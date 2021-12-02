@@ -8,18 +8,13 @@
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
-import java.util.List;
-import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
-
-public class UpdateFirmwareResponseDto extends FirmwareVersionResponseDto {
+public class UpdateFirmwareResponseDto extends ActionResponseDto {
 
   private static final long serialVersionUID = -9159077783233215317L;
 
   private final String firmwareIdentification;
 
-  public UpdateFirmwareResponseDto(
-      final String firmwareIdentification, final List<FirmwareVersionDto> firmwareVersions) {
-    super(firmwareVersions);
+  public UpdateFirmwareResponseDto(final String firmwareIdentification) {
     this.firmwareIdentification = firmwareIdentification;
   }
 

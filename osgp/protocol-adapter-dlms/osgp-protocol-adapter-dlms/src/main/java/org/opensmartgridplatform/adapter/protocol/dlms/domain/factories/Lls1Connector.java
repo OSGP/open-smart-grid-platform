@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Collections;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
@@ -25,33 +26,39 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class Lls1Connector extends SecureDlmsConnector {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Lls1Connector.class);
 
-  @Autowired private SecretManagementService secretManagementService;
+  private final SecretManagementService secretManagementService;
 
   public Lls1Connector(
       final int responseTimeout,
       final int logicalDeviceAddress,
-      final DlmsDeviceAssociation deviceAssociation) {
+      final DlmsDeviceAssociation deviceAssociation,
+      final SecretManagementService secretManagementService) {
     super(responseTimeout, logicalDeviceAddress, deviceAssociation);
+    this.secretManagementService = secretManagementService;
   }
 
   @Override
   public DlmsConnection connect(
-      final DlmsDevice device, final DlmsMessageListener dlmsMessageListener) throws OsgpException {
+      final MessageMetadata messageMetadata,
+      final DlmsDevice device,
+      final DlmsMessageListener dlmsMessageListener)
+      throws OsgpException {
 
     // Make sure neither device or device.getIpAddress() is null.
     this.checkDevice(device);
     this.checkIpAddress(device);
 
     try {
-      return this.createConnection(device, dlmsMessageListener);
+      return this.createConnection(
+          messageMetadata, device, dlmsMessageListener, this.secretManagementService::getKeys);
     } catch (final UnknownHostException e) {
       LOGGER.warn("The IP address is not found: {}", device.getIpAddress(), e);
       // Unknown IP, unrecoverable.
@@ -70,14 +77,21 @@ public class Lls1Connector extends SecureDlmsConnector {
 
   @Override
   protected void setSecurity(
-      final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
+      final MessageMetadata messageMetadata,
+      final DlmsDevice device,
+      final SecurityKeyProvider keyProvider,
+      final TcpConnectionBuilder tcpConnectionBuilder)
       throws OsgpException {
 
     final byte[] password;
     try {
       password =
-          this.secretManagementService.getKey(
-              device.getDeviceIdentification(), SecurityKeyType.PASSWORD);
+          keyProvider
+              .getKeys(
+                  messageMetadata,
+                  device.getDeviceIdentification(),
+                  Collections.singletonList(SecurityKeyType.PASSWORD))
+              .get(SecurityKeyType.PASSWORD);
     } catch (final EncrypterException e) {
       LOGGER.error("Error determining DLMS password setting up LLS1 connection", e);
       throw new FunctionalException(

@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>5.14.1</version>
+    <version>5.15.0-SNAPSHOT</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
@@ -81,10 +81,6 @@
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-domain-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opensmartgridplatform</groupId>
-      <artifactId>osgp-domain-logging</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
@@ -227,7 +223,7 @@
       <groupId>ma.glasnost.orika</groupId>
       <artifactId>orika-core</artifactId>
     </dependency>
-    
+
     <!-- Lombok -->
     <dependency>
       <groupId>org.projectlombok</groupId>

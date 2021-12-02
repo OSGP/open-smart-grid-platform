@@ -8,8 +8,8 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws;
 
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
-import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 
 public class NotificationWebServiceConfigurationBuilder {
 
@@ -34,8 +34,7 @@ public class NotificationWebServiceConfigurationBuilder {
   public NotificationWebServiceConfiguration build() {
     final NotificationWebServiceConfiguration config =
         new NotificationWebServiceConfiguration(
-            new NotificationWebServiceLookupKey(
-                this.organisationIdentification, this.applicationName),
+            new ApplicationDataLookupKey(this.organisationIdentification, this.applicationName),
             this.marshallerContextPath,
             this.targetUri);
     config.useKeyStore(this.keyStoreType, this.keyStoreLocation, this.keyStorePassword);

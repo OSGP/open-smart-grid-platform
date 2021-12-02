@@ -15,7 +15,7 @@
 	<br>
 	<div>
 		<p>The device with id <i>${deviceId}</i> has been added to the Platform.</p>
-		<p>Please simulate the device by adding and registering it to the <a href="https://localhost/web-device-simulator/devices" target="_blank">device simulator</a>.</p>
+		<p>Please simulate the device by adding and registering it to the <a href="/web-device-simulator/devices" target="_blank" rel="noopener noreferrer">device simulator</a>.</p>
 		<br>
 		<p><a class="btn" href="/web-demo-app/list">Return to Devices List</a></p>
 	</div>

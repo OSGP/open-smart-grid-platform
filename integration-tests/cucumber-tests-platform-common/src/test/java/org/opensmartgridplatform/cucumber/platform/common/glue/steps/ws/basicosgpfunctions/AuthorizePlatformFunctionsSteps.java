@@ -341,8 +341,10 @@ public class AuthorizePlatformFunctionsSteps {
     request.setId(PlatformCommonDefaults.FIRMWARE_ID);
     final Firmware firmware = new Firmware();
     firmware.setDescription(PlatformCommonDefaults.FIRMWARE_DESCRIPTION);
-    firmware.setManufacturer(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
-    firmware.setModelCode(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
+    final DeviceModel deviceModel = new DeviceModel();
+    deviceModel.setModelCode(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
+    deviceModel.setManufacturer(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
+    firmware.getDeviceModels().add(deviceModel);
     firmware.setPushToNewDevices(PlatformCommonDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE);
     request.setFirmware(firmware);
     ScenarioContext.current()
@@ -354,8 +356,10 @@ public class AuthorizePlatformFunctionsSteps {
     final AddFirmwareRequest request = new AddFirmwareRequest();
     final Firmware firmware = new Firmware();
     firmware.setDescription(PlatformCommonDefaults.FIRMWARE_DESCRIPTION);
-    firmware.setManufacturer(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
-    firmware.setModelCode(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
+    final DeviceModel deviceModel = new DeviceModel();
+    deviceModel.setModelCode(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
+    deviceModel.setManufacturer(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
+    firmware.getDeviceModels().add(deviceModel);
     firmware.setPushToNewDevices(PlatformCommonDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE);
     request.setFirmware(firmware);
     ScenarioContext.current()

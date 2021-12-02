@@ -14,7 +14,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>protocol-adapter-iec60870</artifactId>
-  <version>5.14.1</version>
+  <version>5.15.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>protocol-adapter-iec60870</name>
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
@@ -35,8 +35,6 @@
   <modules>
     <!-- Shared Libs -->
     <module>parent-pa-iec60870</module>
-    <module>../shared/shared</module>
-    <module>../shared/osgp-dto</module>
     <module>osgp-iec60870</module>
 
     <!-- Protocol Adapter IEC60870 -->

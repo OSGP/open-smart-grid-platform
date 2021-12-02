@@ -1,22 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright 2020 Smart Society Services B.V.
-
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
-with the License.  You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
+    Copyright 2020 Smart Society Services B.V.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.4.0</version>
+    <relativePath />
+  </parent>
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-protocol-simulator-mqtt</artifactId>
+  <version>5.15.0-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>osgp-protocol-simulator-mqtt</name>
   <description>Simulator for MQTT Protocol.</description>
+
+  <url>${maven.site.url}</url>
 
   <organization>
     <name>OSGP</name>
@@ -30,8 +38,6 @@ http://www.apache.org/licenses/LICENSE-2.0
     </license>
   </licenses>
 
-  <url>${maven.site.url}</url>
-
   <distributionManagement>
     <site>
       <id>osgp-protocol-simulator-mqtt</id>
@@ -39,14 +45,6 @@ http://www.apache.org/licenses/LICENSE-2.0
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
-  <version>5.14.1</version>
-
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.4.0</version>
-    <relativePath/>
-  </parent>
 
   <properties>
     <display.version>${project.version}-${BUILD_TAG}</display.version>
@@ -61,6 +59,50 @@ http://www.apache.org/licenses/LICENSE-2.0
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>shared</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.flywaydb</groupId>
+          <artifactId>flyway-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.zaxxer</groupId>
+          <artifactId>HikariCP</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate-entitymanager</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.hibernate.validator</groupId>
+          <artifactId>hibernate-validator</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-orm</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-jms</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework.kafka</groupId>
+          <artifactId>spring-kafka</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.quartz-scheduler</groupId>
+          <artifactId>quartz</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
@@ -114,8 +156,20 @@ http://www.apache.org/licenses/LICENSE-2.0
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
+
+  <repositories>
+    <repository>
+      <id>bintray</id>
+      <url>https://jcenter.bintray.com</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <build>
     <plugins>
@@ -175,18 +229,5 @@ http://www.apache.org/licenses/LICENSE-2.0
     </plugins>
 
   </build>
-
-  <repositories>
-    <repository>
-      <id>bintray</id>
-      <url>https://jcenter.bintray.com</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
 </project>

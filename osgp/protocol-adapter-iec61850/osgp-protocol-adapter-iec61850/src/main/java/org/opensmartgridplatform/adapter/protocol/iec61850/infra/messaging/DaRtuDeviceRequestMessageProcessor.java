@@ -24,7 +24,6 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -77,8 +76,8 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
   public void processMessage(final ObjectMessage message) throws JMSException {
     LOGGER.debug("Processing distribution automation request message");
 
-    MessageMetadata messageMetadata;
-    Serializable request;
+    final MessageMetadata messageMetadata;
+    final Serializable request;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
       request = message.getObject();
@@ -126,17 +125,18 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
       ex = e;
     }
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceResponse.getDeviceIdentification(),
-            deviceResponse.getOrganisationIdentification(),
-            deviceResponse.getCorrelationUid(),
-            messageType);
+    final MessageMetadata deviceMessageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceResponse.getDeviceIdentification())
+            .withOrganisationIdentification(deviceResponse.getOrganisationIdentification())
+            .withCorrelationUid(deviceResponse.getCorrelationUid())
+            .withMessageType(messageType)
+            .build();
     final ProtocolResponseMessage protocolResponseMessage =
         new ProtocolResponseMessage.Builder()
             .domain(domainInformation.getDomain())
             .domainVersion(domainInformation.getDomainVersion())
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(deviceMessageMetadata)
             .result(result)
             .osgpException(ex)
             .dataObject(dataObject)

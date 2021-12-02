@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.simulator.protocol.mqtt;
 
+import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
@@ -27,30 +28,40 @@ public abstract class Client extends Thread {
   private final UUID uuid;
   private final String host;
   private final int port;
+  private final MqttClientSslConfig mqttClientSslConfig;
   private volatile boolean running;
   private Mqtt3BlockingClient mqtt3BlockingClient;
 
-  public Client(final String host, final int port) {
+  protected Client(
+      final String host, final int port, final MqttClientSslConfig mqttClientSslConfig) {
     this.host = host;
     this.port = port;
+    this.mqttClientSslConfig = mqttClientSslConfig;
     this.uuid = UUID.randomUUID();
   }
 
   @Override
   public void run() {
     this.running = true;
-    this.mqtt3BlockingClient =
-        Mqtt3Client.builder()
-            .identifier(this.uuid.toString())
-            .serverHost(this.host)
-            .serverPort(this.port)
-            .buildBlocking();
-    final Mqtt3ConnAck ack = this.mqtt3BlockingClient.connect();
-    LOG.info(
-        String.format("Client %s received Ack %s", this.getClass().getSimpleName(), ack.getType()));
-    this.addShutdownHook();
-    LOG.info(String.format("Client %s started", this.getClass().getSimpleName()));
-    this.onConnect(this.mqtt3BlockingClient);
+
+    try {
+      this.mqtt3BlockingClient =
+          Mqtt3Client.builder()
+              .identifier(this.uuid.toString())
+              .serverHost(this.host)
+              .serverPort(this.port)
+              .sslConfig(this.mqttClientSslConfig)
+              .buildBlocking();
+
+      final Mqtt3ConnAck ack = this.mqtt3BlockingClient.connect();
+      LOG.info("Client {} received Ack {}", this.getClass().getSimpleName(), ack.getType());
+      this.addShutdownHook();
+      LOG.info("Client {} started", this.getClass().getSimpleName());
+      this.onConnect(this.mqtt3BlockingClient);
+    } catch (final Exception ex) {
+      LOG.error("Exception while starting client.", ex);
+      this.stopClient();
+    }
   }
 
   /** Implementations must override this to define behavior after connecting */
@@ -61,23 +72,25 @@ public abstract class Client extends Thread {
   }
 
   private void addShutdownHook() {
-    Runtime.getRuntime()
-        .addShutdownHook(
-            new Thread(
-                () -> {
-                  LOG.info(String.format("Stopping client %s", this.getClass().getSimpleName()));
-                  this.disconnect();
-                  this.running = false;
-                  LOG.info(String.format("Client %s stopped", this.getClass().getSimpleName()));
-                }));
+    Runtime.getRuntime().addShutdownHook(new Thread(this::stopClient));
+  }
+
+  private void stopClient() {
+    LOG.info("Stopping client {}", this.getClass().getSimpleName());
+    this.disconnect();
+    this.running = false;
+    LOG.info("Client {} stopped", this.getClass().getSimpleName());
   }
 
   private void disconnect() {
     try {
       Thread.sleep(2000);
+      if (this.mqtt3BlockingClient != null) {
+        this.mqtt3BlockingClient.disconnect();
+      }
     } catch (final InterruptedException e) {
       LOG.error("Interrupted during sleep", e);
+      Thread.currentThread().interrupt();
     }
-    this.mqtt3BlockingClient.disconnect();
   }
 }

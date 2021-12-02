@@ -8,12 +8,17 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.database;
 
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationKeyConfiguration;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ApplicationKeyConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
@@ -45,6 +50,8 @@ public class DlmsDatabase {
   private NotificationWebServiceConfigurationRepository
       notificationWebServiceConfigurationRepository;
 
+  @Autowired private ApplicationKeyConfigurationRepository applicationKeyConfigurationRepository;
+
   /**
    * This method is used to create default data not directly related to the specific tests. For
    * example: A default dlms gateway device.
@@ -52,6 +59,7 @@ public class DlmsDatabase {
   private void insertDefaultData() {
     this.notificationWebServiceConfigurationRepository.saveAll(
         this.notificationEndpointConfigurations());
+    this.applicationKeyConfigurationRepository.save(this.getDefaultApplicationKeyConfiguration());
   }
 
   private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
@@ -66,6 +74,14 @@ public class DlmsDatabase {
     final NotificationWebServiceConfiguration noOrganisationConfig =
         builder.withOrganisationIdentification("no-organisation").build();
     return Arrays.asList(testOrgConfig, noOrganisationConfig);
+  }
+
+  private ApplicationKeyConfiguration getDefaultApplicationKeyConfiguration() {
+    final ApplicationDataLookupKey applicationDataLookupKey =
+        new ApplicationDataLookupKey(DEFAULT_ORGANIZATION_IDENTIFICATION, "SMART_METERS");
+    return new ApplicationKeyConfiguration(
+        applicationDataLookupKey,
+        "/etc/osp/smartmetering/keys/application/smartmetering-rsa-public.key");
   }
 
   /** Before each scenario dlms related stuff needs to be removed. */

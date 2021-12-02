@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareModule;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -158,7 +157,7 @@ public class FirmwareService {
         moduleVersionsWithFirmwareFile.entrySet()) {
       final String moduleDescription = versionByModule.getKey().getDescription();
       final String moduleVersion = versionByModule.getValue();
-      String filterVersion;
+      final String filterVersion;
       switch (moduleDescription) {
         case MODULE_DESCRIPTION_ACTIVE_FIRMWARE:
           filterVersion = firmwareVersionByModuleType.get(FirmwareModuleType.ACTIVE_FIRMWARE);
@@ -260,46 +259,6 @@ public class FirmwareService {
         deviceModel, moduleDescription, moduleVersion);
   }
 
-  public SmartMeter storeFirmware(
-      final SmartMeter smartMeter,
-      final String firmwareIdentification,
-      final List<FirmwareVersion> firmwareVersions,
-      final String organisationIdentification)
-      throws FunctionalException {
-
-    this.saveFirmwareVersionsReturnedFromDevice(smartMeter, firmwareVersions);
-
-    final Map<FirmwareModuleType, String> firmwareVersionByModuleType =
-        this.getFirmwareVersionByModuleType(firmwareVersions);
-
-    final FirmwareFile firmwareFile =
-        this.firmwareFileRepository.findByIdentification(firmwareIdentification);
-    final Map<FirmwareModule, String> moduleVersionsInFirmwareFile =
-        firmwareFile.getModuleVersions();
-
-    this.checkFirmwareIsUpdated(
-        firmwareVersionByModuleType,
-        FirmwareModuleType.COMMUNICATION,
-        moduleVersionsInFirmwareFile,
-        MODULE_DESCRIPTION_COMMUNICATION_MODULE_ACTIVE_FIRMWARE,
-        smartMeter.getDeviceIdentification());
-    this.checkFirmwareIsUpdated(
-        firmwareVersionByModuleType,
-        FirmwareModuleType.MODULE_ACTIVE,
-        moduleVersionsInFirmwareFile,
-        MODULE_DESCRIPTION_MODULE_ACTIVE_FIRMWARE,
-        smartMeter.getDeviceIdentification());
-    this.checkFirmwareIsUpdated(
-        firmwareVersionByModuleType,
-        FirmwareModuleType.ACTIVE_FIRMWARE,
-        moduleVersionsInFirmwareFile,
-        MODULE_DESCRIPTION_ACTIVE_FIRMWARE,
-        smartMeter.getDeviceIdentification());
-
-    smartMeter.addFirmwareFile(firmwareFile, organisationIdentification);
-    return this.smartMeterRepository.save(smartMeter);
-  }
-
   public void saveFirmwareVersionsReturnedFromDevice(
       final String deviceIdentification, final List<FirmwareVersion> firmwareVersions) {
 
@@ -323,6 +282,12 @@ public class FirmwareService {
             firmwareVersion.getFirmwareModuleType().getDescription());
         continue;
       }
+
+      /*
+       * The DeviceFirmwareModule has a id, that prevents duplicates in the database
+       * The id of DeviceFirmwareModule is made with a combination of deviceId and firmwareModuleId
+       * There for we can just add a new object to the database here
+       */
       final DeviceFirmwareModule deviceFirmwareModule =
           new DeviceFirmwareModule(device, firmwareModule, firmwareVersion.getVersion());
       this.deviceFirmwareModuleRepository.save(deviceFirmwareModule);
@@ -347,58 +312,12 @@ public class FirmwareService {
           break;
         default:
           LOGGER.error(
-              "Cannot handle firmware version type: {}",
-              firmwareVersion.getFirmwareModuleType().name());
+              "Cannot handle firmware version type: {}", firmwareVersion.getFirmwareModuleType());
           throw new FunctionalException(
               FunctionalExceptionType.UNKNOWN_FIRMWARE, ComponentType.DOMAIN_SMART_METERING);
       }
     }
 
     return firmwareVersionByModuleType;
-  }
-
-  private void checkFirmwareIsUpdated(
-      final Map<FirmwareModuleType, String> firmwareVersionsByModuleType,
-      final FirmwareModuleType firmwareModuleType,
-      final Map<FirmwareModule, String> moduleVersionsInFirmwareFile,
-      final String moduleDescription,
-      final String deviceIdentification)
-      throws FunctionalException {
-
-    final String versionToBeInstalled =
-        moduleVersionsInFirmwareFile.get(
-            this.firmwareModuleRepository.findByDescriptionIgnoreCase(moduleDescription));
-
-    if (StringUtils.isBlank(versionToBeInstalled)) {
-      /*
-       * Firmware for this module type was not in the firmware file. Any
-       * version reported by the device is OK.
-       */
-      return;
-    }
-
-    final String versionReportedByDevice = firmwareVersionsByModuleType.get(firmwareModuleType);
-    if (!versionToBeInstalled.equals(versionReportedByDevice)) {
-      LOGGER.error(
-          "Firmware version \"{}\" of type {} not installed on device {}, "
-              + "which reported \"{}\" (all versions returned: {})",
-          versionToBeInstalled,
-          firmwareModuleType,
-          deviceIdentification,
-          versionReportedByDevice,
-          firmwareVersionsByModuleType);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.DOMAIN_SMART_METERING,
-          new OsgpException(
-              ComponentType.DOMAIN_SMART_METERING,
-              "Expected "
-                  + firmwareModuleType.getDescription()
-                  + " version \""
-                  + versionToBeInstalled
-                  + "\", device has \""
-                  + versionReportedByDevice
-                  + "\""));
-    }
   }
 }

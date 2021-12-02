@@ -13,7 +13,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>platform</artifactId>
-  <version>5.14.1</version>
+  <version>5.15.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -89,55 +89,82 @@
   <modules>
     <!-- Shared Libs -->
     <module>parent-platform</module>
-    <module>../shared/shared</module>
-    <module>../shared/osgp-dto</module>
-    <module>../shared/osgp-ws-smartmetering</module>
-    <module>../shared/osgp-ws-core</module>
-    <module>../shared/osgp-ws-admin</module>
-    <module>../shared/osgp-ws-tariffswitching</module>
-    <module>../shared/osgp-ws-publiclighting</module>
-    <module>../shared/osgp-ws-distributionautomation</module>
-    <module>../shared/osgp-ws-microgrids</module>
-    <module>../shared/osgp-kafka-distributionautomation</module>
-    <module>../shared/osgp-kafka-logger</module>
 
     <!-- Domain -->
     <module>osgp-domain-core</module>
     <module>osgp-domain-logging</module>
-    <module>osgp-domain-microgrids</module>
-    <module>osgp-domain-distributionautomation</module>
 
     <module>osgp-adapter-domain-shared</module>
 
     <module>osgp-adapter-domain-admin</module>
     <module>osgp-adapter-domain-core</module>
-    <module>osgp-adapter-domain-distributionautomation</module>
-    <module>osgp-adapter-domain-microgrids</module>
-    <module>osgp-adapter-domain-publiclighting</module>
-    <module>osgp-adapter-domain-tariffswitching</module>
-    <module>osgp-adapter-domain-smartmetering</module>
-
-    <!-- kafka -->
-    <module>osgp-adapter-kafka-distributionautomation</module>
-    <module>osgp-adapter-kafka-logging</module>
 
     <!-- Webservice -->
     <module>osgp-adapter-ws-shared</module>
     <module>osgp-adapter-ws-shared-db</module>
     <module>osgp-adapter-ws-core</module>
     <module>osgp-adapter-ws-admin</module>
-    <module>osgp-adapter-ws-distributionautomation</module>
-    <module>osgp-adapter-ws-microgrids</module>
-    <module>osgp-adapter-ws-publiclighting</module>
-    <module>osgp-adapter-ws-tariffswitching</module>
-    <module>osgp-adapter-ws-smartmetering</module>
 
     <!-- Core -->
     <module>osgp-logging</module>
     <module>osgp-core</module>
-
-    <!-- Other -->
-    <module>osgp-secret-management</module>
   </modules>
 
+  <profiles>
+    <profile>
+      <!-- Public Lighting -->
+      <id>pl</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>osgp-adapter-domain-publiclighting</module>
+        <module>osgp-adapter-domain-tariffswitching</module>
+        <module>osgp-adapter-ws-publiclighting</module>
+        <module>osgp-adapter-ws-tariffswitching</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- Smart meter -->
+      <id>sm</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>osgp-adapter-domain-smartmetering</module>
+        <module>osgp-adapter-ws-smartmetering</module>
+        <module>osgp-secret-management</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- Distribution Automation -->
+      <id>da</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>osgp-domain-distributionautomation</module>
+        <module>osgp-adapter-domain-distributionautomation</module>
+        <module>osgp-adapter-kafka-distributionautomation</module>
+        <module>osgp-adapter-ws-distributionautomation</module>
+        <module>osgp-secret-management</module>
+        <module>osgp-adapter-kafka-logging</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- MicroGrids -->
+      <id>mg</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>osgp-adapter-domain-microgrids</module>
+        <module>osgp-adapter-ws-microgrids</module>
+        <module>osgp-domain-microgrids</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

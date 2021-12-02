@@ -9,72 +9,24 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>osgp-protocol-adapter-mqtt</artifactId>
-  <name>osgp-protocol-adapter-mqtt</name>
-  <packaging>war</packaging>
-  <description>Protocol Adapter for MQTT</description>
-
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-mqtt</artifactId>
-    <version>5.14.1</version>
+    <version>5.15.0-SNAPSHOT</version>
     <relativePath>../parent-pa-mqtt/pom.xml</relativePath>
   </parent>
+
+  <artifactId>osgp-protocol-adapter-mqtt</artifactId>
+  <packaging>war</packaging>
+  <name>osgp-protocol-adapter-mqtt</name>
+  <description>Protocol Adapter for MQTT</description>
 
   <properties>
     <display.version>${project.version}-${BUILD_TAG}</display.version>
     <skipITs>true</skipITs>
-    <hivemq-mqtt-client.version>1.2.0</hivemq-mqtt-client.version>
   </properties>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>${maven.war.plugin.version}</version>
-        <configuration>
-          <attachClasses>true</attachClasses>
-          <failOnMissingWebXml>false</failOnMissingWebXml>
-          <nonFilteredFileExtensions>
-            <nonFilteredFileExtension>gif</nonFilteredFileExtension>
-            <nonFilteredFileExtension>ico</nonFilteredFileExtension>
-            <nonFilteredFileExtension>jpg</nonFilteredFileExtension>
-            <nonFilteredFileExtension>png</nonFilteredFileExtension>
-            <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
-          </nonFilteredFileExtensions>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven.surefire.plugin.version}</version>
-        <configuration>
-          <excludes>
-            <exclude>%regex[.*integrationtests.*class]</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>${maven.failsafe.plugin.version}</version>
-        <executions>
-          <execution>
-            <configuration>
-              <includes>
-                <include>%regex[.*integrationtests.*class]</include>
-              </includes>
-            </configuration>
-            <goals>
-              <goal>integration-test</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-
   <dependencies>
-
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-dto</artifactId>
@@ -99,7 +51,6 @@
     <dependency>
       <groupId>com.hivemq</groupId>
       <artifactId>hivemq-mqtt-client</artifactId>
-      <version>${hivemq-mqtt-client.version}</version>
     </dependency>
 
     <dependency>
@@ -274,4 +225,50 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>${maven.war.plugin.version}</version>
+        <configuration>
+          <attachClasses>true</attachClasses>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+          <nonFilteredFileExtensions>
+            <nonFilteredFileExtension>gif</nonFilteredFileExtension>
+            <nonFilteredFileExtension>ico</nonFilteredFileExtension>
+            <nonFilteredFileExtension>jpg</nonFilteredFileExtension>
+            <nonFilteredFileExtension>png</nonFilteredFileExtension>
+            <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
+          </nonFilteredFileExtensions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven.surefire.plugin.version}</version>
+        <configuration>
+          <excludes>
+            <exclude>%regex[.*integrationtests.*class]</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${maven.failsafe.plugin.version}</version>
+        <executions>
+          <execution>
+            <configuration>
+              <includes>
+                <include>%regex[.*integrationtests.*class]</include>
+              </includes>
+            </configuration>
+            <goals>
+              <goal>integration-test</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

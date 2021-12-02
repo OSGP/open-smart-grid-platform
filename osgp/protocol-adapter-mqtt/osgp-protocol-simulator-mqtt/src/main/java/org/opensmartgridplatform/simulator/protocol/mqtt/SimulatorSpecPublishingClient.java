@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.simulator.protocol.mqtt;
 
+import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.Message;
@@ -22,8 +23,9 @@ public class SimulatorSpecPublishingClient extends Client {
   private final SimulatorSpec simulatorSpec;
   private int i = 0;
 
-  public SimulatorSpecPublishingClient(final SimulatorSpec simulatorSpec) {
-    super(simulatorSpec.getBrokerHost(), simulatorSpec.getBrokerPort());
+  public SimulatorSpecPublishingClient(
+      final SimulatorSpec simulatorSpec, final MqttClientSslConfig mqttClientSslConfig) {
+    super(simulatorSpec.getBrokerHost(), simulatorSpec.getBrokerPort(), mqttClientSslConfig);
     this.simulatorSpec = simulatorSpec;
   }
 

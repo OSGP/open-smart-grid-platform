@@ -19,6 +19,7 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRespo
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.responses.GetFirmwareVersionDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.MessageMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
@@ -28,7 +29,6 @@ import org.opensmartgridplatform.oslp.UnsignedOslpEnvelopeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -54,7 +54,7 @@ public class CommonGetFirmwareRequestMessageProcessor extends DeviceRequestMessa
   public void processMessage(final ObjectMessage message) {
     LOGGER.debug("Processing common get firmware request message");
 
-    MessageMetadata messageMetadata;
+    final MessageMetadata messageMetadata;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
     } catch (final JMSException e) {
@@ -142,7 +142,7 @@ public class CommonGetFirmwareRequestMessageProcessor extends DeviceRequestMessa
       final int retryCount) {
 
     ResponseMessageResultType result = ResponseMessageResultType.OK;
-    String firmwareVersion;
+    final String firmwareVersion;
     OsgpException osgpException = null;
 
     final List<FirmwareVersionDto> firmwareVersions = new ArrayList<>();
@@ -160,18 +160,11 @@ public class CommonGetFirmwareRequestMessageProcessor extends DeviceRequestMessa
               ComponentType.UNKNOWN, "Exception occurred while getting device firmware version", e);
     }
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceResponse.getDeviceIdentification(),
-            deviceResponse.getOrganisationIdentification(),
-            deviceResponse.getCorrelationUid(),
-            messageType,
-            deviceResponse.getMessagePriority());
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
             .domain(domain)
             .domainVersion(domainVersion)
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(MessageMetadataFactory.from(deviceResponse, messageType))
             .result(result)
             .osgpException(osgpException)
             .dataObject((Serializable) firmwareVersions)

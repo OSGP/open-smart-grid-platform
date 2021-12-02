@@ -16,9 +16,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandEx
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.MissingExecutorException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NonRetryableException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseParameterDto;
@@ -27,11 +29,14 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service(value = "dlmsBundleService")
 public class BundleService {
+
+  private static final String DEVICE_IDENTIFICATION = "deviceIdentification";
 
   private final CommandExecutorMap commandExecutorMap;
 
@@ -42,79 +47,90 @@ public class BundleService {
   public BundleMessagesRequestDto callExecutors(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final BundleMessagesRequestDto bundleMessagesRequest) {
+      final BundleMessagesRequestDto request,
+      final MessageMetadata messageMetadata) {
 
-    final List<ActionDto> actionList = bundleMessagesRequest.getActionList();
+    request.getActionList().stream()
+        .filter(this::shouldExecute)
+        .forEach(
+            action -> {
+              final CommandExecutor<?, ?> executor = this.getCommandExecutor(action);
 
-    for (final ActionDto action : actionList) {
+              if (executor == null) {
+                this.handleMissingExecutor(action, device);
 
-      // Only execute the request when there is no response available yet.
-      // Because it could be a retry.
-      if (action.getResponse() == null) {
+              } else {
+                this.callExecutor(executor, action, conn, device, messageMetadata);
+              }
+            });
 
-        final Class<? extends ActionRequestDto> actionRequestClass = action.getRequest().getClass();
-
-        final CommandExecutor<?, ?> executor =
-            this.commandExecutorMap.getCommandExecutor(actionRequestClass);
-
-        if (executor == null) {
-          this.handleMissingExecutor(actionRequestClass, action, device);
-
-        } else {
-          this.callExecutor(executor, actionRequestClass, action, actionList, conn, device);
-        }
-      }
-    }
-
-    return bundleMessagesRequest;
+    return request;
   }
 
-  private void handleMissingExecutor(
-      final Class<? extends ActionRequestDto> actionRequestClass,
-      final ActionDto actionDto,
-      final DlmsDevice device) {
+  private CommandExecutor<?, ?> getCommandExecutor(final ActionDto action) {
+    return this.commandExecutorMap.getCommandExecutor(action.getRequest().getClass());
+  }
+
+  /*
+   * Only execute the request when there is no response available yet. Because it could be a
+   * retry. Or it went wrong last time and it is a retryable situation.
+   */
+  private boolean shouldExecute(final ActionDto action) {
+    return action.getResponse() == null || this.isRetryableFaultResponse(action);
+  }
+
+  private boolean isRetryableFaultResponse(final ActionDto action) {
+    return action.getResponse() instanceof FaultResponseDto
+        && ((FaultResponseDto) action.getResponse()).isRetryable();
+  }
+
+  private void handleMissingExecutor(final ActionDto action, final DlmsDevice device) {
+    final Class<? extends ActionRequestDto> actionRequestClass = action.getRequest().getClass();
+
     log.error(
         "bundleCommandExecutorMap in {} does not have a CommandExecutor registered for action: {}",
         this.getClass().getName(),
         actionRequestClass.getName());
 
-    final ProtocolAdapterException pae =
-        new ProtocolAdapterException(
+    final MissingExecutorException e =
+        new MissingExecutorException(
             String.format(
                 "No CommandExecutor available to handle %s", actionRequestClass.getSimpleName()));
 
-    this.addFaultResponse(actionDto, pae, "Unable to handle request", device);
+    this.addFaultResponse(action, e, "Unable to handle request", device);
   }
 
   private void callExecutor(
       final CommandExecutor<?, ?> executor,
-      final Class<? extends ActionRequestDto> actionRequestClass,
       final ActionDto action,
-      final List<ActionDto> actionList,
       final DlmsConnectionManager conn,
-      final DlmsDevice device) {
+      final DlmsDevice device,
+      final MessageMetadata messageMetadata) {
 
     final String executorName = executor.getClass().getSimpleName();
 
     try {
-      log.debug("**************************************************");
       log.info(
           "Calling executor in bundle {} [deviceId={}]",
           executorName,
           device.getDeviceIdentification());
-      log.debug("**************************************************");
 
-      action.setResponse(executor.executeBundleAction(conn, device, action.getRequest()));
+      final ActionResponseDto response =
+          executor.executeBundleAction(conn, device, action.getRequest(), messageMetadata);
+      action.setResponse(response);
 
     } catch (final ConnectionException ce) {
-      this.logConnectionException(action, actionList, device, executorName, ce);
-      action.setResponse(null);
+      log.warn(
+          "A connection exception occurred while executing {} [deviceId={}]",
+          executorName,
+          device.getDeviceIdentification(),
+          ce);
       throw ce;
 
     } catch (final Exception e) {
       log.error(
           "Error while executing bundle action for {} with {} [deviceId={}]",
-          actionRequestClass.getName(),
+          action.getRequest().getClass().getName(),
           executorName,
           device.getDeviceIdentification(),
           e);
@@ -124,40 +140,20 @@ public class BundleService {
     }
   }
 
-  private void logConnectionException(
-      final ActionDto action,
-      final List<ActionDto> actionList,
-      final DlmsDevice device,
-      final String executorName,
-      final ConnectionException ce) {
-    log.warn(
-        "A connection exception occurred while executing {} [deviceId={}]",
-        executorName,
-        device.getDeviceIdentification(),
-        ce);
-
-    if (log.isDebugEnabled()) {
-      final List<ActionDto> remainingActionDtoList =
-          actionList.subList(actionList.indexOf(action), actionList.size());
-      for (final ActionDto remainingActionDto : remainingActionDtoList) {
-        log.debug("Skipping: {}", remainingActionDto.getRequest().getClass().getSimpleName());
-      }
-    }
-  }
-
   private void addFaultResponse(
-      final ActionDto actionDto,
+      final ActionDto action,
       final Exception exception,
       final String defaultMessage,
       final DlmsDevice device) {
+
     final List<FaultResponseParameterDto> parameterList = new ArrayList<>();
     final FaultResponseParameterDto deviceIdentificationParameter =
-        new FaultResponseParameterDto("deviceIdentification", device.getDeviceIdentification());
+        new FaultResponseParameterDto(DEVICE_IDENTIFICATION, device.getDeviceIdentification());
     parameterList.add(deviceIdentificationParameter);
 
     final FaultResponseDto faultResponse =
         this.faultResponseForException(exception, parameterList, defaultMessage);
-    actionDto.setResponse(faultResponse);
+    action.setResponse(faultResponse);
   }
 
   protected FaultResponseDto faultResponseForException(
@@ -179,6 +175,7 @@ public class BundleService {
         .withInnerException(exception.getClass().getName())
         .withInnerMessage(exception.getMessage())
         .withFaultResponseParameters(faultResponseParameters)
+        .withRetryable(!(exception instanceof NonRetryableException))
         .build();
   }
 

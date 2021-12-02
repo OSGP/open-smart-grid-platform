@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2021 Alliander N.V.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.opensmartgridplatform</groupId>
+  <artifactId>osgp</artifactId>
+  <packaging>pom</packaging>
+  <version>5.15.0-SNAPSHOT</version>
+
+  <modules>
+    <module>platform</module>
+    <module>shared</module>
+  </modules>
+
+  <profiles>
+    <profile>
+      <!-- Public Lighting -->
+      <id>pl</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>protocol-adapter-oslp</module>
+        <module>protocol-adapter-iec60870</module>
+        <module>protocol-adapter-iec61850</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- Smart meter -->
+      <id>sm</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>protocol-adapter-dlms</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- Distrubution Automation -->
+      <id>da</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>protocol-adapter-iec60870</module>
+        <module>protocol-adapter-iec61850</module>
+        <module>protocol-adapter-mqtt</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- MicroGrids -->
+      <id>mg</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>protocol-adapter-iec61850</module>
+      </modules>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <!-- This plugin is disabled, because this module doesn't produce jar files and
+        therefor doesn't need dependency analysis -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+          <skipDeploy>true</skipDeploy>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

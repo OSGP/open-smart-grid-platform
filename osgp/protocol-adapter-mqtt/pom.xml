@@ -9,21 +9,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>protocol-adapter-mqtt</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>5.14.1</version>
+  <artifactId>protocol-adapter-mqtt</artifactId>
+  <version>5.15.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>protocol-adapter-mqtt</name>
-
-  <properties>
-    <jxr.version>3.0.0</jxr.version>
-    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
-    <maven.site.plugin>3.7.1</maven.site.plugin>
-    <jgitflow-maven-plugin.version>1.0-m5.1</jgitflow-maven-plugin.version>
-  </properties>
-
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
   <description>Protocol Adapter for MQTT</description>
+
+  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
+  <url>${maven.site.url}</url>
   <organization>
     <name>OSGP</name>
     <url>https://osgplatform.wordpress.com</url>
@@ -34,8 +29,13 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
     </license>
   </licenses>
-  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
-  <url>${maven.site.url}</url>
+
+  <modules>
+    <module>parent-pa-mqtt</module>
+    <module>osgp-protocol-adapter-mqtt</module>
+    <module>osgp-protocol-simulator-mqtt</module>
+  </modules>
+
   <distributionManagement>
     <site>
       <id>pa-mqtt</id>
@@ -44,6 +44,13 @@
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
+
+  <properties>
+    <jxr.version>3.0.0</jxr.version>
+    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
+    <maven.site.plugin>3.7.1</maven.site.plugin>
+    <jgitflow-maven-plugin.version>1.0-m5.1</jgitflow-maven-plugin.version>
+  </properties>
 
   <build>
     <plugins>
@@ -83,13 +90,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <modules>
-    <module>parent-pa-mqtt</module>
-    <module>osgp-protocol-adapter-mqtt</module>
-    <module>osgp-protocol-simulator-mqtt</module>
-    <module>../shared/shared</module>
-    <module>../shared/osgp-dto</module>
-  </modules>
 
 </project>

@@ -2,7 +2,7 @@
 <!-- Platform version: ${display.version} -->
 
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-  xmlns:sminst="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-notification/2014/10"
+  xmlns:notification="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-notification/2014/10"
   xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
   xmlns:tns="http://www.opensmartgridplatform.org/definitions/smartmetering/sm-notification-v1.0"
@@ -15,7 +15,7 @@
 
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-notification/2014/10"
-        schemaLocation="schemas/sm-notification.xsd" />
+        schemaLocation="schemas/notification-ws-smartmetering.xsd" />
     </xsd:schema>
   </wsdl:types>
 
@@ -26,11 +26,11 @@
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
   <wsdl:message name="SendNotificationResponse">
-    <wsdl:part element="sminst:SendNotificationResponse" name="SendNotificationResponse">
+    <wsdl:part element="notification:SendNotificationResponse" name="SendNotificationResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="SendNotificationRequest">
-    <wsdl:part element="sminst:SendNotificationRequest" name="SendNotificationRequest">
+    <wsdl:part element="notification:SendNotificationRequest" name="SendNotificationRequest">
     </wsdl:part>
   </wsdl:message>
 

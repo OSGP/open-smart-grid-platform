@@ -9,21 +9,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.opensmartgridplatform</groupId>
+    <artifactId>super-osgp</artifactId>
+    <version>5.15.0-SNAPSHOT</version>
+    <relativePath>../../../super/pom.xml</relativePath>
+  </parent>
+
   <artifactId>parent-pa-mqtt</artifactId>
   <packaging>pom</packaging>
   <name>parent-pa-mqtt</name>
   <description>Parent module for MQTT protocol adapter</description>
-
-  <properties>
-    <jgitflow-maven-plugin.version>1.0-m5.1</jgitflow-maven-plugin.version>
-  </properties>
-
-  <parent>
-    <groupId>org.opensmartgridplatform</groupId>
-    <artifactId>super-osgp</artifactId>
-    <version>5.14.1</version>
-    <relativePath>../../../super/pom.xml</relativePath>
-  </parent>
 
   <distributionManagement>
     <site>
@@ -32,6 +28,10 @@
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
+
+  <properties>
+    <jgitflow-maven-plugin.version>1.0-m5.1</jgitflow-maven-plugin.version>
+  </properties>
 
   <build>
     <pluginManagement>

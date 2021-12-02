@@ -14,18 +14,18 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.springframework.stereotype.Component;
 
 @Component
-public class CommandExecutorMap {
+public class CommandExecutorMap<T, R> {
 
-  private final Map<Class<? extends ActionRequestDto>, CommandExecutor<?, ?>> commandExecutors =
+  private final Map<Class<? extends ActionRequestDto>, CommandExecutor<T, R>> commandExecutors =
       new HashMap<>();
 
   public void addCommandExecutor(
-      final Class<? extends ActionRequestDto> clazz, final CommandExecutor<?, ?> commandExecutor) {
+      final Class<? extends ActionRequestDto> clazz, final CommandExecutor<T, R> commandExecutor) {
 
     this.commandExecutors.put(clazz, commandExecutor);
   }
 
-  public CommandExecutor<?, ?> getCommandExecutor(final Class<? extends ActionRequestDto> clazz) {
+  public CommandExecutor<T, R> getCommandExecutor(final Class<? extends ActionRequestDto> clazz) {
     return this.commandExecutors.get(clazz);
   }
 }

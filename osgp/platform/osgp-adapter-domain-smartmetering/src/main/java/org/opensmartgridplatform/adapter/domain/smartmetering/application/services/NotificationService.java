@@ -12,7 +12,7 @@ import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushNotificationAlarmDto;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
@@ -30,11 +30,10 @@ public class NotificationService {
   @Autowired private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
   public void handlePushNotificationAlarm(
-      final DeviceMessageMetadata deviceMessageMetadata,
-      final PushNotificationAlarmDto pushNotificationAlarm) {
+      final MessageMetadata messageMetadata, final PushNotificationAlarmDto pushNotificationAlarm) {
 
     LOGGER.info(
-        "handlePushNotificationAlarm for MessageType: {}", deviceMessageMetadata.getMessageType());
+        "handlePushNotificationAlarm for MessageType: {}", messageMetadata.getMessageType());
 
     final PushNotificationAlarm pushNotificationAlarmDomain =
         this.mapperFactory
@@ -48,14 +47,13 @@ public class NotificationService {
      */
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withCorrelationUid(messageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
+            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
             .withResult(ResponseMessageResultType.OK)
             .withDataObject(pushNotificationAlarmDomain)
-            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
-    this.webServiceResponseMessageSender.send(
-        responseMessage, deviceMessageMetadata.getMessageType());
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 }

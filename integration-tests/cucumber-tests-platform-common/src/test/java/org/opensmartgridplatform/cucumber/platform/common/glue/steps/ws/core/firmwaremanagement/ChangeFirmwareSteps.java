@@ -9,9 +9,7 @@
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.firmwaremanagement;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -20,9 +18,7 @@ import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleData;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
-import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreFirmwareManagementClient;
@@ -32,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 /** Class with all the firmware requests steps */
-public class ChangeFirmwareSteps {
+public class ChangeFirmwareSteps extends FirmwareSteps {
 
   @Autowired private CoreFirmwareManagementClient client;
 
@@ -57,38 +53,15 @@ public class ChangeFirmwareSteps {
 
     request.setId((int) firmwareFileId);
 
-    request.setFirmware(this.createAndGetFirmware(firmwareFileId, requestParameters));
+    final Firmware firmware = this.createAndGetFirmware(requestParameters);
+    firmware.setId((int) firmwareFileId);
+    request.setFirmware(firmware);
 
     try {
       ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.changeFirmware(request));
     } catch (final SoapFaultClientException ex) {
       ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
     }
-  }
-
-  private Firmware createAndGetFirmware(
-      final long firmwareFileId, final Map<String, String> requestParameters) throws Throwable {
-    final Firmware firmware = new Firmware();
-    firmware.setId((int) firmwareFileId);
-    firmware.setFilename(getString(requestParameters, PlatformKeys.FIRMWARE_FILE_FILENAME, ""));
-    firmware.setDescription(getString(requestParameters, PlatformKeys.FIRMWARE_DESCRIPTION, ""));
-    firmware.setPushToNewDevices(
-        getBoolean(
-            requestParameters,
-            PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
-            PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE));
-    firmware.setFirmwareModuleData(new FirmwareModuleData());
-    firmware.setManufacturer(
-        getString(
-            requestParameters,
-            PlatformKeys.MANUFACTURER_NAME,
-            PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
-    firmware.setModelCode(
-        getString(
-            requestParameters,
-            PlatformKeys.DEVICEMODEL_MODELCODE,
-            PlatformDefaults.DEVICE_MODEL_MODEL_CODE));
-    return firmware;
   }
 
   @Then("^the change firmware response contains$")

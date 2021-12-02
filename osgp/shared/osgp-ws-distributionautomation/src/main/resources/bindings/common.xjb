@@ -14,7 +14,7 @@
   xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <jxb:bindings schemaLocation="../schemas/common.xsd">
+  <jxb:bindings schemaLocation="../schemas/common-ws-distributionautomation.xsd">
     <jxb:schemaBindings>
       <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.distributionautomation.common"></jxb:package>
     </jxb:schemaBindings>

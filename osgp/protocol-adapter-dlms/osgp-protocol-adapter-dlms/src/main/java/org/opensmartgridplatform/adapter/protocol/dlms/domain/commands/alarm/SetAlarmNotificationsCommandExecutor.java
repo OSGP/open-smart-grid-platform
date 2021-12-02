@@ -32,6 +32,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificatio
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +81,8 @@ public class SetAlarmNotificationsCommandExecutor
   public AccessResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final AlarmNotificationsDto alarmNotifications)
+      final AlarmNotificationsDto alarmNotifications,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
     try {
       final AttributeAddress alarmFilterValue = this.getAttributeAddress(device);

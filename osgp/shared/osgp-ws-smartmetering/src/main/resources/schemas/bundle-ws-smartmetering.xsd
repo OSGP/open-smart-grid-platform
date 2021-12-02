@@ -1,0 +1,738 @@
+<!-- Copyright 2015 Smart Society Services B.V. -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+  xmlns:smman="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
+  xmlns:smconf="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
+  xmlns:smmon="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10"
+  xmlns:adhoc="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10"
+  xmlns:sminst="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10"
+  xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10"
+  elementFormDefault="qualified"
+  targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10">
+
+  <xsd:import
+    namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+    schemaLocation="base-ws-smartmetering.xsd" />
+  <xsd:import
+    namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
+    schemaLocation="management-ws-smartmetering.xsd" />
+  <xsd:import
+    namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
+    schemaLocation="configuration-ws-smartmetering.xsd" />
+  <xsd:import
+    namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10"
+    schemaLocation="monitoring-ws-smartmetering.xsd" />
+  <xsd:import
+    namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10"
+    schemaLocation="adhoc-ws-smartmetering.xsd" />
+  <xsd:import
+    namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10"
+    schemaLocation="installation-ws-smartmetering.xsd" />
+
+  <!-- Requests and Responses -->
+  <xsd:element name="GetOutagesRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smman:GetOutagesRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="FindEventsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smman:FindEventsRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetSpecialDaysRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:SpecialDaysRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ReadAlarmRegisterRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:ReadAlarmRegisterData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetActualMeterReadsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:ActualMeterReadsData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetActualMeterReadsGasRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smmon:ActualMeterReadsGasData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetAdministrativeStatusRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:GetAdministrativeStatusData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetPeriodicMeterReadsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smmon:PeriodicMeterReadsRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetPeriodicMeterReadsGasRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smmon:PeriodicMeterReadsGasRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetAdministrativeStatusRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:AdministrativeStatusTypeData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetActivityCalendarRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:SetActivityCalendarRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element
+    name="SetEncryptionKeyExchangeOnGMeterRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:SetEncryptionKeyExchangeOnGMeterRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetMbusEncryptionKeyStatusRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:GetMbusEncryptionKeyStatusRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetAlarmNotificationsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:SetAlarmNotificationsRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetConfigurationObjectRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:SetConfigurationObjectRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetConfigurationObjectRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:GetConfigurationObjectRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetPushSetupAlarmRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:SetPushSetupAlarmRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetPushSetupSmsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:SetPushSetupSmsRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SynchronizeTimeRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="adhoc:SynchronizeTimeRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetAllAttributeValuesRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="adhoc:GetAllAttributeValuesRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetFirmwareVersionRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:GetFirmwareVersionRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetFirmwareVersionGasRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:GetFirmwareVersionGasRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="UpdateFirmwareRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:UpdateFirmwareRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetSpecificAttributeValueRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="adhoc:GetSpecificAttributeValueRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetKeysRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetKeysRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetAssociationLnObjectsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="adhoc:GetAssociationLnObjectsRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetClockConfigurationRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:SetClockConfigurationRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetPowerQualityProfileRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smmon:PowerQualityProfileRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetActualPowerQualityRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smmon:ActualPowerQualityRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GenerateAndReplaceKeysRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:GenerateAndReplaceKeysData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ConfigureDefinableLoadProfileRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:DefinableLoadProfileConfigurationData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetMbusUserKeyByChannelRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:SetMbusUserKeyByChannelRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="CoupleMbusDeviceByChannelRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="sminst:CoupleMbusDeviceByChannelRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="DecoupleMbusDeviceByChannelRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="sminst:DecoupleMbusDeviceByChannelRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ClearAlarmRegisterRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:ClearAlarmRegisterData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element
+    name="GetMbusEncryptionKeyStatusByChannelRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:GetMbusEncryptionKeyStatusByChannelRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element
+    name="SetDeviceLifecycleStatusByChannelRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smman:SetDeviceLifecycleStatusByChannelRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ScanMbusChannelsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="adhoc:ScanMbusChannelsRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetRandomisationSettingsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:SetRandomisationSettingsRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetGsmDiagnosticRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smman:GetGsmDiagnosticRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="Actions">
+    <xsd:sequence>
+      <xsd:choice maxOccurs="unbounded">
+        <xsd:element ref="tns:GetOutagesRequest" />
+        <xsd:element ref="tns:FindEventsRequest" />
+        <xsd:element ref="tns:SetSpecialDaysRequest" />
+        <xsd:element ref="tns:ReadAlarmRegisterRequest" />
+        <xsd:element ref="tns:GetActualMeterReadsRequest" />
+        <xsd:element ref="tns:GetActualMeterReadsGasRequest" />
+        <xsd:element
+          ref="tns:GetAdministrativeStatusRequest" />
+        <xsd:element ref="tns:GetPeriodicMeterReadsRequest" />
+        <xsd:element
+          ref="tns:GetPeriodicMeterReadsGasRequest" />
+        <xsd:element
+          ref="tns:SetAdministrativeStatusRequest" />
+        <xsd:element ref="tns:SetActivityCalendarRequest" />
+        <xsd:element
+          ref="tns:SetEncryptionKeyExchangeOnGMeterRequest" />
+        <xsd:element
+          ref="tns:GetMbusEncryptionKeyStatusRequest" />
+        <xsd:element ref="tns:SetAlarmNotificationsRequest" />
+        <xsd:element ref="tns:SetConfigurationObjectRequest" />
+        <xsd:element ref="tns:SetPushSetupAlarmRequest" />
+        <xsd:element ref="tns:SetPushSetupSmsRequest" />
+        <xsd:element ref="tns:SynchronizeTimeRequest" />
+        <xsd:element ref="tns:GetFirmwareVersionRequest" />
+        <xsd:element ref="tns:GetFirmwareVersionGasRequest"/>
+        <xsd:element ref="tns:UpdateFirmwareRequest" />
+        <xsd:element ref="tns:GetAllAttributeValuesRequest" />
+        <xsd:element
+          ref="tns:GetSpecificAttributeValueRequest" />
+        <xsd:element ref="tns:SetKeysRequest" />
+        <xsd:element
+          ref="tns:GetAssociationLnObjectsRequest" />
+        <xsd:element ref="tns:SetClockConfigurationRequest" />
+        <xsd:element ref="tns:GetConfigurationObjectRequest" />
+        <xsd:element ref="tns:GetPowerQualityProfileRequest" />
+        <xsd:element ref="tns:GetActualPowerQualityRequest" />
+        <xsd:element ref="tns:GenerateAndReplaceKeysRequest" />
+        <xsd:element
+          ref="tns:ConfigureDefinableLoadProfileRequest" />
+        <xsd:element
+          ref="tns:SetMbusUserKeyByChannelRequest" />
+        <xsd:element
+          ref="tns:CoupleMbusDeviceByChannelRequest" />
+        <xsd:element
+          ref="tns:DecoupleMbusDeviceByChannelRequest" />
+        <xsd:element ref="tns:ClearAlarmRegisterRequest" />
+        <xsd:element
+          ref="tns:GetMbusEncryptionKeyStatusByChannelRequest" />
+        <xsd:element
+          ref="tns:SetDeviceLifecycleStatusByChannelRequest" />
+        <xsd:element ref="tns:ScanMbusChannelsRequest" />
+        <xsd:element
+          ref="tns:SetRandomisationSettingsRequest" />
+        <xsd:element
+          ref="tns:GetGsmDiagnosticRequest" />
+      </xsd:choice>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="BundleRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification"
+          type="common:DeviceIdentification" />
+        <xsd:element name="Actions" type="tns:Actions" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="BundleAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="BundleAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="FindEventsResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smman:FindEventsResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ActionResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:ActionResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="FaultResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:FaultResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ReadAlarmRegisterResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smmon:ReadAlarmRegisterResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ActualMeterReadsResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smmon:ActualMeterReadsResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ActualMeterReadsGasResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smmon:ActualMeterReadsGasResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="AdministrativeStatusResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:AdministrativeStatusResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="PeriodicMeterReadsResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smmon:PeriodicMeterReadsResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="PeriodicMeterReadsGasResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smmon:PeriodicMeterReadsGasResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetMbusEncryptionKeyStatusResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:GetMbusEncryptionKeyStatusResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetAllAttributeValuesResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="adhoc:GetAllAttributeValuesResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetSpecificAttributeValueResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="adhoc:GetSpecificAttributeValueResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetFirmwareVersionResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:GetFirmwareVersionResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetFirmwareVersionGasResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:GetFirmwareVersionGasResponseData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="UpdateFirmwareResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:UpdateFirmwareResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="AssociationLnObjectsResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="adhoc:AssociationLnObjectsResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetConfigurationObjectResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:GetConfigurationObjectResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetPowerQualityProfileResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smmon:PowerQualityProfileResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ActualPowerQualityResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smmon:ActualPowerQualityResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="CoupleMbusDeviceByChannelResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="sminst:CoupleMbusDeviceByChannelResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="DecoupleMbusDeviceByChannelResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="sminst:DecoupleMbusDeviceByChannelResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element
+    name="GetMbusEncryptionKeyStatusByChannelResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:GetMbusEncryptionKeyStatusByChannelResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element
+    name="SetDeviceLifecycleStatusByChannelResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smman:SetDeviceLifecycleStatusByChannelResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ScanMbusChannelsResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="adhoc:ScanMbusChannelsResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:unique name="UniqueBundledScanMbusChannelValues">
+      <xsd:selector xpath="adhoc:ChannelShortId" />
+      <xsd:field xpath="adhoc:Channel" />
+    </xsd:unique>
+  </xsd:element>
+  <xsd:element name="GetOutagesResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smman:GetOutagesResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetGsmDiagnosticResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smman:GetGsmDiagnosticResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="AllResponses">
+    <xsd:sequence>
+      <xsd:choice maxOccurs="unbounded">
+        <xsd:element ref="tns:FindEventsResponse" />
+        <xsd:element ref="tns:ActionResponse" />
+        <xsd:element ref="tns:FaultResponse" />
+        <xsd:element ref="tns:ReadAlarmRegisterResponse" />
+        <xsd:element ref="tns:ActualMeterReadsResponse" />
+        <xsd:element ref="tns:ActualMeterReadsGasResponse" />
+        <xsd:element ref="tns:AdministrativeStatusResponse" />
+        <xsd:element ref="tns:PeriodicMeterReadsResponse" />
+        <xsd:element ref="tns:PeriodicMeterReadsGasResponse" />
+        <xsd:element
+          ref="tns:GetMbusEncryptionKeyStatusResponse" />
+        <xsd:element ref="tns:GetAllAttributeValuesResponse" />
+        <xsd:element
+          ref="tns:GetSpecificAttributeValueResponse" />
+        <xsd:element ref="tns:GetFirmwareVersionResponse" />
+        <xsd:element ref="tns:GetFirmwareVersionGasResponse"/>
+        <xsd:element ref="tns:UpdateFirmwareResponse" />
+        <xsd:element ref="tns:AssociationLnObjectsResponse" />
+        <xsd:element
+          ref="tns:GetConfigurationObjectResponse" />
+        <xsd:element
+          ref="tns:GetPowerQualityProfileResponse" />
+        <xsd:element ref="tns:ActualPowerQualityResponse" />
+        <xsd:element
+          ref="tns:CoupleMbusDeviceByChannelResponse" />
+        <xsd:element
+          ref="tns:DecoupleMbusDeviceByChannelResponse" />
+        <xsd:element
+          ref="tns:GetMbusEncryptionKeyStatusByChannelResponse" />
+        <xsd:element
+          ref="tns:SetDeviceLifecycleStatusByChannelResponse" />
+        <xsd:element ref="tns:ScanMbusChannelsResponse" />
+        <xsd:element ref="tns:GetOutagesResponse" />
+        <xsd:element ref="tns:GetGsmDiagnosticResponse" />
+      </xsd:choice>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="BundleResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AllResponses"
+          type="tns:AllResponses" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- Requests and Responses -->
+
+  <xsd:element name="GetDevicesRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Page" type="xsd:int" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetDevicesResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DevicePage" type="tns:DevicePage" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- Data Types -->
+
+  <xsd:complexType name="Device">
+    <xsd:sequence>
+      <xsd:element name="DeviceUid" type="xsd:string" />
+      <xsd:element name="DeviceIdentification"
+        type="common:Identification" />
+      <xsd:element name="DeviceType" type="xsd:string" />
+      <xsd:element name="Activated" type="xsd:boolean" />
+      <xsd:element name="HasSchedule" type="xsd:boolean" />
+      <xsd:element name="PublicKeyPresent"
+        type="xsd:boolean" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="DevicePage">
+    <xsd:sequence>
+      <xsd:element name="TotalPages" type="xsd:int" />
+      <xsd:element maxOccurs="unbounded" name="Devices"
+        type="tns:Device" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

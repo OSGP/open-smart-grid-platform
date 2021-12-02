@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
@@ -27,8 +26,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceSessionTerminatedAfterReadingInvocationCounterException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 class InvocationCounterManagerTest {
@@ -36,53 +34,42 @@ class InvocationCounterManagerTest {
       new AttributeAddress(1, new ObisCode(new byte[] {0, 0, 43, 1, 0, -1}), 2);
 
   private InvocationCounterManager manager;
+  private MessageMetadata messageMetadata;
 
   @Mock private DlmsConnectionFactory connectionFactory;
 
   @Mock private DlmsHelper dlmsHelper;
 
-  @Mock private DlmsDeviceRepository deviceRepository;
-
   @BeforeEach
   public void setUp() {
-    this.manager =
-        new InvocationCounterManager(
-            this.connectionFactory, this.dlmsHelper, this.deviceRepository);
+    this.manager = new InvocationCounterManager(this.connectionFactory, this.dlmsHelper);
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
   }
 
   @Test
   void initializesInvocationCounterForDevice() throws Exception {
-    final DlmsDevice device = new DlmsDeviceBuilder().build();
+    final long invocationCounterValueInDatabaseEntity = 7;
+    final long invocationCounterValueOnDevice = 123;
+
+    final DlmsDevice device =
+        new DlmsDeviceBuilder()
+            .withInvocationCounter(invocationCounterValueInDatabaseEntity)
+            .build();
 
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-    when(this.connectionFactory.getPublicClientConnection(device, null))
+    when(this.connectionFactory.getPublicClientConnection(this.messageMetadata, device, null))
         .thenReturn(connectionManager);
 
-    final DataObject dataObject = DataObject.newInteger32Data(123);
+    final DataObject dataObject = DataObject.newUInteger32Data(invocationCounterValueOnDevice);
     when(this.dlmsHelper.getAttributeValue(
             eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
         .thenReturn(dataObject);
 
-    try {
-      this.manager.initializeInvocationCounter(device);
-      fail("Should throw exception");
-    } catch (final DeviceSessionTerminatedAfterReadingInvocationCounterException e) {
-      // expected
-    }
+    this.manager.initializeInvocationCounter(this.messageMetadata, device);
 
-    assertThat(device.getInvocationCounter())
-        .isEqualTo(Long.valueOf(dataObject.getValue().toString()));
-    verify(this.deviceRepository).save(device);
+    assertThat(device.getInvocationCounter()).isEqualTo(invocationCounterValueOnDevice);
+
     verify(connectionManager).close();
-  }
-
-  @Test
-  void resetsInvocationCounter() {
-    final DlmsDevice device = new DlmsDeviceBuilder().withInvocationCounter(123L).build();
-
-    this.manager.resetInvocationCounter(device);
-
-    assertThat(device.isInvocationCounterInitialized()).isFalse();
-    verify(this.deviceRepository).save(device);
   }
 }

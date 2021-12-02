@@ -12,6 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
@@ -45,7 +46,10 @@ public class IcdFileConverter {
 
     Document doc = null;
     try {
-      doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
+      final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+      documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      documentBuilderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+      doc = documentBuilderFactory.newDocumentBuilder().parse(inputStream);
     } catch (final SAXException | IOException | ParserConfigurationException e) {
       LOGGER.error("Exception occurred while creating document", e);
     }
@@ -60,7 +64,11 @@ public class IcdFileConverter {
     final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     Transformer transformer;
     try {
-      transformer = TransformerFactory.newInstance().newTransformer();
+      final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+      transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+      transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
+      transformer = transformerFactory.newTransformer();
       final Result result = new StreamResult(byteArrayOutputStream);
       final Source source = new DOMSource(doc);
       transformer.transform(source, result);

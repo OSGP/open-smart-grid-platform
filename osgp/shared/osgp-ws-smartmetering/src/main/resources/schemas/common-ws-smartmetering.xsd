@@ -1,0 +1,31 @@
+<!-- Copyright 2015 Smart Society Services B.V. -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-common/2014/10"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+  elementFormDefault="qualified"
+  targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-common/2014/10">
+
+  <xsd:import
+    namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+    schemaLocation="base-ws-smartmetering.xsd" />
+
+  <!-- Requests and Responses -->
+
+  <xsd:element name="DeleteResponseDataRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="correlationUid" type="common:CorrelationUid"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="DeleteResponseDataResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:Response" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+
+</xsd:schema>

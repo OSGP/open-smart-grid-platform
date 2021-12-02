@@ -8,17 +8,16 @@
  */
 package org.opensmartgridplatform.domain.da.measurements.elements;
 
-import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementElement;
 
-public class BitmaskMeasurementElement implements MeasurementElement, Serializable {
+public class BitmaskMeasurementElement implements MeasurementElement {
 
   private static final long serialVersionUID = 1L;
 
-  private Byte value;
+  private final Byte value;
 
   public BitmaskMeasurementElement(final Byte value) {
     this.value = value;
@@ -74,7 +73,7 @@ public class BitmaskMeasurementElement implements MeasurementElement, Serializab
     FLAG_7(1 << 6), // 64
     FLAG_8(1 << 7); // 128
 
-    private int value;
+    private final int value;
 
     private BitmaskFlag(final int value) {
       this.value = value;

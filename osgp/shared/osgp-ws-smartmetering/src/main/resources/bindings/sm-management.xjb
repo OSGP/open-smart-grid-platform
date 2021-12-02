@@ -12,7 +12,7 @@
 
   <jxb:globalBindings typesafeEnumMemberName="generateName" choiceContentProperty="true"/>
 
-  <jxb:bindings schemaLocation="../schemas/sm-management.xsd">
+  <jxb:bindings schemaLocation="../schemas/management-ws-smartmetering.xsd">
     <jxb:schemaBindings>
       <jxb:package
         name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.management"></jxb:package>

@@ -39,6 +39,7 @@ public class FirmwareManagementMapper extends ConfigurableMapper {
   public void configure(final MapperFactory mapperFactory) {
 
     mapperFactory.getConverterFactory().registerConverter(new FirmwareConverter());
+    mapperFactory.getConverterFactory().registerConverter(new FirmwareModuleDataConverter());
 
     mapperFactory
         .getConverterFactory()

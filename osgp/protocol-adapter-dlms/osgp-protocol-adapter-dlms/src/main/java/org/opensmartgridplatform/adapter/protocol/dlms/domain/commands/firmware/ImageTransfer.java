@@ -8,7 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,8 +37,6 @@ class ImageTransfer {
 
   private static final double LOGGER_PERCENTAGE_STEP = 5.0;
 
-  private static final String EXCEPTION_MSG_WAITING_FOR_IMAGE_ACTIVATION =
-      "An error occurred while waiting for " + "image activation status to change.";
   private static final String EXCEPTION_MSG_IMAGE_VERIFY_NOT_CALLED =
       "Image verify could not be called.";
   private static final String EXCEPTION_MSG_IMAGE_NOT_VERIFIED =
@@ -47,22 +44,17 @@ class ImageTransfer {
   private static final String EXCEPTION_MSG_IMAGE_BLOCK_SIZE_NOT_READ =
       "Image block size could not be read.";
   private static final String EXCEPTION_MSG_IMAGE_TRANSFER_ENABLED_NOT_READ =
-      "Image transfer enabled could not be " + "read.";
+      "Image transfer enabled could not be read.";
   private static final String EXCEPTION_MSG_IMAGE_TRANSFER_STATUS_NOT_READ =
-      "Image transfer status could not be " + "read.";
+      "Image transfer status could not be read.";
   private static final String EXCEPTION_MSG_IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER_NOT_READ =
-      "Image first not " + "transferred block number could not be read.";
+      "Image first not transferred block number could not be read.";
   private static final String EXCEPTION_MSG_IMAGE_TRANSFER_NOT_INITIATED =
       "Image transfer has not been initiated.";
   private static final String EXCEPTION_MSG_IMAGE_ACTIVATE_NOT_CALLED =
       "Image activate could not be called.";
   private static final String EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK =
-      "Properties of image to activate are not as " + "excepted.";
-  private static final String EXCEPTION_MSG_IMAGE_ACTIVATION_FAILED = "Image activation failed.";
-  private static final String EXCEPTION_MSG_ACTIVATION_TAKING_TOO_LONG =
-      "Activation is taking too long.";
-  private static final String EXCEPTION_MSG_IMAGE_ACTIVATE_NOT_SUCCESS =
-      "Image activate could not be called " + "successfully.";
+      "Properties of image to activate are not as expected.";
 
   private static final int CLASS_ID = 18;
   private static final ObisCode OBIS_CODE = new ObisCode("0.0.44.0.0.255");
@@ -312,15 +304,6 @@ class ImageTransfer {
     if (imageActivate == null) {
       throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_ACTIVATE_NOT_CALLED);
     }
-
-    if (imageActivate == MethodResultCode.TEMPORARY_FAILURE) {
-      this.waitForImageActivation();
-      return;
-    }
-
-    if (imageActivate != MethodResultCode.SUCCESS) {
-      throw new ImageTransferException(EXCEPTION_MSG_IMAGE_ACTIVATE_NOT_SUCCESS);
-    }
   }
 
   private void waitForImageInitiation() throws OsgpException {
@@ -360,31 +343,6 @@ class ImageTransfer {
 
     if (status == ImageTransferStatus.VERIFICATION_FAILED.getValue()) {
       throw new ImageTransferException(EXCEPTION_MSG_IMAGE_NOT_VERIFIED);
-    }
-  }
-
-  private void waitForImageActivation() throws OsgpException {
-    final Future<Integer> newStatus =
-        EXECUTOR_SERVICE.submit(
-            new ImageTransferStatusChangeWatcher(
-                ImageTransferStatus.ACTIVATION_INITIATED,
-                this.properties.getActivationStatusCheckInterval(),
-                this.properties.getActivationStatusCheckTimeout(),
-                true));
-
-    final int status;
-    try {
-      status = newStatus.get();
-    } catch (final InterruptedException | ExecutionException e) {
-      throw new ProtocolAdapterException(EXCEPTION_MSG_WAITING_FOR_IMAGE_ACTIVATION, e);
-    }
-
-    if (status == ImageTransferStatus.ACTIVATION_FAILED.getValue()) {
-      throw new ImageTransferException(EXCEPTION_MSG_IMAGE_ACTIVATION_FAILED);
-    }
-
-    if (status == ImageTransferStatus.ACTIVATION_INITIATED.getValue()) {
-      throw new ImageTransferException(EXCEPTION_MSG_ACTIVATION_TAKING_TOO_LONG);
     }
   }
 
@@ -548,8 +506,6 @@ class ImageTransfer {
   static class ImageTranferProperties {
     private int verificationStatusCheckInterval;
     private int verificationStatusCheckTimeout;
-    private int activationStatusCheckInterval;
-    private int activationStatusCheckTimeout;
     private int initiationStatusCheckInterval;
     private int initiationStatusCheckTimeout;
 
@@ -567,22 +523,6 @@ class ImageTransfer {
 
     public void setVerificationStatusCheckTimeout(final int verificationStatusCheckTimeout) {
       this.verificationStatusCheckTimeout = verificationStatusCheckTimeout;
-    }
-
-    public int getActivationStatusCheckInterval() {
-      return this.activationStatusCheckInterval;
-    }
-
-    public void setActivationStatusCheckInterval(final int activationStatusCheckInterval) {
-      this.activationStatusCheckInterval = activationStatusCheckInterval;
-    }
-
-    public int getActivationStatusCheckTimeout() {
-      return this.activationStatusCheckTimeout;
-    }
-
-    public void setActivationStatusCheckTimeout(final int activationStatusCheckTimeout) {
-      this.activationStatusCheckTimeout = activationStatusCheckTimeout;
     }
 
     public int getInitiationStatusCheckInterval() {
@@ -606,25 +546,15 @@ class ImageTransfer {
     private final ImageTransferStatus imageTransferStatusWaitingToChange;
     private final int pollingInterval;
     private final int timeout;
-    private final boolean disconnectWhileWaiting;
     private int slept = 0;
-
-    public ImageTransferStatusChangeWatcher(
-        final ImageTransferStatus imageTransferStatus,
-        final int pollingInterval,
-        final int timeout) {
-      this(imageTransferStatus, pollingInterval, timeout, false);
-    }
 
     public ImageTransferStatusChangeWatcher(
         final ImageTransferStatus imageTransferStatusWaitingToChange,
         final int pollingInterval,
-        final int timeout,
-        final boolean disconnectWhileWaiting) {
+        final int timeout) {
       this.imageTransferStatusWaitingToChange = imageTransferStatusWaitingToChange;
       this.pollingInterval = pollingInterval;
       this.timeout = timeout;
-      this.disconnectWhileWaiting = disconnectWhileWaiting;
     }
 
     @Override
@@ -636,10 +566,6 @@ class ImageTransfer {
           return status;
         }
 
-        if (this.disconnectWhileWaiting) {
-          this.disconnect();
-        }
-
         log.info("Waiting for status change.");
         final int doSleep =
             (this.slept + this.pollingInterval < this.timeout)
@@ -647,22 +573,9 @@ class ImageTransfer {
                 : this.timeout - this.slept;
         Thread.sleep(doSleep);
         this.slept += doSleep;
-
-        if (this.disconnectWhileWaiting) {
-          // Always return in connected state.
-          this.reconnect();
-        }
       }
 
       return status;
-    }
-
-    private void disconnect() throws IOException {
-      ImageTransfer.this.connector.disconnect();
-    }
-
-    private void reconnect() throws OsgpException {
-      ImageTransfer.this.connector.reconnect();
     }
   }
 

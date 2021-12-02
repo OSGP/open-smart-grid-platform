@@ -14,7 +14,7 @@
 
   <artifactId>protocol-adapter-iec61850</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>5.14.1</version>
+  <version>5.15.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>protocol-adapter-iec61850</name>
   <properties>
@@ -88,8 +88,6 @@
   <modules>
     <!-- Shared Libs -->
     <module>parent-pa-iec61850</module>
-    <module>../shared/shared</module>
-    <module>../shared/osgp-dto</module>
 
     <!-- Protocol Adapter IEC61850 -->
     <module>osgp-iec61850</module>

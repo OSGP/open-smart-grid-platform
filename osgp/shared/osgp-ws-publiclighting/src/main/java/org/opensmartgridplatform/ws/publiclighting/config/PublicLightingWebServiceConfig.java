@@ -20,10 +20,13 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 @Configuration
 public class PublicLightingWebServiceConfig {
 
-  private static final String COMMON_XSD_PATH = "schemas/common.xsd";
-  private static final String PL_ADHOCMANAGEMENT_XSD_PATH = "schemas/pl-adhocmanagement.xsd";
-  private static final String PL_SCHEDULEMANAGEMENT_XSD_PATH = "schemas/pl-schedulemanagement.xsd";
-  private static final String PL_NOTIFICATION_XSD_PATH = "schemas/pl-notification.xsd";
+  private static final String COMMON_XSD_PATH = "schemas/common-ws-publiclighting.xsd";
+  private static final String PL_ADHOCMANAGEMENT_XSD_PATH =
+      "schemas/adhocmanagement-ws-publiclighting.xsd";
+  private static final String PL_SCHEDULEMANAGEMENT_XSD_PATH =
+      "schemas/schedulemanagement-ws-publiclighting.xsd";
+  private static final String PL_NOTIFICATION_XSD_PATH =
+      "schemas/notification-ws-publiclighting.xsd";
 
   private static final String PL_ADHOC_MANAGEMENT_WSDL_PATH = "PublicLightingAdHocManagement.wsdl";
   private static final String PL_SCHEDULE_MANAGEMENT_WSDL_PATH =
@@ -44,7 +47,7 @@ public class PublicLightingWebServiceConfig {
     return payloadValidatingInterceptor;
   }
 
-  @Bean(name = "common")
+  @Bean(name = "common-ws-publiclighting")
   public SimpleXsdSchema commonXsd() {
     return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
   }
@@ -54,7 +57,7 @@ public class PublicLightingWebServiceConfig {
     return new SimpleWsdl11Definition(new ClassPathResource(PL_ADHOC_MANAGEMENT_WSDL_PATH));
   }
 
-  @Bean(name = "pl-adhocmanagement")
+  @Bean(name = "adhocmanagement-ws-publiclighting")
   public SimpleXsdSchema publicLightingAdHocManagementXsd() {
     return new SimpleXsdSchema(new ClassPathResource(PL_ADHOCMANAGEMENT_XSD_PATH));
   }
@@ -64,7 +67,7 @@ public class PublicLightingWebServiceConfig {
     return new SimpleWsdl11Definition(new ClassPathResource(PL_SCHEDULE_MANAGEMENT_WSDL_PATH));
   }
 
-  @Bean(name = "pl-schedulemanagement")
+  @Bean(name = "schedulemanagement-ws-publiclighting")
   public SimpleXsdSchema publicLightingScheduleManagementXsd() {
     return new SimpleXsdSchema(new ClassPathResource(PL_SCHEDULEMANAGEMENT_XSD_PATH));
   }
@@ -74,7 +77,7 @@ public class PublicLightingWebServiceConfig {
     return new SimpleWsdl11Definition(new ClassPathResource(PL_NOTIFICATION_WSDL_PATH));
   }
 
-  @Bean(name = "pl-notification")
+  @Bean(name = "notification-ws-publiclighting")
   public SimpleXsdSchema publicLightingNotificationXsd() {
     return new SimpleXsdSchema(new ClassPathResource(PL_NOTIFICATION_XSD_PATH));
   }

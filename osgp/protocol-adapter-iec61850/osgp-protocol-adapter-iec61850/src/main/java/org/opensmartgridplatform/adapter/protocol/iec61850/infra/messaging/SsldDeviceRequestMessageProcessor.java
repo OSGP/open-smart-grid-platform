@@ -15,7 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.SsldDevic
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetStatusDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DomainInformation;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -77,18 +77,19 @@ public abstract class SsldDeviceRequestMessageProcessor extends BaseMessageProce
     final GetStatusDeviceResponse response = (GetStatusDeviceResponse) deviceResponse;
     final DeviceStatusDto status = response.getDeviceStatus();
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceResponse.getDeviceIdentification(),
-            deviceResponse.getOrganisationIdentification(),
-            deviceResponse.getCorrelationUid(),
-            messageType,
-            response.getMessagePriority());
+    final MessageMetadata deviceMessageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceResponse.getDeviceIdentification())
+            .withOrganisationIdentification(deviceResponse.getOrganisationIdentification())
+            .withCorrelationUid(deviceResponse.getCorrelationUid())
+            .withMessageType(messageType)
+            .withMessagePriority(response.getMessagePriority())
+            .build();
     final ProtocolResponseMessage protocolResponseMessage =
         new ProtocolResponseMessage.Builder()
             .domain(domainInformation.getDomain())
             .domainVersion(domainInformation.getDomainVersion())
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(deviceMessageMetadata)
             .result(ResponseMessageResultType.OK)
             .osgpException(null)
             .retryCount(retryCount)

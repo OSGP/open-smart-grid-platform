@@ -13,7 +13,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Conne
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.PendingRequestsQueue;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceResponseMessageSender;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
@@ -50,8 +50,8 @@ public class Iec60870ConnectResponseService implements ConnectResponseService {
   }
 
   private void sendConnectResponse(final ResponseMetadata responseMetadata) {
-    final DeviceMessageMetadata deviceMessageMetadata =
-        DeviceMessageMetadata.newBuilder()
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
             .withBypassRetry(true)
             .withCorrelationUid(responseMetadata.getCorrelationUid())
             .withDeviceIdentification(responseMetadata.getDeviceIdentification())
@@ -60,7 +60,7 @@ public class Iec60870ConnectResponseService implements ConnectResponseService {
             .build();
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .domain(responseMetadata.getDomainInfo().getDomain())
             .domainVersion(responseMetadata.getDomainInfo().getDomainVersion())
             .result(ResponseMessageResultType.OK)

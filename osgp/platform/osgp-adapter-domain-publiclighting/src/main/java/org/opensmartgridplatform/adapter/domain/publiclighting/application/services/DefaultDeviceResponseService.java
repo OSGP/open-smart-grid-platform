@@ -13,7 +13,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
@@ -52,8 +52,8 @@ public class DefaultDeviceResponseService {
       result = ResponseMessageResultType.NOT_OK;
     }
 
-    final DeviceMessageMetadata metaData =
-        DeviceMessageMetadata.newBuilder()
+    final MessageMetadata metaData =
+        new MessageMetadata.Builder()
             .withCorrelationUid(ids.getCorrelationUid())
             .withDeviceIdentification(ids.getDeviceIdentification())
             .withOrganisationIdentification(ids.getOrganisationIdentification())
@@ -62,7 +62,7 @@ public class DefaultDeviceResponseService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withDeviceMessageMetadata(metaData)
+            .withMessageMetadata(metaData)
             .withResult(result)
             .withOsgpException(osgpException)
             .withMessagePriority(messagePriority)

@@ -27,6 +27,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegist
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsDeviceMonitoringService")
@@ -66,17 +67,19 @@ public class MonitoringService {
   public Serializable requestPeriodicMeterReads(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final PeriodicMeterReadsRequestDto periodicMeterReadsQuery)
+      final PeriodicMeterReadsRequestDto periodicMeterReadsQuery,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     final Serializable response;
     if (periodicMeterReadsQuery.isMbusQuery()) {
       response =
           this.getPeriodicMeterReadsGasCommandExecutor.execute(
-              conn, device, periodicMeterReadsQuery);
+              conn, device, periodicMeterReadsQuery, messageMetadata);
     } else {
       response =
-          this.getPeriodicMeterReadsCommandExecutor.execute(conn, device, periodicMeterReadsQuery);
+          this.getPeriodicMeterReadsCommandExecutor.execute(
+              conn, device, periodicMeterReadsQuery, messageMetadata);
     }
 
     return response;
@@ -85,16 +88,19 @@ public class MonitoringService {
   public Serializable requestActualMeterReads(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ActualMeterReadsQueryDto actualMeterReadsRequest)
+      final ActualMeterReadsQueryDto actualMeterReadsRequest,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     final Serializable response;
     if (actualMeterReadsRequest.isMbusQuery()) {
       response =
-          this.actualMeterReadsGasCommandExecutor.execute(conn, device, actualMeterReadsRequest);
+          this.actualMeterReadsGasCommandExecutor.execute(
+              conn, device, actualMeterReadsRequest, messageMetadata);
     } else {
       response =
-          this.actualMeterReadsCommandExecutor.execute(conn, device, actualMeterReadsRequest);
+          this.actualMeterReadsCommandExecutor.execute(
+              conn, device, actualMeterReadsRequest, messageMetadata);
     }
 
     return response;
@@ -103,38 +109,44 @@ public class MonitoringService {
   public Serializable requestActualPowerQuality(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ActualPowerQualityRequestDto actualPowerQualityRequestDto)
+      final ActualPowerQualityRequestDto actualPowerQualityRequestDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     return this.getActualPowerQualityCommandExecutor.execute(
-        conn, device, actualPowerQualityRequestDto);
+        conn, device, actualPowerQualityRequestDto, messageMetadata);
   }
 
   public AlarmRegisterResponseDto requestReadAlarmRegister(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ReadAlarmRegisterRequestDto readAlarmRegisterRequest)
+      final ReadAlarmRegisterRequestDto readAlarmRegisterRequest,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequest);
+    return this.readAlarmRegisterCommandExecutor.execute(
+        conn, device, readAlarmRegisterRequest, messageMetadata);
   }
 
   public Serializable requestPowerQualityProfile(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final GetPowerQualityProfileRequestDataDto powerQualityProfileRequestDataDto)
+      final GetPowerQualityProfileRequestDataDto powerQualityProfileRequestDataDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     return this.getPowerQualityProfileCommandExecutor.execute(
-        conn, device, powerQualityProfileRequestDataDto);
+        conn, device, powerQualityProfileRequestDataDto, messageMetadata);
   }
 
   public void setClearAlarmRegister(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ClearAlarmRegisterRequestDto clearAlarmRegisterRequestDto)
+      final ClearAlarmRegisterRequestDto clearAlarmRegisterRequestDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    this.clearAlarmRegisterCommandExecutor.execute(conn, device, clearAlarmRegisterRequestDto);
+    this.clearAlarmRegisterCommandExecutor.execute(
+        conn, device, clearAlarmRegisterRequestDto, messageMetadata);
   }
 }

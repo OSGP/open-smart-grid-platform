@@ -20,7 +20,7 @@ import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -66,19 +66,18 @@ public class RequestService {
             requestMessageMetadata.getOrganisationIdentification(),
             requestMessageMetadata.getDeviceIdentification());
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        requestMessageMetadata.newDeviceMessageMetadata(correlationUid);
+    final MessageMetadata messageMetadata =
+        requestMessageMetadata.newMessageMetadata(correlationUid);
 
     final SmartMeteringRequestMessage message =
         new SmartMeteringRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .request(requestData)
             .build();
 
     this.smartMeteringRequestMessageSender.send(message);
 
-    return this.createAsyncResponse(
-        correlationUid, deviceMessageMetadata.getDeviceIdentification());
+    return this.createAsyncResponse(correlationUid, messageMetadata.getDeviceIdentification());
   }
 
   AsyncResponse createAsyncResponse(

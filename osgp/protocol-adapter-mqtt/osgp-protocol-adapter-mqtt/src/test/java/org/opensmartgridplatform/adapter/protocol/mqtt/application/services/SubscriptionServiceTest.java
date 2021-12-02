@@ -31,14 +31,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging.OutboundOsgpCoreResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttClientDefaults;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class SubscriptionServiceTest {
 
+  private static final String DEFAULT_HOST = "localhost";
   private static final int DEFAULT_PORT = 11111;
+  private static final String DEFAULT_USERNAME = null;
+  private static final String DEFAULT_PASSWORD = null;
   private static final String DEFAULT_TOPICS = "test-default-topics";
   private static final MqttQos DEFAULT_QOS = MqttQos.AT_MOST_ONCE;
 
@@ -51,23 +56,35 @@ class SubscriptionServiceTest {
   @Mock private MessageMetadata messageMetadata;
   @Captor private ArgumentCaptor<MqttDevice> deviceCaptor;
   @Mock private MqttClientAdapter mqttClientAdapter;
+  @Mock private MqttClient mqttClient;
   @Captor private ArgumentCaptor<ProtocolResponseMessage> protocolResponseMessageCaptor;
+
+  private MqttClientDefaults mqttClientDefaults;
 
   @BeforeEach
   public void setUp() {
+
+    this.mqttClientDefaults =
+        new MqttClientDefaults(
+            DEFAULT_HOST,
+            DEFAULT_PORT,
+            DEFAULT_USERNAME,
+            DEFAULT_PASSWORD,
+            DEFAULT_QOS.name(),
+            DEFAULT_TOPICS);
+
     this.instance =
         new SubscriptionService(
             this.mqttDeviceRepository,
             this.mqttClientAdapterFactory,
             this.outboundOsgpCoreResponseMessageSender,
-            DEFAULT_PORT,
-            DEFAULT_TOPICS,
-            DEFAULT_QOS.name());
+            this.mqttClientDefaults);
+
     lenient().when(this.mqttClientAdapter.getMessageMetadata()).thenReturn(this.messageMetadata);
   }
 
   @Test
-  void subscribeNewDevice() {
+  void subscribeNewDevice() throws Exception {
     // SETUP
     when(this.messageMetadata.getDeviceIdentification()).thenReturn("test-metadata-device-id");
     when(this.messageMetadata.getIpAddress()).thenReturn("test-metadata-host");
@@ -96,21 +113,45 @@ class SubscriptionServiceTest {
   }
 
   @Test
-  void subscribeExistingDevice() {
+  void subscribeExistingDevice() throws Exception {
     // SETUP
     when(this.messageMetadata.getDeviceIdentification()).thenReturn("test-metadata-device-id");
     final MqttDevice device = mock(MqttDevice.class);
     when(this.mqttDeviceRepository.findByDeviceIdentification(
             this.messageMetadata.getDeviceIdentification()))
         .thenReturn(device);
-    when(this.mqttClientAdapterFactory.create(
-            eq(device), eq(this.messageMetadata), eq(this.instance)))
+    when(this.mqttClientAdapterFactory.create(device, this.messageMetadata, this.instance))
         .thenReturn(this.mqttClientAdapter);
     // CALL
     this.instance.subscribe(this.messageMetadata);
 
     // VERIFY
     verify(this.mqttClientAdapter).connect();
+  }
+
+  @Test
+  void subscribeExistingDeviceUsingExistingMqttClient() {
+    // SETUP
+    final String deviceIdentification = "test-metadata-device-id";
+    when(this.messageMetadata.getDeviceIdentification()).thenReturn(deviceIdentification);
+    final MqttDevice device = new MqttDevice(deviceIdentification);
+    device.setTopics(DEFAULT_TOPICS);
+    device.setQos(DEFAULT_QOS.name());
+
+    when(this.mqttDeviceRepository.findByDeviceIdentification(
+            this.messageMetadata.getDeviceIdentification()))
+        .thenReturn(device);
+    when(this.mqttClientAdapterFactory.create(device, this.messageMetadata, this.instance))
+        .thenReturn(this.mqttClientAdapter);
+    ReflectionTestUtils.setField(
+        this.instance, SubscriptionService.class, "mqttClient", this.mqttClient, MqttClient.class);
+
+    // CALL
+    this.instance.subscribe(this.messageMetadata);
+
+    // VERIFY
+    verify(this.mqttClientAdapter)
+        .subscribe(this.mqttClient.getMqtt3AsyncClient(), DEFAULT_TOPICS, DEFAULT_QOS);
   }
 
   @Test
@@ -200,8 +241,7 @@ class SubscriptionServiceTest {
     when(this.messageMetadata.getMessagePriority()).thenReturn(2345);
     when(this.messageMetadata.isBypassRetry()).thenReturn(true);
     // Note: messageMetadata.isScheduled is not used
-    // by DeviceMessageMetadata. It is derived from scheduleTime
-    when(this.messageMetadata.getScheduleTime()).thenReturn(null);
+    // by MessageMetadata. It is derived from scheduleTime
     when(this.messageMetadata.getDomain()).thenReturn("test-device-id");
     when(this.messageMetadata.getDomainVersion()).thenReturn("test-device-id");
 

@@ -10,6 +10,8 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
@@ -26,7 +28,11 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Firmware
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionQuery;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SecretType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
@@ -45,12 +51,16 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionQueryDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.KeyDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
@@ -62,25 +72,22 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service(value = "domainSmartMeteringConfigurationService")
 @Transactional(value = "transactionManager")
 public class ConfigurationService {
 
   private static final String DEVICE_RESPONSE_NOT_OK_LOG_MSG =
       "Device Response not ok. Unexpected Exception";
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationService.class);
 
   @Autowired
   @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
@@ -101,12 +108,12 @@ public class ConfigurationService {
   }
 
   public void setSpecialDays(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest
           specialDaysRequestValueObject)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "setSpecialDays for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -127,17 +134,17 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void setConfigurationObject(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final org.opensmartgridplatform.domain.core.valueobjects.smartmetering
               .SetConfigurationObjectRequest
           setConfigurationObjectRequestValueObject)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "setConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -159,16 +166,16 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void setPushSetupAlarm(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm
           pushSetupAlarm)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "setPushSetupAlarm for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -189,16 +196,16 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void setPushSetupSms(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms
           pushSetupSms)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "setPushSetupSms for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -219,20 +226,20 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleSpecialDaysResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
-    LOGGER.info(
+    log.info(
         "handleSpecialDaysresponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
-      LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
+      log.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 
@@ -250,11 +257,10 @@ public class ConfigurationService {
   }
 
   public void setAlarmNotifications(
-      final DeviceMessageMetadata deviceMessageMetadata,
-      final AlarmNotifications alarmNotifications)
+      final MessageMetadata deviceMessageMetadata, final AlarmNotifications alarmNotifications)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "setAlarmNotifications for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -275,15 +281,15 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void setAdministrativeStatus(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final AdministrativeStatusType administrativeStatusType)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "Set Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status:"
             + " {}",
         deviceMessageMetadata.getOrganisationIdentification(),
@@ -308,22 +314,22 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleSetAdministrativeStatusResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
-    LOGGER.info(
+    log.info(
         "handleSetAdministrativeStatusResponse for MessageType: {}, with result: {}",
         deviceMessageMetadata.getMessageType(),
         deviceResult);
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
-      LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
+      log.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 
@@ -341,11 +347,11 @@ public class ConfigurationService {
   }
 
   public void getAdministrativeStatus(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final AdministrativeStatusType administrativeStatusType)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "Get Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status:"
             + " {}",
         deviceMessageMetadata.getOrganisationIdentification(),
@@ -368,23 +374,23 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleGetAdministrativeStatusResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType responseMessageResultType,
       final OsgpException osgpException,
       final AdministrativeStatusTypeDto administrativeStatusTypeDto) {
 
-    LOGGER.info(
+    log.info(
         "handleGetAdministrativeStatusResponse for MessageType: {}, with result: {}",
         deviceMessageMetadata.getMessageType(),
         responseMessageResultType);
 
     ResponseMessageResultType result = responseMessageResultType;
     if (osgpException != null) {
-      LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, osgpException);
+      log.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, osgpException);
       result = ResponseMessageResultType.NOT_OK;
     }
 
@@ -406,10 +412,10 @@ public class ConfigurationService {
   }
 
   public void setActivityCalendar(
-      final DeviceMessageMetadata deviceMessageMetadata, final ActivityCalendar activityCalendar)
+      final MessageMetadata deviceMessageMetadata, final ActivityCalendar activityCalendar)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "set Activity Calendar for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -430,21 +436,21 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleSetAlarmNotificationsResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
-    LOGGER.info(
+    log.info(
         "handleSetAlarmNotificationsResponse for MessageType: {}",
         deviceMessageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
-      LOGGER.error("Set Alarm Notifications Response not ok. Unexpected Exception", exception);
+      log.error("Set Alarm Notifications Response not ok. Unexpected Exception", exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 
@@ -462,17 +468,17 @@ public class ConfigurationService {
   }
 
   public void handleSetConfigurationObjectResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
-    LOGGER.info(
+    log.info(
         "handle SetConfigurationObject response for MessageType: {}",
         deviceMessageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
-      LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
+      log.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 
@@ -490,17 +496,17 @@ public class ConfigurationService {
   }
 
   public void handleSetPushSetupAlarmResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
-    LOGGER.info(
+    log.info(
         "handleSetPushSetupAlarmResponse for MessageType: {}",
         deviceMessageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
-      LOGGER.error("Set Push Setup Alarm Response not ok. Unexpected Exception", exception);
+      log.error("Set Push Setup Alarm Response not ok. Unexpected Exception", exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 
@@ -518,17 +524,17 @@ public class ConfigurationService {
   }
 
   public void handleSetPushSetupSmsResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
-    LOGGER.info(
+    log.info(
         "handleSetPushSetupSmsResponse for MessageType: {}",
         deviceMessageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
-      LOGGER.error("Set Push Setup Sms Response not ok. Unexpected Exception", exception);
+      log.error("Set Push Setup Sms Response not ok. Unexpected Exception", exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 
@@ -546,17 +552,17 @@ public class ConfigurationService {
   }
 
   public void handleSetActivityCalendarResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType responseMessageResultType,
       final OsgpException exception,
       final String resultString) {
-    LOGGER.info(
+    log.info(
         "handleSetActivityCalendarResponse for MessageType: {}",
         deviceMessageMetadata.getMessageType());
 
     ResponseMessageResultType result = responseMessageResultType;
     if (exception != null) {
-      LOGGER.error("Set Activity Calendar Response not ok. Unexpected Exception", exception);
+      log.error("Set Activity Calendar Response not ok. Unexpected Exception", exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 
@@ -574,10 +580,10 @@ public class ConfigurationService {
         responseMessage, deviceMessageMetadata.getMessageType());
   }
 
-  public void setEncryptionKeyExchangeOnGMeter(final DeviceMessageMetadata deviceMessageMetadata)
+  public void setEncryptionKeyExchangeOnGMeter(final MessageMetadata deviceMessageMetadata)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "set Encryption Key Exchange On G-Meter for organisationIdentification: {} for deviceIdentification: "
             + "{}",
         deviceMessageMetadata.getOrganisationIdentification(),
@@ -610,20 +616,20 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleSetEncryptionKeyExchangeOnGMeterResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType responseMessageResultType,
       final OsgpException exception) {
-    LOGGER.info(
+    log.info(
         "handleSetEncryptionKeyExchangeOnGMeterResponse for MessageType: {}",
         deviceMessageMetadata.getMessageType());
 
     ResponseMessageResultType result = responseMessageResultType;
     if (exception != null) {
-      LOGGER.error(
+      log.error(
           "Set Encryption Key Exchange On G-Meter Response not ok. Unexpected Exception",
           exception);
       result = ResponseMessageResultType.NOT_OK;
@@ -643,11 +649,11 @@ public class ConfigurationService {
   }
 
   public void setMbusUserKeyByChannel(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final SetMbusUserKeyByChannelRequestData setMbusUserKeyByChannelRequestData)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "Set M-Bus User Key By Channel for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -666,21 +672,20 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleSetMbusUserKeyByChannelResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType responseMessageResultType,
       final OsgpException exception) {
-    LOGGER.info(
+    log.info(
         "handleSetMbusUserKeyByChannelResponse for MessageType: {}",
         deviceMessageMetadata.getMessageType());
 
     ResponseMessageResultType result = responseMessageResultType;
     if (exception != null) {
-      LOGGER.error(
-          "Set M-Bus User Key By Channel Response not ok. Unexpected Exception", exception);
+      log.error("Set M-Bus User Key By Channel Response not ok. Unexpected Exception", exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 
@@ -698,10 +703,10 @@ public class ConfigurationService {
   }
 
   public void replaceKeys(
-      final DeviceMessageMetadata deviceMessageMetadata, final SetKeysRequestData keySet)
+      final MessageMetadata deviceMessageMetadata, final SetKeysRequestData keySet)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "replaceKeys for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -722,20 +727,20 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleReplaceKeysResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
-    LOGGER.info(
+    log.info(
         "handleReplaceKeysResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
-      LOGGER.error("Replace Keys Response not ok. Unexpected Exception", exception);
+      log.error("Replace Keys Response not ok. Unexpected Exception", exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 
@@ -752,9 +757,9 @@ public class ConfigurationService {
         responseMessage, deviceMessageMetadata.getMessageType());
   }
 
-  public void generateAndReplaceKeys(final DeviceMessageMetadata deviceMessageMetadata)
+  public void generateAndReplaceKeys(final MessageMetadata deviceMessageMetadata)
       throws FunctionalException {
-    LOGGER.info(
+    log.info(
         "Generate and replace keys for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -772,21 +777,21 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleGenerateAndReplaceKeysResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
-    LOGGER.info(
+    log.info(
         "Handle generate and replace keys response for MessageType: {}",
         deviceMessageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
-      LOGGER.error("Generate and replace keys response not ok. Unexpected Exception", exception);
+      log.error("Generate and replace keys response not ok. Unexpected Exception", exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 
@@ -813,11 +818,11 @@ public class ConfigurationService {
    *     the device is a G meter and the channel and/or gateway is not configured
    */
   public void requestFirmwareVersion(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final GetFirmwareVersionQuery getFirmwareVersionQuery)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "requestFirmwareVersion for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -868,7 +873,7 @@ public class ConfigurationService {
           deviceMessageMetadata.getMessageType(),
           deviceMessageMetadata.getMessagePriority(),
           deviceMessageMetadata.getScheduleTime(),
-          deviceMessageMetadata.bypassRetry());
+          deviceMessageMetadata.isBypassRetry());
     } else {
       this.osgpCoreRequestMessageSender.send(
           new RequestMessage(
@@ -880,7 +885,7 @@ public class ConfigurationService {
           deviceMessageMetadata.getMessageType(),
           deviceMessageMetadata.getMessagePriority(),
           deviceMessageMetadata.getScheduleTime(),
-          deviceMessageMetadata.bypassRetry());
+          deviceMessageMetadata.isBypassRetry());
     }
   }
 
@@ -893,18 +898,18 @@ public class ConfigurationService {
    * @param firmwareVersionList contains the firmware result list
    */
   public void handleGetFirmwareVersionResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception,
       final List<FirmwareVersionDto> firmwareVersionList) {
 
-    LOGGER.info(
+    log.info(
         "handleGetFirmwareVersionResponse for MessageType: {}",
         deviceMessageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
-      LOGGER.error("Get firmware version response not ok. Unexpected Exception", exception);
+      log.error("Get firmware version response not ok. Unexpected Exception", exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 
@@ -932,17 +937,17 @@ public class ConfigurationService {
   }
 
   public void handleGetFirmwareVersionGasResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception,
       final FirmwareVersionGasDto firmwareVersionGas) {
-    LOGGER.info(
+    log.info(
         "handleGetFirmwareVersionGasResponse for MessageType: {}",
         deviceMessageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
-      LOGGER.error("Get firmware version response not ok. Unexpected Exception", exception);
+      log.error("Get firmware version response not ok. Unexpected Exception", exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 
@@ -970,11 +975,11 @@ public class ConfigurationService {
   }
 
   public void requestUpdateFirmware(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final UpdateFirmwareRequestData updateFirmwareRequestData)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "requestUpdateFirmware for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -996,39 +1001,26 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleUpdateFirmwareResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception,
-      final UpdateFirmwareResponseDto updateFirmwareResponseDto)
-      throws FunctionalException {
+      final UpdateFirmwareResponseDto updateFirmwareResponseDto) {
 
-    LOGGER.info(
+    log.info(
         "handleUpdateFirmwareResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
-      LOGGER.error("Update firmware response not ok. Unexpected Exception", exception);
+      log.error("Update firmware response not ok. Unexpected Exception", exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 
-    final List<FirmwareVersion> firmwareVersions =
-        this.configurationMapper.mapAsList(
-            updateFirmwareResponseDto.getFirmwareVersions(), FirmwareVersion.class);
-    final SmartMeter smartMeter =
-        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
-
-    this.firmwareService.storeFirmware(
-        smartMeter,
-        updateFirmwareResponseDto.getFirmwareIdentification(),
-        firmwareVersions,
-        deviceMessageMetadata.getOrganisationIdentification());
-
     final UpdateFirmwareResponse updateFirmwareResponse =
-        new UpdateFirmwareResponse(firmwareVersions);
+        this.configurationMapper.map(updateFirmwareResponseDto, UpdateFirmwareResponse.class);
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
@@ -1045,11 +1037,11 @@ public class ConfigurationService {
   }
 
   public void setClockConfiguration(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final SetClockConfigurationRequestData setClockConfigurationRequest)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "setClockConfiguration for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -1071,21 +1063,21 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleSetClockConfigurationResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
-    LOGGER.info(
+    log.info(
         "handleSetClockConfigurationResponse for MessageType: {}",
         deviceMessageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
-      LOGGER.error("Set Clock Configuration Response not ok. Unexpected Exception", exception);
+      log.error("Set Clock Configuration Response not ok. Unexpected Exception", exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 
@@ -1103,11 +1095,11 @@ public class ConfigurationService {
   }
 
   public void getConfigurationObject(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final GetConfigurationObjectRequest getConfigurationObjectRequest)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "getConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -1129,16 +1121,16 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleGetConfigurationObjectResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception,
       final GetConfigurationObjectResponseDto resultData) {
 
-    LOGGER.info(
+    log.info(
         "handle GetConfigurationObject response for MessageType: {}",
         deviceMessageMetadata.getMessageType());
 
@@ -1147,7 +1139,7 @@ public class ConfigurationService {
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
-      LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
+      log.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 
@@ -1166,11 +1158,11 @@ public class ConfigurationService {
   }
 
   public void configureDefinableLoadProfile(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final DefinableLoadProfileConfigurationData definableLoadProfileConfigurationData)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "configureDefinableLoadProfile for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -1192,21 +1184,21 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleConfigureDefinableLoadProfileResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
-    LOGGER.info(
+    log.info(
         "handleConfigureDefinableLoadProfileResponse for MessageType: {}",
         deviceMessageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
-      LOGGER.error(
+      log.error(
           "Configure Definable Load Profile Response not ok. Unexpected Exception", exception);
       result = ResponseMessageResultType.NOT_OK;
     }
@@ -1224,10 +1216,10 @@ public class ConfigurationService {
         responseMessage, deviceMessageMetadata.getMessageType());
   }
 
-  public void getMbusEncryptionKeyStatus(final DeviceMessageMetadata deviceMessageMetadata)
+  public void getMbusEncryptionKeyStatus(final MessageMetadata deviceMessageMetadata)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "getMbusEncryptionKeyStatus for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -1254,16 +1246,16 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleGetMbusEncryptionKeyStatusResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType resultType,
       final OsgpException exception,
       final GetMbusEncryptionKeyStatusResponseDto getMbusEncryptionKeyStatusResponseDto) {
 
-    LOGGER.info(
+    log.info(
         "handleGetMbusEncryptionKeyStatusResponse for MessageType: {}",
         deviceMessageMetadata.getMessageType());
 
@@ -1288,12 +1280,12 @@ public class ConfigurationService {
   }
 
   public void getMbusEncryptionKeyStatusByChannel(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final GetMbusEncryptionKeyStatusByChannelRequestData
           getMbusEncryptionKeyStatusByChannelRequestData)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "getMbusEncryptionKeyStatusByChannel for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -1312,17 +1304,17 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleGetMbusEncryptionKeyStatusByChannelResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType resultType,
       final OsgpException exception,
       final GetMbusEncryptionKeyStatusByChannelResponseDto
           getMbusEncryptionKeyStatusByChannelResponseDto) {
 
-    LOGGER.info(
+    log.info(
         "handleGetMbusEncryptionKeyStatusByChannelResponse for MessageType: {}",
         deviceMessageMetadata.getMessageType());
 
@@ -1345,11 +1337,10 @@ public class ConfigurationService {
   }
 
   public void setRandomisationSettings(
-      final DeviceMessageMetadata deviceMessageMetadata,
-      final SetRandomisationSettingsRequestData data)
+      final MessageMetadata deviceMessageMetadata, final SetRandomisationSettingsRequestData data)
       throws FunctionalException {
 
-    LOGGER.info(
+    log.info(
         "setRandomisationSettings for organisationIdentification: {} for deviceIdentification: {}",
         deviceMessageMetadata.getOrganisationIdentification(),
         deviceMessageMetadata.getDeviceIdentification());
@@ -1374,21 +1365,21 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleSetRandomisationSettingsResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
-    LOGGER.info(
+    log.info(
         "handle SetRandomisationSettings response for MessageType: {}",
         deviceMessageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
-      LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
+      log.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 
@@ -1399,6 +1390,70 @@ public class ConfigurationService {
             .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
             .withResult(result)
             .withOsgpException(exception)
+            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .build();
+    this.webServiceResponseMessageSender.send(
+        responseMessage, deviceMessageMetadata.getMessageType());
+  }
+
+  public void getKeys(
+      final MessageMetadata deviceMessageMetadata, final GetKeysRequestData getKeysRequestData)
+      throws FunctionalException {
+
+    log.info(
+        "getKeys for organisationIdentification: {} for deviceIdentification: {}",
+        deviceMessageMetadata.getOrganisationIdentification(),
+        deviceMessageMetadata.getDeviceIdentification());
+
+    final SmartMeter smartMeteringDevice =
+        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+
+    final List<SecretTypeDto> secretTypes =
+        getKeysRequestData.getSecretTypes().stream()
+            .map(secretType -> SecretTypeDto.valueOf(secretType.name()))
+            .collect(Collectors.toList());
+
+    this.osgpCoreRequestMessageSender.send(
+        new RequestMessage(
+            deviceMessageMetadata.getCorrelationUid(),
+            deviceMessageMetadata.getOrganisationIdentification(),
+            smartMeteringDevice.getDeviceIdentification(),
+            smartMeteringDevice.getIpAddress(),
+            new GetKeysRequestDto(secretTypes)),
+        deviceMessageMetadata.getMessageType(),
+        deviceMessageMetadata.getMessagePriority(),
+        deviceMessageMetadata.getScheduleTime(),
+        deviceMessageMetadata.isBypassRetry());
+  }
+
+  public void handleGetKeysResponse(
+      final MessageMetadata deviceMessageMetadata,
+      final ResponseMessageResultType resultType,
+      final OsgpException exception,
+      final GetKeysResponseDto getKeysResponseDto) {
+
+    log.info("handleGetKeysResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
+
+    final List<KeyDto> keys = getKeysResponseDto.getKeys();
+
+    final List<GetKeysResponseData> getKeysResponseData =
+        keys.stream()
+            .map(
+                key ->
+                    new GetKeysResponseData(
+                        SecretType.valueOf(key.getSecretType().name()), key.getSecret()))
+            .collect(Collectors.toList());
+
+    final GetKeysResponse getKeysResponse = new GetKeysResponse(getKeysResponseData);
+
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withResult(resultType)
+            .withOsgpException(exception)
+            .withDataObject(getKeysResponse)
             .withMessagePriority(deviceMessageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(

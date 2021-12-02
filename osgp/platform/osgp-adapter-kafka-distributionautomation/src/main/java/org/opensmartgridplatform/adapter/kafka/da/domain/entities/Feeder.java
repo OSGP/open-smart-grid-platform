@@ -22,12 +22,17 @@ import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 @EqualsAndHashCode(callSuper = false)
 public class Feeder extends AbstractEntity {
 
+  private static final long serialVersionUID = -619428392804319491L;
+
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "location_id", nullable = false, updatable = false)
   private Location location;
 
   @Column(nullable = false)
   private Integer feederNumber;
+
+  @Column(length = 3, nullable = false)
+  private String fieldCode;
 
   @Column(length = 32, nullable = false)
   private String name;

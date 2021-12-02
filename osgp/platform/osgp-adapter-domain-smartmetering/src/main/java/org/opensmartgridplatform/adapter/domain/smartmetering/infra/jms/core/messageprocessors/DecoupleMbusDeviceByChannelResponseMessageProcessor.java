@@ -15,7 +15,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDevi
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 public class DecoupleMbusDeviceByChannelResponseMessageProcessor
     extends OsgpCoreResponseMessageProcessor {
 
-  private InstallationService installationService;
+  private final InstallationService installationService;
 
   protected DecoupleMbusDeviceByChannelResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
@@ -48,7 +48,7 @@ public class DecoupleMbusDeviceByChannelResponseMessageProcessor
 
   @Override
   protected void handleMessage(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessage responseMessage,
       final OsgpException osgpException)
       throws FunctionalException {

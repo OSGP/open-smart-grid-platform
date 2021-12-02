@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import java.util.function.Function;
 import org.apache.commons.codec.binary.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.wsclient.SecretManagementClient;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.opensmartgridplatform.ws.schema.core.secret.management.ActivateSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GenerateAndStoreSecretsRequest;
@@ -60,28 +62,37 @@ public class SecretManagementService {
   /**
    * Retrieve an active key of a certain type for a specified device
    *
+   * @param messageMetadata the metadata of the request message
    * @param deviceIdentification the device identification string of the device
    * @param keyType the requested key type
    * @return the key or NULL if not present
    */
-  public byte[] getKey(final String deviceIdentification, final SecurityKeyType keyType) {
+  public byte[] getKey(
+      final MessageMetadata messageMetadata,
+      final String deviceIdentification,
+      final SecurityKeyType keyType) {
     if (LOGGER.isInfoEnabled()) {
       LOGGER.info("Retrieving {} for device {}", keyType.name(), deviceIdentification);
     }
-    return this.getKeys(deviceIdentification, Arrays.asList(keyType)).get(keyType);
+    return this.getKeys(messageMetadata, deviceIdentification, Collections.singletonList(keyType))
+        .get(keyType);
   }
 
   /**
    * Retrieves the active keys of requested types for a specified device
    *
+   * @param messageMetadata the metadata of the request message
    * @param deviceIdentification the device identification string of the device
    * @param keyTypes the requested key types
    * @return the requested keys in a map by key type, with value NULL if not present
    */
   public Map<SecurityKeyType, byte[]> getKeys(
-      final String deviceIdentification, final List<SecurityKeyType> keyTypes) {
+      final MessageMetadata messageMetadata,
+      final String deviceIdentification,
+      final List<SecurityKeyType> keyTypes) {
     final GetSecretsRequest request = this.createGetSecretsRequest(deviceIdentification, keyTypes);
-    final GetSecretsResponse response = this.secretManagementClient.getSecretsRequest(request);
+    final GetSecretsResponse response =
+        this.secretManagementClient.getSecretsRequest(messageMetadata, request);
     this.validateGetResponse(keyTypes, response);
     return this.convertSoapSecretsToSecretMapByType(response.getTypedSecrets().getTypedSecret());
   }
@@ -89,30 +100,38 @@ public class SecretManagementService {
   /**
    * Retrieve a new (not yet activated) key of a certain type for a specified device
    *
+   * @param messageMetadata the metadata of the request message
    * @param deviceIdentification the device identification string of the device
    * @param keyType the requested key type
    * @return the key or NULL if not present
    */
-  public byte[] getNewKey(final String deviceIdentification, final SecurityKeyType keyType) {
+  public byte[] getNewKey(
+      final MessageMetadata messageMetadata,
+      final String deviceIdentification,
+      final SecurityKeyType keyType) {
     if (LOGGER.isInfoEnabled()) {
       LOGGER.info("Retrieving new {} for device {}", keyType.name(), deviceIdentification);
     }
-    return this.getNewKeys(deviceIdentification, Arrays.asList(keyType)).get(keyType);
+    return this.getNewKeys(messageMetadata, deviceIdentification, Arrays.asList(keyType))
+        .get(keyType);
   }
 
   /**
    * Retrieves the new (not yet activated) keys of requested types for a specified device
    *
+   * @param messageMetadata the metadata of the request message
    * @param deviceIdentification the device identification string of the device
    * @param keyTypes the requested key types
    * @return the requested keys in a map by key type, with value NULL if not present
    */
   public Map<SecurityKeyType, byte[]> getNewKeys(
-      final String deviceIdentification, final List<SecurityKeyType> keyTypes) {
+      final MessageMetadata messageMetadata,
+      final String deviceIdentification,
+      final List<SecurityKeyType> keyTypes) {
     final GetNewSecretsRequest request =
         this.createGetNewSecretsRequest(deviceIdentification, keyTypes);
     final GetNewSecretsResponse response =
-        this.secretManagementClient.getNewSecretsRequest(request);
+        this.secretManagementClient.getNewSecretsRequest(messageMetadata, request);
     this.validateGetNewResponse(keyTypes, response);
     return this.convertSoapSecretsToSecretMapByType(response.getTypedSecrets().getTypedSecret());
   }
@@ -178,22 +197,28 @@ public class SecretManagementService {
    * attempt to replace the communication key that got aborted).<br>
    *
    * <p>The moment the new key is known to be transferred to the device, make sure to activate it by
-   * calling {@link #activateNewKey(String, SecurityKeyType)}.
+   * calling {@link #activateNewKey(MessageMetadata, String, SecurityKeyType)}.
    *
+   * @param messageMetadata the metadata of the request message
    * @param deviceIdentification DLMS device id
    * @param key key to store, unencrypted
    * @param keyType type of key
-   * @see #activateNewKey(String, SecurityKeyType)
+   * @see #storeNewKeys(String, String, Map)
    */
   public void storeNewKey(
-      final String deviceIdentification, final SecurityKeyType keyType, final byte[] key) {
+      final MessageMetadata messageMetadata,
+      final String deviceIdentification,
+      final SecurityKeyType keyType,
+      final byte[] key) {
     final Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
     keysByType.put(keyType, key);
-    this.storeNewKeys(deviceIdentification, keysByType);
+    this.storeNewKeys(messageMetadata, deviceIdentification, keysByType);
   }
 
   public void storeNewKeys(
-      final String deviceIdentification, final Map<SecurityKeyType, byte[]> keysByType) {
+      final MessageMetadata messageMetadata,
+      final String deviceIdentification,
+      final Map<SecurityKeyType, byte[]> keysByType) {
     this.validateKeys(keysByType);
     final TypedSecrets typedSecrets = new TypedSecrets();
     final List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
@@ -207,7 +232,7 @@ public class SecretManagementService {
         this.createStoreSecretsRequest(deviceIdentification, typedSecrets);
     StoreSecretsResponse response = null;
     try {
-      response = this.secretManagementClient.storeSecretsRequest(request);
+      response = this.secretManagementClient.storeSecretsRequest(messageMetadata, request);
     } catch (final RuntimeException exc) {
       throw new IllegalStateException("Could not store keys: unexpected exception occured", exc);
     }
@@ -240,39 +265,52 @@ public class SecretManagementService {
   /**
    * Updates the state of a new key from 'new' to 'active'
    *
-   * <p>This method should be called to activate a new key stored with {@link #storeNewKeys(String,
-   * Map)} after it has been confirmed to be set on the device.
+   * <p>This method should be called to activate a new key stored with {@link
+   * #storeNewKey(MessageMetadata, String, SecurityKeyType)} after it has been confirmed to be set
+   * on the device.
    *
+   * @param messageMetadata the metadata of the request message
    * @param deviceIdentification DLMS device id
    * @param keyType type of key
-   * @see #storeNewKeys(String, Map)
+   * @see #activateNewKeys(String, String, List)
    */
-  public void activateNewKey(final String deviceIdentification, final SecurityKeyType keyType) {
-    this.activateNewKeys(deviceIdentification, Arrays.asList(keyType));
+  public void activateNewKey(
+      final MessageMetadata messageMetadata,
+      final String deviceIdentification,
+      final SecurityKeyType keyType) {
+    this.activateNewKeys(messageMetadata, deviceIdentification, Arrays.asList(keyType));
   }
 
   public void activateNewKeys(
-      final String deviceIdentification, final List<SecurityKeyType> keyTypes) {
+      final MessageMetadata messageMetadata,
+      final String deviceIdentification,
+      final List<SecurityKeyType> keyTypes) {
     final ActivateSecretsRequest request = new ActivateSecretsRequest();
     request.setDeviceId(deviceIdentification);
     request.setSecretTypes(new SecretTypes());
     final List<SecretType> secretTypeList = request.getSecretTypes().getSecretType();
     keyTypes.forEach(kt -> secretTypeList.add(kt.toSecretType()));
-    this.secretManagementClient.activateSecretsRequest(request);
+    this.secretManagementClient.activateSecretsRequest(messageMetadata, request);
   }
 
   public boolean hasNewSecretOfType(
-      final String deviceIdentification, final SecurityKeyType keyType) {
+      final MessageMetadata messageMetadata,
+      final String deviceIdentification,
+      final SecurityKeyType keyType) {
     final HasNewSecretRequest request = new HasNewSecretRequest();
     request.setDeviceId(deviceIdentification);
     request.setSecretType(keyType.toSecretType());
-    final HasNewSecretResponse response = this.secretManagementClient.hasNewSecretRequest(request);
+    final HasNewSecretResponse response =
+        this.secretManagementClient.hasNewSecretRequest(messageMetadata, request);
     return response.isHasNewSecret();
   }
 
   public byte[] generate128BitsKeyAndStoreAsNewKey(
-      final String deviceIdentification, final SecurityKeyType keyType) {
-    return this.generate128BitsKeysAndStoreAsNewKeys(deviceIdentification, Arrays.asList(keyType))
+      final MessageMetadata messageMetadata,
+      final String deviceIdentification,
+      final SecurityKeyType keyType) {
+    return this.generate128BitsKeysAndStoreAsNewKeys(
+            messageMetadata, deviceIdentification, Arrays.asList(keyType))
         .get(keyType);
   }
 
@@ -283,10 +321,15 @@ public class SecretManagementService {
    * <p>The master keys (DLMS master or M-Bus Default) cannot be changed on a device, but can be
    * generated for use in tests or with simulated devices.
    *
+   * @param messageMetadata the metadata of the request message
+   * @param deviceIdentification the device identification for which to generate the keys
+   * @param keyTypes the requested key types
    * @return a new 128bits key, unencrypted.
    */
   public Map<SecurityKeyType, byte[]> generate128BitsKeysAndStoreAsNewKeys(
-      final String deviceIdentification, final List<SecurityKeyType> keyTypes) {
+      final MessageMetadata messageMetadata,
+      final String deviceIdentification,
+      final List<SecurityKeyType> keyTypes) {
     final SecretTypes secretTypes = new SecretTypes();
     final GenerateAndStoreSecretsRequest request =
         this.createGenerateAndStoreSecretsRequest(deviceIdentification, secretTypes);
@@ -295,7 +338,7 @@ public class SecretManagementService {
         .addAll(keyTypes.stream().map(SecurityKeyType::toSecretType).collect(toList()));
 
     final GenerateAndStoreSecretsResponse response =
-        this.secretManagementClient.generateAndStoreSecrets(request);
+        this.secretManagementClient.generateAndStoreSecrets(messageMetadata, request);
     final TypedSecrets typedSecrets = response.getTypedSecrets();
     final List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
     this.validateGenerateAndStoreResponse(keyTypes, response, typedSecretList);

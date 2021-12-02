@@ -19,7 +19,6 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.D
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.LmdDeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -52,7 +51,7 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor
   public void processMessage(final ObjectMessage message) throws JMSException {
     LOGGER.debug("Processing public lighting get status request message");
 
-    MessageMetadata messageMetadata;
+    final MessageMetadata messageMetadata;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
     } catch (final JMSException e) {
@@ -114,14 +113,13 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor
       return;
     }
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        getDeviceMessageMetadata(response, messageType);
+    final MessageMetadata messageMetadata = getMessageMetadata(response, messageType);
 
     final ProtocolResponseMessage protocolResponseMessage =
         new ProtocolResponseMessage.Builder()
             .domain(domainInformation.getDomain())
             .domainVersion(domainInformation.getDomainVersion())
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .result(ResponseMessageResultType.OK)
             .osgpException(null)
             .retryCount(retryCount)

@@ -9,9 +9,13 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +35,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionC
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RetryHeaderFactory;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -61,38 +69,33 @@ class BundleMessageProcessorTest {
   @Mock private DlmsMessageListener messageListener;
 
   private DlmsDevice dlmsDevice;
-  private BundleMessagesRequestDto requestDto;
 
   @InjectMocks private BundleMessageProcessor messageProcessor;
 
   @BeforeEach
   public void setUp() throws JMSException, OsgpException {
     this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
-    this.requestDto = new BundleMessagesRequestDto(null);
-
-    when(this.message.getJMSType()).thenReturn(MessageType.FIND_EVENTS.name());
-    when(this.message.getObject()).thenReturn(this.requestDto);
     when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class)))
         .thenReturn(this.dlmsDevice);
   }
 
   @Test
   public void shouldSetEmptyHeaderOnSuccessfulOperation() throws OsgpException, JMSException {
+    this.prepareBundleServiceMockWithRequestAndResponse(new ActionResponseDto());
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
-    when(this.bundleService.callExecutors(
-            this.dlmsConnectionManager, this.dlmsDevice, this.requestDto))
-        .thenReturn(this.requestDto);
-    when(this.dlmsConnectionHelper.createConnectionForDevice(this.dlmsDevice, null))
+    when(this.dlmsConnectionHelper.createConnectionForDevice(
+            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
         .thenReturn(this.dlmsConnectionManager);
 
     this.messageProcessor.processMessage(this.message);
 
-    verify(this.retryHeaderFactory).createEmtpyRetryHeader();
+    verify(this.retryHeaderFactory, times(1)).createEmtpyRetryHeader();
   }
 
   @Test
   public void shouldSetRetryHeaderOnRuntimeException() throws OsgpException, JMSException {
-    when(this.dlmsConnectionHelper.createConnectionForDevice(this.dlmsDevice, null))
+    when(this.dlmsConnectionHelper.createConnectionForDevice(
+            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
         .thenThrow(new RuntimeException());
 
     this.messageProcessor.processMessage(this.message);
@@ -102,11 +105,61 @@ class BundleMessageProcessorTest {
 
   @Test
   public void shouldSetRetryHeaderOnOsgpException() throws OsgpException, JMSException {
-    when(this.dlmsConnectionHelper.createConnectionForDevice(this.dlmsDevice, null))
+    when(this.dlmsConnectionHelper.createConnectionForDevice(
+            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
         .thenThrow(new OsgpException(ComponentType.PROTOCOL_DLMS, ""));
 
     this.messageProcessor.processMessage(this.message);
 
     verify(this.retryHeaderFactory).createRetryHeader(0);
+  }
+
+  @Test
+  public void shouldSetRetryHeaderOnSuccessfulOperationWithRetryableFaultResponse()
+      throws OsgpException, JMSException {
+    when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
+    when(this.dlmsConnectionHelper.createConnectionForDevice(
+            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
+        .thenReturn(this.dlmsConnectionManager);
+
+    this.prepareBundleServiceMockWithRequestAndResponse(
+        new FaultResponseDto.Builder().withRetryable(true).build());
+
+    this.messageProcessor.processMessage(this.message);
+
+    verify(this.retryHeaderFactory).createRetryHeader(0);
+  }
+
+  @Test
+  public void shouldSetEmptyHeaderOnSuccessfulOperationWithNonRetryableFaultResponse()
+      throws OsgpException, JMSException {
+    when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
+    when(this.dlmsConnectionHelper.createConnectionForDevice(
+            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
+        .thenReturn(this.dlmsConnectionManager);
+
+    this.prepareBundleServiceMockWithRequestAndResponse(
+        new FaultResponseDto.Builder().withRetryable(false).build());
+
+    this.messageProcessor.processMessage(this.message);
+
+    verify(this.retryHeaderFactory).createEmtpyRetryHeader();
+  }
+
+  private void prepareBundleServiceMockWithRequestAndResponse(final ActionResponseDto response)
+      throws JMSException {
+    final ActionDto action = new ActionDto(new ClearAlarmRegisterRequestDto());
+    action.setResponse(response);
+    final BundleMessagesRequestDto request = new BundleMessagesRequestDto(Arrays.asList(action));
+
+    when(this.message.getJMSType()).thenReturn(MessageType.CLEAR_ALARM_REGISTER.name());
+    when(this.message.getObject()).thenReturn(request);
+
+    when(this.bundleService.callExecutors(
+            same(this.dlmsConnectionManager),
+            same(this.dlmsDevice),
+            same(request),
+            any(MessageMetadata.class)))
+        .thenReturn(request);
   }
 }

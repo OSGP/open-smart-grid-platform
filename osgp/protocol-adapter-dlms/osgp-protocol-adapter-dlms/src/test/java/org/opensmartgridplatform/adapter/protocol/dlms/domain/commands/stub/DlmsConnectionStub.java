@@ -10,10 +10,10 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
@@ -23,40 +23,85 @@ import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
+import org.opensmartgridplatform.dlms.interfaceclass.method.MethodClass;
 
 public class DlmsConnectionStub implements DlmsConnection {
 
   private List<AttributeAddress> requestedAttributeAddresses = new ArrayList<>();
+  private final List<SetParameter> parametersSet = new ArrayList<>();
+  private final List<MethodParameter> methodsInvoked = new ArrayList<>();
 
-  private final Map<String, DataObject> returnValues = new HashMap<>();
+  private final Map<String, List<DataObject>> returnValues = new HashMap<>();
+
   private DataObject defaultReturnValue = DataObject.newNullData();
+  private MethodResult defaultMethodResult = null;
 
   private boolean closeCalled = false;
 
   @Override
-  public List<GetResult> get(final List<AttributeAddress> params) {
-
-    this.requestedAttributeAddresses.addAll(params);
-
+  public List<GetResult> get(final List<AttributeAddress> attributeAddresses) {
     final List<GetResult> results = new ArrayList<>();
-
-    for (final AttributeAddress attributeAddress : params) {
+    for (final AttributeAddress attributeAddress : attributeAddresses) {
       results.add(this.get(attributeAddress));
     }
-
     return results;
   }
 
   @Override
-  public GetResult get(final AttributeAddress var1) {
+  public GetResult get(final AttributeAddress attributeAddress) {
+    final int invocationNr =
+        Long.valueOf(
+                this.requestedAttributeAddresses.stream()
+                    .filter(addr -> this.getKey(addr).equals(this.getKey(attributeAddress)))
+                    .count())
+            .intValue();
 
-    this.requestedAttributeAddresses.addAll(Collections.singletonList(var1));
+    this.requestedAttributeAddresses.add(attributeAddress);
 
-    if (this.returnValues.containsKey(this.getKey(var1))) {
-      return new GetResultImpl(this.returnValues.get(this.getKey(var1)), AccessResultCode.SUCCESS);
+    if (this.returnValues.containsKey(this.getKey(attributeAddress))) {
+      // If multiple returnvalues configured, than return return value based on invocations
+      final int resultNr =
+          Integer.min(
+              this.returnValues.get(this.getKey(attributeAddress)).size() - 1, invocationNr);
+      return new GetResultImpl(
+          this.returnValues.get(this.getKey(attributeAddress)).get(resultNr),
+          AccessResultCode.SUCCESS);
     } else {
       return new GetResultImpl(this.defaultReturnValue, AccessResultCode.SUCCESS);
     }
+  }
+
+  @Override
+  public List<AccessResultCode> set(final List<SetParameter> setParameters) {
+    final List<AccessResultCode> results = new ArrayList<>();
+    for (final SetParameter setParameter : setParameters) {
+      results.add(this.set(setParameter));
+    }
+    return results;
+  }
+
+  @Override
+  public AccessResultCode set(final SetParameter setParameter) {
+    this.parametersSet.add(setParameter);
+
+    return AccessResultCode.SUCCESS;
+  }
+
+  @Override
+  public List<MethodResult> action(final List<MethodParameter> methodParameters) {
+    final List<MethodResult> results = new ArrayList<>();
+    for (final MethodParameter methodParameter : methodParameters) {
+      results.add(this.action(methodParameter));
+    }
+    return results;
+  }
+
+  @Override
+  public MethodResult action(final MethodParameter methodParameter) {
+    this.methodsInvoked.add(methodParameter);
+
+    return this.defaultMethodResult;
   }
 
   @Override
@@ -66,11 +111,6 @@ public class DlmsConnectionStub implements DlmsConnection {
 
   @Override
   public List<GetResult> get(final boolean var1, final List<AttributeAddress> var2) {
-    return null;
-  }
-
-  @Override
-  public List<AccessResultCode> set(final List<SetParameter> var1) {
     return null;
   }
 
@@ -85,22 +125,7 @@ public class DlmsConnectionStub implements DlmsConnection {
   }
 
   @Override
-  public AccessResultCode set(final SetParameter var1) {
-    return null;
-  }
-
-  @Override
   public MethodResult action(final boolean var1, final MethodParameter var2) {
-    return null;
-  }
-
-  @Override
-  public MethodResult action(final MethodParameter var1) {
-    return null;
-  }
-
-  @Override
-  public List<MethodResult> action(final List<MethodParameter> var1) {
     return null;
   }
 
@@ -131,8 +156,31 @@ public class DlmsConnectionStub implements DlmsConnection {
     this.requestedAttributeAddresses = new ArrayList<>();
   }
 
+  public List<SetParameter> getSetParameters(final AttributeClass attributeClass) {
+    return this.parametersSet.stream()
+        .filter(
+            setParameter ->
+                setParameter.getAttributeAddress().getId() == attributeClass.attributeId())
+        .collect(Collectors.toList());
+  }
+
+  public boolean hasMethodBeenInvoked(final MethodClass methodClass) {
+    return this.methodsInvoked.stream()
+        .anyMatch(parameter -> parameter.getId() == methodClass.getMethodId());
+  }
+
+  public void addReturnValue(
+      final AttributeAddress attributeAddress,
+      final DataObject dataObject,
+      final int nrOfInvocations) {
+    for (int i = 0; i < nrOfInvocations; i++) {
+      this.returnValues.putIfAbsent(this.getKey(attributeAddress), new ArrayList<>());
+      this.returnValues.get(this.getKey(attributeAddress)).add(dataObject);
+    }
+  }
+
   public void addReturnValue(final AttributeAddress attributeAddress, final DataObject dataObject) {
-    this.returnValues.put(this.getKey(attributeAddress), dataObject);
+    this.addReturnValue(attributeAddress, dataObject, 1);
   }
 
   public void setDefaultReturnValue(final DataObject dataObject) {
@@ -145,5 +193,9 @@ public class DlmsConnectionStub implements DlmsConnection {
 
   private String getKey(final AttributeAddress attributeAddress) {
     return attributeAddress.getInstanceId() + "-" + attributeAddress.getId();
+  }
+
+  public void setDefaultMethodResult(final MethodResult methodResult) {
+    this.defaultMethodResult = methodResult;
   }
 }

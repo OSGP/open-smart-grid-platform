@@ -13,12 +13,10 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersion;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequest;
@@ -27,7 +25,6 @@ import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.DeviceFirmwareModuleSteps;
-import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.ScenarioContextHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.UpdateFirmwareRequestFactory;
@@ -81,94 +78,6 @@ public class UpdateFirmware {
     final UpdateFirmwareResponse response = this.client.getUpdateFirmwareResponse(asyncRequest);
 
     assertThat(response.getResult()).as("result").isEqualTo(OsgpResultType.OK);
-
-    final List<FirmwareVersion> expectedFirmareVersions =
-        UpdateFirmwareRequestFactory.firmwareVersionsFromParameters(settings);
-
-    final List<FirmwareVersion> actualFirmwareVersions = response.getFirmwareVersion();
-
-    assertThat(actualFirmwareVersions.size())
-        .as("number of firmware versions")
-        .isEqualTo(expectedFirmareVersions.size());
-
-    for (final FirmwareVersion expected : expectedFirmareVersions) {
-      assertThat(this.firmwareVersionListContains(actualFirmwareVersions, expected))
-          .as(
-              "Firmware version not returned: "
-                  + expected.getFirmwareModuleType()
-                  + " => "
-                  + expected.getVersion())
-          .isTrue();
-    }
-  }
-
-  private boolean firmwareVersionListContains(
-      final List<FirmwareVersion> firmwareVersions, final FirmwareVersion expectedFirmwareVersion) {
-    for (final FirmwareVersion firmwareVersion : firmwareVersions) {
-      if (this.firmwareVersionEquals(firmwareVersion, expectedFirmwareVersion)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private boolean firmwareVersionEquals(final FirmwareVersion a, final FirmwareVersion b) {
-    if (a == b) {
-      return true;
-    }
-    if (a == null || b == null) {
-      return false;
-    }
-    return a.getFirmwareModuleType().equals(b.getFirmwareModuleType())
-        && a.getVersion().equals(b.getVersion());
-  }
-
-  @Then("^the database should be updated with the new device firmware$")
-  public void theDatabaseShouldBeUpdatedWithTheNewDeviceFirmware(final Map<String, String> settings)
-      throws Throwable {
-
-    final String deviceIdentification =
-        getString(
-            settings,
-            PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-            PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
-    final Device device =
-        this.deviceRepository.findByDeviceIdentificationWithFirmware(deviceIdentification);
-    assertThat(device).as("Device " + deviceIdentification + " not found.").isNotNull();
-
-    final FirmwareFile activeFirmware = device.getActiveFirmwareFile();
-    assertThat(activeFirmware)
-        .as("No active firmware found for device " + deviceIdentification + ".")
-        .isNotNull();
-
-    /*
-     * Check if the firmware module versions from the latest installed
-     * firmware file match the expected versions. It is OK for a firmware
-     * module not to be present in the firmware file, as it may have only a
-     * subset of all possible modules.
-     */
-    if (activeFirmware.getModuleVersionComm() != null) {
-      final String moduleVersionComm = settings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM);
-      assertThat(activeFirmware.getModuleVersionComm())
-          .as(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM)
-          .isEqualTo(moduleVersionComm);
-    }
-    if (activeFirmware.getModuleVersionMa() != null) {
-      final String moduleVersionMa = settings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_MA);
-      assertThat(activeFirmware.getModuleVersionMa())
-          .as(PlatformKeys.FIRMWARE_MODULE_VERSION_MA)
-          .isEqualTo(moduleVersionMa);
-    }
-    if (activeFirmware.getModuleVersionFunc() != null) {
-      final String moduleVersionFunc = settings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC);
-
-      assertThat(activeFirmware.getModuleVersionFunc())
-          .as(PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC)
-          .isEqualTo(moduleVersionFunc);
-    }
-
-    this.deviceFirmwareModuleSteps.theDatabaseShouldBeUpdatedWithTheDeviceFirmwareVersion(
-        SettingsHelper.addDefault(settings, "FirmwareIsForSmartMeters", "true"));
   }
 
   @Then("^the database should not be updated with the new device firmware$")

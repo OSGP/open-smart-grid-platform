@@ -10,8 +10,9 @@ package org.opensmartgridplatform.shared.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.stream.Stream;
 
 public class FileUtils {
 
@@ -50,6 +51,8 @@ public class FileUtils {
   }
 
   public static long countNumberOfLinesInFile(final File inputFile) throws IOException {
-    return Files.lines(inputFile.toPath(), Charset.forName("UTF-8")).count();
+    try (Stream<String> lines = Files.lines(inputFile.toPath(), StandardCharsets.UTF_8)) {
+      return lines.count();
+    }
   }
 }

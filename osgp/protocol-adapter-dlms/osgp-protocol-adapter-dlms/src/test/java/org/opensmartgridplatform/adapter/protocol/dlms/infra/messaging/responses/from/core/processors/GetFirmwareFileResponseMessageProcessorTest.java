@@ -16,7 +16,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.LinkedList;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,8 +89,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
             .withObject(responseMessage)
             .build();
     final UpdateFirmwareResponseDto updateFirmwareResponseDto =
-        new UpdateFirmwareResponseDto(
-            firmwareFileDto.getFirmwareIdentification(), new LinkedList<>());
+        new UpdateFirmwareResponseDto(firmwareFileDto.getFirmwareIdentification());
 
     final ArgumentCaptor<ResponseMessage> responseMessageArgumentCaptor =
         ArgumentCaptor.forClass(ResponseMessage.class);
@@ -101,10 +99,13 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     when(this.dlmsConnectionManagerMock.getDlmsMessageListener())
         .thenReturn(this.dlmsMessageListenerMock);
     when(this.connectionHelper.createConnectionForDevice(
-            same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
+            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
         .thenReturn(this.dlmsConnectionManagerMock);
     when(this.firmwareService.updateFirmware(
-            this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto))
+            same(this.dlmsConnectionManagerMock),
+            same(this.dlmsDevice),
+            same(firmwareFileDto),
+            any(MessageMetadata.class)))
         .thenReturn(updateFirmwareResponseDto);
 
     // act
@@ -131,7 +132,11 @@ public class GetFirmwareFileResponseMessageProcessorTest {
 
     // assert
     verify(this.firmwareService, times(1))
-        .updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto);
+        .updateFirmware(
+            same(this.dlmsConnectionManagerMock),
+            same(this.dlmsDevice),
+            same(firmwareFileDto),
+            any(MessageMetadata.class));
   }
 
   @Test
@@ -154,10 +159,13 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     when(this.dlmsConnectionManagerMock.getDlmsMessageListener())
         .thenReturn(this.dlmsMessageListenerMock);
     when(this.connectionHelper.createConnectionForDevice(
-            same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
+            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
         .thenReturn(this.dlmsConnectionManagerMock);
     when(this.firmwareService.updateFirmware(
-            this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto))
+            same(this.dlmsConnectionManagerMock),
+            same(this.dlmsDevice),
+            same(firmwareFileDto),
+            any(MessageMetadata.class)))
         .thenThrow(new ProtocolAdapterException("Firmware file fw is not available."));
 
     // act

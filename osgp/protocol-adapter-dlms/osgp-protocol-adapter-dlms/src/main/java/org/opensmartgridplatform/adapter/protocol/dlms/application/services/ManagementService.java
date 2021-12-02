@@ -29,6 +29,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceCommuni
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,10 +50,12 @@ public class ManagementService {
   public GetGsmDiagnosticResponseDto getGsmDiagnostic(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final GetGsmDiagnosticRequestDto getGsmDiagnosticRequestDto)
+      final GetGsmDiagnosticRequestDto getGsmDiagnosticRequestDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    return this.getGsmDiagnosticCommandExecutor.execute(conn, device, getGsmDiagnosticRequestDto);
+    return this.getGsmDiagnosticCommandExecutor.execute(
+        conn, device, getGsmDiagnosticRequestDto, messageMetadata);
   }
 
   // === FIND EVENTS ===
@@ -60,7 +63,8 @@ public class ManagementService {
   public EventMessageDataResponseDto findEvents(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final FindEventsRequestList findEventsQueryMessageDataContainer)
+      final FindEventsRequestList findEventsQueryMessageDataContainer,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     final List<EventDto> events = new ArrayList<>();
@@ -75,7 +79,8 @@ public class ManagementService {
           findEventsQuery.getFrom(),
           findEventsQuery.getUntil());
 
-      events.addAll(this.findEventsCommandExecutor.execute(conn, device, findEventsQuery));
+      events.addAll(
+          this.findEventsCommandExecutor.execute(conn, device, findEventsQuery, messageMetadata));
     }
 
     return new EventMessageDataResponseDto(events);
@@ -113,10 +118,11 @@ public class ManagementService {
       final DlmsConnectionManager conn,
       final DlmsDevice device,
       final SetDeviceLifecycleStatusByChannelRequestDataDto
-          setDeviceLifecycleStatusByChannelRequest)
+          setDeviceLifecycleStatusByChannelRequest,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
 
     return this.setDeviceLifecycleStatusByChannelCommandExecutor.execute(
-        conn, device, setDeviceLifecycleStatusByChannelRequest);
+        conn, device, setDeviceLifecycleStatusByChannelRequest, messageMetadata);
   }
 }

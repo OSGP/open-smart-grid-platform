@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,14 +32,18 @@ public class SetAlarmNotificationsRequestMessageProcessor extends DeviceRequestM
 
   @Override
   protected Serializable handleMessage(
-      final DlmsConnectionManager conn, final DlmsDevice device, final Serializable requestObject)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final Serializable requestObject,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
 
     this.assertRequestObjectType(AlarmNotificationsDto.class, requestObject);
 
     final AlarmNotificationsDto alarmNotifications = (AlarmNotificationsDto) requestObject;
 
-    this.configurationService.setAlarmNotifications(conn, device, alarmNotifications);
+    this.configurationService.setAlarmNotifications(
+        conn, device, alarmNotifications, messageMetadata);
 
     return null;
   }

@@ -8,7 +8,10 @@
  */
 package org.opensmartgridplatform.adapter.protocol.mqtt.application.config;
 
+import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttClientDefaults;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
@@ -16,4 +19,18 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:osgp-adapter-protocol-mqtt.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterProtocolMqtt/config}", ignoreResourceNotFound = true)
-public class MqttConfig extends AbstractConfig {}
+public class MqttConfig extends AbstractConfig {
+
+  @Bean
+  public MqttClientDefaults mqttClientDefaults(
+      @Value("${mqtt.default.host:localhost}") final String defaultHost,
+      @Value("${mqtt.default.port:1883}") final int defaultPort,
+      @Value("${mqtt.default.username:#{null}}") final String defaultUsername,
+      @Value("${mqtt.default.password:#{null}}") final String defaultPassword,
+      @Value("${mqtt.default.qos:AT_LEAST_ONCE}") final String defaultQos,
+      @Value("${mqtt.default.topics:+/measurement}") final String defaultTopics) {
+
+    return new MqttClientDefaults(
+        defaultHost, defaultPort, defaultUsername, defaultPassword, defaultQos, defaultTopics);
+  }
+}

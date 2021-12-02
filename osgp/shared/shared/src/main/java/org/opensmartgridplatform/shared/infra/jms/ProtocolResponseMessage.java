@@ -37,8 +37,8 @@ public class ProtocolResponseMessage extends ResponseMessage {
     private String domainVersion;
     private int retryCount;
 
-    public Builder deviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
-      this.superBuilder.withDeviceMessageMetadata(deviceMessageMetadata);
+    public Builder messageMetadata(final MessageMetadata messageMetadata) {
+      this.superBuilder.withMessageMetadata(messageMetadata);
       return this;
     }
 

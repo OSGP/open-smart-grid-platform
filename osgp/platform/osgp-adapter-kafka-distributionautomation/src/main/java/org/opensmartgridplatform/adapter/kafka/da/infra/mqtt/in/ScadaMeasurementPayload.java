@@ -29,6 +29,7 @@ public class ScadaMeasurementPayload {
 
   private String substationName;
   private String feeder;
+  private String fieldCode;
   private String bayIdentification;
   private String assetLabel;
 

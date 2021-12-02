@@ -9,14 +9,16 @@
 package org.opensmartgridplatform.secretmanagement.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.ws.test.server.RequestCreators.withPayload;
+import static org.springframework.ws.test.server.RequestCreators.withSoapEnvelope;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.xml.namespace.QName;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +38,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ws.soap.SoapHeaderElement;
+import org.springframework.ws.soap.SoapMessage;
 import org.springframework.ws.test.server.MockWebServiceClient;
 import org.springframework.ws.test.server.ResponseMatchers;
 
@@ -97,7 +101,7 @@ public class SoapServiceSecretManagementIT {
     assertThat(this.secretRepository.count()).isEqualTo(2);
     final Resource request = new ClassPathResource("test-requests/getSecrets.xml");
     this.mockWebServiceClient
-        .sendRequest(withPayload(request))
+        .sendRequest(withSoapEnvelope(request))
         .andExpect(
             (request2, response) -> {
               final OutputStream outStream = new ByteArrayOutputStream();
@@ -106,6 +110,27 @@ public class SoapServiceSecretManagementIT {
               assertThat(outputString.contains("<ns2:Result>OK</ns2:Result>")).isTrue();
               assertThat(outputString.contains("E_METER_AUTHENTICATION")).isTrue();
               assertThat(outputString.contains("E_METER_ENCRYPTION_KEY_UNICAST")).isTrue();
+            });
+  }
+
+  @Test
+  public void getSecretsWithCorrelationUidInHeader() throws IOException {
+    final Resource request = new ClassPathResource("test-requests/getSecretsEnvelope.xml");
+    this.mockWebServiceClient
+        .sendRequest(withSoapEnvelope(request))
+        .andExpect(
+            (request2, response) -> {
+              final Iterator<SoapHeaderElement> headerElements =
+                  ((SoapMessage) response)
+                      .getSoapHeader()
+                      .examineHeaderElements(
+                          new QName(
+                              "http://www.opensmartgridplatform.org/schemas/security/secretmanagement",
+                              "correlationUid"));
+              assertThat(headerElements).hasNext();
+              final SoapHeaderElement header = headerElements.next();
+              assertThat(header.getText()).isEqualTo("123456");
+              assertThat(headerElements).isExhausted();
             });
   }
 
@@ -121,7 +146,7 @@ public class SoapServiceSecretManagementIT {
         new ClassPathResource("test-requests/getSecrets_noStoredSecretType.xml");
     try {
       this.mockWebServiceClient
-          .sendRequest(withPayload(request))
+          .sendRequest(withSoapEnvelope(request))
           .andExpect(
               (request2, response) -> {
                 final OutputStream outStream = new ByteArrayOutputStream();
@@ -150,7 +175,7 @@ public class SoapServiceSecretManagementIT {
     final Resource expectedResponse = new ClassPathResource("test-responses/storeSecrets.xml");
     try {
       this.mockWebServiceClient
-          .sendRequest(withPayload(request))
+          .sendRequest(withSoapEnvelope(request))
           .andExpect(ResponseMatchers.noFault())
           .andExpect(ResponseMatchers.payload(expectedResponse));
     } catch (final Exception exc) {
@@ -174,7 +199,7 @@ public class SoapServiceSecretManagementIT {
     final Resource expectedStoreResponse = new ClassPathResource("test-responses/storeSecrets.xml");
     // Store secrets
     this.mockWebServiceClient
-        .sendRequest(withPayload(storeRequest))
+        .sendRequest(withSoapEnvelope(storeRequest))
         .andExpect(ResponseMatchers.noFault())
         .andExpect(ResponseMatchers.payload(expectedStoreResponse));
     // Store secrets again, while previously stored secret still have status NEW
@@ -182,7 +207,7 @@ public class SoapServiceSecretManagementIT {
         "Expected 0 new secrets of type E_METER_AUTHENTICATION_KEY for device "
             + "E0000000000000000, but 1 new secret(s) present";
     this.mockWebServiceClient
-        .sendRequest(withPayload(storeRequest))
+        .sendRequest(withSoapEnvelope(storeRequest))
         .andExpect(ResponseMatchers.serverOrReceiverFault(errorMessage));
   }
 
@@ -202,11 +227,11 @@ public class SoapServiceSecretManagementIT {
         new ClassPathResource("test-responses/activateSecrets.xml");
     // Store secrets
     this.mockWebServiceClient
-        .sendRequest(withPayload(storeRequest))
+        .sendRequest(withSoapEnvelope(storeRequest))
         .andExpect(ResponseMatchers.noFault())
         .andExpect(ResponseMatchers.payload(expectedStoreResponse));
     this.mockWebServiceClient
-        .sendRequest(withPayload(activateRequest))
+        .sendRequest(withSoapEnvelope(activateRequest))
         .andExpect(ResponseMatchers.noFault())
         .andExpect(ResponseMatchers.payload(expectedActivateResponse));
   }
@@ -223,8 +248,10 @@ public class SoapServiceSecretManagementIT {
     final Resource activateRequest = new ClassPathResource("test-requests/activateSecrets.xml");
     // Store secrets
     this.mockWebServiceClient
-        .sendRequest(withPayload(activateRequest))
-        .andExpect(ResponseMatchers.serverOrReceiverFault("Could not activate new secrets"));
+        .sendRequest(withSoapEnvelope(activateRequest))
+        .andExpect(
+            ResponseMatchers.serverOrReceiverFault(
+                "Expected 1 new secrets of type E_METER_AUTHENTICATION_KEY for device E0000000000000000, but 0 new secret(s) present"));
   }
 
   @Test
@@ -240,7 +267,7 @@ public class SoapServiceSecretManagementIT {
 
     try {
       this.mockWebServiceClient
-          .sendRequest(withPayload(request))
+          .sendRequest(withSoapEnvelope(request))
           .andExpect(ResponseMatchers.serverOrReceiverFault("Missing input: secret types"));
     } catch (final Exception exc) {
       Assertions.fail("Error", exc);
@@ -260,7 +287,7 @@ public class SoapServiceSecretManagementIT {
 
     try {
       this.mockWebServiceClient
-          .sendRequest(withPayload(request))
+          .sendRequest(withSoapEnvelope(request))
           .andExpect(ResponseMatchers.serverOrReceiverFault("Missing input: typed secrets"));
     } catch (final Exception exc) {
       Assertions.fail("Error", exc);
@@ -272,7 +299,7 @@ public class SoapServiceSecretManagementIT {
     final Resource generateAndStoreRequest =
         new ClassPathResource("test-requests/generateAndStoreSecrets.xml");
     this.mockWebServiceClient
-        .sendRequest(withPayload(generateAndStoreRequest))
+        .sendRequest(withSoapEnvelope(generateAndStoreRequest))
         .andExpect(ResponseMatchers.noFault())
         .andExpect(
             (request, response) -> {
@@ -293,13 +320,13 @@ public class SoapServiceSecretManagementIT {
     // Store secrets
     final Resource storeRequest = new ClassPathResource("test-requests/storeSecrets.xml");
     this.mockWebServiceClient
-        .sendRequest(withPayload(storeRequest))
+        .sendRequest(withSoapEnvelope(storeRequest))
         .andExpect(ResponseMatchers.noFault());
     // Generate and store secret: this should result in a fault message
     final Resource generateAndStoreRequest =
         new ClassPathResource("test-requests/generateAndStoreSecrets.xml");
     this.mockWebServiceClient
-        .sendRequest(withPayload(generateAndStoreRequest))
+        .sendRequest(withSoapEnvelope(generateAndStoreRequest))
         .andExpect(ResponseMatchers.serverOrReceiverFault());
   }
 

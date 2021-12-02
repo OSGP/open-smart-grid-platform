@@ -26,7 +26,7 @@ import org.opensmartgridplatform.core.db.api.iec61850.repositories.SsldDataRepos
 import org.opensmartgridplatform.dto.da.GetPQValuesResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataResponseDto;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
@@ -159,13 +159,14 @@ public class DeviceManagementService {
     final ProtocolResponseMessage responseMessage =
         new ProtocolResponseMessage.Builder()
             .dataObject(response)
-            .deviceMessageMetadata(
-                new DeviceMessageMetadata(
-                    deviceIdentification,
-                    NO_ORGANISATION,
-                    NO_CORRELATION_UID,
-                    MessageType.GET_DATA.name(),
-                    0))
+            .messageMetadata(
+                new MessageMetadata.Builder()
+                    .withDeviceIdentification(deviceIdentification)
+                    .withOrganisationIdentification(NO_ORGANISATION)
+                    .withCorrelationUid(NO_CORRELATION_UID)
+                    .withMessageType(MessageType.GET_DATA.name())
+                    .withMessagePriority(0)
+                    .build())
             .result(ResponseMessageResultType.OK)
             .domain("MICROGRIDS")
             .domainVersion("1.0")
@@ -185,13 +186,14 @@ public class DeviceManagementService {
     final ProtocolResponseMessage responseMessage =
         new ProtocolResponseMessage.Builder()
             .dataObject(response)
-            .deviceMessageMetadata(
-                new DeviceMessageMetadata(
-                    deviceIdentification,
-                    NO_ORGANISATION,
-                    NO_CORRELATION_UID,
-                    MessageType.GET_POWER_QUALITY_VALUES.name(),
-                    0))
+            .messageMetadata(
+                new MessageMetadata.Builder()
+                    .withDeviceIdentification(deviceIdentification)
+                    .withOrganisationIdentification(NO_ORGANISATION)
+                    .withCorrelationUid(NO_CORRELATION_UID)
+                    .withMessageType(MessageType.GET_POWER_QUALITY_VALUES.name())
+                    .withMessagePriority(0)
+                    .build())
             .result(ResponseMessageResultType.OK)
             .domain(deviceReportGroup.getDomain())
             .domainVersion(deviceReportGroup.getDomainVersion())

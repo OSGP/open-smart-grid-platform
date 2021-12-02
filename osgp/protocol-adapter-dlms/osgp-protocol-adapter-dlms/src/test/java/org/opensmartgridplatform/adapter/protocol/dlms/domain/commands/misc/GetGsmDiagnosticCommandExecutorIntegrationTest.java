@@ -43,6 +43,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnostic
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ModemRegistrationStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PacketSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SignalQualityDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 public class GetGsmDiagnosticCommandExecutorIntegrationTest {
@@ -94,6 +95,8 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
       throws Exception {
 
     // SETUP
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
     // Reset stub
     this.connectionStub.clearRequestedAttributeAddresses();
@@ -128,7 +131,8 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
     // CALL
     GetGsmDiagnosticResponseDto response = null;
     try {
-      response = this.executor.execute(this.connectionManagerStub, device, request);
+      response =
+          this.executor.execute(this.connectionManagerStub, device, request, messageMetadata);
     } catch (final ProtocolAdapterException e) {
       if (expectObjectNotFound) {
         assertThat(e.getMessage())

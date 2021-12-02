@@ -29,7 +29,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecyc
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -71,43 +71,43 @@ public class ManagementService {
   }
 
   public void findEvents(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final FindEventsRequestDataList findEventsQueryMessageDataContainer)
       throws FunctionalException {
 
     LOGGER.info(
         "findEvents for organisationIdentification: {} for deviceIdentification: {}",
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification());
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
 
     final SmartMeter smartMeter =
-        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
     final RequestMessage requestMessage =
         new RequestMessage(
-            deviceMessageMetadata.getCorrelationUid(),
-            deviceMessageMetadata.getOrganisationIdentification(),
-            deviceMessageMetadata.getDeviceIdentification(),
+            messageMetadata.getCorrelationUid(),
+            messageMetadata.getOrganisationIdentification(),
+            messageMetadata.getDeviceIdentification(),
             smartMeter.getIpAddress(),
             this.managementMapper.map(
                 findEventsQueryMessageDataContainer, FindEventsRequestList.class));
     this.osgpCoreRequestMessageSender.send(
         requestMessage,
-        deviceMessageMetadata.getMessageType(),
-        deviceMessageMetadata.getMessagePriority(),
-        deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        messageMetadata.getMessageType(),
+        messageMetadata.getMessagePriority(),
+        messageMetadata.getScheduleTime(),
+        messageMetadata.isBypassRetry());
   }
 
   public void handleFindEventsResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType responseMessageResultType,
       final OsgpException osgpException,
       final EventMessageDataResponseDto eventMessageDataContainerDto)
       throws FunctionalException {
 
-    this.eventService.addEventTypeToEvents(deviceMessageMetadata, eventMessageDataContainerDto);
+    this.eventService.addEventTypeToEvents(messageMetadata, eventMessageDataContainerDto);
 
     final EventMessagesResponse eventMessageDataContainer =
         this.managementMapper.map(eventMessageDataContainerDto, EventMessagesResponse.class);
@@ -115,164 +115,160 @@ public class ManagementService {
     // Send the response containing the events to the webservice-adapter
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withCorrelationUid(messageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
+            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
             .withResult(ResponseMessageResultType.NOT_OK)
             .withOsgpException(osgpException)
             .withDataObject(eventMessageDataContainer)
-            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
-    this.webServiceResponseMessageSender.send(
-        responseMessage, deviceMessageMetadata.getMessageType());
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
-  public void enableDebugging(final DeviceMessageMetadata deviceMessageMetadata)
-      throws FunctionalException {
+  public void enableDebugging(final MessageMetadata messageMetadata) throws FunctionalException {
     LOGGER.info(
         "EnableDebugging for organisationIdentification: {} for deviceIdentification: {}",
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification());
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
 
-    this.sendMetadataOnlyRequestMessage(deviceMessageMetadata);
+    this.sendMetadataOnlyRequestMessage(messageMetadata);
   }
 
   public void handleEnableDebuggingResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
     LOGGER.info(
         "handleEnableDebuggingResponse for MessageType: {}, with result: {}",
-        deviceMessageMetadata.getMessageType(),
+        messageMetadata.getMessageType(),
         deviceResult);
 
-    this.handleMetadataOnlyResponseMessage(deviceMessageMetadata, deviceResult, exception);
+    this.handleMetadataOnlyResponseMessage(messageMetadata, deviceResult, exception);
   }
 
-  public void disableDebugging(final DeviceMessageMetadata deviceMessageMetadata)
-      throws FunctionalException {
+  public void disableDebugging(final MessageMetadata messageMetadata) throws FunctionalException {
     LOGGER.info(
         "DisableDebugging for organisationIdentification: {} for deviceIdentification: {}",
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification());
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
 
-    this.sendMetadataOnlyRequestMessage(deviceMessageMetadata);
+    this.sendMetadataOnlyRequestMessage(messageMetadata);
   }
 
   public void handleDisableDebuggingResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
     LOGGER.info(
         "handleDisableDebuggingResponse for MessageType: {}, with result: {}",
-        deviceMessageMetadata.getMessageType(),
+        messageMetadata.getMessageType(),
         deviceResult);
 
-    this.handleMetadataOnlyResponseMessage(deviceMessageMetadata, deviceResult, exception);
+    this.handleMetadataOnlyResponseMessage(messageMetadata, deviceResult, exception);
   }
 
   public void setDeviceCommunicationSettings(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final org.opensmartgridplatform.domain.core.valueobjects.smartmetering
               .SetDeviceCommunicationSettingsRequest
           setDeviceCommunicationSettingsRequest)
       throws FunctionalException {
     LOGGER.info(
         "Set device communication settings for organisationIdentification: {} for deviceIdentification: {}",
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification());
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
 
     final SetDeviceCommunicationSettingsRequestDto setDeviceCommunicationSettingsRequestDto =
         this.managementMapper.map(
             setDeviceCommunicationSettingsRequest, SetDeviceCommunicationSettingsRequestDto.class);
 
     final SmartMeter smartMeteringDevice =
-        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     this.osgpCoreRequestMessageSender.send(
         new RequestMessage(
-            deviceMessageMetadata.getCorrelationUid(),
-            deviceMessageMetadata.getOrganisationIdentification(),
-            deviceMessageMetadata.getDeviceIdentification(),
+            messageMetadata.getCorrelationUid(),
+            messageMetadata.getOrganisationIdentification(),
+            messageMetadata.getDeviceIdentification(),
             smartMeteringDevice.getIpAddress(),
             setDeviceCommunicationSettingsRequestDto),
-        deviceMessageMetadata.getMessageType(),
-        deviceMessageMetadata.getMessagePriority(),
-        deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        messageMetadata.getMessageType(),
+        messageMetadata.getMessagePriority(),
+        messageMetadata.getScheduleTime(),
+        messageMetadata.isBypassRetry());
   }
 
   public void handleSetDeviceCommunicationSettingsResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
     LOGGER.info(
         "Set device communication settings for messageType: {}, with result: {}",
-        deviceMessageMetadata.getMessageType(),
+        messageMetadata.getMessageType(),
         deviceResult);
 
-    this.handleMetadataOnlyResponseMessage(deviceMessageMetadata, deviceResult, exception);
+    this.handleMetadataOnlyResponseMessage(messageMetadata, deviceResult, exception);
   }
 
   public void setDeviceLifecycleStatusByChannel(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final SetDeviceLifecycleStatusByChannelRequestData request)
       throws FunctionalException {
 
     LOGGER.info(
         "Set device communication settings for organisationIdentification: {} for deviceIdentification: {}",
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification());
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
 
     final SetDeviceLifecycleStatusByChannelRequestDataDto requestDto =
         this.managementMapper.map(request, SetDeviceLifecycleStatusByChannelRequestDataDto.class);
     final SmartMeter smartMeteringDevice =
-        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     this.osgpCoreRequestMessageSender.send(
         new RequestMessage(
-            deviceMessageMetadata.getCorrelationUid(),
-            deviceMessageMetadata.getOrganisationIdentification(),
-            deviceMessageMetadata.getDeviceIdentification(),
+            messageMetadata.getCorrelationUid(),
+            messageMetadata.getOrganisationIdentification(),
+            messageMetadata.getDeviceIdentification(),
             smartMeteringDevice.getIpAddress(),
             requestDto),
-        deviceMessageMetadata.getMessageType(),
-        deviceMessageMetadata.getMessagePriority(),
-        deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        messageMetadata.getMessageType(),
+        messageMetadata.getMessagePriority(),
+        messageMetadata.getScheduleTime(),
+        messageMetadata.isBypassRetry());
   }
 
   public void handleSetDeviceLifecycleStatusByChannelResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType result,
       final OsgpException osgpException,
       final SetDeviceLifecycleStatusByChannelResponseDto responseDto) {
 
     LOGGER.info(
         "handleSetDeviceLifecycleStatusByChannelResponse for MessageType: {}",
-        deviceMessageMetadata.getMessageType());
+        messageMetadata.getMessageType());
 
     this.setDeviceLifecycleStatusByChannel(responseDto);
 
-    final String gatewayDeviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+    final String gatewayDeviceIdentification = messageMetadata.getDeviceIdentification();
 
     final SetDeviceLifecycleStatusByChannelResponseData responseData =
         this.managementMapper.map(responseDto, SetDeviceLifecycleStatusByChannelResponseData.class);
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+            .withCorrelationUid(messageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
             .withDeviceIdentification(gatewayDeviceIdentification)
             .withResult(result)
             .withOsgpException(osgpException)
             .withDataObject(responseData)
-            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
-    this.webServiceResponseMessageSender.send(
-        responseMessage, deviceMessageMetadata.getMessageType());
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
   public void setDeviceLifecycleStatusByChannel(
@@ -287,83 +283,81 @@ public class ManagementService {
   }
 
   public void getGsmDiagnostic(
-      final DeviceMessageMetadata deviceMessageMetadata, final GetGsmDiagnosticRequestData request)
+      final MessageMetadata messageMetadata, final GetGsmDiagnosticRequestData request)
       throws FunctionalException {
 
     LOGGER.info(
         "Get gsm diagnostic for organisationIdentification: {} for deviceIdentification: {}",
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification());
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
 
     final GetGsmDiagnosticRequestDto requestDto =
         this.managementMapper.map(request, GetGsmDiagnosticRequestDto.class);
     final SmartMeter smartMeteringDevice =
-        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     this.osgpCoreRequestMessageSender.send(
         new RequestMessage(
-            deviceMessageMetadata.getCorrelationUid(),
-            deviceMessageMetadata.getOrganisationIdentification(),
-            deviceMessageMetadata.getDeviceIdentification(),
+            messageMetadata.getCorrelationUid(),
+            messageMetadata.getOrganisationIdentification(),
+            messageMetadata.getDeviceIdentification(),
             smartMeteringDevice.getIpAddress(),
             requestDto),
-        deviceMessageMetadata.getMessageType(),
-        deviceMessageMetadata.getMessagePriority(),
-        deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        messageMetadata.getMessageType(),
+        messageMetadata.getMessagePriority(),
+        messageMetadata.getScheduleTime(),
+        messageMetadata.isBypassRetry());
   }
 
   public void handleGetGsmDiagnosticResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType result,
       final OsgpException osgpException,
       final GetGsmDiagnosticResponseDto responseDto) {
 
     LOGGER.info(
-        "handleGetGsmDiagnosticResponse for MessageType: {}",
-        deviceMessageMetadata.getMessageType());
+        "handleGetGsmDiagnosticResponse for MessageType: {}", messageMetadata.getMessageType());
 
-    final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+    final String deviceIdentification = messageMetadata.getDeviceIdentification();
 
     final GetGsmDiagnosticResponseData responseData =
         this.managementMapper.map(responseDto, GetGsmDiagnosticResponseData.class);
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+            .withCorrelationUid(messageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
             .withDeviceIdentification(deviceIdentification)
             .withResult(result)
             .withOsgpException(osgpException)
             .withDataObject(responseData)
-            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
-    this.webServiceResponseMessageSender.send(
-        responseMessage, deviceMessageMetadata.getMessageType());
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
-  private void sendMetadataOnlyRequestMessage(final DeviceMessageMetadata deviceMessageMetadata)
+  private void sendMetadataOnlyRequestMessage(final MessageMetadata messageMetadata)
       throws FunctionalException {
     final SmartMeter smartMeteringDevice =
-        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
     final RequestMessage requestMessage =
         new RequestMessage(
-            deviceMessageMetadata.getCorrelationUid(),
-            deviceMessageMetadata.getOrganisationIdentification(),
-            deviceMessageMetadata.getDeviceIdentification(),
+            messageMetadata.getCorrelationUid(),
+            messageMetadata.getOrganisationIdentification(),
+            messageMetadata.getDeviceIdentification(),
             smartMeteringDevice.getIpAddress());
     this.osgpCoreRequestMessageSender.send(
         requestMessage,
-        deviceMessageMetadata.getMessageType(),
-        deviceMessageMetadata.getMessagePriority(),
-        deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        messageMetadata.getMessageType(),
+        messageMetadata.getMessagePriority(),
+        messageMetadata.getScheduleTime(),
+        messageMetadata.isBypassRetry());
   }
 
   private void handleMetadataOnlyResponseMessage(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
@@ -375,14 +369,13 @@ public class ManagementService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withCorrelationUid(messageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
+            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
             .withResult(result)
             .withOsgpException(exception)
-            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
-    this.webServiceResponseMessageSender.send(
-        responseMessage, deviceMessageMetadata.getMessageType());
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 }
