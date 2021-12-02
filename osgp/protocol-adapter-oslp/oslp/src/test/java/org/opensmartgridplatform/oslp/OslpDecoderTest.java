@@ -41,12 +41,12 @@ import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.opensmartgridplatform.oslp.Oslp.RegisterDeviceRequest;
 
 class OslpDecoderTest {
-
   private static final int MAX_RANDOM_DEVICE_OR_PLATFORM = 65535;
+  private static final String ALGORITHM_DETAILS = "SHA256withECDSA";
+  private static final String PROVIDER_DETAILS = "SunEC";
 
-  private Random random = new SecureRandom();
+  private final Random random = new SecureRandom();
 
-  private SignatureDefinition signatureDefinition;
   private KeyPair keyPair;
   private byte[] sequenceNumber;
   private byte[] deviceId;
@@ -54,10 +54,9 @@ class OslpDecoderTest {
   private Message message;
 
   @BeforeEach
-  void setUp() throws Exception {
+  void setUp() {
     ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.PARANOID);
-    this.signatureDefinition = this.randomSignatureDefinition();
-    this.keyPair = this.randomKeyPair(this.signatureDefinition);
+    this.keyPair = this.getKeyPair();
     this.sequenceNumber = this.randomSequenceNumber();
     this.deviceId = this.randomDeviceId();
     this.deviceIdentification = "device-identification";
@@ -72,8 +71,7 @@ class OslpDecoderTest {
     ConnectionBehavior.ALL_BYTES_TOGETHER.writeOslpEnvelope(channel, oslpEnvelope);
     final OslpEnvelope actualOslpEnvelope = channel.readInbound();
 
-    final String description =
-        this.oslpEnvelopeDetails(oslpEnvelope, this.signatureDefinition, this.keyPair.getPrivate());
+    final String description = this.oslpEnvelopeDetails(oslpEnvelope, this.keyPair.getPrivate());
     this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, oslpEnvelope, description);
   }
 
@@ -85,8 +83,7 @@ class OslpDecoderTest {
     ConnectionBehavior.FIELD_MATCHING_CHUNKS.writeOslpEnvelope(channel, oslpEnvelope);
     final OslpEnvelope actualOslpEnvelope = channel.readInbound();
 
-    final String description =
-        this.oslpEnvelopeDetails(oslpEnvelope, this.signatureDefinition, this.keyPair.getPrivate());
+    final String description = this.oslpEnvelopeDetails(oslpEnvelope, this.keyPair.getPrivate());
     this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, oslpEnvelope, description);
   }
 
@@ -98,8 +95,7 @@ class OslpDecoderTest {
     ConnectionBehavior.SINGLE_BYTE_CHUNKS.writeOslpEnvelope(channel, oslpEnvelope);
     final OslpEnvelope actualOslpEnvelope = channel.readInbound();
 
-    final String description =
-        this.oslpEnvelopeDetails(oslpEnvelope, this.signatureDefinition, this.keyPair.getPrivate());
+    final String description = this.oslpEnvelopeDetails(oslpEnvelope, this.keyPair.getPrivate());
     this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, oslpEnvelope, description);
   }
 
@@ -111,8 +107,7 @@ class OslpDecoderTest {
     ConnectionBehavior.RANDOM_CHUNKS.writeOslpEnvelope(channel, oslpEnvelope);
     final OslpEnvelope actualOslpEnvelope = channel.readInbound();
 
-    final String description =
-        this.oslpEnvelopeDetails(oslpEnvelope, this.signatureDefinition, this.keyPair.getPrivate());
+    final String description = this.oslpEnvelopeDetails(oslpEnvelope, this.keyPair.getPrivate());
     this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, oslpEnvelope, description);
   }
 
@@ -125,8 +120,7 @@ class OslpDecoderTest {
     assertThat(channel.writeInbound(oslpEnvelope)).isTrue();
     final OslpEnvelope actualOslpEnvelope = channel.readInbound();
 
-    final String description =
-        this.oslpEnvelopeDetails(oslpEnvelope, this.signatureDefinition, this.keyPair.getPrivate());
+    final String description = this.oslpEnvelopeDetails(oslpEnvelope, this.keyPair.getPrivate());
     this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, oslpEnvelope, description);
   }
 
@@ -137,9 +131,7 @@ class OslpDecoderTest {
     final List<String> descriptions = new ArrayList<>();
 
     for (final OslpEnvelope oslpEnvelope : oslpEnvelopes) {
-      descriptions.add(
-          this.oslpEnvelopeDetails(
-              oslpEnvelope, this.signatureDefinition, this.keyPair.getPrivate()));
+      descriptions.add(this.oslpEnvelopeDetails(oslpEnvelope, this.keyPair.getPrivate()));
       this.randomConnectionBehavior().writeOslpEnvelope(channel, oslpEnvelope);
     }
 
@@ -164,8 +156,8 @@ class OslpDecoderTest {
 
   private OslpEnvelope oslpEnvelope() {
     return new OslpEnvelope.Builder()
-        .withSignature(this.signatureDefinition.algorithm())
-        .withProvider(this.signatureDefinition.provider())
+        .withSignature(ALGORITHM_DETAILS)
+        .withProvider(PROVIDER_DETAILS)
         .withPrimaryKey(this.keyPair.getPrivate())
         .withSecurityKey(null /* will be generated */)
         .withSequenceNumber(this.sequenceNumber)
@@ -178,8 +170,8 @@ class OslpDecoderTest {
     final List<OslpEnvelope> envelopes = new ArrayList<>();
     final OslpEnvelope.Builder builder =
         new OslpEnvelope.Builder()
-            .withSignature(this.signatureDefinition.algorithm())
-            .withProvider(this.signatureDefinition.provider())
+            .withSignature(ALGORITHM_DETAILS)
+            .withProvider(PROVIDER_DETAILS)
             .withPrimaryKey(this.keyPair.getPrivate())
             .withSecurityKey(null /* will be generated */)
             .withDeviceId(this.deviceId);
@@ -209,13 +201,7 @@ class OslpDecoderTest {
   }
 
   private OslpDecoder oslpDecoder() {
-    return new OslpDecoder(
-        this.signatureDefinition.algorithm(), this.signatureDefinition.provider());
-  }
-
-  private SignatureDefinition randomSignatureDefinition() {
-    final SignatureDefinition[] values = SignatureDefinition.values();
-    return values[this.random.nextInt(values.length)];
+    return new OslpDecoder(ALGORITHM_DETAILS, PROVIDER_DETAILS);
   }
 
   private OslpMessageType randomOslpMessageType() {
@@ -228,9 +214,15 @@ class OslpDecoderTest {
     return values[this.random.nextInt(values.length)];
   }
 
-  private KeyPair randomKeyPair(final SignatureDefinition signatureDefinition)
-      throws GeneralSecurityException {
-    return signatureDefinition.randomKeyPair();
+  private KeyPair getKeyPair() {
+    final ECGenParameterSpec parameterSpec = new ECGenParameterSpec("secp256r1");
+    try {
+      final KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
+      generator.initialize(parameterSpec, new SecureRandom());
+      return generator.generateKeyPair();
+    } catch (final GeneralSecurityException e) {
+      throw new AssertionError("Unable to generate key pair", e);
+    }
   }
 
   private byte[] randomSequenceNumber() {
@@ -263,21 +255,9 @@ class OslpDecoderTest {
     return ByteString.copyFrom(new byte[] {(byte) this.random.nextInt(4)});
   }
 
-  private String oslpEnvelopeDetails(
-      final OslpEnvelope oslpEnvelope,
-      final SignatureDefinition signatureDefinition,
-      final PrivateKey privateKey) {
+  private String oslpEnvelopeDetails(final OslpEnvelope oslpEnvelope, final PrivateKey privateKey) {
     if (oslpEnvelope == null) {
       return "no OslpEnvelope";
-    }
-    final String algorithmDetails;
-    final String providerDetails;
-    if (signatureDefinition == null) {
-      algorithmDetails = "no algorithm";
-      providerDetails = "no provider";
-    } else {
-      algorithmDetails = signatureDefinition.algorithm();
-      providerDetails = signatureDefinition.provider();
     }
     final String privateKeyDetails = this.privateKeyDetails(privateKey);
     final String securityKeyDetails = this.byteArrayDetails(oslpEnvelope.getSecurityKey());
@@ -289,8 +269,8 @@ class OslpDecoderTest {
         "OslpEnvelope[%n\tsignatureAlgorithm: %s%n\tprovider: %s%n\tprivateKey: %s%n\tsize: %d"
             + "%n\tsecurityKey: %s%n\tsequenceNumber: %s%n\tdeviceId: %s%n\tlengthIndicator: %s"
             + "%n\tpayloadMessage: %s(end of OslpEnvelope)]",
-        algorithmDetails,
-        providerDetails,
+        ALGORITHM_DETAILS,
+        PROVIDER_DETAILS,
         privateKeyDetails,
         oslpEnvelope.getSize(),
         securityKeyDetails,
@@ -489,55 +469,5 @@ class OslpDecoderTest {
     };
 
     public abstract Message randomMessage(final OslpDecoderTest test);
-  }
-
-  enum SignatureDefinition {
-    SUN_EC_SHA256_ECDSA("SHA256withECDSA", "SunEC") {
-      private final SecureRandom secureRandom = new SecureRandom();
-
-      @Override
-      public KeyPair randomKeyPair() {
-        final ECGenParameterSpec parameterSpec = new ECGenParameterSpec("secp256r1");
-        try {
-          final KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
-          generator.initialize(parameterSpec, this.secureRandom);
-          return generator.generateKeyPair();
-        } catch (final GeneralSecurityException e) {
-          throw new AssertionError("Unable to generate key pair", e);
-        }
-      }
-    },
-    SUN_RSA_SIGN_SHA256_RSA("SHA256withRSA", "SunRsaSign") {
-      private final SecureRandom secureRandom = new SecureRandom();
-
-      @Override
-      public KeyPair randomKeyPair() {
-        try {
-          final KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-          generator.initialize(1024, this.secureRandom);
-          return generator.generateKeyPair();
-        } catch (final GeneralSecurityException e) {
-          throw new AssertionError("Unable to generate key pair", e);
-        }
-      }
-    };
-
-    private final String algorithm;
-    private final String provider;
-
-    SignatureDefinition(final String algorithm, final String provider) {
-      this.algorithm = algorithm;
-      this.provider = provider;
-    }
-
-    public String algorithm() {
-      return this.algorithm;
-    }
-
-    public String provider() {
-      return this.provider;
-    }
-
-    public abstract KeyPair randomKeyPair();
   }
 }
