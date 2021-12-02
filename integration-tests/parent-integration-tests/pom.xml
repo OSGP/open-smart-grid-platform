@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>super-osgp</artifactId>
-    <version>5.18.2</version>
+    <version>5.18.3</version>
     <relativePath>../../super/pom.xml</relativePath>
   </parent>
   <distributionManagement>
