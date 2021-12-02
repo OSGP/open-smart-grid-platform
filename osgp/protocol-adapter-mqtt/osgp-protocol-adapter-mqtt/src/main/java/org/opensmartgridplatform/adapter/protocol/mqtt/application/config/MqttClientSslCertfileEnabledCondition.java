@@ -13,10 +13,11 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-public class MqttClientSslEnabledCondition implements Condition {
+public class MqttClientSslCertfileEnabledCondition implements Condition {
 
   @Override
   public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-    return "true".equalsIgnoreCase(context.getEnvironment().getProperty("mqtt.client.ssl.enabled"));
+    return context.getEnvironment().getProperty("mqtt.client.ssl.config", MqttSslConfigEnum.class)
+        == MqttSslConfigEnum.CERT_FILE;
   }
 }

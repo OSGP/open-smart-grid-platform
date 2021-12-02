@@ -12,5 +12,6 @@ public enum ProfileCaptureTime {
   QUARTER_HOUR,
   HOUR,
   DAY,
-  MONTH
+  MONTH,
+  ASYNCHRONOUSLY
 }

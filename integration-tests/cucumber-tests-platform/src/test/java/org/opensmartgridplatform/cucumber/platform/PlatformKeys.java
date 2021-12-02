@@ -45,6 +45,7 @@ public class PlatformKeys extends Keys {
   public static final String FIRMWARE_FILE_FILENAME = "FirmwareFilename";
   public static final String FIRMWARE_FILE_EXISTS = "FirmwareFileExists";
   public static final String FIRMWARE_FILE_IDENTIFICATION = "FirmwareFileIdentification";
+  public static final String FIRMWARE_FILE_IMAGE_IDENTIFIER = "FirmwareFileImageIdentifier";
   public static final String FIRMWARE_HASH = "FirmwareHash";
   public static final String FIRMWARE_MODULE_VERSION_COMM = "FirmwareModuleVersionComm";
   public static final String FIRMWARE_MODULE_VERSION_FUNC = "FirmwareModuleVersionFunc";
@@ -235,6 +236,7 @@ public class PlatformKeys extends Keys {
   public static final String KEY_SUPPLIER = "Supplier";
   public static final String KEY_SYSTEM_ID = "SystemId";
   public static final String KEY_SYSTEM_TYPE = "SystemType";
+  public static final String KEY_SYSTEM_EVENT_TYPE = "SystemEventType";
   public static final String KEY_TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";
 
   public static final String KEY_TIME = "Time";
@@ -324,6 +326,7 @@ public class PlatformKeys extends Keys {
 
   public static final String TIMESTAMP = "TimeStamp";
   public static final String EVENT_TYPE = "EventType";
+  public static final String EVENT_LOG_CATEGORY = "EventLogCategory";
 
   public static final String FROM_TIMESTAMP = "FromTimeStamp";
   public static final String TO_TIMESTAMP = "ToTimeStamp";

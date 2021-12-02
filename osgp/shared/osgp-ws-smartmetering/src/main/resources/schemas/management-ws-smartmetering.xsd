@@ -270,6 +270,38 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="ClearMbusStatusRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="ClearMbusStatusRequestData"
+          type="tns:ClearMbusStatusRequestData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ClearMbusStatusAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ClearMbusStatusAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ClearMbusStatusResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="ClearMbusStatusResponseData"
+          type="tns:ClearMbusStatusResponseData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
   <!-- Data Types -->
 
   <!-- Query for FindEventsRequest -->
@@ -317,6 +349,7 @@
       <xsd:enumeration value="COMMUNICATION_SESSION_LOG"/>
       <xsd:enumeration value="M_BUS_EVENT_LOG"/>
       <xsd:enumeration value="POWER_QUALITY_EVENT_LOG"/>
+      <xsd:enumeration value="AUXILIARY_EVENT_LOG"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -327,10 +360,6 @@
       <xsd:enumeration value="EVENTLOG_CLEARED"/>
       <!-- 1 - power down -  -  - SMART_METER_E -->
       <xsd:enumeration value="POWER_FAILURE"/>
-      <!-- 1 - power down g -  -  - SMART_METER_G -->
-      <xsd:enumeration value="POWER_FAILURE_G"/>
-      <!-- 1 - power down w -  -  - SMART_METER_W -->
-      <xsd:enumeration value="POWER_FAILURE_W"/>
       <!-- 2 - power up -  -  -  -->
       <xsd:enumeration value="POWER_RETURNED"/>
       <!-- 3 - daylight saving time enabled or disabled -  -  -  -->
@@ -505,6 +534,8 @@
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4"/>
       <!-- 136 - permanent error from mbus device channel4 -  -  -  -->
       <xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4"/>
+      <!-- 230 - manufacturer specific 230 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_230"/>
       <!-- 231 - manufacturer specific 231 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_231"/>
       <!-- 232 - manufacturer specific 232 -  -  -  -->
@@ -543,26 +574,356 @@
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_248"/>
       <!-- 249 - manufacturer specific 249 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_249"/>
-      <!-- 230 - fatal error iskr -  - Iskr -  -->
-      <xsd:enumeration value="FATAL_ERROR_ISKR"/>
-      <!-- 231 - billing reset iskr -  - Iskr -  -->
-      <xsd:enumeration value="BILLING_RESET_ISKR"/>
-      <!-- 232 - power down phase l1 iskr -  - Iskr -  -->
-      <xsd:enumeration value="POWER_DOWN_PHASE_L1_ISKR"/>
-      <!-- 233 - power down phase l2 iskr -  - Iskr -  -->
-      <xsd:enumeration value="POWER_DOWN_PHASE_L2_ISKR"/>
-      <!-- 234 - power down phase l3 iskr -  - Iskr -  -->
-      <xsd:enumeration value="POWER_DOWN_PHASE_L3_ISKR"/>
-      <!-- 235 - power restored phase l1 iskr -  - Iskr -  -->
-      <xsd:enumeration value="POWER_RESTORED_PHASE_L1_ISKR"/>
-      <!-- 236 - power restored phase l2 iskr -  - Iskr -  -->
-      <xsd:enumeration value="POWER_RESTORED_PHASE_L2_ISKR"/>
-      <!-- 237 - power restored phase l3 iskr -  - Iskr -  -->
-      <xsd:enumeration value="POWER_RESTORED_PHASE_L3_ISKR"/>
-      <!-- 244 - module cover opened iskr -  - Iskr -  -->
-      <xsd:enumeration value="MODULE_COVER_OPENED_ISKR"/>
-      <!-- 245 - module cover closed iskr -  - Iskr -  -->
-      <xsd:enumeration value="MODULE_COVER_CLOSED_ISKR"/>
+
+      <!-- Auxiliary Events SMR5.1 -->
+
+      <!-- 0xFFFF - Auxiliary event log cleared -->
+      <xsd:enumeration value="AUXILIARY_EVENTLOG_CLEARED"/>
+
+      <!-- 0x1000 - M-Bus fw upgrade successful - channel 1 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_SUCCESSFUL_CHANNEL_1"/>
+      <!-- 0x1001 - M-Bus fw upgrade block size not supported - channel 1 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_BLOCK_SIZE_NOT_SUPPORTED_CHANNEL_1"/>
+      <!-- 0x1002 - M-Bus fw upgrade image size too big - channel 1 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_IMAGE_SIZE_TOO_BIG_CHANNEL_1"/>
+      <!-- 0x1003 - M-Bus fw upgrade invalid block number - channel 1 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_INVALID_BLOCK_NUMBER_CHANNEL_1"/>
+      <!-- 0x1004 - M-Bus fw upgrade data receive error - channel 1 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_DATA_RECEIVE_ERROR_CHANNEL_1"/>
+      <!-- 0x1005 - M-Bus fw upgrade image not complete error - channel 1 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_IMAGE_NOT_COMPLETE_ERROR_CHANNEL_1"/>
+      <!-- 0x1006 - M-Bus fw upgrade invalid security error - channel 1 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_INVALID_SECURITY_ERROR_CHANNEL_1"/>
+      <!-- 0x1007 - M-Bus fw upgrade invalid firmware for this device - channel 1 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_INVALID_FIRMWARE_FOR_THIS_DEVICE_CHANNEL_1"/>
+
+      <!-- 0x1100 - M-Bus fw upgrade successful - channel 2 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_SUCCESSFUL_CHANNEL_2"/>
+      <!-- 0x1101 - M-Bus fw upgrade block size not supported - channel 2 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_BLOCK_SIZE_NOT_SUPPORTED_CHANNEL_2"/>
+      <!-- 0x1102 - M-Bus fw upgrade image size too big - channel 2 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_IMAGE_SIZE_TOO_BIG_CHANNEL_2"/>
+      <!-- 0x1103 - M-Bus fw upgrade invalid block number - channel 2 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_INVALID_BLOCK_NUMBER_CHANNEL_2"/>
+      <!-- 0x1104 - M-Bus fw upgrade data receive error - channel 2 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_DATA_RECEIVE_ERROR_CHANNEL_2"/>
+      <!-- 0x1105 - M-Bus fw upgrade image not complete error - channel 2 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_IMAGE_NOT_COMPLETE_ERROR_CHANNEL_2"/>
+      <!-- 0x1106 - M-Bus fw upgrade invalid security error - channel 2 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_INVALID_SECURITY_ERROR_CHANNEL_2"/>
+      <!-- 0x1107 - M-Bus fw upgrade invalid firmware for this device - channel 2 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_INVALID_FIRMWARE_FOR_THIS_DEVICE_CHANNEL_2"/>
+
+      <!-- 0x1200 - M-Bus fw upgrade successful - channel 3 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_SUCCESSFUL_CHANNEL_3"/>
+      <!-- 0x1201 - M-Bus fw upgrade block size not supported - channel 3 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_BLOCK_SIZE_NOT_SUPPORTED_CHANNEL_3"/>
+      <!-- 0x1202 - M-Bus fw upgrade image size too big - channel 3 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_IMAGE_SIZE_TOO_BIG_CHANNEL_3"/>
+      <!-- 0x1203 - M-Bus fw upgrade invalid block number - channel 3 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_INVALID_BLOCK_NUMBER_CHANNEL_3"/>
+      <!-- 0x1204 - M-Bus fw upgrade data receive error - channel 3 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_DATA_RECEIVE_ERROR_CHANNEL_3"/>
+      <!-- 0x1205 - M-Bus fw upgrade image not complete error - channel 3 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_IMAGE_NOT_COMPLETE_ERROR_CHANNEL_3"/>
+      <!-- 0x1206 - M-Bus fw upgrade invalid security error - channel 3 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_INVALID_SECURITY_ERROR_CHANNEL_3"/>
+      <!-- 0x1207 - M-Bus fw upgrade invalid firmware for this device - channel 3 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_INVALID_FIRMWARE_FOR_THIS_DEVICE_CHANNEL_3"/>
+
+      <!-- 0x1300 - M-Bus fw upgrade successful - channel 4 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_SUCCESSFUL_CHANNEL_4"/>
+      <!-- 0x1301 - M-Bus fw upgrade block size not supported - channel 4 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_BLOCK_SIZE_NOT_SUPPORTED_CHANNEL_4"/>
+      <!-- 0x1302 - M-Bus fw upgrade image size too big - channel 4 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_IMAGE_SIZE_TOO_BIG_CHANNEL_4"/>
+      <!-- 0x1303 - M-Bus fw upgrade invalid block number - channel 4 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_INVALID_BLOCK_NUMBER_CHANNEL_4"/>
+      <!-- 0x1304 - M-Bus fw upgrade data receive error - channel 4 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_DATA_RECEIVE_ERROR_CHANNEL_4"/>
+      <!-- 0x1305 - M-Bus fw upgrade image not complete error - channel 4 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_IMAGE_NOT_COMPLETE_ERROR_CHANNEL_4"/>
+      <!-- 0x1306 - M-Bus fw upgrade invalid security error - channel 4 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_INVALID_SECURITY_ERROR_CHANNEL_4"/>
+      <!-- 0x1307 - M-Bus fw upgrade invalid firmware for this device - channel 4 -->
+      <xsd:enumeration value="MBUS_FW_UPGRADE_INVALID_FIRMWARE_FOR_THIS_DEVICE_CHANNEL_4"/>
+
+      <!-- 0x8080 - M-Bus device on channel 1, has status bit 0 set (battery low) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_0_BATTERY_LOW_CHANNEL_1"/>
+      <!-- 0x8081 - M-Bus device on channel 1, has status bit 1 set (battery consumption too high) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_1_BATTERY_CONSUMPTION_TOO_HIGH_CHANNEL_1"/>
+      <!-- 0x8082 - M-Bus device on channel 1, has status bit 2 set (reverse flow) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_2_REVERSE_FLOW_CHANNEL_1"/>
+      <!-- 0x8083 - M-Bus device on channel 1, has status bit 3 set (tamper P2) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_1"/>
+      <!-- 0x8084 - M-Bus device on channel 1, has status bit 4 set (tamper P0) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_1"/>
+      <!-- 0x8085 - M-Bus device on channel 1, has status bit 5 set (tamper case) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_5_TAMPER_CASE_CHANNEL_1"/>
+      <!-- 0x8086 - M-Bus device on channel 1, has status bit 6 set (tamper magnetic) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_6_TAMPER_MAGNETIC_CHANNEL_1"/>
+      <!-- 0x8087 - M-Bus device on channel 1, has status bit 7 set (temp out of range) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_7_TEMP_OUT_OF_RANGE_CHANNEL_1"/>
+      <!-- 0x8088 - M-Bus device on channel 1, has status bit 8 set (clock sync error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_8_CLOCK_SYNC_ERROR_CHANNEL_1"/>
+      <!-- 0x8089 - M-Bus device on channel 1, has status bit 9 set (sw error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_9_SW_ERROR_CHANNEL_1"/>
+      <!-- 0x808A - M-Bus device on channel 1, has status bit 10 set (watchdog error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_10_WATCHDOG_ERROR_CHANNEL_1"/>
+      <!-- 0x808B - M-Bus device on channel 1, has status bit 11 set (system / hw error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_11_SYSTEM_HW_ERROR_CHANNEL_1"/>
+      <!-- 0x808C - M-Bus device on channel 1, has status bit 12 set (CFG calibration error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_12_CFG_CALIBRATION_ERROR_CHANNEL_1"/>
+      <!-- 0x808D - M-Bus device on channel 1, has status bit 13 set (high flow > Qmax) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_13_HIGH_FLOW_GREATER_THAN_QMAX_CHANNEL_1"/>
+      <!-- 0x808E - M-Bus device on channel 1, has status bit 14 set (temp sensor error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_14_TEMP_SENSOR_ERROR_CHANNEL_1"/>
+      <!-- 0x808F - M-Bus device on channel 1, has status bit 15 set (reserved) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_15_RESERVED_CHANNEL_1"/>
+      <!-- 0x8090 - M-Bus device on channel 1, has status bit 16 set (P0 enabled) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_1"/>
+      <!-- 0x8091 - M-Bus device on channel 1, has status bit 17 set (new key accepted) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_1"/>
+      <!-- 0x8092 - M-Bus device on channel 1, has status bit 18 set (new key rejected) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_1"/>
+      <!-- 0x8093 - M-Bus device on channel 1, has status bit 19 set (reserved) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_18_RESERVED_CHANNEL_1"/>
+      <!-- 0x8094 - M-Bus device on channel 1, has status bit 20 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_1"/>
+      <!-- 0x8095 - M-Bus device on channel 1, has status bit 21 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_1"/>
+      <!-- 0x8096 - M-Bus device on channel 1, has status bit 22 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_22_MANUFACTURER_SPECIFIC_CHANNEL_1"/>
+      <!-- 0x8097 - M-Bus device on channel 1, has status bit 23 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_23_MANUFACTURER_SPECIFIC_CHANNEL_1"/>
+      <!-- 0x8098 - M-Bus device on channel 1, has status bit 24 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_24_MANUFACTURER_SPECIFIC_CHANNEL_1"/>
+      <!-- 0x8099 - M-Bus device on channel 1, has status bit 25 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_25_MANUFACTURER_SPECIFIC_CHANNEL_1"/>
+      <!-- 0x809A - M-Bus device on channel 1, has status bit 26 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_26_MANUFACTURER_SPECIFIC_CHANNEL_1"/>
+      <!-- 0x809B - M-Bus device on channel 1, has status bit 27 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_27_MANUFACTURER_SPECIFIC_CHANNEL_1"/>
+      <!-- 0x809C - M-Bus device on channel 1, has status bit 28 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_28_MANUFACTURER_SPECIFIC_CHANNEL_1"/>
+      <!-- 0x809D - M-Bus device on channel 1, has status bit 29 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_29_MANUFACTURER_SPECIFIC_CHANNEL_1"/>
+      <!-- 0x809E - M-Bus device on channel 1, has status bit 30 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_30_MANUFACTURER_SPECIFIC_CHANNEL_1"/>
+      <!-- 0x809F - M-Bus device on channel 1, has status bit 31 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_31_MANUFACTURER_SPECIFIC_CHANNEL_1"/>
+      <!-- 0x80A0 - Key is sent to the M-Bus device on channel 1 -->
+      <xsd:enumeration value="KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_1"/>
+      <!-- 0x80A1 - Key is acknowledged by the M-Bus device on channel 1 -->
+      <xsd:enumeration value="KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_1"/>
+
+      <!-- 0x8180 - M-Bus device on channel 2, has status bit 0 set (battery low) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_0_BATTERY_LOW_CHANNEL_2"/>
+      <!-- 0x8181 - M-Bus device on channel 2, has status bit 1 set (battery consumption too high) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_1_BATTERY_CONSUMPTION_TOO_HIGH_CHANNEL_2"/>
+      <!-- 0x8182 - M-Bus device on channel 2, has status bit 2 set (reverse flow) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_2_REVERSE_FLOW_CHANNEL_2"/>
+      <!-- 0x8183 - M-Bus device on channel 2, has status bit 3 set (tamper P2) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_2"/>
+      <!-- 0x8184 - M-Bus device on channel 2, has status bit 4 set (tamper P0) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_2"/>
+      <!-- 0x8185 - M-Bus device on channel 2, has status bit 5 set (tamper case) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_5_TAMPER_CASE_CHANNEL_2"/>
+      <!-- 0x8186 - M-Bus device on channel 2, has status bit 6 set (tamper magnetic) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_6_TAMPER_MAGNETIC_CHANNEL_2"/>
+      <!-- 0x8187 - M-Bus device on channel 2, has status bit 7 set (temp out of range) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_7_TEMP_OUT_OF_RANGE_CHANNEL_2"/>
+      <!-- 0x8188 - M-Bus device on channel 2, has status bit 8 set (clock sync error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_8_CLOCK_SYNC_ERROR_CHANNEL_2"/>
+      <!-- 0x8189 - M-Bus device on channel 2, has status bit 9 set (sw error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_9_SW_ERROR_CHANNEL_2"/>
+      <!-- 0x818A - M-Bus device on channel 2, has status bit 10 set (watchdog error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_10_WATCHDOG_ERROR_CHANNEL_2"/>
+      <!-- 0x818B - M-Bus device on channel 2, has status bit 11 set (system / hw error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_11_SYSTEM_HW_ERROR_CHANNEL_2"/>
+      <!-- 0x818C - M-Bus device on channel 2, has status bit 12 set (CFG calibration error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_12_CFG_CALIBRATION_ERROR_CHANNEL_2"/>
+      <!-- 0x818D - M-Bus device on channel 2, has status bit 13 set (high flow > Qmax) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_13_HIGH_FLOW_GREATER_THAN_QMAX_CHANNEL_2"/>
+      <!-- 0x818E - M-Bus device on channel 2, has status bit 14 set (temp sensor error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_14_TEMP_SENSOR_ERROR_CHANNEL_2"/>
+      <!-- 0x818F - M-Bus device on channel 2, has status bit 15 set (reserved) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_15_RESERVED_CHANNEL_2"/>
+      <!-- 0x8190 - M-Bus device on channel 2, has status bit 16 set (P0 enabled) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_2"/>
+      <!-- 0x8191 - M-Bus device on channel 2, has status bit 17 set (new key accepted) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_2"/>
+      <!-- 0x8192 - M-Bus device on channel 2, has status bit 18 set (new key rejected) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_2"/>
+      <!-- 0x8193 - M-Bus device on channel 2, has status bit 19 set (reserved) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_18_RESERVED_CHANNEL_2"/>
+      <!-- 0x8194 - M-Bus device on channel 2, has status bit 20 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_2"/>
+      <!-- 0x8195 - M-Bus device on channel 2, has status bit 21 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_2"/>
+      <!-- 0x8196 - M-Bus device on channel 2, has status bit 22 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_22_MANUFACTURER_SPECIFIC_CHANNEL_2"/>
+      <!-- 0x8197 - M-Bus device on channel 2, has status bit 23 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_23_MANUFACTURER_SPECIFIC_CHANNEL_2"/>
+      <!-- 0x8198 - M-Bus device on channel 2, has status bit 24 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_24_MANUFACTURER_SPECIFIC_CHANNEL_2"/>
+      <!-- 0x8199 - M-Bus device on channel 2, has status bit 25 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_25_MANUFACTURER_SPECIFIC_CHANNEL_2"/>
+      <!-- 0x819A - M-Bus device on channel 2, has status bit 26 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_26_MANUFACTURER_SPECIFIC_CHANNEL_2"/>
+      <!-- 0x819B - M-Bus device on channel 2, has status bit 27 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_27_MANUFACTURER_SPECIFIC_CHANNEL_2"/>
+      <!-- 0x819C - M-Bus device on channel 2, has status bit 28 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_28_MANUFACTURER_SPECIFIC_CHANNEL_2"/>
+      <!-- 0x819D - M-Bus device on channel 2, has status bit 29 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_29_MANUFACTURER_SPECIFIC_CHANNEL_2"/>
+      <!-- 0x819E - M-Bus device on channel 2, has status bit 30 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_30_MANUFACTURER_SPECIFIC_CHANNEL_2"/>
+      <!-- 0x819F - M-Bus device on channel 2, has status bit 31 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_31_MANUFACTURER_SPECIFIC_CHANNEL_2"/>
+      <!-- 0x81A0 - Key is sent to the M-Bus device on channel 2 -->
+      <xsd:enumeration value="KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_2"/>
+      <!-- 0x81A1 - Key is acknowledged by the M-Bus device on channel 2 -->
+      <xsd:enumeration value="KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_2"/>
+
+      <!-- 0x8280 - M-Bus device on channel 3, has status bit 0 set (battery low) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_0_BATTERY_LOW_CHANNEL_3"/>
+      <!-- 0x8281 - M-Bus device on channel 3, has status bit 1 set (battery consumption too high) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_1_BATTERY_CONSUMPTION_TOO_HIGH_CHANNEL_3"/>
+      <!-- 0x8282 - M-Bus device on channel 3, has status bit 2 set (reverse flow) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_2_REVERSE_FLOW_CHANNEL_3"/>
+      <!-- 0x8283 - M-Bus device on channel 3, has status bit 3 set (tamper P2) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_3"/>
+      <!-- 0x8284 - M-Bus device on channel 3, has status bit 4 set (tamper P0) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_3"/>
+      <!-- 0x8285 - M-Bus device on channel 3, has status bit 5 set (tamper case) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_5_TAMPER_CASE_CHANNEL_3"/>
+      <!-- 0x8286 - M-Bus device on channel 3, has status bit 6 set (tamper magnetic) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_6_TAMPER_MAGNETIC_CHANNEL_3"/>
+      <!-- 0x8287 - M-Bus device on channel 3, has status bit 7 set (temp out of range) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_7_TEMP_OUT_OF_RANGE_CHANNEL_3"/>
+      <!-- 0x8288 - M-Bus device on channel 3, has status bit 8 set (clock sync error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_8_CLOCK_SYNC_ERROR_CHANNEL_3"/>
+      <!-- 0x8289 - M-Bus device on channel 3, has status bit 9 set (sw error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_9_SW_ERROR_CHANNEL_3"/>
+      <!-- 0x828A - M-Bus device on channel 3, has status bit 10 set (watchdog error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_10_WATCHDOG_ERROR_CHANNEL_3"/>
+      <!-- 0x828B - M-Bus device on channel 3, has status bit 11 set (system / hw error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_11_SYSTEM_HW_ERROR_CHANNEL_3"/>
+      <!-- 0x828C - M-Bus device on channel 3, has status bit 12 set (CFG calibration error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_12_CFG_CALIBRATION_ERROR_CHANNEL_3"/>
+      <!-- 0x828D - M-Bus device on channel 3, has status bit 13 set (high flow > Qmax) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_13_HIGH_FLOW_GREATER_THAN_QMAX_CHANNEL_3"/>
+      <!-- 0x828E - M-Bus device on channel 3, has status bit 14 set (temp sensor error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_14_TEMP_SENSOR_ERROR_CHANNEL_3"/>
+      <!-- 0x828F - M-Bus device on channel 3, has status bit 15 set (reserved) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_15_RESERVED_CHANNEL_3"/>
+      <!-- 0x8290 - M-Bus device on channel 3, has status bit 16 set (P0 enabled) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_3"/>
+      <!-- 0x8291 - M-Bus device on channel 3, has status bit 17 set (new key accepted) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_3"/>
+      <!-- 0x8292 - M-Bus device on channel 3, has status bit 18 set (new key rejected) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_3"/>
+      <!-- 0x8293 - M-Bus device on channel 3, has status bit 19 set (reserved) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_18_RESERVED_CHANNEL_3"/>
+      <!-- 0x8294 - M-Bus device on channel 3, has status bit 20 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_3"/>
+      <!-- 0x8295 - M-Bus device on channel 3, has status bit 21 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_3"/>
+      <!-- 0x8296 - M-Bus device on channel 3, has status bit 22 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_22_MANUFACTURER_SPECIFIC_CHANNEL_3"/>
+      <!-- 0x8297 - M-Bus device on channel 3, has status bit 23 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_23_MANUFACTURER_SPECIFIC_CHANNEL_3"/>
+      <!-- 0x8298 - M-Bus device on channel 3, has status bit 24 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_24_MANUFACTURER_SPECIFIC_CHANNEL_3"/>
+      <!-- 0x8299 - M-Bus device on channel 3, has status bit 25 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_25_MANUFACTURER_SPECIFIC_CHANNEL_3"/>
+      <!-- 0x829A - M-Bus device on channel 3, has status bit 26 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_26_MANUFACTURER_SPECIFIC_CHANNEL_3"/>
+      <!-- 0x829B - M-Bus device on channel 3, has status bit 27 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_27_MANUFACTURER_SPECIFIC_CHANNEL_3"/>
+      <!-- 0x829C - M-Bus device on channel 3, has status bit 28 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_28_MANUFACTURER_SPECIFIC_CHANNEL_3"/>
+      <!-- 0x829D - M-Bus device on channel 3, has status bit 29 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_29_MANUFACTURER_SPECIFIC_CHANNEL_3"/>
+      <!-- 0x829E - M-Bus device on channel 3, has status bit 30 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_30_MANUFACTURER_SPECIFIC_CHANNEL_3"/>
+      <!-- 0x829F - M-Bus device on channel 3, has status bit 31 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_31_MANUFACTURER_SPECIFIC_CHANNEL_3"/>
+      <!-- 0x82A0 - Key is sent to the M-Bus device on channel 3 -->
+      <xsd:enumeration value="KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_3"/>
+      <!-- 0x82A1 - Key is acknowledged by the M-Bus device on channel 3 -->
+      <xsd:enumeration value="KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_3"/>
+
+      <!-- 0x8380 - M-Bus device on channel 4, has status bit 0 set (battery low) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_0_BATTERY_LOW_CHANNEL_4"/>
+      <!-- 0x8381 - M-Bus device on channel 4, has status bit 1 set (battery consumption too high) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_1_BATTERY_CONSUMPTION_TOO_HIGH_CHANNEL_4"/>
+      <!-- 0x8382 - M-Bus device on channel 4, has status bit 2 set (reverse flow) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_2_REVERSE_FLOW_CHANNEL_4"/>
+      <!-- 0x8383 - M-Bus device on channel 4, has status bit 3 set (tamper P2) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_4"/>
+      <!-- 0x8384 - M-Bus device on channel 4, has status bit 4 set (tamper P0) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_4"/>
+      <!-- 0x8385 - M-Bus device on channel 4, has status bit 5 set (tamper case) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_5_TAMPER_CASE_CHANNEL_4"/>
+      <!-- 0x8386 - M-Bus device on channel 4, has status bit 6 set (tamper magnetic) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_6_TAMPER_MAGNETIC_CHANNEL_4"/>
+      <!-- 0x8387 - M-Bus device on channel 4, has status bit 7 set (temp out of range) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_7_TEMP_OUT_OF_RANGE_CHANNEL_4"/>
+      <!-- 0x8388 - M-Bus device on channel 4, has status bit 8 set (clock sync error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_8_CLOCK_SYNC_ERROR_CHANNEL_4"/>
+      <!-- 0x8389 - M-Bus device on channel 4, has status bit 9 set (sw error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_9_SW_ERROR_CHANNEL_4"/>
+      <!-- 0x838A - M-Bus device on channel 4, has status bit 10 set (watchdog error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_10_WATCHDOG_ERROR_CHANNEL_4"/>
+      <!-- 0x838B - M-Bus device on channel 4, has status bit 11 set (system / hw error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_11_SYSTEM_HW_ERROR_CHANNEL_4"/>
+      <!-- 0x838C - M-Bus device on channel 4, has status bit 12 set (CFG calibration error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_12_CFG_CALIBRATION_ERROR_CHANNEL_4"/>
+      <!-- 0x838D - M-Bus device on channel 4, has status bit 13 set (high flow > Qmax) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_13_HIGH_FLOW_GREATER_THAN_QMAX_CHANNEL_4"/>
+      <!-- 0x838E - M-Bus device on channel 4, has status bit 14 set (temp sensor error) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_14_TEMP_SENSOR_ERROR_CHANNEL_4"/>
+      <!-- 0x838F - M-Bus device on channel 4, has status bit 15 set (reserved) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_15_RESERVED_CHANNEL_4"/>
+      <!-- 0x8390 - M-Bus device on channel 4, has status bit 16 set (P0 enabled) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_4"/>
+      <!-- 0x8391 - M-Bus device on channel 4, has status bit 17 set (new key accepted) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_4"/>
+      <!-- 0x8392 - M-Bus device on channel 4, has status bit 18 set (new key rejected) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_4"/>
+      <!-- 0x8393 - M-Bus device on channel 4, has status bit 19 set (reserved) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_18_RESERVED_CHANNEL_4"/>
+      <!-- 0x8394 - M-Bus device on channel 4, has status bit 20 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_4"/>
+      <!-- 0x8395 - M-Bus device on channel 4, has status bit 21 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_4"/>
+      <!-- 0x8396 - M-Bus device on channel 4, has status bit 22 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_22_MANUFACTURER_SPECIFIC_CHANNEL_4"/>
+      <!-- 0x8397 - M-Bus device on channel 4, has status bit 23 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_23_MANUFACTURER_SPECIFIC_CHANNEL_4"/>
+      <!-- 0x8398 - M-Bus device on channel 4, has status bit 24 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_24_MANUFACTURER_SPECIFIC_CHANNEL_4"/>
+      <!-- 0x8399 - M-Bus device on channel 4, has status bit 25 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_25_MANUFACTURER_SPECIFIC_CHANNEL_4"/>
+      <!-- 0x839A - M-Bus device on channel 4, has status bit 26 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_26_MANUFACTURER_SPECIFIC_CHANNEL_4"/>
+      <!-- 0x839B - M-Bus device on channel 4, has status bit 27 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_27_MANUFACTURER_SPECIFIC_CHANNEL_4"/>
+      <!-- 0x839C - M-Bus device on channel 4, has status bit 28 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_28_MANUFACTURER_SPECIFIC_CHANNEL_4"/>
+      <!-- 0x839D - M-Bus device on channel 4, has status bit 29 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_29_MANUFACTURER_SPECIFIC_CHANNEL_4"/>
+      <!-- 0x839E - M-Bus device on channel 4, has status bit 30 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_30_MANUFACTURER_SPECIFIC_CHANNEL_4"/>
+      <!-- 0x839F - M-Bus device on channel 4, has status bit 31 set (manufacturer specific event) -->
+      <xsd:enumeration value="MBUS_STATUS_BIT_31_MANUFACTURER_SPECIFIC_CHANNEL_4"/>
+      <!-- 0x83A0 - Key is sent to the M-Bus device on channel 4 -->
+      <xsd:enumeration value="KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_4"/>
+      <!-- 0x83A1 - Key is acknowledged by the M-Bus device on channel 4 -->
+      <xsd:enumeration value="KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_4"/>
+
       <!-- the following events are System Events -->
       <xsd:enumeration value="SET_MAINTENANCE_STATE_E_SUCCESS"/>
       <xsd:enumeration value="SET_MAINTENANCE_STATE_G_SUCCESS"/>
@@ -570,6 +931,8 @@
       <xsd:enumeration value="SET_MAINTENANCE_STATE_G_FAILED"/>
       <xsd:enumeration value="COMMUNICATION_NETWORK_INFORMATION_UPDATED"/>
       <xsd:enumeration value="CLEAN_UP_M_BUS_CHANNEL"/>
+      <xsd:enumeration value="FIRMWARE_UPDATE_STARTED"/>
+      <xsd:enumeration value="INVOCATION_COUNTER_THRESHOLD_REACHED"/>
 
     </xsd:restriction>
   </xsd:simpleType>
@@ -646,11 +1009,25 @@
       <xsd:extension base="common:Response">
         <xsd:sequence>
           <xsd:element name="GatewayDeviceIdentification"
-                       type="common:Identification"/>
+            type="common:Identification"/>
           <xsd:element name="MbusDeviceIdentification" type="common:Identification"/>
           <xsd:element name="DeviceLifecycleStatus" type="common:DeviceLifecycleStatus"/>
           <xsd:element name="Channel" type="common:Channel"/>
         </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="ClearMbusStatusRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="ClearMbusStatusResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>

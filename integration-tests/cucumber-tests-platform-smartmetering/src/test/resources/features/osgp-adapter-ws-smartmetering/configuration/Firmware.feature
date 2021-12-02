@@ -67,6 +67,7 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionMbda | M00 0000               |
       | FirmwareIsForSmartMeters  | true                   |
 
+  @GetFirmwareGas
   Scenario: Get the firmware version from SMR 5.1 gas meter
     Given a dlms device
       | DeviceIdentification | TEST1027000000001 |
@@ -89,8 +90,8 @@ Feature: SmartMetering Configuration - Firmware
       | DeviceIdentification | TEST1027000000002 |
       | SimpleVersionInfo    |          00400011 |
 
-  @NightlyBuildOnly
-  Scenario: successful upgrade of firmware
+  @NightlyBuildOnly @UpdateFirmware
+  Scenario: successful update of firmware
     Given a manufacturer
       | ManufacturerCode | KAIF  |
       | ManufacturerName | Kaifa |
@@ -103,29 +104,30 @@ Feature: SmartMetering Configuration - Firmware
       | ManufacturerCode     | KAIF              |
       | DeviceModelCode      | MA105             |
     And a firmware
-      | FirmwareModuleVersionComm | Telit 10.00.154        |
-      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836               |
-      | FirmwareModuleVersionMbus |                        |
-      | FirmwareModuleVersionSec  |                        |
-      | FirmwareFilename          | KFPP_V060100FF.bin     |
-      | ModelCode                 | MA105                  |
-      | FirmwareIsForSmartMeters  | true                   |
+      | FirmwareFileIdentification  | TEST_FW_FILE_0001                        |
+      | FirmwareFile                | 57696520646974206c656573742069732067656b |
+      | FirmwareModuleVersionComm   | Telit 10.00.154                          |
+      | FirmwareModuleVersionMa     | BL_012 XMX_N42_GprsV09                   |
+      | FirmwareModuleVersionFunc   | M57 4836                                 |
+      | FirmwareModuleVersionMbus   |                                          |
+      | FirmwareModuleVersionSec    |                                          |
+      | FirmwareFilename            | KFPP_V060100FF.bin                       |
+      | FirmwareFileImageIdentifier | 496d6167654964656e746966696572           |
+      | ModelCode                   | MA105                                    |
+      | FirmwareIsForSmartMeters    | true                                     |
     When the request for a firmware upgrade is received
-      | DeviceIdentification      | TEST1024000000002      |
-      | FirmwareModuleVersionComm | Telit 10.00.154        |
-      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836               |
+      | DeviceIdentification        | TEST1024000000002 |
+      | FirmwareFileIdentification  | TEST_FW_FILE_0001 |
     Then the update firmware result should be returned
-      | DeviceIdentification      | TEST1024000000002      |
+      | DeviceIdentification        | TEST1024000000002 |
     And the database should not be updated with the new device firmware
-      | DeviceIdentification      | TEST1024000000002      |
-      | FirmwareModuleVersionComm |                        |
-      | FirmwareModuleVersionMa   |                        |
-      | FirmwareModuleVersionFunc |                        |
+      | DeviceIdentification        | TEST1024000000002 |
+      | FirmwareModuleVersionComm   |                   |
+      | FirmwareModuleVersionMa     |                   |
+      | FirmwareModuleVersionFunc   |                   |
 
-  @NightlyBuildOnly
-  Scenario: successful upgrade of a single firmware module
+  @NightlyBuildOnly @UpdateFirmware
+  Scenario: update of firmware, no firmware file found with firmwareFileIdentification
     Given a manufacturer
       | ManufacturerCode | KAIF  |
       | ManufacturerName | Kaifa |
@@ -138,27 +140,35 @@ Feature: SmartMetering Configuration - Firmware
       | ManufacturerCode     | KAIF              |
       | DeviceModelCode      | MA105             |
     And a firmware
-      | FirmwareModuleVersionComm |                    |
-      | FirmwareModuleVersionMa   |                    |
-      | FirmwareModuleVersionFunc | M57 4836           |
-      | FirmwareModuleVersionMbus |                    |
-      | FirmwareModuleVersionSec  |                    |
-      | FirmwareFilename          | KFPP_V060100FF.bin |
-      | ModelCode                 | MA105              |
-      | FirmwareIsForSmartMeters  | true               |
+      | FirmwareFileIdentification  | TEST_FW_FILE_0001                        |
+      | FirmwareFile                | 57696520646974206c656573742069732067656b |
+      | FirmwareModuleVersionComm   | Telit 10.00.154                          |
+      | FirmwareModuleVersionMa     | BL_012 XMX_N42_GprsV09                   |
+      | FirmwareModuleVersionFunc   | M57 4836                                 |
+      | FirmwareModuleVersionMbus   |                                          |
+      | FirmwareModuleVersionSec    |                                          |
+      | FirmwareFilename            | KFPP_V060100FA                           |
+      | ModelCode                   | MA105                                    |
+      | FirmwareFileImageIdentifier | 496d6167654964656e746966696572           |
+      | FirmwareFileExists          | false                                    |
+      | FirmwareIsForSmartMeters    | true                                     |
     When the request for a firmware upgrade is received
-      | DeviceIdentification      | TEST1024000000002 |
-      | FirmwareModuleVersionFunc | M57 4836          |
-    Then the update firmware result should be returned
-      | DeviceIdentification      | TEST1024000000002 |
+      | DeviceIdentification        | TEST1024000000002 |
+      | FirmwareFileIdentification  | TEST_FW_FILE_000X |
+    Then retrieving the update firmware response results in an exception
+    And a SOAP fault should have been returned
+      | Component      | DOMAIN_SMART_METERING                                            |
+      | Message        | UNKNOWN_FIRMWARE                                                 |
+      | InnerException | org.opensmartgridplatform.shared.exceptionhandling.OsgpException |
+      | InnerMessage   | No firmware file found with Identification TEST_FW_FILE_000X     |
     And the database should not be updated with the new device firmware
-      | DeviceIdentification      | TEST1024000000002 |
-      | FirmwareModuleVersionComm |                   |
-      | FirmwareModuleVersionMa   |                   |
-      | FirmwareModuleVersionFunc |                   |
+      | DeviceIdentification        | TEST1024000000002      |
+      | FirmwareModuleVersionComm   | Telit 10.00.154        |
+      | FirmwareModuleVersionMa     | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc   | M57 4836               |
 
-  @NightlyBuildOnly
-  Scenario: upgrade of firmware, installation file not available
+  @NightlyBuildOnly @UpdateFirmware
+  Scenario: update of firmware, firmware has no imageIdentifier 
     Given a manufacturer
       | ManufacturerCode | KAIF  |
       | ManufacturerName | Kaifa |
@@ -171,34 +181,34 @@ Feature: SmartMetering Configuration - Firmware
       | ManufacturerCode     | KAIF              |
       | DeviceModelCode      | MA105             |
     And a firmware
-      | FirmwareModuleVersionComm | Telit 10.00.154        |
-      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836               |
-      | FirmwareModuleVersionMbus |                        |
-      | FirmwareModuleVersionSec  |                        |
-      | FirmwareFilename          | KFPP_V060100FA         |
-      | ModelCode                 | MA105                  |
-      | FirmwareFileExists        | false                  |
-      | FirmwareIsForSmartMeters  | true                   |
+      | FirmwareFileIdentification | TEST_FW_FILE_0002                        |
+      | FirmwareFile               | 57696520646974206c656573742069732067656b |
+      | FirmwareModuleVersionComm  | Telit 10.00.154                          |
+      | FirmwareModuleVersionMa    | BL_012 XMX_N42_GprsV09                   |
+      | FirmwareModuleVersionFunc  | M57 4836                                 |
+      | FirmwareModuleVersionMbus  |                                          |
+      | FirmwareModuleVersionSec   |                                          |
+      | FirmwareFilename           | KFPP_V060100FA                           |
+      | ModelCode                  | MA105                                    |
+      | FirmwareFileExists         | false                                    |
+      | FirmwareIsForSmartMeters   | true                                     |
     When the request for a firmware upgrade is received
-      | DeviceIdentification      | TEST1024000000002      |
-      | FirmwareModuleVersionComm | Telit 10.00.154        |
-      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836               |
+      | DeviceIdentification       | TEST1024000000002 |
+      | FirmwareFileIdentification | TEST_FW_FILE_0002 |
     Then retrieving the update firmware response results in an exception
     And a SOAP fault should have been returned
       | Component      | PROTOCOL_DLMS                                                         |
       | Message        | Unexpected exception while handling protocol request/response message |
       | InnerException | org.opensmartgridplatform.shared.exceptionhandling.OsgpException      |
-      | InnerMessage   | Firmware file KFPP_V060100FA is not available.                        |
+      | InnerMessage   | Firmware Image Identifier is not available.                           |
     And the database should not be updated with the new device firmware
       | DeviceIdentification      | TEST1024000000002      |
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
 
-  @NightlyBuildOnly
-  Scenario: upgrade of firmware, corrupt installation file
+  @NightlyBuildOnly @UpdateFirmware
+  Scenario: upgrade of firmware, firmware does not support device model
     Given a manufacturer
       | ManufacturerCode | KAIF  |
       | ManufacturerName | Kaifa |
@@ -211,27 +221,72 @@ Feature: SmartMetering Configuration - Firmware
       | ManufacturerCode     | KAIF              |
       | DeviceModelCode      | MA105             |
     And a firmware
-      | FirmwareModuleVersionComm | Telit 10.00.154        |
-      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836               |
-      | FirmwareModuleVersionMbus |                        |
-      | FirmwareModuleVersionSec  |                        |
-      | FirmwareFilename          | KFPP_V060100FF.corrupt |
-      | ModelCode                 | MA105                  |
-      | FirmwareIsForSmartMeters  | true                   |
+      | FirmwareFileIdentification  | TEST_FW_FILE_0001                        |
+      | FirmwareFile                | 57696520646974206c656573742069732067656b |
+      | FirmwareModuleVersionComm   | Telit 10.00.154                          |
+      | FirmwareModuleVersionMa     | BL_012 XMX_N42_GprsV09                   |
+      | FirmwareModuleVersionFunc   | M57 4836                                 |
+      | FirmwareModuleVersionMbus   |                                          |
+      | FirmwareModuleVersionSec    |                                          |
+      | FirmwareFilename            | KFPP_V060100FA                           |
+      | ModelCode                   | MA10X                                    |
+      | FirmwareFileImageIdentifier | 496d6167654964656e746966696572           |
+      | FirmwareFileExists          | false                                    |
+      | FirmwareIsForSmartMeters    | true                                     |
     When the request for a firmware upgrade is received
-      | DeviceIdentification      | TEST1024000000002      |
-      | FirmwareModuleVersionComm | Telit 10.00.154        |
-      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836               |
+      | DeviceIdentification        | TEST1024000000002 |
+      | FirmwareFileIdentification  | TEST_FW_FILE_0001 |
     Then retrieving the update firmware response results in an exception
     And a SOAP fault should have been returned
-      | Component      | PROTOCOL_DLMS                                                         |
-      | Message        | Unexpected exception while handling protocol request/response message |
-      | InnerException | org.opensmartgridplatform.shared.exceptionhandling.OsgpException      |
-      | InnerMessage   | Upgrade of firmware did not succeed.                                  |
+      | Component      | DOMAIN_SMART_METERING                                            |
+      | Message        | FIRMWARE_DOES_NOT_SUPPORT_DEVICE_MODEL                           |
+      | InnerException | org.opensmartgridplatform.shared.exceptionhandling.OsgpException |
+      | InnerMessage   | DeviceModel MA105 of smartmeter TEST1024000000002 is not in list of devicemodels supported by firmware file TEST_FW_FILE_0001 : [MA10X] |
     And the database should not be updated with the new device firmware
-      | DeviceIdentification      | TEST1024000000002      |
-      | FirmwareModuleVersionComm | Telit 10.00.154        |
-      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836               |
+      | DeviceIdentification        | TEST1024000000002      |
+      | FirmwareModuleVersionComm   | Telit 10.00.154        |
+      | FirmwareModuleVersionMa     | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc   | M57 4836               |
+
+  @NightlyBuildOnly @UpdateFirmware @UpdateFirmwareGas
+  Scenario: successful update of firmware on G-meter. Firmware file has valid mbus firmware file header
+    Given a manufacturer
+      | ManufacturerCode | GMAN          |
+      | ManufacturerName | G-meter Man 1 |
+    And a device model
+      | ManufacturerName | G-meter Man 1   |
+      | ModelCode        | G_METER_MODEL_1 |
+    And a manufacturer
+      | ManufacturerCode | EMAN          |
+      | ManufacturerName | E-meter Man 1 |
+    And a device model
+      | ManufacturerName | E-meter Man 1   |
+      | ModelCode        | E_METER_MODEL_1 |
+    And a dlms device
+      | DeviceIdentification     | ETEST102400000002 |
+      | DeviceType               | SMART_METER_E     |
+      | ManufacturerCode         | EMAN              |
+      | DeviceModelCode          | E_METER_MODEL_1   |
+    And a dlms device
+      | DeviceIdentification        | GTEST102400000002 |
+      | DeviceType                  | SMART_METER_G     |
+      | ManufacturerCode            | GMAN              |
+      | DeviceModelCode             | G_METER_MODEL_1   |
+      | GatewayDeviceIdentification | ETEST102400000002 |
+      | MbusIdentificationNumber    | 0000000           |
+      | FirmwareUpdateKey           | 867424ac75b6d53c89276d304608321f0a1f6e401f453f84adf3477c7ee1623c |
+    And a firmware
+      | FirmwareFileIdentification  | TEST_FW_FILE_GAS_0002          |
+      | FirmwareFile                | 534d523500230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4ffbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d5fa821c678e71c05c47e1c69c4bfffe1fd |
+      | FirmwareFilename            | theFirmwareFile.bin            |
+      | FirmwareFileImageIdentifier | 496d6167654964656e746966696572 |
+      | ModelCode                   | G_METER_MODEL_1                |
+      | FirmwareIsForSmartMeters    | true                           |
+    When the request for a firmware upgrade is received
+      | DeviceIdentification        | GTEST102400000002     |
+      | FirmwareFileIdentification  | TEST_FW_FILE_GAS_0002 |
+    Then the update firmware result should be returned
+      | DeviceIdentification        | GTEST102400000002 |
+    And the database should not be updated with the new device firmware
+      | DeviceIdentification        | GTEST102400000002 |
+      

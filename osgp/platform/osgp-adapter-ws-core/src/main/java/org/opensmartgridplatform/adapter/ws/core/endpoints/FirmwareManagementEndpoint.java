@@ -915,7 +915,8 @@ public class FirmwareManagementEndpoint {
         firmware.getDescription(),
         firmware.getFilename(),
         firmware.isPushToNewDevices(),
-        firmware.isActive());
+        firmware.isActive(),
+        firmware.getImageIdentifier());
   }
 
   @PayloadRoot(localPart = "ChangeFirmwareRequest", namespace = NAMESPACE)

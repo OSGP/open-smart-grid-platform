@@ -57,7 +57,7 @@ public enum EventType {
   LIGHT_SENSOR_REPORTS_DARK(45),
   LIGHT_SENSOR_REPORTS_LIGHT(46);
 
-  private int value;
+  private final int value;
 
   EventType(final int value) {
     this.value = value;

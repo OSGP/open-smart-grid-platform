@@ -71,6 +71,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -811,12 +812,39 @@ public class ConfigurationService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
-    final String requestDto =
-        this.firmwareService.determineFirmwareFileIdentifier(
-            smartMeter, updateFirmwareRequestData.getVersionByModuleType());
+    final String firmwareIdentification = updateFirmwareRequestData.getFirmwareIdentification();
+    this.firmwareService.checkFirmwareFileSupportsDeviceModel(
+        smartMeter, this.firmwareService.getFirmwareFile(firmwareIdentification));
+
+    /*
+     * The request here is applicable for an E-meter or G-meter. The assumption here
+     * is that an E-meter has no gateway device and the G-meter always has one.
+     * Therefore no distinction has to be made between requests for E or G-meters.
+     * In case the device to be updated has a gateway device the request will be
+     * sent to this gateway device. The UpdateFirmwareRequestDto contains the
+     * identification of the device to be updated
+     */
+    String deviceIdentification;
+    String ipAddress;
+    final String identificationOfDeviceToBeUpdated = smartMeter.getDeviceIdentification();
+    final Device gatewayDevice = smartMeter.getGatewayDevice();
+    if (gatewayDevice != null) {
+      deviceIdentification = gatewayDevice.getDeviceIdentification();
+      ipAddress = gatewayDevice.getIpAddress();
+    } else {
+      deviceIdentification = smartMeter.getDeviceIdentification();
+      ipAddress = smartMeter.getIpAddress();
+    }
+    final UpdateFirmwareRequestDto requestDto =
+        new UpdateFirmwareRequestDto(firmwareIdentification, identificationOfDeviceToBeUpdated);
 
     this.osgpCoreRequestMessageSender.send(
-        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
+        requestDto,
+        messageMetadata
+            .builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withIpAddress(ipAddress)
+            .build());
   }
 
   public void handleUpdateFirmwareResponse(

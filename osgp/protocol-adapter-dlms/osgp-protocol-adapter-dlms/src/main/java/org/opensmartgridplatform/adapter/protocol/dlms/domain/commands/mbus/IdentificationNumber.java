@@ -29,7 +29,7 @@ public class IdentificationNumber {
 
   private final String last8Digits;
 
-  IdentificationNumber(final String last8Digits) {
+  public IdentificationNumber(final String last8Digits) {
     this.last8Digits = last8Digits;
   }
 
@@ -41,7 +41,7 @@ public class IdentificationNumber {
     return DataObject.newUInteger32Data(this.getIdentificationNumber());
   }
 
-  Long getIdentificationNumber() {
+  public Long getIdentificationNumber() {
     if (StringUtils.isBlank(this.last8Digits)) {
       return null;
     }
