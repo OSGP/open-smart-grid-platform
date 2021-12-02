@@ -34,8 +34,8 @@ import org.opensmartgridplatform.shared.usermanagement.ResponseException;
 public class SimulatorTriggerClient extends AbstractClient {
 
   private static final String CONSTRUCTION_FAILED = "SimulatorTriggerClient construction failed";
-  private static final String TRIGGERPATH = "/trigger";
-  private static final String DYNAMIC_ATTRIBUTES_PATH = "/dynamic";
+  private static final String TRIGGERPATH = "trigger";
+  private static final String DYNAMIC_ATTRIBUTES_PATH = "dynamic";
 
   /**
    * Construct a SimulatorTriggerClient instance.
@@ -118,6 +118,9 @@ public class SimulatorTriggerClient extends AbstractClient {
                   return new X509Certificate[0];
                 }
 
+                @SuppressWarnings(
+                    "squid:S4830") // no server certification validation specifically for testing
+                // purposes
                 @Override
                 public void checkServerTrusted(final X509Certificate[] chain, final String authType)
                     throws CertificateException {
@@ -127,6 +130,9 @@ public class SimulatorTriggerClient extends AbstractClient {
                    */
                 }
 
+                @SuppressWarnings(
+                    "squid:S4830") // no server certification validation specifically for testing
+                // purposes
                 @Override
                 public void checkClientTrusted(final X509Certificate[] chain, final String authType)
                     throws CertificateException {

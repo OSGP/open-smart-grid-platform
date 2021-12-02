@@ -49,6 +49,7 @@ public class PlatformSmartmeteringKeys
   public static final String LLS1_ACTIVE = "Lls1active";
   public static final String USE_HDLC = "UseHdlc";
   public static final String USE_SN = "UseSn";
+  public static final String POLYPHASE = "Polyphase";
   public static final String ICC_ID = "IccId";
   public static final String IN_DEBUG_MODE = "InDebugMode";
   public static final String IN_MAINTENANCE = "InMaintenance";
@@ -79,6 +80,8 @@ public class PlatformSmartmeteringKeys
   // Default keys for security_key
   public static final String DLMS_DEVICE_ID = "DlmsDeviceId";
   public static final String INVOCATION_COUNTER = "InvocationCounter";
+  public static final String KEY_BASE_TRANSCEIVER_STATION_ID = "BtsId";
+  public static final String KEY_CELL_ID = "CellId";
   public static final String NETWORK_ADDRESS = "NetworkAddress";
   public static final String PORT = "Port";
   public static final String PROTOCOL = "Protocol";
@@ -118,6 +121,7 @@ public class PlatformSmartmeteringKeys
   public static final String MBUS_VERSION = "MbusVersion";
   public static final String MBUS_DEVICE_TYPE_IDENTIFICATION = "MbusDeviceTypeIdentification";
   public static final String MBUS_PRIMARY_ADDRESS = "MbusPrimaryAddress";
+  public static final String MBUS_ENCRYPTION_KEY_STATUS = "MbusEncryptionKeyStatus";
 
   public static final String ADMINISTRATIVE_STATUS_TYPE = "AdministrativeStatusType";
   public static final String ALARM_NOTIFICATION_COUNT = "AlarmNotificationCount";

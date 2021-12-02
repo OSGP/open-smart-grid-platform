@@ -88,10 +88,13 @@ public class DomainHelperService {
           FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.PROTOCOL_DLMS);
     }
 
+    /* Ip Address is a transient attribute for DlmsDevice, so save is not required */
     if (dlmsDevice.isIpAddressIsStatic()) {
       dlmsDevice.setIpAddress(ipAddress);
     } else {
-      dlmsDevice.setIpAddress(this.getDeviceIpAddressFromSessionProvider(dlmsDevice));
+      final String ipAddressFromSessionProvider =
+          this.getDeviceIpAddressFromSessionProvider(dlmsDevice);
+      dlmsDevice.setIpAddress(ipAddressFromSessionProvider);
     }
     return dlmsDevice;
   }
@@ -125,7 +128,7 @@ public class DomainHelperService {
               + dlmsDevice.getCommunicationProvider()
               + " did not return an IP address for device: "
               + dlmsDevice.getDeviceIdentification()
-              + "and iccId: "
+              + " and iccId: "
               + dlmsDevice.getIccId());
     }
     return deviceIpAddress;

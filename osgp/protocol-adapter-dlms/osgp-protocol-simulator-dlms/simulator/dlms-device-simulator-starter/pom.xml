@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright 2021 Alliander N.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); 
+    you may not use this file except in compliance with the License. 
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>dlms-device-simulator-starter</artifactId>
+  <description>DLMS device simulator starter, starts one or more simulators configured by single
+    config file.
+  </description>
+
+  <parent>
+    <groupId>org.opensmartgridplatform</groupId>
+    <artifactId>osgp-protocol-simulator-dlms</artifactId>
+    <version>5.19.0</version>
+    <relativePath>../../../osgp-protocol-simulator-dlms/pom.xml</relativePath>
+  </parent>
+
+  <properties>
+    <osgp.version>${project.version}</osgp.version>
+    <!--suppress UnresolvedMavenProperty -->
+    <display.version>${project.version}-${BUILD_TAG}</display.version>
+    <skipITs>true</skipITs>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>dlms-device-simulator</artifactId>
+      <version>${osgp.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${spring.boot.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <mainClass>org.opensmartgridplatform.simulatorstarter.protocol.dlms.starter.Starter
+          </mainClass>
+          <executable>true</executable>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

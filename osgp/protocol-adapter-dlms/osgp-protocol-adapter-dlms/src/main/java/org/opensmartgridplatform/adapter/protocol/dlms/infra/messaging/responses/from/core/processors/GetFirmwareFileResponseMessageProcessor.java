@@ -16,6 +16,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ThrowingConsumer;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.responses.from.core.OsgpResponseMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
@@ -42,35 +43,52 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
     super(MessageType.GET_FIRMWARE_FILE);
   }
 
-  @SuppressWarnings(
-      "squid:S1193") // SilentException cannot be caught since it does not extend Exception.
   @Override
   public void processMessage(final ObjectMessage message) throws JMSException {
-    LOGGER.debug("Processing {} response message", this.messageType.name());
-    MessageMetadata messageMetadata = null;
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Processing {} response message", this.messageType.name());
+    }
 
-    DlmsConnectionManager conn = null;
-    DlmsDevice device = null;
+    // Get metadata from message and update message type to update
+    // firmware
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder(MessageMetadata.fromMessage(message))
+            .withMessageType(MessageType.UPDATE_FIRMWARE.name())
+            .build();
+    final Serializable messageObject = message.getObject();
+
+    final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
+        conn -> this.processMessageTasks(messageObject, messageMetadata, conn);
 
     try {
-      // Get metadata from message and update message type to update
-      // firmware
-      messageMetadata =
-          new MessageMetadata.Builder(MessageMetadata.fromMessage(message))
-              .withMessageType(MessageType.UPDATE_FIRMWARE.name())
-              .build();
+      this.createAndHandleConnectionForDevice(
+          this.domainHelperService.findDlmsDevice(messageMetadata),
+          messageMetadata,
+          taskForConnectionManager);
+    } catch (final OsgpException e) {
+      LOGGER.error("Something went wrong with the DlmsConnection", e);
+    }
+  }
 
-      device = this.domainHelperService.findDlmsDevice(messageMetadata);
+  @SuppressWarnings(
+      "squid:S1193") // SilentException cannot be caught since it does not extend Exception.
+  void processMessageTasks(
+      final Serializable messageObject,
+      final MessageMetadata messageMetadata,
+      final DlmsConnectionManager conn)
+      throws OsgpException {
+    try {
+      final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
       LOGGER.info(
           "{} called for device: {} for organisation: {}",
-          message.getJMSType(),
+          messageMetadata.getMessageType(),
           messageMetadata.getDeviceIdentification(),
           messageMetadata.getOrganisationIdentification());
 
       final Serializable response;
-      conn = this.createConnectionForDevice(device, messageMetadata);
-      response = this.handleMessage(conn, device, message.getObject());
+
+      response = this.handleMessage(conn, device, messageObject);
 
       // Send response
       this.sendResponseMessage(
@@ -80,8 +98,6 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
           this.responseMessageSender,
           response);
 
-    } catch (final JMSException exception) {
-      this.logJmsException(LOGGER, exception, messageMetadata);
     } catch (final Exception exception) {
       // Return original request + exception
       if (!(exception instanceof SilentException)) {
@@ -93,19 +109,20 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
           ResponseMessageResultType.NOT_OK,
           exception,
           this.responseMessageSender,
-          this.createUpdateFirmwareRequestDto(message));
+          this.createUpdateFirmwareRequestDto(messageObject));
     } finally {
+      final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
       this.doConnectionPostProcessing(device, conn, messageMetadata);
     }
   }
 
-  private UpdateFirmwareRequestDto createUpdateFirmwareRequestDto(final ObjectMessage objectMessage)
-      throws JMSException {
-    final Serializable object = objectMessage.getObject();
+  private UpdateFirmwareRequestDto createUpdateFirmwareRequestDto(
+      final Serializable messageObject) {
 
-    if (object instanceof ProtocolResponseMessage) {
+    if (messageObject instanceof ProtocolResponseMessage) {
 
-      final ProtocolResponseMessage protocolResponseMessage = (ProtocolResponseMessage) object;
+      final ProtocolResponseMessage protocolResponseMessage =
+          (ProtocolResponseMessage) messageObject;
       final Serializable dataObject = protocolResponseMessage.getDataObject();
 
       if (dataObject instanceof FirmwareFileDto) {

@@ -54,6 +54,8 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class FindEventsCommandExecutorTest {
 
+  private final DlmsDevice DLMS_DEVICE_5_2 = this.createDlmsDevice(Protocol.SMR_5_2);
+
   private final DlmsDevice DLMS_DEVICE_5_1 = this.createDlmsDevice(Protocol.SMR_5_1);
 
   private final DlmsDevice DLMS_DEVICE_5_0 = this.createDlmsDevice(Protocol.SMR_5_0_0);
@@ -193,6 +195,58 @@ class FindEventsCommandExecutorTest {
   }
 
   @Test
+  void testRetrievalOfEventsFromPowerQualityExtendedEventLog()
+      throws ProtocolAdapterException, IOException {
+    // SETUP
+    this.findEventsRequestDto =
+        new FindEventsRequestDto(
+            EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG,
+            DateTime.now().minusDays(70),
+            DateTime.now());
+
+    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+    when(this.getResult.getResultData()).thenReturn(this.resultData);
+    when(this.resultData.getValue()).thenReturn(this.generateDataObjectsExtendedPowerQuality());
+
+    // CALL
+    final List<EventDto> events =
+        this.executor.execute(
+            this.conn, this.DLMS_DEVICE_5_2, this.findEventsRequestDto, this.messageMetadata);
+
+    // VERIFY
+    assertThat(events.size()).isEqualTo(6);
+
+    int firstEventCode = 93;
+    for (final EventDto event : events) {
+      assertThat(event.getEventCode()).isEqualTo(firstEventCode++);
+    }
+
+    verify(this.dlmsHelper, times(events.size()))
+        .convertDataObjectToDateTime(any(DataObject.class));
+    verify(this.conn).getDlmsMessageListener();
+    verify(this.conn).getConnection();
+    verify(this.dlmsConnection).get(any(AttributeAddress.class));
+  }
+
+  @Test
+  void
+      testRetrievalOfEventsFromPowerQualityExtendedEventLogThrowsExceptionWhenNotSupportedByDevice()
+          throws ProtocolAdapterException, IOException {
+    this.findEventsRequestDto =
+        new FindEventsRequestDto(
+            EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG,
+            DateTime.now().minusDays(70),
+            DateTime.now());
+
+    assertThatExceptionOfType(ProtocolAdapterException.class)
+        .isThrownBy(
+            () -> {
+              this.executor.execute(
+                  this.conn, this.DLMS_DEVICE_5_0, this.findEventsRequestDto, this.messageMetadata);
+            });
+  }
+
+  @Test
   void testOtherReasonResult() throws IOException {
     // SETUP
     when(this.getResult.getResultCode()).thenReturn(AccessResultCode.OTHER_REASON);
@@ -261,6 +315,28 @@ class FindEventsCommandExecutorTest {
                   DataObject.newDateTimeData(new CosemDateTime(2018, 12, 31, 23, code % 60, 0, 0));
 
               final DataObject struct = DataObject.newStructureData(eventTime, eventCode);
+
+              dataObjects.add(struct);
+            });
+
+    return dataObjects;
+  }
+
+  private List<DataObject> generateDataObjectsExtendedPowerQuality() {
+
+    final List<DataObject> dataObjects = new ArrayList<>();
+
+    IntStream.rangeClosed(93, 98)
+        .forEach(
+            code -> {
+              final DataObject eventCode = DataObject.newInteger16Data((short) code);
+              final DataObject eventTime =
+                  DataObject.newDateTimeData(new CosemDateTime(2018, 12, 31, 23, code - 60, 0, 0));
+              final DataObject magnitude = DataObject.newInteger32Data(5);
+              final DataObject duration = DataObject.newInteger32Data(6);
+
+              final DataObject struct =
+                  DataObject.newStructureData(eventTime, eventCode, magnitude, duration);
 
               dataObjects.add(struct);
             });

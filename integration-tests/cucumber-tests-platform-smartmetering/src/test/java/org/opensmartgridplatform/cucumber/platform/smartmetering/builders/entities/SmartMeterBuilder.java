@@ -81,6 +81,8 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
 
     device.setActivated(this.isActivated);
     device.updateRegistrationData(this.networkAddress, this.deviceType);
+    device.setBtsId(this.baseTransceiverStationId);
+    device.setCellId(this.cellId);
 
     // After updateRegistrationData because that sets deviceLifecyleStatus
     // to IN_USE again.

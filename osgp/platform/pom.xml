@@ -13,7 +13,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>platform</artifactId>
-  <version>5.18.4</version>
+  <version>5.19.0</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -89,6 +89,7 @@
   <modules>
     <!-- Shared Libs -->
     <module>parent-platform</module>
+    <module>osgp-throttling-service</module>
 
     <!-- Domain -->
     <module>osgp-domain-core</module>

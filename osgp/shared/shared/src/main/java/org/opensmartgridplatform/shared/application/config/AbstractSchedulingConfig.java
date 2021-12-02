@@ -37,25 +37,25 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
 
   protected static final String KEY_QUARTZ_SCHEDULER_THREAD_COUNT = "quartz.scheduler.thread.count";
 
-  @Value("${db.driver}")
+  @Value("${db.driver:#{null}}")
   protected String databaseDriver;
 
-  @Value("${db.password}")
+  @Value("${db.password:#{null}}")
   protected String databasePassword;
 
-  @Value("${db.protocol}")
+  @Value("${db.protocol:#{null}}")
   protected String databaseProtocol;
 
-  @Value("${db.host}")
+  @Value("${db.host:#{null}}")
   protected String databaseHost;
 
-  @Value("${db.port}")
+  @Value("${db.port:#{null}}")
   protected String databasePort;
 
-  @Value("${db.name}")
+  @Value("${db.name:#{null}}")
   protected String databaseName;
 
-  @Value("${db.username}")
+  @Value("${db.username:#{null}}")
   protected String databaseUsername;
 
   @Autowired private ApplicationContext applicationContext;
@@ -206,17 +206,21 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
     properties.put("org.quartz.jobStore.misfireThreshold", "60000");
     properties.put("org.quartz.jobStore.dataSource", "quartzDefault");
 
-    properties.put(
-        "org.quartz.dataSource.quartzDefault.driver",
-        schedulingConfigProperties.getJobStoreDbDriver());
-    properties.put(
-        "org.quartz.dataSource.quartzDefault.URL", schedulingConfigProperties.getJobStoreDbUrl());
-    properties.put(
-        "org.quartz.dataSource.quartzDefault.user",
-        schedulingConfigProperties.getJobStoreDbUsername());
-    properties.put(
-        "org.quartz.dataSource.quartzDefault.password",
-        schedulingConfigProperties.getJobStoreDbPassword());
+    if (StringUtils.hasText(schedulingConfigProperties.getJobStoreDbDriver())) {
+      properties.put(
+          "org.quartz.dataSource.quartzDefault.driver",
+          schedulingConfigProperties.getJobStoreDbDriver());
+      properties.put(
+          "org.quartz.dataSource.quartzDefault.URL", schedulingConfigProperties.getJobStoreDbUrl());
+      properties.put(
+          "org.quartz.dataSource.quartzDefault.user",
+          schedulingConfigProperties.getJobStoreDbUsername());
+      properties.put(
+          "org.quartz.dataSource.quartzDefault.password",
+          schedulingConfigProperties.getJobStoreDbPassword());
+    } else {
+      throw new IllegalArgumentException("Scheduling datasource not properly configured");
+    }
 
     properties.put("org.quartz.dataSource.quartzDefault.provider", "hikaricp");
     properties.put(

@@ -33,54 +33,89 @@ public class MacGenerationServiceTest {
   @InjectMocks MacGenerationService macGenerationService;
   @Mock SecretManagementService secretManagementService;
 
-  final byte[] firmwareUpdateAuthenticationKey = Hex.decode("F9AA0123456789012345D7AFCCD41BD1");
-  final String expectedIv = "e91e40050010500300400011";
-  final String expectedMac = "9a72acd7a949861cc4df4612cbdbdef6";
+  static final String fwFilename1 = "test-short-v00400011-snffffffff-newmods.bin";
 
-  private static byte[] byteArray;
-  private static final int mbusDeviceIdentificationNumber = Integer.parseInt("10000540", 16);
-  private static final String deviceIdentification = "G0035161000054016";
+  final byte[] firmwareUpdateAuthenticationKey1 = Hex.decode("F9AA0123456789012345D7AFCCD41BD1");
+  private final String deviceIdentification1 = "G0035161000054016";
+
+  final String expectedIv1 = "e91e40050010500300400011";
+  final String expectedMac1 = "9a72acd7a949861cc4df4612cbdbdef6";
+
   private static final MessageMetadata messageMetadata =
       MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
+  private static byte[] byteArray1;
+  private static byte[] byteArray2;
+
   @BeforeAll
-  public static void init() throws IOException {
-    final String filename = "test-short-v00400011-snffffffff-newmods.bin";
-    byteArray = Files.readAllBytes(new ClassPathResource(filename).getFile().toPath());
+  public static void init() throws IOException, ProtocolAdapterException {
+    byteArray1 = Files.readAllBytes(new ClassPathResource(fwFilename1).getFile().toPath());
+    // Same firmware file but now with wildcarded mbusversion (Florian firmware)
+    final FirmwareFile firmwareFile2 = new FirmwareFile(byteArray1);
+    firmwareFile2.setMbusVersion(255);
+    byteArray2 = firmwareFile2.getByteArray();
   }
 
   @Test
-  void calculateMac() throws IOException, ProtocolAdapterException {
+  void calculateMac1() throws IOException, ProtocolAdapterException {
+    this.calculateMac(
+        byteArray1,
+        this.deviceIdentification1,
+        this.firmwareUpdateAuthenticationKey1,
+        this.expectedMac1);
+  }
+
+  @Test
+  void calculateMac2() throws IOException, ProtocolAdapterException {
+
+    this.calculateMac(
+        byteArray2,
+        this.deviceIdentification1,
+        this.firmwareUpdateAuthenticationKey1,
+        this.expectedMac1);
+  }
+
+  void calculateMac(
+      final byte[] byteArray,
+      final String deviceIdentification,
+      final byte[] firmwareUpdateAuthenticationKey,
+      final String expectedMac)
+      throws IOException, ProtocolAdapterException {
 
     when(this.secretManagementService.getKey(
             messageMetadata,
             deviceIdentification,
             SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION))
-        .thenReturn(this.firmwareUpdateAuthenticationKey);
+        .thenReturn(firmwareUpdateAuthenticationKey);
 
-    final FirmwareFile firmwareFile = this.createFirmwareFile();
+    final String mbusDeviceIdentificationNumber = deviceIdentification.substring(7, 15);
+
+    final FirmwareFile firmwareFile =
+        this.createFirmwareFile(byteArray, mbusDeviceIdentificationNumber);
+
     final byte[] calculatedMac =
         this.macGenerationService.calculateMac(messageMetadata, deviceIdentification, firmwareFile);
 
-    assertThat(Hex.toHexString(calculatedMac)).isEqualTo(this.expectedMac);
+    assertThat(Hex.toHexString(calculatedMac)).isEqualTo(expectedMac);
   }
 
   @Test
   void testNoKey() throws IOException, ProtocolAdapterException {
     when(this.secretManagementService.getKey(
             messageMetadata,
-            deviceIdentification,
+            this.deviceIdentification1,
             SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION))
         .thenReturn(null);
 
-    final FirmwareFile firmwareFile = this.createFirmwareFile();
+    final FirmwareFile firmwareFile =
+        this.createFirmwareFile(byteArray1, this.deviceIdentification1.substring(7, 15));
 
     final Exception exception =
         assertThrows(
             ProtocolAdapterException.class,
             () -> {
               this.macGenerationService.calculateMac(
-                  messageMetadata, deviceIdentification, firmwareFile);
+                  messageMetadata, this.deviceIdentification1, firmwareFile);
             });
     assertThat(exception)
         .hasMessageContaining(
@@ -88,130 +123,167 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testIV() throws IOException, ProtocolAdapterException {
-
-    final FirmwareFile firmwareFile = this.createFirmwareFile();
-    final byte[] iv = this.macGenerationService.createIV(firmwareFile);
-
-    assertThat(Hex.toHexString(iv)).isEqualTo(this.expectedIv);
+  public void testIV1() throws IOException, ProtocolAdapterException {
+    this.testIV(byteArray1, this.expectedIv1, this.deviceIdentification1.substring(7, 15));
   }
 
-  private FirmwareFile createFirmwareFile() throws ProtocolAdapterException {
+  @Test
+  public void testIV2() throws IOException, ProtocolAdapterException {
+    this.testIV(byteArray2, this.expectedIv1, this.deviceIdentification1.substring(7, 15));
+  }
+
+  public void testIV(
+      final byte[] byteArray, final String expectedIv, final String mbusDeviceIdentificationNumber)
+      throws IOException, ProtocolAdapterException {
+
+    final FirmwareFile firmwareFile =
+        this.createFirmwareFile(byteArray, mbusDeviceIdentificationNumber);
+
+    final byte[] iv = this.macGenerationService.createIV(firmwareFile);
+
+    assertThat(Hex.toHexString(iv)).isEqualTo(expectedIv);
+  }
+
+  private FirmwareFile createFirmwareFile(
+      final byte[] byteArray, final String mbusDeviceIdentificationNumber)
+      throws ProtocolAdapterException {
     final FirmwareFile firmwareFile = new FirmwareFile(byteArray.clone());
+    System.out.println(firmwareFile.getHeader());
     firmwareFile.setMbusDeviceIdentificationNumber(mbusDeviceIdentificationNumber);
+    firmwareFile.setMbusVersion(80);
+    System.out.println(firmwareFile.getHeader());
     return firmwareFile;
   }
 
   @Test
   public void testInvalidFirmwareImageMagicNumber() throws IOException, ProtocolAdapterException {
 
-    final byte[] clonedByteArray = byteArray.clone();
+    final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[0] = (byte) 0;
     this.assertExceptionContainsMessageOnCalculateMac(
         ProtocolAdapterException.class,
         clonedByteArray,
-        "Unexpected FirmwareImageMagicNumber in header firmware file");
+        "Unexpected FirmwareImageMagicNumber in header firmware file",
+        this.deviceIdentification1);
   }
 
   @Test
   public void testInvalidHeaderLength() throws IOException, ProtocolAdapterException {
 
-    final byte[] clonedByteArray = byteArray.clone();
+    final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[5] = (byte) 0;
     this.assertExceptionContainsMessageOnCalculateMac(
         ProtocolAdapterException.class,
         clonedByteArray,
-        "Unexpected length of header in header firmware file");
+        "Unexpected length of header in header firmware file",
+        this.deviceIdentification1);
   }
 
   @Test
   public void testInvalidAddressLength() throws IOException, ProtocolAdapterException {
 
-    final byte[] clonedByteArray = byteArray.clone();
+    final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[18] = (byte) 0;
     this.assertExceptionContainsMessageOnCalculateMac(
         ProtocolAdapterException.class,
         clonedByteArray,
-        "Unexpected length of address in header firmware file");
+        "Unexpected length of address in header firmware file",
+        this.deviceIdentification1);
   }
 
   @Test
   public void testInvalidAddressType() throws IOException, ProtocolAdapterException {
 
-    final byte[] clonedByteArray = byteArray.clone();
+    final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[19] = (byte) 0;
     this.assertExceptionContainsMessageOnCalculateMac(
-        IllegalArgumentException.class, clonedByteArray, "No AddressType found with code");
+        IllegalArgumentException.class,
+        clonedByteArray,
+        "No AddressType found with code",
+        this.deviceIdentification1);
   }
 
   @Test
   public void testNonExistingSecurityType() throws IOException, ProtocolAdapterException {
 
-    final byte[] clonedByteArray = byteArray.clone();
+    final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[17] = (byte) 6;
     this.assertExceptionContainsMessageOnCalculateMac(
-        IllegalArgumentException.class, clonedByteArray, "No SecurityType found with code");
+        IllegalArgumentException.class,
+        clonedByteArray,
+        "No SecurityType found with code",
+        this.deviceIdentification1);
   }
 
   @Test
   public void testNotExpectedSecurityType() throws IOException, ProtocolAdapterException {
 
-    final byte[] clonedByteArray = byteArray.clone();
+    final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[17] = (byte) 0;
     this.assertExceptionContainsMessageOnCalculateMac(
         ProtocolAdapterException.class,
         clonedByteArray,
-        "Unexpected type of security in header firmware file");
+        "Unexpected type of security in header firmware file",
+        this.deviceIdentification1);
   }
 
   @Test
   public void testInvalidSecurityLength() throws IOException, ProtocolAdapterException {
 
-    final byte[] clonedByteArray = byteArray.clone();
+    final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[15] = (byte) 0;
     this.assertExceptionContainsMessageOnCalculateMac(
         ProtocolAdapterException.class,
         clonedByteArray,
-        "Unexpected length of security in header firmware file");
+        "Unexpected length of security in header firmware file",
+        this.deviceIdentification1);
   }
 
   @Test
   public void testNotExpectedActivationType() throws IOException, ProtocolAdapterException {
 
-    final byte[] clonedByteArray = byteArray.clone();
+    final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[28] = (byte) 1;
     this.assertExceptionContainsMessageOnCalculateMac(
         ProtocolAdapterException.class,
         clonedByteArray,
-        "Unexpected type of activation in header firmware file");
+        "Unexpected type of activation in header firmware file",
+        this.deviceIdentification1);
   }
 
   @Test
   public void testNonExistingActivationType() throws IOException, ProtocolAdapterException {
 
-    final byte[] clonedByteArray = byteArray.clone();
+    final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[28] = (byte) 0;
     this.assertExceptionContainsMessageOnCalculateMac(
-        IllegalArgumentException.class, clonedByteArray, "No ActivationType found with code");
+        IllegalArgumentException.class,
+        clonedByteArray,
+        "No ActivationType found with code",
+        this.deviceIdentification1);
   }
 
   @Test
   public void testNonExistingDeviceType() throws IOException, ProtocolAdapterException {
 
-    final byte[] clonedByteArray = byteArray.clone();
+    final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[27] = (byte) 0;
     this.assertExceptionContainsMessageOnCalculateMac(
-        IllegalArgumentException.class, clonedByteArray, "No DeviceType found with code");
+        IllegalArgumentException.class,
+        clonedByteArray,
+        "No DeviceType found with code",
+        this.deviceIdentification1);
   }
 
   private void assertExceptionContainsMessageOnCalculateMac(
       final Class<? extends Exception> exceptionClass,
       final byte[] malformedFirmwareFile,
-      final String partOfExceptionMessage)
+      final String partOfExceptionMessage,
+      final String deviceIdentification)
       throws ProtocolAdapterException {
 
     final FirmwareFile firmwareFile = new FirmwareFile(malformedFirmwareFile);
-    firmwareFile.setMbusDeviceIdentificationNumber(mbusDeviceIdentificationNumber);
+    firmwareFile.setMbusDeviceIdentificationNumber(deviceIdentification.substring(7, 15));
 
     final Exception exception =
         assertThrows(

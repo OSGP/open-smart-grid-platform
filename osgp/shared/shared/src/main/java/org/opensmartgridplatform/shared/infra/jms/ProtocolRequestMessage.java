@@ -31,6 +31,8 @@ public class ProtocolRequestMessage extends RequestMessage {
         builder.organisationIdentification,
         builder.deviceIdentification,
         builder.ipAddress,
+        builder.baseTransceiverStationId,
+        builder.cellId,
         builder.request);
 
     this.messageType = builder.messageType;
@@ -108,6 +110,8 @@ public class ProtocolRequestMessage extends RequestMessage {
     private String domain;
     private String domainVersion;
     private String ipAddress;
+    private Integer baseTransceiverStationId;
+    private Integer cellId;
     private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
     private boolean scheduled;
     private Long scheduleTime;
@@ -124,6 +128,8 @@ public class ProtocolRequestMessage extends RequestMessage {
       this.domain = messageMetadata.getDomain();
       this.domainVersion = messageMetadata.getDomainVersion();
       this.ipAddress = messageMetadata.getIpAddress();
+      this.baseTransceiverStationId = messageMetadata.getBaseTransceiverStationId();
+      this.cellId = messageMetadata.getCellId();
       this.messagePriority = messageMetadata.getMessagePriority();
       this.scheduled = messageMetadata.isScheduled();
       this.maxScheduleTime = messageMetadata.getMaxScheduleTime();
@@ -144,6 +150,13 @@ public class ProtocolRequestMessage extends RequestMessage {
 
     public Builder ipAddress(final String ipAddress) {
       this.ipAddress = ipAddress;
+      return this;
+    }
+
+    public Builder networkSegementIds(
+        final Integer baseTransceiverStationId, final Integer cellId) {
+      this.baseTransceiverStationId = baseTransceiverStationId;
+      this.cellId = cellId;
       return this;
     }
 

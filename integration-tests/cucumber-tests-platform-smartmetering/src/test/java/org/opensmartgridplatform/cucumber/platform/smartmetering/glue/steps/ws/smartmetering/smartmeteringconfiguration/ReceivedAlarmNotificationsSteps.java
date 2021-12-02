@@ -19,11 +19,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetPushNotificationAlarmResponse;
 import org.opensmartgridplatform.cucumber.core.RetryableAssert;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.hooks.SimulatePushedAlarmsHooks;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ServiceEndpoint;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
 import org.slf4j.Logger;
@@ -44,6 +46,8 @@ public class ReceivedAlarmNotificationsSteps {
 
   @Autowired private ServiceEndpoint serviceEndpoint;
 
+  @Autowired private SmartMeteringConfigurationClient configurationClient;
+
   @When("^an alarm notification is received from a known device$")
   public void anAlarmNotificationIsReceivedFromAKnownDevice(final Map<String, String> settings)
       throws Throwable {
@@ -58,6 +62,7 @@ public class ReceivedAlarmNotificationsSteps {
           new byte[] {0x2C, 0x00, 0x00, 0x01, 0x02},
           this.serviceEndpoint.getAlarmNotificationsHost(),
           this.serviceEndpoint.getAlarmNotificationsPort());
+      TimeUnit.SECONDS.sleep(3);
       SimulatePushedAlarmsHooks.simulateAlarm(
           deviceIdentification,
           new byte[] {0x2C, 0x04, 0x20, 0x00, 0x00},
@@ -82,6 +87,7 @@ public class ReceivedAlarmNotificationsSteps {
           new byte[] {0x2C, 0x00, 0x00, 0x01, 0x02},
           this.serviceEndpoint.getAlarmNotificationsHost(),
           this.serviceEndpoint.getAlarmNotificationsPort());
+      TimeUnit.SECONDS.sleep(3);
       SimulatePushedAlarmsHooks.simulateAlarm(
           deviceIdentification,
           new byte[] {0x2C, 0x04, 0x20, 0x00, 0x00},
@@ -137,5 +143,17 @@ public class ReceivedAlarmNotificationsSteps {
               + RetryableAssert.describeMaxDuration(numberOfRetries, delay, unit),
           e);
     }
+  }
+
+  @Then("^a push notification alarm should be received$")
+  public void aPushNotificationAlarmShouldBeReceived() throws Throwable {
+    /*
+     * The pushed alarm steps simulate two alarms, retrieve the response twice as well.
+     */
+    GetPushNotificationAlarmResponse pushNotificationAlarm =
+        this.configurationClient.getPushNotificationAlarm();
+    assertThat(pushNotificationAlarm.getAlarm()).isNotEmpty();
+    pushNotificationAlarm = this.configurationClient.getPushNotificationAlarm();
+    assertThat(pushNotificationAlarm.getAlarm()).isNotEmpty();
   }
 }

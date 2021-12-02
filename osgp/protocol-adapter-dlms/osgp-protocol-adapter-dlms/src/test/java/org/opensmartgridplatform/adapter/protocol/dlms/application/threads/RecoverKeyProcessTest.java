@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -28,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.DlmsConnection;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
@@ -42,7 +44,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-public class RecoverKeyProcessTest {
+class RecoverKeyProcessTest {
 
   @InjectMocks RecoverKeyProcess recoverKeyProcess;
 
@@ -51,6 +53,7 @@ public class RecoverKeyProcessTest {
   @Mock SecretManagementService secretManagementService;
   @Mock ThrottlingService throttlingService;
   @Mock DlmsDeviceRepository dlmsDeviceRepository;
+  @Mock ThrottlingClientConfig throttlingClientConfig;
 
   private static final String DEVICE_IDENTIFICATION = "E000123456789";
   private static final String IP_ADDRESS = "1.1.1.1";
@@ -63,10 +66,11 @@ public class RecoverKeyProcessTest {
     this.recoverKeyProcess.setIpAddress(IP_ADDRESS);
     this.recoverKeyProcess.setMessageMetadata(MESSAGE_METADATA);
     when(DEVICE.needsInvocationCounter()).thenReturn(true);
+    lenient().when(this.throttlingClientConfig.clientEnabled()).thenReturn(false);
   }
 
   @Test
-  public void testWhenDeviceNotFoundThenException() throws OsgpException {
+  void testWhenDeviceNotFoundThenException() throws OsgpException {
 
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
@@ -82,7 +86,7 @@ public class RecoverKeyProcessTest {
   }
 
   @Test
-  public void testWhenNoNewKeysThenNoActivate() throws OsgpException {
+  void testWhenNoNewKeysThenNoActivate() throws OsgpException {
 
     // GIVEN
     when(this.secretManagementService.hasNewSecretOfType(
@@ -98,7 +102,7 @@ public class RecoverKeyProcessTest {
   }
 
   @Test
-  public void testThrottlingServiceCalledAndKeysActivated() throws Exception {
+  void testThrottlingServiceCalledAndKeysActivated() throws Exception {
 
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
@@ -130,7 +134,7 @@ public class RecoverKeyProcessTest {
   }
 
   @Test
-  public void testWhenConnectionFailedThenConnectionClosedAtThrottlingService() throws Exception {
+  void testWhenConnectionFailedThenConnectionClosedAtThrottlingService() throws Exception {
 
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))

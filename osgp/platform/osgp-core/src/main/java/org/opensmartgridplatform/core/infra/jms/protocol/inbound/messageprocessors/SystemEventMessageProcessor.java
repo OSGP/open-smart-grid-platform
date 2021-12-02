@@ -62,6 +62,8 @@ public class SystemEventMessageProcessor extends AbstractProtocolRequestMessageP
             metadata.getOrganisationIdentification(),
             requestMessage.getDeviceIdentification(),
             requestMessage.getIpAddress(),
+            requestMessage.getBaseTransceiverStationId(),
+            requestMessage.getCellId(),
             systemEvent);
 
     final DomainInfo domainInfo =

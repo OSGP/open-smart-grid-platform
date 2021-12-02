@@ -10,8 +10,10 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
 import java.util.BitSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -83,21 +85,84 @@ public class SetAlarmNotificationsCommandExecutor
       final AlarmNotificationsDto alarmNotifications,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
-    try {
-      final AttributeAddress alarmFilterValue =
-          this.dlmsObjectConfigService.getAttributeAddress(
-              device, DlmsObjectType.ALARM_FILTER, null);
 
+    final AttributeAddress alarmFilter1AttributeAddress =
+        this.dlmsObjectConfigService.getAttributeAddress(
+            device, DlmsObjectType.ALARM_FILTER_1, null);
+
+    final AccessResultCode resultCodeAlarmFilter1 =
+        this.setAlarmNotifications(
+            conn,
+            alarmNotifications,
+            alarmFilter1AttributeAddress,
+            DlmsObjectType.ALARM_REGISTER_1);
+
+    final Optional<AttributeAddress> alarmFilter2AttributeAddress =
+        this.dlmsObjectConfigService.findAttributeAddress(
+            device, DlmsObjectType.ALARM_FILTER_2, null);
+
+    if (!alarmFilter2AttributeAddress.isPresent()) {
+      return resultCodeAlarmFilter1;
+    } else {
+      return this.setAlarmNotifications(
+          conn,
+          alarmNotifications,
+          alarmFilter2AttributeAddress.get(),
+          DlmsObjectType.ALARM_REGISTER_2);
+    }
+  }
+
+  private AccessResultCode setAlarmNotifications(
+      final DlmsConnectionManager conn,
+      final AlarmNotificationsDto alarmNotifications,
+      final AttributeAddress alarmFilterAttributeAddress,
+      final DlmsObjectType alarmRegister)
+      throws ProtocolAdapterException {
+
+    final AccessResultCode resultCodeAlarmFilter =
+        this.executeForAlarmFilter(
+            conn, alarmFilterAttributeAddress, alarmNotifications, alarmRegister);
+
+    if (resultCodeAlarmFilter == null) {
+      throw new ProtocolAdapterException(
+          "Error occurred for set alarm register : " + alarmRegister.name());
+    }
+
+    if (resultCodeAlarmFilter != AccessResultCode.SUCCESS) {
+      throw new ProtocolAdapterException(
+          "AccessResultCode for alarm register was not SUCCESS: " + resultCodeAlarmFilter);
+    }
+
+    return resultCodeAlarmFilter;
+  }
+
+  private AccessResultCode executeForAlarmFilter(
+      final DlmsConnectionManager conn,
+      final AttributeAddress alarmFilterAttributeAddress,
+      final AlarmNotificationsDto alarmNotifications,
+      final DlmsObjectType alarmRegisterDlmsObjectType)
+      throws ProtocolAdapterException {
+    try {
       final AlarmNotificationsDto alarmNotificationsOnDevice =
-          this.retrieveCurrentAlarmNotifications(conn, alarmFilterValue);
+          this.retrieveCurrentAlarmNotifications(
+              conn, alarmFilterAttributeAddress, alarmRegisterDlmsObjectType);
 
       LOGGER.info(
           "Alarm Filter on device before setting notifications: {}", alarmNotificationsOnDevice);
 
+      final Set<AlarmTypeDto> alarmTypesForRegister =
+          this.alarmHelperService.alarmTypesForRegister(alarmRegisterDlmsObjectType);
+      final Set<AlarmNotificationDto> alarmNotificationsSet =
+          alarmNotifications.getAlarmNotificationsSet().stream()
+              .filter(
+                  alarmNotificationDto ->
+                      alarmTypesForRegister.contains(alarmNotificationDto.getAlarmType()))
+              .collect(Collectors.toSet());
+
       final long alarmFilterLongValueOnDevice =
           this.alarmFilterLongValue(alarmNotificationsOnDevice);
       final long updatedAlarmFilterLongValue =
-          this.calculateAlarmFilterLongValue(alarmNotificationsOnDevice, alarmNotifications);
+          this.calculateAlarmFilterLongValue(alarmNotificationsOnDevice, alarmNotificationsSet);
 
       if (alarmFilterLongValueOnDevice == updatedAlarmFilterLongValue) {
         return AccessResultCode.SUCCESS;
@@ -106,14 +171,16 @@ public class SetAlarmNotificationsCommandExecutor
       LOGGER.info("Modified Alarm Filter long value for device: {}", updatedAlarmFilterLongValue);
 
       return this.writeUpdatedAlarmNotifications(
-          conn, updatedAlarmFilterLongValue, alarmFilterValue);
+          conn, updatedAlarmFilterLongValue, alarmFilterAttributeAddress);
     } catch (final IOException e) {
       throw new ConnectionException(e);
     }
   }
 
   private AlarmNotificationsDto retrieveCurrentAlarmNotifications(
-      final DlmsConnectionManager conn, final AttributeAddress alarmFilterValue)
+      final DlmsConnectionManager conn,
+      final AttributeAddress alarmFilterValue,
+      final DlmsObjectType alarmRegisterDlmsObjectType)
       throws IOException, ProtocolAdapterException {
     conn.getDlmsMessageListener()
         .setDescription(
@@ -130,7 +197,7 @@ public class SetAlarmNotificationsCommandExecutor
           "No GetResult received while retrieving current alarm filter.");
     }
 
-    return this.alarmNotifications(getResult.getResultData());
+    return this.alarmNotifications(getResult.getResultData(), alarmRegisterDlmsObjectType);
   }
 
   private AccessResultCode writeUpdatedAlarmNotifications(
@@ -152,7 +219,8 @@ public class SetAlarmNotificationsCommandExecutor
     return conn.getConnection().set(setParameter);
   }
 
-  private AlarmNotificationsDto alarmNotifications(final DataObject alarmFilter)
+  private AlarmNotificationsDto alarmNotifications(
+      final DataObject alarmFilter, final DlmsObjectType alarmRegisterDlmsObjectType)
       throws ProtocolAdapterException {
 
     if (alarmFilter == null) {
@@ -171,12 +239,12 @@ public class SetAlarmNotificationsCommandExecutor
     }
 
     final Number alarmFilterValue = alarmFilter.getValue();
-    return this.alarmNotifications(alarmFilterValue.longValue());
+    return this.alarmNotifications(alarmFilterValue.longValue(), alarmRegisterDlmsObjectType);
   }
 
   private long calculateAlarmFilterLongValue(
       final AlarmNotificationsDto alarmNotificationsOnDevice,
-      final AlarmNotificationsDto alarmNotificationsToSet) {
+      final Set<AlarmNotificationDto> notificationsToSet) {
 
     /*
      * Create a new (modifiable) set of alarm notifications, based on the
@@ -192,23 +260,21 @@ public class SetAlarmNotificationsCommandExecutor
      * setting per AlarmType.
      */
 
-    final Set<AlarmNotificationDto> notificationsToSet =
-        new TreeSet<>(alarmNotificationsToSet.getAlarmNotificationsSet());
-
     notificationsToSet.addAll(alarmNotificationsOnDevice.getAlarmNotificationsSet());
 
     return this.alarmFilterLongValue(new AlarmNotificationsDto(notificationsToSet));
   }
 
-  private AlarmNotificationsDto alarmNotifications(final long alarmFilterLongValue) {
+  private AlarmNotificationsDto alarmNotifications(
+      final long alarmFilterLongValue, final DlmsObjectType alarmRegisterDlmsObjectType) {
 
     final BitSet bitSet = BitSet.valueOf(new long[] {alarmFilterLongValue});
     final Set<AlarmNotificationDto> notifications = new TreeSet<>();
 
-    final AlarmTypeDto[] alarmTypes = AlarmTypeDto.values();
-    for (final AlarmTypeDto alarmType : alarmTypes) {
+    for (final AlarmTypeDto alarmType :
+        this.alarmHelperService.alarmTypesForRegister(alarmRegisterDlmsObjectType)) {
       final boolean enabled =
-          bitSet.get(this.alarmHelperService.getAlarmRegisterBitIndexPerAlarmType().get(alarmType));
+          bitSet.get(this.alarmHelperService.getAlarmRegisterBitIndex(alarmType));
       notifications.add(new AlarmNotificationDto(alarmType, enabled));
     }
 
@@ -221,9 +287,7 @@ public class SetAlarmNotificationsCommandExecutor
     for (final AlarmNotificationDto alarmNotification :
         alarmNotifications.getAlarmNotificationsSet()) {
       bitSet.set(
-          this.alarmHelperService
-              .getAlarmRegisterBitIndexPerAlarmType()
-              .get(alarmNotification.getAlarmType()),
+          this.alarmHelperService.getAlarmRegisterBitIndex(alarmNotification.getAlarmType()),
           alarmNotification.isEnabled());
     }
 

@@ -80,7 +80,7 @@ public class DlmsConfig extends AbstractConfig {
     bootstrap.childHandler(
         new ChannelInitializer<SocketChannel>() {
           @Override
-          protected void initChannel(final SocketChannel ch) throws Exception {
+          protected void initChannel(final SocketChannel ch) {
             DlmsConfig.this.createChannelPipeline(ch, DlmsConfig.this.dlmsChannelHandlerServer());
             LOGGER.info("Created new DLMS handler pipeline for server");
           }
@@ -164,12 +164,14 @@ public class DlmsConfig extends AbstractConfig {
       final Hls5Connector hls5Connector,
       final SecretManagementService secretManagementService,
       final ThrottlingService throttlingService,
+      final ThrottlingClientConfig throttlingClientConfig,
       final DlmsDeviceRepository deviceRepository) {
     return new RecoverKeyProcess(
         domainHelperService,
         hls5Connector,
         secretManagementService,
         throttlingService,
+        throttlingClientConfig,
         deviceRepository);
   }
 

@@ -19,6 +19,8 @@ public class RequestMessage implements Serializable {
   protected final String organisationIdentification;
   protected final String correlationUid;
   protected final String ipAddress;
+  protected final Integer baseTransceiverStationId;
+  protected final Integer cellId;
   protected final Serializable request;
 
   public RequestMessage(final MessageMetadata messageMetadata, final Serializable request) {
@@ -27,6 +29,8 @@ public class RequestMessage implements Serializable {
         messageMetadata.getOrganisationIdentification(),
         messageMetadata.getDeviceIdentification(),
         messageMetadata.getIpAddress(),
+        messageMetadata.getBaseTransceiverStationId(),
+        messageMetadata.getCellId(),
         request);
   }
 
@@ -36,6 +40,8 @@ public class RequestMessage implements Serializable {
         ids.getOrganisationIdentification(),
         ids.getDeviceIdentification(),
         null,
+        null,
+        null,
         request);
   }
 
@@ -43,7 +49,7 @@ public class RequestMessage implements Serializable {
       final String correlationUid,
       final String organisationIdentification,
       final String deviceIdentification) {
-    this(correlationUid, organisationIdentification, deviceIdentification, null, null);
+    this(correlationUid, organisationIdentification, deviceIdentification, null, null, null, null);
   }
 
   public RequestMessage(
@@ -51,7 +57,14 @@ public class RequestMessage implements Serializable {
       final String organisationIdentification,
       final String deviceIdentification,
       final Serializable request) {
-    this(correlationUid, organisationIdentification, deviceIdentification, null, request);
+    this(
+        correlationUid,
+        organisationIdentification,
+        deviceIdentification,
+        null,
+        null,
+        null,
+        request);
   }
 
   public RequestMessage(
@@ -59,11 +72,15 @@ public class RequestMessage implements Serializable {
       final String organisationIdentification,
       final String deviceIdentification,
       final String ipAddress,
+      final Integer baseTransceiverStationId,
+      final Integer cellId,
       final Serializable request) {
     this.correlationUid = correlationUid;
     this.organisationIdentification = organisationIdentification;
     this.deviceIdentification = deviceIdentification;
     this.ipAddress = ipAddress;
+    this.baseTransceiverStationId = baseTransceiverStationId;
+    this.cellId = cellId;
     this.request = request;
   }
 
@@ -83,6 +100,14 @@ public class RequestMessage implements Serializable {
     return this.ipAddress;
   }
 
+  public Integer getBaseTransceiverStationId() {
+    return this.baseTransceiverStationId;
+  }
+
+  public Integer getCellId() {
+    return this.cellId;
+  }
+
   public Serializable getRequest() {
     return this.request;
   }
@@ -93,6 +118,7 @@ public class RequestMessage implements Serializable {
         .withOrganisationIdentification(this.organisationIdentification)
         .withCorrelationUid(this.correlationUid)
         .withIpAddress(this.ipAddress)
+        .withNetworkSegmentIds(this.baseTransceiverStationId, this.cellId)
         .build();
   }
 }

@@ -22,6 +22,7 @@ public class SetDeviceCommunicationSettingsData implements Serializable, ActionR
   private final boolean ipAddressIsStatic;
   private final boolean useSn;
   private final boolean useHdlc;
+  private final boolean polyphase;
 
   public SetDeviceCommunicationSettingsData(
       final int challengeLength,
@@ -29,13 +30,15 @@ public class SetDeviceCommunicationSettingsData implements Serializable, ActionR
       final boolean selectiveAccessSupported,
       final boolean ipAddressIsStatic,
       final boolean useSn,
-      final boolean useHdlc) {
+      final boolean useHdlc,
+      final boolean polyphase) {
     this.challengeLength = challengeLength;
     this.withListSupported = withListSupported;
     this.selectiveAccessSupported = selectiveAccessSupported;
     this.ipAddressIsStatic = ipAddressIsStatic;
     this.useSn = useSn;
     this.useHdlc = useHdlc;
+    this.polyphase = polyphase;
   }
 
   public int getChallengeLength() {
@@ -60,6 +63,10 @@ public class SetDeviceCommunicationSettingsData implements Serializable, ActionR
 
   public boolean isUseHdlc() {
     return this.useHdlc;
+  }
+
+  public boolean isPolyphase() {
+    return this.polyphase;
   }
 
   @Override

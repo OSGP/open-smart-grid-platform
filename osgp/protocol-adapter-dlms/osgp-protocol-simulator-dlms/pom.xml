@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright 2021 Alliander N.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); 
+    you may not use this file except in compliance with the License. 
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>osgp-protocol-simulator-dlms</artifactId>
+  <packaging>pom</packaging>
+
+  <parent>
+    <groupId>org.opensmartgridplatform</groupId>
+    <artifactId>super-osgp</artifactId>
+    <version>5.19.0</version>
+    <relativePath>../../../super/pom.xml</relativePath>
+  </parent>
+  
+  <properties>
+    <display.version>${project.version}-${BUILD_TAG}</display.version>
+    <commons.collections.version>4.1</commons.collections.version>
+    <spring.boot.version>2.2.2.RELEASE</spring.boot.version>
+    <apache.commons.io.version>2.6</apache.commons.io.version>
+
+    <skipITs>true</skipITs>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+
+      <!-- Apache CXF JAX-RS -->
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+        <version>${cxf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-rs-security-cors</artifactId>
+        <version>${cxf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-rs-service-description</artifactId>
+        <version>${cxf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${apache.commons.io.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-collections4</artifactId>
+        <version>${commons.collections.version}</version>
+      </dependency>
+    <dependency>
+        <groupId>org.openmuc</groupId>
+        <artifactId>jdlms-annotation-processor</artifactId>
+        <version>${openmuc.jdlms.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- Spring Boot (N.B. This makes some explicit spring dependencies unnecessary) -->
+      <dependency>
+        <!-- Import dependency management from Spring Boot -->
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring.boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <modules>
+    <module>osgp-simulator-dlms-triggered</module>
+    <module>simulator</module>
+  </modules>
+</project>
