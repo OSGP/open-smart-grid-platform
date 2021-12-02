@@ -19,7 +19,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-protocol-simulator-mqtt</artifactId>
-  <version>5.17.0</version>
+  <version>5.18.0</version>
   <packaging>war</packaging>
   <name>osgp-protocol-simulator-mqtt</name>
   <description>Simulator for MQTT Protocol.</description>
@@ -81,7 +81,7 @@
           <artifactId>hibernate-entitymanager</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.hibernate.validator</groupId>
+          <groupId>org.hibernate</groupId>
           <artifactId>hibernate-validator</artifactId>
         </exclusion>
         <exclusion>

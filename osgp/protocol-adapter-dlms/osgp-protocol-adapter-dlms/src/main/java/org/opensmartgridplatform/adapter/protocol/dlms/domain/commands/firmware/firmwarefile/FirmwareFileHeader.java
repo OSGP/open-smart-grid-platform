@@ -42,7 +42,7 @@ public class FirmwareFileHeader {
     return this.toInt(this.getFirmwareFileHeaderAddressField().getMbusVersion());
   }
 
-  ManufacturerId getMbusManufacturerId() {
+  public ManufacturerId getMbusManufacturerId() {
     return ManufacturerId.fromId(
         this.toInt(this.getFirmwareFileHeaderAddressField().getMbusManufacturerId()));
   }

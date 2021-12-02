@@ -24,12 +24,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.domain.core.entities.DeviceModel;
-import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailNameTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventTypeDto;
@@ -87,56 +84,40 @@ class EventServiceTest {
 
   @Test
   void testProtocolNoMatch() throws FunctionalException {
-    this.assertEventType(1, "SMART_METER_E", "XXX", "iskr", EventTypeDto.POWER_FAILURE);
-    this.assertEventType(80, "SMART_METER_E", "DSMR", "iskr", EventTypeDto.PV_VOLTAGE_SAG_L1);
-    this.assertEventType(81, "SMART_METER_E", "DSMR", "iskr", EventTypeDto.PV_VOLTAGE_SAG_L2);
-    this.assertEventType(82, "SMART_METER_E", "DSMR", "iskr", EventTypeDto.PV_VOLTAGE_SAG_L3);
-    this.assertEventType(83, "SMART_METER_E", "DSMR", "iskr", EventTypeDto.PV_VOLTAGE_SWELL_L1);
-    this.assertEventType(84, "SMART_METER_E", "DSMR", "iskr", EventTypeDto.PV_VOLTAGE_SWELL_L2);
-    this.assertEventType(85, "SMART_METER_E", "DSMR", "iskr", EventTypeDto.PV_VOLTAGE_SWELL_L3);
+    this.assertEventType(1, "XXX", EventTypeDto.POWER_FAILURE);
+    this.assertEventType(80, "DSMR", EventTypeDto.PV_VOLTAGE_SAG_L1);
+    this.assertEventType(81, "DSMR", EventTypeDto.PV_VOLTAGE_SAG_L2);
+    this.assertEventType(82, "DSMR", EventTypeDto.PV_VOLTAGE_SAG_L3);
+    this.assertEventType(83, "DSMR", EventTypeDto.PV_VOLTAGE_SWELL_L1);
+    this.assertEventType(84, "DSMR", EventTypeDto.PV_VOLTAGE_SWELL_L2);
+    this.assertEventType(85, "DSMR", EventTypeDto.PV_VOLTAGE_SWELL_L3);
 
-    this.assertEventType(80, "SMART_METER_E", "SMR", "iskr", EventTypeDto.OVER_VOLTAGE_L1);
-    this.assertEventType(81, "SMART_METER_E", "SMR", "iskr", EventTypeDto.OVER_VOLTAGE_L2);
-    this.assertEventType(82, "SMART_METER_E", "SMR", "iskr", EventTypeDto.OVER_VOLTAGE_L3);
-    this.assertEventType(83, "SMART_METER_E", "SMR", "iskr", EventTypeDto.VOLTAGE_L1_NORMAL);
-    this.assertEventType(84, "SMART_METER_E", "SMR", "iskr", EventTypeDto.VOLTAGE_L2_NORMAL);
-    this.assertEventType(85, "SMART_METER_E", "SMR", "iskr", EventTypeDto.VOLTAGE_L3_NORMAL);
+    this.assertEventType(80, "SMR", EventTypeDto.OVER_VOLTAGE_L1);
+    this.assertEventType(81, "SMR", EventTypeDto.OVER_VOLTAGE_L2);
+    this.assertEventType(82, "SMR", EventTypeDto.OVER_VOLTAGE_L3);
+    this.assertEventType(83, "SMR", EventTypeDto.VOLTAGE_L1_NORMAL);
+    this.assertEventType(84, "SMR", EventTypeDto.VOLTAGE_L2_NORMAL);
+    this.assertEventType(85, "SMR", EventTypeDto.VOLTAGE_L3_NORMAL);
 
-    this.assertEventType(
-        85, "SMART_METER_E", "DSMR_CDMA", "iskr", EventTypeDto.PV_VOLTAGE_SWELL_L3);
-    this.assertEventType(85, "SMART_METER_E", "SMR_CDMA", "iskr", EventTypeDto.VOLTAGE_L3_NORMAL);
+    this.assertEventType(85, "DSMR_CDMA", EventTypeDto.PV_VOLTAGE_SWELL_L3);
+    this.assertEventType(85, "SMR_CDMA", EventTypeDto.VOLTAGE_L3_NORMAL);
   }
 
   @ParameterizedTest
   @CsvFileSource(resources = "event_types.csv", numLinesToSkip = 0, delimiter = ',')
   void testAddEventTypeToEvents(
-      final int eventCode,
-      final String deviceType,
-      final String protocol,
-      final String manufacturerCode,
-      final EventTypeDto expectedEventTypeDto)
+      final int eventCode, final String protocol, final EventTypeDto expectedEventTypeDto)
       throws FunctionalException {
 
-    this.assertEventType(eventCode, deviceType, protocol, manufacturerCode, expectedEventTypeDto);
+    this.assertEventType(eventCode, protocol, expectedEventTypeDto);
   }
 
   private void assertEventType(
-      final int eventCode,
-      final String deviceType,
-      final String protocol,
-      final String manufacturerCode,
-      final EventTypeDto expectedEventTypeDto)
+      final int eventCode, final String protocol, final EventTypeDto expectedEventTypeDto)
       throws FunctionalException {
     final ProtocolInfo protocolInfo = mock(ProtocolInfo.class);
     when(protocolInfo.getProtocol()).thenReturn(protocol);
     when(this.smartMeter.getProtocolInfo()).thenReturn(protocolInfo);
-
-    when(this.smartMeter.getDeviceType()).thenReturn(deviceType);
-    final DeviceModel deviceModel = mock(DeviceModel.class);
-    final Manufacturer manufacturer = mock(Manufacturer.class);
-    when(manufacturer.getCode()).thenReturn(manufacturerCode);
-    when(deviceModel.getManufacturer()).thenReturn(manufacturer);
-    when(this.smartMeter.getDeviceModel()).thenReturn(deviceModel);
 
     final EventDto event = new EventDto(new DateTime(), eventCode, 2, "STANDARD_EVENT_LOG");
     final ArrayList<EventDto> events = new ArrayList<>();
@@ -150,16 +131,6 @@ class EventServiceTest {
     assertThat(eventDto.getEventTypeDto()).isEqualTo(expectedEventTypeDto);
     assertThat(eventDto.getEventCode()).isEqualTo(eventCode);
     final List<EventDetailDto> eventDetails = eventDto.getEventDetails();
-    final int expectedNrOfDetails =
-        (deviceType == null ? 0 : 1)
-            + (manufacturerCode == null ? 0 : 1)
-            + (protocol == null ? 0 : 1);
-    assertThat(eventDetails.size()).isEqualTo(expectedNrOfDetails);
-    assertThat(eventDto.getEventDetailValue(EventDetailNameTypeDto.MANUFACTURER_CODE))
-        .isEqualTo(manufacturerCode);
-    assertThat(eventDto.getEventDetailValue(EventDetailNameTypeDto.DEVICE_TYPE))
-        .isEqualTo(deviceType);
-    assertThat(eventDto.getEventDetailValue(EventDetailNameTypeDto.PROTOCOL_NAME))
-        .isEqualTo(protocol);
+    assertThat(eventDetails.size()).isZero();
   }
 }

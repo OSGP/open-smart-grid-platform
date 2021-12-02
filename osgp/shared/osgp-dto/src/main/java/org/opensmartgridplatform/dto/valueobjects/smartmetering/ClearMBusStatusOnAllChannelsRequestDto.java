@@ -9,8 +9,11 @@
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
-public enum EventDetailNameTypeDto {
-  MANUFACTURER_CODE,
-  DEVICE_TYPE,
-  PROTOCOL_NAME
+public class ClearMBusStatusOnAllChannelsRequestDto implements ActionRequestDto {
+
+  private static final long serialVersionUID = -5014268738210751785L;
+
+  public ClearMBusStatusOnAllChannelsRequestDto() {
+    // default constructor
+  }
 }
