@@ -293,29 +293,27 @@ public class DaylightSavingTimeTransition {
       if (time == null) {
         return false;
       }
+      final String hoursPart;
       final int hours;
       if (time.indexOf(':') == -1) {
-        try {
-          hours = Integer.parseInt(time);
-        } catch (final NumberFormatException nfe) {
-          return false;
-        }
+        hoursPart = time;
       } else {
         final String[] timeParts = time.split(":");
-        try {
-          if (timeParts.length > 3) {
-            return false;
-          }
-          hours = Integer.parseInt(timeParts[0]);
-          for (int i = 1; i < timeParts.length; i++) {
-            final int minutesOrSeconds = Integer.parseInt(timeParts[i]);
-            if (minutesOrSeconds < 0 || minutesOrSeconds > 59) {
-              return false;
-            }
-          }
-        } catch (final NumberFormatException nfe) {
+        if (timeParts.length > 3) {
           return false;
         }
+        hoursPart = timeParts[0];
+        for (int i = 1; i < timeParts.length; i++) {
+          final int minutesOrSeconds = Integer.parseInt(timeParts[i]);
+          if (minutesOrSeconds < 0 || minutesOrSeconds > 59) {
+            return false;
+          }
+        }
+      }
+      try {
+        hours = Integer.parseInt(hoursPart);
+      } catch (final NumberFormatException nfe) {
+        return false;
       }
       return hours >= -167 && hours <= 167;
     }
