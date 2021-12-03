@@ -26,20 +26,19 @@ import org.springframework.core.io.Resource;
 @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true)
 public class SecurityConfig extends AbstractConfig {
 
-  @Value("${osgp.rsa.private.key.resource}")
-  private Resource gxfRsaPrivateKeyResource;
+  @Value("${encryption.rsa.private.key.gxf.smartmetering}")
+  private Resource rsaPrivateKeyGxfSmartMetering;
 
-  @Bean(name = "gxfDecrypter")
-  public RsaEncrypter gxfRsaDecrypter() {
+  // RsaEncrypter for decrypting secrets from other GXF components.
+  @Bean(name = "decrypterForGxfSmartMetering")
+  public RsaEncrypter decrypterForGxfSmartMetering() {
     try {
-      final File privateRsaKeyFile = this.gxfRsaPrivateKeyResource.getFile();
+      final File privateRsaKeyFile = this.rsaPrivateKeyGxfSmartMetering.getFile();
       final RsaEncrypter rsaEncrypter = new RsaEncrypter();
       rsaEncrypter.setPrivateKeyStore(privateRsaKeyFile);
       return rsaEncrypter;
     } catch (final IOException e) {
-      throw new IllegalStateException(
-          "Could not initialize RsaEncrypter for decryption with the private key from the GXF RSA key pair",
-          e);
+      throw new IllegalStateException("Could not initialize decrypterForGxfSmartMetering", e);
     }
   }
 }

@@ -39,7 +39,9 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsInstallationService")
@@ -49,7 +51,9 @@ public class InstallationService {
 
   @Autowired private InstallationMapper installationMapper;
 
-  @Autowired private EncryptionHelperService encryptionService;
+  @Autowired
+  @Qualifier("decrypterForGxfSmartMetering")
+  private RsaEncrypter decrypterForGxfSmartMetering;
 
   @Autowired private SecretManagementService secretManagementService;
 
@@ -83,7 +87,7 @@ public class InstallationService {
     for (final SecurityKeyType keyType : keyTypesToStore) {
       final byte[] key = this.getKeyFromDeviceDto(deviceDto, keyType);
       if (ArrayUtils.isNotEmpty(key)) {
-        keysByType.put(keyType, this.encryptionService.rsaDecrypt(key));
+        keysByType.put(keyType, this.decrypterForGxfSmartMetering.decrypt(key));
       } else {
         final Exception rootCause = new NoSuchElementException(keyType.name());
         throw new FunctionalException(
