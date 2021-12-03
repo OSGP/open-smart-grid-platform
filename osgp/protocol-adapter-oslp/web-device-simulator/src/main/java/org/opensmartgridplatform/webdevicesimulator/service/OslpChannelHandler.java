@@ -862,7 +862,8 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     return Oslp.Message.newBuilder().setGetStatusResponse(builder.build()).build();
   }
 
-  private Builder getLightValueForDeviceOutputSetting(final Device device, final DeviceOutputSetting dos) {
+  private Builder getLightValueForDeviceOutputSetting(
+      final Device device, final DeviceOutputSetting dos) {
     final Builder lightValue =
         LightValue.newBuilder().setIndex(OslpUtils.integerToByteString(dos.getInternalId()));
 
