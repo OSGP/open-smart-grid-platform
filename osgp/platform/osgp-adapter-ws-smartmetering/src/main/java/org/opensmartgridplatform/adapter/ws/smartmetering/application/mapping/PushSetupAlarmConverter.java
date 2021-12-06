@@ -9,14 +9,11 @@
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.PushObject;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CosemObisCode;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CosemObjectDefinition;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MessageType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm;
@@ -60,26 +57,9 @@ public class PushSetupAlarmConverter
     }
 
     if (source.hasPushObjectList()) {
-      final List<CosemObjectDefinition> sourcePushObjectList = source.getPushObjectList();
-      for (final CosemObjectDefinition sourcePushObject : sourcePushObjectList) {
-
-        final PushObject convertedPushObject = new PushObject();
-
-        final ObisCodeValues convertedObisCode = new ObisCodeValues();
-        final CosemObisCode sourceObisCode = sourcePushObject.getLogicalName();
-        convertedObisCode.setA((short) sourceObisCode.getA());
-        convertedObisCode.setB((short) sourceObisCode.getB());
-        convertedObisCode.setC((short) sourceObisCode.getC());
-        convertedObisCode.setD((short) sourceObisCode.getD());
-        convertedObisCode.setE((short) sourceObisCode.getE());
-        convertedObisCode.setF((short) sourceObisCode.getF());
-
-        convertedPushObject.setClassId(sourcePushObject.getClassId());
-        convertedPushObject.setLogicalName(convertedObisCode);
-        convertedPushObject.setAttributeIndex((byte) sourcePushObject.getAttributeIndex());
-        convertedPushObject.setDataIndex(sourcePushObject.getDataIndex());
-        pushSetupAlarm.getPushObjectList().add(convertedPushObject);
-      }
+      final List<PushObject> convertedPushObjectList =
+          this.mapperFacade.mapAsList(source.getPushObjectList(), PushObject.class);
+      pushSetupAlarm.getPushObjectList().addAll(convertedPushObjectList);
     }
 
     return pushSetupAlarm;
@@ -100,32 +80,15 @@ public class PushSetupAlarmConverter
       final String destination = source.getHost() + ":" + source.getPort();
       final SendDestinationAndMethod sendDestinationAndMethod =
           new SendDestinationAndMethod(
-              TransportServiceType.TCP, destination, MessageType.MANUFACTURER_SPECIFIC);
+              TransportServiceType.TCP, destination, MessageType.A_XDR_ENCODED_X_DLMS_APDU);
       builder.withSendDestinationAndMethod(sendDestinationAndMethod);
     }
 
     final List<PushObject> sourcePushObjects = source.getPushObjectList();
 
     if (sourcePushObjects != null) {
-      final List<CosemObjectDefinition> convertedPushObjectList = new ArrayList<>();
-      for (final PushObject sourcePushObject : sourcePushObjects) {
-        final ObisCodeValues obisCode = sourcePushObject.getLogicalName();
-        final CosemObisCode convertedObisCode =
-            new CosemObisCode(
-                obisCode.getA(),
-                obisCode.getB(),
-                obisCode.getC(),
-                obisCode.getD(),
-                obisCode.getE(),
-                obisCode.getF());
-        final CosemObjectDefinition convertedPushObject =
-            new CosemObjectDefinition(
-                sourcePushObject.getClassId(),
-                convertedObisCode,
-                sourcePushObject.getAttributeIndex(),
-                sourcePushObject.getDataIndex());
-        convertedPushObjectList.add(convertedPushObject);
-      }
+      final List<CosemObjectDefinition> convertedPushObjectList =
+          this.mapperFacade.mapAsList(source.getPushObjectList(), CosemObjectDefinition.class);
       builder.withPushObjectList(convertedPushObjectList);
     }
 

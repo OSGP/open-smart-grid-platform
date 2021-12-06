@@ -14,6 +14,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.PushSetupMapper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -38,10 +39,13 @@ public class SetPushSetupAlarmCommandExecutor
   private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
 
   private final DlmsHelper dlmsHelper;
+  private final PushSetupMapper pushSetupMapper;
 
-  public SetPushSetupAlarmCommandExecutor(final DlmsHelper dlmsHelper) {
+  public SetPushSetupAlarmCommandExecutor(
+      final DlmsHelper dlmsHelper, final PushSetupMapper pushSetupMapper) {
     super(SetPushSetupAlarmRequestDto.class);
     this.dlmsHelper = dlmsHelper;
+    this.pushSetupMapper = pushSetupMapper;
   }
 
   @Override
@@ -96,7 +100,7 @@ public class SetPushSetupAlarmCommandExecutor
       throws ProtocolAdapterException {
     LOGGER.info(
         "Setting Send destination and method of Push Setup Alarm: {}",
-        pushSetupAlarm.getPushObjectList());
+        pushSetupAlarm.getSendDestinationAndMethod());
 
     final SetParameter setParameterSendDestinationAndMethod =
         this.getSetParameterSendDestinationAndMethod(pushSetupAlarm);
@@ -104,7 +108,6 @@ public class SetPushSetupAlarmCommandExecutor
         this.doSetRequest(
             "PushSetupAlarm, Send destination and method",
             conn,
-            OBIS_CODE,
             setParameterSendDestinationAndMethod);
 
     if (resultCode != null) {
@@ -121,7 +124,7 @@ public class SetPushSetupAlarmCommandExecutor
     final AttributeAddress sendDestinationAndMethodAddress =
         new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD);
     final DataObject value =
-        this.buildSendDestinationAndMethodObject(pushSetupAlarm.getSendDestinationAndMethod());
+        this.pushSetupMapper.map(pushSetupAlarm.getSendDestinationAndMethod(), DataObject.class);
 
     return new SetParameter(sendDestinationAndMethodAddress, value);
   }
@@ -140,8 +143,7 @@ public class SetPushSetupAlarmCommandExecutor
         this.getSetParameterPushObjectList(pushSetupAlarm);
 
     final AccessResultCode resultCode =
-        this.doSetRequest(
-            "PushSetupAlarm, push object list", conn, OBIS_CODE, setParameterPushObjectList);
+        this.doSetRequest("PushSetupAlarm, push object list", conn, setParameterPushObjectList);
 
     if (resultCode != null) {
       return resultCode;
@@ -189,7 +191,9 @@ public class SetPushSetupAlarmCommandExecutor
 
     final AttributeAddress pushObjectListAddress =
         new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_PUSH_OBJECT_LIST);
-    final DataObject value = this.buildPushObjectListObject(pushSetupAlarm.getPushObjectList());
+    final DataObject value =
+        DataObject.newArrayData(
+            this.pushSetupMapper.mapAsList(pushSetupAlarm.getPushObjectList(), DataObject.class));
 
     return new SetParameter(pushObjectListAddress, value);
   }

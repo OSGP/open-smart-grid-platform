@@ -28,7 +28,7 @@ public class PushSetupAlarmMappingTest {
   private static final BigInteger PORT = BigInteger.TEN;
   private static final String DESTINATION = "host:10";
   private static final TransportServiceType TRANSPORTSERVICETYPE = TransportServiceType.TCP;
-  private static final MessageType MESSAGETYPE = MessageType.MANUFACTURER_SPECIFIC;
+  private static final MessageType MESSAGETYPE = MessageType.A_XDR_ENCODED_X_DLMS_APDU;
   private static final int PUSH_OBJECT_CLASS_ID = 1;
   private static final CosemObisCode PUSH_OBJECT_OBIS_CODE = new CosemObisCode(1, 2, 3, 4, 5, 6);
   private static final int PUSH_OBJECT_ATTRIBUTE_ID = 2;
@@ -56,13 +56,6 @@ public class PushSetupAlarmMappingTest {
 
     assertThat(pushSetupAlarmMapped).isNotNull();
 
-    // check mapping of SendDestinationAndMethod
-    assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod()).isNotNull();
-    assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getDestination()).isNotNull();
-    assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getTransportService())
-        .isNotNull();
-    assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getMessage()).isNotNull();
-
     // port and host are combined into destination. The converter sets default values for the other
     // two variables of a SendDestinationAndMethod.
     assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getDestination())
@@ -73,7 +66,6 @@ public class PushSetupAlarmMappingTest {
         .isEqualTo(MESSAGETYPE.name());
 
     // check mapping of PushObjectList
-    assertThat(pushSetupAlarmMapped.getPushObjectList()).isNotNull();
     assertThat(pushSetupAlarmMapped.getPushObjectList()).hasSize(1);
     final CosemObjectDefinition pushObject = pushSetupAlarmMapped.getPushObjectList().get(0);
     assertThat(pushObject.getClassId()).isEqualTo(PUSH_OBJECT_CLASS_ID);

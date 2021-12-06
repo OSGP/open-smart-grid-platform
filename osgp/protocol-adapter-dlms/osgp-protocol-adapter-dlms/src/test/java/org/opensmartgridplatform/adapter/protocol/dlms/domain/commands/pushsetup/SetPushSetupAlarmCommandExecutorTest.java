@@ -10,7 +10,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,6 +33,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.PushSetupMapper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -115,7 +116,7 @@ class SetPushSetupAlarmCommandExecutorTest {
   @Mock private MessageMetadata messageMetadata;
 
   private final SetPushSetupAlarmCommandExecutor executor =
-      new SetPushSetupAlarmCommandExecutor(new DlmsHelper());
+      new SetPushSetupAlarmCommandExecutor(new DlmsHelper(), new PushSetupMapper());
 
   @Test
   void testSetSendDestinationAndMethod() throws ProtocolAdapterException, IOException {
@@ -124,9 +125,10 @@ class SetPushSetupAlarmCommandExecutorTest {
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
 
-    final PushSetupAlarmDto.Builder pushSetupAlarmBuilder = new PushSetupAlarmDto.Builder();
-    pushSetupAlarmBuilder.withSendDestinationAndMethod(SEND_DESTINATION_AND_METHOD);
-    final PushSetupAlarmDto pushSetupAlarmDto = pushSetupAlarmBuilder.build();
+    final PushSetupAlarmDto pushSetupAlarmDto =
+        new PushSetupAlarmDto.Builder()
+            .withSendDestinationAndMethod(SEND_DESTINATION_AND_METHOD)
+            .build();
 
     // CALL
     final AccessResultCode resultCode =
@@ -172,10 +174,11 @@ class SetPushSetupAlarmCommandExecutorTest {
     when(this.dlmsConnection.get(any(AttributeAddress.class)))
         .thenReturn(new GetResultImpl(DataObject.newNullData(), AccessResultCode.SUCCESS));
 
-    final PushSetupAlarmDto.Builder pushSetupAlarmBuilder = new PushSetupAlarmDto.Builder();
-    pushSetupAlarmBuilder.withSendDestinationAndMethod(SEND_DESTINATION_AND_METHOD);
-    pushSetupAlarmBuilder.withPushObjectList(PUSH_OBJECT_LIST);
-    final PushSetupAlarmDto pushSetupAlarmDto = pushSetupAlarmBuilder.build();
+    final PushSetupAlarmDto pushSetupAlarmDto =
+        new PushSetupAlarmDto.Builder()
+            .withSendDestinationAndMethod(SEND_DESTINATION_AND_METHOD)
+            .withPushObjectList(PUSH_OBJECT_LIST)
+            .build();
 
     // CALL
     final AccessResultCode resultCode =
@@ -196,33 +199,37 @@ class SetPushSetupAlarmCommandExecutorTest {
     when(this.dlmsConnection.get(any(AttributeAddress.class)))
         .thenReturn(new GetResultImpl(DataObject.newNullData(), AccessResultCode.OBJECT_UNDEFINED));
 
-    final PushSetupAlarmDto.Builder pushSetupAlarmBuilder = new PushSetupAlarmDto.Builder();
-    pushSetupAlarmBuilder.withPushObjectList(PUSH_OBJECT_LIST);
-    final PushSetupAlarmDto pushSetupAlarmDto = pushSetupAlarmBuilder.build();
+    final PushSetupAlarmDto pushSetupAlarmDto =
+        new PushSetupAlarmDto.Builder().withPushObjectList(PUSH_OBJECT_LIST).build();
 
     // CALL
-    assertThatExceptionOfType(ProtocolAdapterException.class)
-        .isThrownBy(
+    final Throwable thrown =
+        catchThrowable(
             () -> {
               this.executor.execute(
                   this.conn, this.DLMS_DEVICE, pushSetupAlarmDto, this.messageMetadata);
             });
+
+    // VERIFY
+    assertThat(thrown).isInstanceOf(ProtocolAdapterException.class);
   }
 
   @Test
   void testSetWithUnsupportedFieldsSet() {
     // SETUP
-    final PushSetupAlarmDto.Builder pushSetupAlarmBuilder = new PushSetupAlarmDto.Builder();
-    pushSetupAlarmBuilder.withCommunicationWindow(new ArrayList<>());
-    final PushSetupAlarmDto pushSetupAlarmDto = pushSetupAlarmBuilder.build();
+    final PushSetupAlarmDto pushSetupAlarmDto =
+        new PushSetupAlarmDto.Builder().withCommunicationWindow(new ArrayList<>()).build();
 
     // CALL
-    assertThatExceptionOfType(ProtocolAdapterException.class)
-        .isThrownBy(
+    final Throwable thrown =
+        catchThrowable(
             () -> {
               this.executor.execute(
                   this.conn, this.DLMS_DEVICE, pushSetupAlarmDto, this.messageMetadata);
             });
+
+    // VERIFY
+    assertThat(thrown).isInstanceOf(ProtocolAdapterException.class);
   }
 
   private void verifySendDestinationAndMethodParameter(final SetParameter setParameter) {
@@ -240,7 +247,7 @@ class SetPushSetupAlarmCommandExecutorTest {
 
     // Transport Service Type
     assertThat(values.get(0).getType()).isEqualTo((Type.ENUMERATE));
-    assertThat((int) values.get(0).getValue()).isEqualTo(TRANSPORT_SERVICE.ordinal());
+    assertThat((int) values.get(0).getValue()).isEqualTo(TRANSPORT_SERVICE.getDlmsEnumValue());
 
     // Destination
     assertThat(values.get(1).getType()).isEqualTo((Type.OCTET_STRING));
@@ -248,7 +255,7 @@ class SetPushSetupAlarmCommandExecutorTest {
 
     // Message Type
     assertThat(values.get(2).getType()).isEqualTo((Type.ENUMERATE));
-    assertThat((int) values.get(2).getValue()).isEqualTo(MESSAGE_TYPE.ordinal());
+    assertThat((int) values.get(2).getValue()).isEqualTo(MESSAGE_TYPE.getDlmsEnumValue());
   }
 
   private void verifyPushObjectListParameter(final SetParameter setParameter) {
