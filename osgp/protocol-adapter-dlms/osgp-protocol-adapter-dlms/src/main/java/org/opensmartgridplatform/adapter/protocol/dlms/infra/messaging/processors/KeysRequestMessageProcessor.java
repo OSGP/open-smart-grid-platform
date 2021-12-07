@@ -60,7 +60,7 @@ public class KeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
     final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
     final Serializable messageObject = message.getObject();
 
-    log.info(
+    log.debug(
         "Checking if not already processing key for device {} before processing {} request message",
         messageMetadata.getDeviceIdentification(),
         messageMetadata.getMessageType());
@@ -78,7 +78,7 @@ public class KeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
       final Duration deviceKeyProcessingTimeout =
           this.deviceKeyProcessingService.getDeviceKeyProcessingTimeout();
-      log.info(
+      log.debug(
           "Key(s) already being processed for device {}. {} request message is send back to the MessageSender with delay of {} seconds.",
           messageMetadata.getDeviceIdentification(),
           messageMetadata.getMessageType(),
