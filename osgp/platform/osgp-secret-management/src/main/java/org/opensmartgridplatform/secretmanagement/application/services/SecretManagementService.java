@@ -301,14 +301,23 @@ public class SecretManagementService {
       }
       this.secretRepository.save(foundSecret);
     }
-    TypedSecret resetNewSecret = null;
-    if (mostRecentFoundSecret != null) {
-      resetNewSecret =
-          new TypedSecret(
-              HexUtils.fromHexString(mostRecentFoundSecret.getEncodedSecret()),
-              mostRecentFoundSecret.getSecretType());
+    return this.convertDbEncryptedSecretTypedSecret(mostRecentFoundSecret);
+  }
+
+  private TypedSecret convertDbEncryptedSecretTypedSecret(
+      final DbEncryptedSecret dbEncryptedSecret) {
+    TypedSecret typedSecret = null;
+    if (dbEncryptedSecret != null) {
+      EncryptedTypedSecret encryptedTypedSecret = null;
+      try {
+        encryptedTypedSecret = EncryptedTypedSecret.fromDbEncryptedSecret(dbEncryptedSecret);
+      } catch (final FunctionalException e) {
+        throw new ExceptionWrapper(e);
+      }
+      encryptedTypedSecret = this.reencryptAes2Rsa(encryptedTypedSecret);
+      typedSecret = encryptedTypedSecret.toTypedSecret();
     }
-    return resetNewSecret;
+    return typedSecret;
   }
 
   private synchronized void storeSecrets(
