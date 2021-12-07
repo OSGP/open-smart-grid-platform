@@ -91,9 +91,9 @@ public class ScenarioHooks {
         PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
     map.put(
         PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY,
-        PlatformSmartmeteringDefaults.SECURITY_KEY_A_XML);
+        PlatformSmartmeteringDefaults.SECURITY_KEYPAIR_1);
     map.put(
-        PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY, PlatformSmartmeteringDefaults.SECURITY_KEY_E_XML);
+        PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY, PlatformSmartmeteringDefaults.SECURITY_KEYPAIR_2);
     return map;
   }
 

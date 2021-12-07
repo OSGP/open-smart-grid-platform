@@ -678,8 +678,12 @@ public class DlmsDeviceSteps {
     }
     if (inputSettings.containsKey(keyTypeInputName)) {
       final String inputKey = inputSettings.get(keyTypeInputName);
-      if (inputKey != null && !inputKey.trim().isEmpty()) {
-        return new SecretBuilder().withSecurityKeyType(keyType).withKey(inputKey);
+
+      final String dbEncryptedKey =
+          PlatformSmartmeteringDefaults.SECURITYKEYPAIRS.getDbKey(inputKey);
+
+      if (dbEncryptedKey != null && !dbEncryptedKey.trim().isEmpty()) {
+        return new SecretBuilder().withSecurityKeyType(keyType).withKey(dbEncryptedKey);
       } else { // secret explicitly set to empty; return null to prevent
         // secret storing
         return null;
@@ -763,11 +767,14 @@ public class DlmsDeviceSteps {
             .next();
     for (int i = 0; i < secretTypesToCreate.size(); i++) {
       if (inputSettings.containsKey(keyTypeInputNames.get(i))) {
+        final String key =
+            PlatformSmartmeteringDefaults.SECURITYKEYPAIRS.getDbKey(
+                inputSettings.get(keyTypeInputNames.get(i)));
         final DbEncryptedSecret secret =
             new SecretBuilder()
                 .withDeviceIdentification(deviceIdentification)
                 .withSecretType(secretTypesToCreate.get(i))
-                .withKey(inputSettings.get(keyTypeInputNames.get(i)))
+                .withKey(key)
                 .withSecretStatus(SecretStatus.NEW)
                 .withEncryptionKeyReference(encryptionKeyRef)
                 .withCreationTime(new Date(System.currentTimeMillis() - (minutesAgo * 60000L)))
@@ -780,17 +787,33 @@ public class DlmsDeviceSteps {
   @Then(
       "the encrypted_secret table in the secret management database should contain {string} keys for device {string}")
   public void theEncryptedSecretTableInTheSecretManagementDatabaseShouldContainKeysForDevice(
-      final String secretStatus,
+      final String secretTypeString,
       final String deviceIdentification,
       final Map<String, String> inputSettings) {
 
-    for (final String keyTypeInputName : inputSettings.keySet()) {
-      final int expectedNrOfKeys = Integer.valueOf(inputSettings.get(keyTypeInputName));
-      final SecretType secretType = this.getSecretTypeByKeyTypeInputName(keyTypeInputName);
-      final int nrOfKeys =
-          this.encryptedSecretRepository.getSecretCount(
+    final SecretType secretType = this.getSecretTypeByKeyTypeInputName(secretTypeString);
+
+    for (final String keyName : inputSettings.keySet()) {
+      final String secretStatus = inputSettings.get(keyName);
+      final String dbEncryptedSecretValue =
+          PlatformSmartmeteringDefaults.SECURITYKEYPAIRS.getDbKey(keyName);
+      final List<DbEncryptedSecret> dbEncryptedSecret =
+          this.encryptedSecretRepository.findSecrets(
               deviceIdentification, secretType, SecretStatus.valueOf(secretStatus));
-      assertThat(nrOfKeys).isEqualTo(expectedNrOfKeys);
+
+      assertThat(dbEncryptedSecret)
+          .withFailMessage(
+              "No dbEncryptedSecret for %s with status %s found", secretTypeString, secretStatus)
+          .isNotEmpty();
+      final List<String> actualEncodedSecrets =
+          dbEncryptedSecret.stream()
+              .map(DbEncryptedSecret::getEncodedSecret)
+              .collect(Collectors.toList());
+      assertThat(actualEncodedSecrets)
+          .withFailMessage(
+              "Wrong dbEncryptedSecret for %s with status %s expected %s to be contained in: %s",
+              secretTypeString, secretStatus, dbEncryptedSecretValue, actualEncodedSecrets)
+          .contains(dbEncryptedSecretValue);
     }
   }
 
@@ -828,8 +851,11 @@ public class DlmsDeviceSteps {
               final List<DbEncryptedSecret> activeSecretList =
                   this.encryptedSecretRepository.findSecrets(
                       deviceIdentification, secretType, SecretStatus.ACTIVE);
+              final String expectedKey = inputSettings.get(keyInputName);
+              final String expectedDbEncryptedSecret =
+                  PlatformSmartmeteringDefaults.SECURITYKEYPAIRS.getDbKey(expectedKey);
               assertThat(activeSecretList.get(0).getEncodedSecret())
-                  .isEqualTo(inputSettings.get(keyInputName));
+                  .isEqualTo(expectedDbEncryptedSecret);
             }
           }
         };

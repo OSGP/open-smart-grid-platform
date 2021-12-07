@@ -217,20 +217,30 @@ public class SecretManagementServiceTest {
     final DbEncryptedSecret recentNewMasterSecret = new DbEncryptedSecret();
     recentNewMasterSecret.setDeviceIdentification(SOME_DEVICE);
     recentNewMasterSecret.setSecretStatus(SecretStatus.NEW);
+    recentNewMasterSecret.setEncodedSecret("1234567890abcdef");
+    final DbEncryptionKeyReference encryptionKeyReference = new DbEncryptionKeyReference();
+    encryptionKeyReference.setEncryptionProviderType(EncryptionProviderType.HSM);
+    encryptionKeyReference.setReference("1");
+    recentNewMasterSecret.setEncryptionKeyReference(encryptionKeyReference);
     return recentNewMasterSecret;
   }
 
   @Test
   public void storeNewSecretWhenOlderNewSecretAlreadyExists() throws Exception {
     // GIVEN
-    final DbEncryptedSecret secret = this.getNewEncryptionSecret(100);
+    final DbEncryptedSecret dbEncryptedSecret = this.getNewEncryptionSecret(100);
     // WHEN
     when(this.secretRepository.getSecretCount(
             SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
         .thenReturn(1);
     when(this.secretRepository.findSecrets(
             SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
-        .thenReturn(Arrays.asList(secret));
+        .thenReturn(Arrays.asList(dbEncryptedSecret));
+
+    final byte[] secret = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+    final byte[] rsaSecret = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+    when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(secret);
+    when(this.rsaEncrypter.encrypt(any())).thenReturn(rsaSecret);
 
     final TypedSecret typedSecret =
         new TypedSecret(new byte[16], SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
@@ -242,9 +252,9 @@ public class SecretManagementServiceTest {
             SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW);
     assertThat(foundSecrets).hasSize(1);
 
-    verify(this.secretRepository, never()).saveAll(Arrays.asList(secret));
-    assertThat(secret.getCreationTime()).isCloseTo(new Date(), 100);
-    assertThat(secret.getSecretStatus()).isEqualTo(SecretStatus.NEW);
+    verify(this.secretRepository, never()).saveAll(Arrays.asList(dbEncryptedSecret));
+    assertThat(dbEncryptedSecret.getCreationTime()).isCloseTo(new Date(), 100);
+    assertThat(dbEncryptedSecret.getSecretStatus()).isEqualTo(SecretStatus.NEW);
   }
 
   @Test
@@ -269,6 +279,11 @@ public class SecretManagementServiceTest {
     when(this.secretRepository.findSecrets(
             SOME_DEVICE, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.NEW))
         .thenReturn(Arrays.asList(secretOldAuthen, secretOlderAuthen));
+
+    final byte[] secret = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+    final byte[] rsaSecret = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+    when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(secret);
+    when(this.rsaEncrypter.encrypt(any())).thenReturn(rsaSecret);
 
     final TypedSecret typedSecretEncryption =
         new TypedSecret(new byte[16], SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
@@ -441,16 +456,6 @@ public class SecretManagementServiceTest {
   @Test
   public void activateSecretsNoNewSecret() {
     // WHEN
-    // <<<<<<< HEAD
-    //    when(this.secretRepository.getSecretCount(
-    //            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
-    //        .thenReturn(0);
-    //    assertThatIllegalStateException()
-    //        .isThrownBy(
-    //            () ->
-    //                this.service.activateNewSecrets(
-    //                    SOME_DEVICE, Arrays.asList(SecretType.E_METER_MASTER_KEY)));
-    // =======
     this.service.activateNewSecrets("SOME_DEVICE", Arrays.asList(SecretType.E_METER_MASTER_KEY));
     // THEN
     final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
@@ -458,7 +463,6 @@ public class SecretManagementServiceTest {
     verify(this.secretRepository).saveAll(secretListArgumentCaptor.capture());
     final List<DbEncryptedSecret> savedSecrets = secretListArgumentCaptor.getValue();
     assertThat(savedSecrets.size()).isEqualTo(0);
-    // >>>>>>> development
   }
 
   @Test
@@ -514,14 +518,19 @@ public class SecretManagementServiceTest {
   @Test
   public void generateAndStoreNewSecretWhenOlderNewSecretAlreadyExists() throws Exception {
     // GIVEN
-    final DbEncryptedSecret secret = this.getNewEncryptionSecret(100);
+    final DbEncryptedSecret dbEncryptedSecret = this.getNewEncryptionSecret(100);
     // WHEN
     when(this.secretRepository.getSecretCount(
             SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
         .thenReturn(1);
     when(this.secretRepository.findSecrets(
             SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
-        .thenReturn(Arrays.asList(secret));
+        .thenReturn(Arrays.asList(dbEncryptedSecret));
+
+    final byte[] secret = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+    final byte[] rsaSecret = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+    when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(secret);
+    when(this.rsaEncrypter.encrypt(any())).thenReturn(rsaSecret);
 
     final SecretType secretType = SecretType.E_METER_ENCRYPTION_KEY_UNICAST;
     this.service.generateAndStoreOrResetNewSecrets(SOME_DEVICE, Arrays.asList(secretType));
@@ -532,9 +541,9 @@ public class SecretManagementServiceTest {
             SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW);
     assertThat(foundSecrets).hasSize(1);
 
-    verify(this.secretRepository, never()).saveAll(Arrays.asList(secret));
-    assertThat(secret.getCreationTime()).isCloseTo(new Date(), 100);
-    assertThat(secret.getSecretStatus()).isEqualTo(SecretStatus.NEW);
+    verify(this.secretRepository, never()).saveAll(Arrays.asList(dbEncryptedSecret));
+    assertThat(dbEncryptedSecret.getCreationTime()).isCloseTo(new Date(), 100);
+    assertThat(dbEncryptedSecret.getSecretStatus()).isEqualTo(SecretStatus.NEW);
   }
 
   @Test
@@ -560,6 +569,11 @@ public class SecretManagementServiceTest {
     when(this.secretRepository.findSecrets(
             SOME_DEVICE, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.NEW))
         .thenReturn(Arrays.asList(secretOldAuthen, secretOlderAuthen));
+
+    final byte[] secret = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+    final byte[] rsaSecret = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+    when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(secret);
+    when(this.rsaEncrypter.encrypt(any())).thenReturn(rsaSecret);
 
     final SecretType encryptionSecretType = SecretType.E_METER_ENCRYPTION_KEY_UNICAST;
     final SecretType authenSecretType = SecretType.E_METER_AUTHENTICATION_KEY;

@@ -24,6 +24,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.R
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GenerateAndReplaceKeysRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.ReplaceKeysRequestFactory;
@@ -40,19 +41,21 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
         .put(
             PlatformKeys.KEY_DEVICE_IDENTIFICATION,
             settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
-    ScenarioContext.current()
-        .put(
-            PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY,
-            settings.get(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY));
-    ScenarioContext.current()
-        .put(
-            PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY,
-            settings.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
+
+    this.putKeyInScenarioContext(settings, PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY);
+    this.putKeyInScenarioContext(settings, PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY);
+
     final ReplaceKeysRequest request = ReplaceKeysRequestFactory.fromParameterMap(settings);
     final ReplaceKeysAsyncResponse asyncResponse =
         this.smartMeteringConfigurationClient.replaceKeys(request);
     ScenarioContext.current()
         .put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+  }
+
+  private void putKeyInScenarioContext(final Map<String, String> settings, final String key) {
+    final String keyName = settings.get(key);
+    final String soapKey = PlatformSmartmeteringDefaults.SECURITYKEYPAIRS.getSoapKey(keyName);
+    ScenarioContext.current().put(key, soapKey);
   }
 
   @Then("^the replace keys response should be returned$")
@@ -127,5 +130,31 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
     final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
     assertThat(response.getResult()).as("Result").isNotNull();
     assertThat(response.getResult().name()).as("Result").isEqualTo(expectedResult);
+  }
+
+  public class SecurityKey {
+
+    public SecurityKey(final String name, final String keyInDb, final String keyInRequest) {
+      this.name = name;
+      this.keyInDb = keyInDb;
+      this.keyInRequest = keyInRequest;
+    }
+
+    String name;
+
+    public String getName() {
+      return this.name;
+    }
+
+    public String getKeyInDb() {
+      return this.keyInDb;
+    }
+
+    public String getKeyInRequest() {
+      return this.keyInRequest;
+    }
+
+    String keyInDb;
+    String keyInRequest;
   }
 }

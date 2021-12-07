@@ -87,6 +87,8 @@ public class PlatformSmartmeteringDefaults
           + "fb5ea521eeabd8cb69d8f7a5cbe2b20e010c089ee346aaa13c9abdc5e0c9ba0fcafff53d2dcd3c1b7a8ee3c3f76e0d00fcd043940586f055c5e19a0fa7eeff6a7894e128029eaf11"
           + "c1734565f3f5b614bfab9ea5ce24bf34d2e59878dc2401bd175333315ce197d4243dced9c4e28a23bc91dca432985debe81cf5912df7e99b28f596f335e80678d7b5d1edc93be8bf"
           + "22d77b2e172ccd7c6907454a983999840bf540343d281e8f9871386f005fe40065fcbe218bdc605be4e759cb1b8d5760eab7b8ceb95cfae2224c15045834962f9b6b";
+  public static final String MBUS_USER_KEY_DB =
+      "17ec0e5f6a3314df6239cf9f1b902cbfc9f39e82c57a40ffd8a3e552cc720c92";
   public static final String SECURITY_KEY_TYPE_A = "E_METER_AUTHENTICATION";
   public static final String SECURITY_KEY_TYPE_E = "E_METER_ENCRYPTION";
 
@@ -107,7 +109,37 @@ public class PlatformSmartmeteringDefaults
   public static final Boolean DAYLIGHT_SAVINGS_ACTIVE = false;
   public static final Byte DEVIATION = -60;
 
+  public static final SecurityKeyPairs SECURITYKEYPAIRS;
+
+  public static final String SECURITY_KEYPAIR_1 = "SECURITY_KEYPAIR_1";
+  public static final String SECURITY_KEYPAIR_2 = "SECURITY_KEYPAIR_2";
+  public static final String SECURITY_KEYPAIR_3 = "SECURITY_KEYPAIR_3";
+  public static final String MBUS_USER_KEYPAIR = "MBUS_USER_KEYPAIR";
+  public static final String SECURITY_KEYPAIR_4 = "SECURITY_KEYPAIR_4";
+  public static final String AN_INCORRECT_SECURITY_KEY = "AN_INCORRECT_SECURITY_KEY";
+  public static final String ANOTHER_INCORRECT_SECURITY_KEY = "ANOTHER_INCORRECT_SECURITY_KEY";
+  public static final String EMPTY_SECURITY_KEY = "EMPTY_SECURITY_KEY";
+
   static {
+    SECURITYKEYPAIRS = new SecurityKeyPairs();
+    SECURITYKEYPAIRS.addSecurityKeyPair(SECURITY_KEYPAIR_1, SECURITY_KEY_A_DB, SECURITY_KEY_A_XML);
+    SECURITYKEYPAIRS.addSecurityKeyPair(SECURITY_KEYPAIR_2, SECURITY_KEY_E_DB, SECURITY_KEY_E_XML);
+    SECURITYKEYPAIRS.addSecurityKeyPair(SECURITY_KEYPAIR_3, SECURITY_KEY_M_DB, SECURITY_KEY_M_XML);
+    SECURITYKEYPAIRS.addSecurityKeyPair(MBUS_USER_KEYPAIR, MBUS_USER_KEY_DB, MBUS_USER_KEY_DB);
+    SECURITYKEYPAIRS.addSecurityKeyPair(
+        SECURITY_KEYPAIR_4,
+        "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+        "0123456789abcdef");
+    SECURITYKEYPAIRS.addSecurityKeyPair(
+        AN_INCORRECT_SECURITY_KEY,
+        "34567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef12",
+        "def0123456789abc");
+    SECURITYKEYPAIRS.addSecurityKeyPair(
+        ANOTHER_INCORRECT_SECURITY_KEY,
+        "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+        "abc0123456789def");
+    SECURITYKEYPAIRS.addSecurityKeyPair(EMPTY_SECURITY_KEY, "", "");
+
     InetAddress localhost;
     try {
       localhost = InetAddress.getByName(PlatformDefaults.LOCALHOST);
