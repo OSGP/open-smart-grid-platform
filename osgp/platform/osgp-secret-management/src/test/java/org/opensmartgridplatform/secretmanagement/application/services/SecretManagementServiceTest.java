@@ -60,7 +60,8 @@ public class SecretManagementServiceTest {
   @Mock private EncryptionDelegate encryptionDelegate;
   @Mock private DbEncryptedSecretRepository secretRepository;
   @Mock private DbEncryptionKeyRepository keyRepository;
-  @Mock private RsaEncrypter rsaEncrypter;
+  @Mock private RsaEncrypter encrypterForSecretManagementClient;
+  @Mock private RsaEncrypter decrypterForSecretManagement;
 
   @BeforeEach
   public void setUpSecretManagementService() {
@@ -70,7 +71,8 @@ public class SecretManagementServiceTest {
             ENCRYPTION_PROVIDER_TYPE,
             this.secretRepository,
             this.keyRepository,
-            this.rsaEncrypter);
+            this.encrypterForSecretManagementClient,
+            this.decrypterForSecretManagement);
     final Logger logger = (Logger) LoggerFactory.getLogger(SecretManagementService.class.getName());
     logger.addAppender(this.mockAppender);
   }
@@ -94,7 +96,7 @@ public class SecretManagementServiceTest {
             SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
         .thenReturn(secretList);
     when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(decryptedSecret);
-    when(this.rsaEncrypter.encrypt(any())).thenReturn(rsaSecret);
+    when(this.encrypterForSecretManagementClient.encrypt(any())).thenReturn(rsaSecret);
     final List<TypedSecret> typedSecrets =
         this.service.retrieveSecrets(SOME_DEVICE, Arrays.asList(SecretType.E_METER_MASTER_KEY));
 
@@ -240,7 +242,7 @@ public class SecretManagementServiceTest {
     final byte[] secret = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
     final byte[] rsaSecret = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
     when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(secret);
-    when(this.rsaEncrypter.encrypt(any())).thenReturn(rsaSecret);
+    when(this.encrypterForSecretManagementClient.encrypt(any())).thenReturn(rsaSecret);
 
     final TypedSecret typedSecret =
         new TypedSecret(new byte[16], SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
@@ -283,7 +285,7 @@ public class SecretManagementServiceTest {
     final byte[] secret = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
     final byte[] rsaSecret = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
     when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(secret);
-    when(this.rsaEncrypter.encrypt(any())).thenReturn(rsaSecret);
+    when(this.encrypterForSecretManagementClient.encrypt(any())).thenReturn(rsaSecret);
 
     final TypedSecret typedSecretEncryption =
         new TypedSecret(new byte[16], SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
@@ -505,7 +507,7 @@ public class SecretManagementServiceTest {
     when(this.encryptionDelegate.generateAes128BitsSecret(ENCRYPTION_PROVIDER_TYPE, reference))
         .thenReturn(aesSecret);
     when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(secret);
-    when(this.rsaEncrypter.encrypt(any())).thenReturn(rsaSecret);
+    when(this.encrypterForSecretManagementClient.encrypt(any())).thenReturn(rsaSecret);
     final List<TypedSecret> secrets =
         this.service.generateAndStoreOrResetNewSecrets(
             SOME_DEVICE, Arrays.asList(SecretType.E_METER_AUTHENTICATION_KEY));
@@ -530,7 +532,7 @@ public class SecretManagementServiceTest {
     final byte[] secret = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
     final byte[] rsaSecret = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
     when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(secret);
-    when(this.rsaEncrypter.encrypt(any())).thenReturn(rsaSecret);
+    when(this.encrypterForSecretManagementClient.encrypt(any())).thenReturn(rsaSecret);
 
     final SecretType secretType = SecretType.E_METER_ENCRYPTION_KEY_UNICAST;
     this.service.generateAndStoreOrResetNewSecrets(SOME_DEVICE, Arrays.asList(secretType));
@@ -573,7 +575,7 @@ public class SecretManagementServiceTest {
     final byte[] secret = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
     final byte[] rsaSecret = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
     when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(secret);
-    when(this.rsaEncrypter.encrypt(any())).thenReturn(rsaSecret);
+    when(this.encrypterForSecretManagementClient.encrypt(any())).thenReturn(rsaSecret);
 
     final SecretType encryptionSecretType = SecretType.E_METER_ENCRYPTION_KEY_UNICAST;
     final SecretType authenSecretType = SecretType.E_METER_AUTHENTICATION_KEY;

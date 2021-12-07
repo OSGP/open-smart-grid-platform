@@ -53,11 +53,17 @@ public class SoapClientConfig {
   @Value("${soapclient.ssl.key-password}")
   private String keyPassword;
 
-  @Value("${encryption.soap.rsa.private.key.resource}")
-  private Resource soapRsaPrivateKeyResource;
+  @Value("${encryption.rsa.private.key.protocol.adapter.dlms}")
+  private Resource rsaPrivateKeyProtocolAdapterDlms;
 
-  @Value("${encryption.soap.rsa.public.key.resource}")
-  private Resource soapRsaPublicKeyResource;
+  @Value("${encryption.rsa.public.key.secret.management}")
+  private Resource rsaPublicKeySecretManagement;
+
+  @Value("${encryption.rsa.private.key.gxf.smartmetering}")
+  private Resource rsaPrivateKeyGxfSmartMetering;
+
+  @Value("${encryption.rsa.public.key.gxf.smartmetering}")
+  private Resource rsaPublicKeyGxfSmartMetering;
 
   @Bean
   Jaxb2Marshaller soapClientJaxb2Marshaller() {
@@ -131,17 +137,56 @@ public class SoapClientConfig {
     return keyManagersFactoryBean;
   }
 
-  @Bean
-  public RsaEncrypter rsaEncrypter() {
+  // RsaEncrypter for encrypting secrets to be sent to Secret Management.
+  @Bean(name = "encrypterForSecretManagement")
+  public RsaEncrypter encrypterForSecretManagement() {
     try {
-      final File privateRsaKeyFile = this.soapRsaPrivateKeyResource.getFile();
-      final File publicRsaKeyFile = this.soapRsaPublicKeyResource.getFile();
+      final File publicKeySecretManagementFile = this.rsaPublicKeySecretManagement.getFile();
       final RsaEncrypter rsaEncrypter = new RsaEncrypter();
-      rsaEncrypter.setPrivateKeyStore(privateRsaKeyFile);
-      rsaEncrypter.setPublicKeyStore(publicRsaKeyFile);
+      rsaEncrypter.setPublicKeyStore(publicKeySecretManagementFile);
       return rsaEncrypter;
     } catch (final IOException e) {
-      throw new IllegalStateException("Could not initialize RsaEncrypter", e);
+      throw new IllegalStateException("Could not initialize encrypterForSecretManagement", e);
+    }
+  }
+
+  // RsaEncrypter for decrypting secrets from Secret Management received by the DLMS protocol
+  // adapter.
+  @Bean(name = "decrypterForProtocolAdapterDlms")
+  public RsaEncrypter decrypterForProtocolAdapterDlms() {
+    try {
+      final File privateKeyProtocolAdapterFile = this.rsaPrivateKeyProtocolAdapterDlms.getFile();
+      final RsaEncrypter rsaEncrypter = new RsaEncrypter();
+      rsaEncrypter.setPrivateKeyStore(privateKeyProtocolAdapterFile);
+      return rsaEncrypter;
+    } catch (final IOException e) {
+      throw new IllegalStateException("Could not initialize decrypterForProtocolAdapterDlms", e);
+    }
+  }
+
+  // RsaEncrypter for encrypting secrets to be sent to other GXF components.
+  @Bean(name = "encrypterForGxfSmartMetering")
+  public RsaEncrypter encrypterForGxfSmartMetering() {
+    try {
+      final File publicKeyGxfSmartMeteringFile = this.rsaPublicKeyGxfSmartMetering.getFile();
+      final RsaEncrypter rsaEncrypter = new RsaEncrypter();
+      rsaEncrypter.setPublicKeyStore(publicKeyGxfSmartMeteringFile);
+      return rsaEncrypter;
+    } catch (final IOException e) {
+      throw new IllegalStateException("Could not initialize encrypterForGxfSmartMetering", e);
+    }
+  }
+
+  // RsaEncrypter for decrypting secrets from applications received by the DLMS protocol adapter.
+  @Bean(name = "decrypterForGxfSmartMetering")
+  public RsaEncrypter decrypterForGxfSmartMetering() {
+    try {
+      final File privateKeyGxfSmartMeteringFile = this.rsaPrivateKeyGxfSmartMetering.getFile();
+      final RsaEncrypter rsaEncrypter = new RsaEncrypter();
+      rsaEncrypter.setPrivateKeyStore(privateKeyGxfSmartMeteringFile);
+      return rsaEncrypter;
+    } catch (final IOException e) {
+      throw new IllegalStateException("Could not initialize decrypterForGxfSmartMetering", e);
     }
   }
 }

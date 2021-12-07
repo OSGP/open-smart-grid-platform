@@ -117,23 +117,29 @@ public class SecretManagementService {
     }
   }
 
-  private final EncryptionDelegate encryptionDelegate;
+  private final EncryptionDelegate encryptionDelegateForKeyStorage;
   private final EncryptionProviderType encryptionProviderType;
   private final DbEncryptedSecretRepository secretRepository;
   private final DbEncryptionKeyRepository keyRepository;
-  private final RsaEncrypter rsaEncrypter;
+  private final RsaEncrypter encrypterForSecretManagementClient;
+  private final RsaEncrypter decrypterForSecretManagement;
 
   public SecretManagementService(
-      @Qualifier("DefaultEncryptionDelegate") final EncryptionDelegate defaultEncryptionDelegate,
+      @Qualifier("DefaultEncryptionDelegateForKeyStorage")
+          final EncryptionDelegate defaultEncryptionDelegateForKeyStorage,
       final EncryptionProviderType encryptionProviderType,
       final DbEncryptedSecretRepository secretRepository,
       final DbEncryptionKeyRepository keyRepository,
-      final RsaEncrypter rsaEncrypter) {
-    this.encryptionDelegate = defaultEncryptionDelegate;
+      @Qualifier(value = "encrypterForSecretManagementClient")
+          final RsaEncrypter encrypterForSecretManagementClient,
+      @Qualifier(value = "decrypterForSecretManagement")
+          final RsaEncrypter decrypterForSecretManagement) {
+    this.encryptionDelegateForKeyStorage = defaultEncryptionDelegateForKeyStorage;
     this.encryptionProviderType = encryptionProviderType;
     this.secretRepository = secretRepository;
     this.keyRepository = keyRepository;
-    this.rsaEncrypter = rsaEncrypter;
+    this.encrypterForSecretManagementClient = encrypterForSecretManagementClient;
+    this.decrypterForSecretManagement = decrypterForSecretManagement;
   }
 
   private DbEncryptionKeyReference getCurrentKey() {
@@ -434,7 +440,7 @@ public class SecretManagementService {
     try {
       final DbEncryptionKeyReference currentKey = this.getCurrentKey();
       final byte[] aesEncrypted =
-          this.encryptionDelegate.generateAes128BitsSecret(
+          this.encryptionDelegateForKeyStorage.generateAes128BitsSecret(
               this.encryptionProviderType, currentKey.getReference());
       return new EncryptedTypedSecret(
           aesEncrypted,
@@ -473,8 +479,11 @@ public class SecretManagementService {
     final byte[] aes;
     try {
       aes =
-          this.encryptionDelegate
-              .encrypt(this.encryptionProviderType, this.rsaEncrypter.decrypt(rsa), keyReference)
+          this.encryptionDelegateForKeyStorage
+              .encrypt(
+                  this.encryptionProviderType,
+                  this.decrypterForSecretManagement.decrypt(rsa),
+                  keyReference)
               .getSecret();
     } catch (final EncrypterException ee) {
       throw new IllegalStateException(
@@ -488,8 +497,8 @@ public class SecretManagementService {
       final String keyReference,
       final EncryptionProviderType encryptionProviderType) {
     try {
-      return this.rsaEncrypter.encrypt(
-          this.encryptionDelegate.decrypt(
+      return this.encrypterForSecretManagementClient.encrypt(
+          this.encryptionDelegateForKeyStorage.decrypt(
               new EncryptedSecret(encryptionProviderType, aes), keyReference));
     } catch (final EncrypterException ee) {
       throw new IllegalStateException(

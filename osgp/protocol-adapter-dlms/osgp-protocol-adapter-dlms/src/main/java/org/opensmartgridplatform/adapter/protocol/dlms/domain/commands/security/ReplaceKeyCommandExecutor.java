@@ -13,7 +13,6 @@ import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.EncryptionHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
@@ -26,12 +25,13 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -55,7 +55,9 @@ public class ReplaceKeyCommandExecutor
 
   @Autowired private SecretManagementService secretManagementService;
 
-  @Autowired EncryptionHelperService encryptionService;
+  @Autowired
+  @Qualifier("decrypterForGxfSmartMetering")
+  private RsaEncrypter decrypterForGxfSmartMetering;
 
   public ReplaceKeyCommandExecutor() {
     super(SetKeysRequestDto.class);
@@ -112,12 +114,11 @@ public class ReplaceKeyCommandExecutor
     return new ActionResponseDto(REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
   }
 
-  private SetKeysRequestDto decryptRsaKeys(final SetKeysRequestDto setKeysRequestDto)
-      throws FunctionalException {
+  private SetKeysRequestDto decryptRsaKeys(final SetKeysRequestDto setKeysRequestDto) {
     final byte[] authenticationKey =
-        this.encryptionService.rsaDecrypt(setKeysRequestDto.getAuthenticationKey());
+        this.decrypterForGxfSmartMetering.decrypt(setKeysRequestDto.getAuthenticationKey());
     final byte[] encryptionKey =
-        this.encryptionService.rsaDecrypt(setKeysRequestDto.getEncryptionKey());
+        this.decrypterForGxfSmartMetering.decrypt(setKeysRequestDto.getEncryptionKey());
 
     return new SetKeysRequestDto(authenticationKey, encryptionKey);
   }

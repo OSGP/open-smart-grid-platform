@@ -20,11 +20,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.codec.binary.Hex;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.wsclient.SecretManagementClient;
@@ -47,11 +46,6 @@ import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
 
 @ExtendWith(MockitoExtension.class)
 public class SecretManagementServiceTest {
-  @InjectMocks SecretManagementService secretManagementTestService;
-
-  @Mock SecretManagementClient secretManagementClient;
-  @Mock RsaEncrypter rsaEncrypter;
-
   private static final String DEVICE_IDENTIFICATION = "E000123456789";
   private static final SecurityKeyType KEY_TYPE = SecurityKeyType.E_METER_ENCRYPTION;
   private static final byte[] UNENCRYPTED_SECRET = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
@@ -61,8 +55,21 @@ public class SecretManagementServiceTest {
 
   private static MessageMetadata messageMetadata;
 
-  @BeforeAll
-  public static void init() {
+  @Mock SecretManagementClient secretManagementClient;
+
+  @Mock RsaEncrypter encrypterForSecretManagement;
+
+  @Mock RsaEncrypter decrypterForProtocolAdapterDlms;
+
+  private SecretManagementService secretManagementTestService;
+
+  @BeforeEach
+  public void init() {
+    this.secretManagementTestService =
+        new SecretManagementService(
+            this.encrypterForSecretManagement,
+            this.decrypterForProtocolAdapterDlms,
+            this.secretManagementClient);
     TYPED_SECRET.setType(KEY_TYPE.toSecretType());
     TYPED_SECRET.setSecret(HEX_SOAP_SECRET);
     messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
@@ -79,7 +86,7 @@ public class SecretManagementServiceTest {
     when(this.secretManagementClient.getSecretsRequest(
             same(messageMetadata), any(GetSecretsRequest.class)))
         .thenReturn(response);
-    when(this.rsaEncrypter.decrypt(SOAP_SECRET)).thenReturn(UNENCRYPTED_SECRET);
+    when(this.decrypterForProtocolAdapterDlms.decrypt(SOAP_SECRET)).thenReturn(UNENCRYPTED_SECRET);
     // EXECUTE
     final Map<SecurityKeyType, byte[]> result =
         this.secretManagementTestService.getKeys(messageMetadata, DEVICE_IDENTIFICATION, keyTypes);
@@ -96,7 +103,7 @@ public class SecretManagementServiceTest {
     keys.put(KEY_TYPE, UNENCRYPTED_SECRET);
     final StoreSecretsResponse response = new StoreSecretsResponse();
     response.setResult(OsgpResultType.OK);
-    when(this.rsaEncrypter.encrypt(UNENCRYPTED_SECRET)).thenReturn(SOAP_SECRET);
+    when(this.encrypterForSecretManagement.encrypt(UNENCRYPTED_SECRET)).thenReturn(SOAP_SECRET);
     when(this.secretManagementClient.storeSecretsRequest(same(messageMetadata), any()))
         .thenReturn(response);
     // EXECUTE
@@ -132,7 +139,7 @@ public class SecretManagementServiceTest {
     response.getTypedSecrets().getTypedSecret().add(TYPED_SECRET);
     when(this.secretManagementClient.generateAndStoreSecrets(same(messageMetadata), any()))
         .thenReturn(response);
-    when(this.rsaEncrypter.decrypt(SOAP_SECRET)).thenReturn(UNENCRYPTED_SECRET);
+    when(this.decrypterForProtocolAdapterDlms.decrypt(SOAP_SECRET)).thenReturn(UNENCRYPTED_SECRET);
     // EXECUTE
     final Map<SecurityKeyType, byte[]> keys =
         this.secretManagementTestService.generate128BitsKeysAndStoreAsNewKeys(
