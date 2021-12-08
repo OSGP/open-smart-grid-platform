@@ -21,6 +21,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Provider;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DeviceKeyProcessingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
@@ -166,14 +167,16 @@ public class DlmsConfig extends AbstractConfig {
       final SecretManagementService secretManagementService,
       @Autowired(required = false) final ThrottlingService throttlingService,
       final ThrottlingClientConfig throttlingClientConfig,
-      final DlmsDeviceRepository deviceRepository) {
+      final DlmsDeviceRepository deviceRepository,
+      @Autowired final DeviceKeyProcessingService deviceKeyProcessingService) {
     return new RecoverKeyProcess(
         domainHelperService,
         hls5Connector,
         secretManagementService,
         throttlingService,
         throttlingClientConfig,
-        deviceRepository);
+        deviceRepository,
+        deviceKeyProcessingService);
   }
 
   @Bean

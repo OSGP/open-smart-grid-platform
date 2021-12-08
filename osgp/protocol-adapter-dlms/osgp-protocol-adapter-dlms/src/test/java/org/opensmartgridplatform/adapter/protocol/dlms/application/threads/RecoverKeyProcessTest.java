@@ -15,6 +15,7 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_AUTHENTICATION;
@@ -31,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.DlmsConnection;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DeviceKeyProcessingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
@@ -55,6 +57,7 @@ class RecoverKeyProcessTest {
   @Mock ThrottlingService throttlingService;
   @Mock DlmsDeviceRepository dlmsDeviceRepository;
   @Mock ThrottlingClientConfig throttlingClientConfig;
+  @Mock DeviceKeyProcessingService deviceKeyProcessingService;
 
   private static final String DEVICE_IDENTIFICATION = "E000123456789";
   private static final String IP_ADDRESS = "1.1.1.1";
@@ -67,6 +70,7 @@ class RecoverKeyProcessTest {
     this.recoverKeyProcess.setIpAddress(IP_ADDRESS);
     this.recoverKeyProcess.setMessageMetadata(MESSAGE_METADATA);
     when(DEVICE.needsInvocationCounter()).thenReturn(true);
+    when(DEVICE.getDeviceIdentification()).thenReturn(DEVICE_IDENTIFICATION);
     lenient().when(this.throttlingClientConfig.clientEnabled()).thenReturn(false);
   }
 
@@ -87,6 +91,44 @@ class RecoverKeyProcessTest {
   }
 
   @Test
+  void testWhenAlreadyKeyProcessRunning() throws OsgpException, IOException {
+
+    // GIVEN
+    when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
+        .thenReturn(DEVICE);
+    when(this.deviceKeyProcessingService.isProcessing(DEVICE_IDENTIFICATION)).thenReturn(true);
+
+    // WHEN
+    this.recoverKeyProcess.run();
+
+    // THEN
+    verify(this.secretManagementService, never()).hasNewSecret(any(), any());
+    verify(this.domainHelperService).findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS);
+    verify(this.secretManagementService, never()).activateNewKeys(any(), any(), any());
+  }
+
+  @Test
+  void testWhenHasNoNewKeysToConnectWith() throws OsgpException, IOException {
+
+    // GIVEN
+    when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
+        .thenReturn(DEVICE);
+
+    when(this.deviceKeyProcessingService.isProcessing(DEVICE_IDENTIFICATION)).thenReturn(false);
+    when(this.secretManagementService.hasNewSecret(eq(MESSAGE_METADATA), eq(DEVICE_IDENTIFICATION)))
+        .thenReturn(false);
+
+    // WHEN
+    this.recoverKeyProcess.run();
+
+    // THEN
+    verify(this.secretManagementService, times(1))
+        .hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION);
+    verify(this.domainHelperService).findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS);
+    verify(this.throttlingService, never()).openConnection();
+  }
+
+  @Test
   void testWhenNotAbleToConnectWithNewKeys() throws OsgpException, IOException {
 
     // GIVEN
@@ -95,11 +137,15 @@ class RecoverKeyProcessTest {
     when(this.hls5Connector.connectUnchecked(eq(MESSAGE_METADATA), eq(DEVICE), any(), any()))
         .thenReturn(null);
 
+    when(this.deviceKeyProcessingService.isProcessing(DEVICE_IDENTIFICATION)).thenReturn(false);
+    when(this.secretManagementService.hasNewSecret(eq(MESSAGE_METADATA), eq(DEVICE_IDENTIFICATION)))
+        .thenReturn(true);
+
     // WHEN
     this.recoverKeyProcess.run();
 
     // THEN
-    verify(this.secretManagementService, never())
+    verify(this.secretManagementService, times(1))
         .hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION);
     verify(this.domainHelperService).findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS);
     verify(this.secretManagementService, never()).activateNewKeys(any(), any(), any());
@@ -113,6 +159,10 @@ class RecoverKeyProcessTest {
         .thenReturn(DEVICE);
     when(this.hls5Connector.connectUnchecked(eq(MESSAGE_METADATA), eq(DEVICE), any(), any()))
         .thenReturn(mock(DlmsConnection.class));
+
+    when(this.deviceKeyProcessingService.isProcessing(DEVICE_IDENTIFICATION)).thenReturn(false);
+    when(this.secretManagementService.hasNewSecret(eq(MESSAGE_METADATA), eq(DEVICE_IDENTIFICATION)))
+        .thenReturn(true);
 
     // WHEN
     this.recoverKeyProcess.run();
@@ -141,6 +191,10 @@ class RecoverKeyProcessTest {
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
         .thenReturn(DEVICE);
     when(this.hls5Connector.connectUnchecked(any(), any(), any(), any())).thenReturn(null);
+
+    when(this.deviceKeyProcessingService.isProcessing(DEVICE_IDENTIFICATION)).thenReturn(false);
+    when(this.secretManagementService.hasNewSecret(eq(MESSAGE_METADATA), eq(DEVICE_IDENTIFICATION)))
+        .thenReturn(true);
 
     // WHEN
     this.recoverKeyProcess.run();
