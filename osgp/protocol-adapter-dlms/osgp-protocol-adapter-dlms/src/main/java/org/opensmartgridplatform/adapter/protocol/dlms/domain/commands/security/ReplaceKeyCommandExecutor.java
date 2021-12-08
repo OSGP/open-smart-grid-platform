@@ -24,7 +24,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
@@ -114,13 +117,19 @@ public class ReplaceKeyCommandExecutor
     return new ActionResponseDto(REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
   }
 
-  private SetKeysRequestDto decryptRsaKeys(final SetKeysRequestDto setKeysRequestDto) {
-    final byte[] authenticationKey =
-        this.decrypterForGxfSmartMetering.decrypt(setKeysRequestDto.getAuthenticationKey());
-    final byte[] encryptionKey =
-        this.decrypterForGxfSmartMetering.decrypt(setKeysRequestDto.getEncryptionKey());
+  private SetKeysRequestDto decryptRsaKeys(final SetKeysRequestDto setKeysRequestDto)
+      throws FunctionalException {
+    try {
+      final byte[] authenticationKey =
+          this.decrypterForGxfSmartMetering.decrypt(setKeysRequestDto.getAuthenticationKey());
+      final byte[] encryptionKey =
+          this.decrypterForGxfSmartMetering.decrypt(setKeysRequestDto.getEncryptionKey());
 
-    return new SetKeysRequestDto(authenticationKey, encryptionKey);
+      return new SetKeysRequestDto(authenticationKey, encryptionKey);
+    } catch (final EncrypterException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.DECRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS, e);
+    }
   }
 
   @Override
