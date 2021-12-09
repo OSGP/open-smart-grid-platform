@@ -231,6 +231,8 @@ public class SecretManagementServiceTest {
   public void storeNewSecretWhenOlderNewSecretAlreadyExists() throws Exception {
     // GIVEN
     final DbEncryptedSecret dbEncryptedSecret = this.getNewEncryptionSecret(100);
+    final Date originalCreationTime = dbEncryptedSecret.getCreationTime();
+
     // WHEN
     when(this.secretRepository.getSecretCount(
             SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
@@ -255,7 +257,7 @@ public class SecretManagementServiceTest {
     assertThat(foundSecrets).hasSize(1);
 
     verify(this.secretRepository, never()).saveAll(Arrays.asList(dbEncryptedSecret));
-    assertThat(dbEncryptedSecret.getCreationTime()).isCloseTo(new Date(), 100);
+    assertThat(dbEncryptedSecret.getCreationTime()).isEqualTo(originalCreationTime);
     assertThat(dbEncryptedSecret.getSecretStatus()).isEqualTo(SecretStatus.NEW);
   }
 
@@ -266,6 +268,8 @@ public class SecretManagementServiceTest {
     final DbEncryptedSecret secretOlderEncryption = this.getNewEncryptionSecret(1000);
     final DbEncryptedSecret secretOldAuthen = this.getNewAuthenticationSecret(100);
     final DbEncryptedSecret secretOlderAuthen = this.getNewAuthenticationSecret(1000);
+    final Date originalCreationTimeAuthenticationSecret = secretOldAuthen.getCreationTime();
+    final Date originalCreationTimeEncryptionSecret = secretOldEncryption.getCreationTime();
     final Date olderCreationTime = secretOlderEncryption.getCreationTime();
 
     // WHEN
@@ -300,16 +304,18 @@ public class SecretManagementServiceTest {
     verify(this.secretRepository, never())
         .saveAll(Arrays.asList(secretOldEncryption, secretOldAuthen));
 
-    assertThat(secretOldEncryption.getCreationTime()).isCloseTo(new Date(), 100);
-    assertThat(secretOldAuthen.getCreationTime()).isCloseTo(new Date(), 100);
+    assertThat(secretOldEncryption.getCreationTime())
+        .isEqualTo(originalCreationTimeEncryptionSecret);
+    assertThat(secretOldAuthen.getCreationTime())
+        .isEqualTo(originalCreationTimeAuthenticationSecret);
     assertThat(secretOldEncryption.getSecretStatus()).isEqualTo(SecretStatus.NEW);
     assertThat(secretOldAuthen.getSecretStatus()).isEqualTo(SecretStatus.NEW);
     assertThat(secretOlderEncryption.getCreationTime().getTime())
         .isEqualTo(olderCreationTime.getTime());
     assertThat(secretOlderAuthen.getCreationTime().getTime())
         .isEqualTo(olderCreationTime.getTime());
-    assertThat(secretOlderEncryption.getSecretStatus()).isEqualTo(SecretStatus.EXPIRED);
-    assertThat(secretOlderAuthen.getSecretStatus()).isEqualTo(SecretStatus.EXPIRED);
+    assertThat(secretOlderEncryption.getSecretStatus()).isEqualTo(SecretStatus.WITHDRAWN);
+    assertThat(secretOlderAuthen.getSecretStatus()).isEqualTo(SecretStatus.WITHDRAWN);
   }
 
   @Test
@@ -521,6 +527,7 @@ public class SecretManagementServiceTest {
   public void generateAndStoreNewSecretWhenOlderNewSecretAlreadyExists() throws Exception {
     // GIVEN
     final DbEncryptedSecret dbEncryptedSecret = this.getNewEncryptionSecret(100);
+    final Date originalCreationTime = dbEncryptedSecret.getCreationTime();
     // WHEN
     when(this.secretRepository.getSecretCount(
             SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
@@ -544,7 +551,7 @@ public class SecretManagementServiceTest {
     assertThat(foundSecrets).hasSize(1);
 
     verify(this.secretRepository, never()).saveAll(Arrays.asList(dbEncryptedSecret));
-    assertThat(dbEncryptedSecret.getCreationTime()).isCloseTo(new Date(), 100);
+    assertThat(dbEncryptedSecret.getCreationTime()).isEqualTo(originalCreationTime);
     assertThat(dbEncryptedSecret.getSecretStatus()).isEqualTo(SecretStatus.NEW);
   }
 
@@ -556,6 +563,9 @@ public class SecretManagementServiceTest {
     final DbEncryptedSecret secretOlderEncryption = this.getNewEncryptionSecret(1000);
     final DbEncryptedSecret secretOldAuthen = this.getNewAuthenticationSecret(100);
     final DbEncryptedSecret secretOlderAuthen = this.getNewAuthenticationSecret(1000);
+    final Date originalCreationTimeAuthenticationSecret = secretOldAuthen.getCreationTime();
+    final Date originalCreationTimeEncryptionSecret = secretOldEncryption.getCreationTime();
+
     final Date olderCreationTime = secretOlderEncryption.getCreationTime();
 
     // WHEN
@@ -600,15 +610,17 @@ public class SecretManagementServiceTest {
     verify(this.secretRepository, never())
         .saveAll(Arrays.asList(secretOldEncryption, secretOldAuthen));
 
-    assertThat(secretOldEncryption.getCreationTime()).isCloseTo(new Date(), 100);
-    assertThat(secretOldAuthen.getCreationTime()).isCloseTo(new Date(), 100);
+    assertThat(secretOldEncryption.getCreationTime())
+        .isEqualTo(originalCreationTimeEncryptionSecret);
+    assertThat(secretOldAuthen.getCreationTime())
+        .isEqualTo(originalCreationTimeAuthenticationSecret);
     assertThat(secretOldEncryption.getSecretStatus()).isEqualTo(SecretStatus.NEW);
     assertThat(secretOldAuthen.getSecretStatus()).isEqualTo(SecretStatus.NEW);
     assertThat(secretOlderEncryption.getCreationTime().getTime())
         .isEqualTo(olderCreationTime.getTime());
     assertThat(secretOlderAuthen.getCreationTime().getTime())
         .isEqualTo(olderCreationTime.getTime());
-    assertThat(secretOlderEncryption.getSecretStatus()).isEqualTo(SecretStatus.EXPIRED);
-    assertThat(secretOlderAuthen.getSecretStatus()).isEqualTo(SecretStatus.EXPIRED);
+    assertThat(secretOlderEncryption.getSecretStatus()).isEqualTo(SecretStatus.WITHDRAWN);
+    assertThat(secretOlderAuthen.getSecretStatus()).isEqualTo(SecretStatus.WITHDRAWN);
   }
 }

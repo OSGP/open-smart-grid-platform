@@ -285,7 +285,7 @@ public class SecretManagementService {
   private TypedSecret resetNewSecret(
       final String deviceIdentification, final SecretType secretType) {
     // the most recent key of all NEW keys of the device and type gets a new creation date and is
-    // returned. All other NEW keys of the device and type are set to status EXPIRED.
+    // returned. All other NEW keys of the device and type are set to status WITHDRAWN.
     DbEncryptedSecret mostRecentFoundSecret = null;
     final List<DbEncryptedSecret> foundSecrets =
         this.secretRepository.findSecrets(deviceIdentification, secretType, SecretStatus.NEW);
@@ -293,16 +293,15 @@ public class SecretManagementService {
     boolean firstInListAndMostRecent = true;
     for (final DbEncryptedSecret foundSecret : foundSecrets) {
       if (firstInListAndMostRecent) {
-        foundSecret.setCreationTime(new Date());
         mostRecentFoundSecret = foundSecret;
         firstInListAndMostRecent = false;
       } else {
-        foundSecret.setSecretStatus(SecretStatus.EXPIRED);
+        foundSecret.setSecretStatus(SecretStatus.WITHDRAWN);
         log.warn(
             String.format(
                 "During (GenerateOr)Replace Key Process multiple keys with status NEW of type %s for "
-                    + "device %s have been found. The most recent has been reused. All others have "
-                    + "been expired (status EXPIRED)",
+                    + "device %s have been found. The most recent has been reused. All others will "
+                    + "be withdrawn (status WITHDRAWN)",
                 secretType.name(), deviceIdentification));
       }
       this.secretRepository.save(foundSecret);

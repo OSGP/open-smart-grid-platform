@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly @SMHE-228
+@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly
 Feature: SmartMetering Configuration - Replace Keys
   As a grid operator
   I want to be able to replace the keys on a device
@@ -77,25 +77,13 @@ Feature: SmartMetering Configuration - Replace Keys
     And the new keys are stored in the secret management database encrypted_secret table
     And the stored keys are not equal to the received keys
     And the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
-      | SECURITY_KEYPAIR_1 | EXPIRED |
-      | SECURITY_KEYPAIR_2 | ACTIVE  |
-      | SECURITY_KEYPAIR_4 | EXPIRED |
+      | SECURITY_KEYPAIR_1 | EXPIRED   |
+      | SECURITY_KEYPAIR_2 | ACTIVE    |
+      | SECURITY_KEYPAIR_4 | WITHDRAWN |
     And the encrypted_secret table in the secret management database should contain "Encryption_key" keys for device "TEST1024000000001"
-      | SECURITY_KEYPAIR_2 | EXPIRED |
-      | SECURITY_KEYPAIR_1 | ACTIVE  |
-      | SECURITY_KEYPAIR_4 | EXPIRED |
-
-  @ResetKeysOnDevice
-  Scenario: Generate and Replace keys on a device
-    Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
-    When the generate and replace keys request is received
-      | DeviceIdentification | TEST1024000000001 |
-    Then the generate and replace keys response should be returned
-      | DeviceIdentification | TEST1024000000001 |
-      | Result               | OK                |
-    And the new keys are stored in the secret management database encrypted_secret table
+      | SECURITY_KEYPAIR_2 | EXPIRED   |
+      | SECURITY_KEYPAIR_1 | ACTIVE    |
+      | SECURITY_KEYPAIR_4 | WITHDRAWN |
 
   @ResetKeysOnDevice 
   Scenario: Generate and Replace keys on a device 2
@@ -156,13 +144,13 @@ Feature: SmartMetering Configuration - Replace Keys
       | Result               | OK                |
     And the new keys are stored in the secret management database encrypted_secret table
     And the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
-      | SECURITY_KEYPAIR_1 | EXPIRED |
-      | SECURITY_KEYPAIR_2 | ACTIVE  |
-      | SECURITY_KEYPAIR_3 | EXPIRED |
+      | SECURITY_KEYPAIR_1 | EXPIRED   |
+      | SECURITY_KEYPAIR_2 | ACTIVE    |
+      | SECURITY_KEYPAIR_3 | WITHDRAWN |
     And the encrypted_secret table in the secret management database should contain "Encryption_key" keys for device "TEST1024000000001"
-      | SECURITY_KEYPAIR_2 | EXPIRED |
-      | SECURITY_KEYPAIR_1 | ACTIVE  |
-      | SECURITY_KEYPAIR_3 | EXPIRED |
+      | SECURITY_KEYPAIR_2 | EXPIRED   |
+      | SECURITY_KEYPAIR_1 | ACTIVE    |
+      | SECURITY_KEYPAIR_3 | WITHDRAWN |
 
   @RecoverKeys
   Scenario: Recover keys after a (simulated) failed key change (incorrect E key)

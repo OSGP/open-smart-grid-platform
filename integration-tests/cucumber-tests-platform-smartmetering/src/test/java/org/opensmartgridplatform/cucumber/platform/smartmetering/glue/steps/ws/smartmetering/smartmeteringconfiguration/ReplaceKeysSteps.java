@@ -131,30 +131,4 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
     assertThat(response.getResult()).as("Result").isNotNull();
     assertThat(response.getResult().name()).as("Result").isEqualTo(expectedResult);
   }
-
-  public class SecurityKey {
-
-    public SecurityKey(final String name, final String keyInDb, final String keyInRequest) {
-      this.name = name;
-      this.keyInDb = keyInDb;
-      this.keyInRequest = keyInRequest;
-    }
-
-    String name;
-
-    public String getName() {
-      return this.name;
-    }
-
-    public String getKeyInDb() {
-      return this.keyInDb;
-    }
-
-    public String getKeyInRequest() {
-      return this.keyInRequest;
-    }
-
-    String keyInDb;
-    String keyInRequest;
-  }
 }

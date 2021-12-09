@@ -48,7 +48,6 @@ import org.springframework.ws.test.server.ResponseMatchers;
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
 @Transactional
-// @TestPropertySource(properties = {"max.duration.for.new.key.to.be.activated=PT5M"})
 public class SoapServiceSecretManagementIT {
 
   /**
@@ -187,31 +186,29 @@ public class SoapServiceSecretManagementIT {
     assertThat(this.secretRepository.count()).isEqualTo(4);
   }
 
-  //  @Test
-  //  public void storeSecretsRequestAlreadyNewSecretPresent() throws IOException {
-  //
-  //    /**
-  //     * Note that the output depends, besides the value of the keys, also on both the db key and
-  // the
-  //     * soap key.
-  //     */
-  //    assertThat(this.secretRepository.count()).isEqualTo(2);
-  //
-  //    final Resource storeRequest = new ClassPathResource("test-requests/storeSecrets.xml");
-  //    final Resource expectedStoreResponse = new
-  // ClassPathResource("test-responses/storeSecrets.xml");
-  //    // Store secrets
-  //    this.mockWebServiceClient
-  //        .sendRequest(withSoapEnvelope(storeRequest))
-  //        .andExpect(ResponseMatchers.noFault())
-  //        .andExpect(ResponseMatchers.payload(expectedStoreResponse));
-  //    // Store secrets again, while first request is still being processed
-  //    // Second request will be processed after the first has finished
-  //    this.mockWebServiceClient
-  //        .sendRequest(withSoapEnvelope(storeRequest))
-  //        .andExpect(ResponseMatchers.noFault())
-  //        .andExpect(ResponseMatchers.payload(expectedStoreResponse));
-  //  }
+  @Test
+  public void storeSecretsRequestAlreadyNewSecretPresent() throws IOException {
+
+    /**
+     * Note that the output depends, besides the value of the keys, also on both the db key and the
+     * soap key.
+     */
+    assertThat(this.secretRepository.count()).isEqualTo(2);
+
+    final Resource storeRequest = new ClassPathResource("test-requests/storeSecrets.xml");
+    final Resource expectedStoreResponse = new ClassPathResource("test-responses/storeSecrets.xml");
+    // Store secrets
+    this.mockWebServiceClient
+        .sendRequest(withSoapEnvelope(storeRequest))
+        .andExpect(ResponseMatchers.noFault())
+        .andExpect(ResponseMatchers.payload(expectedStoreResponse));
+    // Store secrets again, while first request is still being processed
+    // Second request will be processed after the first has finished
+    this.mockWebServiceClient
+        .sendRequest(withSoapEnvelope(storeRequest))
+        .andExpect(ResponseMatchers.noFault())
+        .andExpect(ResponseMatchers.payload(expectedStoreResponse));
+  }
 
   @Test
   public void activateSecretsRequest() throws IOException {
@@ -315,24 +312,23 @@ public class SoapServiceSecretManagementIT {
     assertThat(authKey.getEncodedSecret()).hasSize(64);
   }
 
-  //  @Test
-  //  public void generateAndStoreSecretsAlreadyNewSecretPresent() throws IOException {
-  //    // Store secrets
-  //    final Resource storeRequest = new ClassPathResource("test-requests/storeSecrets.xml");
-  //    final Resource expectedStoreResponse = new
-  // ClassPathResource("test-responses/storeSecrets.xml");
-  //    this.mockWebServiceClient
-  //        .sendRequest(withSoapEnvelope(storeRequest))
-  //        .andExpect(ResponseMatchers.noFault())
-  //        .andExpect(ResponseMatchers.payload(expectedStoreResponse));
-  //
-  //    // Generate and store secret: this should result in a fault message
-  //    final Resource generateAndStoreRequest =
-  //        new ClassPathResource("test-requests/generateAndStoreSecrets.xml");
-  //    this.mockWebServiceClient
-  //        .sendRequest(withSoapEnvelope(generateAndStoreRequest))
-  //        .andExpect(ResponseMatchers.noFault());
-  //  }
+  @Test
+  public void generateAndStoreSecretsAlreadyNewSecretPresent() throws IOException {
+    // Store secrets
+    final Resource storeRequest = new ClassPathResource("test-requests/storeSecrets.xml");
+    final Resource expectedStoreResponse = new ClassPathResource("test-responses/storeSecrets.xml");
+    this.mockWebServiceClient
+        .sendRequest(withSoapEnvelope(storeRequest))
+        .andExpect(ResponseMatchers.noFault())
+        .andExpect(ResponseMatchers.payload(expectedStoreResponse));
+
+    // Generate and store secret: this should result in a fault message
+    final Resource generateAndStoreRequest =
+        new ClassPathResource("test-requests/generateAndStoreSecrets.xml");
+    this.mockWebServiceClient
+        .sendRequest(withSoapEnvelope(generateAndStoreRequest))
+        .andExpect(ResponseMatchers.noFault());
+  }
 
   /**
    * Create test data for encrypted secrets and related encryptionkey reference(s). So that the
