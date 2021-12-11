@@ -70,12 +70,14 @@ public class ConfigurationMapper extends ConfigurableMapper {
         .register();
     mapperFactory.getConverterFactory().registerConverter(new ObisCodeValuesConverter());
 
-    // These two converters are needed because they combine two fields
-    // into one SendDestinationAndMethod object (or split the object into
-    // two fields)
+    // These converters are needed for PushSetup
     mapperFactory.getConverterFactory().registerConverter(new PushSetupAlarmConverter());
+    mapperFactory.getConverterFactory().registerConverter(new ObisCodeConverter());
+    mapperFactory.getConverterFactory().registerConverter(new PushObjectConverter());
     mapperFactory.getConverterFactory().registerConverter(new PushSetupSmsConverter());
+
     mapperFactory.getConverterFactory().registerConverter(new SetKeysRequestConverter());
+
     // These converters are necessary to enable correct mapping of dates and
     // times.
     mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter());

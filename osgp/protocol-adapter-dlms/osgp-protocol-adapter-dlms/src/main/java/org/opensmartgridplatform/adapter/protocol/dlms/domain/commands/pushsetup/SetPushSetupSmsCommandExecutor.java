@@ -13,6 +13,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.PushSetupMapper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -33,8 +34,11 @@ public class SetPushSetupSmsCommandExecutor
       LoggerFactory.getLogger(SetPushSetupSmsCommandExecutor.class);
   private static final ObisCode OBIS_CODE = new ObisCode("0.2.25.9.0.255");
 
-  public SetPushSetupSmsCommandExecutor() {
+  private final PushSetupMapper pushSetupMapper;
+
+  public SetPushSetupSmsCommandExecutor(final PushSetupMapper pushSetupMapper) {
     super(SetPushSetupSmsRequestDto.class);
+    this.pushSetupMapper = pushSetupMapper;
   }
 
   @Override
@@ -68,8 +72,10 @@ public class SetPushSetupSmsCommandExecutor
     final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(pushSetupSms);
 
     final AccessResultCode resultCode =
-        this.getAccessResultSetSendDestinationAndMethod(
-            "PushSetupSms", conn, OBIS_CODE, setParameterSendDestinationAndMethod);
+        this.doSetRequest(
+            "PushSetupSms, Send destination and method",
+            conn,
+            setParameterSendDestinationAndMethod);
 
     if (resultCode != null) {
       return resultCode;
@@ -86,7 +92,7 @@ public class SetPushSetupSmsCommandExecutor
     final AttributeAddress sendDestinationAndMethodAddress =
         new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD);
     final DataObject value =
-        this.buildSendDestinationAndMethodObject(pushSetupSms.getSendDestinationAndMethod());
+        this.pushSetupMapper.map(pushSetupSms.getSendDestinationAndMethod(), DataObject.class);
     return new SetParameter(sendDestinationAndMethodAddress, value);
   }
 
