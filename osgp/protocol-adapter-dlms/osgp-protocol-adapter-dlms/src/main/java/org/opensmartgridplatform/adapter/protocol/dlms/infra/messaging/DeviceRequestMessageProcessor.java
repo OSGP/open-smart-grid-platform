@@ -82,18 +82,24 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
     final Serializable messageObject = message.getObject();
 
-    final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
-        connectionManager ->
-            this.processMessageTasks(messageObject, messageMetadata, connectionManager);
-
     try {
       if (this.usesDeviceConnection()) {
-        this.createAndHandleConnectionForDevice(
-            this.domainHelperService.findDlmsDevice(messageMetadata),
-            messageMetadata,
-            taskForConnectionManager);
+        final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+        final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager;
+        if (this.requiresExistingDevice()) {
+          taskForConnectionManager =
+              connectionManager ->
+                  this.processMessageTasks(
+                      messageObject, messageMetadata, connectionManager, device);
+        } else {
+          taskForConnectionManager =
+              connectionManager ->
+                  this.processMessageTasks(messageObject, messageMetadata, connectionManager, null);
+        }
+
+        this.createAndHandleConnectionForDevice(device, messageMetadata, taskForConnectionManager);
       } else {
-        this.processMessageTasks(messageObject, messageMetadata, null);
+        this.processMessageTasks(messageObject, messageMetadata, null, null);
       }
     } catch (final ThrottlingPermitDeniedException exception) {
 
@@ -112,9 +118,9 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
   public void processMessageTasks(
       final Serializable messageObject,
       final MessageMetadata messageMetadata,
-      final DlmsConnectionManager connectionManager)
+      final DlmsConnectionManager connectionManager,
+      final DlmsDevice device)
       throws OsgpException {
-    DlmsDevice device = null;
     try {
       if (this.maxScheduleTimeExceeded(messageMetadata)) {
         log.info(
@@ -129,10 +135,6 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
                 FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED, ComponentType.PROTOCOL_DLMS),
             messageObject);
         return;
-      }
-
-      if (this.requiresExistingDevice()) {
-        device = this.domainHelperService.findDlmsDevice(messageMetadata);
       }
 
       log.info(

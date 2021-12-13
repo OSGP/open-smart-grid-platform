@@ -81,8 +81,6 @@ class BundleMessageProcessorTest {
   void setUp() throws OsgpException, JMSException {
     this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
     this.messageMetadata = MessageMetadata.fromMessage(this.message);
-    when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class)))
-        .thenReturn(this.dlmsDevice);
     when(this.throttlingClientConfig.clientEnabled()).thenReturn(false);
   }
 
@@ -92,7 +90,10 @@ class BundleMessageProcessorTest {
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
 
     this.messageProcessor.processMessageTasks(
-        this.message.getObject(), this.messageMetadata, this.dlmsConnectionManager);
+        this.message.getObject(),
+        this.messageMetadata,
+        this.dlmsConnectionManager,
+        this.dlmsDevice);
 
     verify(this.retryHeaderFactory, times(1)).createEmptyRetryHeader();
   }
@@ -136,7 +137,10 @@ class BundleMessageProcessorTest {
         new FaultResponseDto.Builder().withRetryable(true).build());
 
     this.messageProcessor.processMessageTasks(
-        this.message.getObject(), this.messageMetadata, this.dlmsConnectionManager);
+        this.message.getObject(),
+        this.messageMetadata,
+        this.dlmsConnectionManager,
+        this.dlmsDevice);
 
     verify(this.retryHeaderFactory).createRetryHeader(0);
   }
@@ -150,7 +154,10 @@ class BundleMessageProcessorTest {
         new FaultResponseDto.Builder().withRetryable(false).build());
 
     this.messageProcessor.processMessageTasks(
-        this.message.getObject(), this.messageMetadata, this.dlmsConnectionManager);
+        this.message.getObject(),
+        this.messageMetadata,
+        this.dlmsConnectionManager,
+        this.dlmsDevice);
 
     verify(this.retryHeaderFactory).createEmptyRetryHeader();
   }
