@@ -10,33 +10,17 @@ package org.opensmartgridplatform.oslp;
 
 import com.google.protobuf.ByteString;
 import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
 import java.util.Arrays;
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.opensmartgridplatform.oslp.Oslp.Message;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** Utility methods to ease usage of OSLP. */
 public final class OslpUtils {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(OslpUtils.class);
-
-  /** Fallback signature value which triggers previous RSA/Hash implementation. */
-  public static final String FALLBACK_SIGNATURE = "SHA512encryptedwithRSA";
-
-  /** Fallback RSA / Padding settings for Cipher */
-  public static final String FALLBACK_CIPHER = "RSA/ECB/PKCS1Padding";
-
-  /** Fallback digest to create hash from previous RSA/Hash implementation. */
-  public static final String FALLBACK_DIGEST = "SHA-512";
 
   /** List of signature types which do not allow trailing data and need to be truncated. */
   private static final String[] TRUNCATE_SIGNATURES = {
@@ -109,13 +93,7 @@ public final class OslpUtils {
       final String signature,
       final String provider)
       throws GeneralSecurityException {
-    // Use fallback to plain SHA512 hash, which is encrypted with RSA
-    // instead of real RSA signature
-    if (signature.equalsIgnoreCase(FALLBACK_SIGNATURE)) {
-      return createEncryptedHash(message, privateKey);
-    }
 
-    // Use real signature
     final Signature signatureBuilder = Signature.getInstance(signature, provider);
     signatureBuilder.initSign(privateKey, new SecureRandom());
     signatureBuilder.update(message);
@@ -140,12 +118,6 @@ public final class OslpUtils {
       final String signature,
       final String provider)
       throws GeneralSecurityException {
-
-    // Use fallback to plain SHA512 hash, which is encrypted with RSA
-    // instead of real RSA signature
-    if (signature.equalsIgnoreCase(FALLBACK_SIGNATURE)) {
-      return validateEncryptedHash(message, securityKey, publicKey);
-    }
 
     // Using ECDSA as signature
     final Signature signatureBuilder = Signature.getInstance(signature, provider);
@@ -201,43 +173,5 @@ public final class OslpUtils {
     };
 
     return BooleanUtils.or(hasResponse);
-  }
-
-  private static byte[] createEncryptedHash(final byte[] message, final PrivateKey privateKey)
-      throws GeneralSecurityException {
-
-    final byte[] hash = createHash(message);
-
-    // Encrypt the hash
-    final Cipher cipher = Cipher.getInstance(FALLBACK_CIPHER);
-    cipher.init(Cipher.ENCRYPT_MODE, privateKey);
-    return cipher.doFinal(hash);
-  }
-
-  private static byte[] createHash(final byte[] message) throws GeneralSecurityException {
-    // Create digest Hash
-    final MessageDigest digest = MessageDigest.getInstance(FALLBACK_DIGEST);
-    return digest.digest(message);
-  }
-
-  private static boolean validateEncryptedHash(
-      final byte[] message, final byte[] securityKey, final PublicKey publicKey)
-      throws GeneralSecurityException {
-
-    // Calculate hash of message
-    final byte[] verifyHash = createHash(message);
-
-    try {
-      // Decrypt security key hash
-      final Cipher cipher = Cipher.getInstance(FALLBACK_CIPHER);
-      cipher.init(Cipher.DECRYPT_MODE, publicKey);
-      final byte[] messageHash = cipher.doFinal(securityKey);
-
-      // Verify calculated and received hash
-      return Arrays.equals(messageHash, verifyHash);
-    } catch (final BadPaddingException e) {
-      LOGGER.error("unexpected exception", e);
-      return false;
-    }
   }
 }
