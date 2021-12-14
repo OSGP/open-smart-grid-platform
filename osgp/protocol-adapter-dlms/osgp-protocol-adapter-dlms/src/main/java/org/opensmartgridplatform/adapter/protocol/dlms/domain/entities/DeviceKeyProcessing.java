@@ -8,7 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.entities;
 
-import java.util.Date;
+import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -20,7 +20,7 @@ public class DeviceKeyProcessing {
   @Column(length = 40)
   private String deviceIdentification;
 
-  @Column private Date startTime;
+  @Column private Instant startTime;
 
   public String getDeviceIdentification() {
     return this.deviceIdentification;
@@ -30,11 +30,11 @@ public class DeviceKeyProcessing {
     this.deviceIdentification = deviceIdentification;
   }
 
-  public Date getStartTime() {
+  public java.time.Instant getStartTime() {
     return this.startTime;
   }
 
-  public void setStartTime(final Date startTime) {
+  public void setStartTime(final Instant startTime) {
     this.startTime = startTime;
   }
 }

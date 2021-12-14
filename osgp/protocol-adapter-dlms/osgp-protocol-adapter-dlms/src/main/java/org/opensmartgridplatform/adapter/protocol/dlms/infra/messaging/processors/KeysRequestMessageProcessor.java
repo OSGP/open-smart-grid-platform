@@ -1,10 +1,12 @@
 /*
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2021 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
+ *
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
@@ -13,23 +15,16 @@ import java.time.Duration;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DeviceKeyProcessingService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceKeyProcessAlreadyRunningException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageSender;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
-public class KeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
-
-  @Autowired private ConfigurationService configurationService;
+public abstract class KeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
   @Autowired private DeviceRequestMessageSender deviceRequestMessageSender;
 
@@ -37,22 +32,6 @@ public class KeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
   public KeysRequestMessageProcessor(final MessageType messageType) {
     super(messageType);
-  }
-
-  @Override
-  protected Serializable handleMessage(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final Serializable requestObject,
-      final MessageMetadata messageMetadata)
-      throws OsgpException {
-
-    this.assertRequestObjectType(SetKeysRequestDto.class, requestObject);
-
-    final SetKeysRequestDto keySet = (SetKeysRequestDto) requestObject;
-    this.configurationService.replaceKeys(conn, device, keySet, messageMetadata);
-
-    return null;
   }
 
   @Override
@@ -66,11 +45,8 @@ public class KeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
         messageMetadata.getMessageType());
 
     try {
-      final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
-      this.checkIfOtherKeyProcessIsRunning(device.getDeviceIdentification());
-
-      this.markKeyProcessIsRunning(device.getDeviceIdentification());
+      this.deviceKeyProcessingService.startProcessing(messageMetadata.getDeviceIdentification());
 
       super.processMessage(message);
 
@@ -79,7 +55,7 @@ public class KeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
       final Duration deviceKeyProcessingTimeout =
           this.deviceKeyProcessingService.getDeviceKeyProcessingTimeout();
       log.debug(
-          "Key(s) already being processed for device {}. {} request message is send back to the MessageSender with delay of {} seconds.",
+          "Key(s) already being processed for device {}. {} request message is sent back to the queue with delay of {} seconds.",
           messageMetadata.getDeviceIdentification(),
           messageMetadata.getMessageType(),
           deviceKeyProcessingTimeout.getSeconds());
@@ -92,17 +68,8 @@ public class KeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     } catch (final Exception exception) {
       this.sendErrorResponse(messageMetadata, exception, messageObject);
-    }
-  }
-
-  private void markKeyProcessIsRunning(final String deviceIdentification) {
-    this.deviceKeyProcessingService.startProcessing(deviceIdentification);
-  }
-
-  private void checkIfOtherKeyProcessIsRunning(final String deviceIdentification)
-      throws DeviceKeyProcessAlreadyRunningException {
-    if (this.deviceKeyProcessingService.isProcessing(deviceIdentification)) {
-      throw new DeviceKeyProcessAlreadyRunningException();
+    } finally {
+      this.deviceKeyProcessingService.stopProcessing(messageMetadata.getDeviceIdentification());
     }
   }
 }

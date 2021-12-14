@@ -8,14 +8,23 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories;
 
+import java.time.Instant;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DeviceKeyProcessing;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DeviceKeyProcessingRepository extends JpaRepository<DeviceKeyProcessing, Long> {
+public interface DeviceKeyProcessingRepository extends JpaRepository<DeviceKeyProcessing, String> {
 
-  DeviceKeyProcessing findByDeviceIdentification(String deviceIdentification);
-
-  DeviceKeyProcessing deleteByDeviceIdentification(String deviceIdentification);
+  @Modifying
+  @Query(
+      "UPDATE DeviceKeyProcessing d SET d.startTime = CURRENT_TIMESTAMP"
+          + " WHERE d.deviceIdentification = :deviceIdentification"
+          + "   AND d.startTime < :delayTime")
+  int updateStartTime(
+      @Param("deviceIdentification") String deviceIdentification,
+      @Param("delayTime") Instant delayTime);
 }

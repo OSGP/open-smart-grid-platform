@@ -168,7 +168,7 @@ public class DlmsConfig extends AbstractConfig {
       @Autowired(required = false) final ThrottlingService throttlingService,
       final ThrottlingClientConfig throttlingClientConfig,
       final DlmsDeviceRepository deviceRepository,
-      @Autowired final DeviceKeyProcessingService deviceKeyProcessingService) {
+      final DeviceKeyProcessingService deviceKeyProcessingService) {
     return new RecoverKeyProcess(
         domainHelperService,
         hls5Connector,

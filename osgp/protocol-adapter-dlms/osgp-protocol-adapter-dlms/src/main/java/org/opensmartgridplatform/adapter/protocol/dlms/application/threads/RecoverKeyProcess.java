@@ -86,7 +86,7 @@ public class RecoverKeyProcess implements Runnable {
 
     try {
 
-      this.checkIfOtherKeyProcessIsRunning(device.getDeviceIdentification());
+      this.deviceKeyProcessingService.startProcessing(device.getDeviceIdentification());
 
       if (!this.canConnectUsingNewKeys(device)) {
         log.warn(
@@ -95,8 +95,6 @@ public class RecoverKeyProcess implements Runnable {
             this.deviceIdentification);
         return;
       }
-
-      this.markKeyProcessIsRunning(device.getDeviceIdentification());
 
     } catch (final ThrottlingPermitDeniedException e) {
       log.warn(
@@ -112,9 +110,11 @@ public class RecoverKeyProcess implements Runnable {
               },
               this.throttlingClientConfig.permitRejectedDelay().toMillis());
 
+      this.deviceKeyProcessingService.stopProcessing(this.deviceIdentification);
+
       return;
     } catch (final DeviceKeyProcessAlreadyRunningException e) {
-      log.warn(
+      log.info(
           "RecoverKeyProcess could not be started while other key changing process is already running.");
 
       new Timer()
@@ -137,6 +137,8 @@ public class RecoverKeyProcess implements Runnable {
           Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION));
     } catch (final Exception e) {
       throw new RecoverKeyException(e);
+    } finally {
+      this.deviceKeyProcessingService.stopProcessing(this.deviceIdentification);
     }
   }
 
@@ -145,17 +147,6 @@ public class RecoverKeyProcess implements Runnable {
       return this.domainHelperService.findDlmsDevice(this.deviceIdentification, this.ipAddress);
     } catch (final Exception e) {
       throw new RecoverKeyException(e);
-    }
-  }
-
-  private void markKeyProcessIsRunning(final String deviceIdentification) {
-    this.deviceKeyProcessingService.startProcessing(deviceIdentification);
-  }
-
-  private void checkIfOtherKeyProcessIsRunning(final String deviceIdentification)
-      throws DeviceKeyProcessAlreadyRunningException {
-    if (this.deviceKeyProcessingService.isProcessing(deviceIdentification)) {
-      throw new DeviceKeyProcessAlreadyRunningException();
     }
   }
 

@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,6 +38,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceKeyProcessAlreadyRunningException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
@@ -47,7 +49,7 @@ import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class KeyRequestMessageProcessorTest {
+class ReplaceKeysRequestMessageProcessorTest {
 
   @Mock protected DlmsConnectionHelper connectionHelper;
 
@@ -110,10 +112,10 @@ class KeyRequestMessageProcessorTest {
   }
 
   @Test
-  void processMessageWhenNoOtherKeyProcessIsRunning() throws OsgpException, JMSException {
+  void processMessageWhenNoOtherKeyProcessIsRunning()
+      throws OsgpException, JMSException, DeviceKeyProcessAlreadyRunningException {
 
     // Arrange
-    when(this.deviceKeyProcessingService.isProcessing(this.deviceIdentification)).thenReturn(false);
     when(this.deviceKeyProcessingService.getDeviceKeyProcessingTimeout())
         .thenReturn(this.deviceKeyProcessingTimeout);
 
@@ -127,10 +129,13 @@ class KeyRequestMessageProcessorTest {
   }
 
   @Test
-  void processMessageWhenAnotherKeyProcessIsAlreadyRunning() throws OsgpException, JMSException {
+  void processMessageWhenAnotherKeyProcessIsAlreadyRunning()
+      throws OsgpException, JMSException, DeviceKeyProcessAlreadyRunningException {
 
     // Arrange
-    when(this.deviceKeyProcessingService.isProcessing(this.deviceIdentification)).thenReturn(true);
+    doThrow(new DeviceKeyProcessAlreadyRunningException())
+        .when(this.deviceKeyProcessingService)
+        .startProcessing(this.deviceIdentification);
     when(this.deviceKeyProcessingService.getDeviceKeyProcessingTimeout())
         .thenReturn(this.deviceKeyProcessingTimeout);
 
@@ -138,7 +143,6 @@ class KeyRequestMessageProcessorTest {
     this.processor.processMessage(this.message);
 
     // Assert
-    verify(this.deviceKeyProcessingService, never()).startProcessing(this.deviceIdentification);
     verify(this.deviceRequestMessageSender)
         .send(
             same(this.messageObject),
