@@ -268,13 +268,13 @@ Feature: SmartMetering Configuration - Firmware
       | ManufacturerCode         | EMAN              |
       | DeviceModelCode          | E_METER_MODEL_1   |
     And a dlms device
-      | DeviceIdentification        | GTEST102400000002  |
-      | DeviceType                  | SMART_METER_G      |
-      | ManufacturerCode            | GMAN               |
-      | DeviceModelCode             | G_METER_MODEL_1    |
-      | GatewayDeviceIdentification | ETEST102400000002  |
-      | MbusIdentificationNumber    | 0000000            |
-      | FirmwareUpdateKey           | SECURITY_KEYPAIR_2 |
+      | DeviceIdentification        | GTEST102400000002 |
+      | DeviceType                  | SMART_METER_G     |
+      | ManufacturerCode            | GMAN              |
+      | DeviceModelCode             | G_METER_MODEL_1   |
+      | GatewayDeviceIdentification | ETEST102400000002 |
+      | MbusIdentificationNumber    | 0000000           |
+      | FirmwareUpdateKey           | SECURITY_KEY_2    |
     And a firmware
       | FirmwareFileIdentification  | TEST_FW_FILE_GAS_0002          |
       | FirmwareFile                | 534d523500230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4ffbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d5fa821c678e71c05c47e1c69c4bfffe1fd |

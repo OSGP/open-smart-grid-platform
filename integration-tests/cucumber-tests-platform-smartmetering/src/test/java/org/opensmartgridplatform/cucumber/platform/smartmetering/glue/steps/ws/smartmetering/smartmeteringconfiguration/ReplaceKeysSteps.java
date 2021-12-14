@@ -24,7 +24,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.R
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.SecurityKey;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GenerateAndReplaceKeysRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.ReplaceKeysRequestFactory;
@@ -54,7 +54,7 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
 
   private void putKeyInScenarioContext(final Map<String, String> settings, final String key) {
     final String keyName = settings.get(key);
-    final String soapKey = PlatformSmartmeteringDefaults.SECURITYKEYPAIRS.getSoapKey(keyName);
+    final String soapKey = SecurityKey.valueOf(keyName).getSoapRequestKey();
     ScenarioContext.current().put(key, soapKey);
   }
 

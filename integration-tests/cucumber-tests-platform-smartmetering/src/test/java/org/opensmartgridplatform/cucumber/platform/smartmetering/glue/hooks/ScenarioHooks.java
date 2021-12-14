@@ -15,7 +15,7 @@ import java.util.Map;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.SecurityKey;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.database.DlmsDatabase;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.simulator.DeviceSimulatorSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration.ReplaceKeysSteps;
@@ -89,11 +89,8 @@ public class ScenarioHooks {
     map.put(
         PlatformKeys.KEY_DEVICE_IDENTIFICATION,
         PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
-    map.put(
-        PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY,
-        PlatformSmartmeteringDefaults.SECURITY_KEYPAIR_1);
-    map.put(
-        PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY, PlatformSmartmeteringDefaults.SECURITY_KEYPAIR_2);
+    map.put(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY, SecurityKey.SECURITY_KEY_A.name());
+    map.put(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY, SecurityKey.SECURITY_KEY_E.name());
     return map;
   }
 

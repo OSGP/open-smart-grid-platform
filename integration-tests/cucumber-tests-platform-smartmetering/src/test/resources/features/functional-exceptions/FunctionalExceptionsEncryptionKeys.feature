@@ -1,22 +1,23 @@
 @SmartMetering @Platform @NightlyBuildOnly
 Feature: SmartMetering functional exceptions regarding encryption keys
+
   Scenario: Replace keys on a device with incorrectly encrypted keys
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
       | HLS5_active          | true              |
     And a dlms device
-      | DeviceIdentification           | TESTG102400000001                                                |
-      | DeviceType                     | SMART_METER_G                                                    |
-      | GatewayDeviceIdentification    | TEST1024000000001                                                |
-      | Channel                        |                                                                1 |
-      | MbusIdentificationNumber       |                                                         24000000 |
-      | MbusManufacturerIdentification | LGB                                                              |
-      | MbusUserKey                    | MBUS_USER_KEYPAIR |
+      | DeviceIdentification           | TESTG102400000001 |
+      | DeviceType                     | SMART_METER_G     |
+      | GatewayDeviceIdentification    | TEST1024000000001 |
+      | Channel                        |                 1 |
+      | MbusIdentificationNumber       |          24000000 |
+      | MbusManufacturerIdentification | LGB               |
+      | MbusUserKey                    | MBUS_USER_KEY     |
     When the replace keys request is received
-      | DeviceIdentification | TEST1024000000001              |
-      | Authentication_key   | AN_INCORRECT_SECURITY_KEY      |
-      | Encryption_key       | ANOTHER_INCORRECT_SECURITY_KEY |
+      | DeviceIdentification | TEST1024000000001        |
+      | Authentication_key   | INCORRECT_SECURITY_KEY_1 |
+      | Encryption_key       | INCORRECT_SECURITY_KEY_2 |
     Then the replace keys response generating an error is received
       | DeviceIdentification | TEST1024000000001 |
     And a SOAP fault should have been returned

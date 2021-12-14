@@ -15,7 +15,7 @@ Feature: SmartMetering Configuration - Exchange User Key on M-Bus Device
       | Channel                        |                 1 |
       | MbusIdentificationNumber       |          24000000 |
       | MbusManufacturerIdentification | LGB               |
-      | MbusUserKey                    | MBUS_USER_KEYPAIR |
+      | MbusUserKey                    | MBUS_USER_KEY     |
 
   # This test runs mostly OK in isolation. However, when run with other tests it fails.
   # Somehow the M-Bus User key is stored in the database, but is not seen in the device
@@ -36,6 +36,7 @@ Feature: SmartMetering Configuration - Exchange User Key on M-Bus Device
       | DeviceIdentification | TESTG102411111111 |
     Then a valid m-bus user key is stored
       | DeviceIdentification | TESTG102411111111 |
+
   Scenario: Exchange user key on a gas device with existing user key
     When the exchange user key request is received
       | DeviceIdentification | TESTG102400000001 |

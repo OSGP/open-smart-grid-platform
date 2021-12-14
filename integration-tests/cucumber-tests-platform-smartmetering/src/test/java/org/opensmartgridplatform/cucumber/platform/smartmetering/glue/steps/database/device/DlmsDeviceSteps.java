@@ -52,6 +52,7 @@ import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.Devi
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.DeviceSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.SecurityKey;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities.DeviceBuilder;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities.SecretBuilder;
@@ -117,22 +118,22 @@ public class DlmsDeviceSteps {
       Arrays.asList(
           new SecretBuilder()
               .withSecurityKeyType(E_METER_AUTHENTICATION)
-              .withKey(PlatformSmartmeteringDefaults.SECURITY_KEY_A_DB),
+              .withKey(SecurityKey.SECURITY_KEY_A.getDatabaseKey()),
           new SecretBuilder()
               .withSecurityKeyType(E_METER_ENCRYPTION)
-              .withKey(PlatformSmartmeteringDefaults.SECURITY_KEY_E_DB),
+              .withKey(SecurityKey.SECURITY_KEY_E.getDatabaseKey()),
           new SecretBuilder()
               .withSecurityKeyType(E_METER_MASTER)
-              .withKey(PlatformSmartmeteringDefaults.SECURITY_KEY_M_DB),
+              .withKey(SecurityKey.SECURITY_KEY_M.getDatabaseKey()),
           new SecretBuilder()
               .withSecurityKeyType(PASSWORD)
-              .withKey(PlatformSmartmeteringDefaults.PASSWORD),
+              .withKey(SecurityKey.PASSWORD.getDatabaseKey()),
           new SecretBuilder()
               .withSecurityKeyType(G_METER_ENCRYPTION)
-              .withKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_ENCRYPTION),
+              .withKey(SecurityKey.SECURITY_KEY_G_ENCRYPTION.getDatabaseKey()),
           new SecretBuilder()
               .withSecurityKeyType(G_METER_MASTER)
-              .withKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_MASTER));
+              .withKey(SecurityKey.SECURITY_KEY_G_MASTER.getDatabaseKey()));
 
   public DlmsDeviceSteps() {
     this.securityKeyTypesByInputName.put(KEY_DEVICE_AUTHENTICATIONKEY, E_METER_AUTHENTICATION);
@@ -677,10 +678,8 @@ public class DlmsDeviceSteps {
               keyTypeInputName, this.securityKeyTypesByInputName.keySet()));
     }
     if (inputSettings.containsKey(keyTypeInputName)) {
-      final String inputKey = inputSettings.get(keyTypeInputName);
-
-      final String dbEncryptedKey =
-          PlatformSmartmeteringDefaults.SECURITYKEYPAIRS.getDbKey(inputKey);
+      final String inputKeyName = inputSettings.get(keyTypeInputName);
+      final String dbEncryptedKey = SecurityKey.valueOf(inputKeyName).getDatabaseKey();
 
       if (dbEncryptedKey != null && !dbEncryptedKey.trim().isEmpty()) {
         return new SecretBuilder().withSecurityKeyType(keyType).withKey(dbEncryptedKey);
@@ -767,9 +766,8 @@ public class DlmsDeviceSteps {
             .next();
     for (int i = 0; i < secretTypesToCreate.size(); i++) {
       if (inputSettings.containsKey(keyTypeInputNames.get(i))) {
-        final String key =
-            PlatformSmartmeteringDefaults.SECURITYKEYPAIRS.getDbKey(
-                inputSettings.get(keyTypeInputNames.get(i)));
+        final String inputKeyName = inputSettings.get(keyTypeInputNames.get(i));
+        final String key = SecurityKey.valueOf(inputKeyName).getDatabaseKey();
         final DbEncryptedSecret secret =
             new SecretBuilder()
                 .withDeviceIdentification(deviceIdentification)
@@ -795,8 +793,7 @@ public class DlmsDeviceSteps {
 
     for (final String keyName : inputSettings.keySet()) {
       final String secretStatus = inputSettings.get(keyName);
-      final String dbEncryptedSecretValue =
-          PlatformSmartmeteringDefaults.SECURITYKEYPAIRS.getDbKey(keyName);
+      final String dbEncryptedSecretValue = SecurityKey.valueOf(keyName).getDatabaseKey();
       final List<DbEncryptedSecret> dbEncryptedSecret =
           this.encryptedSecretRepository.findSecrets(
               deviceIdentification, secretType, SecretStatus.valueOf(secretStatus));
@@ -851,9 +848,9 @@ public class DlmsDeviceSteps {
               final List<DbEncryptedSecret> activeSecretList =
                   this.encryptedSecretRepository.findSecrets(
                       deviceIdentification, secretType, SecretStatus.ACTIVE);
-              final String expectedKey = inputSettings.get(keyInputName);
+              final String expectedKeyName = inputSettings.get(keyInputName);
               final String expectedDbEncryptedSecret =
-                  PlatformSmartmeteringDefaults.SECURITYKEYPAIRS.getDbKey(expectedKey);
+                  SecurityKey.valueOf(expectedKeyName).getDatabaseKey();
               assertThat(activeSecretList.get(0).getEncodedSecret())
                   .isEqualTo(expectedDbEncryptedSecret);
             }
