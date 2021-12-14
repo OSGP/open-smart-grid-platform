@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
       "classpath:features/osgp-adapter-ws-core",
       "classpath:features/osgp-adapter-ws-smartmetering"
     },
-    tags = {"@SMHE-228" /*"not @Skip", "not @NightlyBuildOnly"*/},
+    tags = {"not @Skip", "not @NightlyBuildOnly"},
     glue = {
       "classpath:org.opensmartgridplatform.cucumber.platform.glue",
       "classpath:org.opensmartgridplatform.cucumber.platform.common.glue",
