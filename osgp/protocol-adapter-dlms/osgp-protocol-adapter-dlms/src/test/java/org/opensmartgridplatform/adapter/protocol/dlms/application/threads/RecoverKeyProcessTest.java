@@ -11,7 +11,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.threads;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -40,7 +39,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Thro
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceKeyProcessAlreadyRunningException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RecoverKeyException;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -89,26 +87,6 @@ class RecoverKeyProcessTest {
     assertThrows(RecoverKeyException.class, () -> this.recoverKeyProcess.run());
 
     // THEN
-    verify(this.secretManagementService, never()).activateNewKeys(any(), any(), any());
-  }
-
-  @Test
-  void testWhenAlreadyKeyProcessRunning()
-      throws OsgpException, IOException, DeviceKeyProcessAlreadyRunningException {
-
-    // GIVEN
-    when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
-        .thenReturn(DEVICE);
-    doThrow(new DeviceKeyProcessAlreadyRunningException())
-        .when(this.deviceKeyProcessingService)
-        .startProcessing(DEVICE_IDENTIFICATION);
-
-    // WHEN
-    this.recoverKeyProcess.run();
-
-    // THEN
-    verify(this.secretManagementService, never()).hasNewSecret(any(), any());
-    verify(this.domainHelperService).findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS);
     verify(this.secretManagementService, never()).activateNewKeys(any(), any(), any());
   }
 
