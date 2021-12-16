@@ -12,7 +12,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.time.Duration;
 import java.time.Instant;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DeviceKeyProcessing;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DeviceKeyProcessingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceKeyProcessAlreadyRunningException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +34,7 @@ public class DeviceKeyProcessingService {
 
   public void startProcessing(final String deviceIdentification)
       throws DeviceKeyProcessAlreadyRunningException {
-    final DeviceKeyProcessing deviceKeyProcessing = new DeviceKeyProcessing();
-    deviceKeyProcessing.setDeviceIdentification(deviceIdentification);
-    deviceKeyProcessing.setStartTime(Instant.now());
-    try {
-      this.deviceKeyProcessingRepository.saveAndFlush(deviceKeyProcessing);
-    } catch (final Exception e) {
+    if (!this.deviceKeyProcessingRepository.insert(deviceIdentification)) {
       final int updates =
           this.deviceKeyProcessingRepository.updateStartTime(
               deviceIdentification, Instant.now().minus(this.deviceKeyProcessingTimeout));
@@ -51,7 +45,7 @@ public class DeviceKeyProcessingService {
   }
 
   public void stopProcessing(final String deviceIdentification) {
-    this.deviceKeyProcessingRepository.deleteById(deviceIdentification);
+    this.deviceKeyProcessingRepository.remove(deviceIdentification);
   }
 
   public Duration getDeviceKeyProcessingTimeout() {

@@ -12,6 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncResponse;
@@ -29,6 +32,7 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.s
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GenerateAndReplaceKeysRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.ReplaceKeysRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
+import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
@@ -52,6 +56,39 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
         .put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
   }
 
+  @When("^multiple replace keys requests are received$")
+  public void multipleReplaceKeysRequestsAreReceived(final Map<String, String> settings2)
+      throws Throwable {
+    final List<Map<String, String>> listOfSettingsPerRequest =
+        this.createSettingPerRequest(settings2);
+    final List<String> correlationUIDs = new ArrayList<>();
+    for (final Map<String, String> settingsPerRequest : listOfSettingsPerRequest) {
+      final ReplaceKeysRequest request =
+          ReplaceKeysRequestFactory.fromParameterMap(settingsPerRequest);
+
+      final ReplaceKeysAsyncResponse asyncResponse =
+          this.smartMeteringConfigurationClient.replaceKeys(request);
+
+      correlationUIDs.add(asyncResponse.getCorrelationUid());
+    }
+    ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, correlationUIDs);
+  }
+
+  private List<Map<String, String>> createSettingPerRequest(final Map<String, String> settings) {
+    final List<Map<String, String>> settingPerRequest = new ArrayList<>();
+    final int numberOfRequests = settings.values().iterator().next().split(",").length;
+    for (int i = 0; i < numberOfRequests; i++) {
+      final Map<String, String> map = new HashMap<>();
+      for (final String key : settings.keySet()) {
+        final String values = settings.get(key);
+        final String value = values.split(",")[i];
+        map.put(key, value);
+      }
+      settingPerRequest.add(map);
+    }
+    return settingPerRequest;
+  }
+
   private void putKeyInScenarioContext(final Map<String, String> settings, final String key) {
     final String keyName = settings.get(key);
     final String soapKey = SecurityKey.valueOf(keyName).getSoapRequestKey();
@@ -63,6 +100,23 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
       throws Throwable {
     final String correlationUid =
         (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
+    this.assertReplaceKeysResponse(responseParameters, correlationUid);
+  }
+
+  @Then("^multiple replace keys responses should be returned$")
+  public void multipleReplaceKeysResponsesShouldBeReturned(
+      final Map<String, String> responseParameters) throws Throwable {
+
+    final List<String> correlationUids =
+        (List<String>) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
+    for (final String correlationUid : correlationUids) {
+      this.assertReplaceKeysResponse(responseParameters, correlationUid);
+    }
+  }
+
+  private void assertReplaceKeysResponse(
+      final Map<String, String> responseParameters, final String correlationUid)
+      throws WebServiceSecurityException {
     final Map<String, String> extendedParameters =
         SettingsHelper.addDefault(
             responseParameters, PlatformKeys.KEY_CORRELATION_UID, correlationUid);

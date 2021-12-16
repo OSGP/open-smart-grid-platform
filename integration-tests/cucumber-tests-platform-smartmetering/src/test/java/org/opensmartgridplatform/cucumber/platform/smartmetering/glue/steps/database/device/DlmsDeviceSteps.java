@@ -814,6 +814,61 @@ public class DlmsDeviceSteps {
     }
   }
 
+  @Then(
+      "the encrypted_secret table in the secret management database should contain an EXPIRED and an ACTIVE key for device {string} or exactly the opposite")
+  public void
+      theEncryptedSecretTableInTheSecretManagementDatabaseShouldContainKeysForDeviceOrExactlyTheOpposite(
+          final String deviceIdentification, final Map<String, String> inputSettings) {
+    // Depending on the order in which the two request are processed the results (status of the
+    // secret) are either as specified as the first or second value
+    int countResultKeysRequest1 = 0;
+    int countResultKeysRequest2 = 0;
+
+    for (final String secretTypeString : inputSettings.keySet()) {
+
+      final String[] keyInfo = inputSettings.get(secretTypeString).split(",");
+
+      final String keyNameExpired = keyInfo[0];
+      final String keyNameActive = keyInfo[1];
+
+      final SecretType secretType = this.getSecretTypeByKeyTypeInputName(secretTypeString);
+
+      final List<DbEncryptedSecret> dbEncryptedSecretsRequest1 =
+          this.encryptedSecretRepository.findSecretsIncludingEncodedSecret(
+              deviceIdentification,
+              secretType,
+              SecretStatus.EXPIRED,
+              SecurityKey.valueOf(keyNameExpired).getDatabaseKey());
+      dbEncryptedSecretsRequest1.addAll(
+          this.encryptedSecretRepository.findSecretsIncludingEncodedSecret(
+              deviceIdentification,
+              secretType,
+              SecretStatus.ACTIVE,
+              SecurityKey.valueOf(keyNameActive).getDatabaseKey()));
+
+      countResultKeysRequest1 += dbEncryptedSecretsRequest1.size();
+
+      final List<DbEncryptedSecret> dbEncryptedSecretsRequest2 =
+          this.encryptedSecretRepository.findSecretsIncludingEncodedSecret(
+              deviceIdentification,
+              secretType,
+              SecretStatus.ACTIVE,
+              SecurityKey.valueOf(keyNameExpired).getDatabaseKey());
+      dbEncryptedSecretsRequest2.addAll(
+          this.encryptedSecretRepository.findSecretsIncludingEncodedSecret(
+              deviceIdentification,
+              secretType,
+              SecretStatus.EXPIRED,
+              SecurityKey.valueOf(keyNameActive).getDatabaseKey()));
+
+      countResultKeysRequest2 += dbEncryptedSecretsRequest2.size();
+    }
+
+    assertThat(
+        (countResultKeysRequest1 == 0 && countResultKeysRequest2 == 4)
+            || (countResultKeysRequest1 == 4 && countResultKeysRequest2 == 0));
+  }
+
   @Then("after {int} seconds, the new {} key is recovered")
   public void newKeysAreRecovered(
       final int maxSecondsToWait,

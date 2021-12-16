@@ -9,22 +9,50 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories;
 
 import java.time.Instant;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DeviceKeyProcessing;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface DeviceKeyProcessingRepository extends JpaRepository<DeviceKeyProcessing, String> {
+public class DeviceKeyProcessingRepository {
 
-  @Modifying
-  @Query(
-      "UPDATE DeviceKeyProcessing d SET d.startTime = CURRENT_TIMESTAMP"
-          + " WHERE d.deviceIdentification = :deviceIdentification"
-          + "   AND d.startTime < :delayTime")
-  int updateStartTime(
-      @Param("deviceIdentification") String deviceIdentification,
-      @Param("delayTime") Instant delayTime);
+  @PersistenceContext private EntityManager em;
+
+  @Transactional
+  public int updateStartTime(final String deviceIdentification, final Instant delayTime) {
+    final Query query =
+        this.em.createQuery(
+            "UPDATE DeviceKeyProcessing d SET d.startTime = CURRENT_TIMESTAMP"
+                + " WHERE d.deviceIdentification = :deviceIdentification"
+                + "   AND d.startTime < :delayTime");
+    query.setParameter("deviceIdentification", deviceIdentification);
+    query.setParameter("delayTime", delayTime);
+    return query.executeUpdate();
+  }
+
+  @Transactional
+  public boolean insert(final String deviceIdentification) {
+    try {
+      final DeviceKeyProcessing deviceKeyProcessing = new DeviceKeyProcessing();
+      deviceKeyProcessing.setDeviceIdentification(deviceIdentification);
+      deviceKeyProcessing.setStartTime(Instant.now());
+      this.em.persist(deviceKeyProcessing);
+      return true;
+    } catch (final Exception e) {
+      return false;
+    }
+  };
+
+  @Transactional
+  public int remove(final String deviceIdentification) {
+    final Query query =
+        this.em.createQuery(
+            "DELETE DeviceKeyProcessing d "
+                + " WHERE d.deviceIdentification = :deviceIdentification");
+    query.setParameter("deviceIdentification", deviceIdentification);
+    return query.executeUpdate();
+  };
 }
