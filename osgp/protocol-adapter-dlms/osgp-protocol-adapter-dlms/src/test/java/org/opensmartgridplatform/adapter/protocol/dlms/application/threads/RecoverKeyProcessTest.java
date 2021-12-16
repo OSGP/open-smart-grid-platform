@@ -77,33 +77,27 @@ class RecoverKeyProcessTest {
   @Test
   void testWhenDeviceNotFoundThenException() throws OsgpException {
 
-    // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
         .thenThrow(
             new FunctionalException(
                 FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.PROTOCOL_DLMS));
 
-    // WHEN
     assertThrows(RecoverKeyException.class, () -> this.recoverKeyProcess.run());
 
-    // THEN
     verify(this.secretManagementService, never()).activateNewKeys(any(), any(), any());
   }
 
   @Test
   void testWhenHasNoNewKeysToConnectWith() throws OsgpException, IOException {
 
-    // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
         .thenReturn(DEVICE);
 
     when(this.secretManagementService.hasNewSecret(eq(MESSAGE_METADATA), eq(DEVICE_IDENTIFICATION)))
         .thenReturn(false);
 
-    // WHEN
     this.recoverKeyProcess.run();
 
-    // THEN
     verify(this.secretManagementService, times(1))
         .hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION);
     verify(this.domainHelperService).findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS);
@@ -113,7 +107,6 @@ class RecoverKeyProcessTest {
   @Test
   void testWhenNotAbleToConnectWithNewKeys() throws OsgpException, IOException {
 
-    // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
         .thenReturn(DEVICE);
     when(this.hls5Connector.connectUnchecked(eq(MESSAGE_METADATA), eq(DEVICE), any(), any()))
@@ -122,10 +115,8 @@ class RecoverKeyProcessTest {
     when(this.secretManagementService.hasNewSecret(eq(MESSAGE_METADATA), eq(DEVICE_IDENTIFICATION)))
         .thenReturn(true);
 
-    // WHEN
     this.recoverKeyProcess.run();
 
-    // THEN
     verify(this.secretManagementService, times(1))
         .hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION);
     verify(this.domainHelperService).findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS);
@@ -135,7 +126,6 @@ class RecoverKeyProcessTest {
   @Test
   void testThrottlingServiceCalledAndKeysActivated() throws Exception {
 
-    // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
         .thenReturn(DEVICE);
     when(this.hls5Connector.connectUnchecked(eq(MESSAGE_METADATA), eq(DEVICE), any(), any()))
@@ -144,10 +134,8 @@ class RecoverKeyProcessTest {
     when(this.secretManagementService.hasNewSecret(eq(MESSAGE_METADATA), eq(DEVICE_IDENTIFICATION)))
         .thenReturn(true);
 
-    // WHEN
     this.recoverKeyProcess.run();
 
-    // THEN
     final InOrder inOrder = inOrder(this.throttlingService, this.hls5Connector);
 
     inOrder.verify(this.throttlingService).openConnection();
@@ -167,7 +155,6 @@ class RecoverKeyProcessTest {
   @Test
   void testWhenConnectionFailedThenConnectionClosedAtThrottlingService() throws Exception {
 
-    // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
         .thenReturn(DEVICE);
     when(this.hls5Connector.connectUnchecked(any(), any(), any(), any())).thenReturn(null);
@@ -175,10 +162,8 @@ class RecoverKeyProcessTest {
     when(this.secretManagementService.hasNewSecret(eq(MESSAGE_METADATA), eq(DEVICE_IDENTIFICATION)))
         .thenReturn(true);
 
-    // WHEN
     this.recoverKeyProcess.run();
 
-    // THEN
     final InOrder inOrder = inOrder(this.throttlingService, this.hls5Connector);
 
     inOrder.verify(this.throttlingService).openConnection();
