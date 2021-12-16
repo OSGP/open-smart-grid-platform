@@ -47,11 +47,13 @@ Feature: SmartMetering Configuration - Replace Keys
     And the new keys are stored in the secret management database encrypted_secret table
     And the stored keys are not equal to the received keys
     And the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
-      | SECURITY_KEY_A | EXPIRED |
-      | SECURITY_KEY_2 | ACTIVE  |
+      | SECURITY_KEY_A | EXPIRED   |
+      | SECURITY_KEY_4 | ACTIVE    |
+      | SECURITY_KEY_2 | WITHDRAWN |
     And the encrypted_secret table in the secret management database should contain "Encryption_key" keys for device "TEST1024000000001"
-      | SECURITY_KEY_E | EXPIRED |
-      | SECURITY_KEY_1 | ACTIVE  |
+      | SECURITY_KEY_E | EXPIRED   |
+      | SECURITY_KEY_3 | ACTIVE    |
+      | SECURITY_KEY_1 | WITHDRAWN |
 
   @ResetKeysOnDevice
   Scenario: Replace keys on a device while multiple NEW keys already present in SecretManagement
@@ -77,12 +79,14 @@ Feature: SmartMetering Configuration - Replace Keys
     And the stored keys are not equal to the received keys
     And the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
       | SECURITY_KEY_A | EXPIRED   |
-      | SECURITY_KEY_2 | ACTIVE    |
+      | SECURITY_KEY_6 | ACTIVE    |
       | SECURITY_KEY_4 | WITHDRAWN |
+      | SECURITY_KEY_2 | WITHDRAWN |
     And the encrypted_secret table in the secret management database should contain "Encryption_key" keys for device "TEST1024000000001"
       | SECURITY_KEY_E | EXPIRED   |
-      | SECURITY_KEY_1 | ACTIVE    |
+      | SECURITY_KEY_5 | ACTIVE    |
       | SECURITY_KEY_3 | WITHDRAWN |
+      | SECURITY_KEY_1 | WITHDRAWN |
 
   @ResetKeysOnDevice
   Scenario: Replace keys on a device (two concurrent requests are executed after one other)

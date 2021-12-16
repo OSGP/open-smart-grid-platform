@@ -139,7 +139,7 @@ public class SecretManagementEndpoint {
     final TypedSecrets soapTypedSecrets = request.getTypedSecrets();
     final List<TypedSecret> typedSecretList =
         this.converter.convertToTypedSecrets(soapTypedSecrets);
-    this.secretManagementService.storeOrResetNewSecrets(request.getDeviceId(), typedSecretList);
+    this.secretManagementService.storeSecrets(request.getDeviceId(), typedSecretList);
     return new StoreSecretsResponse();
   }
 
@@ -149,8 +149,7 @@ public class SecretManagementEndpoint {
     final SecretTypes soapSecretTypes = request.getSecretTypes();
     final List<SecretType> secretTypeList = this.converter.convertToSecretTypes(soapSecretTypes);
     final List<TypedSecret> typedSecretList =
-        this.secretManagementService.generateAndStoreOrResetNewSecrets(
-            request.getDeviceId(), secretTypeList);
+        this.secretManagementService.generateAndStoreSecrets(request.getDeviceId(), secretTypeList);
     response.setTypedSecrets(this.converter.convertToSoapTypedSecrets(typedSecretList));
     return response;
   }

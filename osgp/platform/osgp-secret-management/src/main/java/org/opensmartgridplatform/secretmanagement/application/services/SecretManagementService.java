@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -257,83 +256,35 @@ public class SecretManagementService {
     return Optional.of(secretsList.iterator().next());
   }
 
-  public synchronized void storeOrResetNewSecrets(
+  public synchronized void storeSecrets(
       final String deviceIdentification, final List<TypedSecret> typedSecrets) {
-    final List<TypedSecret> typedNewSecretsToStore = new ArrayList<>();
-    final List<TypedSecret> typedNewSecretsToReset = new ArrayList<>();
     for (final TypedSecret typedSecret : typedSecrets) {
-      final boolean thereAreNoKeysWithStatusNew =
-          this.thereAreNoKeysWithStatusNew(deviceIdentification, typedSecret.getSecretType());
-      if (thereAreNoKeysWithStatusNew) {
-        typedNewSecretsToStore.add(typedSecret);
-      } else {
-        typedNewSecretsToReset.add(typedSecret);
-      }
+      this.withdrawExistingKeysWithStatusNew(deviceIdentification, typedSecret.getSecretType());
     }
-    this.storeSecrets(deviceIdentification, typedNewSecretsToStore);
-    typedNewSecretsToReset.forEach(
-        ts -> this.resetNewSecret(deviceIdentification, ts.getSecretType()));
-  }
-
-  private boolean thereAreNoKeysWithStatusNew(
-      final String deviceIdentification, final SecretType secretType) {
-    final int numberOfNewSecrets =
-        this.secretRepository.getSecretCount(deviceIdentification, secretType, SecretStatus.NEW);
-    return numberOfNewSecrets == 0;
-  }
-
-  private TypedSecret resetNewSecret(
-      final String deviceIdentification, final SecretType secretType) {
-    // the most recent key of all NEW keys of the device and type gets a new creation date and is
-    // returned. All other NEW keys of the device and type are set to status WITHDRAWN.
-    DbEncryptedSecret mostRecentFoundSecret = null;
-    final List<DbEncryptedSecret> foundSecrets =
-        this.secretRepository.findSecrets(deviceIdentification, secretType, SecretStatus.NEW);
-
-    boolean firstInListAndMostRecent = true;
-    for (final DbEncryptedSecret foundSecret : foundSecrets) {
-      if (firstInListAndMostRecent) {
-        mostRecentFoundSecret = foundSecret;
-        firstInListAndMostRecent = false;
-      } else {
-        foundSecret.setSecretStatus(SecretStatus.WITHDRAWN);
-        log.warn(
-            String.format(
-                "During (GenerateOr)Replace Key Process multiple keys with status NEW of type %s for "
-                    + "device %s have been found. The most recent has been reused. All others will "
-                    + "be withdrawn (status WITHDRAWN)",
-                secretType.name(), deviceIdentification));
-      }
-      this.secretRepository.save(foundSecret);
-    }
-    return this.convertDbEncryptedSecretTypedSecret(mostRecentFoundSecret);
-  }
-
-  private TypedSecret convertDbEncryptedSecretTypedSecret(
-      final DbEncryptedSecret dbEncryptedSecret) {
-    TypedSecret typedSecret = null;
-    if (dbEncryptedSecret != null) {
-      EncryptedTypedSecret encryptedTypedSecret = null;
-      try {
-        encryptedTypedSecret = EncryptedTypedSecret.fromDbEncryptedSecret(dbEncryptedSecret);
-      } catch (final FunctionalException e) {
-        throw new ExceptionWrapper(e);
-      }
-      encryptedTypedSecret = this.reencryptAes2Rsa(encryptedTypedSecret);
-      typedSecret = encryptedTypedSecret.toTypedSecret();
-    }
-    return typedSecret;
-  }
-
-  private synchronized void storeSecrets(
-      final String deviceIdentification, final List<TypedSecret> secrets) {
-    secrets.forEach(s -> this.checkNrNewSecretsOfType(deviceIdentification, s.getSecretType(), 0));
     final List<EncryptedTypedSecret> aesSecrets =
-        secrets.stream()
+        typedSecrets.stream()
             .map(ts -> new EncryptedTypedSecret(ts.getSecret(), ts.getSecretType()))
             .map(this::reencryptRsa2Aes)
             .collect(toList());
     this.storeAesSecrets(deviceIdentification, aesSecrets);
+  }
+
+  private void withdrawExistingKeysWithStatusNew(
+      final String deviceIdentification, final SecretType secretType) {
+    // All NEW keys of the device and type are set to status WITHDRAWN.
+    final List<DbEncryptedSecret> foundSecrets =
+        this.secretRepository.findSecrets(deviceIdentification, secretType, SecretStatus.NEW);
+
+    for (final DbEncryptedSecret foundSecret : foundSecrets) {
+      foundSecret.setSecretStatus(SecretStatus.WITHDRAWN);
+      this.secretRepository.save(foundSecret);
+      log.warn(
+          String.format(
+              "During (GenerateOr)Replace Key Process multiple keys with status NEW of type %s for "
+                  + "device %s have been found. The most recent has been reused. All others will "
+                  + "be withdrawn (status WITHDRAWN)",
+              secretType.name(), deviceIdentification));
+    }
   }
 
   private void storeAesSecrets(
@@ -383,47 +334,12 @@ public class SecretManagementService {
     return updatedSecrets;
   }
 
-  private void checkNrNewSecretsOfType(
-      final String deviceIdentification, final SecretType t, final int expectedNr) {
-    final int nrNewSecretsOfType =
-        this.secretRepository.getSecretCount(deviceIdentification, t, SecretStatus.NEW);
-    if (nrNewSecretsOfType != expectedNr) {
-      final String errorMsg =
-          "Expected %s new secrets of type %s for device %s, but %s new secret(s) present";
-      throw new IllegalStateException(
-          String.format(errorMsg, expectedNr, t, deviceIdentification, nrNewSecretsOfType));
-    }
-  }
-
-  public synchronized List<TypedSecret> generateAndStoreOrResetNewSecrets(
+  public synchronized List<TypedSecret> generateAndStoreSecrets(
       final String deviceIdentification, final List<SecretType> secretTypes) {
 
-    final List<SecretType> typedNewSecretsToGenerateAndStore = new ArrayList<>();
-    final List<SecretType> typedNewSecretsToReset = new ArrayList<>();
     for (final SecretType secretType : secretTypes) {
-      final boolean thereAreNoKeysWithStatusNew =
-          this.thereAreNoKeysWithStatusNew(deviceIdentification, secretType);
-      if (thereAreNoKeysWithStatusNew) {
-        typedNewSecretsToGenerateAndStore.add(secretType);
-      } else {
-        typedNewSecretsToReset.add(secretType);
-      }
+      this.withdrawExistingKeysWithStatusNew(deviceIdentification, secretType);
     }
-    final List<TypedSecret> generatedSecrets =
-        this.generateAndStoreSecrets(deviceIdentification, typedNewSecretsToGenerateAndStore);
-    final List<TypedSecret> resetNewSecrets =
-        typedNewSecretsToReset.stream()
-            .map(ts -> this.resetNewSecret(deviceIdentification, ts))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-
-    generatedSecrets.addAll(resetNewSecrets);
-    return generatedSecrets;
-  }
-
-  private synchronized List<TypedSecret> generateAndStoreSecrets(
-      final String deviceIdentification, final List<SecretType> secretTypes) {
-
     final List<EncryptedTypedSecret> encryptedTypedSecrets =
         secretTypes.stream().map(this::generateAes128BitsSecret).collect(Collectors.toList());
 
