@@ -30,7 +30,7 @@ public class DeviceKeyProcessing {
     this.deviceIdentification = deviceIdentification;
   }
 
-  public java.time.Instant getStartTime() {
+  public Instant getStartTime() {
     return this.startTime;
   }
 

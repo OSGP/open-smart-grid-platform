@@ -322,7 +322,7 @@ public class SoapServiceSecretManagementIT {
         .andExpect(ResponseMatchers.noFault())
         .andExpect(ResponseMatchers.payload(expectedStoreResponse));
 
-    // Generate and store secret: this should result in a fault message
+    // Generate and store secret: this should NOT result in a fault message
     final Resource generateAndStoreRequest =
         new ClassPathResource("test-requests/generateAndStoreSecrets.xml");
     this.mockWebServiceClient

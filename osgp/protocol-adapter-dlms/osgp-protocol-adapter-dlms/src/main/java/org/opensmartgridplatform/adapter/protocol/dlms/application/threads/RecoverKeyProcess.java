@@ -86,6 +86,9 @@ public class RecoverKeyProcess implements Runnable {
 
     try {
 
+      // the process started in this try-catch block should only be stopped in the
+      // ThrottlingPermitDeniedException catch block. The next try-catch block has a finally block
+      // to ensure stopping trhe process started here.
       this.deviceKeyProcessingService.startProcessing(device.getDeviceIdentification());
 
       if (!this.canConnectUsingNewKeys(device)) {
