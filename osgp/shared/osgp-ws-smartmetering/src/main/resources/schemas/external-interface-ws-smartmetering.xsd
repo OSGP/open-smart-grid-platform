@@ -58,6 +58,7 @@
           <xsd:element ref="bun:ActualMeterReadsResponse"/>
           <xsd:element ref="bun:ActualMeterReadsGasResponse"/>
           <xsd:element ref="con:GetPushNotificationAlarmResponse"/>
+          <xsd:element ref="adm:SendSystemEventResponse"/>
           <xsd:element ref="bun:FindEventsResponse"/>
           <xsd:element ref="ins:DecoupleMbusDeviceByChannelResponse"/>
           <xsd:element ref="bun:ActionResponse"/>

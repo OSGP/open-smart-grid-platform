@@ -938,16 +938,6 @@
       <!-- 0x83A1 - Key is acknowledged by the M-Bus device on channel 4 -->
       <xsd:enumeration value="KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_4"/>
 
-      <!-- the following events are System Events -->
-      <xsd:enumeration value="SET_MAINTENANCE_STATE_E_SUCCESS"/>
-      <xsd:enumeration value="SET_MAINTENANCE_STATE_G_SUCCESS"/>
-      <xsd:enumeration value="SET_MAINTENANCE_STATE_E_FAILED"/>
-      <xsd:enumeration value="SET_MAINTENANCE_STATE_G_FAILED"/>
-      <xsd:enumeration value="COMMUNICATION_NETWORK_INFORMATION_UPDATED"/>
-      <xsd:enumeration value="CLEAN_UP_M_BUS_CHANNEL"/>
-      <xsd:enumeration value="FIRMWARE_UPDATE_STARTED"/>
-      <xsd:enumeration value="INVOCATION_COUNTER_THRESHOLD_REACHED"/>
-
     </xsd:restriction>
   </xsd:simpleType>
 

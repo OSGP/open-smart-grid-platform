@@ -140,7 +140,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
           this.ssldDataService.findByRelayType(ssld, RelayType.LIGHT);
       final List<LightValueDto> lightValues =
           deviceRequest.getLightValuesContainer().getLightValues();
-      List<LightValueDto> relaysWithInternalIdToSwitch;
+      final List<LightValueDto> relaysWithInternalIdToSwitch;
 
       // Check if external index 0 is used.
       final LightValueDto index0LightValue = this.checkForIndex0(lightValues);
@@ -416,12 +416,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
       final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
 
       new Iec61850SetScheduleCommand(this.deviceMessageLoggingService, this.ssldDataService)
-          .setScheduleOnDevice(
-              this.iec61850Client,
-              deviceConnection,
-              deviceRequest.getRelayType(),
-              deviceRequest.getSchedule(),
-              ssld);
+          .setScheduleOnDevice(this.iec61850Client, deviceConnection, deviceRequest, ssld);
 
       this.createSuccessfulDefaultResponse(deviceRequest, deviceResponseHandler);
     } catch (final ConnectionFailureException se) {
@@ -621,10 +616,9 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
       final DeviceResponseHandler deviceResponseHandler,
       final ProtocolAdapterException protocolAdapterException) {
     LOGGER.error(
-        "Could not complete the request: "
-            + deviceRequest.getMessageType()
-            + " for device: "
-            + deviceRequest.getDeviceIdentification(),
+        "Could not complete the request: {} for device: {}",
+        deviceRequest.getMessageType(),
+        deviceRequest.getDeviceIdentification(),
         protocolAdapterException);
     final EmptyDeviceResponse deviceResponse =
         this.createDefaultResponse(deviceRequest, DeviceMessageStatus.FAILURE);
@@ -674,7 +668,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
       final DeviceConnection deviceConnection, final DeviceRequest deviceRequest)
       throws NodeException {
     // Enabling device reporting.
-    if (this.isBufferedReportingEnabled) {
+    if (Boolean.TRUE.equals(this.isBufferedReportingEnabled)) {
       new Iec61850EnableReportingCommand()
           .enableBufferedReportingOnDeviceWithoutUsingSequenceNumber(deviceConnection);
     } else {
@@ -689,7 +683,8 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
               @Override
               public void run() {
                 try {
-                  if (Iec61850SsldDeviceService.this.isBufferedReportingEnabled) {
+                  if (Boolean.TRUE.equals(
+                      Iec61850SsldDeviceService.this.isBufferedReportingEnabled)) {
                     new Iec61850ClearReportCommand().clearBufferedReportOnDevice(deviceConnection);
                   } else {
                     new Iec61850ClearReportCommand()
@@ -697,8 +692,8 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
                   }
                 } catch (final ProtocolAdapterException e) {
                   LOGGER.error(
-                      "Unable to clear report for device: "
-                          + deviceRequest.getDeviceIdentification(),
+                      "Unable to clear report for device: {}",
+                      deviceRequest.getDeviceIdentification(),
                       e);
                 }
                 Iec61850SsldDeviceService.this.iec61850DeviceConnectionService.disconnect(

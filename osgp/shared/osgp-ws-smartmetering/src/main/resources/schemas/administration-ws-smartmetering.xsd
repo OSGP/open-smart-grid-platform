@@ -33,4 +33,63 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
+
+  <xsd:element name="ClearServiceLocationRequest">
+    <xsd:complexType/>
+  </xsd:element>
+
+  <xsd:element name="ClearServiceLocationResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="result" type="xsd:string" minOccurs="1"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="SendSystemEventRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="SystemEventType" type="tns:SmartMeteringSystemEventType"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="SmartMeteringSystemEvent">
+    <xsd:sequence>
+      <xsd:element name="timestamp" type="xsd:dateTime"/>
+      <xsd:element name="systemEventType" type="tns:SmartMeteringSystemEventType"/>
+      <xsd:element name="eventDetails" type="tns:EventDetail"
+        maxOccurs="unbounded" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="EventDetail">
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:string"/>
+      <xsd:element name="value" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="SmartMeteringSystemEventType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_E_SUCCESS"/>
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_G_SUCCESS"/>
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_E_FAILED"/>
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_G_FAILED"/>
+      <xsd:enumeration value="COMMUNICATION_NETWORK_INFORMATION_UPDATED"/>
+      <xsd:enumeration value="CLEAN_UP_M_BUS_CHANNEL"/>
+      <xsd:enumeration value="FIRMWARE_UPDATE_STARTED"/>
+      <xsd:enumeration value="INVOCATION_COUNTER_THRESHOLD_REACHED"/>
+      <xsd:enumeration value="METER_UNINSTALLED"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="SendSystemEventResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="SystemEvent" type="tns:SmartMeteringSystemEvent"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
 </xsd:schema>
