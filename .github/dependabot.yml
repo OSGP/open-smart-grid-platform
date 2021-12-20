@@ -5,16 +5,4 @@ updates:
   schedule:
     interval: daily
     time: "04:00"
-  open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: org.springframework.boot:spring-boot-maven-plugin
-    versions:
-    - 2.4.2
-    - 2.4.3
-    - 2.4.4
-  - dependency-name: org.hibernate.validator:hibernate-validator
-    versions:
-    - 7.0.0.Final
-  - dependency-name: org.apache.kafka:kafka-clients
-    versions:
-    - 2.7.0
+  open-pull-requests-limit: 5
