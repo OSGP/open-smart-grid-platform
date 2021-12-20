@@ -28,6 +28,7 @@ public class DlmsDeviceBuilder {
   private DefaultValue<Boolean> ipAddressStatic = notSet();
   private DefaultValue<String> iccId = notSet();
   private DefaultValue<String> communicationMethod = notSet();
+  private DefaultValue<String> communicationProvider = notSet();
 
   public DlmsDevice build() {
     counter += 1;
@@ -43,6 +44,7 @@ public class DlmsDeviceBuilder {
     device.setIpAddressIsStatic(this.ipAddressStatic.orElse(true));
     device.setIccId(this.iccId.orElse(null));
     device.setCommunicationMethod(this.communicationMethod.orElse(null));
+    device.setCommunicationProvider(this.communicationProvider.orElse(null));
     return device;
   }
 
@@ -98,6 +100,11 @@ public class DlmsDeviceBuilder {
 
   public DlmsDeviceBuilder withCommunicationMethod(final String communicationMethod) {
     this.communicationMethod = setTo(communicationMethod);
+    return this;
+  }
+
+  public DlmsDeviceBuilder withCommunicationProvider(final String communicationProvider) {
+    this.communicationProvider = setTo(communicationProvider);
     return this;
   }
 }

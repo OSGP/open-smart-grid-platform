@@ -72,31 +72,7 @@ public class DomainHelperService {
   }
 
   public DlmsDevice findDlmsDevice(final MessageMetadata messageMetadata) throws OsgpException {
-    return this.findDlmsDevice(
-        messageMetadata.getDeviceIdentification(), messageMetadata.getIpAddress());
-  }
-
-  public DlmsDevice findDlmsDevice(final String deviceIdentification, final String ipAddress)
-      throws OsgpException {
-    final DlmsDevice dlmsDevice =
-        this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
-    if (dlmsDevice == null) {
-      final String errorMessage = String.format("Unable to find device: %s", deviceIdentification);
-      LOGGER.error(errorMessage);
-
-      throw new FunctionalException(
-          FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.PROTOCOL_DLMS);
-    }
-
-    /* Ip Address is a transient attribute for DlmsDevice, so save is not required */
-    if (dlmsDevice.isIpAddressIsStatic()) {
-      dlmsDevice.setIpAddress(ipAddress);
-    } else {
-      final String ipAddressFromSessionProvider =
-          this.getDeviceIpAddressFromSessionProvider(dlmsDevice);
-      dlmsDevice.setIpAddress(ipAddressFromSessionProvider);
-    }
-    return dlmsDevice;
+    return this.findDlmsDevice(messageMetadata.getDeviceIdentification());
   }
 
   public String getDeviceIpAddressFromSessionProvider(final DlmsDevice dlmsDevice)
@@ -147,6 +123,7 @@ public class DomainHelperService {
         }
       }
     } catch (final InterruptedException e) {
+      Thread.currentThread().interrupt();
       throw new ProtocolAdapterException(
           "Interrupted while sleeping before calling the sessionProvider.getIpAddress", e);
     } catch (final SessionProviderException e) {

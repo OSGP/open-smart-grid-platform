@@ -10,6 +10,8 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -145,6 +147,48 @@ class DlmsConnectionFactoryTest {
         this.messageMetadata, device, listener, this.task);
 
     this.assertConnectionManagerForDevice(expected);
+  }
+
+  @Test
+  void setsIpAddressFromMessageMetadataIfIpAddressIsStatic() throws Exception {
+    final DlmsDevice device =
+        new DlmsDeviceBuilder()
+            .withHls5Active(true)
+            .withIpAddress(null)
+            .withIpAddressStatic(true)
+            .build();
+    final String ipAddress = "1.2.3.4";
+    final MessageMetadata messageMetadataWithIpAddress =
+        this.messageMetadata.builder().withIpAddress(ipAddress).build();
+    final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+    when(this.hls5Connector.connect(messageMetadataWithIpAddress, device, listener))
+        .thenReturn(this.connection);
+
+    this.factory.createAndHandleConnection(
+        messageMetadataWithIpAddress, device, listener, this.task);
+
+    assertThat(device.getIpAddress()).isEqualTo(ipAddress);
+    verify(this.domainHelperService, never()).getDeviceIpAddressFromSessionProvider(any());
+  }
+
+  @Test
+  void setsIpAddressFromSessionProviderIfIpAddressIsNotStatic() throws Exception {
+    final DlmsDevice device =
+        new DlmsDeviceBuilder()
+            .withHls5Active(true)
+            .withIpAddress(null)
+            .withIpAddressStatic(false)
+            .build();
+    final String ipAddress = "1.2.3.4";
+    when(this.domainHelperService.getDeviceIpAddressFromSessionProvider(device))
+        .thenReturn(ipAddress);
+    final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+    when(this.hls5Connector.connect(this.messageMetadata, device, listener))
+        .thenReturn(this.connection);
+
+    this.factory.createAndHandleConnection(this.messageMetadata, device, listener, this.task);
+
+    assertThat(device.getIpAddress()).isEqualTo(ipAddress);
   }
 
   private void assertConnectionManagerForDevice(final DlmsConnectionManager expected)

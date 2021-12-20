@@ -189,6 +189,14 @@ public class DlmsConnectionFactory {
       final Consumer<DlmsConnectionManager> taskForConnectionManager)
       throws OsgpException {
 
+    if (device.isIpAddressIsStatic()) {
+      device.setIpAddress(messageMetadata.getIpAddress());
+    } else {
+      final String ipAddressFromSessionProvider =
+          this.domainHelperService.getDeviceIpAddressFromSessionProvider(device);
+      device.setIpAddress(ipAddressFromSessionProvider);
+    }
+
     try (final DlmsConnectionManager connectionManager =
         new DlmsConnectionManager(
             this.connectorFor(securityLevel),

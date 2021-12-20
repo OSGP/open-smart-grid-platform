@@ -115,7 +115,7 @@ public class RecoverKeyProcess implements Runnable {
 
   private DlmsDevice findDevice() {
     try {
-      return this.domainHelperService.findDlmsDevice(this.deviceIdentification, this.ipAddress);
+      return this.domainHelperService.findDlmsDevice(this.deviceIdentification);
     } catch (final Exception e) {
       throw new RecoverKeyException(e);
     }
@@ -148,6 +148,14 @@ public class RecoverKeyProcess implements Runnable {
 
       if (device.needsInvocationCounter()) {
         dlmsMessageListener = new InvocationCountingDlmsMessageListener();
+      }
+
+      if (device.isIpAddressIsStatic()) {
+        device.setIpAddress(this.messageMetadata.getIpAddress());
+      } else {
+        final String ipAddressFromSessionProvider =
+            this.domainHelperService.getDeviceIpAddressFromSessionProvider(device);
+        device.setIpAddress(ipAddressFromSessionProvider);
       }
 
       connection =
