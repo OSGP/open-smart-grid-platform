@@ -81,6 +81,19 @@
       <xsd:enumeration value="FIRMWARE_UPDATE_STARTED"/>
       <xsd:enumeration value="INVOCATION_COUNTER_THRESHOLD_REACHED"/>
       <xsd:enumeration value="METER_UNINSTALLED"/>
+      <xsd:enumeration value="NEW_E_METER_DISCOVERED"/>
+      <xsd:enumeration value="EXISTING_E_METER_DISCOVERED"/>
+      <xsd:enumeration value="FIRMWARE_VERIFICATION_FAILED"/>
+      <xsd:enumeration value="INSTALLED"/>
+      <xsd:enumeration value="UNINSTALLED"/>
+      <xsd:enumeration value="EMETER_RECONFIGURED"/>
+      <xsd:enumeration value="MBUS_METER_RECONFIGURED"/>
+      <xsd:enumeration value="MBUS_DEVICE_MOVED_TO_ANOTHER_EMETER"/>
+      <xsd:enumeration value="EXISTING_MBUS_METER_DISCOVERED"/>
+      <xsd:enumeration value="TASK_UPDATE_FIRMWARE_FAILED"/>
+      <xsd:enumeration value="FIRMWARE_UPDATE_VERIFICATION_FAILED"/>
+      <xsd:enumeration value="MBUS_DEVICE_NOT_MOVED_TO_ANOTHER_EMETER"/>
+      <xsd:enumeration value="FIRMWARE_UPDATE_NOT_MATCHING_RULE_CRITERIA"/>
     </xsd:restriction>
   </xsd:simpleType>
 
