@@ -865,8 +865,9 @@ public class DlmsDeviceSteps {
     }
 
     assertThat(
-        (countResultKeysRequest1 == 0 && countResultKeysRequest2 == 4)
-            || (countResultKeysRequest1 == 4 && countResultKeysRequest2 == 0));
+            (countResultKeysRequest1 == 0 && countResultKeysRequest2 == 4)
+                || (countResultKeysRequest1 == 4 && countResultKeysRequest2 == 0))
+        .isTrue();
   }
 
   @Then("after {int} seconds, the new {} key is recovered")

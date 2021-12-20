@@ -44,7 +44,7 @@ public class DeviceKeyProcessingRepository {
     } catch (final Exception e) {
       return false;
     }
-  };
+  }
 
   @Transactional
   public int remove(final String deviceIdentification) {
@@ -54,5 +54,5 @@ public class DeviceKeyProcessingRepository {
                 + " WHERE d.deviceIdentification = :deviceIdentification");
     query.setParameter("deviceIdentification", deviceIdentification);
     return query.executeUpdate();
-  };
+  }
 }
