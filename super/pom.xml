@@ -75,7 +75,7 @@
     <slf4j.version>1.7.30</slf4j.version>
     <apache.commons.lang.version>3.10</apache.commons.lang.version>
     <apache.commons.text.version>1.8</apache.commons.text.version>
-    <apache.httpcomponents.version>4.5.12</apache.httpcomponents.version>
+    <apache.httpcomponents.version>4.5.13</apache.httpcomponents.version>
     <apache.httpcomponents.httpcore.version>4.4.13</apache.httpcomponents.httpcore.version>
     <commons.codec.version>1.14</commons.codec.version>
     <orika.version>1.5.4</orika.version>
