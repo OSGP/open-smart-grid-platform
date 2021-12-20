@@ -81,6 +81,7 @@
       <xsd:enumeration value="FIRMWARE_UPDATE_STARTED"/>
       <xsd:enumeration value="INVOCATION_COUNTER_THRESHOLD_REACHED"/>
       <xsd:enumeration value="METER_UNINSTALLED"/>
+      <xsd:enumeration value="NEW_MBUS_DEVICE_DISCOVERED"/>
       <xsd:enumeration value="NEW_E_METER_DISCOVERED"/>
       <xsd:enumeration value="EXISTING_E_METER_DISCOVERED"/>
       <xsd:enumeration value="FIRMWARE_VERIFICATION_FAILED"/>
