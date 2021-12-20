@@ -19,8 +19,8 @@ Feature: SmartMetering Configuration - Replace Keys
     Then the replace keys response should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
-    And the new keys are stored in the secret management database encrypted_secret table
-    And the stored keys are not equal to the received keys
+    And the newly received keys are stored in the secret management database encrypted_secret table
+    And the new keys are stored in the database in another encryption then the encryption of the keys received in the SOAP request
     And the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
       | SECURITY_KEY_A | EXPIRED |
       | SECURITY_KEY_2 | ACTIVE  |
@@ -44,8 +44,8 @@ Feature: SmartMetering Configuration - Replace Keys
     Then the replace keys response should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
-    And the new keys are stored in the secret management database encrypted_secret table
-    And the stored keys are not equal to the received keys
+    And the newly received keys are stored in the secret management database encrypted_secret table
+    And the new keys are stored in the database in another encryption then the encryption of the keys received in the SOAP request
     And the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
       | SECURITY_KEY_A | EXPIRED   |
       | SECURITY_KEY_4 | ACTIVE    |
@@ -75,8 +75,8 @@ Feature: SmartMetering Configuration - Replace Keys
     Then the replace keys response should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
-    And the new keys are stored in the secret management database encrypted_secret table
-    And the stored keys are not equal to the received keys
+    And the newly received keys are stored in the secret management database encrypted_secret table
+    And the new keys are stored in the database in another encryption then the encryption of the keys received in the SOAP request
     And the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
       | SECURITY_KEY_A | EXPIRED   |
       | SECURITY_KEY_6 | ACTIVE    |

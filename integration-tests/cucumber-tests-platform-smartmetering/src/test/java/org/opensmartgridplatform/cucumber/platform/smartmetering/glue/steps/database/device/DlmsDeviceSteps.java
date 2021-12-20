@@ -269,7 +269,18 @@ public class DlmsDeviceSteps {
         .isNull();
   }
 
-  @Then("^the new keys are stored in the secret management database encrypted_secret table$")
+  @Then(
+      "^the newly generated keys are stored in the secret management database encrypted_secret table$")
+  public void theNewlyGeneratedKeysAreStoredInTheSecretManagementDatabaseEncryptedSecretTable() {
+    this.theNewKeysAreStoredInTheSecretManagementDatabaseEncryptedSecretTable();
+  }
+
+  @Then(
+      "^the newly received keys are stored in the secret management database encrypted_secret table$")
+  public void theNewlyReceivedKeysAreStoredInTheSecretManagementDatabaseEncryptedSecretTable() {
+    this.theNewKeysAreStoredInTheSecretManagementDatabaseEncryptedSecretTable();
+  }
+
   public void theNewKeysAreStoredInTheSecretManagementDatabaseEncryptedSecretTable() {
     final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
     final String deviceIdentification =
@@ -363,8 +374,10 @@ public class DlmsDeviceSteps {
     return this.encryptedSecretRepository.findAll(Example.of(searchByIdExample));
   }
 
-  @Then("^the stored keys are not equal to the received keys$")
-  public void theStoredKeysAreNotEqualToTheReceivedKeys() {
+  @Then(
+      "^the new keys are stored in the database in another encryption then the encryption of the keys received in the SOAP request$")
+  public void
+      theNewKeysAreStoredInTheDatabaseInAnotherEncryptionThenTheEncryptionOfTheKeysReceivedInTheSOAPRequest() {
     final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
     final String deviceIdentification =
         (String) ScenarioContext.current().get(keyDeviceIdentification);

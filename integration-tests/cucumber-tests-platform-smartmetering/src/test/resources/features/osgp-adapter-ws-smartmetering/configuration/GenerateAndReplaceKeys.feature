@@ -14,8 +14,7 @@ Feature: SmartMetering Configuration - Generate And Replace Keys
     Then the generate and replace keys response should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
-    And the new keys are stored in the secret management database encrypted_secret table
-    And the stored keys are not equal to the received keys
+    And the newly generated keys are stored in the secret management database encrypted_secret table
     And the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
       | SECURITY_KEY_A | EXPIRED |
     And the encrypted_secret table in the secret management database should contain "Encryption_key" keys for device "TEST1024000000001"
@@ -35,7 +34,7 @@ Feature: SmartMetering Configuration - Generate And Replace Keys
     Then the generate and replace keys response should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
-    And the new keys are stored in the secret management database encrypted_secret table
+    And the newly generated keys are stored in the secret management database encrypted_secret table
     And the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
       | SECURITY_KEY_A | EXPIRED   |
       | SECURITY_KEY_2 | WITHDRAWN |
@@ -61,7 +60,7 @@ Feature: SmartMetering Configuration - Generate And Replace Keys
     Then the generate and replace keys response should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
-    And the new keys are stored in the secret management database encrypted_secret table
+    And the newly generated keys are stored in the secret management database encrypted_secret table
     And the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
       | SECURITY_KEY_A | EXPIRED   |
       | SECURITY_KEY_2 | WITHDRAWN |

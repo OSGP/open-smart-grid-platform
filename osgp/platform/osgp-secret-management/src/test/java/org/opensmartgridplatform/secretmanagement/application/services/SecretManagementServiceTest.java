@@ -233,10 +233,10 @@ public class SecretManagementServiceTest {
     verify(this.secretRepository).saveAll(secretListArgumentCaptor.capture());
     final List<DbEncryptedSecret> savedSecrets = secretListArgumentCaptor.getValue();
 
-    final ArgumentCaptor<DbEncryptedSecret> secretToWithdrawListArgumentCaptor =
+    final ArgumentCaptor<DbEncryptedSecret> secretToWithdrawArgumentCaptor =
         ArgumentCaptor.forClass(DbEncryptedSecret.class);
-    verify(this.secretRepository).save(secretToWithdrawListArgumentCaptor.capture());
-    final DbEncryptedSecret savedSecretToWithdraw = secretToWithdrawListArgumentCaptor.getValue();
+    verify(this.secretRepository, times(1)).save(secretToWithdrawArgumentCaptor.capture());
+    final DbEncryptedSecret savedSecretToWithdraw = secretToWithdrawArgumentCaptor.getValue();
 
     assertThat(savedSecrets).isNotNull();
     assertThat(savedSecrets.size()).isEqualTo(1);
@@ -545,7 +545,7 @@ public class SecretManagementServiceTest {
         SOME_DEVICE, Arrays.asList(encryptionSecretType, authenticationSecretType));
 
     final String logMessage =
-        "During (GenerateOr)Replace Key Process multiple keys with status NEW";
+        "During (GenerateOr)Replace Key Process one or more keys with status NEW";
     verify(this.mockAppender, times(2))
         .doAppend(
             argThat(

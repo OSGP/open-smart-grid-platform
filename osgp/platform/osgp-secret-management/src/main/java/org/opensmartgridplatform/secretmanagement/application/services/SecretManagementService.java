@@ -280,9 +280,8 @@ public class SecretManagementService {
       this.secretRepository.save(foundSecret);
       log.warn(
           String.format(
-              "During (GenerateOr)Replace Key Process multiple keys with status NEW of type %s for "
-                  + "device %s have been found. The most recent has been reused. All others will "
-                  + "be withdrawn (status WITHDRAWN)",
+              "During (GenerateOr)Replace Key Process one or more keys with status NEW of type %s for "
+                  + "device %s have been found. These keys will be withdrawn (status WITHDRAWN)",
               secretType.name(), deviceIdentification));
     }
   }

@@ -28,7 +28,7 @@ Feature: SmartMetering Installation - Add smart meter
       | ManufacturerCode | Test |
       | ModelCode        | Test |
     And a request to the device can be performed after activation
-    And the stored keys are not equal to the received keys
+    And the new keys are stored in the database in another encryption then the encryption of the keys received in the SOAP request
 
   @NightlyBuildOnly @Skip
   Scenario: Add a new device with incorrectly encrypted keys
