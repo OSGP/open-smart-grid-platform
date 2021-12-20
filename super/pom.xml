@@ -53,7 +53,7 @@
     <spring.version>5.3.2</spring.version>
     <spring.data.version>2.2.3.RELEASE</spring.data.version>
     <spring.data.commons.version>2.2.4.RELEASE</spring.data.commons.version>
-    <spring.security.version>5.4.2</spring.security.version>
+    <spring.security.version>5.4.7</spring.security.version>
     <spring.ws.version>3.0.10.RELEASE</spring.ws.version>
     <projectreactor.netty.version>1.0.11</projectreactor.netty.version>
     <assertj.version>3.16.1</assertj.version>
@@ -75,7 +75,7 @@
     <slf4j.version>1.7.30</slf4j.version>
     <apache.commons.lang.version>3.10</apache.commons.lang.version>
     <apache.commons.text.version>1.8</apache.commons.text.version>
-    <apache.httpcomponents.version>4.5.12</apache.httpcomponents.version>
+    <apache.httpcomponents.version>4.5.13</apache.httpcomponents.version>
     <apache.httpcomponents.httpcore.version>4.4.13</apache.httpcomponents.httpcore.version>
     <commons.codec.version>1.14</commons.codec.version>
     <orika.version>1.5.4</orika.version>
@@ -101,7 +101,7 @@
     <versions.maven.plugin.version>2.7</versions.maven.plugin.version>
     <fmt-maven-plugin.version>2.9.1</fmt-maven-plugin.version>
     <apache.activemq.version>5.16.0</apache.activemq.version>
-    <logback.version>1.2.3</logback.version>
+    <logback.version>1.2.8</logback.version>
     <apache.commons.schema>2.2.5</apache.commons.schema>
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
     <netty.version>4.1.53.Final</netty.version>
@@ -112,7 +112,7 @@
     <javax.annotation.version>1.3.2</javax.annotation.version>
     <license.maven.plugin>3.0</license.maven.plugin>
     <jackson.version>2.11.0</jackson.version>
-    <jackson-databind.version>2.10.3</jackson-databind.version>
+    <jackson-databind.version>2.10.5.1</jackson-databind.version>
     <cxf.version>3.4.1</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
