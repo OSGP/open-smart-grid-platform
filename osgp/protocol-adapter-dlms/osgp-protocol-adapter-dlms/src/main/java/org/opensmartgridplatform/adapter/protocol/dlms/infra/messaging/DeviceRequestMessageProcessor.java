@@ -83,23 +83,25 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     final Serializable messageObject = message.getObject();
 
     try {
+      final DlmsDevice device;
+      if (this.requiresExistingDevice()) {
+        device = this.domainHelperService.findDlmsDevice(messageMetadata);
+      } else {
+        device = null;
+      }
       if (this.usesDeviceConnection()) {
-        final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
-        final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager;
-        if (this.requiresExistingDevice()) {
-          taskForConnectionManager =
-              connectionManager ->
-                  this.processMessageTasks(
-                      messageObject, messageMetadata, connectionManager, device);
-        } else {
-          taskForConnectionManager =
-              connectionManager ->
-                  this.processMessageTasks(messageObject, messageMetadata, connectionManager, null);
-        }
-
+        /*
+         * Set up a consumer to be called back with a DlmsConnectionManager for which the connection
+         * with the device has been created. Note that when usesDeviceConnection is true, in this
+         * way all logic in processMessageTasks is executed only after the connection to the device
+         * has successfully been established.
+         */
+        final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
+            connectionManager ->
+                this.processMessageTasks(messageObject, messageMetadata, connectionManager, device);
         this.createAndHandleConnectionForDevice(device, messageMetadata, taskForConnectionManager);
       } else {
-        this.processMessageTasks(messageObject, messageMetadata, null, null);
+        this.processMessageTasks(messageObject, messageMetadata, null, device);
       }
     } catch (final ThrottlingPermitDeniedException exception) {
 
