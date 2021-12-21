@@ -33,4 +33,77 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
+
+  <xsd:element name="ClearServiceLocationRequest">
+    <xsd:complexType/>
+  </xsd:element>
+
+  <xsd:element name="ClearServiceLocationResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="result" type="xsd:string" minOccurs="1"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="SendSystemEventRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="SystemEventType" type="tns:SmartMeteringSystemEventType"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="SmartMeteringSystemEvent">
+    <xsd:sequence>
+      <xsd:element name="timestamp" type="xsd:dateTime"/>
+      <xsd:element name="systemEventType" type="tns:SmartMeteringSystemEventType"/>
+      <xsd:element name="eventDetails" type="tns:EventDetail"
+        maxOccurs="unbounded" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="EventDetail">
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:string"/>
+      <xsd:element name="value" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="SmartMeteringSystemEventType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_E_SUCCESS"/>
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_G_SUCCESS"/>
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_E_FAILED"/>
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_G_FAILED"/>
+      <xsd:enumeration value="COMMUNICATION_NETWORK_INFORMATION_UPDATED"/>
+      <xsd:enumeration value="CLEAN_UP_M_BUS_CHANNEL"/>
+      <xsd:enumeration value="FIRMWARE_UPDATE_STARTED"/>
+      <xsd:enumeration value="INVOCATION_COUNTER_THRESHOLD_REACHED"/>
+      <xsd:enumeration value="METER_UNINSTALLED"/>
+      <xsd:enumeration value="NEW_MBUS_DEVICE_DISCOVERED"/>
+      <xsd:enumeration value="NEW_E_METER_DISCOVERED"/>
+      <xsd:enumeration value="EXISTING_E_METER_DISCOVERED"/>
+      <xsd:enumeration value="FIRMWARE_VERIFICATION_FAILED"/>
+      <xsd:enumeration value="INSTALLED"/>
+      <xsd:enumeration value="UNINSTALLED"/>
+      <xsd:enumeration value="EMETER_RECONFIGURED"/>
+      <xsd:enumeration value="MBUS_METER_RECONFIGURED"/>
+      <xsd:enumeration value="MBUS_DEVICE_MOVED_TO_ANOTHER_EMETER"/>
+      <xsd:enumeration value="EXISTING_MBUS_METER_DISCOVERED"/>
+      <xsd:enumeration value="TASK_UPDATE_FIRMWARE_FAILED"/>
+      <xsd:enumeration value="FIRMWARE_UPDATE_VERIFICATION_FAILED"/>
+      <xsd:enumeration value="MBUS_DEVICE_NOT_MOVED_TO_ANOTHER_EMETER"/>
+      <xsd:enumeration value="FIRMWARE_UPDATE_NOT_MATCHING_RULE_CRITERIA"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="SendSystemEventResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="SystemEvent" type="tns:SmartMeteringSystemEvent"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
 </xsd:schema>
