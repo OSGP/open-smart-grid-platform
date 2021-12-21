@@ -72,6 +72,9 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
   @Value("${db.idle_timeout:120000}")
   private int idleTimeout;
 
+  @Value("${db.max_lifetime:1800000}")
+  private int maxLifetime;
+
   @Value("${flyway.initial.version}")
   private String flywayInitialVersion;
 
@@ -234,6 +237,7 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
         .withMaxPoolSize(this.maxPoolSize)
         .withAutoCommit(this.isAutoCommit)
         .withIdleTimeout(this.idleTimeout)
+        .withMaxLifetime(this.maxLifetime)
         .withInitializationFailTimeout(this.initializationFailTimeout)
         .withValidationTimeout(this.validationTimeout)
         .withConnectionTimeout(this.connectionTimeout);
