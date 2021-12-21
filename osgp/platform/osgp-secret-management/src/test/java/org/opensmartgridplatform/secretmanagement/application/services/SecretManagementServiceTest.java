@@ -13,16 +13,11 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.Appender;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -46,7 +41,6 @@ import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionDelegate;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
-import org.slf4j.LoggerFactory;
 
 @ExtendWith(MockitoExtension.class)
 public class SecretManagementServiceTest {
@@ -56,7 +50,6 @@ public class SecretManagementServiceTest {
 
   private SecretManagementService service;
 
-  @Mock private Appender<ILoggingEvent> mockAppender;
   @Mock private EncryptionDelegate encryptionDelegate;
   @Mock private DbEncryptedSecretRepository secretRepository;
   @Mock private DbEncryptionKeyRepository keyRepository;
@@ -73,8 +66,6 @@ public class SecretManagementServiceTest {
             this.keyRepository,
             this.encrypterForSecretManagementClient,
             this.decrypterForSecretManagement);
-    final Logger logger = (Logger) LoggerFactory.getLogger(SecretManagementService.class.getName());
-    logger.addAppender(this.mockAppender);
   }
 
   @Test
@@ -543,17 +534,6 @@ public class SecretManagementServiceTest {
 
     this.service.generateAndStoreSecrets(
         SOME_DEVICE, Arrays.asList(encryptionSecretType, authenticationSecretType));
-
-    final String logMessage =
-        "During (GenerateOr)Replace Key Process one or more keys with status NEW";
-    verify(this.mockAppender, times(2))
-        .doAppend(
-            argThat(
-                argument -> {
-                  assertThat(argument.getMessage()).startsWith(logMessage);
-                  assertThat(argument.getLevel()).isEqualTo(Level.WARN);
-                  return true;
-                }));
 
     verify(this.secretRepository, never()).saveAll(Arrays.asList(secretOldEncryption));
     verify(this.secretRepository, never()).saveAll(Arrays.asList(secretOldEncryption));
