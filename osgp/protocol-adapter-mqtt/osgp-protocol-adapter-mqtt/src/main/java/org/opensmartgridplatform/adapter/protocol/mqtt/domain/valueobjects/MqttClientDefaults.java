@@ -10,49 +10,110 @@
 package org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects;
 
 public class MqttClientDefaults {
-  private final String defaultHost;
-  private final int defaultPort;
-  private final String defaultUsername;
-  private final String defaultPassword;
-  private final String defaultQos;
-  private final String defaultTopics;
+  private final String host;
+  private final int port;
+  private final String username;
+  private final String password;
+  private final String qos;
+  private final String topics;
+  private final boolean cleanSession;
+  private final int keepAlive;
 
-  public MqttClientDefaults(
-      final String defaultHost,
-      final int defaultPort,
-      final String defaultUsername,
-      final String defaultPassword,
-      final String defaultQos,
-      final String defaultTopics) {
-    this.defaultHost = defaultHost;
-    this.defaultPort = defaultPort;
-    this.defaultUsername = defaultUsername;
-    this.defaultPassword = defaultPassword;
-    this.defaultQos = defaultQos;
-    this.defaultTopics = defaultTopics;
+  private MqttClientDefaults(final Builder builder) {
+    this.host = builder.host;
+    this.port = builder.port;
+    this.username = builder.username;
+    this.password = builder.password;
+    this.qos = builder.qos;
+    this.topics = builder.topics;
+    this.cleanSession = builder.cleanSession;
+    this.keepAlive = builder.keepAlive;
   }
 
   public String getDefaultHost() {
-    return this.defaultHost;
+    return this.host;
   }
 
   public int getDefaultPort() {
-    return this.defaultPort;
+    return this.port;
   }
 
   public String getDefaultUsername() {
-    return this.defaultUsername;
+    return this.username;
   }
 
   public String getDefaultPassword() {
-    return this.defaultPassword;
+    return this.password;
   }
 
   public String getDefaultQos() {
-    return this.defaultQos;
+    return this.qos;
   }
 
   public String getDefaultTopics() {
-    return this.defaultTopics;
+    return this.topics;
+  }
+
+  public boolean isDefaultCleanSession() {
+    return this.cleanSession;
+  }
+
+  public int getDefaultKeepAlive() {
+    return this.keepAlive;
+  }
+
+  public static class Builder {
+    private String host;
+    private int port;
+    private String username;
+    private String password;
+    private String qos;
+    private String topics;
+    private boolean cleanSession;
+    private int keepAlive;
+
+    public Builder withHost(final String host) {
+      this.host = host;
+      return this;
+    }
+
+    public Builder withPort(final int port) {
+      this.port = port;
+      return this;
+    }
+
+    public Builder withUsername(final String username) {
+      this.username = username;
+      return this;
+    }
+
+    public Builder withPassword(final String password) {
+      this.password = password;
+      return this;
+    }
+
+    public Builder withQos(final String qos) {
+      this.qos = qos;
+      return this;
+    }
+
+    public Builder withTopics(final String topics) {
+      this.topics = topics;
+      return this;
+    }
+
+    public Builder withCleanSession(final boolean cleanSession) {
+      this.cleanSession = cleanSession;
+      return this;
+    }
+
+    public Builder withKeepAlive(final int keepAlive) {
+      this.keepAlive = keepAlive;
+      return this;
+    }
+
+    public MqttClientDefaults build() {
+      return new MqttClientDefaults(this);
+    }
   }
 }

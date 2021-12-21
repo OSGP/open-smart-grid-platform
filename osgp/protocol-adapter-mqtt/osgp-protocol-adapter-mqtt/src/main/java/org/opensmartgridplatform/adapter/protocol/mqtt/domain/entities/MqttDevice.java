@@ -62,6 +62,10 @@ public class MqttDevice extends AbstractEntity {
     return this.topics;
   }
 
+  public String[] getTopicsArray() {
+    return this.topics.split(",");
+  }
+
   public void setTopics(final String topic) {
     this.topics = topic;
   }
