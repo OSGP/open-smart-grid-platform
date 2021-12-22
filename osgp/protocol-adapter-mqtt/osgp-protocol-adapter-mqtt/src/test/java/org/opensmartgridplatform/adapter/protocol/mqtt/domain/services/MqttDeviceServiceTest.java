@@ -28,10 +28,11 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 @ExtendWith(MockitoExtension.class)
 class MqttDeviceServiceTest {
 
-  private static final String DEVICE_IDENTIFICATION = "dvc-001";
+  private static final String DEVICE_IDENTIFICATION = "test-device-id";
 
-  @Mock private MessageMetadata messageMetadata;
-  @Mock private MqttDevice mqttDevice;
+  private MessageMetadata messageMetadata;
+  private MqttDevice mqttDevice;
+
   @Mock private MqttDeviceFactory mqttDeviceFactory;
   @Mock private MqttDeviceRepository mqttDeviceRepository;
 
@@ -39,7 +40,9 @@ class MqttDeviceServiceTest {
 
   @BeforeEach
   void setup() {
-    when(this.messageMetadata.getDeviceIdentification()).thenReturn(DEVICE_IDENTIFICATION);
+    this.mqttDevice = new MqttDevice(DEVICE_IDENTIFICATION);
+    this.messageMetadata =
+        new MessageMetadata.Builder().withDeviceIdentification(DEVICE_IDENTIFICATION).build();
   }
 
   @Test

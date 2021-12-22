@@ -10,16 +10,18 @@
 package org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects;
 
 public class MqttClientDefaults {
+  private final String clientId;
   private final String host;
   private final int port;
   private final String username;
   private final String password;
   private final String qos;
-  private final String topics;
+  private final String[] topics;
   private final boolean cleanSession;
   private final int keepAlive;
 
   private MqttClientDefaults(final Builder builder) {
+    this.clientId = builder.clientId;
     this.host = builder.host;
     this.port = builder.port;
     this.username = builder.username;
@@ -28,6 +30,10 @@ public class MqttClientDefaults {
     this.topics = builder.topics;
     this.cleanSession = builder.cleanSession;
     this.keepAlive = builder.keepAlive;
+  }
+
+  public String getDefaultClientId() {
+    return this.clientId;
   }
 
   public String getDefaultHost() {
@@ -50,7 +56,7 @@ public class MqttClientDefaults {
     return this.qos;
   }
 
-  public String getDefaultTopics() {
+  public String[] getDefaultTopics() {
     return this.topics;
   }
 
@@ -63,14 +69,20 @@ public class MqttClientDefaults {
   }
 
   public static class Builder {
+    private String clientId;
     private String host;
     private int port;
     private String username;
     private String password;
     private String qos;
-    private String topics;
+    private String[] topics;
     private boolean cleanSession;
     private int keepAlive;
+
+    public Builder withClientId(final String clientId) {
+      this.clientId = clientId;
+      return this;
+    }
 
     public Builder withHost(final String host) {
       this.host = host;
@@ -97,7 +109,7 @@ public class MqttClientDefaults {
       return this;
     }
 
-    public Builder withTopics(final String topics) {
+    public Builder withTopics(final String[] topics) {
       this.topics = topics;
       return this;
     }

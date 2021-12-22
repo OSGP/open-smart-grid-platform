@@ -80,7 +80,7 @@ public class MqttClientAdapter {
   public void subscribe() {
     if (this.isConnected()) {
       final MqttQos qos = this.getQosOrDefault(this.device);
-      Arrays.stream(this.device.getTopicsArray())
+      Arrays.stream(this.device.getTopics())
           .forEach(
               topic -> {
                 this.unsubscribe(topic);

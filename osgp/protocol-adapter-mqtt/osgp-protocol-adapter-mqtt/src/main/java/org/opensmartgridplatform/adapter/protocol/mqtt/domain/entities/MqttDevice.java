@@ -11,6 +11,8 @@ package org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 @Entity
@@ -58,16 +60,18 @@ public class MqttDevice extends AbstractEntity {
     this.port = port;
   }
 
-  public String getTopics() {
-    return this.topics;
+  public String[] getTopics() {
+    if (StringUtils.isBlank(this.topics)) {
+      return new String[] {};
+    }
+    return StringUtils.split(this.topics, ',');
   }
 
-  public String[] getTopicsArray() {
-    return this.topics.split(",");
-  }
-
-  public void setTopics(final String topic) {
-    this.topics = topic;
+  public void setTopics(final String[] topics) {
+    if (ArrayUtils.isEmpty(topics)) {
+      this.topics = null;
+    }
+    this.topics = StringUtils.join(topics, ',');
   }
 
   public String getQos() {

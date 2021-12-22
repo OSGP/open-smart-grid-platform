@@ -36,7 +36,7 @@ public class MqttClient {
 
     Mqtt3ClientBuilder clientBuilder =
         Mqtt3Client.builder()
-            .identifier(getClientId())
+            .identifier(getClientId(mqttClientDefaults))
             .serverHost(host)
             .serverPort(port)
             .automaticReconnectWithDefaultConfig()
@@ -108,18 +108,20 @@ public class MqttClient {
     }
   }
 
-  private static String getClientId() {
-    String value;
-    InetAddress inetAddress;
-    try {
-      inetAddress = InetAddress.getLocalHost();
-      value = inetAddress.getHostName() + '-' + inetAddress.getHostAddress();
-      LOGGER.info("MQTT Client ID: {} (Using host information)", value);
-    } catch (final UnknownHostException e) {
-      value = UUID.randomUUID().toString();
-      LOGGER.warn("MQTT Client ID: {} (Using random UUID)", value);
+  private static String getClientId(final MqttClientDefaults mqttClientDefaults) {
+    String value = mqttClientDefaults.getDefaultClientId();
+    if (StringUtils.isBlank(value)) {
+      try {
+        final InetAddress inetAddress = InetAddress.getLocalHost();
+        value = inetAddress.getHostName() + '-' + inetAddress.getHostAddress();
+        LOGGER.info("MQTT Client ID: {} (Using host information)", value);
+      } catch (final UnknownHostException e) {
+        value = UUID.randomUUID().toString();
+        LOGGER.warn("MQTT Client ID: {} (Using random UUID)", value);
+      }
+    } else {
+      LOGGER.info("MQTT Client ID: {} (Using configuration property)", value);
     }
-
     return value;
   }
 }

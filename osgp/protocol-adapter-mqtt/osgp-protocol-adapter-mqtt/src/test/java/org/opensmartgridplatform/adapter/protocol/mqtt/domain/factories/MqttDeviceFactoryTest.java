@@ -24,30 +24,26 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 @ExtendWith(MockitoExtension.class)
 class MqttDeviceFactoryTest {
 
-  private static String DEVICE_IDENTIFICATION = "test-device";
-  private static String HOST = "test-host";
-  private static int DEFAULT_PORT = 8883;
-  private static String DEFAULT_TOPICS = "topic1,topic2";
-  private static String DEFAULT_QOS = "AT_LEAST_ONCE";
+  private static final String DEVICE_IDENTIFICATION = "test-device-id";
+  private static final String HOST = "test-host";
 
-  @InjectMocks private MqttDeviceFactory instance;
+  private static final int DEFAULT_PORT = 8883;
+  private static final String[] DEFAULT_TOPICS = {"topic1", "topic2"};
+  private static final String DEFAULT_QOS = "AT_LEAST_ONCE";
 
   @Mock MqttClientDefaults mqttClientDefaults;
-  @Mock MessageMetadata messageMetadata;
+
+  @InjectMocks private MqttDeviceFactory instance;
 
   @Test
   void testCreate() {
 
     // Arrange
-    when(this.messageMetadata.getDeviceIdentification()).thenReturn(DEVICE_IDENTIFICATION);
-    when(this.messageMetadata.getIpAddress()).thenReturn(HOST);
-
-    when(this.mqttClientDefaults.getDefaultPort()).thenReturn(DEFAULT_PORT);
-    when(this.mqttClientDefaults.getDefaultTopics()).thenReturn(DEFAULT_TOPICS);
-    when(this.mqttClientDefaults.getDefaultQos()).thenReturn(DEFAULT_QOS);
+    final MessageMetadata messageMetadata = createMessageMetadata();
+    this.setupMqttClientDefaultsMock();
 
     // Act
-    final MqttDevice actual = this.instance.create(this.messageMetadata);
+    final MqttDevice actual = this.instance.create(messageMetadata);
 
     // Assert
     assertThat(actual)
@@ -56,5 +52,18 @@ class MqttDeviceFactoryTest {
         .hasFieldOrPropertyWithValue("port", DEFAULT_PORT)
         .hasFieldOrPropertyWithValue("qos", DEFAULT_QOS)
         .hasFieldOrPropertyWithValue("topics", DEFAULT_TOPICS);
+  }
+
+  private void setupMqttClientDefaultsMock() {
+    when(this.mqttClientDefaults.getDefaultPort()).thenReturn(DEFAULT_PORT);
+    when(this.mqttClientDefaults.getDefaultTopics()).thenReturn(DEFAULT_TOPICS);
+    when(this.mqttClientDefaults.getDefaultQos()).thenReturn(DEFAULT_QOS);
+  }
+
+  private static MessageMetadata createMessageMetadata() {
+    return new MessageMetadata.Builder()
+        .withIpAddress(HOST)
+        .withDeviceIdentification(DEVICE_IDENTIFICATION)
+        .build();
   }
 }

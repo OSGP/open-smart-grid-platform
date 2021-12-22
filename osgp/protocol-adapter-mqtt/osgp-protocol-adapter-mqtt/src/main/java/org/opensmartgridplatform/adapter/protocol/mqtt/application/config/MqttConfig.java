@@ -24,6 +24,9 @@ public class MqttConfig extends AbstractConfig {
   @Value("${mqtt.default.clean.session:true}")
   private boolean defaultCleanSession;
 
+  @Value("${mqtt.default.client.id:#{null}}")
+  private String defaultClientId;
+
   @Value("${mqtt.default.host:localhost}")
   private String defaultHost;
 
@@ -40,15 +43,17 @@ public class MqttConfig extends AbstractConfig {
   private String defaultQos;
 
   @Value("${mqtt.default.topics:+/measurement}")
-  private String defaultTopics;
+  private String[] defaultTopics;
 
   @Value("${mqtt.default.username:#{null}}")
   private String defaultUsername;
 
   @Bean
   public MqttClientDefaults mqttClientDefaults() {
+
     return new MqttClientDefaults.Builder()
         .withCleanSession(this.defaultCleanSession)
+        .withClientId(this.defaultClientId)
         .withHost(this.defaultHost)
         .withKeepAlive(this.defaultKeepAlive)
         .withPassword(this.defaultPassword)

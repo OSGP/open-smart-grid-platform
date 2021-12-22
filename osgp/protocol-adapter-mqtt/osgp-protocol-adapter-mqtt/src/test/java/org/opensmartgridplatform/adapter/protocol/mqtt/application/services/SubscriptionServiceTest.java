@@ -142,8 +142,6 @@ class SubscriptionServiceTest {
   @Test
   void onReceive() {
     // Arrange
-    this.setupMessageMetadata();
-
     final String payload = "12345";
     final byte[] bytes = payload.getBytes();
 
