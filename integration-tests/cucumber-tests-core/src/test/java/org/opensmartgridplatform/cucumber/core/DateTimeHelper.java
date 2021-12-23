@@ -10,6 +10,8 @@ package org.opensmartgridplatform.cucumber.core;
 
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.Location;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.regex.Matcher;
@@ -169,6 +171,15 @@ public class DateTimeHelper {
     return retval;
   }
 
+  public static ZonedDateTime getZonedDateTime(final String dateString) {
+    return dateTimeToZonedDateTime(getDateTime(dateString));
+  }
+
+  public static Instant getInstant(final String dateString) {
+    final DateTime dateTime = getDateTime(dateString);
+    return Instant.ofEpochMilli(dateTime.getMillis());
+  }
+
   public static DateTime getDateTime2(final String startDate, final DateTime defaultStartDate) {
     if (startDate == null) {
       return defaultStartDate;
@@ -270,5 +281,18 @@ public class DateTimeHelper {
             .plusHours(offsetHours);
 
     return timeFormatter.print(shiftedTime);
+  }
+
+  private static ZonedDateTime dateTimeToZonedDateTime(final DateTime dateTime) {
+    if (dateTime == null) {
+      return null;
+    }
+
+    final org.joda.time.Instant jodaInstant = dateTime.toInstant();
+    final Instant instant = Instant.ofEpochMilli(jodaInstant.getMillis());
+    final DateTimeZone dateTimeZone = dateTime.getZone();
+    final String zone = dateTimeZone.getID();
+    final ZoneId zoneId = ZoneId.of(zone);
+    return ZonedDateTime.ofInstant(instant, zoneId);
   }
 }
