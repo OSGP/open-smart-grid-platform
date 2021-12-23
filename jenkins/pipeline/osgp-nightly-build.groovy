@@ -5,7 +5,7 @@ def servername = stream + '-at-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
 
 // Choose the branch to use for SmartSocietyServices/release repository. Default value is 'master'.
-def branchReleaseRepo = 'SMHE-228-Prevent-simultaneous-Replace-Key-operations'
+def branchReleaseRepo = 'master'
 
 pipeline {
     agent {
