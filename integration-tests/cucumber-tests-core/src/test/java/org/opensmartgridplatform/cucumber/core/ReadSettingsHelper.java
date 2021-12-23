@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.cucumber.core;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -80,6 +81,35 @@ public class ReadSettingsHelper {
     }
 
     return DateTime.parse(settings.get(key));
+  }
+
+  /**
+   * Get a ZonedDateTime object based on the settings if the key exists.
+   *
+   * @param settings The settings
+   * @param key The key in the settings for the date time.
+   * @return The ZonedDateTime.
+   */
+  public static ZonedDateTime getZonedDateTime(
+      final Map<String, String> settings, final String key) {
+    return getZonedDateTime(settings, key, ZonedDateTime.now());
+  }
+
+  /**
+   * Get a ZonedDateTime object based on the settings if the key exists.
+   *
+   * @param settings The settings
+   * @param key The key in the settings for the date time.
+   * @param defaultDate The default date to return.
+   * @return The ZonedDateTime.
+   */
+  public static ZonedDateTime getZonedDateTime(
+      final Map<String, String> settings, final String key, final ZonedDateTime defaultDate) {
+    if (!settings.containsKey(key) || StringUtils.isBlank(settings.get(key))) {
+      return defaultDate;
+    }
+
+    return ZonedDateTime.parse(settings.get(key));
   }
 
   /**
@@ -295,7 +325,7 @@ public class ReadSettingsHelper {
   public static List<String> getStringList(
       final Map<String, String> settings, final String key, final String separator) {
     if (!settings.containsKey(key) || StringUtils.isBlank(settings.get(key))) {
-      return new ArrayList<String>(0);
+      return new ArrayList<>(0);
     }
     return Arrays.asList(settings.get(key).split(separator));
   }
