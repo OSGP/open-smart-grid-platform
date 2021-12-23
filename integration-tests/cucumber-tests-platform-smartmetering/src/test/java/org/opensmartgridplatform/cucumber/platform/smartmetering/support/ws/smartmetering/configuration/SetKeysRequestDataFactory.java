@@ -35,6 +35,9 @@ public class SetKeysRequestDataFactory {
 
   private static String getSoapKey(final Map<String, String> requestParameters, final String key) {
     final String keyName = requestParameters.get(key);
+    if (keyName == null) {
+      return null;
+    }
     return SecurityKey.valueOf(keyName).getSoapRequestKey();
   }
 }

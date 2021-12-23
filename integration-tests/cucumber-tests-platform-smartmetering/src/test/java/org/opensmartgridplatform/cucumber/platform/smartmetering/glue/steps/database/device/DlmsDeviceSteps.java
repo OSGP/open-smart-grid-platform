@@ -746,13 +746,47 @@ public class DlmsDeviceSteps {
     return null;
   }
 
+  @Given("simulate failure of change from previous key of device \"{}\"")
+  public void simulateFailureOfChangeFromPreviousKeyOfDevice(
+      final String id, final Map<String, String> inputSettings) {
+
+    for (final String keyTypeInputName : inputSettings.keySet()) {
+      final String securityTypeInputName = inputSettings.get(keyTypeInputName);
+      final SecretType secretType = this.getSecretTypeByKeyTypeInputName(keyTypeInputName);
+      final String key = SecurityKey.valueOf(securityTypeInputName).getDatabaseKey();
+
+      final List<DbEncryptedSecret> currentlyActiveKeys =
+          this.encryptedSecretRepository.findSecrets(id, secretType, SecretStatus.ACTIVE);
+      for (final DbEncryptedSecret currentlyActiveKey : currentlyActiveKeys) {
+        currentlyActiveKey.setSecretStatus(SecretStatus.NEW);
+        this.encryptedSecretRepository.save(currentlyActiveKey);
+      }
+
+      final DbEncryptionKeyReference encryptionKeyRef =
+          this.encryptionKeyRepository
+              .findByTypeAndValid(EncryptionProviderType.JRE, new Date())
+              .iterator()
+              .next();
+      final DbEncryptedSecret secret =
+          new SecretBuilder()
+              .withDeviceIdentification(id)
+              .withSecretType(secretType)
+              .withKey(key)
+              .withSecretStatus(SecretStatus.ACTIVE)
+              .withEncryptionKeyReference(encryptionKeyRef)
+              .withCreationTime(new Date())
+              .build();
+      this.encryptedSecretRepository.save(secret);
+    }
+  }
+
   @Given("new keys are registered in the secret management database {int} minutes ago")
   public void newKeysAreRegisteredInTheSecretManagementDatabaseMinutesAgo(
       final int minutesAgo, final Map<String, String> inputSettings) {
     this.registerNewKeys(minutesAgo, inputSettings);
   }
 
-  @When("^new keys are registered in the secret management database")
+  @Given("^new keys are registered in the secret management database")
   public void newKeysAreRegisteredInTheSecretManagementDatabase(
       final Map<String, String> inputSettings) {
     this.registerNewKeys(0, inputSettings);
@@ -793,6 +827,23 @@ public class DlmsDeviceSteps {
         this.encryptedSecretRepository.save(secret);
       }
     }
+  }
+
+  @When(
+      "after {int} seconds, the encrypted_secret table in the secret management database should contain {string} keys for device {string}")
+  public void
+      afterXsecondsTheEncryptedSecretTableInTheSecretManagementDatabaseShouldContainKeysForDevice(
+          final int maxSecondsToWait,
+          final String secretTypeString,
+          final String deviceIdentification,
+          final Map<String, String> inputSettings) {
+    final Runnable task =
+        () -> {
+          this.theEncryptedSecretTableInTheSecretManagementDatabaseShouldContainKeysForDevice(
+              secretTypeString, deviceIdentification, inputSettings);
+        };
+
+    Wait.until(task, maxSecondsToWait, 1000);
   }
 
   @Then(
@@ -883,7 +934,7 @@ public class DlmsDeviceSteps {
         .isTrue();
   }
 
-  @Then("after {int} seconds, the new {} key is recovered")
+  @When("after {int} seconds, the new {} key is recovered")
   public void newKeysAreRecovered(
       final int maxSecondsToWait,
       final SecretType keyType,

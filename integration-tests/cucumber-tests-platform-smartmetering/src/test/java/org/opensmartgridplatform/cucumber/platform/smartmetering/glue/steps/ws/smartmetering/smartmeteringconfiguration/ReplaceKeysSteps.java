@@ -91,8 +91,10 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
 
   private void putKeyInScenarioContext(final Map<String, String> settings, final String key) {
     final String keyName = settings.get(key);
-    final String soapKey = SecurityKey.valueOf(keyName).getSoapRequestKey();
-    ScenarioContext.current().put(key, soapKey);
+    if (keyName != null) {
+      final String soapKey = SecurityKey.valueOf(keyName).getSoapRequestKey();
+      ScenarioContext.current().put(key, soapKey);
+    }
   }
 
   @Then("^the replace keys response should be returned$")
