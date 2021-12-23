@@ -2,25 +2,25 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
+import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DeviceKeyProcessingRepository;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceKeyProcessAlreadyRunningException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 public class DeviceKeyProcessingServiceTest {
 
-  @Mock DeviceKeyProcessingRepository deviceKeyProcessingRepository;
+  @Mock DlmsDeviceRepository dlmsDeviceRepository;
 
   @InjectMocks private DeviceKeyProcessingService deviceKeyProcessingService;
 
@@ -36,7 +36,11 @@ public class DeviceKeyProcessingServiceTest {
 
   @Test
   public void testNoKeyProcessRunning() {
-    when(this.deviceKeyProcessingRepository.insert(DEVICE_IDENTIFICATION)).thenReturn(true);
+    final DlmsDevice dlmsDevice = new DlmsDevice();
+    dlmsDevice.setDeviceIdentification(DEVICE_IDENTIFICATION);
+
+    when(this.dlmsDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
+        .thenReturn(dlmsDevice);
     assertDoesNotThrow(
         () -> this.deviceKeyProcessingService.startProcessing(DEVICE_IDENTIFICATION));
   }
@@ -44,9 +48,12 @@ public class DeviceKeyProcessingServiceTest {
   @Test
   public void testKeyProcessRunning() throws DeviceKeyProcessAlreadyRunningException {
 
-    when(this.deviceKeyProcessingRepository.insert(DEVICE_IDENTIFICATION)).thenReturn(false);
-    when(this.deviceKeyProcessingRepository.updateStartTime(same(DEVICE_IDENTIFICATION), any()))
-        .thenReturn(0);
+    final DlmsDevice dlmsDevice = new DlmsDevice();
+    dlmsDevice.setDeviceIdentification(DEVICE_IDENTIFICATION);
+    dlmsDevice.setKeyProcessingStartTime(new Date());
+    when(this.dlmsDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
+        .thenReturn(dlmsDevice);
+
     assertThrows(
         DeviceKeyProcessAlreadyRunningException.class,
         () -> {
@@ -57,9 +64,14 @@ public class DeviceKeyProcessingServiceTest {
   @Test
   public void testPreviousKeyProcessTimedOut() {
 
-    when(this.deviceKeyProcessingRepository.insert(DEVICE_IDENTIFICATION)).thenReturn(false);
-    when(this.deviceKeyProcessingRepository.updateStartTime(eq(DEVICE_IDENTIFICATION), any()))
-        .thenReturn(1);
+    final DlmsDevice dlmsDevice = new DlmsDevice();
+    dlmsDevice.setDeviceIdentification(DEVICE_IDENTIFICATION);
+    dlmsDevice.setKeyProcessingStartTime(
+        Date.from(
+            Instant.now().minus(this.deviceKeyProcessingService.getDeviceKeyProcessingTimeout())));
+    when(this.dlmsDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
+        .thenReturn(dlmsDevice);
+
     assertDoesNotThrow(
         () -> this.deviceKeyProcessingService.startProcessing(DEVICE_IDENTIFICATION));
   }

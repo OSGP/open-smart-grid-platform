@@ -4,18 +4,14 @@ BEGIN
 
 IF NOT EXISTS (
     SELECT 1
-    FROM   pg_tables
-    WHERE  schemaname = current_schema
-    AND    tablename  = 'device_key_processing') THEN
+	FROM   information_schema.columns
+    WHERE  table_schema = current_schema
+    AND    table_name  = 'dlms_device'
+    AND    column_name = 'key_processing_start_time'
+	) THEN
 
-    CREATE TABLE device_key_processing
-	(
-	    device_identification character varying(40)       NOT NULL,
-	    start_time            timestamp without time zone,
-	    CONSTRAINT device_identification_pkey PRIMARY KEY (device_identification)
-	);
-
-    ALTER TABLE device_key_processing OWNER TO osp_admin;
+    ALTER TABLE dlms_device
+      ADD COLUMN key_processing_start_time timestamp without time zone;
 
 END IF;
 

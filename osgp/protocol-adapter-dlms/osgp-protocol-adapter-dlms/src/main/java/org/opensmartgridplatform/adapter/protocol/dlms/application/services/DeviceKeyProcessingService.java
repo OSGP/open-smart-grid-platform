@@ -12,7 +12,9 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.time.Duration;
 import java.time.Instant;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DeviceKeyProcessingRepository;
+import java.util.Date;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceKeyProcessAlreadyRunningException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,28 +26,35 @@ public class DeviceKeyProcessingService {
   @Value("#{T(java.time.Duration).parse('${device.key.processing.timeout:PT5M}')}")
   private Duration deviceKeyProcessingTimeout;
 
-  private final DeviceKeyProcessingRepository deviceKeyProcessingRepository;
+  private final DlmsDeviceRepository dlmsDeviceRepository;
 
   @Autowired
-  public DeviceKeyProcessingService(
-      final DeviceKeyProcessingRepository deviceKeyProcessingRepository) {
-    this.deviceKeyProcessingRepository = deviceKeyProcessingRepository;
+  public DeviceKeyProcessingService(final DlmsDeviceRepository dlmsDeviceRepository) {
+    this.dlmsDeviceRepository = dlmsDeviceRepository;
   }
 
   public void startProcessing(final String deviceIdentification)
       throws DeviceKeyProcessAlreadyRunningException {
-    if (!this.deviceKeyProcessingRepository.insert(deviceIdentification)) {
-      final int updates =
-          this.deviceKeyProcessingRepository.updateStartTime(
-              deviceIdentification, Instant.now().minus(this.deviceKeyProcessingTimeout));
-      if (updates == 0) {
-        throw new DeviceKeyProcessAlreadyRunningException();
-      }
+
+    final DlmsDevice dlmsDevice =
+        this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+    final Date keyProcessingStartTime = dlmsDevice.getKeyProcessingStartTime();
+    final Instant timeoutTime = Instant.now().minus(this.deviceKeyProcessingTimeout);
+    final boolean processIsAlreadyRunning =
+        keyProcessingStartTime != null && timeoutTime.isBefore(keyProcessingStartTime.toInstant());
+    if (processIsAlreadyRunning) {
+      throw new DeviceKeyProcessAlreadyRunningException();
+    } else {
+      dlmsDevice.setKeyProcessingStartTime(new Date());
+      this.dlmsDeviceRepository.saveAndFlush(dlmsDevice);
     }
   }
 
   public void stopProcessing(final String deviceIdentification) {
-    this.deviceKeyProcessingRepository.remove(deviceIdentification);
+    final DlmsDevice dlmsDevice =
+        this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+    dlmsDevice.setKeyProcessingStartTime(null);
+    this.dlmsDeviceRepository.saveAndFlush(dlmsDevice);
   }
 
   public Duration getDeviceKeyProcessingTimeout() {

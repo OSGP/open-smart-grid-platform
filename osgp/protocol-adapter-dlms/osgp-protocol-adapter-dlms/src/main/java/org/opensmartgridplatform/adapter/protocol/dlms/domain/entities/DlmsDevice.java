@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.entities;
 
+import java.util.Date;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -63,6 +64,8 @@ public class DlmsDevice extends AbstractEntity {
   @Column private boolean useSn;
 
   @Column private boolean polyphase;
+
+  @Column private Date keyProcessingStartTime;
 
   @Column private Long mbusIdentificationNumber;
 
@@ -297,6 +300,14 @@ public class DlmsDevice extends AbstractEntity {
 
   public void setPolyphase(final boolean polyphase) {
     this.polyphase = polyphase;
+  }
+
+  public Date getKeyProcessingStartTime() {
+    return this.keyProcessingStartTime;
+  }
+
+  public void setKeyProcessingStartTime(final Date keyProcessingStartTime) {
+    this.keyProcessingStartTime = keyProcessingStartTime;
   }
 
   public Long getMbusIdentificationNumber() {
