@@ -10,13 +10,16 @@ package org.opensmartgridplatform.simulator.protocol.mqtt;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import io.moquette.broker.ClientDescriptor;
 import io.moquette.broker.Server;
 import io.moquette.broker.config.IConfig;
 import io.moquette.interception.AbstractInterceptHandler;
 import io.moquette.interception.messages.InterceptPublishMessage;
 import io.netty.buffer.ByteBuf;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +30,8 @@ public final class Broker {
 
   private static volatile boolean running;
   private final IConfig config;
+
+  private Server server;
 
   public Broker(final IConfig config) {
     this.config = config;
@@ -41,9 +46,32 @@ public final class Broker {
       LOG.warn("Broker already runnning, exiting");
       return;
     }
-    final Server server = new Server();
-    startServer(server, this.config);
-    handleShutdown(server);
+    this.server = new Server();
+    startServer(this.server, this.config);
+    this.logConnectedClients("after start");
+    handleShutdown(this.server);
+  }
+
+  public void stop() {
+    if (!isRunning()) {
+      LOG.warn("Broker not running, nothing to stop");
+      return;
+    }
+    this.logConnectedClients("before stop");
+    this.server.stopServer();
+    running = false;
+  }
+
+  public Collection<ClientDescriptor> getConnectedClients() {
+    return this.server.listConnectedClients();
+  }
+
+  private void logConnectedClients(final String context) {
+    final String clients =
+        this.server.listConnectedClients().stream()
+            .map(ClientDescriptor::toString)
+            .collect(Collectors.joining("\n"));
+    LOG.info("Connected clients {}:\n{}", context, clients);
   }
 
   private static void startServer(final Server server, final IConfig config) throws IOException {
