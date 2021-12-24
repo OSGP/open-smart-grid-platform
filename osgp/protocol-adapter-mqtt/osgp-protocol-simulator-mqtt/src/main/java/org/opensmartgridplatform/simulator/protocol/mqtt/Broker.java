@@ -28,7 +28,7 @@ public final class Broker {
   private static final Logger LOG = LoggerFactory.getLogger(Broker.class);
   private static final String LISTENER_ID = "MoquetteBroker";
 
-  private static volatile boolean running;
+  private boolean running;
   private final IConfig config;
 
   private Server server;
@@ -37,29 +37,33 @@ public final class Broker {
     this.config = config;
   }
 
-  public static boolean isRunning() {
-    return running;
+  public boolean isRunning() {
+    return this.running;
   }
 
   public void start() throws IOException {
-    if (isRunning()) {
+    if (this.isRunning()) {
       LOG.warn("Broker already runnning, exiting");
       return;
     }
     this.server = new Server();
-    startServer(this.server, this.config);
+    this.startServer(this.server, this.config);
     this.logConnectedClients("after start");
-    handleShutdown(this.server);
+    this.handleShutdown(this);
   }
 
   public void stop() {
-    if (!isRunning()) {
+    if (!this.isRunning()) {
       LOG.warn("Broker not running, nothing to stop");
       return;
     }
     this.logConnectedClients("before stop");
+
+    LOG.info("Stopping broker");
     this.server.stopServer();
-    running = false;
+    LOG.info("Broker stopped");
+
+    this.running = false;
   }
 
   public Collection<ClientDescriptor> getConnectedClients() {
@@ -74,7 +78,7 @@ public final class Broker {
     LOG.info("Connected clients {}:\n{}", context, clients);
   }
 
-  private static void startServer(final Server server, final IConfig config) throws IOException {
+  private void startServer(final Server server, final IConfig config) throws IOException {
     server.startServer(
         config,
         Collections.singletonList(
@@ -92,7 +96,7 @@ public final class Broker {
                         msg.getTopicName(), new String(getBytes(msg), UTF_8)));
               }
             }));
-    running = true;
+    this.running = true;
     LOG.info("Broker started press [CTRL+C] to stop");
   }
 
@@ -104,15 +108,7 @@ public final class Broker {
     return bytes;
   }
 
-  private static void handleShutdown(final Server server) {
-    Runtime.getRuntime()
-        .addShutdownHook(
-            new Thread(
-                () -> {
-                  LOG.info("Stopping broker");
-                  server.stopServer();
-                  running = false;
-                  LOG.info("Broker stopped");
-                }));
+  private void handleShutdown(final Broker broker) {
+    Runtime.getRuntime().addShutdownHook(new Thread(broker::stop));
   }
 }
