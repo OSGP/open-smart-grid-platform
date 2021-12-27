@@ -15,6 +15,7 @@ import io.cucumber.java.en.Given;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -78,12 +79,17 @@ public class MqttDeviceSteps {
             settings,
             PlatformDistributionAutomationKeys.MQTT_PORT,
             PlatformDistributionAutomationDefaults.MQTT_PORT));
-    device.setTopics(getString(settings, PlatformDistributionAutomationKeys.MQTT_TOPIC));
+    device.setTopics(getTopics(settings));
     device.setQos(
         getString(
             settings,
             PlatformDistributionAutomationKeys.MQTT_QOS,
             PlatformDistributionAutomationDefaults.MQTT_QOS));
     this.mqttDeviceRepository.save(device);
+  }
+
+  private static String[] getTopics(final Map<String, String> settings) {
+    final String topic = getString(settings, PlatformDistributionAutomationKeys.MQTT_TOPIC);
+    return StringUtils.isEmpty(topic) ? new String[] {} : StringUtils.split(topic, ',');
   }
 }

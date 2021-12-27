@@ -42,12 +42,14 @@ public class MqttDeviceSteps {
         this.mqttDeviceRepository.findByDeviceIdentification(deviceIdentification);
     final String host = device.getHost();
     final int port = device.getPort();
-    final String topic = device.getTopics();
+    final String[] topics = device.getTopics();
 
     final String payload = parameters.get(PlatformDistributionAutomationKeys.PAYLOAD);
     LOGGER.info("Payload: {}", payload);
 
-    this.startPublishingClient(host, port, topic, payload, parameters);
+    for (final String topic : topics) {
+      this.startPublishingClient(host, port, topic, payload, parameters);
+    }
   }
 
   private void startPublishingClient(

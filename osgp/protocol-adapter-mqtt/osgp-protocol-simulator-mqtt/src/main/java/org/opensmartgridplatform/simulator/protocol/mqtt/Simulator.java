@@ -23,6 +23,8 @@ public class Simulator {
 
   private static final Logger LOG = LoggerFactory.getLogger(Simulator.class);
 
+  private Broker broker;
+
   public static void main(final String[] args) throws IOException {
     final String spec = getFirstArgOrNull(args);
     final Properties sslServerProperties = new Properties();
@@ -62,8 +64,8 @@ public class Simulator {
       final Properties brokerProperties,
       final MqttClientSslConfig clientSslConfig)
       throws IOException {
-    final Broker broker = new Broker(new MemoryConfig(brokerProperties));
-    broker.start();
+    this.broker = new Broker(new MemoryConfig(brokerProperties));
+    this.broker.start();
     try {
       Thread.sleep(simulatorSpec.getStartupPauseMillis());
     } catch (final InterruptedException e) {
@@ -96,5 +98,9 @@ public class Simulator {
     }
     LOG.info("Simulator spec: {}", simulatorSpec);
     return simulatorSpec;
+  }
+
+  public Broker getBroker() {
+    return this.broker;
   }
 }
