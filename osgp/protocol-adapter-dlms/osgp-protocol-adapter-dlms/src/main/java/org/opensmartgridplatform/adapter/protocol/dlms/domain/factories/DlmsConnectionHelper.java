@@ -112,26 +112,28 @@ public class DlmsConnectionHelper {
       final Consumer<DlmsConnectionManager> taskForConnectionManager)
       throws OsgpException {
 
+    DlmsDevice localDevice = device;
     if (connectionProperties.isPingDevice()) {
-      this.devicePingConfig.pinger().ping(device.getIpAddress());
+      this.devicePingConfig.pinger().ping(localDevice.getIpAddress());
     }
 
     if (connectionProperties.isInitializeInvocationCounter()) {
       this.delay(connectionProperties.getWaitBeforeInitializingInvocationCounter());
-      this.invocationCounterManager.initializeInvocationCounter(messageMetadata, device);
+      localDevice =
+          this.invocationCounterManager.initializeInvocationCounter(messageMetadata, localDevice);
     }
 
     try {
       this.delay(connectionProperties.getWaitBeforeCreatingTheConnection());
       this.connectionFactory.createAndHandleConnection(
-          messageMetadata, device, messageListener, permit, taskForConnectionManager);
+          messageMetadata, localDevice, messageListener, permit, taskForConnectionManager);
     } catch (final ConnectionException e) {
-      if ((device.needsInvocationCounter() && this.indicatesInvocationCounterOutOfSync(e))
+      if ((localDevice.needsInvocationCounter() && this.indicatesInvocationCounterOutOfSync(e))
           && !connectionProperties.isInitializeInvocationCounter()) {
         LOGGER.warn(
             "Invocation counter (stored value: {}) appears to be out of sync for {}, retry initializing the counter",
-            device.getInvocationCounter(),
-            device.getDeviceIdentification());
+            localDevice.getInvocationCounter(),
+            localDevice.getDeviceIdentification());
         final ConnectionProperties newConnectionProperties =
             new ConnectionProperties(
                 false, true, this.delayBetweenDlmsConnections, this.delayBetweenDlmsConnections);
@@ -143,7 +145,7 @@ public class DlmsConnectionHelper {
          * regardless of whether it has already been initialized before or not.
          */
         this.createAndHandleConnectionForDevice(
-            device,
+            localDevice,
             messageListener,
             newConnectionProperties,
             messageMetadata,

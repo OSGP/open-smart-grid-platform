@@ -51,11 +51,13 @@ public class InvocationCounterManager {
   /**
    * Updates the device instance with the invocation counter value on the actual device. Should only
    * be called for a device that actually has an invocation counter stored on the device itself.
+   *
+   * @return Updated device
    */
-  public void initializeInvocationCounter(
+  public DlmsDevice initializeInvocationCounter(
       final MessageMetadata messageMetadata, final DlmsDevice device) throws OsgpException {
 
-    this.initializeWithInvocationCounterStoredOnDevice(messageMetadata, device, null);
+    return this.initializeWithInvocationCounterStoredOnDevice(messageMetadata, device, null);
   }
 
   /**
@@ -69,7 +71,7 @@ public class InvocationCounterManager {
     this.initializeWithInvocationCounterStoredOnDevice(messageMetadata, device, permit);
   }
 
-  private void initializeWithInvocationCounterStoredOnDevice(
+  private DlmsDevice initializeWithInvocationCounterStoredOnDevice(
       final MessageMetadata messageMetadata, final DlmsDevice device, final Permit permit)
       throws OsgpException {
 
@@ -78,6 +80,7 @@ public class InvocationCounterManager {
             this.initializeWithInvocationCounterStoredOnDeviceTask(device, connectionManager);
     this.connectionFactory.createAndHandlePublicClientConnection(
         messageMetadata, device, null, permit, taskForConnectionManager);
+    return this.deviceRepository.findByDeviceIdentification(device.getDeviceIdentification());
   }
 
   void initializeWithInvocationCounterStoredOnDeviceTask(
