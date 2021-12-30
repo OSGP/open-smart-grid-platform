@@ -11,9 +11,11 @@ package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.alliander.data.scadameasurementpublishedevent.ConductingEquipment;
 import com.alliander.data.scadameasurementpublishedevent.Message;
 import com.alliander.data.scadameasurementpublishedevent.Name;
 import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -23,7 +25,7 @@ public abstract class AbstractMessageConsumer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMessageConsumer.class);
 
-  protected ConsumerRecord<String, Message> consumerRecord;
+  private List<ConsumerRecord<String, Message>> consumerRecords;
   private final long waitFailMillis;
 
   protected AbstractMessageConsumer(final long waitFailMillis) {
@@ -31,25 +33,55 @@ public abstract class AbstractMessageConsumer {
   }
 
   public void checkKafkaOutput(final ScadaMeasurementPublishedEvent expectedMessage) {
-
     final long startTime = System.currentTimeMillis();
     long remaining = this.waitFailMillis;
 
     final String expectedSubstation = getSubstationFromMessage(expectedMessage);
     while (remaining > 0
-        && waitForConsumerRecordFromSubstation(expectedSubstation, this.consumerRecord)) {
+        && this.consumerRecords.stream()
+            .noneMatch(
+                cr ->
+                    this.meetsConditions(
+                        cr, expectedSubstation, expectedMessage.getPowerSystemResource()))) {
       final long elapsed = System.currentTimeMillis() - startTime;
       remaining = this.waitFailMillis - elapsed;
     }
-    assertThat(this.consumerRecord).isNotNull();
-    final Message message = this.consumerRecord.value();
-    assertThat(message.getMessageId()).isNotNull();
-    assertThat(message.getProducerId()).hasToString("GXF");
-    final ScadaMeasurementPublishedEvent event = message.getPayload();
-    assertThat(event.getPowerSystemResource()).isEqualTo(expectedMessage.getPowerSystemResource());
+
+    final ConsumerRecord<String, Message> consumerRecord =
+        this.consumerRecords.stream()
+            .filter(
+                cr ->
+                    this.meetsConditions(
+                        cr, expectedSubstation, expectedMessage.getPowerSystemResource()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("ConsumerRecord should be present"));
+    final ScadaMeasurementPublishedEvent event = consumerRecord.value().getPayload();
     assertThat(event.getMeasurements())
         .usingElementComparatorIgnoringFields("mRID")
         .isEqualTo(expectedMessage.getMeasurements());
+  }
+
+  private boolean meetsConditions(
+      final ConsumerRecord<String, Message> consumerRecord,
+      final String substation,
+      final ConductingEquipment powerSystemResource) {
+    return consumerRecord != null
+        && this.meetsConditions(consumerRecord.value(), substation, powerSystemResource);
+  }
+
+  private boolean meetsConditions(
+      final Message msg, final String substation, final ConductingEquipment powerSystemResource) {
+    return msg.getMessageId() != null
+        && msg.getProducerId().equals("GXF")
+        && this.meetsConditions(msg.getPayload(), substation, powerSystemResource);
+  }
+
+  private boolean meetsConditions(
+      final ScadaMeasurementPublishedEvent event,
+      final String substation,
+      final ConductingEquipment powerSystemResource) {
+    return event.getPowerSystemResource().equals(powerSystemResource)
+        && getSubstationFromMessage(event).equals(substation);
   }
 
   private static boolean waitForConsumerRecordFromSubstation(
@@ -84,5 +116,9 @@ public abstract class AbstractMessageConsumer {
     return n != null
         && n.getNameType().getDescription() != null
         && "gisbehuizingnummer".equals(n.getNameType().getDescription().toString());
+  }
+
+  protected void addConsumerRecord(final ConsumerRecord<String, Message> consumerRecord) {
+    this.consumerRecords.add(consumerRecord);
   }
 }

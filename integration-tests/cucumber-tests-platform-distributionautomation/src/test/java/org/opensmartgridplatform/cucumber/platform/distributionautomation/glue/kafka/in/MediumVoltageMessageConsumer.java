@@ -32,6 +32,6 @@ public class MediumVoltageMessageConsumer extends AbstractMessageConsumer {
       topics = "${medium.voltage.kafka.topic}")
   public void listen(final ConsumerRecord<String, Message> consumerRecord) {
     LOGGER.info("Received consumerRecord");
-    this.consumerRecord = consumerRecord;
+    this.addConsumerRecord(consumerRecord);
   }
 }

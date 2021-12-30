@@ -31,6 +31,6 @@ public class LowVoltageMessageConsumer extends AbstractMessageConsumer {
       topics = "${low.voltage.kafka.topic}")
   public void listen(final ConsumerRecord<String, Message> consumerRecord) {
     LOGGER.info("received consumerRecord");
-    this.consumerRecord = consumerRecord;
+    this.addConsumerRecord(consumerRecord);
   }
 }
