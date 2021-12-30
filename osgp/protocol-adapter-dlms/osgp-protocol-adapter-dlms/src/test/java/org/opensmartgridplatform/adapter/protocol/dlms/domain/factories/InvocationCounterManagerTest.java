@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.refEq;
@@ -79,6 +80,7 @@ class InvocationCounterManagerTest {
     when(this.dlmsHelper.getAttributeValue(
             eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
         .thenReturn(dataObject);
+    when(this.deviceRepository.findByDeviceIdentification(anyString())).thenReturn(this.device);
 
     this.manager.initializeWithInvocationCounterStoredOnDeviceTask(this.device, connectionManager);
     verify(this.deviceRepository).save(this.device);

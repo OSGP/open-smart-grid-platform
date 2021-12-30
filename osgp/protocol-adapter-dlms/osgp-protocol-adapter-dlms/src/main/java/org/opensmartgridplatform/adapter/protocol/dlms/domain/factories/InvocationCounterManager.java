@@ -94,13 +94,16 @@ public class InvocationCounterManager {
             device.getDeviceIdentification(),
             previousKnownInvocationCounter);
       } else {
-        device.setInvocationCounter(invocationCounterFromDevice);
-        this.deviceRepository.save(device);
+        // Make sure we've got the latest version before update
+        final DlmsDevice deviceForUpdate =
+            this.deviceRepository.findByDeviceIdentification(device.getDeviceIdentification());
+        deviceForUpdate.setInvocationCounter(invocationCounterFromDevice);
+        this.deviceRepository.save(deviceForUpdate);
         LOGGER.info(
             "Property invocationCounter of device {} initialized to the value of the invocation counter "
                 + "stored on the device: {}{}",
-            device.getDeviceIdentification(),
-            device.getInvocationCounter(),
+            deviceForUpdate.getDeviceIdentification(),
+            deviceForUpdate.getInvocationCounter(),
             previousKnownInvocationCounter == null
                 ? ""
                 : " (previous known value: " + previousKnownInvocationCounter + ")");
