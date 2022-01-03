@@ -51,13 +51,11 @@ public class InvocationCounterManager {
   /**
    * Updates the device instance with the invocation counter value on the actual device. Should only
    * be called for a device that actually has an invocation counter stored on the device itself.
-   *
-   * @return Updated device
    */
-  public DlmsDevice initializeInvocationCounter(
+  public void initializeInvocationCounter(
       final MessageMetadata messageMetadata, final DlmsDevice device) throws OsgpException {
 
-    return this.initializeWithInvocationCounterStoredOnDevice(messageMetadata, device, null);
+    this.initializeWithInvocationCounterStoredOnDevice(messageMetadata, device, null);
   }
 
   /**
@@ -71,7 +69,7 @@ public class InvocationCounterManager {
     this.initializeWithInvocationCounterStoredOnDevice(messageMetadata, device, permit);
   }
 
-  private DlmsDevice initializeWithInvocationCounterStoredOnDevice(
+  private void initializeWithInvocationCounterStoredOnDevice(
       final MessageMetadata messageMetadata, final DlmsDevice device, final Permit permit)
       throws OsgpException {
 
@@ -80,7 +78,6 @@ public class InvocationCounterManager {
             this.initializeWithInvocationCounterStoredOnDeviceTask(device, connectionManager);
     this.connectionFactory.createAndHandlePublicClientConnection(
         messageMetadata, device, null, permit, taskForConnectionManager);
-    return this.deviceRepository.findByDeviceIdentification(device.getDeviceIdentification());
   }
 
   void initializeWithInvocationCounterStoredOnDeviceTask(
@@ -94,16 +91,13 @@ public class InvocationCounterManager {
             device.getDeviceIdentification(),
             previousKnownInvocationCounter);
       } else {
-        // Make sure we've got the latest version before update
-        final DlmsDevice deviceForUpdate =
-            this.deviceRepository.findByDeviceIdentification(device.getDeviceIdentification());
-        deviceForUpdate.setInvocationCounter(invocationCounterFromDevice);
-        this.deviceRepository.save(deviceForUpdate);
+        device.setInvocationCounter(invocationCounterFromDevice);
+        this.deviceRepository.save(device);
         LOGGER.info(
             "Property invocationCounter of device {} initialized to the value of the invocation counter "
                 + "stored on the device: {}{}",
-            deviceForUpdate.getDeviceIdentification(),
-            deviceForUpdate.getInvocationCounter(),
+            device.getDeviceIdentification(),
+            device.getInvocationCounter(),
             previousKnownInvocationCounter == null
                 ? ""
                 : " (previous known value: " + previousKnownInvocationCounter + ")");

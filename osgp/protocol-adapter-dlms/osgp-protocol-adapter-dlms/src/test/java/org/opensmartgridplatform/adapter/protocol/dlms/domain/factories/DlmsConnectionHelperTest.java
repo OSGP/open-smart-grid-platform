@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -132,9 +131,6 @@ class DlmsConnectionHelperTest {
     doNothing()
         .when(this.connectionFactory)
         .createAndHandleConnection(this.messageMetadata, device, listener, null, this.task);
-    doReturn(device)
-        .when(this.invocationCounterManager)
-        .initializeInvocationCounter(this.messageMetadata, device);
 
     this.helper.createAndHandleConnectionForDevice(
         this.messageMetadata, device, listener, this.task);
@@ -178,9 +174,6 @@ class DlmsConnectionHelperTest {
     doThrow(exception)
         .when(this.connectionFactory)
         .createAndHandleConnection(this.messageMetadata, device, listener, null, this.task);
-    doReturn(device)
-        .when(this.invocationCounterManager)
-        .initializeInvocationCounter(this.messageMetadata, device);
 
     assertThrows(
         ConnectionException.class,
@@ -211,9 +204,6 @@ class DlmsConnectionHelperTest {
     doThrow(exception)
         .when(this.connectionFactory)
         .createAndHandleConnection(this.messageMetadata, device, listener, null, this.task);
-    doReturn(device)
-        .when(this.invocationCounterManager)
-        .initializeInvocationCounter(this.messageMetadata, device);
 
     assertThrows(
         ConnectionException.class,
@@ -234,12 +224,6 @@ class DlmsConnectionHelperTest {
             .withProtocol("SMR")
             .withInvocationCounter(123L)
             .build();
-    final DlmsDevice deviceWithUpdatedInvocationCounter =
-        new DlmsDeviceBuilder()
-            .withHls5Active(true)
-            .withProtocol("SMR")
-            .withInvocationCounter(369L)
-            .build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
     final ConnectionException exception =
@@ -252,21 +236,13 @@ class DlmsConnectionHelperTest {
         .doNothing()
         .when(this.connectionFactory)
         .createAndHandleConnection(this.messageMetadata, device, listener, null, this.task);
-    doReturn(deviceWithUpdatedInvocationCounter)
-        .when(this.invocationCounterManager)
-        .initializeInvocationCounter(this.messageMetadata, device);
 
     this.helper.createAndHandleConnectionForDevice(
         this.messageMetadata, device, listener, null, this.task);
 
     verify(this.invocationCounterManager).initializeInvocationCounter(this.messageMetadata, device);
-    // Verify that IC is retrieved from the original device
-    verify(this.connectionFactory)
+    verify(this.connectionFactory, times(2))
         .createAndHandleConnection(this.messageMetadata, device, listener, null, this.task);
-    // Verify that the updated device is then used for the actual call
-    verify(this.connectionFactory)
-        .createAndHandleConnection(
-            this.messageMetadata, deviceWithUpdatedInvocationCounter, listener, null, this.task);
   }
 
   @Test
