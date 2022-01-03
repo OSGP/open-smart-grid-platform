@@ -29,6 +29,7 @@ public class DlmsDeviceBuilder {
   private DefaultValue<String> iccId = notSet();
   private DefaultValue<String> communicationMethod = notSet();
   private DefaultValue<String> communicationProvider = notSet();
+  private DefaultValue<Long> version = notSet();
 
   public DlmsDevice build() {
     counter += 1;
@@ -45,6 +46,7 @@ public class DlmsDeviceBuilder {
     device.setIccId(this.iccId.orElse(null));
     device.setCommunicationMethod(this.communicationMethod.orElse(null));
     device.setCommunicationProvider(this.communicationProvider.orElse(null));
+    device.setVersion(this.version.orElse(0L));
     return device;
   }
 
@@ -105,6 +107,11 @@ public class DlmsDeviceBuilder {
 
   public DlmsDeviceBuilder withCommunicationProvider(final String communicationProvider) {
     this.communicationProvider = setTo(communicationProvider);
+    return this;
+  }
+
+  public DlmsDeviceBuilder withVersion(final Long version) {
+    this.version = setTo(version);
     return this;
   }
 }
