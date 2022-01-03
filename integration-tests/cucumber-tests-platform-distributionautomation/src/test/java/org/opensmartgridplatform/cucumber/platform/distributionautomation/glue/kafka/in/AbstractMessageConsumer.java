@@ -15,6 +15,7 @@ import com.alliander.data.scadameasurementpublishedevent.ConductingEquipment;
 import com.alliander.data.scadameasurementpublishedevent.Message;
 import com.alliander.data.scadameasurementpublishedevent.Name;
 import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -25,7 +26,7 @@ public abstract class AbstractMessageConsumer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMessageConsumer.class);
 
-  private List<ConsumerRecord<String, Message>> consumerRecords;
+  private final List<ConsumerRecord<String, Message>> consumerRecords = new ArrayList<>();
   private final long waitFailMillis;
 
   protected AbstractMessageConsumer(final long waitFailMillis) {
