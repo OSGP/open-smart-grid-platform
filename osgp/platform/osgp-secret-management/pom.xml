@@ -34,7 +34,7 @@
     <maven.failsafe.plugin.version>3.0.0-M5</maven.failsafe.plugin.version>
     <spring.boot.maven.plugin.version>2.4.0</spring.boot.maven.plugin.version>
     <osgp-ws-secret-management-version>${project.parent.version}</osgp-ws-secret-management-version>
-    <com.h2database>1.4.200</com.h2database>
+    <h2database.version>2.0.204</h2database.version>
     <failOnMissingWebXml>false</failOnMissingWebXml>
   </properties>
 
@@ -178,7 +178,7 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <version>${com.h2database}</version>
+      <version>${h2database.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
