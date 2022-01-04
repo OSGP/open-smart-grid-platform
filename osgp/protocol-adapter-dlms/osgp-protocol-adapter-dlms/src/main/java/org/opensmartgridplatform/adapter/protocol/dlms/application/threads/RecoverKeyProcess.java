@@ -17,6 +17,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.DlmsConnection;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
@@ -37,8 +38,6 @@ public class RecoverKeyProcess implements Runnable {
   private final DomainHelperService domainHelperService;
 
   @Setter private String deviceIdentification;
-
-  @Setter private String ipAddress;
 
   @Setter private MessageMetadata messageMetadata;
 
@@ -69,14 +68,12 @@ public class RecoverKeyProcess implements Runnable {
 
   @Override
   public void run() {
-    this.checkState();
+    final DlmsDevice device = this.findDeviceAndCheckState();
 
     log.info(
         "[{}] Attempting key recovery for device {}",
         this.messageMetadata.getCorrelationUid(),
         this.deviceIdentification);
-
-    final DlmsDevice device = this.findDevice();
 
     try {
       if (!this.canConnectUsingNewKeys(device)) {
@@ -121,13 +118,20 @@ public class RecoverKeyProcess implements Runnable {
     }
   }
 
-  private void checkState() {
+  private DlmsDevice findDeviceAndCheckState() {
     if (this.deviceIdentification == null) {
       throw new IllegalStateException("DeviceIdentification not set.");
     }
-    if (this.ipAddress == null) {
-      throw new IllegalStateException("IP address not set.");
+
+    final DlmsDevice device = this.findDevice();
+    if (device.isIpAddressIsStatic() && StringUtils.isBlank(this.messageMetadata.getIpAddress())) {
+      throw new IllegalStateException(
+          "IP address not set in message metadata for device \""
+              + device.getDeviceIdentification()
+              + "\" which has a static IP address.");
     }
+
+    return device;
   }
 
   private boolean canConnectUsingNewKeys(final DlmsDevice device) {
@@ -150,13 +154,8 @@ public class RecoverKeyProcess implements Runnable {
         dlmsMessageListener = new InvocationCountingDlmsMessageListener();
       }
 
-      if (device.isIpAddressIsStatic()) {
-        device.setIpAddress(this.messageMetadata.getIpAddress());
-      } else {
-        final String ipAddressFromSessionProvider =
-            this.domainHelperService.getDeviceIpAddressFromSessionProvider(device);
-        device.setIpAddress(ipAddressFromSessionProvider);
-      }
+      this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider(
+          device, this.messageMetadata);
 
       connection =
           this.hls5Connector.connectUnchecked(

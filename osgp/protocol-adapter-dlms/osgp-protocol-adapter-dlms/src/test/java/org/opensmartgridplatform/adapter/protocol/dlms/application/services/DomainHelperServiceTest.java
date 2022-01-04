@@ -134,4 +134,39 @@ class DomainHelperServiceTest {
         .thenReturn(this.sessionProvider);
     when(this.sessionProvider.getIpAddress(iccId)).thenReturn(null).thenReturn(IP_ADDRESS);
   }
+
+  @Test
+  void setsIpAddressFromMessageMetadataIfIpAddressIsStatic() throws Exception {
+    final String ipAddress = IP_ADDRESS;
+    final DlmsDevice dlmsDevice =
+        new DlmsDeviceBuilder().withIpAddress(null).withIpAddressStatic(true).build();
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newBuilder().withIpAddress(ipAddress).build();
+
+    this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider(
+        dlmsDevice, messageMetadata);
+
+    assertThat(dlmsDevice.getIpAddress()).isEqualTo(ipAddress);
+  }
+
+  @Test
+  void setsIpAddressFromSessionProviderIfIpAddressIsNotStatic() throws Exception {
+    final String communicationProvider = "comm-prov";
+    final String iccId = "icc-id";
+    final String ipAddress = IP_ADDRESS;
+    this.whenSessionProviderReturnsIpAddressAfterWakeUp(communicationProvider, iccId, ipAddress);
+    final DlmsDevice dlmsDevice =
+        new DlmsDeviceBuilder()
+            .withIpAddressStatic(false)
+            .withCommunicationProvider(communicationProvider)
+            .setIccId(iccId)
+            .build();
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newBuilder().withIpAddress(null).build();
+
+    this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider(
+        dlmsDevice, messageMetadata);
+
+    assertThat(dlmsDevice.getIpAddress()).isEqualTo(ipAddress);
+  }
 }

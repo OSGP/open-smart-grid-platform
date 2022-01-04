@@ -75,6 +75,28 @@ public class DomainHelperService {
     return this.findDlmsDevice(messageMetadata.getDeviceIdentification());
   }
 
+  /**
+   * Sets the transient ipAddress field of the given DLMS device to the IP address from the message
+   * metadata if the device has a static IP address, or to an IP address obtained from the session
+   * provider otherwise.
+   *
+   * @param dlmsDevice the device on which the IP address will be set
+   * @param messageMetadata the message metadata containing the IP address to be used for devices
+   *     with a static IP address
+   * @throws OsgpException if such exception occurs getting the IP address from the session provider
+   */
+  public void setIpAddressFromMessageMetadataOrSessionProvider(
+      final DlmsDevice dlmsDevice, final MessageMetadata messageMetadata) throws OsgpException {
+
+    if (dlmsDevice.isIpAddressIsStatic()) {
+      dlmsDevice.setIpAddress(messageMetadata.getIpAddress());
+    } else {
+      final String ipAddressFromSessionProvider =
+          this.getDeviceIpAddressFromSessionProvider(dlmsDevice);
+      dlmsDevice.setIpAddress(ipAddressFromSessionProvider);
+    }
+  }
+
   public String getDeviceIpAddressFromSessionProvider(final DlmsDevice dlmsDevice)
       throws OsgpException {
 

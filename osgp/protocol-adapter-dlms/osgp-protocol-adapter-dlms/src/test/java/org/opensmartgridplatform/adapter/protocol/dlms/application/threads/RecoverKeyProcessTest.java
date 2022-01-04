@@ -48,7 +48,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 class RecoverKeyProcessTest {
 
   private static final String DEVICE_IDENTIFICATION = "E000123456789";
-  private static final String IP_ADDRESS = "1.1.1.1";
 
   @InjectMocks RecoverKeyProcess recoverKeyProcess;
 
@@ -65,7 +64,6 @@ class RecoverKeyProcessTest {
   @BeforeEach
   public void before() {
     this.recoverKeyProcess.setDeviceIdentification(DEVICE_IDENTIFICATION);
-    this.recoverKeyProcess.setIpAddress(IP_ADDRESS);
     this.recoverKeyProcess.setMessageMetadata(this.messageMetadata);
     lenient().when(this.throttlingClientConfig.clientEnabled()).thenReturn(false);
   }
@@ -159,29 +157,13 @@ class RecoverKeyProcessTest {
   }
 
   @Test
-  void setsIpAddressFromMessageMetadataIfIpAddressIsStatic() throws Exception {
+  void setsIpAddressWhenConnectingToTheDevice() throws Exception {
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION))
         .thenReturn(this.dlmsDevice);
-    when(this.dlmsDevice.isIpAddressIsStatic()).thenReturn(true);
-    when(this.messageMetadata.getIpAddress()).thenReturn(IP_ADDRESS);
 
     this.recoverKeyProcess.run();
 
-    verify(this.dlmsDevice).setIpAddress(IP_ADDRESS);
-    verify(this.domainHelperService, never()).getDeviceIpAddressFromSessionProvider(any());
-  }
-
-  @Test
-  void setsIpAddressFromSessionProviderIfIpAddressIsNotStatic() throws Exception {
-    when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION))
-        .thenReturn(this.dlmsDevice);
-    when(this.dlmsDevice.isIpAddressIsStatic()).thenReturn(false);
-    when(this.domainHelperService.getDeviceIpAddressFromSessionProvider(this.dlmsDevice))
-        .thenReturn(IP_ADDRESS);
-
-    this.recoverKeyProcess.run();
-
-    verify(this.dlmsDevice).setIpAddress(IP_ADDRESS);
-    verify(this.messageMetadata, never()).getIpAddress();
+    verify(this.domainHelperService)
+        .setIpAddressFromMessageMetadataOrSessionProvider(this.dlmsDevice, this.messageMetadata);
   }
 }
