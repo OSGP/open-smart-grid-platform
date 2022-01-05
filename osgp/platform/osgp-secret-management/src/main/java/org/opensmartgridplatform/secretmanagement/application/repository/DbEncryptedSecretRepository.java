@@ -36,7 +36,7 @@ public interface DbEncryptedSecretRepository extends JpaRepository<DbEncryptedSe
               + "WHERE es.deviceIdentification = :deviceIdentification AND es.secretType = :secretType "
               + "AND es.secretStatus = :secretStatus AND es.encodedSecret = :encodedSecret "
               + "ORDER BY es.creationTime DESC, es.id DESC")
-  List<DbEncryptedSecret> findSecretsIncludingEncodedSecret(
+  List<DbEncryptedSecret> findSecretsWithSpecificEncodedSecret(
       @Param("deviceIdentification") String deviceIdentification,
       @Param("secretType") SecretType secretType,
       @Param("secretStatus") SecretStatus secretStatus,

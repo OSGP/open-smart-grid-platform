@@ -892,38 +892,38 @@ public class DlmsDeviceSteps {
 
       final String[] keyInfo = inputSettings.get(secretTypeString).split(",");
 
-      final String keyNameExpired = keyInfo[0];
-      final String keyNameActive = keyInfo[1];
+      final String keyName1 = keyInfo[0];
+      final String keyName2 = keyInfo[1];
 
       final SecretType secretType = this.getSecretTypeByKeyTypeInputName(secretTypeString);
 
       final List<DbEncryptedSecret> dbEncryptedSecretsRequest1 =
-          this.encryptedSecretRepository.findSecretsIncludingEncodedSecret(
+          this.encryptedSecretRepository.findSecretsWithSpecificEncodedSecret(
               deviceIdentification,
               secretType,
               SecretStatus.EXPIRED,
-              SecurityKey.valueOf(keyNameExpired).getDatabaseKey());
+              SecurityKey.valueOf(keyName1).getDatabaseKey());
       dbEncryptedSecretsRequest1.addAll(
-          this.encryptedSecretRepository.findSecretsIncludingEncodedSecret(
+          this.encryptedSecretRepository.findSecretsWithSpecificEncodedSecret(
               deviceIdentification,
               secretType,
               SecretStatus.ACTIVE,
-              SecurityKey.valueOf(keyNameActive).getDatabaseKey()));
+              SecurityKey.valueOf(keyName2).getDatabaseKey()));
 
       countResultKeysRequest1 += dbEncryptedSecretsRequest1.size();
 
       final List<DbEncryptedSecret> dbEncryptedSecretsRequest2 =
-          this.encryptedSecretRepository.findSecretsIncludingEncodedSecret(
+          this.encryptedSecretRepository.findSecretsWithSpecificEncodedSecret(
               deviceIdentification,
               secretType,
               SecretStatus.ACTIVE,
-              SecurityKey.valueOf(keyNameExpired).getDatabaseKey());
+              SecurityKey.valueOf(keyName1).getDatabaseKey());
       dbEncryptedSecretsRequest2.addAll(
-          this.encryptedSecretRepository.findSecretsIncludingEncodedSecret(
+          this.encryptedSecretRepository.findSecretsWithSpecificEncodedSecret(
               deviceIdentification,
               secretType,
               SecretStatus.EXPIRED,
-              SecurityKey.valueOf(keyNameActive).getDatabaseKey()));
+              SecurityKey.valueOf(keyName2).getDatabaseKey()));
 
       countResultKeysRequest2 += dbEncryptedSecretsRequest2.size();
     }

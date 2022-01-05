@@ -12,14 +12,19 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceKeyProcessAlreadyRunningException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional(value = "transactionManager")
 @Component
 public class DeviceKeyProcessingService {
 
@@ -34,19 +39,25 @@ public class DeviceKeyProcessingService {
   }
 
   public void startProcessing(final String deviceIdentification)
-      throws DeviceKeyProcessAlreadyRunningException {
+      throws DeviceKeyProcessAlreadyRunningException, FunctionalException {
 
     final DlmsDevice dlmsDevice =
         this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
-    final Date keyProcessingStartTime = dlmsDevice.getKeyProcessingStartTime();
-    final Instant timeoutTime = Instant.now().minus(this.deviceKeyProcessingTimeout);
-    final boolean processIsAlreadyRunning =
-        keyProcessingStartTime != null && timeoutTime.isBefore(keyProcessingStartTime.toInstant());
-    if (processIsAlreadyRunning) {
+    if (dlmsDevice == null) {
+      throw new FunctionalException(
+          FunctionalExceptionType.UNKNOWN_DEVICE,
+          ComponentType.PROTOCOL_DLMS,
+          new ProtocolAdapterException(
+              "Unable to start key changing process with unknown device: " + deviceIdentification));
+    }
+
+    final Instant oldestStartTimeNotConsiderTimedOut =
+        Instant.now().minus(this.deviceKeyProcessingTimeout);
+    final int updatedRecords =
+        this.dlmsDeviceRepository.setProcessingStartTime(
+            dlmsDevice.getDeviceIdentification(), oldestStartTimeNotConsiderTimedOut);
+    if (updatedRecords == 0) {
       throw new DeviceKeyProcessAlreadyRunningException();
-    } else {
-      dlmsDevice.setKeyProcessingStartTime(new Date());
-      this.dlmsDeviceRepository.saveAndFlush(dlmsDevice);
     }
   }
 

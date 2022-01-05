@@ -1,11 +1,20 @@
+/*
+ * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
-import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +50,9 @@ public class DeviceKeyProcessingServiceTest {
 
     when(this.dlmsDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
         .thenReturn(dlmsDevice);
+    when(this.dlmsDeviceRepository.setProcessingStartTime(
+            eq(DEVICE_IDENTIFICATION), any(Instant.class)))
+        .thenReturn(1);
     assertDoesNotThrow(
         () -> this.deviceKeyProcessingService.startProcessing(DEVICE_IDENTIFICATION));
   }
@@ -50,10 +62,12 @@ public class DeviceKeyProcessingServiceTest {
 
     final DlmsDevice dlmsDevice = new DlmsDevice();
     dlmsDevice.setDeviceIdentification(DEVICE_IDENTIFICATION);
-    dlmsDevice.setKeyProcessingStartTime(new Date());
+    dlmsDevice.setKeyProcessingStartTime(Instant.now());
     when(this.dlmsDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
         .thenReturn(dlmsDevice);
-
+    when(this.dlmsDeviceRepository.setProcessingStartTime(
+            eq(DEVICE_IDENTIFICATION), any(Instant.class)))
+        .thenReturn(0);
     assertThrows(
         DeviceKeyProcessAlreadyRunningException.class,
         () -> {
@@ -67,11 +81,12 @@ public class DeviceKeyProcessingServiceTest {
     final DlmsDevice dlmsDevice = new DlmsDevice();
     dlmsDevice.setDeviceIdentification(DEVICE_IDENTIFICATION);
     dlmsDevice.setKeyProcessingStartTime(
-        Date.from(
-            Instant.now().minus(this.deviceKeyProcessingService.getDeviceKeyProcessingTimeout())));
+        Instant.now().minus(this.deviceKeyProcessingService.getDeviceKeyProcessingTimeout()));
     when(this.dlmsDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
         .thenReturn(dlmsDevice);
-
+    when(this.dlmsDeviceRepository.setProcessingStartTime(
+            eq(DEVICE_IDENTIFICATION), any(Instant.class)))
+        .thenReturn(1);
     assertDoesNotThrow(
         () -> this.deviceKeyProcessingService.startProcessing(DEVICE_IDENTIFICATION));
   }

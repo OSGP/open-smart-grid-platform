@@ -57,10 +57,13 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
   }
 
   @When("^multiple replace keys requests are received$")
-  public void multipleReplaceKeysRequestsAreReceived(final Map<String, String> settings2)
+  public void multipleReplaceKeysRequestsAreReceived(final Map<String, String> settings)
       throws Throwable {
     final List<Map<String, String>> listOfSettingsPerRequest =
-        this.createSettingPerRequest(settings2);
+        this.createSettingPerRequest(settings);
+    if (listOfSettingsPerRequest.size() != 2) {
+      throw new IllegalArgumentException("This scenario only excepts TWO replace keys requests");
+    }
     final List<String> correlationUIDs = new ArrayList<>();
     for (final Map<String, String> settingsPerRequest : listOfSettingsPerRequest) {
       final ReplaceKeysRequest request =

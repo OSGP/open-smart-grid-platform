@@ -29,6 +29,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsD
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceKeyProcessAlreadyRunningException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RecoverKeyException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.InvocationCountingDlmsMessageListener;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.throttling.ThrottlingPermitDeniedException;
 import org.opensmartgridplatform.throttling.api.Permit;
@@ -86,10 +87,16 @@ public class RecoverKeyProcess implements Runnable {
 
     try {
 
-      // the process started in this try-catch block should only be stopped in the
-      // ThrottlingPermitDeniedException catch block. The next try-catch block has a finally block
-      // to ensure stopping trhe process started here.
-      this.deviceKeyProcessingService.startProcessing(device.getDeviceIdentification());
+      // The process started in this try-catch block should only be stopped in the
+      // ThrottlingPermitDeniedException catch block.
+      // The next try-catch block has a finally block to ensure stopping the process started here.
+      try {
+        this.deviceKeyProcessingService.startProcessing(device.getDeviceIdentification());
+      } catch (final FunctionalException e) {
+        // If a FunctionalException is catched here the process is not started. So does not have to
+        // be stopped here.
+        throw new RecoverKeyException(e);
+      }
 
       if (!this.canConnectUsingNewKeys(device)) {
         log.warn(

@@ -23,7 +23,7 @@ Feature: SmartMetering Configuration - Recover Keys
   @RecoverKeys @ResetKeysOnDevice
   Scenario: Replace keys triggers a recover keys and replaces keys on the retry
     #Replace keys request will fail at first time which triggers the RecoverKey process
-    #Replace keys request will succeed in the retry returning and OK response
+    #Replace keys request will succeed in the retry returning an OK response
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -47,7 +47,7 @@ Feature: SmartMetering Configuration - Recover Keys
   @RecoverKeys @ResetKeysOnDevice
   Scenario: Generate and Replace keys triggers a recover keys and replaces keys on the retry
     #Generate and Replace keys request will fail at first time which triggers the RecoverKey process
-    #Generate and Replace keys request will succeed in the retry returning and OK response
+    #Generate and Replace keys request will succeed in the retry returning an OK response
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
