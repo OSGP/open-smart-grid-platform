@@ -81,8 +81,7 @@ public class Hls5Connector extends SecureDlmsConnector {
     } catch (final IOException e) { // Queue key recovery process
       if (this.secretManagementService.hasNewSecret(
           messageMetadata, device.getDeviceIdentification())) {
-        this.recoverKeyProcessInitiator.initiate(
-            messageMetadata, device.getDeviceIdentification(), device.getIpAddress());
+        this.recoverKeyProcessInitiator.initiate(messageMetadata, device.getDeviceIdentification());
       }
 
       final String msg =

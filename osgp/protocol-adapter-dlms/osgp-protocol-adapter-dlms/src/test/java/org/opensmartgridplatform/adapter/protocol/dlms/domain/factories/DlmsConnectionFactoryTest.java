@@ -147,6 +147,24 @@ class DlmsConnectionFactoryTest {
     this.assertConnectionManagerForDevice(expected);
   }
 
+  @Test
+  void setsIpAddressWhenConnectingToTheDevice() throws Exception {
+    final DlmsDevice device =
+        new DlmsDeviceBuilder()
+            .withHls5Active(true)
+            .withIpAddress(null)
+            .withIpAddressStatic(false)
+            .build();
+    final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+    when(this.hls5Connector.connect(this.messageMetadata, device, listener))
+        .thenReturn(this.connection);
+
+    this.factory.createAndHandleConnection(this.messageMetadata, device, listener, this.task);
+
+    verify(this.domainHelperService)
+        .setIpAddressFromMessageMetadataOrSessionProvider(device, this.messageMetadata);
+  }
+
   private void assertConnectionManagerForDevice(final DlmsConnectionManager expected)
       throws IOException {
     assertThat(this.actualConnectionManagerReference.get())
