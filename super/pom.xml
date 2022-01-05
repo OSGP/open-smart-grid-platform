@@ -59,7 +59,7 @@
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.core.version>4.1.0</mockito.core.version>
-    <okhttp3.mockwebserver.version>4.9.1</okhttp3.mockwebserver.version>
+    <okhttp3.mockwebserver.version>4.9.3</okhttp3.mockwebserver.version>
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
     <servlet.version>4.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
