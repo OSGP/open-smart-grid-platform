@@ -85,15 +85,11 @@ public class RecoverKeyProcess implements Runnable {
     try {
 
       // The process started in this try-catch block should only be stopped in the
-      // ThrottlingPermitDeniedException catch block.
+      // ThrottlingPermitDeniedException catch block. If a DeviceKeyProcessAlreadyRunningException
+      // is thrown the process was already started and should not be stopped. This method below
+      // could also throw a RecoverKeyException in this case the process wasn't started either
       // The next try-catch block has a finally block to ensure stopping the process started here.
-      try {
-        this.deviceKeyProcessingService.startProcessing(device.getDeviceIdentification());
-      } catch (final FunctionalException e) {
-        // If a FunctionalException is catched here the process is not started. So does not have to
-        // be stopped here.
-        throw new RecoverKeyException(e);
-      }
+      this.startProcessing(device);
 
       if (!this.canConnectUsingNewKeys(device)) {
         log.warn(
@@ -146,6 +142,17 @@ public class RecoverKeyProcess implements Runnable {
       throw new RecoverKeyException(e);
     } finally {
       this.deviceKeyProcessingService.stopProcessing(this.deviceIdentification);
+    }
+  }
+
+  private void startProcessing(final DlmsDevice device)
+      throws DeviceKeyProcessAlreadyRunningException {
+    try {
+      this.deviceKeyProcessingService.startProcessing(device.getDeviceIdentification());
+    } catch (final FunctionalException e) {
+      // If a FunctionalException is catched here the process is not started. So does not have to
+      // be stopped here.
+      throw new RecoverKeyException(e);
     }
   }
 
