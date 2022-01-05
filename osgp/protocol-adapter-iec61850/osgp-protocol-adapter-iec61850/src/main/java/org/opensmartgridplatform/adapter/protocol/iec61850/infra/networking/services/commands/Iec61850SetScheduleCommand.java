@@ -8,29 +8,20 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands;
 
-import com.beanit.openiec61850.BdaBoolean;
-import com.beanit.openiec61850.Fc;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import org.joda.time.DateTime;
-import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
+import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.SetScheduleDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.ScheduleEntry;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.TriggerType;
-import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeException;
-import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.Function;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
+import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.Iec61850SetScheduleFunction;
 import org.opensmartgridplatform.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.core.db.api.iec61850.application.services.SsldDataService;
 import org.opensmartgridplatform.core.db.api.iec61850.entities.DeviceOutputSetting;
@@ -53,12 +44,6 @@ public class Iec61850SetScheduleCommand {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850SetScheduleCommand.class);
 
-  // The value used to indicate that the time on or time off of a schedule
-  // entry is unused.
-  private static final int DEFAULT_SCHEDULE_VALUE = -1;
-  // The number of schedule entries available for a relay.
-  private static final int MAX_NUMBER_OF_SCHEDULE_ENTRIES = 64;
-
   private final DeviceMessageLoggingService loggingService;
 
   private final SsldDataService ssldDataService;
@@ -72,15 +57,12 @@ public class Iec61850SetScheduleCommand {
   public void setScheduleOnDevice(
       final Iec61850Client iec61850Client,
       final DeviceConnection deviceConnection,
-      final RelayTypeDto relayType,
-      final ScheduleDto scheduleDto,
+      final SetScheduleDeviceRequest deviceRequest,
       final Ssld ssld)
       throws ProtocolAdapterException {
-
-    final String tariffOrLight = relayType.equals(RelayTypeDto.LIGHT) ? "light" : "tariff";
+    final ScheduleDto scheduleDto = deviceRequest.getSchedule();
+    final RelayTypeDto relayType = deviceRequest.getRelayType();
     final List<ScheduleEntryDto> scheduleList = scheduleDto.getScheduleList();
-    final Short astronomicalSunriseOffset = scheduleDto.getAstronomicalSunriseOffset();
-    final Short astronomicalSunsetOffset = scheduleDto.getAstronomicalSunsetOffset();
 
     try {
       // Creating a list of all Schedule entries, grouped by relay index.
@@ -88,318 +70,14 @@ public class Iec61850SetScheduleCommand {
           this.createScheduleEntries(scheduleList, ssld, relayType);
 
       final Function<Void> function =
-          new Function<Void>() {
-
-            @Override
-            public Void apply(final DeviceMessageLog deviceMessageLog)
-                throws ProtocolAdapterException {
-
-              this.writeAstronomicalOffsetsForSchedule(deviceMessageLog);
-
-              Iec61850SetScheduleCommand.this.disableScheduleEntries(
-                  relayType, deviceConnection, iec61850Client, deviceMessageLog, ssld);
-
-              for (final Integer relayIndex : relaySchedulesEntries.keySet()) {
-                final List<ScheduleEntry> scheduleEntries = relaySchedulesEntries.get(relayIndex);
-                final int numberOfScheduleEntries = scheduleEntries.size();
-
-                if (numberOfScheduleEntries > MAX_NUMBER_OF_SCHEDULE_ENTRIES) {
-                  throw new ProtocolAdapterException(
-                      "Received "
-                          + numberOfScheduleEntries
-                          + " "
-                          + tariffOrLight
-                          + " schedule entries for relay "
-                          + relayIndex
-                          + " for device "
-                          + ssld.getDeviceIdentification()
-                          + ". Setting more than "
-                          + MAX_NUMBER_OF_SCHEDULE_ENTRIES
-                          + " is not possible.");
-                }
-
-                // Get the logical node for the relay index.
-                final LogicalNode logicalNode = LogicalNode.getSwitchComponentByIndex(relayIndex);
-                // Check if the relay can be operated, if not, enable
-                // operation for the current relay. This is needed to
-                // ensure that the switch schedule which will be written
-                // to the device can be executed.
-                Iec61850Commands.enableOperationOfRelay(
-                    deviceConnection, iec61850Client, deviceMessageLog, logicalNode, relayIndex);
-
-                // Get the logical node and read all the values for the
-                // schedule of the current relay.
-                final NodeContainer schedule =
-                    deviceConnection.getFcModelNode(
-                        LogicalDevice.LIGHTING, logicalNode, DataAttribute.SCHEDULE, Fc.CF);
-                iec61850Client.readNodeDataValues(
-                    deviceConnection.getConnection().getClientAssociation(),
-                    schedule.getFcmodelNode());
-
-                // Write the schedule entries of the switch schedule to
-                // the logical node of the schedule for the current
-                // relay.
-                for (int i = 0; i < numberOfScheduleEntries; i++) {
-                  LOGGER.info(
-                      "Write {} schedule entry {} for relay {}", tariffOrLight, i + 1, relayIndex);
-                  this.writeScheduleEntryForRelay(
-                      deviceMessageLog, scheduleEntries, logicalNode, schedule, i);
-                }
-              }
-              Iec61850SetScheduleCommand.this.loggingService.logMessage(
-                  deviceMessageLog,
-                  deviceConnection.getDeviceIdentification(),
-                  deviceConnection.getOrganisationIdentification(),
-                  false);
-              return null;
-            }
-
-            private void writeAstronomicalOffsetsForSchedule(
-                final DeviceMessageLog deviceMessageLog) throws NodeException {
-              if (relayType.equals(RelayTypeDto.LIGHT)
-                  && astronomicalSunriseOffset != null
-                  && astronomicalSunsetOffset != null) {
-                final NodeContainer softwareConfiguration =
-                    deviceConnection.getFcModelNode(
-                        LogicalDevice.LIGHTING, LogicalNode.STREET_LIGHT_CONFIGURATION,
-                        DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF);
-
-                softwareConfiguration.writeShort(
-                    SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET, astronomicalSunriseOffset);
-                deviceMessageLog.addVariable(
-                    LogicalNode.STREET_LIGHT_CONFIGURATION,
-                    DataAttribute.SOFTWARE_CONFIGURATION,
-                    Fc.CF,
-                    SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET,
-                    Short.toString(astronomicalSunriseOffset));
-
-                softwareConfiguration.writeShort(
-                    SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET, astronomicalSunsetOffset);
-                deviceMessageLog.addVariable(
-                    LogicalNode.STREET_LIGHT_CONFIGURATION,
-                    DataAttribute.SOFTWARE_CONFIGURATION,
-                    Fc.CF,
-                    SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET,
-                    Short.toString(astronomicalSunsetOffset));
-              }
-            }
-
-            private void writeScheduleEntryForRelay(
-                final DeviceMessageLog deviceMessageLog,
-                final List<ScheduleEntry> scheduleEntries,
-                final LogicalNode logicalNode,
-                final NodeContainer schedule,
-                final int i)
-                throws NodeWriteException {
-              final ScheduleEntry scheduleEntry = scheduleEntries.get(i);
-
-              final String scheduleEntryName =
-                  SubDataAttribute.SCHEDULE_ENTRY.getDescription() + (i + 1);
-              final NodeContainer scheduleNode = schedule.getChild(scheduleEntryName);
-
-              this.setEnabled(
-                  deviceMessageLog, logicalNode, scheduleEntry, scheduleEntryName, scheduleNode);
-
-              this.setDay(
-                  deviceMessageLog, logicalNode, scheduleEntry, scheduleEntryName, scheduleNode);
-
-              this.setSwitchTimes(
-                  deviceMessageLog, logicalNode, scheduleEntry, scheduleEntryName, scheduleNode);
-
-              this.setMinimumTimeOn(
-                  deviceMessageLog, logicalNode, scheduleEntry, scheduleEntryName, scheduleNode);
-
-              this.setTriggerWindow(
-                  deviceMessageLog, logicalNode, scheduleEntry, scheduleEntryName, scheduleNode);
-            }
-
-            private void setEnabled(
-                final DeviceMessageLog deviceMessageLog,
-                final LogicalNode logicalNode,
-                final ScheduleEntry scheduleEntry,
-                final String scheduleEntryName,
-                final NodeContainer scheduleNode)
-                throws NodeWriteException {
-              final BdaBoolean enabled = scheduleNode.getBoolean(SubDataAttribute.SCHEDULE_ENABLE);
-              if (enabled.getValue() != scheduleEntry.isEnabled()) {
-                scheduleNode.writeBoolean(
-                    SubDataAttribute.SCHEDULE_ENABLE, scheduleEntry.isEnabled());
-              }
-              deviceMessageLog.addVariable(
-                  logicalNode,
-                  DataAttribute.SCHEDULE,
-                  Fc.CF,
-                  scheduleEntryName,
-                  SubDataAttribute.SCHEDULE_ENABLE,
-                  Boolean.toString(scheduleEntry.isEnabled()));
-            }
-
-            private void setDay(
-                final DeviceMessageLog deviceMessageLog,
-                final LogicalNode logicalNode,
-                final ScheduleEntry scheduleEntry,
-                final String scheduleEntryName,
-                final NodeContainer scheduleNode)
-                throws NodeWriteException {
-              final Integer day = scheduleNode.getInteger(SubDataAttribute.SCHEDULE_DAY).getValue();
-              if (day != scheduleEntry.getDay()) {
-                scheduleNode.writeInteger(SubDataAttribute.SCHEDULE_DAY, scheduleEntry.getDay());
-              }
-              deviceMessageLog.addVariable(
-                  logicalNode,
-                  DataAttribute.SCHEDULE,
-                  Fc.CF,
-                  scheduleEntryName,
-                  SubDataAttribute.SCHEDULE_DAY,
-                  Integer.toString(scheduleEntry.getDay()));
-            }
-
-            private void setSwitchTimes(
-                final DeviceMessageLog deviceMessageLog,
-                final LogicalNode logicalNode,
-                final ScheduleEntry scheduleEntry,
-                final String scheduleEntryName,
-                final NodeContainer scheduleNode)
-                throws NodeWriteException {
-              /*
-               * A schedule entry on the platform is about switching on a
-               * certain time, or on a certain trigger. The schedule
-               * entries on the device are about a period with a time on
-               * and a time off. To bridge these different approaches,
-               * either the on or the off values on the device are set to
-               * a certain default to indicate they are not relevant to
-               * the schedule entry.
-               */
-              int timeOnValue = DEFAULT_SCHEDULE_VALUE;
-              byte timeOnTypeValue = DEFAULT_SCHEDULE_VALUE;
-              int timeOffValue = DEFAULT_SCHEDULE_VALUE;
-              byte timeOffTypeValue = DEFAULT_SCHEDULE_VALUE;
-
-              if (scheduleEntry.isOn()) {
-                timeOnValue = scheduleEntry.getTime();
-                timeOnTypeValue = (byte) scheduleEntry.getTriggerType().getIndex();
-              } else {
-                timeOffValue = scheduleEntry.getTime();
-                timeOffTypeValue = (byte) scheduleEntry.getTriggerType().getIndex();
-              }
-
-              final Integer timeOn =
-                  scheduleNode.getInteger(SubDataAttribute.SCHEDULE_TIME_ON).getValue();
-              if (timeOn != timeOnValue) {
-                scheduleNode.writeInteger(SubDataAttribute.SCHEDULE_TIME_ON, timeOnValue);
-              }
-              deviceMessageLog.addVariable(
-                  logicalNode,
-                  DataAttribute.SCHEDULE,
-                  Fc.CF,
-                  scheduleEntryName,
-                  SubDataAttribute.SCHEDULE_TIME_ON,
-                  Integer.toString(timeOnValue));
-
-              final Byte timeOnActionTime =
-                  scheduleNode.getByte(SubDataAttribute.SCHEDULE_TIME_ON_TYPE).getValue();
-              if (timeOnActionTime != timeOnTypeValue) {
-                scheduleNode.writeByte(SubDataAttribute.SCHEDULE_TIME_ON_TYPE, timeOnTypeValue);
-              }
-              deviceMessageLog.addVariable(
-                  logicalNode,
-                  DataAttribute.SCHEDULE,
-                  Fc.CF,
-                  scheduleEntryName,
-                  SubDataAttribute.SCHEDULE_TIME_ON_TYPE,
-                  Byte.toString(timeOnTypeValue));
-
-              final Integer timeOff =
-                  scheduleNode.getInteger(SubDataAttribute.SCHEDULE_TIME_OFF).getValue();
-              if (timeOff != timeOffValue) {
-                scheduleNode.writeInteger(SubDataAttribute.SCHEDULE_TIME_OFF, timeOffValue);
-              }
-              deviceMessageLog.addVariable(
-                  logicalNode,
-                  DataAttribute.SCHEDULE,
-                  Fc.CF,
-                  scheduleEntryName,
-                  SubDataAttribute.SCHEDULE_TIME_OFF,
-                  Integer.toString(timeOffValue));
-
-              final Byte timeOffActionTime =
-                  scheduleNode.getByte(SubDataAttribute.SCHEDULE_TIME_OFF_TYPE).getValue();
-              if (timeOffActionTime != timeOffTypeValue) {
-                scheduleNode.writeByte(SubDataAttribute.SCHEDULE_TIME_OFF_TYPE, timeOffTypeValue);
-              }
-              deviceMessageLog.addVariable(
-                  logicalNode,
-                  DataAttribute.SCHEDULE,
-                  Fc.CF,
-                  scheduleEntryName,
-                  SubDataAttribute.SCHEDULE_TIME_OFF_TYPE,
-                  Byte.toString(timeOffTypeValue));
-            }
-
-            private void setMinimumTimeOn(
-                final DeviceMessageLog deviceMessageLog,
-                final LogicalNode logicalNode,
-                final ScheduleEntry scheduleEntry,
-                final String scheduleEntryName,
-                final NodeContainer scheduleNode)
-                throws NodeWriteException {
-              final Integer minimumTimeOn =
-                  scheduleNode.getUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON).getValue();
-              final Integer newMinimumTimeOn = scheduleEntry.getMinimumLightsOn() / 60;
-              if (!Objects.equals(minimumTimeOn, newMinimumTimeOn)) {
-                scheduleNode.writeUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON, newMinimumTimeOn);
-              }
-              deviceMessageLog.addVariable(
-                  logicalNode,
-                  DataAttribute.SCHEDULE,
-                  Fc.CF,
-                  scheduleEntryName,
-                  SubDataAttribute.MINIMUM_TIME_ON,
-                  Integer.toString(newMinimumTimeOn));
-            }
-
-            private void setTriggerWindow(
-                final DeviceMessageLog deviceMessageLog,
-                final LogicalNode logicalNode,
-                final ScheduleEntry scheduleEntry,
-                final String scheduleEntryName,
-                final NodeContainer scheduleNode)
-                throws NodeWriteException {
-              final Integer triggerMinutesBefore =
-                  scheduleNode
-                      .getUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE)
-                      .getValue();
-              if (triggerMinutesBefore != scheduleEntry.getTriggerWindowMinutesBefore()) {
-                scheduleNode.writeUnsignedShort(
-                    SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE,
-                    scheduleEntry.getTriggerWindowMinutesBefore());
-              }
-              deviceMessageLog.addVariable(
-                  logicalNode,
-                  DataAttribute.SCHEDULE,
-                  Fc.CF,
-                  scheduleEntryName,
-                  SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE,
-                  Integer.toString(scheduleEntry.getTriggerWindowMinutesBefore()));
-
-              final Integer triggerMinutesAfter =
-                  scheduleNode
-                      .getUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER)
-                      .getValue();
-              if (triggerMinutesAfter != scheduleEntry.getTriggerWindowMinutesAfter()) {
-                scheduleNode.writeUnsignedShort(
-                    SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER,
-                    scheduleEntry.getTriggerWindowMinutesAfter());
-              }
-              deviceMessageLog.addVariable(
-                  logicalNode,
-                  DataAttribute.SCHEDULE,
-                  Fc.CF,
-                  scheduleEntryName,
-                  SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER,
-                  Integer.toString(scheduleEntry.getTriggerWindowMinutesAfter()));
-            }
-          };
+          new Iec61850SetScheduleFunction(
+              iec61850Client,
+              deviceConnection,
+              deviceRequest,
+              ssld,
+              relaySchedulesEntries,
+              this.loggingService,
+              this.ssldDataService);
 
       iec61850Client.sendCommandWithRetry(
           function, "SetSchedule", deviceConnection.getDeviceIdentification());
@@ -461,7 +139,7 @@ public class Iec61850SetScheduleCommand {
       indexes.add(this.ssldDataService.convertToInternalIndex(ssld, lightValue.getIndex()));
     }
 
-    ScheduleEntry scheduleEntry;
+    final ScheduleEntry scheduleEntry;
     try {
       scheduleEntry = this.convertToScheduleEntry(schedule, lightValue);
     } catch (final ProtocolAdapterException e) {
@@ -518,7 +196,7 @@ public class Iec61850SetScheduleCommand {
         builder.triggerWindowMinutesAfter((int) triggerWindow.getMinutesAfter());
       }
       builder.triggerType(this.extractTriggerType(schedule));
-      builder.enabled(schedule.getIsEnabled() == null ? true : schedule.getIsEnabled());
+      builder.enabled(schedule.getIsEnabled() == null || schedule.getIsEnabled());
       final WeekDayTypeDto weekDay = schedule.getWeekDay();
       if (WeekDayTypeDto.ABSOLUTEDAY.equals(weekDay)) {
         final DateTime specialDay = schedule.getStartDay();
@@ -535,7 +213,7 @@ public class Iec61850SetScheduleCommand {
         builder.minimumLightsOn(schedule.getMinimumLightsOn());
       }
       return builder.build();
-    } catch (IllegalStateException | IllegalArgumentException e) {
+    } catch (final IllegalStateException | IllegalArgumentException e) {
       throw new ProtocolAdapterException(
           "Error converting ScheduleDto and LightValueDto into a ScheduleEntry: " + e.getMessage(),
           e);
@@ -600,62 +278,6 @@ public class Iec61850SetScheduleCommand {
         throw new FunctionalException(
             FunctionalExceptionType.ACTION_NOT_ALLOWED_FOR_TARIFF_RELAY,
             ComponentType.PROTOCOL_IEC61850);
-      }
-    }
-  }
-
-  /**
-   * Disable the schedule entries for all relays of a given {@link RelayTypeDto} using the {@link
-   * DeviceOutputSetting}s for a device.
-   *
-   * @throws NodeException
-   */
-  private void disableScheduleEntries(
-      final RelayTypeDto relayTypeDto,
-      final DeviceConnection deviceConnection,
-      final Iec61850Client iec61850Client,
-      final DeviceMessageLog deviceMessageLog,
-      final Ssld ssld)
-      throws NodeException {
-
-    final List<DeviceOutputSetting> deviceOutputSettings =
-        this.ssldDataService.findByRelayType(ssld, RelayType.valueOf(relayTypeDto.name()));
-
-    for (final DeviceOutputSetting deviceOutputSetting : deviceOutputSettings) {
-      final int relayIndex = deviceOutputSetting.getInternalId();
-
-      final LogicalNode logicalNode = LogicalNode.getSwitchComponentByIndex(relayIndex);
-      final NodeContainer schedule =
-          deviceConnection.getFcModelNode(
-              LogicalDevice.LIGHTING, logicalNode, DataAttribute.SCHEDULE, Fc.CF);
-      iec61850Client.readNodeDataValues(
-          deviceConnection.getConnection().getClientAssociation(), schedule.getFcmodelNode());
-
-      for (int i = 1; i <= MAX_NUMBER_OF_SCHEDULE_ENTRIES; i++) {
-        final String scheduleEntryName = SubDataAttribute.SCHEDULE_ENTRY.getDescription() + i;
-        final NodeContainer scheduleNode = schedule.getChild(scheduleEntryName);
-
-        final boolean enabled =
-            scheduleNode.getBoolean(SubDataAttribute.SCHEDULE_ENABLE).getValue();
-        LOGGER.info(
-            "Checking if schedule entry {} for relay {} is enabled: {}", i, relayIndex, enabled);
-        if (enabled) {
-          LOGGER.info(
-              "Disabling schedule entry {} of {} for relay {} before setting new {} schedule",
-              i,
-              MAX_NUMBER_OF_SCHEDULE_ENTRIES,
-              relayIndex,
-              relayTypeDto.name());
-          scheduleNode.writeBoolean(SubDataAttribute.SCHEDULE_ENABLE, false);
-
-          deviceMessageLog.addVariable(
-              logicalNode,
-              DataAttribute.SCHEDULE,
-              Fc.CF,
-              scheduleEntryName,
-              SubDataAttribute.SCHEDULE_ENABLE,
-              Boolean.toString(false));
-        }
       }
     }
   }

@@ -92,7 +92,14 @@ public class InvocationCounterManager {
             previousKnownInvocationCounter);
       } else {
         device.setInvocationCounter(invocationCounterFromDevice);
-        this.deviceRepository.save(device);
+        /*
+         * After saving the version is incremented. To prevent optimistic locking failures if the
+         * device gets saved again (for instance from updateInvocationCounterForDevice, called from
+         * doConnectionPostProcessing in DlmsConnectionMessageProcessor) set the version on the
+         * device that was passed on as a parameter to the InvocationCounterManager.
+         */
+        final DlmsDevice updatedDevice = this.deviceRepository.save(device);
+        device.setVersion(updatedDevice.getVersion());
         LOGGER.info(
             "Property invocationCounter of device {} initialized to the value of the invocation counter "
                 + "stored on the device: {}{}",

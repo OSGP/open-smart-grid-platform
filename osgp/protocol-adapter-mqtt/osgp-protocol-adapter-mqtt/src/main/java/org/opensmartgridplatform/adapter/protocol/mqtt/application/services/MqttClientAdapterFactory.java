@@ -19,8 +19,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class MqttClientAdapterFactory {
 
-  @Autowired @Nullable private MqttClientSslConfig mqttClientSslConfig;
-  @Autowired private MqttClientDefaults mqttClientDefaults;
+  @Nullable private final MqttClient mqttClient;
+  private final MqttClientDefaults mqttClientDefaults;
+  @Nullable private final MqttClientSslConfig mqttClientSslConfig;
+
+  @Autowired
+  public MqttClientAdapterFactory(
+      @Nullable final MqttClient mqttClient,
+      final MqttClientDefaults mqttClientDefaults,
+      @Nullable final MqttClientSslConfig mqttClientSslConfig) {
+    this.mqttClient = mqttClient;
+    this.mqttClientDefaults = mqttClientDefaults;
+    this.mqttClientSslConfig = mqttClientSslConfig;
+  }
 
   public MqttClientAdapter create(
       final MqttDevice device,
@@ -29,6 +40,7 @@ public class MqttClientAdapterFactory {
     return new MqttClientAdapter(
         device,
         messageMetadata,
+        this.mqttClient != null ? this.mqttClient.getMqtt3AsyncClient() : null,
         this.mqttClientDefaults,
         this.mqttClientSslConfig,
         mqttClientEventHandler);

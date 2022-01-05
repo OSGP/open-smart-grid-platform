@@ -10,12 +10,15 @@ package org.opensmartgridplatform.adapter.protocol.mqtt.application.services;
 
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
+import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode;
 import com.hivemq.client.mqtt.mqtt3.message.subscribe.suback.Mqtt3SubAck;
-import java.util.Arrays;
+import com.hivemq.client.mqtt.mqtt3.message.subscribe.suback.Mqtt3SubAckReturnCode;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.PreDestroy;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging.OutboundOsgpCoreResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
-import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
-import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttClientDefaults;
+import org.opensmartgridplatform.adapter.protocol.mqtt.domain.services.MqttDeviceService;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
@@ -23,7 +26,6 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 @Service(value = "mqttSubcriptionService")
@@ -31,60 +33,46 @@ public class SubscriptionService implements MqttClientEventHandler {
 
   private static final Logger LOG = LoggerFactory.getLogger(SubscriptionService.class);
 
-  private final MqttDeviceRepository mqttDeviceRepository;
   private final OutboundOsgpCoreResponseMessageSender outboundOsgpCoreResponseMessageSender;
   private final MqttClientAdapterFactory mqttClientAdapterFactory;
+  private final MqttDeviceService mqttDeviceService;
 
-  private final MqttClientDefaults mqttClientDefaults;
+  private final Map<String, MqttClientAdapter> mqttClientAdapters = new HashMap<>();
 
-  @Autowired @Nullable private MqttClient mqttClient;
-
+  @Autowired
   public SubscriptionService(
-      final MqttDeviceRepository mqttDeviceRepository,
+      final MqttDeviceService mqttDeviceService,
       final MqttClientAdapterFactory mqttClientAdapterFactory,
-      final OutboundOsgpCoreResponseMessageSender outboundOsgpCoreResponseMessageSender,
-      final MqttClientDefaults mqttClientDefaults) {
-    this.mqttDeviceRepository = mqttDeviceRepository;
+      final OutboundOsgpCoreResponseMessageSender outboundOsgpCoreResponseMessageSender) {
+    this.mqttDeviceService = mqttDeviceService;
     this.mqttClientAdapterFactory = mqttClientAdapterFactory;
     this.outboundOsgpCoreResponseMessageSender = outboundOsgpCoreResponseMessageSender;
-    this.mqttClientDefaults = mqttClientDefaults;
   }
 
   public void subscribe(final MessageMetadata messageMetadata) {
-    final MqttDevice device = this.getOrCreateDevice(messageMetadata);
+    final MqttDevice device = this.mqttDeviceService.getOrCreateDevice(messageMetadata);
     final MqttClientAdapter mqttClientAdapter =
-        this.mqttClientAdapterFactory.create(device, messageMetadata, this);
+        this.mqttClientAdapters.computeIfAbsent(
+            device.getDeviceIdentification(),
+            k -> this.mqttClientAdapterFactory.create(device, messageMetadata, this));
 
-    if (this.mqttClient == null) {
+    if (mqttClientAdapter.isDisconnected()) {
+      LOG.info("MQTT Client is disconnected, connecting...");
       mqttClientAdapter.connect();
+    } else if (mqttClientAdapter.isWaitingForReconnect()) {
+      LOG.info("MQTT Client is waiting for reconnect...");
     } else {
-      this.subscribeUsingExistingConnection(device, mqttClientAdapter);
+      LOG.info("MQTT Client is available, subscribing...");
+      mqttClientAdapter.subscribe();
     }
   }
 
-  private MqttDevice getOrCreateDevice(final MessageMetadata messageMetadata) {
-    MqttDevice device =
-        this.mqttDeviceRepository.findByDeviceIdentification(
-            messageMetadata.getDeviceIdentification());
-    if (device == null) {
-      device = new MqttDevice(messageMetadata.getDeviceIdentification());
-      device.setHost(messageMetadata.getIpAddress());
-      device.setPort(this.mqttClientDefaults.getDefaultPort());
-      device.setTopics(this.mqttClientDefaults.getDefaultTopics());
-      device.setQos(this.mqttClientDefaults.getDefaultQos());
-      this.mqttDeviceRepository.save(device);
+  @PreDestroy
+  public void shutdown() {
+    LOG.info("Disconnecting MQTT Clients...");
+    for (final MqttClientAdapter mqttClientAdapter : this.mqttClientAdapters.values()) {
+      mqttClientAdapter.disconnect();
     }
-    return device;
-  }
-
-  private void subscribeUsingExistingConnection(
-      final MqttDevice device, final MqttClientAdapter mqttClientAdapter) {
-    final MqttQos qos = this.getQosOrDefault(device);
-    final String[] topics = this.getTopicsForDevice(device);
-    Arrays.stream(topics)
-        .forEach(
-            topic ->
-                mqttClientAdapter.subscribe(this.mqttClient.getMqtt3AsyncClient(), topic, qos));
   }
 
   @Override
@@ -92,60 +80,90 @@ public class SubscriptionService implements MqttClientEventHandler {
       final MqttClientAdapter mqttClientAdapter,
       final Mqtt3ConnAck ack,
       final Throwable throwable) {
-    if (throwable == null) {
-      this.onConnectSuccess(mqttClientAdapter, ack);
+    if (isConnectSuccess(ack, throwable)) {
+      this.onConnectSuccess(mqttClientAdapter);
     } else {
-      LOG.info(
-          "Client connect failed for device:{}",
-          mqttClientAdapter.getMessageMetadata().getDeviceIdentification(),
-          throwable);
+      this.onConnectFailure(mqttClientAdapter, ack, throwable);
     }
   }
 
-  private void onConnectSuccess(final MqttClientAdapter mqttClientAdapter, final Mqtt3ConnAck ack) {
-    LOG.info(
-        "Client connected for device:{} ack:{}",
-        mqttClientAdapter.getMessageMetadata().getDeviceIdentification(),
-        ack.getType());
-    final MqttDevice device = mqttClientAdapter.getDevice();
-    final MqttQos qos = this.getQosOrDefault(device);
-    final String[] topics = this.getTopicsForDevice(device);
-    Arrays.stream(topics).forEach(topic -> mqttClientAdapter.subscribe(topic, qos));
+  private static boolean isConnectSuccess(final Mqtt3ConnAck ack, final Throwable throwable) {
+    return (throwable == null
+        && (ack != null && ack.getReturnCode() == Mqtt3ConnAckReturnCode.SUCCESS));
   }
 
-  private String[] getTopicsForDevice(final MqttDevice device) {
-    return device.getTopics().split(",");
+  private void onConnectSuccess(final MqttClientAdapter mqttClientAdapter) {
+    final String deviceIdentification =
+        mqttClientAdapter.getMessageMetadata().getDeviceIdentification();
+    LOG.info("Client connected for device: {}", deviceIdentification);
+    mqttClientAdapter.subscribe();
   }
 
-  private MqttQos getQosOrDefault(final MqttDevice device) {
-    MqttQos mqttQos;
-    try {
-      mqttQos = MqttQos.valueOf(device.getQos());
-    } catch (final IllegalArgumentException | NullPointerException e) {
-      LOG.warn(String.format("Illegal or missing QoS value %s, using default", device.getQos()), e);
-      device.setQos(this.mqttClientDefaults.getDefaultQos());
-      mqttQos = MqttQos.valueOf(device.getQos());
-    }
-    return mqttQos;
+  private void onConnectFailure(
+      final MqttClientAdapter mqttClientAdapter,
+      final Mqtt3ConnAck ack,
+      final Throwable throwable) {
+
+    final String deviceIdentification =
+        mqttClientAdapter.getMessageMetadata().getDeviceIdentification();
+    LOG.warn("Client connect failed for device: {}, ack: {}", deviceIdentification, ack, throwable);
   }
 
   @Override
   public void onSubscribe(
       final MqttClientAdapter mqttClientAdapter,
-      final Mqtt3SubAck subAck,
+      final String topic,
+      final MqttQos qos,
+      final Mqtt3SubAck ack,
       final Throwable throwable) {
-    final MessageMetadata messageMetadata = mqttClientAdapter.getMessageMetadata();
-    if (throwable == null) {
-      LOG.info(
-          "Client subscribed for device:{} suback:{}",
-          messageMetadata.getDeviceIdentification(),
-          subAck.getType());
+
+    if (this.isSubscribeSuccess(ack, throwable)) {
+      this.onSubscribeSuccess(mqttClientAdapter, topic, qos, ack);
     } else {
-      LOG.info(
-          "Client subscription for device:{} failed",
-          messageMetadata.getDeviceIdentification(),
-          throwable);
+      this.onSubscribeFailure(mqttClientAdapter, topic, qos, ack, throwable);
     }
+  }
+
+  private boolean isSubscribeSuccess(final Mqtt3SubAck ack, final Throwable throwable) {
+    return (throwable == null
+        && (ack != null
+            && ack.getReturnCodes().stream().noneMatch(rc -> rc == Mqtt3SubAckReturnCode.FAILURE)));
+  }
+
+  private void onSubscribeSuccess(
+      final MqttClientAdapter mqttClientAdapter,
+      final String topic,
+      final MqttQos qos,
+      final Mqtt3SubAck ack) {
+
+    final String deviceIdentification =
+        mqttClientAdapter.getMessageMetadata().getDeviceIdentification();
+
+    LOG.info(
+        "Client subscribed for device: {}, topic: {}, qos: {},  ack: {}",
+        deviceIdentification,
+        topic,
+        qos,
+        ack);
+  }
+
+  private void onSubscribeFailure(
+      final MqttClientAdapter mqttClientAdapter,
+      final String topic,
+      final MqttQos qos,
+      final Mqtt3SubAck ack,
+      final Throwable throwable) {
+
+    final String deviceIdentification =
+        mqttClientAdapter.getMessageMetadata().getDeviceIdentification();
+
+    LOG.warn(
+        "Client subscription failed for device: {}, topic: {}, qos: {}, ack: {}",
+        deviceIdentification,
+        topic,
+        qos,
+        ack,
+        throwable);
   }
 
   @Override
@@ -163,5 +181,33 @@ public class SubscriptionService implements MqttClientEventHandler {
             .result(ResponseMessageResultType.OK)
             .build();
     this.outboundOsgpCoreResponseMessageSender.send(responseMessage);
+  }
+
+  @Override
+  public void onUnsubscribe(
+      final MqttClientAdapter mqttClientAdapter, final String topic, final Throwable throwable) {
+    final String deviceIdentification =
+        mqttClientAdapter.getMessageMetadata().getDeviceIdentification();
+    if (throwable == null) {
+      LOG.info("Client unsubscribed for device:{}, topic: {}", deviceIdentification, topic);
+    } else {
+      LOG.info(
+          "Client unsubscribe failed for device:{}, topic: {}",
+          deviceIdentification,
+          topic,
+          throwable);
+    }
+  }
+
+  @Override
+  public void onDisconnect(final MqttClientAdapter mqttClientAdapter, final Throwable throwable) {
+    final String deviceIdentification =
+        mqttClientAdapter.getMessageMetadata().getDeviceIdentification();
+    if (throwable == null) {
+      LOG.info("Client disconnected for device:{}", deviceIdentification);
+      this.mqttClientAdapters.remove(deviceIdentification);
+    } else {
+      LOG.info("Client disconnect failed for device:{}", deviceIdentification, throwable);
+    }
   }
 }

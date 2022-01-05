@@ -13,11 +13,13 @@ import java.util.Arrays;
 import java.util.List;
 import org.mockito.Mockito;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundLogItemRequestsMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundOsgpCoreResponsesMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MonitoringService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SystemEventService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
@@ -44,6 +46,7 @@ import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
+import org.springframework.jms.core.JmsTemplate;
 import stub.DlmsConnectionFactoryStub;
 import stub.DlmsPersistenceConfigStub;
 
@@ -87,11 +90,26 @@ public class MessagingTestConfiguration extends AbstractConfig {
     return Mockito.mock(DeviceResponseMessageSender.class);
   }
 
+  @Bean
+  public JmsTemplate protocolDlmsDeviceRequestMessageSenderJmsTemplate() {
+    return Mockito.mock(JmsTemplate.class);
+  }
+
+  @Bean
+  public JmsTemplate protocolDlmsOutboundOsgpCoreRequestsJmsTemplate() {
+    return Mockito.mock(JmsTemplate.class);
+  }
+
   // Beans, Mocks and Stubs
 
   @Bean
   public DlmsHelper dlmsHelper() {
     return new DlmsHelper();
+  }
+
+  @Bean
+  public DeviceRequestMessageSender deviceRequestMessageSender() {
+    return new DeviceRequestMessageSender();
   }
 
   @Bean
@@ -102,6 +120,17 @@ public class MessagingTestConfiguration extends AbstractConfig {
   @Bean
   public CorrelationIdProviderService correlationIdProviderService() {
     return new CorrelationIdProviderUUIDService();
+  }
+
+  @Bean
+  public SystemEventService systemEventService(
+      final OsgpRequestMessageSender osgpRequestMessageSender,
+      final CorrelationIdProviderService correlationIdProviderService) {
+
+    return new SystemEventService(
+        osgpRequestMessageSender,
+        correlationIdProviderService,
+        this.invocationCounterEventThreshold);
   }
 
   @Bean
@@ -150,6 +179,11 @@ public class MessagingTestConfiguration extends AbstractConfig {
   @Bean
   public ThrottlingService throttlingService() {
     return new ThrottlingService();
+  }
+
+  @Bean
+  public ThrottlingClientConfig throttlingClientConfig() {
+    return new ThrottlingClientConfig();
   }
 
   @Bean

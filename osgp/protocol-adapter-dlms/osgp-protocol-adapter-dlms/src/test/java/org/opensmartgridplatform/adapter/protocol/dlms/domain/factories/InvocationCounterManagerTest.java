@@ -42,6 +42,7 @@ class InvocationCounterManagerTest {
   private MessageMetadata messageMetadata;
   private DlmsDevice device;
   private final long invocationCounterValueInDatabaseEntity = 7;
+  private final long initialDeviceVersion = 2;
 
   @Mock private DlmsConnectionFactory connectionFactory;
 
@@ -57,6 +58,7 @@ class InvocationCounterManagerTest {
     this.device =
         new DlmsDeviceBuilder()
             .withInvocationCounter(this.invocationCounterValueInDatabaseEntity)
+            .withVersion(this.initialDeviceVersion)
             .build();
   }
 
@@ -72,17 +74,23 @@ class InvocationCounterManagerTest {
   @Test
   void initializesInvocationCounterForDevice() throws Exception {
     final long invocationCounterValueOnDevice = 123;
-
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-
     final DataObject dataObject = DataObject.newUInteger32Data(invocationCounterValueOnDevice);
     when(this.dlmsHelper.getAttributeValue(
             eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
         .thenReturn(dataObject);
+    when(this.deviceRepository.save(this.device))
+        .thenReturn(
+            new DlmsDeviceBuilder()
+                .withDeviceIdentification(this.device.getDeviceIdentification())
+                .withInvocationCounter(this.device.getInvocationCounter())
+                .withVersion(this.device.getVersion() + 1)
+                .build());
 
     this.manager.initializeWithInvocationCounterStoredOnDeviceTask(this.device, connectionManager);
-    verify(this.deviceRepository).save(this.device);
 
+    verify(this.deviceRepository).save(this.device);
+    assertThat(this.device.getVersion()).isGreaterThan(this.initialDeviceVersion);
     assertThat(this.device.getInvocationCounter()).isEqualTo(invocationCounterValueOnDevice);
   }
 }
