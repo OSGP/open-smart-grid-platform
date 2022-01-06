@@ -304,12 +304,7 @@ public class DateTimeHelper {
       return null;
     }
 
-    final org.joda.time.Instant jodaInstant = dateTime.toInstant();
-    final Instant instant = Instant.ofEpochMilli(jodaInstant.getMillis());
-    final DateTimeZone dateTimeZone = dateTime.getZone();
-    final String zone = dateTimeZone.getID();
-    final ZoneId zoneId = ZoneId.of(zone);
-    return ZonedDateTime.ofInstant(instant, zoneId);
+    return dateTime.toGregorianCalendar().toZonedDateTime();
   }
 
   private static DateTime zonedDateTimeToDateTime(final ZonedDateTime zonedDateTime) {
