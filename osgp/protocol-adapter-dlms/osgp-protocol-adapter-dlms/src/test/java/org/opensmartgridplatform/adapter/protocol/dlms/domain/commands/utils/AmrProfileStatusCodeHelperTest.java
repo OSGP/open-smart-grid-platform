@@ -42,10 +42,20 @@ public class AmrProfileStatusCodeHelperTest {
 
   @Test
   public void testBitPositions() {
+    assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.CRITICAL_ERROR))
+        .isZero();
     assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.CLOCK_INVALID))
         .isEqualTo(1);
+    assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.DATA_NOT_VALID))
+        .isEqualTo(2);
     assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.DAYLIGHT_SAVING))
         .isEqualTo(3);
+    assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.NOT_USED))
+        .isEqualTo(4);
+    assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.CLOCK_ADJUSTED))
+        .isEqualTo(5);
+    assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.RECOVERED_VALUE))
+        .isEqualTo(6);
     assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.POWER_DOWN))
         .isEqualTo(7);
   }
