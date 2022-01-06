@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.shared.domain.entities;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -62,6 +63,11 @@ public abstract class AbstractEntity implements Serializable {
   /** @return the modification time */
   public Date getModificationTime() {
     return (Date) this.modificationTime.clone();
+  }
+
+  /** @return the modification time */
+  public Instant getModificationTimeInstant() {
+    return this.modificationTime.toInstant();
   }
 
   /** @return the version */
