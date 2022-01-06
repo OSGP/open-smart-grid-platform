@@ -16,6 +16,7 @@ import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.core.application.criteria.SearchEventsCriteria;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.DeviceManagementMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.DeviceManagementService;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncResponse;
@@ -74,8 +75,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +88,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 /** Device Management Endpoint class */
 @Endpoint(value = "coreDeviceManagementEndpoint")
-public class DeviceManagementEndpoint {
+public class DeviceManagementEndpoint extends CoreEndpoint {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementEndpoint.class);
   private static final String DEVICE_MANAGEMENT_NAMESPACE =
@@ -239,11 +238,11 @@ public class DeviceManagementEndpoint {
     final SetEventNotificationsResponse response = new SetEventNotificationsResponse();
 
     try {
-      final ResponseMessage message =
-          this.deviceManagementService.dequeueSetEventNotificationsResponse(
-              request.getAsyncRequest().getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
+      if (responseData != null) {
+        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);
@@ -660,11 +659,11 @@ public class DeviceManagementEndpoint {
         new UpdateDeviceSslCertificationResponse();
 
     try {
-      final ResponseMessage message =
-          this.deviceManagementService.dequeueUpdateDeviceSslCertificationResponse(
-              request.getAsyncRequest().getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
+      if (responseData != null) {
+        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
       } else {
         LOGGER.debug("Update Device Ssl Certification data is null");
       }
@@ -736,11 +735,11 @@ public class DeviceManagementEndpoint {
     final SetDeviceVerificationKeyResponse response = new SetDeviceVerificationKeyResponse();
 
     try {
-      final ResponseMessage message =
-          this.deviceManagementService.dequeueSetDeviceVerificationKeyResponse(
-              request.getAsyncRequest().getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
+      if (responseData != null) {
+        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
       } else {
         LOGGER.debug("Set Device Verification Key is null");
       }
@@ -802,11 +801,10 @@ public class DeviceManagementEndpoint {
     final SetDeviceLifecycleStatusResponse response = new SetDeviceLifecycleStatusResponse();
 
     try {
-      final ResponseMessage message =
-          this.deviceManagementService.dequeueSetDeviceLifecycleStatusResponse(
-              asyncRequest.getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      final ResponseData responseData =
+          this.responseDataService.dequeue(asyncRequest.getCorrelationUid(), ComponentType.WS_CORE);
+      if (responseData != null) {
+        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);
@@ -880,29 +878,15 @@ public class DeviceManagementEndpoint {
     final UpdateDeviceCdmaSettingsResponse response = new UpdateDeviceCdmaSettingsResponse();
 
     try {
-      final ResponseMessage message =
-          this.deviceManagementService.dequeueUpdateDeviceCdmaSettingsResponse(
-              asyncRequest.getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      final ResponseData responseData =
+          this.responseDataService.dequeue(asyncRequest.getCorrelationUid(), ComponentType.WS_CORE);
+      if (responseData != null) {
+        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);
     }
 
     return response;
-  }
-
-  private void handleException(final Exception e) throws OsgpException {
-    // Rethrow exception if it already is a functional or technical
-    // exception,
-    // otherwise throw new technical exception.
-    if (e instanceof OsgpException) {
-      LOGGER.error("Exception occurred: ", e);
-      throw (OsgpException) e;
-    } else {
-      LOGGER.error("Exception occurred: ", e);
-      throw new TechnicalException(COMPONENT_WS_CORE, e);
-    }
   }
 }

@@ -38,11 +38,14 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
       "org.opensmartgridplatform.shared.domain.services",
       "org.opensmartgridplatform.domain.core",
       "org.opensmartgridplatform.adapter.ws.core",
-      "org.opensmartgridplatform.domain.logging"
+      "org.opensmartgridplatform.adapter.ws.shared.services",
+      "org.opensmartgridplatform.adapter.ws.mapping",
+      "org.opensmartgridplatform.domain.logging",
     })
 @ImportResource("classpath:applicationContext.xml")
 @Import({
-  PersistenceConfig.class,
+  PersistenceConfigCore.class,
+  PersistenceConfigWs.class,
   WritablePersistenceConfig.class,
   WebServiceConfig.class,
   CoreWebServiceConfig.class

@@ -12,6 +12,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.platform.config.ApplicationPersistenceConfiguration;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.repositories.WsSmartMeteringNotificationWebServiceConfigurationRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,9 +23,12 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 @Configuration
 @EnableJpaRepositories(
-    entityManagerFactoryRef = "entityMgrRespData",
-    transactionManagerRef = "txMgrRespData",
-    basePackageClasses = {ResponseDataRepository.class})
+    entityManagerFactoryRef = "entityMgrWsSmartMetering",
+    transactionManagerRef = "txMgrWsSmartMetering",
+    basePackageClasses = {
+      ResponseDataRepository.class,
+      WsSmartMeteringNotificationWebServiceConfigurationRepository.class
+    })
 public class AdapterWsSmartMeteringPersistenceConfig extends ApplicationPersistenceConfiguration {
 
   @Value("${db.name.osgp_adapter_ws_smartmetering}")
@@ -50,7 +54,7 @@ public class AdapterWsSmartMeteringPersistenceConfig extends ApplicationPersiste
    *
    * @return DataSource
    */
-  @Bean(name = "dsRespData")
+  @Bean(name = "dsWsSmartMetering")
   public DataSource dataSource() {
     return this.makeDataSource();
   }
@@ -61,11 +65,11 @@ public class AdapterWsSmartMeteringPersistenceConfig extends ApplicationPersiste
    * @return LocalContainerEntityManagerFactoryBean
    * @throws ClassNotFoundException when class not found
    */
-  @Bean(name = "entityMgrRespData")
+  @Bean(name = "entityMgrWsSmartMetering")
   public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-      @Qualifier("dsRespData") final DataSource dataSource) throws ClassNotFoundException {
+      @Qualifier("dsWsSmartMetering") final DataSource dataSource) throws ClassNotFoundException {
 
-    return this.makeEntityManager("OSGP_CUCUMBER_RESPDATA", dataSource);
+    return this.makeEntityManager("OSGP_CUCUMBER_WS_SMARTMETERING", dataSource);
   }
 
   /**
@@ -73,9 +77,9 @@ public class AdapterWsSmartMeteringPersistenceConfig extends ApplicationPersiste
    *
    * @return JpaTransactionManager
    */
-  @Bean(name = "txMgrRespData")
+  @Bean(name = "txMgrWsSmartMetering")
   public JpaTransactionManager transactionManager(
-      @Qualifier("entityMgrRespData") final EntityManagerFactory barEntityManagerFactory) {
+      @Qualifier("entityMgrWsSmartMetering") final EntityManagerFactory barEntityManagerFactory) {
     return new JpaTransactionManager(barEntityManagerFactory);
   }
 }

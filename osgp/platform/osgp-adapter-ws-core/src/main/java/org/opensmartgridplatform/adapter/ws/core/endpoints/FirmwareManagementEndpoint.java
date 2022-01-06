@@ -16,6 +16,7 @@ import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.FirmwareManagementMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.FirmwareFileRequest;
 import org.opensmartgridplatform.adapter.ws.core.application.services.FirmwareManagementService;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncResponse;
@@ -75,7 +76,6 @@ import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
-import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
@@ -83,8 +83,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +94,7 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
-public class FirmwareManagementEndpoint {
+public class FirmwareManagementEndpoint extends CoreEndpoint {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareManagementEndpoint.class);
   private static final String NAMESPACE =
@@ -241,11 +239,11 @@ public class FirmwareManagementEndpoint {
     final UpdateFirmwareResponse response = new UpdateFirmwareResponse();
 
     try {
-      final ResponseMessage message =
-          this.firmwareManagementService.dequeueUpdateFirmwareResponse(
-              request.getAsyncRequest().getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
+      if (responseData != null) {
+        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);
@@ -308,18 +306,18 @@ public class FirmwareManagementEndpoint {
 
     final GetFirmwareVersionResponse response = new GetFirmwareVersionResponse();
     try {
-      final ResponseMessage message =
-          this.firmwareManagementService.dequeueGetFirmwareResponse(
-              request.getAsyncRequest().getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-        if (message.getDataObject() != null) {
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
+      if (responseData != null) {
+        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+        if (responseData.getMessageData() != null) {
           final List<FirmwareVersion> target = response.getFirmwareVersion();
           @SuppressWarnings("unchecked")
           final List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion>
               firmwareVersions =
                   (List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion>)
-                      message.getDataObject();
+                      responseData.getMessageData();
           target.addAll(
               this.firmwareManagementMapper.mapAsList(firmwareVersions, FirmwareVersion.class));
         } else {
@@ -537,12 +535,11 @@ public class FirmwareManagementEndpoint {
     final SwitchFirmwareResponse response = new SwitchFirmwareResponse();
 
     try {
-      final ResponseMessage message =
-          this.firmwareManagementService.dequeueSwitchFirmwareResponse(
-              request.getAsyncRequest().getCorrelationUid());
-
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
+      if (responseData != null) {
+        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
       } else {
         LOGGER.debug("Switch Firmware data is null");
       }
@@ -1145,20 +1142,5 @@ public class FirmwareManagementEndpoint {
                 ::getModelCode)
         .findFirst()
         .orElse(null);
-  }
-
-  private void handleException(final Exception e) throws OsgpException {
-    // Rethrow exception if it already is a functional or technical
-    // exception, otherwise throw new technical exception.
-    if (e instanceof ConstraintViolationException) {
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(((ConstraintViolationException) e).getConstraintViolations()));
-    } else if (e instanceof OsgpException) {
-      throw (OsgpException) e;
-    } else {
-      throw new TechnicalException(COMPONENT_WS_CORE, e);
-    }
   }
 }

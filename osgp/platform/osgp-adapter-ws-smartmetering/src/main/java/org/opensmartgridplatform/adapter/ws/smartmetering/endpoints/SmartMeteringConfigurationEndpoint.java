@@ -118,7 +118,6 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.U
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse;
-import org.opensmartgridplatform.adapter.ws.smartmetering.application.ApplicationConstants;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.RequestService;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
@@ -140,6 +139,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -163,6 +163,9 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
   @Autowired
   @Qualifier("decrypterForGxfSmartMetering")
   private RsaEncrypter decrypterForGxfSmartMetering;
+
+  @Value("${web.service.notification.application.name}")
+  private String webserviceNotificationApplicationName;
 
   public SmartMeteringConfigurationEndpoint() {
     // Default constructor
@@ -1696,13 +1699,13 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         this.applicationKeyConfigurationRepository
             .findById(
                 new ApplicationDataLookupKey(
-                    organisationIdentification, ApplicationConstants.APPLICATION_NAME))
+                    organisationIdentification, this.webserviceNotificationApplicationName))
             .orElseThrow(
                 () ->
                     new OsgpException(
                         ComponentType.WS_SMART_METERING,
                         "No public key found for application "
-                            + ApplicationConstants.APPLICATION_NAME
+                            + this.webserviceNotificationApplicationName
                             + " and organisation "
                             + organisationIdentification));
 
@@ -1717,7 +1720,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
       throw new OsgpException(
           ComponentType.WS_SMART_METERING,
           "Could not get public key file for application "
-              + ApplicationConstants.APPLICATION_NAME
+              + this.webserviceNotificationApplicationName
               + " and organisation "
               + organisationIdentification);
     }

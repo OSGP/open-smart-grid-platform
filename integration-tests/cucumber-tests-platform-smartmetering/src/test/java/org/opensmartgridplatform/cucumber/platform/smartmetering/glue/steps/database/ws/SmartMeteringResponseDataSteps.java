@@ -38,7 +38,7 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
   @Autowired private ResponseDataRepository responseDataRepository;
 
   @Given("^a response data record$")
-  @Transactional("txMgrRespData")
+  @Transactional("txMgrWsSmartMetering")
   public ResponseData aResponseDataRecord(final Map<String, String> settings) {
 
     final ResponseData responseData =

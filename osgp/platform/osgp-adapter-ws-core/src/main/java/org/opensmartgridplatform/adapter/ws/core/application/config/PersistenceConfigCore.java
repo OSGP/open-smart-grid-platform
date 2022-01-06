@@ -1,8 +1,9 @@
 /*
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2021 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -21,27 +22,32 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-@EnableJpaRepositories(basePackageClasses = {DeviceRepository.class})
+@EnableJpaRepositories(
+    entityManagerFactoryRef = "coreEntityManagerFactory",
+    basePackageClasses = {DeviceRepository.class})
 @Configuration
 @PropertySource("classpath:osgp-adapter-ws-core.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true)
-public class PersistenceConfig extends AbstractPersistenceConfig {
+public class PersistenceConfigCore extends AbstractPersistenceConfig {
 
-  @Value("${db.readonly.username}")
+  @Value("${db.username.core}")
   private String username;
 
-  @Value("${db.readonly.password}")
+  @Value("${db.password.core}")
   private String password;
 
-  @Value("${db.host}")
+  @Value("${db.host.core}")
   private String databaseHost;
 
-  @Value("${db.port}")
+  @Value("${db.port.core}")
   private int databasePort;
 
-  @Value("${db.name}")
+  @Value("${db.name.core}")
   private String databaseName;
+
+  @Value("${entitymanager.packages.to.scan.core}")
+  private String entitymanagerPackagesToScan;
 
   private HikariDataSource dataSourceCore;
 
@@ -65,14 +71,16 @@ public class PersistenceConfig extends AbstractPersistenceConfig {
   }
 
   @Override
-  @Bean
+  @Bean(name = "coreTransactionManager")
   public JpaTransactionManager transactionManager() {
     return super.transactionManager();
   }
 
   @Override
-  @Bean
+  @Bean(name = "coreEntityManagerFactory")
   public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-    return super.entityManagerFactory("OSGP_WS_ADAPTER_CORE", this.getDataSourceCore());
+
+    return super.entityManagerFactory(
+        "OSGP_WS_ADAPTER_CORE", this.getDataSourceCore(), this.entitymanagerPackagesToScan);
   }
 }

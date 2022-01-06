@@ -12,6 +12,7 @@ import java.util.List;
 import javax.validation.ConstraintViolationException;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.DeviceInstallationMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.DeviceInstallationService;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncResponse;
@@ -50,7 +51,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +62,7 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
-public class DeviceInstallationEndpoint {
+public class DeviceInstallationEndpoint extends CoreEndpoint {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DeviceInstallationEndpoint.class);
   private static final String DEVICE_INSTALLATION_NAMESPACE =
@@ -136,12 +136,12 @@ public class DeviceInstallationEndpoint {
     final GetStatusResponse response = new GetStatusResponse();
 
     try {
-      final ResponseMessage message =
-          this.deviceInstallationService.dequeueGetStatusResponse(
-              request.getAsyncRequest().getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-        final DeviceStatus deviceStatus = (DeviceStatus) message.getDataObject();
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
+      if (responseData != null) {
+        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+        final DeviceStatus deviceStatus = (DeviceStatus) responseData.getMessageData();
         if (deviceStatus != null) {
           response.setDeviceStatus(
               this.deviceInstallationMapper.map(
@@ -427,11 +427,11 @@ public class DeviceInstallationEndpoint {
     final StartDeviceTestResponse response = new StartDeviceTestResponse();
 
     try {
-      final ResponseMessage message =
-          this.deviceInstallationService.dequeueStartDeviceTestResponse(
-              request.getAsyncRequest().getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
+      if (responseData != null) {
+        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);
@@ -496,29 +496,16 @@ public class DeviceInstallationEndpoint {
     final StopDeviceTestResponse response = new StopDeviceTestResponse();
 
     try {
-      final ResponseMessage message =
-          this.deviceInstallationService.dequeueStopDeviceTestResponse(
-              request.getAsyncRequest().getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
+      if (responseData != null) {
+        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);
     }
 
     return response;
-  }
-
-  private void handleException(final Exception e) throws OsgpException {
-    // Rethrow exception if it already is a functional or technical
-    // exception,
-    // otherwise throw new technical exception.
-    if (e instanceof OsgpException) {
-      LOGGER.error("Exception occurred: ", e);
-      throw (OsgpException) e;
-    } else {
-      LOGGER.error("Exception occurred: ", e);
-      throw new TechnicalException(COMPONENT_WS_CORE, e);
-    }
   }
 }
