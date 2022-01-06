@@ -8,8 +8,12 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories;
 
+import java.time.Instant;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -19,4 +23,16 @@ public interface DlmsDeviceRepository extends JpaRepository<DlmsDevice, Long> {
 
   DlmsDevice findByMbusIdentificationNumberAndMbusManufacturerIdentification(
       Long mbusIdentificationNumber, String mbusManufacturerIdentification);
+
+  @Modifying
+  @Query(
+      value =
+          "UPDATE DlmsDevice"
+              + "   SET keyProcessingStartTime = CURRENT_TIMESTAMP"
+              + " WHERE deviceIdentification = :deviceIdentification"
+              + "   AND (keyProcessingStartTime IS NULL OR"
+              + "        keyProcessingStartTime < :oldestStartTimeNotConsiderTimedOut)")
+  int setProcessingStartTime(
+      @Param("deviceIdentification") String deviceIdentification,
+      @Param("oldestStartTimeNotConsiderTimedOut") Instant oldestStartTimeNotConsiderTimedOut);
 }

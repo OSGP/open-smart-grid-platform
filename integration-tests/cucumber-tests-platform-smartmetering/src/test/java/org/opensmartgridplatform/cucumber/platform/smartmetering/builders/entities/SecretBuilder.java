@@ -11,7 +11,7 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entit
 import java.util.Date;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.cucumber.platform.core.builders.Builder;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.SecurityKey;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretStatus;
@@ -20,7 +20,7 @@ import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 public class SecretBuilder implements Builder<DbEncryptedSecret> {
 
   private SecretType secretType;
-  private String key = PlatformSmartmeteringDefaults.SECURITY_KEY_A_DB;
+  private String key = SecurityKey.SECURITY_KEY_A.getDatabaseKey();
   private SecretStatus status;
   private String deviceIdentification;
   private Date creationTime;

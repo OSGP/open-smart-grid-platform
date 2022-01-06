@@ -20,14 +20,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.DlmsConnection;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DeviceKeyProcessingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceKeyProcessAlreadyRunningException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RecoverKeyException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.InvocationCountingDlmsMessageListener;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.throttling.ThrottlingPermitDeniedException;
 import org.opensmartgridplatform.throttling.api.Permit;
@@ -51,19 +54,23 @@ public class RecoverKeyProcess implements Runnable {
 
   private final DlmsDeviceRepository deviceRepository;
 
+  private final DeviceKeyProcessingService deviceKeyProcessingService;
+
   public RecoverKeyProcess(
       final DomainHelperService domainHelperService,
       final Hls5Connector hls5Connector,
       final SecretManagementService secretManagementService,
       final ThrottlingService throttlingService,
       final ThrottlingClientConfig throttlingClientConfig,
-      final DlmsDeviceRepository deviceRepository) {
+      final DlmsDeviceRepository deviceRepository,
+      final DeviceKeyProcessingService deviceKeyProcessingService) {
     this.domainHelperService = domainHelperService;
     this.hls5Connector = hls5Connector;
     this.secretManagementService = secretManagementService;
     this.throttlingService = throttlingService;
     this.throttlingClientConfig = throttlingClientConfig;
     this.deviceRepository = deviceRepository;
+    this.deviceKeyProcessingService = deviceKeyProcessingService;
   }
 
   @Override
@@ -76,6 +83,14 @@ public class RecoverKeyProcess implements Runnable {
         this.deviceIdentification);
 
     try {
+
+      // The process started in this try-catch block should only be stopped in the
+      // ThrottlingPermitDeniedException catch block. If a DeviceKeyProcessAlreadyRunningException
+      // is thrown the process was already started and should not be stopped. This method below
+      // could also throw a RecoverKeyException in this case the process wasn't started either
+      // The next try-catch block has a finally block to ensure stopping the process started here.
+      this.startProcessing(device);
+
       if (!this.canConnectUsingNewKeys(device)) {
         log.warn(
             "[{}] Could not recover keys: could not connect to device {} using New keys",
@@ -83,6 +98,7 @@ public class RecoverKeyProcess implements Runnable {
             this.deviceIdentification);
         return;
       }
+
     } catch (final ThrottlingPermitDeniedException e) {
       log.warn(
           "RecoverKeyProcess could not connect to the device due to throttling constraints", e);
@@ -97,6 +113,23 @@ public class RecoverKeyProcess implements Runnable {
               },
               this.throttlingClientConfig.permitRejectedDelay().toMillis());
 
+      this.deviceKeyProcessingService.stopProcessing(this.deviceIdentification);
+
+      return;
+    } catch (final DeviceKeyProcessAlreadyRunningException e) {
+      log.info(
+          "RecoverKeyProcess could not be started while other key changing process is already running.");
+
+      new Timer()
+          .schedule(
+              new TimerTask() {
+                @Override
+                public void run() {
+                  RecoverKeyProcess.this.run();
+                }
+              },
+              this.deviceKeyProcessingService.getDeviceKeyProcessingTimeout().toMillis());
+
       return;
     }
 
@@ -106,6 +139,19 @@ public class RecoverKeyProcess implements Runnable {
           this.deviceIdentification,
           Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION));
     } catch (final Exception e) {
+      throw new RecoverKeyException(e);
+    } finally {
+      this.deviceKeyProcessingService.stopProcessing(this.deviceIdentification);
+    }
+  }
+
+  private void startProcessing(final DlmsDevice device)
+      throws DeviceKeyProcessAlreadyRunningException {
+    try {
+      this.deviceKeyProcessingService.startProcessing(device.getDeviceIdentification());
+    } catch (final FunctionalException e) {
+      // If a FunctionalException is caught here the process is not started. So does not have to
+      // be stopped here.
       throw new RecoverKeyException(e);
     }
   }
@@ -139,6 +185,19 @@ public class RecoverKeyProcess implements Runnable {
     InvocationCountingDlmsMessageListener dlmsMessageListener = null;
     Permit permit = null;
     try {
+
+      // before starting the recovery process check if there are still keys with status NEW
+      final boolean hasNewSecret =
+          this.secretManagementService.hasNewSecret(
+              this.messageMetadata, this.deviceIdentification);
+      if (!hasNewSecret) {
+        log.warn(
+            "[{}] Device {} has no NEW key to use in KeyRecovery process",
+            this.messageMetadata.getCorrelationUid(),
+            this.deviceIdentification);
+        return false;
+      }
+
       if (this.throttlingClientConfig.clientEnabled()) {
         permit =
             this.throttlingClientConfig
@@ -162,7 +221,7 @@ public class RecoverKeyProcess implements Runnable {
               this.messageMetadata,
               device,
               dlmsMessageListener,
-              this.secretManagementService::getNewKeyPairForConnection);
+              this.secretManagementService::getNewOrActiveKeyPerSecretType);
       return connection != null;
     } catch (final ThrottlingPermitDeniedException e) {
       throw e;
