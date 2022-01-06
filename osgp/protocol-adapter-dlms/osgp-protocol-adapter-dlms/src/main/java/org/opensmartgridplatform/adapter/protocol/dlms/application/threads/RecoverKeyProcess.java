@@ -150,7 +150,7 @@ public class RecoverKeyProcess implements Runnable {
     try {
       this.deviceKeyProcessingService.startProcessing(device.getDeviceIdentification());
     } catch (final FunctionalException e) {
-      // If a FunctionalException is catched here the process is not started. So does not have to
+      // If a FunctionalException is caught here the process is not started. So does not have to
       // be stopped here.
       throw new RecoverKeyException(e);
     }

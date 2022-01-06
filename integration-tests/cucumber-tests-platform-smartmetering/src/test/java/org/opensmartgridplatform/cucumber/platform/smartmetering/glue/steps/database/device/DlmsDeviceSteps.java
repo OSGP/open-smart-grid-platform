@@ -879,59 +879,76 @@ public class DlmsDeviceSteps {
   }
 
   @Then(
-      "the encrypted_secret table in the secret management database should contain an EXPIRED and an ACTIVE key for device {string} or exactly the opposite")
+      "the encrypted_secret table in the secret management database should contain one or more EXPIRED and just one ACTIVE key for device {string} in correct combination")
   public void
       theEncryptedSecretTableInTheSecretManagementDatabaseShouldContainKeysForDeviceOrExactlyTheOpposite(
           final String deviceIdentification, final Map<String, String> inputSettings) {
     // Depending on the order in which the two request are processed the results (status of the
     // secret) are either as specified as the first or second value
-    int countResultKeysRequest1 = 0;
-    int countResultKeysRequest2 = 0;
 
-    for (final String secretTypeString : inputSettings.keySet()) {
+    final List<String> activeAuthenticationKeys =
+        this.encryptedSecretRepository
+            .findSecrets(
+                deviceIdentification, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.ACTIVE)
+            .stream()
+            .map(DbEncryptedSecret::getEncodedSecret)
+            .collect(Collectors.toList());
+    final List<String> expiredAuthenticationKeys =
+        this.encryptedSecretRepository
+            .findSecrets(
+                deviceIdentification, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.EXPIRED)
+            .stream()
+            .map(DbEncryptedSecret::getEncodedSecret)
+            .collect(Collectors.toList());
+    final List<String> activeEncryptionKeys =
+        this.encryptedSecretRepository
+            .findSecrets(
+                deviceIdentification,
+                SecretType.E_METER_ENCRYPTION_KEY_UNICAST,
+                SecretStatus.ACTIVE)
+            .stream()
+            .map(DbEncryptedSecret::getEncodedSecret)
+            .collect(Collectors.toList());
+    final List<String> expiredEncryptionKeys =
+        this.encryptedSecretRepository
+            .findSecrets(
+                deviceIdentification,
+                SecretType.E_METER_ENCRYPTION_KEY_UNICAST,
+                SecretStatus.EXPIRED)
+            .stream()
+            .map(DbEncryptedSecret::getEncodedSecret)
+            .collect(Collectors.toList());
 
-      final String[] keyInfo = inputSettings.get(secretTypeString).split(",");
+    final String[] authenticationKeyNames =
+        inputSettings.get(PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY).split(",");
+    final String[] encryptionKeyNames =
+        inputSettings.get(PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY).split(",");
 
-      final String keyName1 = keyInfo[0];
-      final String keyName2 = keyInfo[1];
+    final int numberOfRequestsFromWhichKeysAreIncluded = authenticationKeyNames.length;
+    int countKeysFromRequestBothActive = 0;
+    int countKeysFromRequestBothExpired = 0;
 
-      final SecretType secretType = this.getSecretTypeByKeyTypeInputName(secretTypeString);
+    for (int i = 0; i < numberOfRequestsFromWhichKeysAreIncluded; i++) {
+      final String authenticationKeyFromRequest =
+          SecurityKey.valueOf(authenticationKeyNames[i]).getDatabaseKey();
+      final String encryptionKeyFromRequest =
+          SecurityKey.valueOf(encryptionKeyNames[i]).getDatabaseKey();
 
-      final List<DbEncryptedSecret> dbEncryptedSecretsRequest1 =
-          this.encryptedSecretRepository.findSecretsWithSpecificEncodedSecret(
-              deviceIdentification,
-              secretType,
-              SecretStatus.EXPIRED,
-              SecurityKey.valueOf(keyName1).getDatabaseKey());
-      dbEncryptedSecretsRequest1.addAll(
-          this.encryptedSecretRepository.findSecretsWithSpecificEncodedSecret(
-              deviceIdentification,
-              secretType,
-              SecretStatus.ACTIVE,
-              SecurityKey.valueOf(keyName2).getDatabaseKey()));
-
-      countResultKeysRequest1 += dbEncryptedSecretsRequest1.size();
-
-      final List<DbEncryptedSecret> dbEncryptedSecretsRequest2 =
-          this.encryptedSecretRepository.findSecretsWithSpecificEncodedSecret(
-              deviceIdentification,
-              secretType,
-              SecretStatus.ACTIVE,
-              SecurityKey.valueOf(keyName1).getDatabaseKey());
-      dbEncryptedSecretsRequest2.addAll(
-          this.encryptedSecretRepository.findSecretsWithSpecificEncodedSecret(
-              deviceIdentification,
-              secretType,
-              SecretStatus.EXPIRED,
-              SecurityKey.valueOf(keyName2).getDatabaseKey()));
-
-      countResultKeysRequest2 += dbEncryptedSecretsRequest2.size();
+      if (activeAuthenticationKeys.contains(authenticationKeyFromRequest)
+          && activeEncryptionKeys.contains(encryptionKeyFromRequest)) {
+        countKeysFromRequestBothActive += 1;
+      } else if (expiredAuthenticationKeys.contains(authenticationKeyFromRequest)
+          && expiredEncryptionKeys.contains(encryptionKeyFromRequest)) {
+        countKeysFromRequestBothExpired += 1;
+      } else {
+        throw new AssertionError(
+            "Keys from the same request ended up not both active or both expired.");
+      }
     }
 
-    assertThat(
-            (countResultKeysRequest1 == 0 && countResultKeysRequest2 == 4)
-                || (countResultKeysRequest1 == 4 && countResultKeysRequest2 == 0))
-        .isTrue();
+    assertThat(countKeysFromRequestBothActive).isOne();
+    assertThat(countKeysFromRequestBothExpired)
+        .isEqualTo(numberOfRequestsFromWhichKeysAreIncluded - 1);
   }
 
   @When("after {int} seconds, the new {} key is recovered")

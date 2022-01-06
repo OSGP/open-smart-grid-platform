@@ -61,9 +61,10 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
       throws Throwable {
     final List<Map<String, String>> listOfSettingsPerRequest =
         this.createSettingPerRequest(settings);
-    if (listOfSettingsPerRequest.size() != 2) {
-      throw new IllegalArgumentException("This scenario only excepts TWO replace keys requests");
-    }
+    //    if (listOfSettingsPerRequest.size() != 2) {
+    //      throw new IllegalArgumentException("This scenario only expects TWO replace keys
+    // requests");
+    //    }
     final List<String> correlationUIDs = new ArrayList<>();
     for (final Map<String, String> settingsPerRequest : listOfSettingsPerRequest) {
       final ReplaceKeysRequest request =
