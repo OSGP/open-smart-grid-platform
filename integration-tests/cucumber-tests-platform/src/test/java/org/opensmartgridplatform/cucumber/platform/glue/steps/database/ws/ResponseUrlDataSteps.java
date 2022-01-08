@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws;
+package org.opensmartgridplatform.cucumber.platform.glue.steps.database.ws;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
