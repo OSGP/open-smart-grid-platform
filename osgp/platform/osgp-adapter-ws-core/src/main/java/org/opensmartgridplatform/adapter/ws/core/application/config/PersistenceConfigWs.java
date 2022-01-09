@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Alliander N.V.
+ * Copyright 2022 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-/** An application context Java configuration class. */
 @EnableJpaRepositories(
     transactionManagerRef = "transactionManager",
     entityManagerFactoryRef = "entityManagerFactory",
