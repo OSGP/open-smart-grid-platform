@@ -25,9 +25,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NotificationService {
+public class CoreNotificationService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(NotificationService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CoreNotificationService.class);
 
   private final BlockingQueue<Notification> queue = new LinkedBlockingQueue<>();
   private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();

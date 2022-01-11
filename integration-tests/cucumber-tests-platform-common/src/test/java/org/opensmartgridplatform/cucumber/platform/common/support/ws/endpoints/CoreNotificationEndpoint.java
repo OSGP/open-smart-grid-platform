@@ -12,7 +12,7 @@ package org.opensmartgridplatform.cucumber.platform.common.support.ws.endpoints;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.SendNotificationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.SendNotificationResponse;
-import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.notification.NotificationService;
+import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.notification.CoreNotificationService;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class CoreNotificationEndpoint {
   private static final String CORE_NOTIFICATION_NAMESPACE =
       "http://www.opensmartgridplatform.org/schemas/netmanagement/osgp-notification/2018/01";
 
-  @Autowired private NotificationService notificationService;
+  @Autowired private CoreNotificationService coreNotificationService;
 
   public CoreNotificationEndpoint() {
     // Default constructor
@@ -47,7 +47,7 @@ public class CoreNotificationEndpoint {
         organisationIdentification,
         request.getNotification().getDeviceIdentification());
 
-    this.notificationService.handleNotification(
+    this.coreNotificationService.handleNotification(
         request.getNotification(), organisationIdentification);
 
     return new SendNotificationResponse();

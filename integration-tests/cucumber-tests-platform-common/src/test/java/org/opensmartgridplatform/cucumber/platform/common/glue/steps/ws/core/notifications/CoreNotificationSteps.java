@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.Notification;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
-import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.notification.NotificationService;
+import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.notification.CoreNotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class CoreNotificationSteps {
    */
   private static final int MAX_WAIT_FOR_NOTIFICATION = 65_000;
 
-  @Autowired private NotificationService notificationService;
+  @Autowired private CoreNotificationService coreNotificationService;
 
   @Then("^a notification is sent in ws-core$")
   public void aNotificationIsSent() throws Throwable {
@@ -69,7 +69,8 @@ public class CoreNotificationSteps {
         maxTimeOut);
 
     final Notification notification =
-        this.notificationService.getNotification(correlationUid, maxTimeOut, TimeUnit.MILLISECONDS);
+        this.coreNotificationService.getNotification(
+            correlationUid, maxTimeOut, TimeUnit.MILLISECONDS);
 
     final boolean gotExpectedNotification = expectCorrelationUid && notification != null;
     final boolean didNotGetUnexpectedNotification = !expectCorrelationUid && notification == null;

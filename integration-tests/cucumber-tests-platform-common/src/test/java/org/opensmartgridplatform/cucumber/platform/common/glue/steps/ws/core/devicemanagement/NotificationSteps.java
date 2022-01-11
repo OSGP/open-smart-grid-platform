@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.Notification;
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.NotificationType;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
-import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.notification.NotificationService;
+import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.notification.CoreNotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class NotificationSteps {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NotificationSteps.class);
 
-  @Autowired private NotificationService notificationService;
+  @Autowired private CoreNotificationService coreNotificationService;
 
   @Value("${core.response.wait.fail.duration:30000}")
   private int waitFailMillis;
@@ -55,7 +55,8 @@ public class NotificationSteps {
         nextWait);
 
     final Notification notification =
-        this.notificationService.getNotification(correlationUid, nextWait, TimeUnit.MILLISECONDS);
+        this.coreNotificationService.getNotification(
+            correlationUid, nextWait, TimeUnit.MILLISECONDS);
 
     if (notification == null) {
       throw new AssertionError(
@@ -89,7 +90,8 @@ public class NotificationSteps {
         nextWait);
 
     final Notification notification =
-        this.notificationService.getNotification(notificationType, nextWait, TimeUnit.MILLISECONDS);
+        this.coreNotificationService.getNotification(
+            notificationType, nextWait, TimeUnit.MILLISECONDS);
 
     return notification;
   }
@@ -98,7 +100,7 @@ public class NotificationSteps {
     LOGGER.info("Waiting for a notification for at most {} milliseconds.", nextWait);
 
     final Notification notification =
-        this.notificationService.getNotification(nextWait, TimeUnit.MILLISECONDS);
+        this.coreNotificationService.getNotification(nextWait, TimeUnit.MILLISECONDS);
 
     if (notification == null) {
       LOGGER.info("Did not receive a notification within " + nextWait + " milliseconds");
