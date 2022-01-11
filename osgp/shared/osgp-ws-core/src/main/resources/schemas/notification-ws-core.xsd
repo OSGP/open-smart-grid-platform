@@ -41,7 +41,6 @@
   <xsd:simpleType name="NotificationType">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="DEVICE_UPDATED" />
-
       <xsd:enumeration value="GET_CONFIGURATION" />
       <xsd:enumeration value="GET_STATUS" />
       <xsd:enumeration value="SET_CONFIGURATION" />
@@ -57,7 +56,6 @@
       <xsd:enumeration value="UPDATE_DEVICE_CDMA_SETTINGS" />
       <xsd:enumeration value="UPDATE_DEVICE_SSL_CERTIFICATION" />
       <xsd:enumeration value="UPDATE_FIRMWARE" />
-
     </xsd:restriction>
   </xsd:simpleType>
 

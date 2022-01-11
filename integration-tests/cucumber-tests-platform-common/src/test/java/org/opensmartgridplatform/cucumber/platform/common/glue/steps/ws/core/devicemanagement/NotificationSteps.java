@@ -106,7 +106,7 @@ public class NotificationSteps {
     return notification;
   }
 
-  @When("^the notification is recieved$")
+  @When("^the notification is received$")
   public void theNotificationIsReceived(final Map<String, String> settings) throws Throwable {
     final NotificationType notificationType =
         NotificationType.valueOf(settings.get(PlatformKeys.KEY_NOTIFICATION_TYPE));

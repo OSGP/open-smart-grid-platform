@@ -11,7 +11,7 @@ Feature: CoreDeviceManagement Set Device Lifecycle Status
     When the SetDeviceLifecycleStatus request is received
       | DeviceIdentification  | TEST1024000000001 |
       | DeviceLifecycleStatus | IN_USE            |
-    And the notification is recieved
+    And the notification is received
       | NotificationType | SET_DEVICE_LIFECYCLE_STATUS |
     Then the device lifecycle status in the database is
       | DeviceIdentification  | TEST1024000000001 |
