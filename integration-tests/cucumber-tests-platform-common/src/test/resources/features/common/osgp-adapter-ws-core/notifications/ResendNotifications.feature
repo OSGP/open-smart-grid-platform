@@ -5,22 +5,22 @@ Feature: SmartMetering notifications - Resend notifications
   So the notification mechanism is more robust
 
   Scenario: Resend missed notifications
-    Given a response data record
+    Given a response data record in ws-core
       | DeviceIdentification      | TEST1024000000001                                      |
       | CreationTime              | now - 2 minutes                                        |
       | MessageType               | SET_DEVICE_LIFECYCLE_STATUS                            |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      0 |
     When OSGP checks for which response data a notification has to be resend
-    Then a notification is sent
-    And the response data has values
+    Then a notification is sent in ws-core
+    And the response data has values in ws-core
       | DeviceIdentification      | TEST1024000000001                                      |
       | MessageType               | SET_DEVICE_LIFECYCLE_STATUS                            |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      1 |
 
   Scenario: Resend missed notifications with response url
-    Given a response data record
+    Given a response data record in ws-core
       | DeviceIdentification      | TEST1024000000001                                      |
       | CreationTime              | now - 2 minutes                                        |
       | MessageType               | SET_DEVICE_LIFECYCLE_STATUS                            |
@@ -30,35 +30,35 @@ Feature: SmartMetering notifications - Resend notifications
       | CorrelationUid | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | ResponseUrl    | http://localhost:8843/notifications                    |
     When OSGP checks for which response data a notification has to be resend
-    Then a notification is sent
+    Then a notification is sent in ws-core
     And the response url data has values
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | ResponseUrl               | http://localhost:8843/notifications                    |
 
   Scenario: Don't send notifications when the configurable time has not passed
-    Given a response data record
+    Given a response data record in ws-core
       | CreationTime              | now + 5 minutes                                        |
       | MessageType               | SET_DEVICE_LIFECYCLE_STATUS                            |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      0 |
     When OSGP checks for which response data a notification has to be resend
-    Then no notification is sent
-    And the response data has values
+    Then no notification is sent in ws-core
+    And the response data has values in ws-core
       | DeviceIdentification      | TEST1024000000001                                      |
       | MessageType               | SET_DEVICE_LIFECYCLE_STATUS                            |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      0 |
 
   Scenario: Don't send notifications when the maximum of notifications sent has been reached
-    Given a response data record
+    Given a response data record in ws-core
       | DeviceIdentification      | TEST1024000000001                                      |
       | CreationTime              | yesterday                                              |
       | MessageType               | SET_DEVICE_LIFECYCLE_STATUS                            |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      3 |
     When OSGP checks for which response data a notification has to be resend
-    Then no notification is sent
-    And the response data has values
+    Then no notification is sent in ws-core
+    And the response data has values in ws-core
       | DeviceIdentification      | TEST1024000000001                                      |
       | MessageType               | SET_DEVICE_LIFECYCLE_STATUS                            |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |

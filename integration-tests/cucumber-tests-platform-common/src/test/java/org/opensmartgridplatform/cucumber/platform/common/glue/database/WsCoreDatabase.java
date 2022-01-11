@@ -30,9 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class WsCoreDatabase {
 
-  @Autowired private ResponseDataRepository responseDataRepo;
+  @Autowired private ResponseDataRepository responseDataRepository;
 
-  @Autowired private ResponseUrlDataRepository responseUrlDataRepo;
+  @Autowired private ResponseUrlDataRepository responseUrlDataRepository;
 
   @Autowired
   private WsCoreNotificationWebServiceConfigurationRepository
@@ -77,8 +77,8 @@ public class WsCoreDatabase {
   public void prepareDatabaseForScenario() {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
-    this.responseDataRepo.deleteAllInBatch();
-    this.responseUrlDataRepo.deleteAllInBatch();
+    this.responseDataRepository.deleteAllInBatch();
+    this.responseUrlDataRepository.deleteAllInBatch();
 
     this.insertDefaultData();
   }

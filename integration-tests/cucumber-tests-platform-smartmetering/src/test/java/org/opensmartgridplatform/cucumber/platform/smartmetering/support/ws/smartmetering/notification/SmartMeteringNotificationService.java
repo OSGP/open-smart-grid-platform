@@ -23,9 +23,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NotificationService {
+public class SmartMeteringNotificationService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(NotificationService.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(SmartMeteringNotificationService.class);
 
   private final BlockingQueue<Notification> queue = new LinkedBlockingQueue<>();
   private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();

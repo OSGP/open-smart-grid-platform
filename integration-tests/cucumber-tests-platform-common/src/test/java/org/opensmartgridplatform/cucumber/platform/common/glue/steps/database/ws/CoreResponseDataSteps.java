@@ -36,7 +36,7 @@ public class CoreResponseDataSteps extends BaseDeviceSteps {
 
   @Autowired private ResponseDataRepository responseDataRepository;
 
-  @Given("^a response data record$")
+  @Given("^a response data record in ws-core$")
   @Transactional("txMgrWsCore")
   public ResponseData aResponseDataRecord(final Map<String, String> settings) {
 
@@ -60,13 +60,13 @@ public class CoreResponseDataSteps extends BaseDeviceSteps {
       }
     } catch (final Exception e) {
       LOGGER.error("Exception", e);
-      Assertions.fail("Failed to create response data record.");
+      Assertions.fail("Failed to create response data record in ws-core.");
     }
 
     return responseData;
   }
 
-  @Then("^the response data record should be deleted$")
+  @Then("^the response data record should be deleted in ws-core$")
   public void theResponseDataRecordShouldBeDeleted() {
     final String correlationUid =
         (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
@@ -74,10 +74,10 @@ public class CoreResponseDataSteps extends BaseDeviceSteps {
     final ResponseData responseData =
         this.responseDataRepository.findByCorrelationUid(correlationUid);
 
-    assertThat(responseData).as("Response data should be deleted").isNull();
+    assertThat(responseData).as("Response data should be deleted in ws-core").isNull();
   }
 
-  @Then("^the response data record should not be deleted$")
+  @Then("^the response data record should not be deleted in ws-core$")
   public void theResponseDataRecordShouldNotBeDeleted() {
     final String correlationUid =
         (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
@@ -85,26 +85,27 @@ public class CoreResponseDataSteps extends BaseDeviceSteps {
     final ResponseData responseData =
         this.responseDataRepository.findByCorrelationUid(correlationUid);
 
-    assertThat(responseData).as("Response data should not be deleted").isNotNull();
+    assertThat(responseData).as("Response data should not be deleted in ws-core").isNotNull();
   }
 
-  @Then("^the response data record with correlation uid \\\"(.*)\\\" should be deleted$")
+  @Then("^the response data record with correlation uid \\\"(.*)\\\" should be deleted in ws-core$")
   public void theResponseDataRecordShouldBeDeleted(final String correlationUid) {
     final ResponseData responseData =
         this.responseDataRepository.findByCorrelationUid(correlationUid);
 
-    assertThat(responseData).as("Response data should be deleted").isNull();
+    assertThat(responseData).as("Response data should be deleted in ws-core").isNull();
   }
 
-  @Then("^the response data record with correlation uid \\\"(.*)\\\" should not be deleted$")
+  @Then(
+      "^the response data record with correlation uid \\\"(.*)\\\" should not be deleted in ws-core$")
   public void theResponseDataRecordShouldNotBeDeleted(final String correlationUid) {
     final ResponseData responseData =
         this.responseDataRepository.findByCorrelationUid(correlationUid);
 
-    assertThat(responseData).as("Response data should not be deleted").isNotNull();
+    assertThat(responseData).as("Response data should not be deleted in ws-core").isNotNull();
   }
 
-  @Then("^the response data has values$")
+  @Then("^the response data has values in ws-core$")
   public void theResponseDataHasValues(final Map<String, String> settings) {
     final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
     final short expectedNumberOfNotificationsSent =

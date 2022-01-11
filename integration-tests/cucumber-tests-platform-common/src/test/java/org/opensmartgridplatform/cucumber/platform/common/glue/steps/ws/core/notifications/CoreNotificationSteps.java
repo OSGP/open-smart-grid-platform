@@ -32,7 +32,7 @@ public class CoreNotificationSteps {
 
   @Autowired private NotificationService notificationService;
 
-  @Then("^a notification is sent$")
+  @Then("^a notification is sent in ws-core$")
   public void aNotificationIsSent() throws Throwable {
     final String correlationUid =
         (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
@@ -40,12 +40,12 @@ public class CoreNotificationSteps {
       Assertions.fail(
           "No "
               + PlatformKeys.KEY_CORRELATION_UID
-              + " stored in the scenario context. Unable to make assumptions as to whether a notification has been sent.");
+              + " stored in the scenario context. Unable to make assumptions as to whether a notification has been sent in ws-core.");
     }
     this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, correlationUid, true);
   }
 
-  @Then("^no notification is sent$")
+  @Then("^no notification is sent in ws-core$")
   public void noNotificationIsSent() throws Throwable {
     final String correlationUid =
         (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
@@ -53,7 +53,7 @@ public class CoreNotificationSteps {
       Assertions.fail(
           "No "
               + PlatformKeys.KEY_CORRELATION_UID
-              + " stored in the scenario context. Unable to make assumptions as to whether a notification has been sent.");
+              + " stored in the scenario context. Unable to make assumptions as to whether a notification has been sent in ws-core.");
     }
     this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, correlationUid, false);
   }
