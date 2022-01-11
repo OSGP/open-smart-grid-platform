@@ -180,8 +180,8 @@ public class DateTimeHelper {
   }
 
   public static Instant getInstant(final String dateString) {
-    final DateTime dateTime = getDateTime(dateString);
-    return Instant.ofEpochMilli(dateTime.getMillis());
+    final ZonedDateTime dateTime = getZonedDateTime(dateString);
+    return dateTime.toInstant();
   }
 
   public static DateTime getDateTime2(final String startDate, final DateTime defaultStartDate) {
@@ -299,7 +299,7 @@ public class DateTimeHelper {
     return timeFormatter.print(shiftedTime);
   }
 
-  private static ZonedDateTime dateTimeToZonedDateTime(final DateTime dateTime) {
+  public static ZonedDateTime dateTimeToZonedDateTime(final DateTime dateTime) {
     if (dateTime == null) {
       return null;
     }
