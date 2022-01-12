@@ -161,7 +161,7 @@ public class MBusGatewayService {
       final ChannelElementValuesDto channelElementValuesDto) {
     final SmartMeter mbusDevice =
         this.smartMeteringDeviceRepository.findByMBusIdentificationNumber(
-            Long.valueOf(channelElementValuesDto.getIdentificationNumber()),
+            channelElementValuesDto.getIdentificationNumber(),
             channelElementValuesDto.getManufacturerIdentification());
 
     return Optional.ofNullable(mbusDevice);
@@ -227,10 +227,9 @@ public class MBusGatewayService {
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
     final SmartMeter mbusDevice =
         this.smartMeteringDeviceRepository.findByMBusIdentificationNumber(
-            Long.valueOf(
-                coupleMbusDeviceByChannelResponseDto
-                    .getChannelElementValues()
-                    .getIdentificationNumber()),
+            coupleMbusDeviceByChannelResponseDto
+                .getChannelElementValues()
+                .getIdentificationNumber(),
             coupleMbusDeviceByChannelResponseDto
                 .getChannelElementValues()
                 .getManufacturerIdentification());
