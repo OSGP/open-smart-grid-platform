@@ -7,7 +7,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.common.glue.repositories;
+package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws;
 
 import java.util.List;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
@@ -16,7 +16,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface WsCoreNotificationWebServiceConfigurationRepository
+public interface SmartMeteringNotificationWebServiceConfigurationRepository
     extends JpaRepository<NotificationWebServiceConfiguration, ApplicationDataLookupKey> {
 
   List<NotificationWebServiceConfiguration> findByIdOrganisationIdentification(

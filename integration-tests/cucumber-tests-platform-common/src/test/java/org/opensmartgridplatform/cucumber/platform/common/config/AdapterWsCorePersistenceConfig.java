@@ -11,8 +11,10 @@ package org.opensmartgridplatform.cucumber.platform.common.config;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
-import org.opensmartgridplatform.cucumber.platform.common.glue.repositories.WsCoreNotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.CoreApplicationKeyConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.CoreNotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.CoreResponseDataRepository;
+import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.CoreResponseUrlDataRepository;
 import org.opensmartgridplatform.cucumber.platform.config.ApplicationPersistenceConfiguration;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,8 +29,10 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
     entityManagerFactoryRef = "entityMgrWsCore",
     transactionManagerRef = "txMgrWsCore",
     basePackageClasses = {
-      WsCoreNotificationWebServiceConfigurationRepository.class,
-      ResponseDataRepository.class
+      CoreApplicationKeyConfigurationRepository.class,
+      CoreNotificationWebServiceConfigurationRepository.class,
+      CoreResponseDataRepository.class,
+      CoreResponseUrlDataRepository.class
     })
 public class AdapterWsCorePersistenceConfig extends ApplicationPersistenceConfiguration {
 

@@ -11,8 +11,8 @@ package org.opensmartgridplatform.cucumber.platform.publiclighting.database;
 import java.util.Arrays;
 import java.util.List;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
+import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws.PublicLightingNotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws.PublicLightingResponseDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,11 +28,11 @@ public class Database {
   // tariffSwitchingResponseDataRepository;
 
   @Autowired
-  private NotificationWebServiceConfigurationRepository
-      notificationWebServiceConfigurationRepository;
+  private PublicLightingNotificationWebServiceConfigurationRepository
+      publicLightingNotificationWebServiceConfigurationRepository;
 
   private void insertDefaultData() {
-    this.notificationWebServiceConfigurationRepository.saveAll(
+    this.publicLightingNotificationWebServiceConfigurationRepository.saveAll(
         this.notificationEndpointConfigurations());
   }
 
@@ -57,7 +57,7 @@ public class Database {
   @Transactional("txMgrWsPublicLighting")
   public void preparePublicLightingDatabaseForScenario() {
     this.publicLightingResponseDataRepository.deleteAll();
-    this.notificationWebServiceConfigurationRepository.deleteAll();
+    this.publicLightingNotificationWebServiceConfigurationRepository.deleteAll();
 
     this.insertDefaultData();
   }

@@ -10,9 +10,9 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.config;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.platform.config.ApplicationPersistenceConfiguration;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.repositories.WsSmartMeteringNotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.SmartMeteringNotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.SmartMeteringResponseDataRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,8 +26,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
     entityManagerFactoryRef = "entityMgrWsSmartMetering",
     transactionManagerRef = "txMgrWsSmartMetering",
     basePackageClasses = {
-      ResponseDataRepository.class,
-      WsSmartMeteringNotificationWebServiceConfigurationRepository.class
+      SmartMeteringResponseDataRepository.class,
+      SmartMeteringNotificationWebServiceConfigurationRepository.class
     })
 public class AdapterWsSmartMeteringPersistenceConfig extends ApplicationPersistenceConfiguration {
 

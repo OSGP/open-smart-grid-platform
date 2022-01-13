@@ -18,10 +18,10 @@ import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLooku
 import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationKeyConfiguration;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ApplicationKeyConfigurationRepository;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.repositories.WsSmartMeteringNotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.SmartMeteringNotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.SmartMeteringResponseDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,12 +30,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class WsDatabase {
 
-  @Autowired private ResponseDataRepository responseDataRepo;
+  @Autowired private SmartMeteringResponseDataRepository smartMeteringResponseDataRepository;
 
   @Autowired private ResponseUrlDataRepository responseUrlDataRepo;
 
   @Autowired
-  private WsSmartMeteringNotificationWebServiceConfigurationRepository
+  private SmartMeteringNotificationWebServiceConfigurationRepository
       notificationWebServiceConfigurationRepository;
 
   @Autowired private ApplicationKeyConfigurationRepository applicationKeyConfigurationRepository;
@@ -77,7 +77,7 @@ public class WsDatabase {
   public void prepareDatabaseForScenario() {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
-    this.responseDataRepo.deleteAllInBatch();
+    this.smartMeteringResponseDataRepository.deleteAllInBatch();
     this.responseUrlDataRepo.deleteAllInBatch();
 
     this.insertDefaultData();
