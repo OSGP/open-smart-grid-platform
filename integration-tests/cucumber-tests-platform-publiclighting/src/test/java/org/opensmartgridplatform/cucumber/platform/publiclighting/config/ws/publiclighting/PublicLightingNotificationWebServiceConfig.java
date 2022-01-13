@@ -38,7 +38,7 @@ public class PublicLightingNotificationWebServiceConfig extends WsConfigurerAdap
   private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
 
   @Value("${jaxb2.marshaller.context.path.publiclighting.notification}")
-  private String contextPathMicrogridsNotification;
+  private String contextPathNotification;
 
   @Value("${web.service.notification.context}")
   private String notificationContextPath;
@@ -99,7 +99,7 @@ public class PublicLightingNotificationWebServiceConfig extends WsConfigurerAdap
   public Jaxb2Marshaller publicLightingNotificationMarshaller() {
     final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-    marshaller.setContextPath(this.contextPathMicrogridsNotification);
+    marshaller.setContextPath(this.contextPathNotification);
 
     return marshaller;
   }

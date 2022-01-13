@@ -23,10 +23,6 @@ public class Database {
 
   @Autowired private PublicLightingResponseDataRepository publicLightingResponseDataRepository;
 
-  // @Autowired
-  // private TariffSwitchingResponseDataRepository
-  // tariffSwitchingResponseDataRepository;
-
   @Autowired
   private PublicLightingNotificationWebServiceConfigurationRepository
       publicLightingNotificationWebServiceConfigurationRepository;
