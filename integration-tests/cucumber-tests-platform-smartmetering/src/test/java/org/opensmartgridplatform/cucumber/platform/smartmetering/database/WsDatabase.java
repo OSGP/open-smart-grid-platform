@@ -17,9 +17,9 @@ import java.util.TimeZone;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationKeyConfiguration;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ApplicationKeyConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.SmartMeteringApplicationKeyConfigurationRepository;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.SmartMeteringNotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.SmartMeteringResponseDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,9 @@ public class WsDatabase {
   private SmartMeteringNotificationWebServiceConfigurationRepository
       notificationWebServiceConfigurationRepository;
 
-  @Autowired private ApplicationKeyConfigurationRepository applicationKeyConfigurationRepository;
+  @Autowired
+  private SmartMeteringApplicationKeyConfigurationRepository
+      smartMeteringApplicationKeyConfigurationRepository;
 
   /**
    * This method is used to create default data not directly related to the specific tests. For
@@ -47,7 +49,8 @@ public class WsDatabase {
   private void insertDefaultData() {
     this.notificationWebServiceConfigurationRepository.saveAll(
         this.notificationEndpointConfigurations());
-    this.applicationKeyConfigurationRepository.save(this.getDefaultApplicationKeyConfiguration());
+    this.smartMeteringApplicationKeyConfigurationRepository.save(
+        this.getDefaultApplicationKeyConfiguration());
   }
 
   private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
