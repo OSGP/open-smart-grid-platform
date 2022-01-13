@@ -57,12 +57,4 @@ public class Database {
 
     this.insertDefaultData();
   }
-
-  // @Transactional("txMgrWsTariffSwitching")
-  // public void prepareTariffSwitchingDatabaseForScenario() {
-  // this.tariffSwitchingResponseDataRepository.deleteAll();
-  // this.notificationWebServiceConfigurationRepository.deleteAll();
-  //
-  // this.insertDefaultData();
-  // }
 }
