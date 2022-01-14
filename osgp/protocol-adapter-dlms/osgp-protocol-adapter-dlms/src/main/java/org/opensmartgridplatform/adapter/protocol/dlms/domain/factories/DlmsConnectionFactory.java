@@ -189,6 +189,9 @@ public class DlmsConnectionFactory {
       final Consumer<DlmsConnectionManager> taskForConnectionManager)
       throws OsgpException {
 
+    this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider(
+        device, messageMetadata);
+
     try (final DlmsConnectionManager connectionManager =
         new DlmsConnectionManager(
             this.connectorFor(securityLevel),

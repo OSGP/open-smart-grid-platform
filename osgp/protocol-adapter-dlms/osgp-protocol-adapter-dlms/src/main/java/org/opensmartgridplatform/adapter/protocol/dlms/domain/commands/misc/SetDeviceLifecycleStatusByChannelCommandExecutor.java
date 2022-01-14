@@ -63,7 +63,7 @@ public class SetDeviceLifecycleStatusByChannelCommandExecutor
 
     final DlmsDevice mbusDevice =
         this.dlmsDeviceRepository.findByMbusIdentificationNumberAndMbusManufacturerIdentification(
-            Long.valueOf(channelElementValues.getIdentificationNumber()),
+            channelElementValues.getIdentificationNumber(),
             channelElementValues.getManufacturerIdentification());
 
     if (mbusDevice == null) {

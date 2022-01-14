@@ -14,6 +14,8 @@ import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3ClientBuilder;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttClientDefaults;
@@ -31,12 +33,13 @@ public class MqttClient {
       final int port,
       final MqttClientDefaults mqttClientDefaults,
       final MqttClientSslConfig mqttClientSslConfig) {
-    final String id = UUID.randomUUID().toString();
+
     Mqtt3ClientBuilder clientBuilder =
         Mqtt3Client.builder()
-            .identifier(id)
+            .identifier(getClientId(mqttClientDefaults))
             .serverHost(host)
             .serverPort(port)
+            .automaticReconnectWithDefaultConfig()
             .sslConfig(mqttClientSslConfig);
 
     if (StringUtils.isNotEmpty(mqttClientDefaults.getDefaultUsername())) {
@@ -61,7 +64,12 @@ public class MqttClient {
             mqttClientDefaults,
             mqttClientSslConfig);
 
-    this.client.connectWith().send().whenComplete(MqttClient::onConnect);
+    this.client
+        .connectWith()
+        .cleanSession(mqttClientDefaults.isDefaultCleanSession())
+        .keepAlive(mqttClientDefaults.getDefaultKeepAlive())
+        .send()
+        .whenComplete(MqttClient::onConnect);
 
     return this.client;
   }
@@ -98,5 +106,22 @@ public class MqttClient {
     } else {
       LOGGER.info("MQTT connection disconnected.");
     }
+  }
+
+  private static String getClientId(final MqttClientDefaults mqttClientDefaults) {
+    String value = mqttClientDefaults.getDefaultClientId();
+    if (StringUtils.isBlank(value)) {
+      try {
+        final InetAddress inetAddress = InetAddress.getLocalHost();
+        value = inetAddress.getHostName() + '-' + inetAddress.getHostAddress();
+        LOGGER.info("MQTT Client ID: {} (Using host information)", value);
+      } catch (final UnknownHostException e) {
+        value = UUID.randomUUID().toString();
+        LOGGER.warn("MQTT Client ID: {} (Using random UUID)", value);
+      }
+    } else {
+      LOGGER.info("MQTT Client ID: {} (Using configuration property)", value);
+    }
+    return value;
   }
 }

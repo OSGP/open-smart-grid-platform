@@ -24,10 +24,10 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 @Configuration
 @EnableScheduling
 @SpringBootApplication
-@PropertySource(value = "file:${osgp/SimulatorProtocolMqtt/config}", ignoreResourceNotFound = true)
 @PropertySource(
     value = "classpath:osgp-simulator-protocol-mqtt.properties",
     ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/SimulatorProtocolMqtt/config}", ignoreResourceNotFound = true)
 public class SimulatorApplication extends SpringBootServletInitializer {
 
   protected static final ConfigurableEnvironment ENVIRONMENT = new StandardServletEnvironment();

@@ -29,6 +29,7 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.SecurityKey;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation.AddDeviceRequestFactory;
@@ -54,20 +55,10 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
       throws Throwable {
     final String deviceIdentification = settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION);
     ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, deviceIdentification);
-    ScenarioContext.current()
-        .put(PlatformKeys.KEY_DEVICE_MASTERKEY, settings.get(PlatformKeys.KEY_DEVICE_MASTERKEY));
-    ScenarioContext.current()
-        .put(
-            PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY,
-            settings.get(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY));
-    ScenarioContext.current()
-        .put(
-            PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY,
-            settings.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
-    ScenarioContext.current()
-        .put(
-            PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY,
-            settings.get(PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY));
+    this.putKeyInScenarioContext(settings, PlatformKeys.KEY_DEVICE_MASTERKEY);
+    this.putKeyInScenarioContext(settings, PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY);
+    this.putKeyInScenarioContext(settings, PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY);
+    this.putKeyInScenarioContext(settings, PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY);
 
     final AddDeviceRequest request = AddDeviceRequestFactory.fromParameterMap(settings);
     final AddDeviceAsyncResponse asyncResponse =
@@ -78,6 +69,15 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
     assertThat(asyncResponse.getDeviceIdentification())
         .as("Device identification in response")
         .isEqualTo(deviceIdentification);
+  }
+
+  private void putKeyInScenarioContext(
+      final Map<String, String> settings, final String platformKey) {
+    final String inputKeyName = settings.get(platformKey);
+    if (inputKeyName != null) {
+      final SecurityKey securityKey = SecurityKey.valueOf(inputKeyName);
+      ScenarioContext.current().put(platformKey, securityKey.getSoapRequestKey());
+    }
   }
 
   @Then("^the add device response should be returned$")

@@ -161,7 +161,7 @@ public class MBusGatewayService {
       final ChannelElementValuesDto channelElementValuesDto) {
     final SmartMeter mbusDevice =
         this.smartMeteringDeviceRepository.findByMBusIdentificationNumber(
-            Long.valueOf(channelElementValuesDto.getIdentificationNumber()),
+            channelElementValuesDto.getIdentificationNumber(),
             channelElementValuesDto.getManufacturerIdentification());
 
     return Optional.ofNullable(mbusDevice);
@@ -227,10 +227,9 @@ public class MBusGatewayService {
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
     final SmartMeter mbusDevice =
         this.smartMeteringDeviceRepository.findByMBusIdentificationNumber(
-            Long.valueOf(
-                coupleMbusDeviceByChannelResponseDto
-                    .getChannelElementValues()
-                    .getIdentificationNumber()),
+            coupleMbusDeviceByChannelResponseDto
+                .getChannelElementValues()
+                .getIdentificationNumber(),
             coupleMbusDeviceByChannelResponseDto
                 .getChannelElementValues()
                 .getManufacturerIdentification());
@@ -325,12 +324,6 @@ public class MBusGatewayService {
   private MbusChannelElementsDto makeMbusChannelElementsDto(final SmartMeter mbusDevice) {
 
     final String mbusDeviceIdentification = mbusDevice.getDeviceIdentification();
-    final String mbusIdentificationNumber;
-    if (mbusDevice.getMbusIdentificationNumber() == null) {
-      mbusIdentificationNumber = null;
-    } else {
-      mbusIdentificationNumber = String.format("%08d", mbusDevice.getMbusIdentificationNumber());
-    }
     final String mbusManufacturerIdentification = mbusDevice.getMbusManufacturerIdentification();
     final Short mbusVersion = mbusDevice.getMbusVersion();
     final Short mbusDeviceTypeIdentification = mbusDevice.getMbusDeviceTypeIdentification();
@@ -343,7 +336,7 @@ public class MBusGatewayService {
     return new MbusChannelElementsDto(
         primaryAddress,
         mbusDeviceIdentification,
-        mbusIdentificationNumber,
+        mbusDevice.getMbusIdentificationNumber(),
         mbusManufacturerIdentification,
         mbusVersion,
         mbusDeviceTypeIdentification);
