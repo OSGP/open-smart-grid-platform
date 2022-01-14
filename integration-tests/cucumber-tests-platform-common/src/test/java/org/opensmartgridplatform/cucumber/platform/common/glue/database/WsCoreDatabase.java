@@ -28,7 +28,7 @@ public class WsCoreDatabase {
 
   @Autowired private CoreResponseDataRepository coreResponseDataRepository;
 
-  @Autowired private CoreResponseUrlDataRepository responseUrlDataRepository;
+  @Autowired private CoreResponseUrlDataRepository coreResponseUrlDataRepository;
 
   @Autowired
   private CoreNotificationWebServiceConfigurationRepository
@@ -68,7 +68,8 @@ public class WsCoreDatabase {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
     this.coreResponseDataRepository.deleteAllInBatch();
-    this.responseUrlDataRepository.deleteAllInBatch();
+    this.coreNotificationWebServiceConfigurationRepository.deleteAllInBatch();
+    this.coreResponseUrlDataRepository.deleteAllInBatch();
 
     this.insertDefaultData();
   }

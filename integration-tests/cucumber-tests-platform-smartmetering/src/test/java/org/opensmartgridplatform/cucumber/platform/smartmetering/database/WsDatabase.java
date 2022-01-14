@@ -36,7 +36,7 @@ public class WsDatabase {
 
   @Autowired
   private SmartMeteringNotificationWebServiceConfigurationRepository
-      notificationWebServiceConfigurationRepository;
+      smartMeteringNotificationWebServiceConfigurationRepository;
 
   @Autowired
   private SmartMeteringApplicationKeyConfigurationRepository
@@ -47,7 +47,7 @@ public class WsDatabase {
    * example: A default dlms gateway device.
    */
   private void insertDefaultData() {
-    this.notificationWebServiceConfigurationRepository.saveAll(
+    this.smartMeteringNotificationWebServiceConfigurationRepository.saveAll(
         this.notificationEndpointConfigurations());
     this.smartMeteringApplicationKeyConfigurationRepository.save(
         this.getDefaultApplicationKeyConfiguration());
@@ -81,6 +81,7 @@ public class WsDatabase {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
     this.smartMeteringResponseDataRepository.deleteAllInBatch();
+    this.smartMeteringNotificationWebServiceConfigurationRepository.deleteAllInBatch();
     this.responseUrlDataRepo.deleteAllInBatch();
 
     this.insertDefaultData();
