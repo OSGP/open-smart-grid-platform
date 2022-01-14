@@ -155,7 +155,7 @@ public class DomainHelperService {
   }
 
   public DlmsDevice findMbusDevice(
-      final Long mbusIdentificationNumber, final String mbusManufacturerIdentification)
+      final String mbusIdentificationNumber, final String mbusManufacturerIdentification)
       throws FunctionalException {
     final DlmsDevice dlmsDevice =
         this.dlmsDeviceRepository.findByMbusIdentificationNumberAndMbusManufacturerIdentification(

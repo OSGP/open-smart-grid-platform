@@ -47,7 +47,7 @@ public class SmartMeteringDeviceDto implements Serializable {
 
   private Date deliveryDate;
 
-  private Long mbusIdentificationNumber;
+  private String mbusIdentificationNumber;
 
   private String mbusManufacturerIdentification;
 
