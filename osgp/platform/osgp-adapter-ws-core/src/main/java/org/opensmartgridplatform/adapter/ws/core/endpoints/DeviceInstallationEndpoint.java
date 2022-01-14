@@ -12,7 +12,6 @@ import java.util.List;
 import javax.validation.ConstraintViolationException;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.DeviceInstallationMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.DeviceInstallationService;
-import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncResponse;
@@ -51,6 +50,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,12 +136,10 @@ public class DeviceInstallationEndpoint extends CoreEndpoint {
     final GetStatusResponse response = new GetStatusResponse();
 
     try {
-      final ResponseData responseData =
-          this.responseDataService.dequeue(
-              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-        final DeviceStatus deviceStatus = (DeviceStatus) responseData.getMessageData();
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
+        final DeviceStatus deviceStatus = (DeviceStatus) responseMessage.getDataObject();
         if (deviceStatus != null) {
           response.setDeviceStatus(
               this.deviceInstallationMapper.map(
@@ -427,11 +425,9 @@ public class DeviceInstallationEndpoint extends CoreEndpoint {
     final StartDeviceTestResponse response = new StartDeviceTestResponse();
 
     try {
-      final ResponseData responseData =
-          this.responseDataService.dequeue(
-              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);
@@ -496,11 +492,9 @@ public class DeviceInstallationEndpoint extends CoreEndpoint {
     final StopDeviceTestResponse response = new StopDeviceTestResponse();
 
     try {
-      final ResponseData responseData =
-          this.responseDataService.dequeue(
-              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);

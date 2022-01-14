@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.ws.core.endpoints;
 
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpoint.WebserviceEndpoint;
+import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseUrlService;
@@ -18,6 +19,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.exceptionhandling.UnknownCorrelationUidException;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,18 +54,26 @@ abstract class CoreEndpoint implements WebserviceEndpoint {
     }
   }
 
+  protected ResponseMessage getResponseMessage(final AsyncRequest asyncRequest)
+      throws UnknownCorrelationUidException {
+    return (ResponseMessage)
+        this.responseDataService
+            .dequeue(asyncRequest.getCorrelationUid(), ComponentType.WS_CORE)
+            .getMessageData();
+  }
+
   protected void throwExceptionIfResultNotOk(
       final ResponseData meterResponseData, final String exceptionContext) throws OsgpException {
     if (OsgpResultType.NOT_OK
         == OsgpResultType.fromValue(meterResponseData.getResultType().getValue())) {
       if (meterResponseData.getMessageData() instanceof String) {
         throw new TechnicalException(
-            ComponentType.WS_SMART_METERING, (String) meterResponseData.getMessageData(), null);
+            ComponentType.WS_CORE, (String) meterResponseData.getMessageData(), null);
       } else if (meterResponseData.getMessageData() instanceof OsgpException) {
         throw (OsgpException) meterResponseData.getMessageData();
       } else {
         throw new TechnicalException(
-            ComponentType.WS_SMART_METERING,
+            ComponentType.WS_CORE,
             String.format("An exception occurred %s.", exceptionContext),
             null);
       }

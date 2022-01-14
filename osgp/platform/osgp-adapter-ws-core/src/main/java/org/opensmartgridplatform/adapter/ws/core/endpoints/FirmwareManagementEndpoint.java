@@ -16,7 +16,6 @@ import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.FirmwareManagementMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.FirmwareFileRequest;
 import org.opensmartgridplatform.adapter.ws.core.application.services.FirmwareManagementService;
-import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncResponse;
@@ -79,10 +78,10 @@ import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +98,6 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
   private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareManagementEndpoint.class);
   private static final String NAMESPACE =
       "http://www.opensmartgridplatform.org/schemas/common/firmwaremanagement/2014/10";
-  private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
   private static final String ADD_DEVICEMODEL_EXISTING_DEVICEMODEL = "EXISTING_DEVICEMODEL";
   private static final String ADD_FIRMWARE_EXISTING_FIRMWARE = "EXISTING_FIRMWARE";
   private static final String ADD_MANUFACTURER_EXISTING_MANUFACTURER = "EXISTING_MANUFACTURER";
@@ -239,11 +237,9 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
     final UpdateFirmwareResponse response = new UpdateFirmwareResponse();
 
     try {
-      final ResponseData responseData =
-          this.responseDataService.dequeue(
-              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);
@@ -306,18 +302,16 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
 
     final GetFirmwareVersionResponse response = new GetFirmwareVersionResponse();
     try {
-      final ResponseData responseData =
-          this.responseDataService.dequeue(
-              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-        if (responseData.getMessageData() != null) {
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
+        if (responseMessage.getDataObject() != null) {
           final List<FirmwareVersion> target = response.getFirmwareVersion();
           @SuppressWarnings("unchecked")
           final List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion>
               firmwareVersions =
                   (List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion>)
-                      responseData.getMessageData();
+                      responseMessage.getDataObject();
           target.addAll(
               this.firmwareManagementMapper.mapAsList(firmwareVersions, FirmwareVersion.class));
         } else {
@@ -535,11 +529,9 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
     final SwitchFirmwareResponse response = new SwitchFirmwareResponse();
 
     try {
-      final ResponseData responseData =
-          this.responseDataService.dequeue(
-              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       } else {
         LOGGER.debug("Switch Firmware data is null");
       }

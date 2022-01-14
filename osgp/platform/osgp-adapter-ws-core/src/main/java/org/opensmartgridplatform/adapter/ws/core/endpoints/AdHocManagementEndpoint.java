@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.adapter.ws.core.endpoints;
 
 import org.opensmartgridplatform.adapter.ws.core.application.services.AdHocManagementService;
-import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.core.adhocmanagement.SetRebootAsyncRequest;
@@ -18,8 +17,8 @@ import org.opensmartgridplatform.adapter.ws.schema.core.adhocmanagement.SetReboo
 import org.opensmartgridplatform.adapter.ws.schema.core.adhocmanagement.SetRebootResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +35,6 @@ public class AdHocManagementEndpoint extends CoreEndpoint {
   private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementEndpoint.class);
   private static final String NAMESPACE =
       "http://www.opensmartgridplatform.org/schemas/adhocmanagement/2014/10";
-  private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
   private final AdHocManagementService adHocManagementService;
 
@@ -99,11 +97,9 @@ public class AdHocManagementEndpoint extends CoreEndpoint {
     final SetRebootResponse response = new SetRebootResponse();
 
     try {
-      final ResponseData responseData =
-          this.responseDataService.dequeue(
-              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);

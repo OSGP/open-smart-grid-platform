@@ -16,7 +16,6 @@ import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.core.application.criteria.SearchEventsCriteria;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.DeviceManagementMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.DeviceManagementService;
-import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncResponse;
@@ -75,6 +74,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +93,6 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
   private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementEndpoint.class);
   private static final String DEVICE_MANAGEMENT_NAMESPACE =
       "http://www.opensmartgridplatform.org/schemas/devicemanagement/2014/10";
-  private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
   private static final String EXCEPTION = "Exception: {}, StackTrace: {}";
   private static final String EXCEPTION_WHILE_UPDATING_DEVICE =
@@ -238,11 +237,9 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
     final SetEventNotificationsResponse response = new SetEventNotificationsResponse();
 
     try {
-      final ResponseData responseData =
-          this.responseDataService.dequeue(
-              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);
@@ -659,11 +656,9 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
         new UpdateDeviceSslCertificationResponse();
 
     try {
-      final ResponseData responseData =
-          this.responseDataService.dequeue(
-              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       } else {
         LOGGER.debug("Update Device Ssl Certification data is null");
       }
@@ -735,11 +730,9 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
     final SetDeviceVerificationKeyResponse response = new SetDeviceVerificationKeyResponse();
 
     try {
-      final ResponseData responseData =
-          this.responseDataService.dequeue(
-              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       } else {
         LOGGER.debug("Set Device Verification Key is null");
       }
@@ -801,10 +794,9 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
     final SetDeviceLifecycleStatusResponse response = new SetDeviceLifecycleStatusResponse();
 
     try {
-      final ResponseData responseData =
-          this.responseDataService.dequeue(asyncRequest.getCorrelationUid(), ComponentType.WS_CORE);
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(asyncRequest);
+      if (responseMessage != null) {
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);
@@ -878,10 +870,9 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
     final UpdateDeviceCdmaSettingsResponse response = new UpdateDeviceCdmaSettingsResponse();
 
     try {
-      final ResponseData responseData =
-          this.responseDataService.dequeue(asyncRequest.getCorrelationUid(), ComponentType.WS_CORE);
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(asyncRequest);
+      if (responseMessage != null) {
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);

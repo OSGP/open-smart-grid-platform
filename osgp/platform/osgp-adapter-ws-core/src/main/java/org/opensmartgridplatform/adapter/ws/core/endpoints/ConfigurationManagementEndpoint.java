@@ -13,7 +13,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.ConfigurationManagementMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.ConfigurationManagementService;
-import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncResponse;
@@ -38,6 +37,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +55,6 @@ public class ConfigurationManagementEndpoint extends CoreEndpoint {
       "http://www.opensmartgridplatform.org/schemas/configurationmanagement/2014/10";
   private static final Logger LOGGER =
       LoggerFactory.getLogger(ConfigurationManagementEndpoint.class);
-  private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
   private final ConfigurationManagementService configurationManagementService;
   private final ConfigurationManagementMapper configurationManagementMapper;
@@ -141,11 +140,9 @@ public class ConfigurationManagementEndpoint extends CoreEndpoint {
     final SetConfigurationResponse response = new SetConfigurationResponse();
 
     try {
-      final ResponseData responseData =
-          this.responseDataService.dequeue(
-              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);
@@ -222,14 +219,11 @@ public class ConfigurationManagementEndpoint extends CoreEndpoint {
     final GetConfigurationResponse response = new GetConfigurationResponse();
 
     try {
-      final ResponseData responseData =
-          this.responseDataService.dequeue(
-              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
-
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-        if (responseData.getMessageData() != null) {
-          final Configuration configuration = (Configuration) responseData.getMessageData();
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
+        if (responseMessage.getDataObject() != null) {
+          final Configuration configuration = (Configuration) responseMessage.getDataObject();
           response.setConfiguration(
               this.configurationManagementMapper.map(
                   configuration,
@@ -301,11 +295,9 @@ public class ConfigurationManagementEndpoint extends CoreEndpoint {
     final SwitchConfigurationResponse response = new SwitchConfigurationResponse();
 
     try {
-      final ResponseData responseData =
-          this.responseDataService.dequeue(
-              request.getAsyncRequest().getCorrelationUid(), ComponentType.WS_CORE);
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       } else {
         LOGGER.debug("Get Configuration data is null");
       }
