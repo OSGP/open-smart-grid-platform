@@ -19,12 +19,19 @@ import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.CoreResponseUrlDataRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /** WsCore related database steps. */
 @Component
 public class WsCoreDatabase {
+
+  @Value("${web.service.notification.context}")
+  private String webServiceNotificationContext;
+
+  @Value("${web.service.notification.port}")
+  private int webServiceNotificationPort;
 
   @Autowired private CoreResponseDataRepository coreResponseDataRepository;
 
@@ -52,7 +59,10 @@ public class WsCoreDatabase {
             .withApplicationName("OSGP")
             .withMarshallerContextPath(
                 "org.opensmartgridplatform.adapter.ws.schema.core.notification")
-            .withTargetUri("http://localhost:8843/notifications")
+            .withTargetUri(
+                String.format(
+                    "http://localhost:%s%s",
+                    this.webServiceNotificationPort, this.webServiceNotificationContext))
             .withoutKeyStoreConfig()
             .withoutTrustStoreConfig()
             .withoutCircuitBreakerConfig();
