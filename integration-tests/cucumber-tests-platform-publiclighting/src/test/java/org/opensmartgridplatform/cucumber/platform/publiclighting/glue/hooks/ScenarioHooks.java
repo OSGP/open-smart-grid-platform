@@ -13,6 +13,7 @@ import io.cucumber.java.Before;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.database.Database;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.database.OslpDatabase;
+import org.opensmartgridplatform.cucumber.platform.publiclighting.database.WsCoreDatabasePublicLightinng;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ public class ScenarioHooks {
   private static final Logger LOGGER = LoggerFactory.getLogger(ScenarioHooks.class);
 
   @Autowired private Database database;
+  @Autowired private WsCoreDatabasePublicLightinng wsCoreDatabasePublicLightinng;
 
   @Autowired private OslpDatabase oslpDatabase;
 
@@ -60,5 +62,10 @@ public class ScenarioHooks {
 
     // Make sure that the scenario context is clean before each test.
     ScenarioContext.context = null;
+  }
+
+  @Before(order = 1001)
+  public void beforeScenarioAfterDefault() {
+    this.wsCoreDatabasePublicLightinng.prepareDatabaseForScenario();
   }
 }
