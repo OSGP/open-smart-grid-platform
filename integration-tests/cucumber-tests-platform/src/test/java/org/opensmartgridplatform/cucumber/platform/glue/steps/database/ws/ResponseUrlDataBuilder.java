@@ -15,7 +15,7 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 public class ResponseUrlDataBuilder {
 
   private String correlationUid = "test-org|||TEST1024000000001|||20170101000000000";
-  private String responseUrl = "http://localhost:8843/notifications";
+  private String responseUrl = "http://localhost:8088/notifications";
 
   public ResponseUrlData build() {
     return new ResponseUrlData(this.correlationUid, this.responseUrl);

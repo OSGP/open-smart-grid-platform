@@ -59,7 +59,7 @@ public class WsDatabase {
             .withApplicationName("SMART_METERS")
             .withMarshallerContextPath(
                 "org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification")
-            .withTargetUri("http://localhost:8843/notifications")
+            .withTargetUri("http://localhost:8088/notifications")
             .withoutCircuitBreakerConfig();
     final NotificationWebServiceConfiguration testOrgConfig = builder.build();
     final NotificationWebServiceConfiguration noOrganisationConfig =

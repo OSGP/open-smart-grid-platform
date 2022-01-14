@@ -28,12 +28,12 @@ Feature: SmartMetering notifications - Resend notifications
       | NumberOfNotificationsSent |                                                      0 |
     And a response url data record
       | CorrelationUid | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
-      | ResponseUrl    | http://localhost:8843/notifications                    |
+      | ResponseUrl    | http://localhost:8088/notifications                    |
     When OSGP checks for which response data a notification has to be resend
     Then a notification is sent in ws-core
     And the response url data has values
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
-      | ResponseUrl               | http://localhost:8843/notifications                    |
+      | ResponseUrl               | http://localhost:8088/notifications                    |
 
   Scenario: Don't send notifications when the configurable time has not passed
     Given a response data record in ws-core

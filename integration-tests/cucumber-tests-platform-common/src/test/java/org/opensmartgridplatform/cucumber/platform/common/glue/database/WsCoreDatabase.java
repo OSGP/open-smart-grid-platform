@@ -18,6 +18,8 @@ import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.CoreResponseDataRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.CoreResponseUrlDataRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 /** WsCore related database steps. */
 @Component
 public class WsCoreDatabase {
+  private static final Logger LOGGER = LoggerFactory.getLogger(WsCoreDatabase.class);
 
   @Value("${web.service.notification.context}")
   private String webServiceNotificationContext;
@@ -54,15 +57,18 @@ public class WsCoreDatabase {
   }
 
   private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
+    final String targetUri =
+        String.format(
+            "http://localhost:%s%s",
+            this.webServiceNotificationPort, this.webServiceNotificationContext);
+    LOGGER.info("Set notificationEndpointConfigurations targetUri: {}", targetUri);
+
     final NotificationWebServiceConfigurationBuilder builder =
         new NotificationWebServiceConfigurationBuilder()
             .withApplicationName("OSGP")
             .withMarshallerContextPath(
                 "org.opensmartgridplatform.adapter.ws.schema.core.notification")
-            .withTargetUri(
-                String.format(
-                    "http://localhost:%s%s",
-                    this.webServiceNotificationPort, this.webServiceNotificationContext))
+            .withTargetUri(targetUri)
             .withoutKeyStoreConfig()
             .withoutTrustStoreConfig()
             .withoutCircuitBreakerConfig();
