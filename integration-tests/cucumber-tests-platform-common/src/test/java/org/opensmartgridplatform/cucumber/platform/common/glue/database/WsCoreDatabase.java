@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class WsCoreDatabase {
   private static final Logger LOGGER = LoggerFactory.getLogger(WsCoreDatabase.class);
+  private static final String APPLICATION_NAME = "OSGP";
 
   @Value("${web.service.notification.context}")
   private String webServiceNotificationContext;
@@ -65,7 +66,7 @@ public class WsCoreDatabase {
 
     final NotificationWebServiceConfigurationBuilder builder =
         new NotificationWebServiceConfigurationBuilder()
-            .withApplicationName("OSGP")
+            .withApplicationName(APPLICATION_NAME)
             .withMarshallerContextPath(
                 "org.opensmartgridplatform.adapter.ws.schema.core.notification")
             .withTargetUri(targetUri)
@@ -84,8 +85,9 @@ public class WsCoreDatabase {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
     this.coreResponseDataRepository.deleteAllInBatch();
-    this.coreNotificationWebServiceConfigurationRepository.deleteAllInBatch();
     this.coreResponseUrlDataRepository.deleteAllInBatch();
+    this.coreNotificationWebServiceConfigurationRepository.deleteAllInBatch();
+    this.coreApplicationKeyConfigurationRepository.deleteAllInBatch();
 
     this.insertDefaultData();
   }
