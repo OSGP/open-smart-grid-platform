@@ -22,7 +22,7 @@ public interface DlmsDeviceRepository extends JpaRepository<DlmsDevice, Long> {
   DlmsDevice findByDeviceIdentification(String deviceIdentification);
 
   DlmsDevice findByMbusIdentificationNumberAndMbusManufacturerIdentification(
-      Long mbusIdentificationNumber, String mbusManufacturerIdentification);
+      String mbusIdentificationNumber, String mbusManufacturerIdentification);
 
   @Modifying
   @Query(

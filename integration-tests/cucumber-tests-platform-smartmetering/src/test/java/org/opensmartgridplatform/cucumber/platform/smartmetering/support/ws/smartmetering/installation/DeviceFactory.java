@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
@@ -92,7 +91,7 @@ public class DeviceFactory {
             settings, PlatformKeys.KEY_DEVICE_DELIVERY_DATE));
 
     device.setMbusIdentificationNumber(
-        getLong(settings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER, null));
+        getString(settings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
     device.setMbusManufacturerIdentification(
         getString(settings, PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION));
     device.setMbusVersion(getShort(settings, PlatformSmartmeteringKeys.MBUS_VERSION, null));
