@@ -94,7 +94,7 @@ public abstract class AbstractReplaceKeyCommandExecutor<T>
 
     return new ActionResponseDto(
         String.format(
-            "Replace keys for device: {} was successful", device.getDeviceIdentification()));
+            "Replace keys for device %s was successful", device.getDeviceIdentification()));
   }
 
   private static ReplaceKeyInput wrap(

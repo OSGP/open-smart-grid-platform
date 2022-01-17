@@ -187,4 +187,51 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
     assertThat(response.getResult()).as("Result").isNotNull();
     assertThat(response.getResult().name()).as("Result").isEqualTo(expectedResult);
   }
+
+  @When("multiple generate and replace keys requests are received")
+  public void multipleGenerateAndReplaceKeysRequestsAreReceived(final Map<String, String> settings)
+      throws Throwable {
+    final List<Map<String, String>> listOfSettingsPerRequest =
+        this.createSettingPerRequest(settings);
+    final List<String> correlationUIDs = new ArrayList<>();
+    for (final Map<String, String> settingsPerRequest : listOfSettingsPerRequest) {
+      final GenerateAndReplaceKeysRequest request =
+          GenerateAndReplaceKeysRequestFactory.fromParameterMap(settingsPerRequest);
+
+      final GenerateAndReplaceKeysAsyncResponse asyncResponse =
+          this.smartMeteringConfigurationClient.generateAndReplaceKeys(request);
+
+      correlationUIDs.add(asyncResponse.getCorrelationUid());
+    }
+    ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, correlationUIDs);
+  }
+
+  @Then("multiple generate and replace keys responses should be returned")
+  public void multipleGenerateAndReplaceKeysResponsesShouldBeReturned(
+      final Map<String, String> responseParameters) throws Throwable {
+
+    final List<String> correlationUids =
+        (List<String>) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
+    for (final String correlationUid : correlationUids) {
+      this.assertGenerateAndReplaceKeysResponse(responseParameters, correlationUid);
+    }
+  }
+
+  private void assertGenerateAndReplaceKeysResponse(
+      final Map<String, String> responseParameters, final String correlationUid)
+      throws WebServiceSecurityException {
+    final Map<String, String> extendedParameters =
+        SettingsHelper.addDefault(
+            responseParameters, PlatformKeys.KEY_CORRELATION_UID, correlationUid);
+    final GenerateAndReplaceKeysAsyncRequest generateAndReplaceKeysAsyncRequest =
+        GenerateAndReplaceKeysRequestFactory.fromParameterMapAsync(extendedParameters);
+
+    final GenerateAndReplaceKeysResponse response =
+        this.smartMeteringConfigurationClient.getGenerateAndReplaceKeysResponse(
+            generateAndReplaceKeysAsyncRequest);
+
+    final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
+    assertThat(response.getResult()).as("Result").isNotNull();
+    assertThat(response.getResult().name()).as("Result").isEqualTo(expectedResult);
+  }
 }

@@ -270,6 +270,24 @@ public class DlmsDeviceSteps {
   }
 
   @Then(
+      "^the keyprocessing lock should be removed from off dlms device with identification \"([^\"]*)\"$")
+  public void theKeyprocessingLockShouldBeRemovedFromDlmsDeviceWithIdentification(
+      final String deviceIdentification) {
+
+    final DlmsDevice dlmsDevice =
+        this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+    assertThat(dlmsDevice)
+        .as("DLMS device with identification " + deviceIdentification + " in protocol database")
+        .isNotNull();
+    assertThat(dlmsDevice.getKeyProcessingStartTime())
+        .as(
+            "DLMS device with identification "
+                + deviceIdentification
+                + " should not have lock on keyprocessing in protocol database")
+        .isNull();
+  }
+
+  @Then(
       "^the newly generated keys are stored in the secret management database encrypted_secret table$")
   public void theNewlyGeneratedKeysAreStoredInTheSecretManagementDatabaseEncryptedSecretTable() {
     this.theNewKeysAreStoredInTheSecretManagementDatabaseEncryptedSecretTable();
@@ -876,6 +894,43 @@ public class DlmsDeviceSteps {
               secretTypeString, secretStatus, dbEncryptedSecretValue, actualEncodedSecrets)
           .contains(dbEncryptedSecretValue);
     }
+  }
+
+  @Then(
+      "the encrypted_secret table in the secret management database should contain a specified number of EXPIRED and just one ACTIVE key for device {string}")
+  public void
+      theEncrypted_secretTableInTheSecretManagementDatabaseShouldContainASpecifiedNumberOfEXPIREDAndJustOneACTIVEKeyForDevice(
+          final String deviceIdentification, final Map<String, String> settings) {
+    final int expectedNumberOfExpiredEncryptionKeys =
+        Integer.valueOf(settings.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
+    final int expectedNumberOfExpiredAuthenticationKey =
+        Integer.valueOf(settings.get(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY));
+
+    this.assertCorrectNumbers(
+        deviceIdentification,
+        SecretType.E_METER_AUTHENTICATION_KEY,
+        SecretStatus.EXPIRED,
+        expectedNumberOfExpiredAuthenticationKey);
+    this.assertCorrectNumbers(
+        deviceIdentification,
+        SecretType.E_METER_ENCRYPTION_KEY_UNICAST,
+        SecretStatus.EXPIRED,
+        expectedNumberOfExpiredEncryptionKeys);
+    this.assertCorrectNumbers(
+        deviceIdentification, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.ACTIVE, 1);
+    this.assertCorrectNumbers(
+        deviceIdentification, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.ACTIVE, 1);
+  }
+
+  private void assertCorrectNumbers(
+      final String deviceIdentification,
+      final SecretType secretType,
+      final SecretStatus secretStatus,
+      final int expectedNumberOfKeys) {
+
+    final List<DbEncryptedSecret> keys =
+        this.encryptedSecretRepository.findSecrets(deviceIdentification, secretType, secretStatus);
+    assertThat(keys.size()).isEqualTo(expectedNumberOfKeys);
   }
 
   @Then(

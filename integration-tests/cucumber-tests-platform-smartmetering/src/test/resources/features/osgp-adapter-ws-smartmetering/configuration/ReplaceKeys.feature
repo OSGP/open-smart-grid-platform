@@ -27,6 +27,7 @@ Feature: SmartMetering Configuration - Replace Keys
     And the encrypted_secret table in the secret management database should contain "Encryption_key" keys for device "TEST1024000000001"
       | SECURITY_KEY_E | EXPIRED |
       | SECURITY_KEY_1 | ACTIVE  |
+    And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"
 
   @ResetKeysOnDevice
   Scenario: Replace keys on a device while NEW key already present in SecretManagement
@@ -54,6 +55,7 @@ Feature: SmartMetering Configuration - Replace Keys
       | SECURITY_KEY_E | EXPIRED   |
       | SECURITY_KEY_3 | ACTIVE    |
       | SECURITY_KEY_1 | WITHDRAWN |
+    And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"
 
   @ResetKeysOnDevice
   Scenario: Replace keys on a device while multiple NEW keys already present in SecretManagement
@@ -87,9 +89,10 @@ Feature: SmartMetering Configuration - Replace Keys
       | SECURITY_KEY_5 | ACTIVE    |
       | SECURITY_KEY_3 | WITHDRAWN |
       | SECURITY_KEY_1 | WITHDRAWN |
+    And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"
 
   @ResetKeysOnDevice
-  Scenario: Replace keys on a device (multiple concurrent requests are executed after one other)
+  Scenario: Replace keys on a device (multiple concurrent single requests are executed after one other)
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -110,3 +113,36 @@ Feature: SmartMetering Configuration - Replace Keys
     And the encrypted_secret table in the secret management database should contain one or more EXPIRED and just one ACTIVE key for device "TEST1024000000001" in correct combination
       | Authentication_key | SECURITY_KEY_2,SECURITY_KEY_4,SECURITY_KEY_6 |
       | Encryption_key     | SECURITY_KEY_1,SECURITY_KEY_3,SECURITY_KEY_5 |
+    And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"
+
+  @ResetKeysOnDevice
+  Scenario: Replace keys on a device (multiple requests in one bundle are executed after one other)
+    Given a dlms device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Master_key           | SECURITY_KEY_M    |
+      | Encryption_key       | SECURITY_KEY_E    |
+      | Authentication_key   | SECURITY_KEY_A    |
+    Given a bundle request
+      | DeviceIdentification | TEST1024000000001 |
+    And the bundle request contains a replace keys action
+      | Encryption_key       | SECURITY_KEY_1    |
+      | Authentication_key   | SECURITY_KEY_2    |
+    And the bundle request contains a replace keys action
+      | Encryption_key       | SECURITY_KEY_3    |
+      | Authentication_key   | SECURITY_KEY_4    |
+    And the bundle request contains a replace keys action
+      | Encryption_key       | SECURITY_KEY_5    |
+      | Authentication_key   | SECURITY_KEY_6    |
+    When the bundle request is received
+    Then the bundle response should contain a replace keys response with values
+      | Result               | OK                                                       |
+      | ResultString         | Replace keys for device TEST1024000000001 was successful |
+    And the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
+      | SECURITY_KEY_A | EXPIRED   |
+    And the encrypted_secret table in the secret management database should contain "Encryption_key" keys for device "TEST1024000000001"
+      | SECURITY_KEY_E | EXPIRED   |
+    And the encrypted_secret table in the secret management database should contain one or more EXPIRED and just one ACTIVE key for device "TEST1024000000001" in correct combination
+      | Authentication_key | SECURITY_KEY_2,SECURITY_KEY_4,SECURITY_KEY_6 |
+      | Encryption_key     | SECURITY_KEY_1,SECURITY_KEY_3,SECURITY_KEY_5 |
+    And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"
