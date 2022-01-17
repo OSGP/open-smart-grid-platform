@@ -15,7 +15,6 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_ENCRYPTION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_MASTER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.PASSWORD;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_E;
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_G;
@@ -216,7 +215,7 @@ public class DlmsDeviceSteps {
     assertThat(smartMeter.getChannel())
         .isEqualTo(getShort(settings, PlatformSmartmeteringKeys.CHANNEL));
     assertThat(smartMeter.getMbusIdentificationNumber())
-        .isEqualTo(getLong(settings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER, null));
+        .isEqualTo(settings.get(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
     assertThat(smartMeter.getMbusManufacturerIdentification())
         .isEqualTo(settings.get(PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION));
     assertThat(smartMeter.getMbusVersion())

@@ -797,7 +797,6 @@
 
   <xsd:simpleType name="MbusIdentificationNumber">
     <xsd:restriction base="xsd:string">
-      <xsd:pattern value="[0-9]{8}"/>
     </xsd:restriction>
   </xsd:simpleType>
 

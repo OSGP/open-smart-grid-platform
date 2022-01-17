@@ -296,7 +296,7 @@ public class ConfigurationService {
 
     final DlmsDevice mbusDevice =
         this.domainHelperService.findMbusDevice(
-            Long.valueOf(channelElementValues.getIdentificationNumber()),
+            channelElementValues.getIdentificationNumber(),
             channelElementValues.getManufacturerIdentification());
 
     return new GMeterInfoDto(

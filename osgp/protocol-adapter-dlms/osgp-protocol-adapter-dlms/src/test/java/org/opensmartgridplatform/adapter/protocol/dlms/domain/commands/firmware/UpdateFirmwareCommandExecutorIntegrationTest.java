@@ -148,7 +148,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
   @Test
   void testExecuteMbusFirmware() throws Exception {
     final DlmsDevice device = new DlmsDevice();
-    device.setMbusIdentificationNumber(1L);
+    device.setMbusIdentificationNumber("00000001");
     final String firmwareIdentification = RandomStringUtils.randomAlphabetic(10);
     final String deviceIdentification = RandomStringUtils.randomAlphabetic(10);
     device.setDeviceIdentification(deviceIdentification);

@@ -26,7 +26,7 @@ public class SmartMeter extends Device {
 
   @Column private Short channel;
 
-  @Column private Long mbusIdentificationNumber;
+  @Column private String mbusIdentificationNumber;
 
   @Column(length = 3)
   private String mbusManufacturerIdentification;
@@ -93,11 +93,11 @@ public class SmartMeter extends Device {
     this.deviceIdentification = deviceIdentification;
   }
 
-  public Long getMbusIdentificationNumber() {
+  public String getMbusIdentificationNumber() {
     return this.mbusIdentificationNumber;
   }
 
-  public void setMbusIdentificationNumber(final Long mbusIdentificationNumber) {
+  public void setMbusIdentificationNumber(final String mbusIdentificationNumber) {
     this.mbusIdentificationNumber = mbusIdentificationNumber;
   }
 
