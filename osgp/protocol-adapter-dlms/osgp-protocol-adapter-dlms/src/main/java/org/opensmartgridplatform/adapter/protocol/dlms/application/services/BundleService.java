@@ -16,6 +16,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandEx
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DirectlyRetryableException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.MissingExecutorException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NonRetryableException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionDto;
@@ -126,6 +127,11 @@ public class BundleService {
           device.getDeviceIdentification(),
           ce);
       throw ce;
+
+    } catch (final DirectlyRetryableException e) {
+      // This exception will be caught in the DeviceRequestMessageProcessor.
+      // The request will NOT be sent back to Core to retry but put back on the queue
+      throw e;
 
     } catch (final Exception e) {
       log.error(

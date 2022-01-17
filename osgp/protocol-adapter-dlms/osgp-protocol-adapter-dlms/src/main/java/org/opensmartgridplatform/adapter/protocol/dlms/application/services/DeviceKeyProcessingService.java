@@ -57,7 +57,7 @@ public class DeviceKeyProcessingService {
         this.dlmsDeviceRepository.setProcessingStartTime(
             dlmsDevice.getDeviceIdentification(), oldestStartTimeNotConsiderTimedOut);
     if (updatedRecords == 0) {
-      throw new DeviceKeyProcessAlreadyRunningException();
+      throw new DeviceKeyProcessAlreadyRunningException(this.deviceKeyProcessingTimeout);
     }
   }
 

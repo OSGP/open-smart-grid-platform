@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DirectlyRetryableException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ThrowingConsumer;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -113,7 +114,12 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
           messageObject, messageMetadata, this.throttlingClientConfig.permitRejectedDelay());
 
     } catch (final Exception exception) {
-      this.sendErrorResponse(messageMetadata, exception, messageObject);
+      if (exception instanceof DirectlyRetryableException) {
+        this.deviceRequestMessageSender.send(
+            messageObject, messageMetadata, ((DirectlyRetryableException) exception).getDelay());
+      } else {
+        this.sendErrorResponse(messageMetadata, exception, messageObject);
+      }
     }
   }
 

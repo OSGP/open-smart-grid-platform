@@ -10,13 +10,13 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.exceptions;
 
-public class DeviceKeyProcessAlreadyRunningException extends Exception {
+import java.time.Duration;
+
+public class DeviceKeyProcessAlreadyRunningException extends DirectlyRetryableException {
 
   private static final long serialVersionUID = 1998438538193678335L;
 
-  public DeviceKeyProcessAlreadyRunningException() {}
-
-  public DeviceKeyProcessAlreadyRunningException(final String message) {
-    super(message);
+  public DeviceKeyProcessAlreadyRunningException(final Duration delay) {
+    super(delay);
   }
 }
