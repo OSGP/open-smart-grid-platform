@@ -109,7 +109,12 @@ public class ReadSettingsHelper {
       return defaultDate;
     }
 
-    return ZonedDateTime.parse(settings.get(key));
+    String zonedDateTime = settings.get(key);
+    if (zonedDateTime.matches("^[0-9]{4}-[0-9]{2}-[0-9]{2}$")) {
+      zonedDateTime = zonedDateTime + "T00:00:00Z";
+    }
+
+    return ZonedDateTime.parse(zonedDateTime);
   }
 
   /**
@@ -325,7 +330,7 @@ public class ReadSettingsHelper {
   public static List<String> getStringList(
       final Map<String, String> settings, final String key, final String separator) {
     if (!settings.containsKey(key) || StringUtils.isBlank(settings.get(key))) {
-      return new ArrayList<String>(0);
+      return new ArrayList<>(0);
     }
     return Arrays.asList(settings.get(key).split(separator));
   }
