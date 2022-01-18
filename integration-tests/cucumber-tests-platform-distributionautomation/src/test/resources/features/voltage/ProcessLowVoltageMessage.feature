@@ -2,11 +2,7 @@
 Feature: DistributionAutomation Low voltage message processing
 
   Scenario: Process a low voltage message from MQTT device version 2
-    Given an MQTT device
-      | DeviceIdentification | TST-01             |
-      | IntegrationType      | Kafka              |
-      | MqttTopic            | TST-01/measurement |
-    And a location
+    Given a location
       | substation identification | sub-1        |
       | substation name           | substation-1 |
     And a feeder
@@ -16,12 +12,13 @@ Feature: DistributionAutomation Low voltage message processing
       | feeder name               | fdr-1 |
       | asset label               | lbl-1 |
     When MQTT device "TST-01" sends a measurement report
-      | payload | [{"gisnr":"sub-1", "versie":"2", "feeder":"1", "D": "02/10/2020 16:03:38", "uts":"1601647418", "data": [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0,4.1,4.2,4.3,4.4,4.5,4.6,4.7,4.8,4.9]}] |
+      | MqttTopic | TST-01/measurement                                                                                                                                                                                                                                                                                             |
+      | payload   | [{"gisnr":"sub-1", "versie":"2", "feeder":"1", "D": "02/10/2020 16:03:38", "uts":"1601647418", "data": [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0,4.1,4.2,4.3,4.4,4.5,4.6,4.7,4.8,4.9]}] |
     Then a LOW_VOLTAGE message is published to Kafka
       | substation identification    | sub-1        |
       | version                      |            2 |
       | substation name              | substation-1 |
-      | field code                   | 01           |
+      | field code                   |           01 |
       | bay identification           | fdr-1        |
       | asset label                  | lbl-1        |
       | numberOfElements             |           49 |
@@ -181,8 +178,8 @@ Feature: DistributionAutomation Low voltage message processing
       | measurement49_unitSymbol     | Hz           |
       | measurement49_value          |          4.9 |
 
-@Skip      
-Scenario: Process a low voltage message from MQTT device version 1
+  @Skip
+  Scenario: Process a low voltage message from MQTT device version 1
     Given an MQTT device
       | DeviceIdentification | TST-02             |
       | IntegrationType      | Kafka              |
@@ -202,7 +199,7 @@ Scenario: Process a low voltage message from MQTT device version 1
       | substation identification    | sub-2        |
       | version                      |            1 |
       | substation name              | substation-2 |
-      | field code                   | 02           |
+      | field code                   |           02 |
       | bay identification           | fdr-2        |
       | asset label                  | lbl-2        |
       | numberOfElements             |           41 |
@@ -331,7 +328,7 @@ Scenario: Process a low voltage message from MQTT device version 1
       | measurement39_description    | H15-I1       |
       | measurement39_unitSymbol     | A            |
       | measurement39_value          |          3.9 |
-      | measurement40_description    | H15-I2				|
+      | measurement40_description    | H15-I2       |
       | measurement40_unitSymbol     | A            |
       | measurement40_value          |          4.0 |
       | measurement41_description    | H15-I3       |

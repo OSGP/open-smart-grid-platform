@@ -9,6 +9,8 @@
  */
 package org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects;
 
+import com.hivemq.client.mqtt.datatypes.MqttQos;
+
 public class MqttClientDefaults {
   private final String clientId;
   private final String host;
@@ -70,14 +72,14 @@ public class MqttClientDefaults {
 
   public static class Builder {
     private String clientId;
-    private String host;
-    private int port;
+    private String host = "localhost";
+    private int port = 1883;
     private String username;
     private String password;
-    private String qos;
-    private String[] topics;
-    private boolean cleanSession;
-    private int keepAlive;
+    private String qos = MqttQos.AT_LEAST_ONCE.name();
+    private String[] topics = {"+/measurement"};
+    private boolean cleanSession = true;
+    private int keepAlive = 60;
 
     public Builder withClientId(final String clientId) {
       this.clientId = clientId;

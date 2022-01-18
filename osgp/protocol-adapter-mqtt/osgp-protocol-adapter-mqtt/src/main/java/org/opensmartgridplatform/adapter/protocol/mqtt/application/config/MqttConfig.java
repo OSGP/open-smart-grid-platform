@@ -8,8 +8,13 @@
  */
 package org.opensmartgridplatform.adapter.protocol.mqtt.application.config;
 
+import com.hivemq.client.mqtt.MqttClientSslConfig;
+import org.opensmartgridplatform.adapter.protocol.mqtt.application.services.MessageHandler;
+import org.opensmartgridplatform.adapter.protocol.mqtt.application.services.MqttClient;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttClientDefaults;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +25,8 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterProtocolMqtt/config}", ignoreResourceNotFound = true)
 public class MqttConfig extends AbstractConfig {
+
+  private static final Logger LOG = LoggerFactory.getLogger(MqttConfig.class);
 
   @Value("${mqtt.default.clean.session:true}")
   private boolean defaultCleanSession;
@@ -62,5 +69,22 @@ public class MqttConfig extends AbstractConfig {
         .withTopics(this.defaultTopics)
         .withUsername(this.defaultUsername)
         .build();
+  }
+
+  @Bean(destroyMethod = "disconnect")
+  public MqttClient mqttClient(
+      final MqttClientDefaults mqttClientDefaults,
+      final MqttClientSslConfig mqttClientSslConfig,
+      final MessageHandler protocolResponseMessageSendingHandler) {
+
+    final MqttClient client =
+        new MqttClient(
+            mqttClientDefaults, mqttClientSslConfig, protocolResponseMessageSendingHandler);
+    LOG.info(
+        "Connecting to MQTT client with address: {}:{}",
+        mqttClientDefaults.getDefaultHost(),
+        mqttClientDefaults.getDefaultPort());
+    client.connect();
+    return client;
   }
 }
