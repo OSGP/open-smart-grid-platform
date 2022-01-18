@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
@@ -324,6 +325,8 @@ public class MBusGatewayService {
   private MbusChannelElementsDto makeMbusChannelElementsDto(final SmartMeter mbusDevice) {
 
     final String mbusDeviceIdentification = mbusDevice.getDeviceIdentification();
+    final String mbusIdentificationNumber =
+        StringUtils.leftPad(mbusDevice.getMbusIdentificationNumber(), 8, "0");
     final String mbusManufacturerIdentification = mbusDevice.getMbusManufacturerIdentification();
     final Short mbusVersion = mbusDevice.getMbusVersion();
     final Short mbusDeviceTypeIdentification = mbusDevice.getMbusDeviceTypeIdentification();
@@ -336,7 +339,7 @@ public class MBusGatewayService {
     return new MbusChannelElementsDto(
         primaryAddress,
         mbusDeviceIdentification,
-        mbusDevice.getMbusIdentificationNumber(),
+        mbusIdentificationNumber,
         mbusManufacturerIdentification,
         mbusVersion,
         mbusDeviceTypeIdentification);

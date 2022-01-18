@@ -13,6 +13,7 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 @Entity
@@ -318,7 +319,7 @@ public class DlmsDevice extends AbstractEntity {
     if (this.mbusIdentificationNumber == null) {
       return null;
     }
-    return this.mbusIdentificationNumber;
+    return StringUtils.leftPad(this.mbusIdentificationNumber, 8, "0");
   }
 
   public void setMbusIdentificationNumber(final String mbusIdentificationNumber) {
