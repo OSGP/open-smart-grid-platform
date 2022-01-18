@@ -10,13 +10,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.exceptions;
 
-public class DeviceKeyProcessAlreadyRunningException extends Exception {
+public class DeviceKeyProcessAlreadyRunningException extends RuntimeException {
 
   private static final long serialVersionUID = 1998438538193678335L;
-
-  public DeviceKeyProcessAlreadyRunningException() {}
-
-  public DeviceKeyProcessAlreadyRunningException(final String message) {
-    super(message);
-  }
 }

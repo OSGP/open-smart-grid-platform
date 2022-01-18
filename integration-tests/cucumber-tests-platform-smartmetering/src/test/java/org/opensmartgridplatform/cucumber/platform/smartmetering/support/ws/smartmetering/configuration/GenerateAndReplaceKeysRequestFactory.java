@@ -37,7 +37,7 @@ public class GenerateAndReplaceKeysRequestFactory {
 
   public static GenerateAndReplaceKeysAsyncRequest fromParameterMapAsync(
       final Map<String, String> requestParameters) {
-    final String correlationUid = RequestFactoryHelper.getCorrelationUidFromScenarioContext();
+    final String correlationUid = requestParameters.get(PlatformKeys.KEY_CORRELATION_UID);
     final String deviceIdentification =
         RequestFactoryHelper.getDeviceIdentificationFromStepData(requestParameters);
     final GenerateAndReplaceKeysAsyncRequest generateAndReplaceKeysAsyncRequest =
