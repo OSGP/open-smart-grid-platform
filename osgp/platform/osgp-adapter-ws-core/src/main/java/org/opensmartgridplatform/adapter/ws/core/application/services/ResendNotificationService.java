@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "transactionManager")
 public class ResendNotificationService extends AbstractResendNotificationService<NotificationType> {
 
-  @Autowired private NotificationService smartMeteringNotificationService;
+  @Autowired private NotificationService notificationService;
 
   @Value("${web.service.notification.application.name}")
   private String webserviceNotificationApplicationName;
@@ -33,7 +33,7 @@ public class ResendNotificationService extends AbstractResendNotificationService
 
   @PostConstruct
   public void initialize() {
-    this.setNotificationService(this.smartMeteringNotificationService);
+    this.setNotificationService(this.notificationService);
     this.setApplicationName(this.webserviceNotificationApplicationName);
   }
 }

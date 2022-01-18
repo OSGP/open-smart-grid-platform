@@ -23,7 +23,7 @@ CREATE SEQUENCE response_data_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-ALTER TABLE response_data_seq OWNER TO osp_admin;
+ALTER SEQUENCE response_data_seq OWNER TO osp_admin;
 ALTER SEQUENCE response_data_seq OWNED BY response_data.id;
 
 ALTER TABLE ONLY response_data ALTER COLUMN id SET DEFAULT nextval('response_data_seq'::regclass);
@@ -33,7 +33,7 @@ CREATE UNIQUE INDEX ON response_data (correlation_uid);
 
 COMMENT ON COLUMN response_data.organisation_identification IS 'Identification of the organisation behind the request this response is for.';
 COMMENT ON COLUMN response_data.device_identification IS 'Identification of the device the response data belongs with.';
-COMMENT ON COLUMN response_data.message_type IS 'Indicates which device function was executed that lead to this response.';
+COMMENT ON COLUMN response_data.message_type IS 'Indicates which device function was executed that leads to this response.';
 COMMENT ON COLUMN response_data.correlation_uid IS 'Unique identifier correlating all actions related to the request this response is for.';
 COMMENT ON COLUMN response_data.message_data IS 'Serialized response object.';
 COMMENT ON COLUMN response_data.result_type IS 'Message result type [OK, NOT_FOUND, NOT_OK].';
@@ -57,7 +57,7 @@ CREATE SEQUENCE response_url_seq
         NO MINVALUE
         NO MAXVALUE
         CACHE 1;
-ALTER TABLE response_url_seq OWNER TO osp_admin;
+ALTER SEQUENCE response_url_seq OWNER TO osp_admin;
 ALTER SEQUENCE response_url_seq OWNED BY response_url.id;
 ALTER TABLE ONLY response_url ALTER COLUMN id SET DEFAULT nextval('response_url_seq'::regclass);
 ALTER TABLE ONLY response_url ADD CONSTRAINT response_url_pkey PRIMARY KEY (id);

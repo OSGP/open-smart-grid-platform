@@ -45,7 +45,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
   @Override
   public void processMessage(final ObjectMessage message) {
-    log.debug("Processing smart metering response message");
+    log.debug("Processing response message");
 
     String correlationUid = null;
     String actualMessageType = null;
@@ -123,16 +123,15 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
       final Serializable dataObject) {
 
     final short numberOfNotificationsSent = 0;
-    final Serializable meterResponseObject;
+    final Serializable responseObject;
     if (dataObject == null) {
-      meterResponseObject = resultDescription;
+      responseObject = resultDescription;
     } else {
-      meterResponseObject = dataObject;
+      responseObject = dataObject;
     }
 
     final ResponseData responseData =
-        new ResponseData(
-            ids, messageType, resultType, meterResponseObject, numberOfNotificationsSent);
+        new ResponseData(ids, messageType, resultType, responseObject, numberOfNotificationsSent);
     this.responseDataService.enqueue(responseData);
   }
 }
