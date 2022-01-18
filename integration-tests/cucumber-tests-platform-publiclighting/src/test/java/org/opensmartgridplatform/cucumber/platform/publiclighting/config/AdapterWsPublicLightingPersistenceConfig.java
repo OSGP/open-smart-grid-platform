@@ -11,8 +11,6 @@ package org.opensmartgridplatform.cucumber.platform.publiclighting.config;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.opensmartgridplatform.cucumber.platform.config.ApplicationPersistenceConfiguration;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws.PublicLightingNotificationWebServiceConfigurationRepository;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws.PublicLightingResponseDataRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -25,9 +23,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @EnableJpaRepositories(
     entityManagerFactoryRef = "entityMgrFactWsPublicLighting",
     transactionManagerRef = "txMgrWsPublicLighting",
-    basePackageClasses = {
-      PublicLightingResponseDataRepository.class,
-      PublicLightingNotificationWebServiceConfigurationRepository.class
+    basePackages = {
+      "org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws"
     })
 public class AdapterWsPublicLightingPersistenceConfig extends ApplicationPersistenceConfiguration {
 

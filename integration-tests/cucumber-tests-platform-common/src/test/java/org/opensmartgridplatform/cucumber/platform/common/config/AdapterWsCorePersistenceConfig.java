@@ -11,10 +11,6 @@ package org.opensmartgridplatform.cucumber.platform.common.config;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.CoreApplicationKeyConfigurationRepository;
-import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.CoreNotificationWebServiceConfigurationRepository;
-import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.CoreResponseDataRepository;
-import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.CoreResponseUrlDataRepository;
 import org.opensmartgridplatform.cucumber.platform.config.ApplicationPersistenceConfiguration;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,12 +24,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @EnableJpaRepositories(
     entityManagerFactoryRef = "entityMgrWsCore",
     transactionManagerRef = "txMgrWsCore",
-    basePackageClasses = {
-      CoreApplicationKeyConfigurationRepository.class,
-      CoreNotificationWebServiceConfigurationRepository.class,
-      CoreResponseDataRepository.class,
-      CoreResponseUrlDataRepository.class
-    })
+    basePackages = {"org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws"})
 public class AdapterWsCorePersistenceConfig extends ApplicationPersistenceConfiguration {
 
   @Value("${db.name.osgp_adapter_ws_core}")
