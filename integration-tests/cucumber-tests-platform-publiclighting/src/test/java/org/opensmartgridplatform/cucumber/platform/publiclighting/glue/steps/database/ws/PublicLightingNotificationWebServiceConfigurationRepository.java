@@ -9,7 +9,6 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws;
 
-import java.util.List;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,8 +16,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PublicLightingNotificationWebServiceConfigurationRepository
-    extends JpaRepository<NotificationWebServiceConfiguration, ApplicationDataLookupKey> {
-
-  List<NotificationWebServiceConfiguration> findByIdOrganisationIdentification(
-      String organisationIdentification);
-}
+    extends JpaRepository<NotificationWebServiceConfiguration, ApplicationDataLookupKey> {}
