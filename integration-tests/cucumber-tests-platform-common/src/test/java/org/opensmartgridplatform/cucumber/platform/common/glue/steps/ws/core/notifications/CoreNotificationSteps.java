@@ -33,20 +33,16 @@ public class CoreNotificationSteps {
   @Autowired private CoreNotificationService coreNotificationService;
 
   @Then("^a notification is sent in ws-core$")
-  public void aNotificationIsSent() throws Throwable {
-    final String correlationUid =
-        (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
-    if (correlationUid == null) {
-      Assertions.fail(
-          "No "
-              + PlatformKeys.KEY_CORRELATION_UID
-              + " stored in the scenario context. Unable to make assumptions as to whether a notification has been sent in ws-core.");
-    }
-    this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, correlationUid, true);
+  public void aNotificationIsSent() {
+    this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, true);
   }
 
   @Then("^no notification is sent in ws-core$")
-  public void noNotificationIsSent() throws Throwable {
+  public void noNotificationIsSent() {
+    this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, false);
+  }
+
+  private void waitForNotification(final int maxTimeOut, final boolean expectNotification) {
     final String correlationUid =
         (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
     if (correlationUid == null) {
@@ -55,16 +51,9 @@ public class CoreNotificationSteps {
               + PlatformKeys.KEY_CORRELATION_UID
               + " stored in the scenario context. Unable to make assumptions as to whether a notification has been sent in ws-core.");
     }
-    this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, correlationUid, false);
-  }
-
-  private void waitForNotification(
-      final int maxTimeOut, final String correlationUid, final boolean expectCorrelationUid)
-      throws Throwable {
-
     LOGGER.info(
         "Waiting to make sure {} notification is received for correlation UID {} for at most {} milliseconds.",
-        expectCorrelationUid ? "a" : "no",
+        expectNotification ? "a" : "no",
         correlationUid,
         maxTimeOut);
 
@@ -72,20 +61,16 @@ public class CoreNotificationSteps {
         this.coreNotificationService.getNotification(
             correlationUid, maxTimeOut, TimeUnit.MILLISECONDS);
 
-    final boolean gotExpectedNotification = expectCorrelationUid && notification != null;
-    final boolean didNotGetUnexpectedNotification = !expectCorrelationUid && notification == null;
-    if (gotExpectedNotification || didNotGetUnexpectedNotification) {
-      return;
-    }
-
-    if (expectCorrelationUid) {
+    if (expectNotification && notification == null) {
       Assertions.fail(
           "Did not receive a notification for correlation UID: "
               + correlationUid
               + " within "
               + maxTimeOut
               + " milliseconds");
-    } else {
+    }
+
+    if (!expectNotification && notification != null) {
       Assertions.fail("Received notification for correlation UID: " + correlationUid);
     }
   }

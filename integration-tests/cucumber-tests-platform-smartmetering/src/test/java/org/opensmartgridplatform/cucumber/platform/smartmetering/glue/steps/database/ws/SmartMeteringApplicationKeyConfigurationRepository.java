@@ -9,11 +9,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws;
 
-import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
-import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationKeyConfiguration;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ApplicationKeyConfigurationRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SmartMeteringApplicationKeyConfigurationRepository
-    extends JpaRepository<ApplicationKeyConfiguration, ApplicationDataLookupKey> {}
+    extends ApplicationKeyConfigurationRepository {}

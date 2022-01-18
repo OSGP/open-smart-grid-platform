@@ -17,7 +17,7 @@ import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.SecurityKey;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.database.DlmsDatabase;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.database.WsDatabase;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.database.WsSmartMeteringNotificationDatabase;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.simulator.DeviceSimulatorSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration.ReplaceKeysSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ServiceEndpoint;
@@ -34,7 +34,7 @@ public class ScenarioHooks {
   private int alarmNotificationsPort;
 
   @Autowired private DlmsDatabase dlmsDatabase;
-  @Autowired private WsDatabase wsDatabase;
+  @Autowired private WsSmartMeteringNotificationDatabase wsSmartMeteringNotificationDatabase;
 
   @Autowired private ReplaceKeysSteps replaceKeysSteps;
 
@@ -57,7 +57,7 @@ public class ScenarioHooks {
   public void beforeScenario() {
     this.deviceSimulatorSteps.clearDlmsAttributeValues();
     this.dlmsDatabase.prepareDatabaseForScenario();
-    this.wsDatabase.prepareDatabaseForScenario();
+    this.wsSmartMeteringNotificationDatabase.prepareDatabaseForScenario();
     this.prepareServiceEndpoint();
   }
 

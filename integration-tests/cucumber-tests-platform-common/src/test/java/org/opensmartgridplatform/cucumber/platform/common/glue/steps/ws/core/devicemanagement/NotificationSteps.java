@@ -11,7 +11,7 @@ package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.de
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import io.cucumber.java.en.When;
+import io.cucumber.java.en.Then;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.Notification;
@@ -89,11 +89,8 @@ public class NotificationSteps {
         notificationType,
         nextWait);
 
-    final Notification notification =
-        this.coreNotificationService.getNotification(
-            notificationType, nextWait, TimeUnit.MILLISECONDS);
-
-    return notification;
+    return this.coreNotificationService.getNotification(
+        notificationType, nextWait, TimeUnit.MILLISECONDS);
   }
 
   protected Notification waitForNotification(final int nextWait) {
@@ -108,7 +105,7 @@ public class NotificationSteps {
     return notification;
   }
 
-  @When("^the notification is received$")
+  @Then("^the notification is received$")
   public void theNotificationIsReceived(final Map<String, String> settings) throws Throwable {
     final NotificationType notificationType =
         NotificationType.valueOf(settings.get(PlatformKeys.KEY_NOTIFICATION_TYPE));

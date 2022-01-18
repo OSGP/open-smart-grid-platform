@@ -1,5 +1,5 @@
 @Common @Platform @NightlyBuildOnly
-Feature: SmartMetering notifications - Resend notifications
+Feature: GXF notifications (WS Core) - Resend notifications
   As an OSGP user
   I want the platform to resend missed notifications
   So the notification mechanism is more robust

@@ -71,10 +71,7 @@ public class CoreResponseDataSteps extends BaseDeviceSteps {
     final String correlationUid =
         (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
 
-    final ResponseData responseData =
-        this.coreResponseDataRepository.findByCorrelationUid(correlationUid);
-
-    assertThat(responseData).as("Response data should be deleted in ws-core").isNull();
+    this.theResponseDataRecordShouldBeDeleted(correlationUid);
   }
 
   @Then("^the response data record should not be deleted in ws-core$")
@@ -82,10 +79,7 @@ public class CoreResponseDataSteps extends BaseDeviceSteps {
     final String correlationUid =
         (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
 
-    final ResponseData responseData =
-        this.coreResponseDataRepository.findByCorrelationUid(correlationUid);
-
-    assertThat(responseData).as("Response data should not be deleted in ws-core").isNotNull();
+    this.theResponseDataRecordShouldBeDeleted(correlationUid);
   }
 
   @Then("^the response data record with correlation uid \\\"(.*)\\\" should be deleted in ws-core$")

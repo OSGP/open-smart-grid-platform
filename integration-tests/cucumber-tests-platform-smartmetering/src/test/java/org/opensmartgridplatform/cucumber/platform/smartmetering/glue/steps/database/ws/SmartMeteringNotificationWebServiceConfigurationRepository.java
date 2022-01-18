@@ -9,11 +9,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws;
 
-import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
-import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SmartMeteringNotificationWebServiceConfigurationRepository
-    extends JpaRepository<NotificationWebServiceConfiguration, ApplicationDataLookupKey> {}
+    extends NotificationWebServiceConfigurationRepository {}

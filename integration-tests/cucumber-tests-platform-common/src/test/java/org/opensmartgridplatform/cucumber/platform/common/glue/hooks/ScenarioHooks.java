@@ -12,13 +12,13 @@ package org.opensmartgridplatform.cucumber.platform.common.glue.hooks;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
-import org.opensmartgridplatform.cucumber.platform.common.glue.database.WsCoreDatabase;
+import org.opensmartgridplatform.cucumber.platform.common.glue.database.WsCoreNotificationDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /** Class with all the scenario hooks when each scenario runs. */
 public class ScenarioHooks {
 
-  @Autowired private WsCoreDatabase wsCoreDatabase;
+  @Autowired private WsCoreNotificationDatabase wsCoreNotificationDatabase;
 
   /**
    * Executed before each scenario.
@@ -30,7 +30,7 @@ public class ScenarioHooks {
    */
   @Before(order = 1000)
   public void beforeScenario() {
-    this.wsCoreDatabase.prepareDatabaseForScenario();
+    this.wsCoreNotificationDatabase.prepareDatabaseForScenario();
   }
 
   /**
