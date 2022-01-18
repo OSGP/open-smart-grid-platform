@@ -30,11 +30,11 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true)
 public class PersistenceConfigCore extends AbstractPersistenceConfig {
 
-  @Value("${db.username.core}")
-  private String username;
+  @Value("${db.readonly.username.core}")
+  private String readonlyUsername;
 
-  @Value("${db.password.core}")
-  private String password;
+  @Value("${db.readonly.password.core}")
+  private String readonlyPassword;
 
   @Value("${db.host.core}")
   private String databaseHost;
@@ -57,8 +57,8 @@ public class PersistenceConfigCore extends AbstractPersistenceConfig {
 
       final DefaultConnectionPoolFactory.Builder builder =
           super.builder()
-              .withUsername(this.username)
-              .withPassword(this.password)
+              .withUsername(this.readonlyUsername)
+              .withPassword(this.readonlyPassword)
               .withDatabaseHost(this.databaseHost)
               .withDatabasePort(this.databasePort)
               .withDatabaseName(this.databaseName);
