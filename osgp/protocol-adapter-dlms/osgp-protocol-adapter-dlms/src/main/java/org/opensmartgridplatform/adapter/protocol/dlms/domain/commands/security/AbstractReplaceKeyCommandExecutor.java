@@ -62,7 +62,7 @@ public abstract class AbstractReplaceKeyCommandExecutor<T>
       final DlmsDevice device,
       final SetKeysRequestDto setKeysRequestDto,
       final MessageMetadata messageMetadata)
-      throws FunctionalException, OsgpException {
+      throws OsgpException {
     log.info("Keys set on device :{}", device.getDeviceIdentification());
 
     SetKeysRequestDto setDecryptedKeysRequestDto = setKeysRequestDto;
