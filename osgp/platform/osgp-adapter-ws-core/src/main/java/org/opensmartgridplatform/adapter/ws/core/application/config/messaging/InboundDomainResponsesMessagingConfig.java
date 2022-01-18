@@ -55,8 +55,7 @@ public class InboundDomainResponsesMessagingConfig {
     return this.jmsConfigurationFactory.initMessageListenerContainer(messageListener);
   }
 
-  @Bean
-  @Qualifier("wsCoreInboundDomainResponsesMessageProcessorMap")
+  @Bean(name = "wsCoreInboundDomainResponsesMessageProcessorMap")
   public MessageProcessorMap coreResponseMessageProcessorMap() {
     return new BaseMessageProcessorMap("domainResponseMessageProcessorMap");
   }
