@@ -32,6 +32,7 @@ public class WsCoreNotificationDatabase extends WsNotificationDatabase {
         "OSGP",
         String.format(
             "http://localhost:%s%s", webServiceNotificationPort, webServiceNotificationContext),
+        false,
         "org.opensmartgridplatform.adapter.ws.schema.core.notification",
         responseDataRepository,
         responseUrlDataRepository,

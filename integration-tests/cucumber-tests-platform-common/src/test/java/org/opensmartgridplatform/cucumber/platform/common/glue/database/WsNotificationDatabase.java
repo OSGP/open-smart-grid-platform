@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class WsNotificationDatabase {
   private final String applicationName;
   private final String targetUri;
+  private final boolean useKeyStore;
   private final String marshallerContextPath;
   private final ResponseDataRepository responseDataRepository;
   private final ResponseUrlDataRepository responseUrlDataRepository;
@@ -33,6 +34,7 @@ public class WsNotificationDatabase {
   public WsNotificationDatabase(
       final String applicationName,
       final String targetUri,
+      final boolean useKeyStore,
       final String marshallerContextPath,
       final ResponseDataRepository responseDataRepository,
       final ResponseUrlDataRepository responseUrlDataRepository,
@@ -41,6 +43,7 @@ public class WsNotificationDatabase {
       final ApplicationKeyConfigurationRepository applicationKeyConfigurationRepository) {
     this.applicationName = applicationName;
     this.targetUri = targetUri;
+    this.useKeyStore = useKeyStore;
     this.marshallerContextPath = marshallerContextPath;
     this.responseDataRepository = responseDataRepository;
     this.responseUrlDataRepository = responseUrlDataRepository;
@@ -72,9 +75,10 @@ public class WsNotificationDatabase {
             .withApplicationName(this.applicationName)
             .withMarshallerContextPath(this.marshallerContextPath)
             .withTargetUri(this.targetUri)
-            .withoutKeyStoreConfig()
-            .withoutTrustStoreConfig()
             .withoutCircuitBreakerConfig();
+    if (!this.useKeyStore) {
+      builder.withoutKeyStoreConfig().withoutTrustStoreConfig();
+    }
     final NotificationWebServiceConfiguration testOrgConfig = builder.build();
     final NotificationWebServiceConfiguration noOrganisationConfig =
         builder.withOrganisationIdentification("no-organisation").build();
