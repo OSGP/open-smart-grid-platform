@@ -273,7 +273,7 @@ Feature: SmartMetering Configuration - Firmware
       | ManufacturerCode            | GMAN              |
       | DeviceModelCode             | G_METER_MODEL_1   |
       | GatewayDeviceIdentification | ETEST102400000002 |
-      | MbusIdentificationNumber    | 0000000           |
+      | MbusIdentificationNumber    | 00000000          |
       | FirmwareUpdateKey           | SECURITY_KEY_2    |
     And a firmware
       | FirmwareFileIdentification  | TEST_FW_FILE_GAS_0002          |
