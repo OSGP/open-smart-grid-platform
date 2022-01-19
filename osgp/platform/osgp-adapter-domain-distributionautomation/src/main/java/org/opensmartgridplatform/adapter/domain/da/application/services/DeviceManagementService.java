@@ -112,7 +112,7 @@ public class DeviceManagementService extends BaseService {
         throw osgpException;
       }
 
-      this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification);
+      this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification, true);
 
       getHealthStatusResponse =
           this.mapper.map(getHealthStatusResponseDto, GetHealthStatusResponse.class);
