@@ -14,7 +14,7 @@
 
   <artifactId>protocol-adapter-oslp</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>5.18.4</version>
+  <version>5.18.5-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
