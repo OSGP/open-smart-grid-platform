@@ -276,7 +276,10 @@ public class MqttClient {
       LOGGER.info("MQTT Client {} unsubscribed from topic: {}", this.clientIdentifier, topic);
     } else {
       LOGGER.warn(
-          "MQTT Client {} unsubscribe failed for topic: {}", this.clientIdentifier, throwable);
+          "MQTT Client {} unsubscribe failed for topic: {}",
+          this.clientIdentifier,
+          topic,
+          throwable);
     }
   }
 }
