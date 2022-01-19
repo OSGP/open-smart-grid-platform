@@ -20,6 +20,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.exceptionhandling.UnknownCorrelationUidException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,12 +55,18 @@ abstract class CoreEndpoint implements WebserviceEndpoint {
     }
   }
 
-  protected ResponseMessage getResponseMessage(final AsyncRequest asyncRequest)
-      throws UnknownCorrelationUidException {
-    return (ResponseMessage)
-        this.responseDataService
-            .dequeue(asyncRequest.getCorrelationUid(), ComponentType.WS_CORE)
-            .getMessageData();
+  protected ResponseMessage getResponseMessage(final AsyncRequest asyncRequest) {
+    try {
+      return (ResponseMessage)
+          this.responseDataService
+              .dequeue(asyncRequest.getCorrelationUid(), ComponentType.WS_CORE)
+              .getMessageData();
+    } catch (final UnknownCorrelationUidException unknownCorrelationUidException) {
+      LOGGER.info(
+          "No message with correlationUID: {} has been found, NOT_FOUND will be returned.",
+          asyncRequest.getCorrelationUid());
+      return this.createEmptyMessage(asyncRequest.getCorrelationUid());
+    }
   }
 
   protected void throwExceptionIfResultNotOk(
@@ -83,5 +90,12 @@ abstract class CoreEndpoint implements WebserviceEndpoint {
   @Override
   public void saveResponseUrlIfNeeded(final String correlationUid, final String responseUrl) {
     this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+  }
+
+  private ResponseMessage createEmptyMessage(final String correlationUid) {
+    return ResponseMessage.newResponseMessageBuilder()
+        .withCorrelationUid(correlationUid)
+        .withResult(ResponseMessageResultType.NOT_FOUND)
+        .build();
   }
 }
