@@ -13,7 +13,7 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaDeviceSpecifications;
 import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaEventSpecifications;
-import org.opensmartgridplatform.adapter.ws.shared.db.application.config.WritablePersistenceConfig;
+import org.opensmartgridplatform.adapter.ws.shared.db.application.config.WritablePersistenceConfigCore;
 import org.opensmartgridplatform.domain.core.specifications.DeviceSpecifications;
 import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareLocation;
@@ -46,7 +46,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @Import({
   PersistenceConfigCore.class,
   PersistenceConfigWs.class,
-  WritablePersistenceConfig.class,
+  WritablePersistenceConfigCore.class,
   WebServiceConfig.class,
   CoreWebServiceConfig.class
 })
