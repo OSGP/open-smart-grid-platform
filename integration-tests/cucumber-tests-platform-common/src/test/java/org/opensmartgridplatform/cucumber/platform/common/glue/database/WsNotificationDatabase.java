@@ -18,7 +18,6 @@ import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebS
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
-import org.springframework.transaction.annotation.Transactional;
 
 public class WsNotificationDatabase {
   private final String applicationName;
