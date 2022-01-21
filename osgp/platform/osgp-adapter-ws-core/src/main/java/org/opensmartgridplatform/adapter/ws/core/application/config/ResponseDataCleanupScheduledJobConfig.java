@@ -10,6 +10,7 @@
 package org.opensmartgridplatform.adapter.ws.core.application.config;
 
 import javax.annotation.PostConstruct;
+import org.opensmartgridplatform.adapter.ws.core.application.services.ResponseUrlDataCleanupJob;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataCleanupJob;
 import org.opensmartgridplatform.shared.application.scheduling.OsgpScheduler;
 import org.quartz.SchedulerException;
@@ -42,5 +43,8 @@ public class ResponseDataCleanupScheduledJobConfig {
   private void initializeScheduledJob() throws SchedulerException {
     this.osgpScheduler.createAndScheduleJob(
         ResponseDataCleanupJob.class, this.cronExpressionResponseCleanup);
+
+    this.osgpScheduler.createAndScheduleJob(
+        ResponseUrlDataCleanupJob.class, this.cronExpressionResponseCleanup);
   }
 }

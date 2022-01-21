@@ -52,7 +52,6 @@ public class WsNotificationDatabase {
     this.applicationKeyConfigurationRepository = applicationKeyConfigurationRepository;
   }
 
-  @Transactional(transactionManager = "txMgrWsSmartMetering")
   public void prepareDatabaseForScenario() {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 

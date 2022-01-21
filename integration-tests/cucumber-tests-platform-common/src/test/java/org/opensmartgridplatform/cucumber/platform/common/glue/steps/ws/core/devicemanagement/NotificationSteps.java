@@ -70,7 +70,11 @@ public class NotificationSteps {
 
   protected Notification waitForNotification(final NotificationType notificationType) {
     final int nextWait = this.getNextWait();
-    final Notification notification = this.waitForNotification(notificationType, nextWait);
+
+    final Notification notification =
+        this.coreNotificationService.getNotification(
+            notificationType, nextWait, TimeUnit.MILLISECONDS);
+
     if (notification == null) {
       throw new AssertionError(
           "Did not receive a notification for notification type: "
@@ -78,29 +82,6 @@ public class NotificationSteps {
               + " within "
               + nextWait
               + " milliseconds");
-    }
-    return notification;
-  }
-
-  protected Notification waitForNotification(
-      final NotificationType notificationType, final int nextWait) {
-    LOGGER.info(
-        "Waiting for a notification for notification type {} for at most {} milliseconds.",
-        notificationType,
-        nextWait);
-
-    return this.coreNotificationService.getNotification(
-        notificationType, nextWait, TimeUnit.MILLISECONDS);
-  }
-
-  protected Notification waitForNotification(final int nextWait) {
-    LOGGER.info("Waiting for a notification for at most {} milliseconds.", nextWait);
-
-    final Notification notification =
-        this.coreNotificationService.getNotification(nextWait, TimeUnit.MILLISECONDS);
-
-    if (notification == null) {
-      LOGGER.info("Did not receive a notification within " + nextWait + " milliseconds");
     }
     return notification;
   }

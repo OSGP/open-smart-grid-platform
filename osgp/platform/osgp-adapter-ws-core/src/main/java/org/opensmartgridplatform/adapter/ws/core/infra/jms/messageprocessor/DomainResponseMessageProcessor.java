@@ -23,7 +23,6 @@ import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -37,8 +36,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
   public DomainResponseMessageProcessor(
       final NotificationService notificationService,
       final ResponseDataService responseDataService,
-      @Value("${web.service.notification.application.name}")
-          final String webserviceNotificationApplicationName) {
+      final String webserviceNotificationApplicationName) {
     this.notificationService = notificationService;
     this.responseDataService = responseDataService;
     this.webserviceNotificationApplicationName = webserviceNotificationApplicationName;

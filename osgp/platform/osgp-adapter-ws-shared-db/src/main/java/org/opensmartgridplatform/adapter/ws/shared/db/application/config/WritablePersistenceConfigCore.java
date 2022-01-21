@@ -32,31 +32,31 @@ import org.springframework.transaction.support.AbstractPlatformTransactionManage
     basePackageClasses = {WritableDeviceRepository.class})
 @Configuration
 @EnableTransactionManagement()
-public class WritablePersistenceConfig extends AbstractCustomConfig {
+public class WritablePersistenceConfigCore extends AbstractCustomConfig {
 
-  private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.writable.username";
-  private static final String PROPERTY_NAME_DATABASE_PW = "db.writable.password";
+  private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.writable.username.core";
+  private static final String PROPERTY_NAME_DATABASE_PW = "db.writable.password.core";
 
-  private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
-  private static final String PROPERTY_NAME_DATABASE_PROTOCOL = "db.protocol";
+  private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver.core";
+  private static final String PROPERTY_NAME_DATABASE_PROTOCOL = "db.protocol.core";
 
-  private static final String PROPERTY_NAME_DATABASE_HOST = "db.host";
-  private static final String PROPERTY_NAME_DATABASE_PORT = "db.port";
-  private static final String PROPERTY_NAME_DATABASE_NAME = "db.name";
+  private static final String PROPERTY_NAME_DATABASE_HOST = "db.host.core";
+  private static final String PROPERTY_NAME_DATABASE_PORT = "db.port.core";
+  private static final String PROPERTY_NAME_DATABASE_NAME = "db.name.core";
 
-  private static final String PROPERTY_NAME_DATABASE_MIN_POOL_SIZE = "db.min_pool_size";
-  private static final String PROPERTY_NAME_DATABASE_MAX_POOL_SIZE = "db.max_pool_size";
-  private static final String PROPERTY_NAME_DATABASE_AUTO_COMMIT = "db.auto_commit";
-  private static final String PROPERTY_NAME_DATABASE_IDLE_TIMEOUT = "db.idle_timeout";
+  private static final String PROPERTY_NAME_DATABASE_MIN_POOL_SIZE = "db.min_pool_size.core";
+  private static final String PROPERTY_NAME_DATABASE_MAX_POOL_SIZE = "db.max_pool_size.core";
+  private static final String PROPERTY_NAME_DATABASE_AUTO_COMMIT = "db.auto_commit.core";
+  private static final String PROPERTY_NAME_DATABASE_IDLE_TIMEOUT = "db.idle_timeout.core";
 
-  private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
-  private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
+  private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect.core";
+  private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql.core";
   private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY =
-      "hibernate.physical_naming_strategy";
-  private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
+      "hibernate.physical_naming_strategy.core";
+  private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql.core";
 
   private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN =
-      "entitymanager.packages.to.scan";
+      "entitymanager.packages.to.scan.core";
 
   private HikariDataSource dataSource;
 

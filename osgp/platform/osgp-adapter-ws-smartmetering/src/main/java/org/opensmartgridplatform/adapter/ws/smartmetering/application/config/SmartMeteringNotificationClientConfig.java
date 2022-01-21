@@ -32,6 +32,9 @@ import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true)
 public class SmartMeteringNotificationClientConfig extends AbstractConfig {
 
+  private static final String PROPERTY_NAME_NOTIFICATION_APPLICATION_NAME =
+      "web.service.notification.application.name";
+
   @Value("${web.service.notification.enabled}")
   private boolean webserviceNotificationEnabled;
 
@@ -41,8 +44,10 @@ public class SmartMeteringNotificationClientConfig extends AbstractConfig {
   @Value("${web.service.notification.organisation:OSGP}")
   private String webserviceNotificationOrganisation;
 
-  @Value("${web.service.notification.application.name}")
-  private String webserviceNotificationApplicationName;
+  @Bean
+  public String webserviceNotificationApplicationName() {
+    return this.environment.getRequiredProperty(PROPERTY_NAME_NOTIFICATION_APPLICATION_NAME);
+  }
 
   @Bean
   public NotificationService smartMeteringNotificationService(
@@ -59,7 +64,7 @@ public class SmartMeteringNotificationClientConfig extends AbstractConfig {
         notificationRequestType,
         mapper,
         responseUrlService,
-        this.webserviceNotificationApplicationName);
+        this.webserviceNotificationApplicationName());
   }
 
   @Bean
@@ -70,7 +75,7 @@ public class SmartMeteringNotificationClientConfig extends AbstractConfig {
         OrganisationIdentificationClientInterceptor.newBuilder()
             .withOrganisationIdentification(this.webserviceNotificationOrganisation)
             .withUserName(this.webserviceNotificationUsername)
-            .withApplicationName(this.webserviceNotificationApplicationName)
+            .withApplicationName(this.webserviceNotificationApplicationName())
             .build();
 
     return new NotificationWebServiceTemplateFactory(

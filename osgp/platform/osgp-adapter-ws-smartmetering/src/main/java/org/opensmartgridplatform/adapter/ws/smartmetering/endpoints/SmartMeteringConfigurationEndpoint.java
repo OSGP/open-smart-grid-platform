@@ -139,7 +139,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -164,8 +163,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
   @Qualifier("decrypterForGxfSmartMetering")
   private RsaEncrypter decrypterForGxfSmartMetering;
 
-  @Value("${web.service.notification.application.name}")
-  private String webserviceNotificationApplicationName;
+  @Autowired private String webserviceNotificationApplicationName;
 
   public SmartMeteringConfigurationEndpoint() {
     // Default constructor
