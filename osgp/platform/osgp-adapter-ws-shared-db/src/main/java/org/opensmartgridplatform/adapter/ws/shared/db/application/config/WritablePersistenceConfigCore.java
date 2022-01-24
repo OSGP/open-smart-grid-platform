@@ -159,17 +159,15 @@ public class WritablePersistenceConfigCore extends AbstractCustomConfig {
 
     final Properties jpaProperties = new Properties();
     jpaProperties.put(
-        PROPERTY_NAME_HIBERNATE_DIALECT,
-        ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT));
+        "hibernate.dialect", ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT));
     jpaProperties.put(
-        PROPERTY_NAME_HIBERNATE_FORMAT_SQL,
+        "hibernate.format_sql",
         ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_FORMAT_SQL));
     jpaProperties.put(
-        PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY,
+        "hibernate.physical_naming_strategy",
         ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY));
     jpaProperties.put(
-        PROPERTY_NAME_HIBERNATE_SHOW_SQL,
-        ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL));
+        "hibernate.show_sql", ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL));
 
     entityManagerFactoryBean.setJpaProperties(jpaProperties);
 
