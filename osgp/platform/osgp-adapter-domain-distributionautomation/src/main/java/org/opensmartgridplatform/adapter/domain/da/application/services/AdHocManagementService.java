@@ -87,7 +87,7 @@ public class AdHocManagementService extends BaseService {
         throw osgpException;
       }
 
-      this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification);
+      this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification, true);
 
       getDeviceModelResponse =
           this.mapper.map(getDeviceModelResponseDto, GetDeviceModelResponse.class);
@@ -119,7 +119,8 @@ public class AdHocManagementService extends BaseService {
         "Forward {} response {} for device: {}", messageType, response, deviceIdentification);
 
     try {
-      this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification);
+      // For GET_DATA responses device data is not always expected to be known to GXF.
+      this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification, false);
     } catch (final FunctionalException e) {
       LOGGER.error("FunctionalException", e);
       return;

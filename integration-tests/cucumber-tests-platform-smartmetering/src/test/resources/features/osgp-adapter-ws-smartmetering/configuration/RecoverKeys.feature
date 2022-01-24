@@ -19,6 +19,7 @@ Feature: SmartMetering Configuration - Recover Keys
       | Authentication_key   | SECURITY_KEY_A    |
     And after 15 seconds, the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
       | SECURITY_KEY_1 | EXPIRED |
+    And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"
 
   @RecoverKeys @ResetKeysOnDevice
   Scenario: Replace keys triggers a recover keys and replaces keys on the retry
@@ -43,6 +44,7 @@ Feature: SmartMetering Configuration - Recover Keys
       | SECURITY_KEY_E | EXPIRED |
       | SECURITY_KEY_1 | EXPIRED |
       | SECURITY_KEY_2 | ACTIVE  |
+    And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"
 
   @RecoverKeys @ResetKeysOnDevice
   Scenario: Generate and Replace keys triggers a recover keys and replaces keys on the retry
@@ -63,3 +65,4 @@ Feature: SmartMetering Configuration - Recover Keys
     And the encrypted_secret table in the secret management database should contain "Encryption_key" keys for device "TEST1024000000001"
       | SECURITY_KEY_E | EXPIRED |
       | SECURITY_KEY_1 | EXPIRED |
+    And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"

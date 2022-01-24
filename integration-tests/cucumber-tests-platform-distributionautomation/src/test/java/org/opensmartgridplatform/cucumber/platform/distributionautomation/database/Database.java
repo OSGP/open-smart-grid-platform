@@ -11,7 +11,6 @@ package org.opensmartgridplatform.cucumber.platform.distributionautomation.datab
 import java.util.Arrays;
 import java.util.List;
 import org.opensmartgridplatform.adapter.kafka.da.domain.repositories.LocationRepository;
-import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps.database.ws.DistributionAutomationNotificationWebServiceConfigurationRepository;
@@ -22,8 +21,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Database {
-
-  @Autowired private MqttDeviceRepository mqttDeviceRepository;
 
   @Autowired
   private DistributionAutomationResponseDataRepository distributionAutomationResponseDataRepository;
@@ -56,9 +53,6 @@ public class Database {
 
   public void prepareDatabaseForScenario() {
     // Removes all test related data from the various databases
-
-    // Remove from osgp_adapter_protocol_mqtt
-    this.mqttDeviceRepository.deleteAll();
 
     // Remove from osgp_adapter_ws_distributionautomation
     this.distributionAutomationResponseDataRepository.deleteAll();

@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.time.Instant;
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceKeyProcessAlreadyRunningException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ThrowingConsumer;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -31,6 +33,7 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.throttling.ThrottlingPermitDeniedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor implementation should be
@@ -44,6 +47,9 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
 
   /** Constant to signal that message processor doesn't (have to) send a response. */
   protected static final String NO_RESPONSE = "NO-RESPONSE";
+
+  @Value("#{T(java.time.Duration).parse('${device.key.processing.timeout:PT5M}')}")
+  private Duration deviceKeyProcessingTimeout;
 
   @Autowired protected DeviceResponseMessageSender responseMessageSender;
 
@@ -112,6 +118,10 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       this.deviceRequestMessageSender.send(
           messageObject, messageMetadata, this.throttlingClientConfig.permitRejectedDelay());
 
+    } catch (final DeviceKeyProcessAlreadyRunningException exception) {
+
+      this.deviceRequestMessageSender.send(
+          messageObject, messageMetadata, this.deviceKeyProcessingTimeout);
     } catch (final Exception exception) {
       this.sendErrorResponse(messageMetadata, exception, messageObject);
     }

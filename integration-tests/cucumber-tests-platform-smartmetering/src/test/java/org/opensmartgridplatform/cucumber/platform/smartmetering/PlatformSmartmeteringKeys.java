@@ -102,6 +102,7 @@ public class PlatformSmartmeteringKeys
   public static final String TIME_ZONE_OFFSET = "TimeZoneOffset";
 
   public static final String RESULT = "Result";
+  public static final String RESULT_STRING = "ResultString";
   public static final String DAYLIGHT_SAVINGS_ACTIVE = "DST";
   public static final String DEVIATION = "Deviation";
 
