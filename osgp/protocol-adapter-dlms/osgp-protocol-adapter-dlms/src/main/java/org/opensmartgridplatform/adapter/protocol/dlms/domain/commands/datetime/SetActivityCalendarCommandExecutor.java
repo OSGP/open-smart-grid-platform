@@ -50,15 +50,24 @@ public class SetActivityCalendarCommandExecutor
   private static final int ATTRIBUTE_ID_WEEK_PROFILE_TABLE_PASSIVE = 8;
   private static final int ATTRIBUTE_ID_DAY_PROFILE_TABLE_PASSIVE = 9;
 
-  @Autowired private ConfigurationMapper configurationMapper;
+  private final ConfigurationMapper configurationMapper;
+
+  private final SetActivityCalendarCommandActivationExecutor
+      setActivityCalendarCommandActivationExecutor;
+
+  private final DlmsHelper dlmsHelper;
 
   @Autowired
-  private SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor;
-
-  @Autowired private DlmsHelper dlmsHelper;
-
-  public SetActivityCalendarCommandExecutor() {
+  public SetActivityCalendarCommandExecutor(
+      final DlmsHelper dlmsHelper,
+      final SetActivityCalendarCommandActivationExecutor
+          setActivityCalendarCommandActivationExecutor,
+      final ConfigurationMapper configurationMapper) {
     super(ActivityCalendarDataDto.class);
+    this.dlmsHelper = dlmsHelper;
+    this.setActivityCalendarCommandActivationExecutor =
+        setActivityCalendarCommandActivationExecutor;
+    this.configurationMapper = configurationMapper;
   }
 
   @Override
