@@ -8,7 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.mqtt.application.config;
 
-import org.opensmartgridplatform.adapter.protocol.mqtt.application.config.messaging.InboundOsgpCoreRequestsMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.config.messaging.OutboundOsgpCoreResponsesMessagingConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
@@ -21,11 +20,7 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:osgp-adapter-protocol-mqtt.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterProtocolMqtt/config}", ignoreResourceNotFound = true)
-@Import(
-    value = {
-      InboundOsgpCoreRequestsMessagingConfig.class,
-      OutboundOsgpCoreResponsesMessagingConfig.class
-    })
+@Import(value = {OutboundOsgpCoreResponsesMessagingConfig.class})
 public class MessagingConfig extends AbstractConfig {
 
   @Bean
