@@ -14,7 +14,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>protocol-adapter-iec60870</artifactId>
-  <version>5.18.5-SNAPSHOT</version>
+  <version>5.18.5</version>
   <packaging>pom</packaging>
   <name>protocol-adapter-iec60870</name>
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
