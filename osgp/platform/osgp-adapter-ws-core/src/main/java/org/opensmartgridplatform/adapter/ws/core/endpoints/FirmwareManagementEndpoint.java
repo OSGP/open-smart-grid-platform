@@ -239,6 +239,7 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
     try {
       final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
       if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "updating firmware");
         response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
@@ -306,6 +307,8 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
       if (responseMessage != null) {
         response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
         if (responseMessage.getDataObject() != null) {
+          throwExceptionIfResultNotOk(responseMessage, "retrieving firmware version");
+
           final List<FirmwareVersion> target = response.getFirmwareVersion();
           @SuppressWarnings("unchecked")
           final List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion>
@@ -531,6 +534,7 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
     try {
       final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
       if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "switching firmware");
         response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       } else {
         LOGGER.debug("Switch Firmware data is null");

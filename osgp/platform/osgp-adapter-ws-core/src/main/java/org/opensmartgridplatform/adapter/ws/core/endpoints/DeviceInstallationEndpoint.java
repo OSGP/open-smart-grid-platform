@@ -138,6 +138,7 @@ public class DeviceInstallationEndpoint extends CoreEndpoint {
     try {
       final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
       if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "getting status");
         response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
         final DeviceStatus deviceStatus = (DeviceStatus) responseMessage.getDataObject();
         if (deviceStatus != null) {
@@ -427,6 +428,7 @@ public class DeviceInstallationEndpoint extends CoreEndpoint {
     try {
       final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
       if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "starting device test");
         response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
@@ -494,6 +496,7 @@ public class DeviceInstallationEndpoint extends CoreEndpoint {
     try {
       final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
       if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "stopping device test");
         response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {

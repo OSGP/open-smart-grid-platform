@@ -197,11 +197,10 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
     final SetEventNotificationsAsyncResponse response = new SetEventNotificationsAsyncResponse();
 
     try {
-      final List<EventNotificationType> eventNotifications = new ArrayList<>();
-      eventNotifications.addAll(
-          this.deviceManagementMapper.mapAsList(
-              request.getEventNotifications(), EventNotificationType.class));
-
+      final List<EventNotificationType> eventNotifications =
+          new ArrayList<>(
+              this.deviceManagementMapper.mapAsList(
+                  request.getEventNotifications(), EventNotificationType.class));
       final String correlationUid =
           this.deviceManagementService.enqueueSetEventNotificationsRequest(
               organisationIdentification,
@@ -239,6 +238,7 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
     try {
       final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
       if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "setting event notifications");
         response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
@@ -658,6 +658,7 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
     try {
       final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
       if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "updating device ssl certificate");
         response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       } else {
         LOGGER.debug("Update Device Ssl Certification data is null");
@@ -732,6 +733,7 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
     try {
       final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
       if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "setting device verification key");
         response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       } else {
         LOGGER.debug("Set Device Verification Key is null");
@@ -796,6 +798,7 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
     try {
       final ResponseMessage responseMessage = this.getResponseMessage(asyncRequest);
       if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "setting device lifecycle status");
         response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
@@ -872,6 +875,7 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
     try {
       final ResponseMessage responseMessage = this.getResponseMessage(asyncRequest);
       if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "updating CDMA settings for device");
         response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {

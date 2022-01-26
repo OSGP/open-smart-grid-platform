@@ -142,6 +142,7 @@ public class ConfigurationManagementEndpoint extends CoreEndpoint {
     try {
       final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
       if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "setting configuration");
         response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
@@ -221,6 +222,7 @@ public class ConfigurationManagementEndpoint extends CoreEndpoint {
     try {
       final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
       if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "getting configuration");
         response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
         if (responseMessage.getDataObject() != null) {
           final Configuration configuration = (Configuration) responseMessage.getDataObject();
@@ -297,6 +299,7 @@ public class ConfigurationManagementEndpoint extends CoreEndpoint {
     try {
       final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
       if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "switching configuration");
         response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       } else {
         LOGGER.debug("Get Configuration data is null");

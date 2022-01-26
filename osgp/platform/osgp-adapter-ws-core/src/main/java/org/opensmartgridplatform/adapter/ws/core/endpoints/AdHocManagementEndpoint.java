@@ -99,6 +99,7 @@ public class AdHocManagementEndpoint extends CoreEndpoint {
     try {
       final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
       if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "rebooting");
         response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {

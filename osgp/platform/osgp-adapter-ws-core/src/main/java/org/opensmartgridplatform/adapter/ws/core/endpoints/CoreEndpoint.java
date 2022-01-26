@@ -9,10 +9,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.endpoints;
 
-import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpoint.WebserviceEndpoint;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseUrlService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -65,26 +63,27 @@ abstract class CoreEndpoint implements WebserviceEndpoint {
       LOGGER.info(
           "No message with correlationUID: {} has been found, NOT_FOUND will be returned.",
           asyncRequest.getCorrelationUid());
-      return this.createEmptyMessage(asyncRequest.getCorrelationUid());
+      return createEmptyMessage(asyncRequest.getCorrelationUid());
     }
   }
 
-  protected void throwExceptionIfResultNotOk(
-      final ResponseData meterResponseData, final String exceptionContext) throws OsgpException {
-    if (OsgpResultType.NOT_OK
-        == OsgpResultType.fromValue(meterResponseData.getResultType().getValue())) {
-      if (meterResponseData.getMessageData() instanceof String) {
-        throw new TechnicalException(
-            ComponentType.WS_CORE, (String) meterResponseData.getMessageData(), null);
-      } else if (meterResponseData.getMessageData() instanceof OsgpException) {
-        throw (OsgpException) meterResponseData.getMessageData();
-      } else {
-        throw new TechnicalException(
-            ComponentType.WS_CORE,
-            String.format("An exception occurred %s.", exceptionContext),
-            null);
-      }
+  protected static void throwExceptionIfResultNotOk(
+      final ResponseMessage responseMessage, final String exceptionContext) throws OsgpException {
+    if (ResponseMessageResultType.NOT_OK == responseMessage.getResult()
+        && responseMessage.getOsgpException() != null) {
+      LOGGER.error(
+          "Unexpected exception while {}: {}",
+          exceptionContext,
+          getExceptionMessage(responseMessage.getOsgpException()));
+      throw responseMessage.getOsgpException();
     }
+  }
+
+  private static String getExceptionMessage(final OsgpException exception) {
+    if (exception.getCause() != null) {
+      return exception.getCause().getMessage();
+    }
+    return exception.getMessage();
   }
 
   @Override
@@ -92,7 +91,7 @@ abstract class CoreEndpoint implements WebserviceEndpoint {
     this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
   }
 
-  private ResponseMessage createEmptyMessage(final String correlationUid) {
+  private static ResponseMessage createEmptyMessage(final String correlationUid) {
     return ResponseMessage.newResponseMessageBuilder()
         .withCorrelationUid(correlationUid)
         .withResult(ResponseMessageResultType.NOT_FOUND)
