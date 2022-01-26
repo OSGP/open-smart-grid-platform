@@ -122,6 +122,26 @@ class ListEventMappingTest {
               EventLogCategory.STANDARD_EVENT_LOG),
           newEvent(
               DateTime.now(),
+              EventType.COMMUNICATION_MODULE_REMOVED,
+              null,
+              EventLogCategory.STANDARD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.COMMUNICATION_MODULE_INSERTED,
+              null,
+              EventLogCategory.STANDARD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.ERROR_REGISTER_2_CLEARED,
+              null,
+              EventLogCategory.STANDARD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.ALARM_REGISTER_2_CLEARED,
+              null,
+              EventLogCategory.STANDARD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_231,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
