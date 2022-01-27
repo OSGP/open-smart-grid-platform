@@ -16,6 +16,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.validators.ActivityCalendarValidator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DataObjectAttrExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DataObjectAttrExecutors;
@@ -30,6 +31,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendar
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DayProfileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SeasonProfileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.WeekProfileDto;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,9 +97,11 @@ public class SetActivityCalendarCommandExecutor
       final DlmsDevice device,
       final ActivityCalendarDto activityCalendar,
       final MessageMetadata messageMetadata)
-      throws ProtocolAdapterException {
+      throws ProtocolAdapterException, FunctionalException {
     LOGGER.debug(
         "SetActivityCalendarCommandExecutor.execute {} called", activityCalendar.getCalendarName());
+
+    ActivityCalendarValidator.validate(activityCalendar);
 
     final List<SeasonProfileDto> seasonProfileList = activityCalendar.getSeasonProfileList();
     final Set<WeekProfileDto> weekProfileSet = this.getWeekProfileSet(seasonProfileList);
