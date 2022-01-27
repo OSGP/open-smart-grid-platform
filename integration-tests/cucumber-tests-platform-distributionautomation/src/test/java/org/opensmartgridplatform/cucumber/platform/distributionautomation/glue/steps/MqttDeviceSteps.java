@@ -38,9 +38,8 @@ public class MqttDeviceSteps {
     return StringUtils.isEmpty(topic) ? new String[] {} : StringUtils.split(topic, ',');
   }
 
-  @When("MQTT device {string} sends a measurement report")
-  public void theDeviceSendsAMeasurementReport(
-      final String deviceIdentification, final Map<String, String> parameters) throws IOException {
+  @When("an MQTT message is published")
+  public void anMqttMessageIsPublished(final Map<String, String> parameters) throws IOException {
 
     final String host =
         getString(

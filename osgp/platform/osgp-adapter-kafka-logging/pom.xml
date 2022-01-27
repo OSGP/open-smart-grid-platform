@@ -37,10 +37,6 @@
     </dependency>
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
-      <artifactId>osgp-kafka-distributionautomation</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-kafka-logger</artifactId>
     </dependency>
 

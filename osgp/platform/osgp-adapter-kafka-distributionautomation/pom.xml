@@ -51,10 +51,6 @@
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-adapter-ws-shared</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.opensmartgridplatform</groupId>
-      <artifactId>osgp-kafka-distributionautomation</artifactId>
-    </dependency>
 
     <!-- Spring Framework -->
     <dependency>
@@ -153,7 +149,7 @@
       <artifactId>lombok</artifactId>
       <scope>provided</scope>
     </dependency>
-    
+
     <!-- Orika (mapping framework) -->
     <dependency>
       <groupId>ma.glasnost.orika</groupId>
