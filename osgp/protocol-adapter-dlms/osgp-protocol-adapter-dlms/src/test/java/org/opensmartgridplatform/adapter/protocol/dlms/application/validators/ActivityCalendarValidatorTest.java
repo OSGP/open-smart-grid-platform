@@ -149,61 +149,31 @@ public class ActivityCalendarValidatorTest {
 
   @Test
   void testNotUniqueSeasons() {
-    final FunctionalException exception =
-        assertThrows(
-            FunctionalException.class,
-            () ->
-                ActivityCalendarValidator.validate(
-                    this.createActivityCalendarDto(TestAnomaly.DUPLICATE_SEASON)));
-    assertThat(exception).getCause().hasMessage("Not all seasons have a unique name");
+    this.testExpectException(TestAnomaly.DUPLICATE_SEASON, "Not all seasons have a unique name");
   }
 
   @Test
   void testTooManySeasons() {
-    final FunctionalException exception =
-        assertThrows(
-            FunctionalException.class,
-            () ->
-                ActivityCalendarValidator.validate(
-                    this.createActivityCalendarDto(TestAnomaly.FIFTH_SEASON)));
-    assertThat(exception).getCause().hasMessageStartingWith("Maximum number of seasons supported");
+    this.testExpectException(
+        TestAnomaly.FIFTH_SEASON, "Maximum number of seasons supported (4) is exceeded: 5");
   }
 
   @Test
   void testTooManyDays() {
-    final FunctionalException exception =
-        assertThrows(
-            FunctionalException.class,
-            () ->
-                ActivityCalendarValidator.validate(
-                    this.createActivityCalendarDto(TestAnomaly.FIFTH_DAY)));
-    assertThat(exception).getCause().hasMessageStartingWith("Maximum number of days supported");
+    this.testExpectException(
+        TestAnomaly.FIFTH_DAY, "Maximum number of days supported (4) is exceeded: 5");
   }
 
   @Test
   void testNotUniqueWeeks() {
-    final FunctionalException exception =
-        assertThrows(
-            FunctionalException.class,
-            () ->
-                ActivityCalendarValidator.validate(
-                    this.createActivityCalendarDto(TestAnomaly.DUPLICATE_WEEK)));
-    assertThat(exception)
-        .getCause()
-        .hasMessage("Weekprofiles with same name have different day profiles");
+    this.testExpectException(
+        TestAnomaly.DUPLICATE_WEEK, "Weekprofiles with same name have different day profiles");
   }
 
   @Test
   void testNotUniqueDays() {
-    final FunctionalException exception =
-        assertThrows(
-            FunctionalException.class,
-            () ->
-                ActivityCalendarValidator.validate(
-                    this.createActivityCalendarDto(TestAnomaly.DUPLICATE_DAY)));
-    assertThat(exception)
-        .getCause()
-        .hasMessage("Dayprofiles with same dayid have different switching points");
+    this.testExpectException(
+        TestAnomaly.DUPLICATE_DAY, "Dayprofiles with same dayid have different switching points");
   }
 
   @Test
@@ -212,5 +182,15 @@ public class ActivityCalendarValidatorTest {
         () ->
             ActivityCalendarValidator.validate(
                 this.createActivityCalendarDto(TestAnomaly.MULTIPLE_USES_SAME_WEEK)));
+  }
+
+  private void testExpectException(final TestAnomaly testAnomaly, final String exceptionMessage) {
+    final FunctionalException exception =
+        assertThrows(
+            FunctionalException.class,
+            () -> {
+              ActivityCalendarValidator.validate(this.createActivityCalendarDto(testAnomaly));
+            });
+    assertThat(exception).getCause().hasMessage(exceptionMessage);
   }
 }

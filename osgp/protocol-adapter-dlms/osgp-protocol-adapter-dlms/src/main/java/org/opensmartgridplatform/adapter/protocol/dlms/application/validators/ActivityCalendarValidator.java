@@ -25,6 +25,8 @@ public class ActivityCalendarValidator {
   private static final int MAX_NUMBER_OF_WEEKS = 4;
   private static final int MAX_NUMBER_OF_DAYS = 4;
 
+  private ActivityCalendarValidator() {}
+
   public static void validate(final ActivityCalendarDto activityCalendarDto)
       throws FunctionalException {
     final List<SeasonProfileDto> seasonProfiles = activityCalendarDto.getSeasonProfileList();
@@ -35,10 +37,9 @@ public class ActivityCalendarValidator {
           FunctionalExceptionType.VALIDATION_ERROR,
           ComponentType.PROTOCOL_DLMS,
           new IllegalArgumentException(
-              "Maximum number of seasons supported ("
-                  + MAX_NUMBER_OF_SEASONS
-                  + ") is exceeded: "
-                  + seasonProfiles.size()));
+              String.format(
+                  "Maximum number of seasons supported (%d) is exceeded: %d",
+                  MAX_NUMBER_OF_SEASONS, seasonProfiles.size())));
     }
     // Check if each season has an unique season name
     final long numberOfUniqueSeasonNames =
@@ -62,10 +63,9 @@ public class ActivityCalendarValidator {
           FunctionalExceptionType.VALIDATION_ERROR,
           ComponentType.PROTOCOL_DLMS,
           new IllegalArgumentException(
-              "Maximum number of weeks supported ("
-                  + MAX_NUMBER_OF_WEEKS
-                  + ") is exceeded: "
-                  + numberOfUniqueWeekNames));
+              String.format(
+                  "Maximum number of weeks supported (%d) is exceeded: %d",
+                  MAX_NUMBER_OF_WEEKS, numberOfUniqueWeekNames)));
     }
 
     // Check if no weekProfiles exist with identical weekProfileName but with different DaySchedules
@@ -107,10 +107,9 @@ public class ActivityCalendarValidator {
           FunctionalExceptionType.VALIDATION_ERROR,
           ComponentType.PROTOCOL_DLMS,
           new IllegalArgumentException(
-              "Maximum number of days supported ("
-                  + MAX_NUMBER_OF_DAYS
-                  + ") is exceeded: "
-                  + numberOfUniqueDayIds));
+              String.format(
+                  "Maximum number of days supported (%d) is exceeded: %d",
+                  MAX_NUMBER_OF_DAYS, numberOfUniqueDayIds)));
     }
 
     // Check if no dayProfiles exist with identical dayId but with different DayProfileActions
