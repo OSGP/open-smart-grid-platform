@@ -56,6 +56,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.DayProfileAction
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DayProfileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SeasonProfileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.WeekProfileDto;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
@@ -103,7 +104,8 @@ class SetActivityCalendarCommandExecutorTest {
   }
 
   @Test
-  void testSetActivityCalendarEmpty() throws ProtocolAdapterException, IOException {
+  void testSetActivityCalendarEmpty()
+      throws ProtocolAdapterException, IOException, FunctionalException {
     // SETUP
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
     when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
@@ -132,7 +134,8 @@ class SetActivityCalendarCommandExecutorTest {
   }
 
   @Test
-  void testSetActivityCalendarWithSingleSeason() throws ProtocolAdapterException, IOException {
+  void testSetActivityCalendarWithSingleSeason()
+      throws ProtocolAdapterException, IOException, FunctionalException {
     // SETUP
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
     when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
@@ -163,7 +166,8 @@ class SetActivityCalendarCommandExecutorTest {
   }
 
   @Test
-  void testSetActivityCalendarWithMultipleSeasons() throws ProtocolAdapterException, IOException {
+  void testSetActivityCalendarWithMultipleSeasons()
+      throws ProtocolAdapterException, IOException, FunctionalException {
     // SETUP
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
     when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
@@ -195,7 +199,7 @@ class SetActivityCalendarCommandExecutorTest {
 
   @Test
   void testSetActivityCalendarWithMultipleSeasonsWeeksDaysAndActions()
-      throws ProtocolAdapterException, IOException {
+      throws ProtocolAdapterException, IOException, FunctionalException {
     // SETUP
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
     when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
