@@ -12,6 +12,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,12 +26,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.joda.time.DateTime;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -42,6 +45,7 @@ import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.validators.ActivityCalendarValidator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -93,6 +97,8 @@ class SetActivityCalendarCommandExecutorTest {
 
   private SetActivityCalendarCommandExecutor executor;
 
+  private MockedStatic<ActivityCalendarValidator> activityCalendarValidator;
+
   @BeforeEach
   public void setUp() {
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
@@ -101,11 +107,19 @@ class SetActivityCalendarCommandExecutorTest {
     this.executor =
         new SetActivityCalendarCommandExecutor(
             new DlmsHelper(), this.activationExecutor, new ConfigurationMapper());
+
+    this.activityCalendarValidator = mockStatic(ActivityCalendarValidator.class);
+  }
+
+  @AfterEach
+  public void tearDown() throws Exception {
+    this.activityCalendarValidator.close();
   }
 
   @Test
   void testSetActivityCalendarEmpty()
       throws ProtocolAdapterException, IOException, FunctionalException {
+
     // SETUP
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
     when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
@@ -122,6 +136,8 @@ class SetActivityCalendarCommandExecutorTest {
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
     verify(this.dlmsConnection, times(4)).set(this.setParameterArgumentCaptor.capture());
+    this.activityCalendarValidator.verify(
+        () -> ActivityCalendarValidator.validate(activityCalendar), times(1));
 
     final List<SetParameter> setParameters = this.setParameterArgumentCaptor.getAllValues();
     this.verifySetParameters(
@@ -159,6 +175,8 @@ class SetActivityCalendarCommandExecutorTest {
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
     verify(this.dlmsConnection, times(4)).set(this.setParameterArgumentCaptor.capture());
+    this.activityCalendarValidator.verify(
+        () -> ActivityCalendarValidator.validate(activityCalendar), times(1));
 
     final List<SetParameter> setParameters = this.setParameterArgumentCaptor.getAllValues();
     this.verifySetParameters(
@@ -191,6 +209,8 @@ class SetActivityCalendarCommandExecutorTest {
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
     verify(this.dlmsConnection, times(4)).set(this.setParameterArgumentCaptor.capture());
+    this.activityCalendarValidator.verify(
+        () -> ActivityCalendarValidator.validate(activityCalendar), times(1));
 
     final List<SetParameter> setParameters = this.setParameterArgumentCaptor.getAllValues();
     this.verifySetParameters(
@@ -226,6 +246,8 @@ class SetActivityCalendarCommandExecutorTest {
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
     verify(this.dlmsConnection, times(4)).set(this.setParameterArgumentCaptor.capture());
+    this.activityCalendarValidator.verify(
+        () -> ActivityCalendarValidator.validate(activityCalendar), times(1));
 
     final List<SetParameter> setParameters = this.setParameterArgumentCaptor.getAllValues();
     this.verifySetParameters(
@@ -257,6 +279,8 @@ class SetActivityCalendarCommandExecutorTest {
     assertThat(thrown)
         .isInstanceOf(ProtocolAdapterException.class)
         .hasMessageContaining("SEASONS: Result(OTHER_REASON)");
+    this.activityCalendarValidator.verify(
+        () -> ActivityCalendarValidator.validate(activityCalendar), times(1));
   }
 
   @Test
@@ -281,6 +305,8 @@ class SetActivityCalendarCommandExecutorTest {
     assertThat(thrown)
         .isInstanceOf(ProtocolAdapterException.class)
         .hasMessageContaining(errorMessage);
+    this.activityCalendarValidator.verify(
+        () -> ActivityCalendarValidator.validate(activityCalendar), times(1));
   }
 
   private ActivityCalendarDto createDefaultActivityCalendar() {
