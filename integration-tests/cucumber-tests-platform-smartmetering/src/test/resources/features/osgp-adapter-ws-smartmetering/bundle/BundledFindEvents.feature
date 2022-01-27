@@ -5,7 +5,7 @@ Feature: SmartMetering Bundle - FindEvents
 
   Background:
     Given a manufacturer
-      | ManufacturerCode | KAIF  |
+      | ManufacturerCode | KAI   |
       | ManufacturerName | Kaifa |
     And a device model
       | ManufacturerName | Kaifa |
@@ -13,7 +13,7 @@ Feature: SmartMetering Bundle - FindEvents
     And a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-      | ManufacturerCode     | KAIF              |
+      | ManufacturerCode     | KAI               |
       | DeviceModelCode      | MA105             |
       | Protocol             | SMR               |
       | ProtocolVersion      | 5.1               |
