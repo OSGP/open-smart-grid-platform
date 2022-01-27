@@ -28,12 +28,13 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
 public class ActivityCalendarValidatorTest {
 
-  private enum TestAnomaly {
+  enum TestAnomaly {
     DUPLICATE_SEASON,
     FIFTH_SEASON,
     DUPLICATE_WEEK,
     DUPLICATE_DAY,
     FIFTH_DAY,
+    MULTIPLE_USES_SAME_WEEK
   };
 
   ActivityCalendarDto createActivityCalendarDto(final TestAnomaly testAnomaly)
@@ -90,8 +91,14 @@ public class ActivityCalendarValidatorTest {
       // a second season with name 'Season_1' will be created with a different week profile
       seasonProfileName = "Season_1";
     }
+
+    WeekProfileDto weekProfileDto = weekProfileDto2;
+    if (testAnomaly == TestAnomaly.MULTIPLE_USES_SAME_WEEK) {
+      // the same week profile is used in multiple seasons
+      weekProfileDto = weekProfileDto1;
+    }
     final SeasonProfileDto seasonProfileDto2 =
-        new SeasonProfileDto(seasonProfileName, new CosemDateTimeDto(), weekProfileDto2);
+        new SeasonProfileDto(seasonProfileName, new CosemDateTimeDto(), weekProfileDto);
 
     final List<SeasonProfileDto> seasonList = new ArrayList<>();
     seasonList.addAll(Arrays.asList(seasonProfileDto1, seasonProfileDto2));
@@ -197,5 +204,13 @@ public class ActivityCalendarValidatorTest {
     assertThat(exception)
         .getCause()
         .hasMessage("Dayprofiles with same dayid have different switching points");
+  }
+
+  @Test
+  void testMultipleUsesOfSameWeek() {
+    assertDoesNotThrow(
+        () ->
+            ActivityCalendarValidator.validate(
+                this.createActivityCalendarDto(TestAnomaly.MULTIPLE_USES_SAME_WEEK)));
   }
 }
