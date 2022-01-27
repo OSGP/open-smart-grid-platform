@@ -308,7 +308,7 @@ public class ConfigurationService {
       final DlmsDevice device,
       final ActivityCalendarDto activityCalendar,
       final MessageMetadata messageMetadata)
-      throws ProtocolAdapterException {
+      throws ProtocolAdapterException, FunctionalException {
 
     LOGGER.info("Device for Activity Calendar is: {}", device);
 
