@@ -255,10 +255,8 @@ class SetActivityCalendarCommandExecutorTest {
   }
 
   @Test
-  void testSetActivityCalendarWithOneOfTheSetRequestsFailing()
-      throws ProtocolAdapterException, IOException {
+  void testSetActivityCalendarWithOneOfTheSetRequestsFailing() throws IOException {
     // SETUP
-    final String errorMessage = "Set request failure";
     when(this.dlmsConnection.set(any(SetParameter.class)))
         .thenReturn(AccessResultCode.SUCCESS) // Calendar name
         .thenReturn(AccessResultCode.OTHER_REASON) // Season profiles
@@ -270,10 +268,9 @@ class SetActivityCalendarCommandExecutorTest {
     // CALL
     final Throwable thrown =
         catchThrowable(
-            () -> {
-              this.executor.execute(
-                  this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata);
-            });
+            () ->
+                this.executor.execute(
+                    this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata));
 
     // VERIFY
     assertThat(thrown)
@@ -296,10 +293,9 @@ class SetActivityCalendarCommandExecutorTest {
     // CALL
     final Throwable thrown =
         catchThrowable(
-            () -> {
-              this.executor.execute(
-                  this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata);
-            });
+            () ->
+                this.executor.execute(
+                    this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata));
 
     // VERIFY
     assertThat(thrown)
