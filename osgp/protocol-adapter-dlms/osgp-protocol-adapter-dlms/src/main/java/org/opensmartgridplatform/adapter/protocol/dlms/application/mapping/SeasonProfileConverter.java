@@ -37,8 +37,8 @@ public class SeasonProfileConverter extends CustomConverter<SeasonProfileDto, Da
     seasonElements.add(seasonProfileNameObject);
 
     final DataObject seasonStartObject =
-        DataObject.newDateTimeData(
-            this.mapperFacade.map(source.getSeasonStart(), CosemDateTime.class));
+        DataObject.newOctetStringData(
+            this.mapperFacade.map(source.getSeasonStart(), CosemDateTime.class).encode());
     seasonElements.add(seasonStartObject);
 
     final DataObject seasonWeekProfileNameObject =

@@ -460,8 +460,8 @@ class SetActivityCalendarCommandExecutorTest {
         .containsExactly(seasonName.getBytes(StandardCharsets.UTF_8));
 
     // Season start time
-    assertThat(values.get(1).getType()).isEqualTo(Type.DATE_TIME);
-    final CosemDateTime cosemDateTime = values.get(1).getValue();
+    assertThat(values.get(1).getType()).isEqualTo(Type.OCTET_STRING);
+    final CosemDateTime cosemDateTime = CosemDateTime.decode(values.get(1).getValue());
     final CosemDateTime expectedTime =
         new CosemDateTime(
             0xFFFF, seasonStart.getMonth(), seasonStart.getDayOfMonth(), 255, 0, 0, 0, 0, 0);
