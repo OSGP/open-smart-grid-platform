@@ -45,7 +45,6 @@ import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.validators.ActivityCalendarValidator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -60,7 +59,9 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.DayProfileAction
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DayProfileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SeasonProfileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.WeekProfileDto;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
@@ -101,9 +102,6 @@ class SetActivityCalendarCommandExecutorTest {
 
   @BeforeEach
   public void setUp() {
-    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
-    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
-
     this.executor =
         new SetActivityCalendarCommandExecutor(
             new DlmsHelper(), this.activationExecutor, new ConfigurationMapper());
@@ -121,6 +119,8 @@ class SetActivityCalendarCommandExecutorTest {
       throws ProtocolAdapterException, IOException, FunctionalException {
 
     // SETUP
+    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
     when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
         .thenReturn(MethodResultCode.SUCCESS);
@@ -153,6 +153,8 @@ class SetActivityCalendarCommandExecutorTest {
   void testSetActivityCalendarWithSingleSeason()
       throws ProtocolAdapterException, IOException, FunctionalException {
     // SETUP
+    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
     when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
         .thenReturn(MethodResultCode.SUCCESS);
@@ -187,6 +189,8 @@ class SetActivityCalendarCommandExecutorTest {
   void testSetActivityCalendarWithMultipleSeasons()
       throws ProtocolAdapterException, IOException, FunctionalException {
     // SETUP
+    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
     when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
         .thenReturn(MethodResultCode.SUCCESS);
@@ -221,6 +225,8 @@ class SetActivityCalendarCommandExecutorTest {
   void testSetActivityCalendarWithMultipleSeasonsWeeksDaysAndActions()
       throws ProtocolAdapterException, IOException, FunctionalException {
     // SETUP
+    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
     when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
         .thenReturn(MethodResultCode.SUCCESS);
@@ -255,8 +261,31 @@ class SetActivityCalendarCommandExecutorTest {
   }
 
   @Test
+  void testSetActivityCalendarWithValidationFailure() throws IOException {
+    // SETUP
+    this.activityCalendarValidator
+        .when(() -> ActivityCalendarValidator.validate(any()))
+        .thenThrow(
+            new FunctionalException(
+                FunctionalExceptionType.VALIDATION_ERROR, ComponentType.PROTOCOL_DLMS));
+    final ActivityCalendarDto activityCalendar = this.createDefaultActivityCalendar();
+
+    // CALL
+    final Throwable thrown =
+        catchThrowable(
+            () ->
+                this.executor.execute(
+                    this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata));
+
+    // VERIFY
+    assertThat(thrown).isInstanceOf(FunctionalException.class);
+  }
+
+  @Test
   void testSetActivityCalendarWithOneOfTheSetRequestsFailing() throws IOException {
     // SETUP
+    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class)))
         .thenReturn(AccessResultCode.SUCCESS) // Calendar name
         .thenReturn(AccessResultCode.OTHER_REASON) // Season profiles
@@ -284,6 +313,8 @@ class SetActivityCalendarCommandExecutorTest {
   void testSetActivityCalendarWithActivationFailure() throws ProtocolAdapterException, IOException {
     // SETUP
     final String errorMessage = "Activation failure";
+    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
     when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
         .thenThrow(new ProtocolAdapterException(errorMessage));
