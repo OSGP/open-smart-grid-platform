@@ -7,7 +7,7 @@ Feature: Core Operations, DeviceLifeCycle
   Scenario Outline: Set rtu device status
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10001 |
-    When the SetDeviceLifecycleStatus request is received
+    When a SetDeviceLifecycleStatus request is received
       | DeviceIdentification  | RTU10001 |
       | DeviceLifecycleStatus | <Status> |
     Then the device lifecycle status in the database is

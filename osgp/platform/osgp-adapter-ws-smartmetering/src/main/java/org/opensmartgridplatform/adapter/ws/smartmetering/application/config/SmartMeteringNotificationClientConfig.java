@@ -17,7 +17,6 @@ import org.opensmartgridplatform.adapter.ws.shared.services.CorrelationUidTarget
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationServiceBlackHole;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseUrlService;
-import org.opensmartgridplatform.adapter.ws.smartmetering.application.ApplicationConstants;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.infra.ws.OrganisationIdentificationClientInterceptor;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +41,14 @@ public class SmartMeteringNotificationClientConfig extends AbstractConfig {
   @Value("${web.service.notification.organisation:OSGP}")
   private String webserviceNotificationOrganisation;
 
+  @Value("${web.service.notification.application.name}")
+  private String webserviceNotificationApplicationName;
+
+  @Bean
+  public String webserviceNotificationApplicationName() {
+    return this.webserviceNotificationApplicationName;
+  }
+
   @Bean
   public NotificationService smartMeteringNotificationService(
       final NotificationWebServiceTemplateFactory templateFactory,
@@ -57,7 +64,7 @@ public class SmartMeteringNotificationClientConfig extends AbstractConfig {
         notificationRequestType,
         mapper,
         responseUrlService,
-        ApplicationConstants.APPLICATION_NAME);
+        this.webserviceNotificationApplicationName);
   }
 
   @Bean
@@ -68,7 +75,7 @@ public class SmartMeteringNotificationClientConfig extends AbstractConfig {
         OrganisationIdentificationClientInterceptor.newBuilder()
             .withOrganisationIdentification(this.webserviceNotificationOrganisation)
             .withUserName(this.webserviceNotificationUsername)
-            .withApplicationName(ApplicationConstants.APPLICATION_NAME)
+            .withApplicationName(this.webserviceNotificationApplicationName)
             .build();
 
     return new NotificationWebServiceTemplateFactory(

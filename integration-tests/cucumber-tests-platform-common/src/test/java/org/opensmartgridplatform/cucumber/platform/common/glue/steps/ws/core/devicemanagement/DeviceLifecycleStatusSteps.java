@@ -33,8 +33,8 @@ public class DeviceLifecycleStatusSteps {
 
   @Autowired private DeviceRepository DeviceRepository;
 
-  @When("^the SetDeviceLifecycleStatus request is received$")
-  public void theSetDeviceLifecycleStatusRequestIsReceived(final Map<String, String> settings)
+  @When("^a SetDeviceLifecycleStatus request is received$")
+  public void aSetDeviceLifecycleStatusRequestIsReceived(final Map<String, String> settings)
       throws Throwable {
 
     final SetDeviceLifecycleStatusRequest request = new SetDeviceLifecycleStatusRequest();

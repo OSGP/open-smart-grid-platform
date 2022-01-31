@@ -12,9 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 import org.opensmartgridplatform.adapter.kafka.da.domain.repositories.LocationRepository;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
+import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps.database.ws.DistributionAutomationNotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps.database.ws.DistributionAutomationResponseDataRepository;
 import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,18 +22,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class Database {
 
-  @Autowired private ResponseDataRepository responseDataRepository;
+  @Autowired
+  private DistributionAutomationResponseDataRepository distributionAutomationResponseDataRepository;
 
   @Autowired
-  private NotificationWebServiceConfigurationRepository
-      notificationWebServiceConfigurationRepository;
+  private DistributionAutomationNotificationWebServiceConfigurationRepository
+      distributionAutomationNotificationWebServiceConfigurationRepository;
 
   @Autowired private RtuDeviceRepository rtuDeviceRepository;
 
   @Autowired private LocationRepository locationRepository;
 
   private void insertDefaultData() {
-    this.notificationWebServiceConfigurationRepository.saveAll(
+    this.distributionAutomationNotificationWebServiceConfigurationRepository.saveAll(
         this.notificationEndpointConfigurations());
   }
 
@@ -54,7 +55,7 @@ public class Database {
     // Removes all test related data from the various databases
 
     // Remove from osgp_adapter_ws_distributionautomation
-    this.responseDataRepository.deleteAll();
+    this.distributionAutomationResponseDataRepository.deleteAll();
 
     // Remove from osgp_core
     this.rtuDeviceRepository.deleteAll();

@@ -7,7 +7,7 @@ Feature: Core Operations, DeviceLifeCycle
   Scenario Outline: Set ssld device status
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
-    When the SetDeviceLifecycleStatus request is received
+    When a SetDeviceLifecycleStatus request is received
       | DeviceIdentification  | TEST1024000000001 |
       | DeviceLifecycleStatus | <Status>          |
     Then the device lifecycle status in the database is

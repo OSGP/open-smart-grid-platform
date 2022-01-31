@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
 import org.opensmartgridplatform.cucumber.core.RetryableAssert;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -35,14 +34,15 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(SmartMeteringResponseDataSteps.class);
 
-  @Autowired private ResponseDataRepository responseDataRepository;
+  @Autowired private SmartMeteringResponseDataRepository smartMeteringResponseDataRepository;
 
   @Given("^a response data record$")
-  @Transactional("txMgrRespData")
+  @Transactional("txMgrWsSmartMetering")
   public ResponseData aResponseDataRecord(final Map<String, String> settings) {
 
     final ResponseData responseData =
-        this.responseDataRepository.save(new ResponseDataBuilder().fromSettings(settings).build());
+        this.smartMeteringResponseDataRepository.save(
+            new ResponseDataBuilder().fromSettings(settings).build());
 
     ScenarioContext.current()
         .put(PlatformKeys.KEY_CORRELATION_UID, responseData.getCorrelationUid());
@@ -57,7 +57,7 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
         fld.set(
             responseData,
             DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
-        this.responseDataRepository.saveAndFlush(responseData);
+        this.smartMeteringResponseDataRepository.saveAndFlush(responseData);
       }
     } catch (final Exception e) {
       LOGGER.error("Exception", e);
@@ -73,7 +73,7 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
         (String) ScenarioContext.current().get(PlatformSmartmeteringKeys.KEY_CORRELATION_UID);
 
     final ResponseData responseData =
-        this.responseDataRepository.findByCorrelationUid(correlationUid);
+        this.smartMeteringResponseDataRepository.findByCorrelationUid(correlationUid);
 
     assertThat(responseData).as("Response data should be deleted").isNull();
   }
@@ -84,7 +84,7 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
         (String) ScenarioContext.current().get(PlatformSmartmeteringKeys.KEY_CORRELATION_UID);
 
     final ResponseData responseData =
-        this.responseDataRepository.findByCorrelationUid(correlationUid);
+        this.smartMeteringResponseDataRepository.findByCorrelationUid(correlationUid);
 
     assertThat(responseData).as("Response data should not be deleted").isNotNull();
   }
@@ -92,7 +92,7 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
   @Then("^the response data record with correlation uid \\\"(.*)\\\" should be deleted$")
   public void theResponseDataRecordShouldBeDeleted(final String correlationUid) {
     final ResponseData responseData =
-        this.responseDataRepository.findByCorrelationUid(correlationUid);
+        this.smartMeteringResponseDataRepository.findByCorrelationUid(correlationUid);
 
     assertThat(responseData).as("Response data should be deleted").isNull();
   }
@@ -100,7 +100,7 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
   @Then("^the response data record with correlation uid \\\"(.*)\\\" should not be deleted$")
   public void theResponseDataRecordShouldNotBeDeleted(final String correlationUid) {
     final ResponseData responseData =
-        this.responseDataRepository.findByCorrelationUid(correlationUid);
+        this.smartMeteringResponseDataRepository.findByCorrelationUid(correlationUid);
 
     assertThat(responseData).as("Response data should not be deleted").isNotNull();
   }
@@ -127,7 +127,7 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
       final String expectedMessageType) {
 
     final ResponseData responseData =
-        this.responseDataRepository.findByCorrelationUid(correlationUid);
+        this.smartMeteringResponseDataRepository.findByCorrelationUid(correlationUid);
 
     assertThat(responseData.getNumberOfNotificationsSent())
         .as(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT)

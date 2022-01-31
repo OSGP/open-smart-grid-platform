@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.Notification;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.notification.NotificationService;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.notification.SmartMeteringNotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class SmartMeteringNotificationSteps {
    */
   private static final int MAX_WAIT_FOR_NOTIFICATION = 65_000;
 
-  @Autowired private NotificationService notificationService;
+  @Autowired private SmartMeteringNotificationService notificationService;
 
   @Then("^a notification is sent$")
   public void aNotificationIsSent() throws Throwable {

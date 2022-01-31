@@ -31,7 +31,7 @@ public class InboundDomainResponsesMessagingConfig {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(InboundDomainResponsesMessagingConfig.class);
 
-  private JmsConfigurationFactory jmsConfigurationFactory;
+  private final JmsConfigurationFactory jmsConfigurationFactory;
 
   public InboundDomainResponsesMessagingConfig(
       final Environment environment, final DefaultJmsConfiguration defaultJmsConfiguration)
@@ -57,8 +57,7 @@ public class InboundDomainResponsesMessagingConfig {
     return this.jmsConfigurationFactory.initMessageListenerContainer(messageListener);
   }
 
-  @Bean
-  @Qualifier("wsSmartMeteringInboundDomainResponsesMessageProcessorMap")
+  @Bean(name = "wsSmartMeteringInboundDomainResponsesMessageProcessorMap")
   public MessageProcessorMap smartMeteringResponseMessageProcessorMap() {
     return new BaseMessageProcessorMap("domainResponseMessageProcessorMap");
   }

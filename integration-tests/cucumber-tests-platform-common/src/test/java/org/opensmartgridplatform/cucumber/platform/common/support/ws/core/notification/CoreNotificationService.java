@@ -1,11 +1,13 @@
 /*
- * Copyright 2018 Smart Society Services B.V.
+ * Copyright 2022 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.notification;
+package org.opensmartgridplatform.cucumber.platform.common.support.ws.core.notification;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
@@ -16,16 +18,17 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.Notification;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
+import java.util.function.Predicate;
+import org.opensmartgridplatform.adapter.ws.schema.core.notification.Notification;
+import org.opensmartgridplatform.adapter.ws.schema.core.notification.NotificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NotificationService {
+public class CoreNotificationService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(NotificationService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CoreNotificationService.class);
 
   private final BlockingQueue<Notification> queue = new LinkedBlockingQueue<>();
   private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
@@ -68,27 +71,9 @@ public class NotificationService {
     try {
       return CompletableFuture.supplyAsync(
               () -> {
-                final long startTime = System.currentTimeMillis();
-                long remaining = maxTimeout;
-                while (remaining > 0) {
-                  try {
-                    final Notification notification =
-                        this.queue.poll(remaining, TimeUnit.MILLISECONDS);
-                    if (notification != null) {
-                      if (correlationUid.equals(notification.getCorrelationUid())) {
-                        return notification;
-                      } else {
-                        this.putBackOnQueue(notification);
-                      }
-                    }
-                    final long elapsed = System.currentTimeMillis() - startTime;
-                    remaining = maxTimeout - elapsed;
-                  } catch (final InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new CompletionException(e);
-                  }
-                }
-                return null;
+                final Predicate<Notification> correlationUidEquals =
+                    notification -> notification.getCorrelationUid().equals(correlationUid);
+                return this.getNotification(correlationUidEquals, maxTimeout);
               })
           .get(maxTimeout, TimeUnit.MILLISECONDS);
     } catch (final InterruptedException e) {
@@ -109,27 +94,9 @@ public class NotificationService {
     try {
       return CompletableFuture.supplyAsync(
               () -> {
-                final long startTime = System.currentTimeMillis();
-                long remaining = maxTimeout;
-                while (remaining > 0) {
-                  try {
-                    final Notification notification =
-                        this.queue.poll(remaining, TimeUnit.MILLISECONDS);
-                    if (notification != null) {
-                      if (notificationType == notification.getNotificationType()) {
-                        return notification;
-                      } else {
-                        this.putBackOnQueue(notification);
-                      }
-                    }
-                    final long elapsed = System.currentTimeMillis() - startTime;
-                    remaining = maxTimeout - elapsed;
-                  } catch (final InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new CompletionException(e);
-                  }
-                }
-                return null;
+                final Predicate<Notification> notificationTypeEquals =
+                    notification -> notification.getNotificationType() == notificationType;
+                return this.getNotification(notificationTypeEquals, maxTimeout);
               })
           .get(maxTimeout, TimeUnit.MILLISECONDS);
     } catch (final InterruptedException e) {
@@ -142,6 +109,30 @@ public class NotificationService {
           e);
     } catch (final TimeoutException e) {
       LOGGER.trace("getNotification for notification type {} timed out", notificationType, e);
+    }
+    return null;
+  }
+
+  private Notification getNotification(
+      final Predicate<Notification> predicate, final long maxTimeout) {
+    final long startTime = System.currentTimeMillis();
+    long remaining = maxTimeout;
+    while (remaining > 0) {
+      try {
+        final Notification notification = this.queue.poll(remaining, TimeUnit.MILLISECONDS);
+        if (notification != null) {
+          if (predicate.test(notification)) {
+            return notification;
+          } else {
+            this.putBackOnQueue(notification);
+          }
+        }
+        final long elapsed = System.currentTimeMillis() - startTime;
+        remaining = maxTimeout - elapsed;
+      } catch (final InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new CompletionException(e);
+      }
     }
     return null;
   }

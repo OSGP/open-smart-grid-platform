@@ -28,6 +28,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.NoDeviceResponseExcept
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -109,6 +110,7 @@ public class DeviceInstallationService extends AbstractService {
             .withOsgpException(response.getOsgpException())
             .withDataObject(response.getDeviceStatusMapped())
             .withMessagePriority(messagePriority)
+            .withMessageType(MessageType.GET_STATUS.name())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage);
   }

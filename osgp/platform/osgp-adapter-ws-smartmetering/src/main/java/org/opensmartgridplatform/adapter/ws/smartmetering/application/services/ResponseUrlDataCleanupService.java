@@ -21,12 +21,12 @@ public class ResponseUrlDataCleanupService {
 
   @Autowired private ResponseUrlDataRepository responseUrlDataRepository;
 
-  @Autowired private int urlDataCleanupJobRetentionTimeInDays;
+  @Autowired private int cleanupJobRetentionTimeInDays;
 
   public void execute() {
 
     final DateTime removeBeforeDateTime =
-        DateTime.now(DateTimeZone.UTC).minusDays(this.urlDataCleanupJobRetentionTimeInDays);
+        DateTime.now(DateTimeZone.UTC).minusDays(this.cleanupJobRetentionTimeInDays);
     this.responseUrlDataRepository.removeByCreationTimeBefore(removeBeforeDateTime.toDate());
   }
 }

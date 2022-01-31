@@ -46,11 +46,11 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
     String organisationIdentification = null;
     String deviceIdentification = null;
 
-    String notificationMessage;
-    NotificationType notificationType;
-    ResponseMessageResultType resultType;
-    String resultDescription;
-    Serializable dataObject;
+    final String notificationMessage;
+    final NotificationType notificationType;
+    final ResponseMessageResultType resultType;
+    final String resultDescription;
+    final Serializable dataObject;
 
     try {
       correlationUid = message.getJMSCorrelationID();
@@ -111,16 +111,16 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
     final short NUMBER_OF_NOTIFICATIONS_SENT = 0;
 
-    Serializable meterResponseObject;
+    final Serializable responseObject;
     if (dataObject == null) {
-      meterResponseObject = resultDescription;
+      responseObject = resultDescription;
     } else {
-      meterResponseObject = dataObject;
+      responseObject = dataObject;
     }
 
     final ResponseData responseData =
         new ResponseData(
-            ids, messageType, resultType, meterResponseObject, NUMBER_OF_NOTIFICATIONS_SENT);
+            ids, messageType, resultType, responseObject, NUMBER_OF_NOTIFICATIONS_SENT);
     this.responseDataService.enqueue(responseData);
   }
 
