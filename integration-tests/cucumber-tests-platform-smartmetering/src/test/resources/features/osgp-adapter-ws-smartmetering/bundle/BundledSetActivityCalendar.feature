@@ -15,31 +15,31 @@ Feature: SmartMetering Bundle - SetActivityCalendar
       | ActivityCalendarName        | CALENDAR                 |
       | ActivatePassiveCalendarTime | FFFFFFFEFFFFFFFFFF000000 |
     And the activity calendar contains a season profile
-      | SeasonProfileName | SEASON01                 |
+      | SeasonProfileName | 1                        |
       | SeasonStart       | FFFF0101FF00000000FFC400 |
-      | WeekName          | WEEK0001                 |
+      | WeekName          | 1                        |
     And the activity calendar contains a season profile
-      | SeasonProfileName | SEASON02                 |
+      | SeasonProfileName | 2                        |
       | SeasonStart       | FFFF0701FF00000000FFC400 |
-      | WeekName          | WEEK0002                 |
+      | WeekName          | 2                        |
     And the activity calendar contains a week profile
-      | WeekProfileName | WEEK0001 |
-      | MondayDayId     |        0 |
-      | TuesdayDayId    |        0 |
-      | WednesdayDayId  |        0 |
-      | ThursdayDayId   |        0 |
-      | FridayDayId     |        0 |
-      | SaturdayDayId   |        1 |
-      | SundayDayId     |        1 |
+      | WeekProfileName | 1 |
+      | MondayDayId     | 0 |
+      | TuesdayDayId    | 0 |
+      | WednesdayDayId  | 0 |
+      | ThursdayDayId   | 0 |
+      | FridayDayId     | 0 |
+      | SaturdayDayId   | 1 |
+      | SundayDayId     | 1 |
     And the activity calendar contains a week profile
-      | WeekProfileName | WEEK0002 |
-      | MondayDayId     |        0 |
-      | TuesdayDayId    |        0 |
-      | WednesdayDayId  |        0 |
-      | ThursdayDayId   |        0 |
-      | FridayDayId     |        0 |
-      | SaturdayDayId   |        2 |
-      | SundayDayId     |        2 |
+      | WeekProfileName | 2 |
+      | MondayDayId     | 0 |
+      | TuesdayDayId    | 0 |
+      | WednesdayDayId  | 0 |
+      | ThursdayDayId   | 0 |
+      | FridayDayId     | 0 |
+      | SaturdayDayId   | 2 |
+      | SundayDayId     | 2 |
     And the activity calendar contains a day profile
       | DayId                 |        0 |
       | DayProfileActionCount |        3 |

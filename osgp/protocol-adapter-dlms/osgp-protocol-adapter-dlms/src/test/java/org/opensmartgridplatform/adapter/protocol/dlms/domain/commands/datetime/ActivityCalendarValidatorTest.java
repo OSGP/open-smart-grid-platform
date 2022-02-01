@@ -36,7 +36,9 @@ public class ActivityCalendarValidatorTest {
     DUPLICATE_WEEK,
     DUPLICATE_DAY,
     FIFTH_DAY,
-    MULTIPLE_USES_SAME_WEEK
+    MULTIPLE_USES_SAME_WEEK,
+    INVALID_SEASON_NAME,
+    INVALID_WEEK_NAME
   }
 
   ActivityCalendarDto createActivityCalendarDto(final TestAnomaly testAnomaly)
@@ -61,16 +63,17 @@ public class ActivityCalendarValidatorTest {
     final DayProfileDto dayProfile4 = new DayProfileDto(4, dayActions2);
     final DayProfileDto dayProfile5 = new DayProfileDto(5, dayActions2);
 
-    final WeekProfileDto weekProfileDto1 =
-        this.createWeekProfile("Week___1", dayProfile1, dayProfile2);
+    final WeekProfileDto weekProfileDto1 = this.createWeekProfile("1", dayProfile1, dayProfile2);
 
     final SeasonProfileDto seasonProfileDto1 =
-        new SeasonProfileDto("Season_1", new CosemDateTimeDto(), weekProfileDto1);
+        new SeasonProfileDto("1", new CosemDateTimeDto(), weekProfileDto1);
 
-    String weekProfileName = "Week___2";
+    String weekProfileName = "2";
     if (testAnomaly == TestAnomaly.DUPLICATE_WEEK) {
       // a second week with name 'Week___1' will be created with different day profiles
-      weekProfileName = "Week___1";
+      weekProfileName = "1";
+    } else if (testAnomaly == TestAnomaly.INVALID_WEEK_NAME) {
+      weekProfileName = "Week01";
     }
     final Builder weekProfileBuilder2 = WeekProfileDto.newBuilder();
     weekProfileBuilder2.withWeekProfileName(weekProfileName);
@@ -88,9 +91,11 @@ public class ActivityCalendarValidatorTest {
     }
     final WeekProfileDto weekProfileDto2 = weekProfileBuilder2.build();
 
-    String seasonProfileName = "Season_2";
+    String seasonProfileName = "2";
     if (testAnomaly == TestAnomaly.DUPLICATE_SEASON) {
       // a second season with name 'Season_1' will be created with a different week profile
+      seasonProfileName = "1";
+    } else if (testAnomaly == TestAnomaly.INVALID_SEASON_NAME) {
       seasonProfileName = "Season_1";
     }
 
@@ -110,17 +115,17 @@ public class ActivityCalendarValidatorTest {
       seasonList.addAll(
           Arrays.asList(
               new SeasonProfileDto(
-                  "Season_3",
+                  "3",
                   new CosemDateTimeDto(),
-                  WeekProfileDto.newBuilder().withWeekProfileName("Week___3").build()),
+                  WeekProfileDto.newBuilder().withWeekProfileName("3").build()),
               new SeasonProfileDto(
-                  "Season_4",
+                  "4",
                   new CosemDateTimeDto(),
-                  WeekProfileDto.newBuilder().withWeekProfileName("Week___4").build()),
+                  WeekProfileDto.newBuilder().withWeekProfileName("4").build()),
               new SeasonProfileDto(
-                  "Season_5",
+                  "5",
                   new CosemDateTimeDto(),
-                  WeekProfileDto.newBuilder().withWeekProfileName("Week___5").build())));
+                  WeekProfileDto.newBuilder().withWeekProfileName("5").build())));
     }
 
     return new ActivityCalendarDto("Calendar", new CosemDateTimeDto(), seasonList);
@@ -184,6 +189,20 @@ public class ActivityCalendarValidatorTest {
         () ->
             ActivityCalendarValidator.validate(
                 this.createActivityCalendarDto(TestAnomaly.MULTIPLE_USES_SAME_WEEK)));
+  }
+
+  @Test
+  void testInvalidSeasonName() {
+    final byte[] test = new byte[] {"0".getBytes()[0]};
+
+    this.testExpectException(
+        TestAnomaly.INVALID_SEASON_NAME, "Not all season names contain exactly one digit");
+  }
+
+  @Test
+  void testInvalidWeekName() {
+    this.testExpectException(
+        TestAnomaly.INVALID_WEEK_NAME, "Not all week names contain exactly one digit");
   }
 
   private void testExpectException(final TestAnomaly testAnomaly, final String exceptionMessage) {

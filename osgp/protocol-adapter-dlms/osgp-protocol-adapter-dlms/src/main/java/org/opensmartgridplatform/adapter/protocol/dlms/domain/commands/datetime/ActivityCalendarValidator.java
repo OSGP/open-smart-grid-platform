@@ -53,6 +53,18 @@ public class ActivityCalendarValidator {
           new IllegalArgumentException("Not all seasons have a unique name"));
     }
 
+    // Check if season names have a size of 1 and only contain digits.
+    // Note: According to the DLMS blue book, the name can be multiple characters. However, some
+    // meters do not support this. That's why we limit the name to what is supported by all meters.
+    if (seasonProfiles.stream()
+        .map(SeasonProfileDto::getSeasonProfileName)
+        .anyMatch(name -> !name.matches("[0-9]"))) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.PROTOCOL_DLMS,
+          new IllegalArgumentException("Not all season names contain exactly one digit"));
+    }
+
     // Get list of weeks of all seasons
     final List<WeekProfileDto> weekProfiles =
         seasonProfiles.stream().map(SeasonProfileDto::getWeekProfile).collect(Collectors.toList());
@@ -68,6 +80,18 @@ public class ActivityCalendarValidator {
               String.format(
                   "Maximum number of weeks supported (%d) is exceeded: %d",
                   MAX_NUMBER_OF_WEEKS, numberOfUniqueWeekNames)));
+    }
+
+    // Check if week names have a size of 1 and only contain digits.
+    // Note: According to the DLMS blue book, the name can be multiple characters. However, some
+    // meters do not support this. That's why we limit the name to what is supported by all meters.
+    if (weekProfiles.stream()
+        .map(WeekProfileDto::getWeekProfileName)
+        .anyMatch(name -> !name.matches("[0-9]"))) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.PROTOCOL_DLMS,
+          new IllegalArgumentException("Not all week names contain exactly one digit"));
     }
 
     // Check if no weekProfiles exist with identical weekProfileName but with different DaySchedules

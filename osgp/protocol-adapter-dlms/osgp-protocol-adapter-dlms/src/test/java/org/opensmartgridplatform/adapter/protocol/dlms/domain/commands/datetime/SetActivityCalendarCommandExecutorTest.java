@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -162,8 +163,8 @@ class SetActivityCalendarCommandExecutorTest {
     final List<Short> dayIds = Collections.singletonList((short) 1);
     final List<CosemTimeDto> actionStartTimes =
         Collections.singletonList(new CosemTimeDto(0, 0, 0, 0));
-    final List<String> weekNames = Collections.singletonList("Week1");
-    final List<String> seasonNames = Collections.singletonList("Season1");
+    final List<String> weekNames = Collections.singletonList("1");
+    final List<String> seasonNames = Collections.singletonList("1");
     final List<CosemDateDto> seasonStarts =
         Collections.singletonList(new CosemDateDto(0xFFFF, 1, 1));
 
@@ -198,8 +199,8 @@ class SetActivityCalendarCommandExecutorTest {
     final List<Short> dayIds = Collections.singletonList((short) 1);
     final List<CosemTimeDto> actionStartTimes =
         Collections.singletonList(new CosemTimeDto(0, 0, 0, 0));
-    final List<String> weekNames = Collections.singletonList("Week1");
-    final List<String> seasonNames = Arrays.asList("Season1", "Season2");
+    final List<String> weekNames = Collections.singletonList("1");
+    final List<String> seasonNames = Arrays.asList("1", "2");
     final List<CosemDateDto> seasonStarts =
         Arrays.asList(new CosemDateDto(0xFFFF, 1, 1), new CosemDateDto(0xFFFF, 6, 15));
 
@@ -234,8 +235,8 @@ class SetActivityCalendarCommandExecutorTest {
     final List<Short> dayIds = Arrays.asList((short) 1, (short) 2, (short) 3);
     final List<CosemTimeDto> actionStartTimes =
         Arrays.asList(new CosemTimeDto(0, 0, 0, 0), new CosemTimeDto(10, 15, 0, 0));
-    final List<String> weekNames = Arrays.asList("Week1", "Week2");
-    final List<String> seasonNames = Arrays.asList("Season1", "Season2", "Season3");
+    final List<String> weekNames = Arrays.asList("1", "2");
+    final List<String> seasonNames = Arrays.asList("1", "2", "3");
     final List<CosemDateDto> seasonStarts =
         Arrays.asList(
             new CosemDateDto(0xFFFF, 1, 1),
@@ -340,8 +341,8 @@ class SetActivityCalendarCommandExecutorTest {
     final List<Short> dayIds = Collections.singletonList((short) 1);
     final List<CosemTimeDto> actionStartTimes =
         Collections.singletonList(new CosemTimeDto(0, 0, 0, 0));
-    final List<String> weekNames = Collections.singletonList("Week1");
-    final List<String> seasonNames = Collections.singletonList("Season1");
+    final List<String> weekNames = Collections.singletonList("1");
+    final List<String> seasonNames = Collections.singletonList("1");
     final List<CosemDateDto> seasonStarts =
         Collections.singletonList(new CosemDateDto(0xFFFF, 1, 1));
 
@@ -488,7 +489,7 @@ class SetActivityCalendarCommandExecutorTest {
     // Season Name
     assertThat(values.get(0).getType()).isEqualTo(Type.OCTET_STRING);
     assertThat((byte[]) values.get(0).getValue())
-        .containsExactly(seasonName.getBytes(StandardCharsets.UTF_8));
+        .containsExactly(new BigInteger(seasonName, 10).toByteArray());
 
     // Season start time
     assertThat(values.get(1).getType()).isEqualTo(Type.OCTET_STRING);
@@ -501,7 +502,7 @@ class SetActivityCalendarCommandExecutorTest {
     // Week name
     assertThat(values.get(2).getType()).isEqualTo(Type.OCTET_STRING);
     assertThat((byte[]) values.get(2).getValue())
-        .containsExactly(weekName.getBytes(StandardCharsets.UTF_8));
+        .containsExactly(new BigInteger(weekName, 10).toByteArray());
   }
 
   private void verifySetParameterWeekProfiles(
@@ -530,8 +531,7 @@ class SetActivityCalendarCommandExecutorTest {
 
           // Week name
           assertThat(nameAndDays.get(0).getType()).isEqualTo(Type.OCTET_STRING);
-          final String weekName =
-              new String((byte[]) nameAndDays.get(0).getValue(), StandardCharsets.UTF_8);
+          final String weekName = String.valueOf(((byte[]) nameAndDays.get(0).getValue())[0]);
           assertThat(weekNamesNotFound.remove(weekName)).isTrue();
 
           // DayIds for Monday - Sunday
