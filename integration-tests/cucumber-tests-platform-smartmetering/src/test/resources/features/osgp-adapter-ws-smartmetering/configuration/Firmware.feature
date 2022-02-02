@@ -93,7 +93,7 @@ Feature: SmartMetering Configuration - Firmware
   @NightlyBuildOnly @UpdateFirmware
   Scenario: successful update of firmware
     Given a manufacturer
-      | ManufacturerCode | KAIF  |
+      | ManufacturerCode | KAI   |
       | ManufacturerName | Kaifa |
     And a device model
       | ManufacturerName | Kaifa |
@@ -101,7 +101,7 @@ Feature: SmartMetering Configuration - Firmware
     And a dlms device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
-      | ManufacturerCode     | KAIF              |
+      | ManufacturerCode     | KAI               |
       | DeviceModelCode      | MA105             |
     And a firmware
       | FirmwareFileIdentification  | TEST_FW_FILE_0001                        |
@@ -129,7 +129,7 @@ Feature: SmartMetering Configuration - Firmware
   @NightlyBuildOnly @UpdateFirmware
   Scenario: update of firmware, no firmware file found with firmwareFileIdentification
     Given a manufacturer
-      | ManufacturerCode | KAIF  |
+      | ManufacturerCode | KAI   |
       | ManufacturerName | Kaifa |
     And a device model
       | ManufacturerName | Kaifa |
@@ -137,7 +137,7 @@ Feature: SmartMetering Configuration - Firmware
     And a dlms device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
-      | ManufacturerCode     | KAIF              |
+      | ManufacturerCode     | KAI               |
       | DeviceModelCode      | MA105             |
     And a firmware
       | FirmwareFileIdentification  | TEST_FW_FILE_0001                        |
@@ -170,7 +170,7 @@ Feature: SmartMetering Configuration - Firmware
   @NightlyBuildOnly @UpdateFirmware
   Scenario: update of firmware, firmware has no imageIdentifier 
     Given a manufacturer
-      | ManufacturerCode | KAIF  |
+      | ManufacturerCode | KAI   |
       | ManufacturerName | Kaifa |
     And a device model
       | ManufacturerName | Kaifa |
@@ -178,7 +178,7 @@ Feature: SmartMetering Configuration - Firmware
     And a dlms device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
-      | ManufacturerCode     | KAIF              |
+      | ManufacturerCode     | KAI               |
       | DeviceModelCode      | MA105             |
     And a firmware
       | FirmwareFileIdentification | TEST_FW_FILE_0002                        |
@@ -210,7 +210,7 @@ Feature: SmartMetering Configuration - Firmware
   @NightlyBuildOnly @UpdateFirmware
   Scenario: upgrade of firmware, firmware does not support device model
     Given a manufacturer
-      | ManufacturerCode | KAIF  |
+      | ManufacturerCode | KAI   |
       | ManufacturerName | Kaifa |
     And a device model
       | ManufacturerName | Kaifa |
@@ -218,7 +218,7 @@ Feature: SmartMetering Configuration - Firmware
     And a dlms device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
-      | ManufacturerCode     | KAIF              |
+      | ManufacturerCode     | KAI               |
       | DeviceModelCode      | MA105             |
     And a firmware
       | FirmwareFileIdentification  | TEST_FW_FILE_0001                        |

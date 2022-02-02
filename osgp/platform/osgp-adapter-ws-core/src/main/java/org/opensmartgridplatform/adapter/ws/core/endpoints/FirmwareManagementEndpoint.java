@@ -75,15 +75,12 @@ import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
-import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
@@ -96,12 +93,11 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
-public class FirmwareManagementEndpoint {
+public class FirmwareManagementEndpoint extends CoreEndpoint {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareManagementEndpoint.class);
   private static final String NAMESPACE =
       "http://www.opensmartgridplatform.org/schemas/common/firmwaremanagement/2014/10";
-  private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
   private static final String ADD_DEVICEMODEL_EXISTING_DEVICEMODEL = "EXISTING_DEVICEMODEL";
   private static final String ADD_FIRMWARE_EXISTING_FIRMWARE = "EXISTING_FIRMWARE";
   private static final String ADD_MANUFACTURER_EXISTING_MANUFACTURER = "EXISTING_MANUFACTURER";
@@ -241,11 +237,10 @@ public class FirmwareManagementEndpoint {
     final UpdateFirmwareResponse response = new UpdateFirmwareResponse();
 
     try {
-      final ResponseMessage message =
-          this.firmwareManagementService.dequeueUpdateFirmwareResponse(
-              request.getAsyncRequest().getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "updating firmware");
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);
@@ -308,18 +303,18 @@ public class FirmwareManagementEndpoint {
 
     final GetFirmwareVersionResponse response = new GetFirmwareVersionResponse();
     try {
-      final ResponseMessage message =
-          this.firmwareManagementService.dequeueGetFirmwareResponse(
-              request.getAsyncRequest().getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-        if (message.getDataObject() != null) {
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
+        if (responseMessage.getDataObject() != null) {
+          throwExceptionIfResultNotOk(responseMessage, "retrieving firmware version");
+
           final List<FirmwareVersion> target = response.getFirmwareVersion();
           @SuppressWarnings("unchecked")
           final List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion>
               firmwareVersions =
                   (List<org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion>)
-                      message.getDataObject();
+                      responseMessage.getDataObject();
           target.addAll(
               this.firmwareManagementMapper.mapAsList(firmwareVersions, FirmwareVersion.class));
         } else {
@@ -537,12 +532,10 @@ public class FirmwareManagementEndpoint {
     final SwitchFirmwareResponse response = new SwitchFirmwareResponse();
 
     try {
-      final ResponseMessage message =
-          this.firmwareManagementService.dequeueSwitchFirmwareResponse(
-              request.getAsyncRequest().getCorrelationUid());
-
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "switching firmware");
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       } else {
         LOGGER.debug("Switch Firmware data is null");
       }
@@ -1145,20 +1138,5 @@ public class FirmwareManagementEndpoint {
                 ::getModelCode)
         .findFirst()
         .orElse(null);
-  }
-
-  private void handleException(final Exception e) throws OsgpException {
-    // Rethrow exception if it already is a functional or technical
-    // exception, otherwise throw new technical exception.
-    if (e instanceof ConstraintViolationException) {
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(((ConstraintViolationException) e).getConstraintViolations()));
-    } else if (e instanceof OsgpException) {
-      throw (OsgpException) e;
-    } else {
-      throw new TechnicalException(COMPONENT_WS_CORE, e);
-    }
   }
 }

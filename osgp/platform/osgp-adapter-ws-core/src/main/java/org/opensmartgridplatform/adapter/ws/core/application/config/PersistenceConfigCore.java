@@ -21,27 +21,32 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-@EnableJpaRepositories(basePackageClasses = {DeviceRepository.class})
+@EnableJpaRepositories(
+    entityManagerFactoryRef = "coreEntityManagerFactory",
+    basePackageClasses = {DeviceRepository.class})
 @Configuration
 @PropertySource("classpath:osgp-adapter-ws-core.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true)
-public class PersistenceConfig extends AbstractPersistenceConfig {
+public class PersistenceConfigCore extends AbstractPersistenceConfig {
 
-  @Value("${db.readonly.username}")
-  private String username;
+  @Value("${db.readonly.username.core}")
+  private String readonlyUsername;
 
-  @Value("${db.readonly.password}")
-  private String password;
+  @Value("${db.readonly.password.core}")
+  private String readonlyPassword;
 
-  @Value("${db.host}")
+  @Value("${db.host.core}")
   private String databaseHost;
 
-  @Value("${db.port}")
+  @Value("${db.port.core}")
   private int databasePort;
 
-  @Value("${db.name}")
+  @Value("${db.name.core}")
   private String databaseName;
+
+  @Value("${entitymanager.packages.to.scan.core}")
+  private String entitymanagerPackagesToScan;
 
   private HikariDataSource dataSourceCore;
 
@@ -52,8 +57,8 @@ public class PersistenceConfig extends AbstractPersistenceConfig {
 
       final DefaultConnectionPoolFactory.Builder builder =
           super.builder()
-              .withUsername(this.username)
-              .withPassword(this.password)
+              .withUsername(this.readonlyUsername)
+              .withPassword(this.readonlyPassword)
               .withDatabaseHost(this.databaseHost)
               .withDatabasePort(this.databasePort)
               .withDatabaseName(this.databaseName);
@@ -65,14 +70,16 @@ public class PersistenceConfig extends AbstractPersistenceConfig {
   }
 
   @Override
-  @Bean
+  @Bean(name = "coreTransactionManager")
   public JpaTransactionManager transactionManager() {
     return super.transactionManager();
   }
 
   @Override
-  @Bean
+  @Bean(name = "coreEntityManagerFactory")
   public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-    return super.entityManagerFactory("OSGP_WS_ADAPTER_CORE", this.getDataSourceCore());
+
+    return super.entityManagerFactory(
+        "OSGP_WS_ADAPTER_CORE", this.getDataSourceCore(), this.entitymanagerPackagesToScan);
   }
 }

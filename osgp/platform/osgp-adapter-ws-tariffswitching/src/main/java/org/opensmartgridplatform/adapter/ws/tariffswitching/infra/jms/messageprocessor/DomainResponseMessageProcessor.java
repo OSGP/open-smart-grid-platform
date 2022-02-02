@@ -69,16 +69,16 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
   @Override
   public void processMessage(final ObjectMessage message) {
-    LOGGER.debug("Processing smart metering response message");
+    LOGGER.debug("Processing response message");
 
     String correlationUid = null;
     String jmsType = null;
     String organisationIdentification = null;
     String deviceIdentification = null;
-    NotificationType notificationType;
-    ResponseMessageResultType resultType;
-    String resultDescription;
-    Serializable dataObject;
+    final NotificationType notificationType;
+    final ResponseMessageResultType resultType;
+    final String resultDescription;
+    final Serializable dataObject;
 
     try {
       correlationUid = message.getJMSCorrelationID();
@@ -128,7 +128,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
       final Serializable dataObject) {
 
     final short numberOfNotificationsSent = 0;
-    Serializable deviceResponseObject;
+    final Serializable deviceResponseObject;
 
     if (ResponseMessageResultType.OK == resultType) {
       deviceResponseObject = dataObject;
