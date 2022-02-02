@@ -14,6 +14,8 @@ import java.util.List;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,19 +37,54 @@ import org.springframework.ws.transport.http.WebServiceMessageReceiverHttpHandle
 @Configuration
 public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapter {
 
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(SmartMeteringNotificationWebServiceConfig.class);
+
   private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
 
   @Value("${jaxb2.marshaller.context.path.smartmetering.notification}")
   private String contextPathSmartMeteringNotification;
 
-  @Value("${web.service.notification.context}")
+  @Value("${web.service.smartmetering.notification.context}")
   private String notificationContextPath;
 
-  @Value("${web.service.notification.port}")
+  @Value("${web.service.smartmetering.notification.port}")
   private int notificationPort;
 
+  @Override
+  public void addInterceptors(final List<EndpointInterceptor> interceptors) {
+    interceptors.add(
+        new SoapHeaderEndpointInterceptor(
+            ORGANISATION_IDENTIFICATION_HEADER, ORGANISATION_IDENTIFICATION_HEADER));
+  }
+
   @Bean
-  public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
+  public SimpleHttpServerFactoryBean smartMeteringNotificationsHttpServer(
+      final SaajSoapMessageFactory messageFactory,
+      final PayloadRootAnnotationMethodEndpointMapping mapping) {
+
+    LOGGER.info(
+        "Initializing smart metering notifications HTTP server with context path: '{}' and port: '{}'",
+        this.notificationContextPath,
+        this.notificationPort);
+
+    final SoapMessageDispatcher soapMessageDispatcher = new SoapMessageDispatcher();
+    soapMessageDispatcher.setEndpointMappings(Arrays.asList(mapping));
+    soapMessageDispatcher.setEndpointAdapters(Arrays.asList(this.defaultMethodEndpointAdapter()));
+
+    final WebServiceMessageReceiverHttpHandler httpHandler =
+        new WebServiceMessageReceiverHttpHandler();
+    httpHandler.setMessageReceiver(soapMessageDispatcher);
+    httpHandler.setMessageFactory(messageFactory);
+
+    final SimpleHttpServerFactoryBean httpServer = new SimpleHttpServerFactoryBean();
+    httpServer.setContexts(Collections.singletonMap(this.notificationContextPath, httpHandler));
+    httpServer.setPort(this.notificationPort);
+
+    return httpServer;
+  }
+
+  private DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
     final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter =
         new DefaultMethodEndpointAdapter();
 
@@ -66,44 +103,18 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
     return defaultMethodEndpointAdapter;
   }
 
-  @Override
-  public void addInterceptors(final List<EndpointInterceptor> interceptors) {
-    interceptors.add(
-        new SoapHeaderEndpointInterceptor(
-            ORGANISATION_IDENTIFICATION_HEADER, ORGANISATION_IDENTIFICATION_HEADER));
-  }
+  private Jaxb2Marshaller smartMeteringNotificationMarshaller() {
 
-  @Bean
-  public SimpleHttpServerFactoryBean httpServer(
-      final SaajSoapMessageFactory messageFactory,
-      final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter,
-      final PayloadRootAnnotationMethodEndpointMapping mapping) {
+    LOGGER.info(
+        "Initializing smart metering notification marshaller with context path: '{}'",
+        this.contextPathSmartMeteringNotification);
 
-    final SoapMessageDispatcher soapMessageDispatcher = new SoapMessageDispatcher();
-    soapMessageDispatcher.setEndpointMappings(Arrays.asList(mapping));
-    soapMessageDispatcher.setEndpointAdapters(Arrays.asList(defaultMethodEndpointAdapter));
-
-    final WebServiceMessageReceiverHttpHandler httpHandler =
-        new WebServiceMessageReceiverHttpHandler();
-    httpHandler.setMessageReceiver(soapMessageDispatcher);
-    httpHandler.setMessageFactory(messageFactory);
-
-    final SimpleHttpServerFactoryBean httpServer = new SimpleHttpServerFactoryBean();
-    httpServer.setContexts(Collections.singletonMap(this.notificationContextPath, httpHandler));
-    httpServer.setPort(this.notificationPort);
-
-    return httpServer;
-  }
-
-  @Bean
-  public Jaxb2Marshaller smartMeteringNotificationMarshaller() {
     final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
     marshaller.setContextPath(this.contextPathSmartMeteringNotification);
     return marshaller;
   }
 
-  @Bean
-  public MarshallingPayloadMethodProcessor
+  private MarshallingPayloadMethodProcessor
       smartMeteringNotificationMarshallingPayloadMethodProcessor() {
     return new MarshallingPayloadMethodProcessor(
         this.smartMeteringNotificationMarshaller(), this.smartMeteringNotificationMarshaller());

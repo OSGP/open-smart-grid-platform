@@ -10,8 +10,6 @@ package org.opensmartgridplatform.cucumber.platform.glue.steps.database.ws;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -21,13 +19,15 @@ import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
 import org.opensmartgridplatform.cucumber.core.RetryableAssert;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
-import org.springframework.beans.factory.annotation.Autowired;
 
-public class ResponseUrlDataSteps {
+public abstract class ResponseUrlDataSteps {
 
-  @Autowired private ResponseUrlDataRepository responseUrlDataRepository;
+  private final ResponseUrlDataRepository responseUrlDataRepository;
 
-  @Given("^a response url data record$")
+  public ResponseUrlDataSteps(final ResponseUrlDataRepository responseUrlDataRepository) {
+    this.responseUrlDataRepository = responseUrlDataRepository;
+  }
+
   public void aResponseUrlDataRecord(final Map<String, String> settings) throws Throwable {
     final ResponseUrlData responseUrlData =
         this.responseUrlDataRepository.save(
@@ -48,7 +48,6 @@ public class ResponseUrlDataSteps {
     }
   }
 
-  @Then("^the response url data has values$")
   public void theResponseUrlDataHasValues(final Map<String, String> settings) throws Throwable {
     final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
     final String expectedResponseUrl = settings.get(PlatformKeys.KEY_RESPONSE_URL);
@@ -71,7 +70,6 @@ public class ResponseUrlDataSteps {
         .isEqualTo(expectedResponseUrl);
   }
 
-  @Then("^the response url data record with correlation uid \\\"(.*)\\\" should be deleted$")
   public void theResponseUrlDataRecordShouldBeDeleted(final String correlationUid) {
     final ResponseUrlData responseUrlData =
         this.responseUrlDataRepository.findSingleResultByCorrelationUid(correlationUid);
@@ -79,7 +77,6 @@ public class ResponseUrlDataSteps {
     assertThat(responseUrlData).as("Response url data should be deleted").isNull();
   }
 
-  @Then("^the response url data record with correlation uid \\\"(.*)\\\" should not be deleted$")
   public void theResponseUrlDataRecordShouldNotBeDeleted(final String correlationUid) {
     final ResponseUrlData responseUrlData =
         this.responseUrlDataRepository.findSingleResultByCorrelationUid(correlationUid);

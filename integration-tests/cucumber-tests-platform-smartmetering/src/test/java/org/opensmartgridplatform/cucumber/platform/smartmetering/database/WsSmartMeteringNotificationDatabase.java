@@ -29,7 +29,7 @@ public class WsSmartMeteringNotificationDatabase extends WsNotificationDatabase 
           applicationKeyConfigurationRepository) {
     super(
         "SMART_METERS",
-        "http://localhost:8088/notifications",
+        "http://localhost:8089/notifications/",
         false,
         "org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification",
         responseDataRepository,

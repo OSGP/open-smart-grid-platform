@@ -26,8 +26,9 @@ public class WsCoreNotificationDatabase extends WsNotificationDatabase {
       final CoreNotificationWebServiceConfigurationRepository
           notificationWebServiceConfigurationRepository,
       final CoreApplicationKeyConfigurationRepository applicationKeyConfigurationRepository,
-      @Value("${web.service.notification.port}") final int webServiceNotificationPort,
-      @Value("${web.service.notification.context}") final String webServiceNotificationContext) {
+      @Value("${web.service.core.notification.port}") final int webServiceNotificationPort,
+      @Value("${web.service.core.notification.context}")
+          final String webServiceNotificationContext) {
     super(
         "OSGP",
         String.format(

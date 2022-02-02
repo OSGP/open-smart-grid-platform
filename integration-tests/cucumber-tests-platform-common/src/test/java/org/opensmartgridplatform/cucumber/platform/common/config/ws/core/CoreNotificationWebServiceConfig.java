@@ -15,6 +15,8 @@ import java.util.List;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,19 +38,55 @@ import org.springframework.ws.transport.http.WebServiceMessageReceiverHttpHandle
 @Configuration
 public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
 
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(CoreNotificationWebServiceConfig.class);
+
   private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
 
   @Value("${jaxb2.marshaller.context.path.core.notification}")
   private String contextPathCoreNotification;
 
-  @Value("${web.service.notification.context}")
+  @Value("${web.service.core.notification.context}")
   private String notificationContextPath;
 
-  @Value("${web.service.notification.port}")
+  @Value("${web.service.core.notification.port}")
   private int notificationPort;
 
+  @Override
+  public void addInterceptors(final List<EndpointInterceptor> interceptors) {
+    interceptors.add(
+        new SoapHeaderEndpointInterceptor(
+            ORGANISATION_IDENTIFICATION_HEADER, ORGANISATION_IDENTIFICATION_HEADER));
+  }
+
   @Bean
-  public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
+  public SimpleHttpServerFactoryBean coreNotificationsHttpServer(
+      final SaajSoapMessageFactory messageFactory,
+      final PayloadRootAnnotationMethodEndpointMapping mapping) {
+
+    LOGGER.info(
+        "Initializing core notifications HTTP server with context path: '{}' and port: '{}'",
+        this.notificationContextPath,
+        this.notificationPort);
+
+    final SoapMessageDispatcher soapMessageDispatcher = new SoapMessageDispatcher();
+    soapMessageDispatcher.setEndpointMappings(Collections.singletonList(mapping));
+    soapMessageDispatcher.setEndpointAdapters(
+        Collections.singletonList(this.defaultMethodEndpointAdapter()));
+
+    final WebServiceMessageReceiverHttpHandler httpHandler =
+        new WebServiceMessageReceiverHttpHandler();
+    httpHandler.setMessageReceiver(soapMessageDispatcher);
+    httpHandler.setMessageFactory(messageFactory);
+
+    final SimpleHttpServerFactoryBean httpServer = new SimpleHttpServerFactoryBean();
+    httpServer.setContexts(Collections.singletonMap(this.notificationContextPath, httpHandler));
+    httpServer.setPort(this.notificationPort);
+
+    return httpServer;
+  }
+
+  private DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
     final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter =
         new DefaultMethodEndpointAdapter();
 
@@ -66,45 +104,18 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
     return defaultMethodEndpointAdapter;
   }
 
-  @Override
-  public void addInterceptors(final List<EndpointInterceptor> interceptors) {
-    interceptors.add(
-        new SoapHeaderEndpointInterceptor(
-            ORGANISATION_IDENTIFICATION_HEADER, ORGANISATION_IDENTIFICATION_HEADER));
-  }
+  private Jaxb2Marshaller coreNotificationMarshaller() {
 
-  @Bean
-  public SimpleHttpServerFactoryBean httpServer(
-      final SaajSoapMessageFactory messageFactory,
-      final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter,
-      final PayloadRootAnnotationMethodEndpointMapping mapping) {
+    LOGGER.info(
+        "Initializing core notification marshaller with context path '{}'",
+        this.contextPathCoreNotification);
 
-    final SoapMessageDispatcher soapMessageDispatcher = new SoapMessageDispatcher();
-    soapMessageDispatcher.setEndpointMappings(Collections.singletonList(mapping));
-    soapMessageDispatcher.setEndpointAdapters(
-        Collections.singletonList(defaultMethodEndpointAdapter));
-
-    final WebServiceMessageReceiverHttpHandler httpHandler =
-        new WebServiceMessageReceiverHttpHandler();
-    httpHandler.setMessageReceiver(soapMessageDispatcher);
-    httpHandler.setMessageFactory(messageFactory);
-
-    final SimpleHttpServerFactoryBean httpServer = new SimpleHttpServerFactoryBean();
-    httpServer.setContexts(Collections.singletonMap(this.notificationContextPath, httpHandler));
-    httpServer.setPort(this.notificationPort);
-
-    return httpServer;
-  }
-
-  @Bean
-  public Jaxb2Marshaller coreNotificationMarshaller() {
     final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
     marshaller.setContextPath(this.contextPathCoreNotification);
     return marshaller;
   }
 
-  @Bean
-  public MarshallingPayloadMethodProcessor coreNotificationMarshallingPayloadMethodProcessor() {
+  private MarshallingPayloadMethodProcessor coreNotificationMarshallingPayloadMethodProcessor() {
     return new MarshallingPayloadMethodProcessor(
         this.coreNotificationMarshaller(), this.coreNotificationMarshaller());
   }

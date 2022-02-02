@@ -26,14 +26,14 @@ Feature: GXF notifications (WS Core) - Resend notifications
       | MessageType               | SET_DEVICE_LIFECYCLE_STATUS                            |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      0 |
-    And a response url data record
+    And a response url data record in ws-core
       | CorrelationUid | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
-      | ResponseUrl    | http://localhost:8088/notifications                    |
+      | ResponseUrl    | http://localhost:8088/notifications/                   |
     When OSGP checks for which response data a notification has to be resend
     Then a notification is sent in ws-core
-    And the response url data has values
+    And the response url data in ws-core has values
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
-      | ResponseUrl               | http://localhost:8088/notifications                    |
+      | ResponseUrl               | http://localhost:8088/notifications/                   |
 
   Scenario: Don't send notifications when the configurable time has not passed
     Given a response data record in ws-core
