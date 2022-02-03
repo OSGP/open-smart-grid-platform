@@ -14,6 +14,8 @@ import java.util.List;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,34 +37,36 @@ import org.springframework.ws.transport.http.WebServiceMessageReceiverHttpHandle
 @Configuration
 public class MicrogridsNotificationWebServiceConfig extends WsConfigurerAdapter {
 
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(MicrogridsNotificationWebServiceConfig.class);
+
   private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
 
   @Value("${jaxb2.marshaller.context.path.microgrids.notification}")
-  private String contextPathMicrogridsNotification;
+  private String notificationMarshallerContextPath;
 
-  @Value("${web.service.notification.context}")
+  @Value("${web.service.microgrids.notification.application.name}")
+  private String notificationApplicationName;
+
+  @Value("${web.service.microgrids.notification.context}")
   private String notificationContextPath;
 
-  @Value("${web.service.notification.port}")
+  @Value("${web.service.microgrids.notification.port}")
   private int notificationPort;
 
-  @Bean
-  public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
-    final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter =
-        new DefaultMethodEndpointAdapter();
+  @Bean("microgridsNotificationApplicationName")
+  public String notificationApplicationName() {
+    return this.notificationApplicationName;
+  }
 
-    final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
-    methodArgumentResolvers.add(this.microgridsNotificationMarshallingPayloadMethodProcessor());
-    methodArgumentResolvers.add(
-        new AnnotationMethodArgumentResolver(
-            ORGANISATION_IDENTIFICATION_HEADER, OrganisationIdentification.class));
-    defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
+  @Bean("microgridsNotificationMarshallerContextPath")
+  public String notificationMarshallerContextPath() {
+    return this.notificationMarshallerContextPath;
+  }
 
-    final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
-    methodReturnValueHandlers.add(this.microgridsNotificationMarshallingPayloadMethodProcessor());
-    defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
-
-    return defaultMethodEndpointAdapter;
+  @Bean("microgridsNotificationTargetUri")
+  public String notificationTargetUri() {
+    return "http://localhost:" + this.notificationPort + this.notificationContextPath;
   }
 
   @Override
@@ -72,15 +76,19 @@ public class MicrogridsNotificationWebServiceConfig extends WsConfigurerAdapter 
             ORGANISATION_IDENTIFICATION_HEADER, ORGANISATION_IDENTIFICATION_HEADER));
   }
 
-  @Bean
+  @Bean("microgridsNotificationHttpServer")
   public SimpleHttpServerFactoryBean httpServer(
       final SaajSoapMessageFactory messageFactory,
-      final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter,
       final PayloadRootAnnotationMethodEndpointMapping mapping) {
+
+    LOGGER.info(
+        "Initializing microgrids notifications HTTP server with context path: '{}' and port: '{}'",
+        this.notificationContextPath,
+        this.notificationPort);
 
     final SoapMessageDispatcher soapMessageDispatcher = new SoapMessageDispatcher();
     soapMessageDispatcher.setEndpointMappings(Arrays.asList(mapping));
-    soapMessageDispatcher.setEndpointAdapters(Arrays.asList(defaultMethodEndpointAdapter));
+    soapMessageDispatcher.setEndpointAdapters(Arrays.asList(this.defaultMethodEndpointAdapter()));
 
     final WebServiceMessageReceiverHttpHandler httpHandler =
         new WebServiceMessageReceiverHttpHandler();
@@ -94,29 +102,39 @@ public class MicrogridsNotificationWebServiceConfig extends WsConfigurerAdapter 
     return httpServer;
   }
 
-  /**
-   * Method for creating the Marshaller for Microgrids notification.
-   *
-   * @return Jaxb2Marshaller
-   */
-  @Bean
-  public Jaxb2Marshaller microgridsNotificationMarshaller() {
+  private DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
+    final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter =
+        new DefaultMethodEndpointAdapter();
+
+    final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
+    methodArgumentResolvers.add(this.notificationMarshallingPayloadMethodProcessor());
+    methodArgumentResolvers.add(
+        new AnnotationMethodArgumentResolver(
+            ORGANISATION_IDENTIFICATION_HEADER, OrganisationIdentification.class));
+    defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
+
+    final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
+    methodReturnValueHandlers.add(this.notificationMarshallingPayloadMethodProcessor());
+    defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
+
+    return defaultMethodEndpointAdapter;
+  }
+
+  private Jaxb2Marshaller notificationMarshaller() {
+
+    LOGGER.info(
+        "Initializing microgrids notification marshaller with context path: '{}'",
+        this.notificationMarshallerContextPath);
+
     final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-    marshaller.setContextPath(this.contextPathMicrogridsNotification);
+    marshaller.setContextPath(this.notificationMarshallerContextPath);
 
     return marshaller;
   }
 
-  /**
-   * Method for creating the Marshalling Payload Method Processor for Microgrids notification.
-   *
-   * @return MarshallingPayloadMethodProcessor
-   */
-  @Bean
-  public MarshallingPayloadMethodProcessor
-      microgridsNotificationMarshallingPayloadMethodProcessor() {
+  private MarshallingPayloadMethodProcessor notificationMarshallingPayloadMethodProcessor() {
     return new MarshallingPayloadMethodProcessor(
-        this.microgridsNotificationMarshaller(), this.microgridsNotificationMarshaller());
+        this.notificationMarshaller(), this.notificationMarshaller());
   }
 }
