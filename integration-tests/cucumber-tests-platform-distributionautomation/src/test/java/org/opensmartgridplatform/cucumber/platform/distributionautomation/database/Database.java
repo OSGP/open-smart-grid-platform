@@ -12,38 +12,53 @@ import java.util.Arrays;
 import java.util.List;
 import org.opensmartgridplatform.adapter.kafka.da.domain.repositories.LocationRepository;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
-import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps.database.ws.DistributionAutomationNotificationWebServiceConfigurationRepository;
-import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps.database.ws.DistributionAutomationResponseDataRepository;
 import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Database {
 
   @Autowired
-  private DistributionAutomationResponseDataRepository distributionAutomationResponseDataRepository;
+  @Qualifier("wsDistributionAutomationResponseDataRepository")
+  private ResponseDataRepository responseDataRepository;
 
   @Autowired
-  private DistributionAutomationNotificationWebServiceConfigurationRepository
-      distributionAutomationNotificationWebServiceConfigurationRepository;
+  @Qualifier("wsDistributionAutomationNotificationWebServiceConfigurationRepository")
+  private NotificationWebServiceConfigurationRepository
+      notificationWebServiceConfigurationRepository;
+
+  @Autowired
+  @Qualifier("wsDistributionAutomationNotificationMarshallerContextPath")
+  private String notificationMarshallerContextPath;
+
+  @Autowired
+  @Qualifier("wsDistributionAutomationNotificationApplicationName")
+  private String notificationApplicationName;
+
+  @Autowired
+  @Qualifier("wsDistributionAutomationNotificationTargetUri")
+  private String notificationTargetUri;
 
   @Autowired private RtuDeviceRepository rtuDeviceRepository;
 
   @Autowired private LocationRepository locationRepository;
 
   private void insertDefaultData() {
-    this.distributionAutomationNotificationWebServiceConfigurationRepository.saveAll(
+    this.notificationWebServiceConfigurationRepository.saveAll(
         this.notificationEndpointConfigurations());
   }
 
   private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
     final NotificationWebServiceConfigurationBuilder builder =
         new NotificationWebServiceConfigurationBuilder()
-            .withApplicationName("DISTRIBUTION_AUTOMATION")
-            .withMarshallerContextPath(
-                "org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification");
+            .withApplicationName(this.notificationApplicationName)
+            .withMarshallerContextPath(this.notificationMarshallerContextPath)
+            .withTargetUri(this.notificationTargetUri);
 
     final NotificationWebServiceConfiguration osgpOrganizationConfig =
         builder.withOrganisationIdentification("OSGP").build();
@@ -55,7 +70,7 @@ public class Database {
     // Removes all test related data from the various databases
 
     // Remove from osgp_adapter_ws_distributionautomation
-    this.distributionAutomationResponseDataRepository.deleteAll();
+    this.responseDataRepository.deleteAll();
 
     // Remove from osgp_core
     this.rtuDeviceRepository.deleteAll();

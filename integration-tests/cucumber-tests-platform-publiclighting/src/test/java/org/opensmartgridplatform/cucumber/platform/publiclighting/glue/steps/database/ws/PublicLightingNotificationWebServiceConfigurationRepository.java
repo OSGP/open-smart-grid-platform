@@ -12,6 +12,6 @@ package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.da
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
+@Repository("wsPublicLightingNotificationWebServiceConfigurationRepository")
 public interface PublicLightingNotificationWebServiceConfigurationRepository
     extends NotificationWebServiceConfigurationRepository {}

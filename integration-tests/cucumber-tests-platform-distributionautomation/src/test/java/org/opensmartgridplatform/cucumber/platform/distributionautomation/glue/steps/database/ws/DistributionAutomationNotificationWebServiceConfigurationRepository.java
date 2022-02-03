@@ -12,6 +12,6 @@ package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
+@Repository("wsDistributionAutomationNotificationWebServiceConfigurationRepository")
 public interface DistributionAutomationNotificationWebServiceConfigurationRepository
     extends NotificationWebServiceConfigurationRepository {}

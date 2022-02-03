@@ -44,13 +44,31 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
   private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
 
   @Value("${jaxb2.marshaller.context.path.core.notification}")
-  private String contextPathCoreNotification;
+  private String notificationMarshallerContextPath;
+
+  @Value("${web.service.core.notification.application.name}")
+  private String notificationApplicationName;
 
   @Value("${web.service.core.notification.context}")
   private String notificationContextPath;
 
   @Value("${web.service.core.notification.port}")
   private int notificationPort;
+
+  @Bean("wsCoreNotificationApplicationName")
+  public String notificationApplicationName() {
+    return this.notificationApplicationName;
+  }
+
+  @Bean("wsCoreNotificationMarshallerContextPath")
+  public String notificationMarshallerContextPath() {
+    return this.notificationMarshallerContextPath;
+  }
+
+  @Bean("wsCoreNotificationTargetUri")
+  public String notificationTargetUri() {
+    return "http://localhost:" + this.notificationPort + this.notificationContextPath;
+  }
 
   @Override
   public void addInterceptors(final List<EndpointInterceptor> interceptors) {
@@ -59,8 +77,8 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
             ORGANISATION_IDENTIFICATION_HEADER, ORGANISATION_IDENTIFICATION_HEADER));
   }
 
-  @Bean
-  public SimpleHttpServerFactoryBean coreNotificationsHttpServer(
+  @Bean("wsCoreNotificationHttpServer")
+  public SimpleHttpServerFactoryBean httpServer(
       final SaajSoapMessageFactory messageFactory,
       final PayloadRootAnnotationMethodEndpointMapping mapping) {
 
@@ -90,33 +108,42 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
     final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter =
         new DefaultMethodEndpointAdapter();
 
+    final MarshallingPayloadMethodProcessor processor = this.marshallingPayloadMethodProcessor();
+    final AnnotationMethodArgumentResolver resolver = this.annotationMethodArgumentResolver();
+
     final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
-    methodArgumentResolvers.add(this.coreNotificationMarshallingPayloadMethodProcessor());
-    methodArgumentResolvers.add(
-        new AnnotationMethodArgumentResolver(
-            ORGANISATION_IDENTIFICATION_HEADER, OrganisationIdentification.class));
+    methodArgumentResolvers.add(processor);
+    methodArgumentResolvers.add(resolver);
     defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
     final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
-    methodReturnValueHandlers.add(this.coreNotificationMarshallingPayloadMethodProcessor());
+    methodReturnValueHandlers.add(processor);
     defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
 
     return defaultMethodEndpointAdapter;
   }
 
-  private Jaxb2Marshaller coreNotificationMarshaller() {
-
-    LOGGER.info(
-        "Initializing core notification marshaller with context path '{}'",
-        this.contextPathCoreNotification);
-
-    final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-    marshaller.setContextPath(this.contextPathCoreNotification);
-    return marshaller;
+  private AnnotationMethodArgumentResolver annotationMethodArgumentResolver() {
+    final AnnotationMethodArgumentResolver resolver =
+        new AnnotationMethodArgumentResolver(
+            ORGANISATION_IDENTIFICATION_HEADER, OrganisationIdentification.class);
+    return resolver;
   }
 
-  private MarshallingPayloadMethodProcessor coreNotificationMarshallingPayloadMethodProcessor() {
-    return new MarshallingPayloadMethodProcessor(
-        this.coreNotificationMarshaller(), this.coreNotificationMarshaller());
+  private MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor() {
+    final Jaxb2Marshaller marshaller = this.notificationMarshaller();
+    final MarshallingPayloadMethodProcessor processor =
+        new MarshallingPayloadMethodProcessor(marshaller, marshaller);
+    return processor;
+  }
+
+  private Jaxb2Marshaller notificationMarshaller() {
+    LOGGER.info(
+        "Initializing core notification marshaller with context path '{}'",
+        this.notificationMarshallerContextPath);
+
+    final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+    marshaller.setContextPath(this.notificationMarshallerContextPath);
+    return marshaller;
   }
 }

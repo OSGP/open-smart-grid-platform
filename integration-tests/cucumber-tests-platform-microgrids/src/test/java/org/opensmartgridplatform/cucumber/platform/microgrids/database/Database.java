@@ -26,24 +26,24 @@ public class Database {
   @Autowired private Iec61850DeviceRepository iec61850DeviceRepository;
 
   @Autowired
-  @Qualifier("microgridsResponseDataRepository")
+  @Qualifier("wsMicrogridsResponseDataRepository")
   private ResponseDataRepository responseDataRepository;
 
   @Autowired
-  @Qualifier("microgridsNotificationWebServiceConfigurationRepository")
+  @Qualifier("wsMicrogridsNotificationWebServiceConfigurationRepository")
   private NotificationWebServiceConfigurationRepository
       notificationWebServiceConfigurationRepository;
 
   @Autowired
-  @Qualifier("microgridsNotificationApplicationName")
+  @Qualifier("wsMicrogridsNotificationApplicationName")
   private String notificationApplicationName;
 
   @Autowired
-  @Qualifier("microgridsNotificationMarshallerContextPath")
+  @Qualifier("wsMicrogridsNotificationMarshallerContextPath")
   private String notificationMarshallerContextPath;
 
   @Autowired
-  @Qualifier("microgridsNotificationTargetUri")
+  @Qualifier("wsMicrogridsNotificationTargetUri")
   private String notificationTargetUri;
 
   @Autowired private RtuDeviceRepository rtuDeviceRepository;

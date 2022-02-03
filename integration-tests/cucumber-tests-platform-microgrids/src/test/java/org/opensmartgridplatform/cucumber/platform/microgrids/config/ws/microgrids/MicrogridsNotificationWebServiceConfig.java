@@ -54,17 +54,17 @@ public class MicrogridsNotificationWebServiceConfig extends WsConfigurerAdapter 
   @Value("${web.service.microgrids.notification.port}")
   private int notificationPort;
 
-  @Bean("microgridsNotificationApplicationName")
+  @Bean("wsMicrogridsNotificationApplicationName")
   public String notificationApplicationName() {
     return this.notificationApplicationName;
   }
 
-  @Bean("microgridsNotificationMarshallerContextPath")
+  @Bean("wsMicrogridsNotificationMarshallerContextPath")
   public String notificationMarshallerContextPath() {
     return this.notificationMarshallerContextPath;
   }
 
-  @Bean("microgridsNotificationTargetUri")
+  @Bean("wsMicrogridsNotificationTargetUri")
   public String notificationTargetUri() {
     return "http://localhost:" + this.notificationPort + this.notificationContextPath;
   }
@@ -76,7 +76,7 @@ public class MicrogridsNotificationWebServiceConfig extends WsConfigurerAdapter 
             ORGANISATION_IDENTIFICATION_HEADER, ORGANISATION_IDENTIFICATION_HEADER));
   }
 
-  @Bean("microgridsNotificationHttpServer")
+  @Bean("wsMicrogridsNotificationHttpServer")
   public SimpleHttpServerFactoryBean httpServer(
       final SaajSoapMessageFactory messageFactory,
       final PayloadRootAnnotationMethodEndpointMapping mapping) {
@@ -106,35 +106,38 @@ public class MicrogridsNotificationWebServiceConfig extends WsConfigurerAdapter 
     final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter =
         new DefaultMethodEndpointAdapter();
 
+    final MarshallingPayloadMethodProcessor processor = this.marshallingPayloadMethodProcessor();
+    final AnnotationMethodArgumentResolver resolver = this.annotationMethodArgumentResolver();
+
     final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
-    methodArgumentResolvers.add(this.notificationMarshallingPayloadMethodProcessor());
-    methodArgumentResolvers.add(
-        new AnnotationMethodArgumentResolver(
-            ORGANISATION_IDENTIFICATION_HEADER, OrganisationIdentification.class));
+    methodArgumentResolvers.add(processor);
+    methodArgumentResolvers.add(resolver);
     defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
     final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
-    methodReturnValueHandlers.add(this.notificationMarshallingPayloadMethodProcessor());
+    methodReturnValueHandlers.add(processor);
     defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
 
     return defaultMethodEndpointAdapter;
   }
 
-  private Jaxb2Marshaller notificationMarshaller() {
+  private AnnotationMethodArgumentResolver annotationMethodArgumentResolver() {
+    return new AnnotationMethodArgumentResolver(
+        ORGANISATION_IDENTIFICATION_HEADER, OrganisationIdentification.class);
+  }
 
+  private MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor() {
+    final Jaxb2Marshaller marshaller = this.notificationMarshaller();
+    return new MarshallingPayloadMethodProcessor(marshaller, marshaller);
+  }
+
+  private Jaxb2Marshaller notificationMarshaller() {
     LOGGER.info(
         "Initializing microgrids notification marshaller with context path: '{}'",
         this.notificationMarshallerContextPath);
 
     final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-
     marshaller.setContextPath(this.notificationMarshallerContextPath);
-
     return marshaller;
-  }
-
-  private MarshallingPayloadMethodProcessor notificationMarshallingPayloadMethodProcessor() {
-    return new MarshallingPayloadMethodProcessor(
-        this.notificationMarshaller(), this.notificationMarshaller());
   }
 }

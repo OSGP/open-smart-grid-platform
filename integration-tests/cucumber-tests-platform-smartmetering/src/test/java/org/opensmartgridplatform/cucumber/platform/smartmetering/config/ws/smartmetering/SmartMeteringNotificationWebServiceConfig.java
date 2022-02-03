@@ -43,13 +43,31 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
   private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
 
   @Value("${jaxb2.marshaller.context.path.smartmetering.notification}")
-  private String contextPathSmartMeteringNotification;
+  private String notificationMarshallerContextPath;
+
+  @Value("${web.service.smartmetering.notification.application.name}")
+  private String notificationApplicationName;
 
   @Value("${web.service.smartmetering.notification.context}")
   private String notificationContextPath;
 
   @Value("${web.service.smartmetering.notification.port}")
   private int notificationPort;
+
+  @Bean("wsSmartMeteringNotificationApplicationName")
+  public String notificationApplicationName() {
+    return this.notificationApplicationName;
+  }
+
+  @Bean("wsSmartMeteringNotificationMarshallerContextPath")
+  public String notificationMarshallerContextPath() {
+    return this.notificationMarshallerContextPath;
+  }
+
+  @Bean("wsSmartMeteringNotificationTargetUri")
+  public String notificationTargetUri() {
+    return "http://localhost:" + this.notificationPort + this.notificationContextPath;
+  }
 
   @Override
   public void addInterceptors(final List<EndpointInterceptor> interceptors) {
@@ -58,8 +76,8 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
             ORGANISATION_IDENTIFICATION_HEADER, ORGANISATION_IDENTIFICATION_HEADER));
   }
 
-  @Bean
-  public SimpleHttpServerFactoryBean smartMeteringNotificationsHttpServer(
+  @Bean("wsSmartMeteringNotificationHttpServer")
+  public SimpleHttpServerFactoryBean httpServer(
       final SaajSoapMessageFactory messageFactory,
       final PayloadRootAnnotationMethodEndpointMapping mapping) {
 
@@ -88,35 +106,38 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
     final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter =
         new DefaultMethodEndpointAdapter();
 
+    final MarshallingPayloadMethodProcessor processor = this.marshallingPayloadMethodProcessor();
+    final AnnotationMethodArgumentResolver resolver = this.annotationMethodArgumentResolver();
+
     final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
-    methodArgumentResolvers.add(this.smartMeteringNotificationMarshallingPayloadMethodProcessor());
-    methodArgumentResolvers.add(
-        new AnnotationMethodArgumentResolver(
-            ORGANISATION_IDENTIFICATION_HEADER, OrganisationIdentification.class));
+    methodArgumentResolvers.add(processor);
+    methodArgumentResolvers.add(resolver);
     defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
     final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
-    methodReturnValueHandlers.add(
-        this.smartMeteringNotificationMarshallingPayloadMethodProcessor());
+    methodReturnValueHandlers.add(processor);
     defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
 
     return defaultMethodEndpointAdapter;
   }
 
-  private Jaxb2Marshaller smartMeteringNotificationMarshaller() {
-
-    LOGGER.info(
-        "Initializing smart metering notification marshaller with context path: '{}'",
-        this.contextPathSmartMeteringNotification);
-
-    final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-    marshaller.setContextPath(this.contextPathSmartMeteringNotification);
-    return marshaller;
+  private AnnotationMethodArgumentResolver annotationMethodArgumentResolver() {
+    return new AnnotationMethodArgumentResolver(
+        ORGANISATION_IDENTIFICATION_HEADER, OrganisationIdentification.class);
   }
 
-  private MarshallingPayloadMethodProcessor
-      smartMeteringNotificationMarshallingPayloadMethodProcessor() {
-    return new MarshallingPayloadMethodProcessor(
-        this.smartMeteringNotificationMarshaller(), this.smartMeteringNotificationMarshaller());
+  private MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor() {
+    final Jaxb2Marshaller marshaller = this.notificationMarshaller();
+    return new MarshallingPayloadMethodProcessor(marshaller, marshaller);
+  }
+
+  private Jaxb2Marshaller notificationMarshaller() {
+    LOGGER.info(
+        "Initializing smart metering notification marshaller with context path: '{}'",
+        this.notificationMarshallerContextPath);
+
+    final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+    marshaller.setContextPath(this.notificationMarshallerContextPath);
+    return marshaller;
   }
 }

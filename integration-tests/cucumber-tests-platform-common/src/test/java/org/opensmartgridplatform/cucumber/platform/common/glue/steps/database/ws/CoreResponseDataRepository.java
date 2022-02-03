@@ -12,5 +12,5 @@ package org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.w
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
+@Repository("wsCoreResponseDataRepository")
 public interface CoreResponseDataRepository extends ResponseDataRepository {}

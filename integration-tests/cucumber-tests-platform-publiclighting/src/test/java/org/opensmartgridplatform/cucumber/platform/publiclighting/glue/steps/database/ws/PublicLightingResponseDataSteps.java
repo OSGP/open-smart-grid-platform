@@ -26,6 +26,7 @@ import org.opensmartgridplatform.cucumber.platform.glue.steps.database.ws.Respon
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 public class PublicLightingResponseDataSteps {
@@ -33,7 +34,9 @@ public class PublicLightingResponseDataSteps {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(PublicLightingResponseDataSteps.class);
 
-  @Autowired private PublicLightingResponseDataRepository publicLightingResponseDataRepository;
+  @Autowired
+  @Qualifier("wsPublicLightingResponseDataRepository")
+  private ResponseDataRepository responseDataRepository;
 
   // @Autowired
   // private TariffSwitchingResponseDataRepository
@@ -42,7 +45,7 @@ public class PublicLightingResponseDataSteps {
   @Given("^a public lighting response data record$")
   @Transactional("txMgrWsPublicLighting")
   public ResponseData aPublicLightingResponseDataRecord(final Map<String, String> settings) {
-    return this.createResponseDataRecord(settings, this.publicLightingResponseDataRepository);
+    return this.createResponseDataRecord(settings, this.responseDataRepository);
   }
 
   // @Given("^a tariff switching response data record$")
@@ -84,8 +87,7 @@ public class PublicLightingResponseDataSteps {
       "^the public lighting response data record with correlation uid \\\"(.*)\\\" should be deleted$")
   @Transactional("txMgrWsPublicLighting")
   public void thePublicLightingResponseDataRecordShouldBeDeleted(final String correlationUid) {
-    this.theResponseDataRecordShouldBeDeleted(
-        correlationUid, this.publicLightingResponseDataRepository);
+    this.theResponseDataRecordShouldBeDeleted(correlationUid, this.responseDataRepository);
   }
 
   // @Then("^the tariff switching response data record with correlation uid
@@ -108,8 +110,7 @@ public class PublicLightingResponseDataSteps {
       "^the public lighting response data record with correlation uid \\\"(.*)\\\" should not be deleted$")
   @Transactional("txMgrWsPublicLighting")
   public void thePublicLightingResponseDataRecordShouldNotBeDeleted(final String correlationUid) {
-    this.theResponseDataRecordShouldNotBeDeleted(
-        correlationUid, this.publicLightingResponseDataRepository);
+    this.theResponseDataRecordShouldNotBeDeleted(correlationUid, this.responseDataRepository);
   }
 
   // @Then("^the tariff switching response data record with correlation uid
@@ -131,7 +132,7 @@ public class PublicLightingResponseDataSteps {
   @Then("^the public lighting response data has values$")
   @Transactional("txMgrWsPublicLighting")
   public void thePublicLightingResponseDataHasValues(final Map<String, String> settings) {
-    this.theResponseDataHasValues(settings, this.publicLightingResponseDataRepository);
+    this.theResponseDataHasValues(settings, this.responseDataRepository);
   }
 
   // @Then("^the tariff switching response data has values$")

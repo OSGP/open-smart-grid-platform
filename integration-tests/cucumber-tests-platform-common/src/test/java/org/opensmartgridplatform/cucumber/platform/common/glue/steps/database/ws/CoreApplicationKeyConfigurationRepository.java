@@ -12,6 +12,6 @@ package org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.w
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ApplicationKeyConfigurationRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
+@Repository("wsCoreApplicationKeyConfigurationRepository")
 public interface CoreApplicationKeyConfigurationRepository
     extends ApplicationKeyConfigurationRepository {}

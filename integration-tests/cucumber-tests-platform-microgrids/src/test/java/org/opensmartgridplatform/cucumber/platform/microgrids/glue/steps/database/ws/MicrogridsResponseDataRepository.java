@@ -12,5 +12,5 @@ package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.databa
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository("microgridsResponseDataRepository")
+@Repository("wsMicrogridsResponseDataRepository")
 public interface MicrogridsResponseDataRepository extends ResponseDataRepository {}

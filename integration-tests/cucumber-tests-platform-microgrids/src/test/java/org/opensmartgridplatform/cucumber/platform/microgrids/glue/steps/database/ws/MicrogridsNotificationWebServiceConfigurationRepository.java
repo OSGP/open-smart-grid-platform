@@ -12,6 +12,6 @@ package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.databa
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository("microgridsNotificationWebServiceConfigurationRepository")
+@Repository("wsMicrogridsNotificationWebServiceConfigurationRepository")
 public interface MicrogridsNotificationWebServiceConfigurationRepository
     extends NotificationWebServiceConfigurationRepository {}
