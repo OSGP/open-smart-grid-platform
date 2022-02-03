@@ -45,7 +45,7 @@ public class PublicLightingNotificationWebServiceConfig extends WsConfigurerAdap
   @Value("${jaxb2.marshaller.context.path.publiclighting.notification}")
   private String notificationMarshallerContextPath;
 
-  @Value("${web.service.publiclighting.notification.application.name")
+  @Value("${web.service.publiclighting.notification.application.name}")
   private String notificationApplicationName;
 
   @Value("${web.service.publiclighting.notification.context}")
