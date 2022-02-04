@@ -93,87 +93,16 @@ public class SetActivityCalendarRequestFactory {
 
     final WeekType weekType = new WeekType();
 
-    // Monday
-    final DayType dayTypeMonday = new DayType();
-    dayTypeMonday.setDayId(BigInteger.valueOf(1L));
-    final List<DayProfileActionType> dayProfileActionTypes = new ArrayList<>();
-    final DayProfileActionType dayProfileActionType = new DayProfileActionType();
-    dayProfileActionType.setScriptSelector(BigInteger.valueOf(1L));
-    final String startTime = "06050000";
-    byte[] decodedStartTime = null;
-    try {
-      decodedStartTime = Hex.decodeHex(startTime.toCharArray());
-      dayProfileActionType.setStartTime(decodedStartTime);
-    } catch (final DecoderException e) {
-      LOGGER.error("Unexpected exception during decode startTime from dayProfileActionType.", e);
-    }
+    final DayType normalDay = createDayType(1, "06050000");
+    final DayType weekendDay = createDayType(2, "07050000");
 
-    dayProfileActionTypes.add(dayProfileActionType);
-    final DayProfileActionsType dayProfilesActionType = new DayProfileActionsType();
-    dayProfilesActionType.getDayProfileAction().addAll(dayProfileActionTypes);
-    dayTypeMonday.setDaySchedule(dayProfilesActionType);
-
-    // Tuesday
-    final DayType dayTypeTuesday = new DayType();
-    dayTypeTuesday.setDayId(BigInteger.valueOf(2L));
-    dayProfileActionType.setScriptSelector(BigInteger.valueOf(1L));
-    dayProfileActionType.setStartTime(decodedStartTime);
-    dayProfileActionTypes.add(dayProfileActionType);
-    dayProfilesActionType.getDayProfileAction().addAll(dayProfileActionTypes);
-    dayTypeTuesday.setDaySchedule(dayProfilesActionType);
-
-    // Wednesday
-    final DayType dayTypeWednesday = new DayType();
-    dayTypeWednesday.setDayId(BigInteger.valueOf(3L));
-    dayProfileActionType.setScriptSelector(BigInteger.valueOf(1L));
-    dayProfileActionType.setStartTime(decodedStartTime);
-    dayProfileActionTypes.add(dayProfileActionType);
-    dayProfilesActionType.getDayProfileAction().addAll(dayProfileActionTypes);
-    dayTypeWednesday.setDaySchedule(dayProfilesActionType);
-
-    // Thursday
-    final DayType dayTypeThursday = new DayType();
-    dayTypeThursday.setDayId(BigInteger.valueOf(4L));
-    dayProfileActionType.setScriptSelector(BigInteger.valueOf(1L));
-    dayProfileActionType.setStartTime(decodedStartTime);
-    dayProfileActionTypes.add(dayProfileActionType);
-    dayProfilesActionType.getDayProfileAction().addAll(dayProfileActionTypes);
-    dayTypeThursday.setDaySchedule(dayProfilesActionType);
-
-    // Friday
-    final DayType dayTypeFriday = new DayType();
-    dayTypeFriday.setDayId(BigInteger.valueOf(5L));
-    dayProfileActionType.setScriptSelector(BigInteger.valueOf(1L));
-    dayProfileActionType.setStartTime(decodedStartTime);
-    dayProfileActionTypes.add(dayProfileActionType);
-    dayProfilesActionType.getDayProfileAction().addAll(dayProfileActionTypes);
-    dayTypeFriday.setDaySchedule(dayProfilesActionType);
-
-    // Saturday
-    final DayType dayTypeSaturday = new DayType();
-    dayTypeSaturday.setDayId(BigInteger.valueOf(6L));
-    dayProfileActionType.setScriptSelector(BigInteger.valueOf(1L));
-    dayProfileActionType.setStartTime(decodedStartTime);
-    dayProfileActionTypes.add(dayProfileActionType);
-    dayProfilesActionType.getDayProfileAction().addAll(dayProfileActionTypes);
-    dayTypeSaturday.setDaySchedule(dayProfilesActionType);
-
-    // Sunday
-    final DayType dayTypeSunday = new DayType();
-    dayTypeSunday.setDayId(BigInteger.valueOf(7L));
-    dayProfileActionType.setScriptSelector(BigInteger.valueOf(1L));
-    dayProfileActionType.setStartTime(decodedStartTime);
-    dayProfileActionTypes.add(dayProfileActionType);
-    dayProfilesActionType.getDayProfileAction().addAll(dayProfileActionTypes);
-    dayTypeSunday.setDaySchedule(dayProfilesActionType);
-
-    weekType.setMonday(dayTypeMonday);
-    weekType.setTuesday(dayTypeTuesday);
-    weekType.setWednesday(dayTypeWednesday);
-    weekType.setThursday(dayTypeThursday);
-    weekType.setFriday(dayTypeFriday);
-    weekType.setSaturday(dayTypeSaturday);
-    weekType.setSunday(dayTypeSunday);
+    weekType.setMonday(normalDay);
+    weekType.setTuesday(normalDay);
+    weekType.setWednesday(normalDay);
+    weekType.setThursday(normalDay);
+    weekType.setFriday(normalDay);
+    weekType.setSaturday(weekendDay);
+    weekType.setSunday(weekendDay);
 
     weekType.setWeekProfileName("1");
     season.setWeekProfile(weekType);
@@ -183,5 +112,26 @@ public class SetActivityCalendarRequestFactory {
     activityCalendarType.setSeasonProfile(seasonsType);
 
     return activityCalendarType;
+  }
+
+  private static DayType createDayType(final int dayId, final String startTime) {
+    final DayType dayType = new DayType();
+    dayType.setDayId(BigInteger.valueOf(dayId));
+    final List<DayProfileActionType> dayProfileActionTypes = new ArrayList<>();
+    final DayProfileActionType dayProfileActionType = new DayProfileActionType();
+    dayProfileActionType.setScriptSelector(BigInteger.valueOf(1L));
+    final byte[] decodedStartTime;
+    try {
+      decodedStartTime = Hex.decodeHex(startTime.toCharArray());
+      dayProfileActionType.setStartTime(decodedStartTime);
+    } catch (final DecoderException e) {
+      LOGGER.error("Unexpected exception during decode startTime from dayProfileActionType.", e);
+    }
+    dayProfileActionTypes.add(dayProfileActionType);
+    final DayProfileActionsType dayProfilesActionType = new DayProfileActionsType();
+    dayProfilesActionType.getDayProfileAction().addAll(dayProfileActionTypes);
+    dayType.setDaySchedule(dayProfilesActionType);
+
+    return dayType;
   }
 }
