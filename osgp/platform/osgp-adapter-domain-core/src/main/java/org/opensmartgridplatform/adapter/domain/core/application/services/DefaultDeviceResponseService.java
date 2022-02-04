@@ -57,6 +57,7 @@ public class DefaultDeviceResponseService {
             .withResult(result)
             .withOsgpException(osgpException)
             .withMessagePriority(messagePriority)
+            .withMessageType(messageType)
             .build();
     this.webServiceResponseMessageSender.send(responseMessage);
   }

@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.notifications;
+package org.opensmartgridplatform.cucumber.platform.glue.steps.ws.notifications;
 
 import io.cucumber.java.en.When;
 

@@ -12,9 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
+import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws.MicrogridsNotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws.MicrogridsResponseDataRepository;
 import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,16 +24,16 @@ public class Database {
 
   @Autowired private Iec61850DeviceRepository iec61850DeviceRepository;
 
-  @Autowired private ResponseDataRepository responseDataRepository;
+  @Autowired private MicrogridsResponseDataRepository microgridsResponseDataRepository;
 
   @Autowired
-  private NotificationWebServiceConfigurationRepository
-      notificationWebServiceConfigurationRepository;
+  private MicrogridsNotificationWebServiceConfigurationRepository
+      microgridsNotificationWebServiceConfigurationRepository;
 
   @Autowired private RtuDeviceRepository rtuDeviceRepository;
 
   private void insertDefaultData() {
-    this.notificationWebServiceConfigurationRepository.saveAll(
+    this.microgridsNotificationWebServiceConfigurationRepository.saveAll(
         this.notificationEndpointConfigurations());
   }
 
@@ -58,7 +58,7 @@ public class Database {
     this.iec61850DeviceRepository.deleteAll();
 
     // Then remove stuff from the osgp_adapter_ws_microgrids
-    this.responseDataRepository.deleteAll();
+    this.microgridsResponseDataRepository.deleteAll();
 
     // Now remove all from the core.
     this.rtuDeviceRepository.deleteAll();

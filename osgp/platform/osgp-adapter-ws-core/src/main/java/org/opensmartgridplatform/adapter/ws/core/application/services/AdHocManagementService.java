@@ -10,17 +10,14 @@ package org.opensmartgridplatform.adapter.ws.core.application.services;
 
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.validation.Identification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +46,6 @@ public class AdHocManagementService {
   @Autowired private CorrelationIdProviderService correlationIdProviderService;
 
   @Autowired private CommonRequestMessageSender commonRequestMessageSender;
-
-  @Autowired private CommonResponseMessageFinder commonResponseMessageFinder;
 
   public AdHocManagementService() {
     // Parameterless constructor required for transactions
@@ -109,10 +104,5 @@ public class AdHocManagementService {
     this.commonRequestMessageSender.send(message);
 
     return correlationUid;
-  }
-
-  public ResponseMessage dequeueSetRebootResponse(final String correlationUid)
-      throws OsgpException {
-    return this.commonResponseMessageFinder.findMessage(correlationUid);
   }
 }

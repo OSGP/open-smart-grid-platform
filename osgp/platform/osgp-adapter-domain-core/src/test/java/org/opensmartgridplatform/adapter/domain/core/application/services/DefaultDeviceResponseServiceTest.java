@@ -55,6 +55,7 @@ public class DefaultDeviceResponseServiceTest {
             .withResult(ResponseMessageResultType.NOT_OK)
             .withOsgpException(exception)
             .withMessagePriority(MESSAGE_PRIORITY)
+            .withMessageType(MESSAGE_TYPE)
             .build();
 
     // Act
@@ -83,6 +84,7 @@ public class DefaultDeviceResponseServiceTest {
             .withResult(ResponseMessageResultType.NOT_OK)
             .withOsgpException(osgpException)
             .withMessagePriority(MESSAGE_PRIORITY)
+            .withMessageType(MESSAGE_TYPE)
             .build();
 
     this.defaultDeviceResponseService.handleDefaultDeviceResponse(
@@ -110,6 +112,7 @@ public class DefaultDeviceResponseServiceTest {
             .withResult(ResponseMessageResultType.NOT_OK)
             .withOsgpException(exception)
             .withMessagePriority(MESSAGE_PRIORITY)
+            .withMessageType(MESSAGE_TYPE)
             .build();
 
     // Act
@@ -136,6 +139,7 @@ public class DefaultDeviceResponseServiceTest {
             .withResult(ResponseMessageResultType.OK)
             .withOsgpException(exception)
             .withMessagePriority(MESSAGE_PRIORITY)
+            .withMessageType(MESSAGE_TYPE)
             .build();
 
     // Act

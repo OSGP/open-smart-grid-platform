@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws;
+package org.opensmartgridplatform.cucumber.platform.glue.steps.database.ws;
 
 import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseUrlData;
@@ -15,7 +15,7 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 public class ResponseUrlDataBuilder {
 
   private String correlationUid = "test-org|||TEST1024000000001|||20170101000000000";
-  private String responseUrl = "http://localhost:8843/notifications";
+  private String responseUrl = "http://localhost:8088/notifications";
 
   public ResponseUrlData build() {
     return new ResponseUrlData(this.correlationUid, this.responseUrl);

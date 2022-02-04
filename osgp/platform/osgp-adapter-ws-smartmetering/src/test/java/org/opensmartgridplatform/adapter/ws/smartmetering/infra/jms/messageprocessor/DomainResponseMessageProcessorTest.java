@@ -20,14 +20,13 @@ import javax.jms.ObjectMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 
 @ExtendWith(MockitoExtension.class)
-public class DomainResponseMessageProcessorTest {
+class DomainResponseMessageProcessorTest {
 
   @Mock private NotificationService notificationService;
 
@@ -35,10 +34,14 @@ public class DomainResponseMessageProcessorTest {
 
   @Mock private ObjectMessage message;
 
-  @InjectMocks private DomainResponseMessageProcessor messageProcessor;
+  private DomainResponseMessageProcessor messageProcessor;
 
   @BeforeEach
   void init() throws JMSException {
+    this.messageProcessor =
+        new DomainResponseMessageProcessor(
+            this.notificationService, this.responseDataService, "SMART_METERS");
+
     when(this.message.getJMSType()).thenReturn("HANDLE_BUNDLED_ACTIONS");
     when(this.message.getStringProperty("Result")).thenReturn("OK");
     when(this.message.getStringProperty("OrganisationIdentification"))

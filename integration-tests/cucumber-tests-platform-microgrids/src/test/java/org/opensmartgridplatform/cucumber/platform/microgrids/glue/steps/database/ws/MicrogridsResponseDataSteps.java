@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
 import org.opensmartgridplatform.cucumber.core.RetryableAssert;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -33,14 +32,14 @@ public class MicrogridsResponseDataSteps extends BaseDeviceSteps {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MicrogridsResponseDataSteps.class);
 
-  @Autowired private ResponseDataRepository responseDataRepository;
+  @Autowired private MicrogridsResponseDataRepository microgridsResponseDataRepository;
 
   @Given("^a response data record$")
   @Transactional("txMgrWsMicrogrids")
   public ResponseData aResponseDataRecord(final Map<String, String> settings) {
 
     ResponseData responseData = new ResponseDataBuilder().fromSettings(settings).build();
-    responseData = this.responseDataRepository.save(responseData);
+    responseData = this.microgridsResponseDataRepository.save(responseData);
     ScenarioContext.current()
         .put(PlatformKeys.KEY_CORRELATION_UID, responseData.getCorrelationUid());
 
@@ -54,7 +53,7 @@ public class MicrogridsResponseDataSteps extends BaseDeviceSteps {
         fld.set(
             responseData,
             DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
-        this.responseDataRepository.saveAndFlush(responseData);
+        this.microgridsResponseDataRepository.saveAndFlush(responseData);
       }
     } catch (final Exception e) {
       LOGGER.error("Exception", e);
@@ -67,7 +66,7 @@ public class MicrogridsResponseDataSteps extends BaseDeviceSteps {
   @Then("^the response data record with correlation uid \\\"(.*)\\\" should be deleted$")
   public void theResponseDataRecordShouldBeDeleted(final String correlationUid) {
     final ResponseData responseData =
-        this.responseDataRepository.findByCorrelationUid(correlationUid);
+        this.microgridsResponseDataRepository.findByCorrelationUid(correlationUid);
 
     assertThat(responseData).as("Response data should be deleted").isNull();
   }
@@ -75,7 +74,7 @@ public class MicrogridsResponseDataSteps extends BaseDeviceSteps {
   @Then("^the response data record with correlation uid \\\"(.*)\\\" should not be deleted$")
   public void theResponseDataRecordShouldNotBeDeleted(final String correlationUid) {
     final ResponseData responseData =
-        this.responseDataRepository.findByCorrelationUid(correlationUid);
+        this.microgridsResponseDataRepository.findByCorrelationUid(correlationUid);
 
     assertThat(responseData).as("Response data should not be deleted").isNotNull();
   }
@@ -102,7 +101,7 @@ public class MicrogridsResponseDataSteps extends BaseDeviceSteps {
       final String expectedMessageType) {
 
     final ResponseData responseData =
-        this.responseDataRepository.findByCorrelationUid(correlationUid);
+        this.microgridsResponseDataRepository.findByCorrelationUid(correlationUid);
 
     assertThat(responseData.getNumberOfNotificationsSent())
         .as(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT)

@@ -10,8 +10,8 @@ package org.opensmartgridplatform.cucumber.platform.microgrids.config;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.platform.config.ApplicationPersistenceConfiguration;
+import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws.MicrogridsResponseDataRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +24,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @EnableJpaRepositories(
     entityManagerFactoryRef = "entityMgrFactWsMicrogrids",
     transactionManagerRef = "txMgrWsMicrogrids",
-    basePackageClasses = {ResponseDataRepository.class})
+    basePackageClasses = {MicrogridsResponseDataRepository.class})
 public class AdapterWsMicrogridsPersistenceConfig extends ApplicationPersistenceConfiguration {
 
   public AdapterWsMicrogridsPersistenceConfig() {}

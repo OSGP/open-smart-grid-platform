@@ -11,7 +11,7 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.sma
 import java.util.concurrent.TimeUnit;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.Notification;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.notification.NotificationService;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.notification.SmartMeteringNotificationService;
 import org.opensmartgridplatform.cucumber.platform.support.ws.BaseClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringBaseClient.class);
 
-  @Autowired private NotificationService notificationService;
+  @Autowired private SmartMeteringNotificationService notificationService;
 
   @Value("${smartmetering.response.wait.fail.duration:30000}")
   private int waitFailMillis;

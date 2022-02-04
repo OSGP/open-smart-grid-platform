@@ -25,7 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceFirmwareFileRepository;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
@@ -54,7 +53,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.validation.Identification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,8 +76,6 @@ public class FirmwareManagementService {
   @Autowired private CorrelationIdProviderService correlationIdProviderService;
 
   @Autowired private CommonRequestMessageSender commonRequestMessageSender;
-
-  @Autowired private CommonResponseMessageFinder commonResponseMessageFinder;
 
   @Autowired private WritableManufacturerRepository manufacturerRepository;
 
@@ -143,11 +139,6 @@ public class FirmwareManagementService {
     this.commonRequestMessageSender.send(message);
 
     return correlationUid;
-  }
-
-  public ResponseMessage dequeueUpdateFirmwareResponse(final String correlationUid)
-      throws OsgpException {
-    return this.commonResponseMessageFinder.findMessage(correlationUid);
   }
 
   public String enqueueGetFirmwareRequest(
@@ -989,11 +980,6 @@ public class FirmwareManagementService {
     return this.deviceFirmwareFileRepository.findByDeviceOrderByInstallationDateAsc(device);
   }
 
-  public ResponseMessage dequeueGetFirmwareResponse(final String correlationUid)
-      throws OsgpException {
-    return this.commonResponseMessageFinder.findMessage(correlationUid);
-  }
-
   public String enqueueSwitchFirmwareRequest(
       final String organisationIdentification,
       final String deviceIdentification,
@@ -1034,11 +1020,6 @@ public class FirmwareManagementService {
     this.commonRequestMessageSender.send(message);
 
     return correlationUid;
-  }
-
-  public ResponseMessage dequeueSwitchFirmwareResponse(final String correlationUid)
-      throws OsgpException {
-    return this.commonResponseMessageFinder.findMessage(correlationUid);
   }
 
   // HELPER METHODS

@@ -20,7 +20,6 @@ import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.core.application.criteria.SearchEventsCriteria;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceLifecycleStatus;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
@@ -61,10 +60,8 @@ import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderSer
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.utils.SearchUtil;
 import org.opensmartgridplatform.shared.validation.Identification;
 import org.slf4j.Logger;
@@ -103,8 +100,6 @@ public class DeviceManagementService {
   @Autowired private CorrelationIdProviderService correlationIdProviderService;
 
   @Autowired private CommonRequestMessageSender commonRequestMessageSender;
-
-  @Autowired private CommonResponseMessageFinder commonResponseMessageFinder;
 
   @Autowired private ScheduledTaskWithoutDataRepository scheduledTaskRepository;
 
@@ -665,13 +660,6 @@ public class DeviceManagementService {
   }
 
   @Transactional(value = "transactionManager")
-  public ResponseMessage dequeueSetEventNotificationsResponse(final String correlationUid)
-      throws OsgpException {
-
-    return this.commonResponseMessageFinder.findMessage(correlationUid);
-  }
-
-  @Transactional(value = "transactionManager")
   // === RETRIEVE SCHEDULED TASKS LIST FOR SPECIFIC DEVICE ===
   public List<ScheduledTaskWithoutData> findScheduledTasks(
       @Identification final String organisationIdentification,
@@ -930,11 +918,6 @@ public class DeviceManagementService {
     return correlationUid;
   }
 
-  public ResponseMessage dequeueUpdateDeviceSslCertificationResponse(final String correlationUid)
-      throws OsgpException {
-    return this.commonResponseMessageFinder.findMessage(correlationUid);
-  }
-
   public String enqueueSetDeviceVerificationKeyRequest(
       final String organisationIdentification,
       final String deviceIdentification,
@@ -976,11 +959,6 @@ public class DeviceManagementService {
     this.commonRequestMessageSender.send(message);
 
     return correlationUid;
-  }
-
-  public ResponseMessage dequeueSetDeviceVerificationKeyResponse(final String correlationUid)
-      throws OsgpException {
-    return this.commonResponseMessageFinder.findMessage(correlationUid);
   }
 
   public String enqueueSetDeviceLifecycleStatusRequest(
@@ -1030,11 +1008,6 @@ public class DeviceManagementService {
     return correlationUid;
   }
 
-  public ResponseMessage dequeueSetDeviceLifecycleStatusResponse(final String correlationUid)
-      throws OsgpException {
-    return this.commonResponseMessageFinder.findMessage(correlationUid);
-  }
-
   public String enqueueUpdateDeviceCdmaSettingsRequest(
       final String organisationIdentification,
       final String deviceIdentification,
@@ -1074,10 +1047,5 @@ public class DeviceManagementService {
     this.commonRequestMessageSender.send(message);
 
     return correlationUid;
-  }
-
-  public ResponseMessage dequeueUpdateDeviceCdmaSettingsResponse(final String correlationUid)
-      throws OsgpException {
-    return this.commonResponseMessageFinder.findMessage(correlationUid);
   }
 }

@@ -32,10 +32,10 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
     ignoreResourceNotFound = true)
 public class PersistenceConfigCore extends AbstractPersistenceConfig {
 
-  @Value("${db.readonly.username}")
+  @Value("${db.readonly.username.core}")
   private String username;
 
-  @Value("${db.readonly.password}")
+  @Value("${db.readonly.password.core}")
   private String password;
 
   @Value("${db.host.core}")

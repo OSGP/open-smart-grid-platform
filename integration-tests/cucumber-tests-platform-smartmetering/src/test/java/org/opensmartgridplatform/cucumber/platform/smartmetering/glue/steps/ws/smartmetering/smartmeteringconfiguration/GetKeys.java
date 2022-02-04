@@ -12,12 +12,15 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetKeysRequestFactory.getSecretTypesFromParameterMap;
 
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.ArrayUtils;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationKeyConfiguration;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncResponse;
@@ -27,15 +30,23 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.G
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SecretType;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.SmartMeteringApplicationKeyConfigurationRepository;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetKeysRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 public class GetKeys {
 
   private static final String OPERATION = "Get keys";
 
+  @Value("${web.service.notification.application.name}")
+  private String applicationName;
+
   @Autowired private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
+
+  @Autowired
+  private SmartMeteringApplicationKeyConfigurationRepository applicationKeyConfigurationRepository;
 
   @When("^a get keys request is received$")
   public void aGetKeysRequestIsReceived(final Map<String, String> settings) throws Throwable {
@@ -48,6 +59,18 @@ public class GetKeys {
     assertThat(asyncResponse).as("getKeysAsyncResponse should not be null").isNotNull();
     ScenarioContext.current()
         .put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+  }
+
+  @Given("^a application key is configured$")
+  public void aApplicationKeyIsConnfigured(final Map<String, String> settings) throws Throwable {
+    final ApplicationDataLookupKey applicationDataLookupKey =
+        new ApplicationDataLookupKey(
+            settings.get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION), this.applicationName);
+    final ApplicationKeyConfiguration applicationKeyConfiguration =
+        new ApplicationKeyConfiguration(
+            applicationDataLookupKey,
+            "/etc/osp/smartmetering/keys/application/smartmetering-rsa-public.key");
+    this.applicationKeyConfigurationRepository.save(applicationKeyConfiguration);
   }
 
   @Then("^the get keys response should return the requested keys$")
