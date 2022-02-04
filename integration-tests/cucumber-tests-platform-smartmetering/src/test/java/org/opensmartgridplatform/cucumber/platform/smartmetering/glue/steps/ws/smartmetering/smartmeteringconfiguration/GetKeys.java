@@ -34,13 +34,14 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.data
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetKeysRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class GetKeys {
 
   private static final String OPERATION = "Get keys";
 
-  @Value("${web.service.notification.application.name}")
+  @Autowired
+  @Qualifier("wsSmartMeteringNotificationApplicationName")
   private String applicationName;
 
   @Autowired private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
