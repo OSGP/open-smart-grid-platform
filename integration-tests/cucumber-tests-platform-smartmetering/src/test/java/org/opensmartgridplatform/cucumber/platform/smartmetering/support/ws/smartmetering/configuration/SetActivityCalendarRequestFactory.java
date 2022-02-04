@@ -81,9 +81,9 @@ public class SetActivityCalendarRequestFactory {
     final SeasonsType seasonsType = new SeasonsType();
     final List<SeasonType> seasons = new ArrayList<>();
     final SeasonType season = new SeasonType();
-    season.setSeasonProfileName("Season N");
+    season.setSeasonProfileName("1");
     final String seasonStart = "FFFF0C03FFFFFFFFFF000000";
-    byte[] decodedSeasonStart;
+    final byte[] decodedSeasonStart;
     try {
       decodedSeasonStart = Hex.decodeHex(seasonStart.toCharArray());
       season.setSeasonStart(decodedSeasonStart);
@@ -175,7 +175,7 @@ public class SetActivityCalendarRequestFactory {
     weekType.setSaturday(dayTypeSaturday);
     weekType.setSunday(dayTypeSunday);
 
-    weekType.setWeekProfileName("WeekProf");
+    weekType.setWeekProfileName("1");
     season.setWeekProfile(weekType);
     seasons.add(season);
     seasonsType.getSeason().addAll(seasons);

@@ -193,8 +193,6 @@ public class ActivityCalendarValidatorTest {
 
   @Test
   void testInvalidSeasonName() {
-    final byte[] test = new byte[] {"0".getBytes()[0]};
-
     this.testExpectException(
         TestAnomaly.INVALID_SEASON_NAME, "Not all season names contain exactly one digit");
   }
