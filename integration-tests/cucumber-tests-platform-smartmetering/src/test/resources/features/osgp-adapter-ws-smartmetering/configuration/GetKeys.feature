@@ -8,7 +8,7 @@ Feature: SmartMetering - Configuration - Get Keys
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And a application key is configured
+    And an application key is configured
       | OrganizationIdentification | test-org |
     When a get keys request is received
       | DeviceIdentification | TEST1024000000001                             |

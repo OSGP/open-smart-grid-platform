@@ -62,8 +62,8 @@ public class GetKeys {
         .put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
   }
 
-  @Given("^a application key is configured$")
-  public void aApplicationKeyIsConnfigured(final Map<String, String> settings) throws Throwable {
+  @Given("^an application key is configured$")
+  public void anApplicationKeyIsConfigured(final Map<String, String> settings) throws Throwable {
     final ApplicationDataLookupKey applicationDataLookupKey =
         new ApplicationDataLookupKey(
             settings.get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION), this.applicationName);
