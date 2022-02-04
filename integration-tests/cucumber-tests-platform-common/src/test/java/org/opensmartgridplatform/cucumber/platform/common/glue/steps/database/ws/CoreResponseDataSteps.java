@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
@@ -27,7 +28,6 @@ import org.opensmartgridplatform.cucumber.platform.glue.steps.database.ws.Respon
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 public class CoreResponseDataSteps extends BaseDeviceSteps {
 
@@ -36,12 +36,20 @@ public class CoreResponseDataSteps extends BaseDeviceSteps {
   @Autowired private CoreResponseDataRepository coreResponseDataRepository;
 
   @Given("^a response data record in ws-core$")
-  @Transactional("txMgrWsCore")
+  //  @Transactional("txMgrWsCore")
   public ResponseData aResponseDataRecord(final Map<String, String> settings) {
 
     final ResponseData responseData =
         this.coreResponseDataRepository.save(
             new ResponseDataBuilder().fromSettings(settings).build());
+
+    final Date creationTime =
+        DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate();
+
+    LOGGER.info(
+        "Creating resonse data record for correlationUid: {} and creationTime: {}",
+        responseData.getCorrelationUid(),
+        creationTime);
 
     ScenarioContext.current()
         .put(PlatformKeys.KEY_CORRELATION_UID, responseData.getCorrelationUid());
@@ -53,9 +61,7 @@ public class CoreResponseDataSteps extends BaseDeviceSteps {
       if (settings.containsKey(PlatformKeys.KEY_CREATION_TIME)) {
         final Field fld = responseData.getClass().getSuperclass().getDeclaredField("creationTime");
         fld.setAccessible(true);
-        fld.set(
-            responseData,
-            DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
+        fld.set(responseData, creationTime);
         this.coreResponseDataRepository.saveAndFlush(responseData);
       }
     } catch (final Exception e) {
