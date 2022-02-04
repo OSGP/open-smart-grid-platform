@@ -7,7 +7,7 @@ Feature: GXF notifications (WS Core) - Resend notifications
   Scenario: Resend missed notifications
     Given a response data record in ws-core
       | DeviceIdentification      | TEST1024000000001                                      |
-      | CreationTime              | now - 2 minutes                                        |
+      | CreationTime              | now - 5 minutes                                        |
       | MessageType               | SET_DEVICE_LIFECYCLE_STATUS                            |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      0 |
@@ -22,7 +22,7 @@ Feature: GXF notifications (WS Core) - Resend notifications
   Scenario: Resend missed notifications with response url
     Given a response data record in ws-core
       | DeviceIdentification      | TEST1024000000001                                      |
-      | CreationTime              | now - 2 minutes                                        |
+      | CreationTime              | now - 5 minutes                                        |
       | MessageType               | SET_DEVICE_LIFECYCLE_STATUS                            |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      0 |
