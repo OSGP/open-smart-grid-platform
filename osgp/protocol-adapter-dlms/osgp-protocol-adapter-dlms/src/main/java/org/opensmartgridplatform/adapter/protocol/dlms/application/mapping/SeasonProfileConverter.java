@@ -8,7 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
-import java.nio.charset.StandardCharsets;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import ma.glasnost.orika.CustomConverter;
@@ -33,17 +33,17 @@ public class SeasonProfileConverter extends CustomConverter<SeasonProfileDto, Da
 
     final DataObject seasonProfileNameObject =
         DataObject.newOctetStringData(
-            source.getSeasonProfileName().getBytes(StandardCharsets.UTF_8));
+            new BigInteger(source.getSeasonProfileName(), 10).toByteArray());
     seasonElements.add(seasonProfileNameObject);
 
     final DataObject seasonStartObject =
-        DataObject.newDateTimeData(
-            this.mapperFacade.map(source.getSeasonStart(), CosemDateTime.class));
+        DataObject.newOctetStringData(
+            this.mapperFacade.map(source.getSeasonStart(), CosemDateTime.class).encode());
     seasonElements.add(seasonStartObject);
 
     final DataObject seasonWeekProfileNameObject =
         DataObject.newOctetStringData(
-            source.getWeekProfile().getWeekProfileName().getBytes(StandardCharsets.UTF_8));
+            new BigInteger(source.getWeekProfile().getWeekProfileName(), 10).toByteArray());
     seasonElements.add(seasonWeekProfileNameObject);
 
     return DataObject.newStructureData(seasonElements);
