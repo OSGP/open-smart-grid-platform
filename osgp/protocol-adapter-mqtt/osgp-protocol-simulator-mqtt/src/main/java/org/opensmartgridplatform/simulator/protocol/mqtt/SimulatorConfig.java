@@ -10,6 +10,7 @@ package org.opensmartgridplatform.simulator.protocol.mqtt;
 
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import java.io.IOException;
+import java.net.BindException;
 import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +27,28 @@ public class SimulatorConfig {
   public Simulator simulator(
       @Value("${mqtt.simulator.spec}") final String spec,
       @Value("${mqtt.simulator.startClient}") final boolean startClient,
+      @Value("${mqtt.simulator.client.clean.session:true}") final boolean cleanSession,
+      @Value("${mqtt.simulator.client.keep.alive:60}") final int keepAlive,
       final Properties mqttBrokerProperties,
       final MqttClientSslConfig mqttClientSslConfig)
       throws IOException {
     LOG.info("Start MQTT simulator with spec={}, startClient={}", spec, startClient);
     final Simulator app = new Simulator();
-    app.run(spec, startClient, mqttBrokerProperties, mqttClientSslConfig);
+    try {
+      app.run(
+          spec, startClient, cleanSession, keepAlive, mqttBrokerProperties, mqttClientSslConfig);
+    } catch (final BindException e) {
+      /*
+       * Application context reloads may cause the simulator bean to be instantiated multiple times.
+       * The simulator however starts an MQTT broker that runs on configured ports.
+       * For now on the BindException ("Address already in use") swallow the exception in the hope
+       * that the broker is usable. Log the error to leave information in case it is not.
+       * An actual solution instead of this hack may be needed.
+       */
+      LOG.error(
+          "Running the MQTT Simulator failed. Issues with the MQTT Broker may or may not occur.",
+          e);
+    }
     return app;
   }
 }

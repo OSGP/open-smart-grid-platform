@@ -15,6 +15,8 @@ public class PlatformDistributionAutomationKeys {
   public static final String INFORMATION_OBJECT_TYPE = "InformationObjectType";
   public static final String MQTT_HOST = "MqttHost";
   public static final String MQTT_PORT = "MqttPort";
+  public static final String MQTT_CLIENT_CLEAN_SESSION = "MqttClientCleanSession";
+  public static final String MQTT_CLIENT_KEEP_ALIVE = "MqttClientKeepAlive";
   public static final String MQTT_QOS = "MqttQos";
   public static final String MQTT_TOPIC = "MqttTopic";
   public static final String MQTT_SSL_ENABLED = "MqttSslEnabled";

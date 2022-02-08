@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps;
 
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
@@ -51,19 +52,31 @@ public class MqttDeviceSteps {
             parameters,
             PlatformDistributionAutomationKeys.MQTT_PORT,
             PlatformDistributionAutomationDefaults.MQTT_PORT);
+    final boolean cleanSession =
+        getBoolean(
+            parameters,
+            PlatformDistributionAutomationKeys.MQTT_CLIENT_CLEAN_SESSION,
+            PlatformDistributionAutomationDefaults.MQTT_CLIENT_CLEAN_SESSION);
+    final int keepAlive =
+        getInteger(
+            parameters,
+            PlatformDistributionAutomationKeys.MQTT_CLIENT_KEEP_ALIVE,
+            PlatformDistributionAutomationDefaults.MQTT_CLIENT_KEEP_ALIVE);
     final String[] topics = getTopics(parameters);
 
     final String payload = parameters.get(PlatformDistributionAutomationKeys.PAYLOAD);
     LOGGER.info("Payload: {}", payload);
 
     for (final String topic : topics) {
-      this.startPublishingClient(host, port, topic, payload, parameters);
+      this.startPublishingClient(host, port, cleanSession, keepAlive, topic, payload, parameters);
     }
   }
 
   private void startPublishingClient(
       final String host,
       final int port,
+      final boolean cleanSession,
+      final int keepAlive,
       final String topic,
       final String payload,
       final Map<String, String> parameters) {
@@ -108,7 +121,7 @@ public class MqttDeviceSteps {
     }
 
     final SimulatorSpecPublishingClient publishingClient =
-        new SimulatorSpecPublishingClient(spec, mqttClientSslConfig);
+        new SimulatorSpecPublishingClient(spec, cleanSession, keepAlive, mqttClientSslConfig);
     publishingClient.start();
   }
 }

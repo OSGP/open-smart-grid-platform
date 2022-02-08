@@ -31,7 +31,7 @@ public class Simulator {
     final MqttClientSslConfig sslClientProperties = null;
     final boolean startClient = getSecondArgOrTrue(args);
     final Simulator app = new Simulator();
-    app.run(spec, startClient, sslServerProperties, sslClientProperties);
+    app.run(spec, startClient, true, 60, sslServerProperties, sslClientProperties);
   }
 
   private static String getFirstArgOrNull(final String[] args) {
@@ -52,15 +52,25 @@ public class Simulator {
   public void run(
       final String specJsonPath,
       final boolean startClient,
+      final boolean cleanSession,
+      final int keepAlive,
       final Properties brokerProperties,
       final MqttClientSslConfig clientSslConfig)
       throws IOException {
-    this.run(this.getSimulatorSpec(specJsonPath), startClient, brokerProperties, clientSslConfig);
+    this.run(
+        this.getSimulatorSpec(specJsonPath),
+        startClient,
+        cleanSession,
+        keepAlive,
+        brokerProperties,
+        clientSslConfig);
   }
 
   public void run(
       final SimulatorSpec simulatorSpec,
       final boolean startClient,
+      final boolean cleanSession,
+      final int keepAlive,
       final Properties brokerProperties,
       final MqttClientSslConfig clientSslConfig)
       throws IOException {
@@ -74,7 +84,8 @@ public class Simulator {
     }
     if (startClient) {
       final SimulatorSpecPublishingClient publishingClient =
-          new SimulatorSpecPublishingClient(simulatorSpec, clientSslConfig);
+          new SimulatorSpecPublishingClient(
+              simulatorSpec, cleanSession, keepAlive, clientSslConfig);
       publishingClient.start();
     }
   }
