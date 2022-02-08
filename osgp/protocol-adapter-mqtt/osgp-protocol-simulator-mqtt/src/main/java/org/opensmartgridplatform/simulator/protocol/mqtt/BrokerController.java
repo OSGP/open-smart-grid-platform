@@ -24,26 +24,26 @@ import org.springframework.web.bind.annotation.RestController;
 public class BrokerController {
   private static final Logger LOGGER = LoggerFactory.getLogger(BrokerController.class);
 
-  private final Simulator simulator;
+  private final Broker broker;
 
-  public BrokerController(final Simulator simulator) {
-    this.simulator = simulator;
+  public BrokerController(final Broker broker) {
+    this.broker = broker;
   }
 
   @GetMapping(path = "/start")
   public void start() throws IOException {
     LOGGER.info("Starting broker");
-    this.simulator.getBroker().start();
+    this.broker.start();
   }
 
   @GetMapping(path = "/stop")
   public void stop() {
     LOGGER.info("Stopping broker");
-    this.simulator.getBroker().stop();
+    this.broker.stop();
   }
 
   @GetMapping(path = "/clients")
   public Collection<ClientDescriptor> clients() {
-    return this.simulator.getBroker().getConnectedClients();
+    return this.broker.getConnectedClients();
   }
 }
