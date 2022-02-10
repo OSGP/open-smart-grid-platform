@@ -28,7 +28,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 public class RsaEncrypter {
   private static final int BLOCK_SIZE = 16;
   private static final String ALG = "RSA";
-  private static final String ALGORITHM = "RSA/ECB/PKCS1Padding";
+  private static final String ALGORITHM = "RSA/ECB/OAEPPadding";
 
   private Key publicKey;
   private Key privateKey;
@@ -38,7 +38,7 @@ public class RsaEncrypter {
       final byte[] keyData = Files.readAllBytes(privateKeyStoreFile.toPath());
       final PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(keyData);
       this.privateKey = KeyFactory.getInstance(ALG).generatePrivate(privateKeySpec);
-    } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
+    } catch (final NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
       throw new EncrypterException("Could not get cipher", e);
     }
   }
@@ -48,7 +48,7 @@ public class RsaEncrypter {
       final byte[] keyData = Files.readAllBytes(publicKeyStoreFile.toPath());
       final X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(keyData);
       this.publicKey = KeyFactory.getInstance(ALG).generatePublic(publicKeySpec);
-    } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
+    } catch (final NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
       throw new EncrypterException("Could not set public keystore", e);
     }
   }
@@ -59,7 +59,7 @@ public class RsaEncrypter {
   protected Cipher getCipher() {
     try {
       return Cipher.getInstance(ALGORITHM);
-    } catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
+    } catch (final NoSuchPaddingException | NoSuchAlgorithmException e) {
       throw new EncrypterException("Could not get cipher", e);
     }
   }
