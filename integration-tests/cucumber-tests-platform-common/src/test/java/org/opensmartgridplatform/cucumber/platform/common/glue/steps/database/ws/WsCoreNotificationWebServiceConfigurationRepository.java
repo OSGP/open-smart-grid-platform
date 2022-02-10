@@ -12,6 +12,6 @@ package org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.w
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository("wsCoreNotificationWebServiceConfigurationRepository")
-public interface CoreNotificationWebServiceConfigurationRepository
+@Repository
+public interface WsCoreNotificationWebServiceConfigurationRepository
     extends NotificationWebServiceConfigurationRepository {}

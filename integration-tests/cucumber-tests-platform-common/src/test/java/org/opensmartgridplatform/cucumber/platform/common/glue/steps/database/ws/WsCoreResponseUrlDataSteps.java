@@ -13,15 +13,18 @@ import io.cucumber.java.en.Then;
 import java.util.Map;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.ws.ResponseUrlDataSteps;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
-public class CoreResponseUrlDataSteps extends ResponseUrlDataSteps {
+public class WsCoreResponseUrlDataSteps extends ResponseUrlDataSteps {
 
   @Autowired
-  public CoreResponseUrlDataSteps(final CoreResponseUrlDataRepository responseUrlDataRepository) {
+  public WsCoreResponseUrlDataSteps(
+      final WsCoreResponseUrlDataRepository responseUrlDataRepository) {
     super(responseUrlDataRepository);
   }
 
   @Given("^a response url data record in ws-core")
+  @Transactional("txMgrWsCore")
   public void aResponseUrlDataRecordInWsCore(final Map<String, String> settings) throws Throwable {
     this.aResponseUrlDataRecord(settings);
   }

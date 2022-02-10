@@ -9,10 +9,10 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.database;
 
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ApplicationKeyConfigurationRepository;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
+import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.WsCoreApplicationKeyConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.WsCoreNotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.WsCoreResponseDataRepository;
+import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.WsCoreResponseUrlDataRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,15 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class WsCoreNotificationDatabase extends WsNotificationDatabase {
 
   public WsCoreNotificationDatabase(
-      @Qualifier("wsCoreResponseDataRepository")
-          final ResponseDataRepository responseDataRepository,
-      @Qualifier("wsCoreResponseUrlDataRepository")
-          final ResponseUrlDataRepository responseUrlDataRepository,
-      @Qualifier("wsCoreNotificationWebServiceConfigurationRepository")
-          final NotificationWebServiceConfigurationRepository
-              notificationWebServiceConfigurationRepository,
-      @Qualifier("wsCoreApplicationKeyConfigurationRepository")
-          final ApplicationKeyConfigurationRepository applicationKeyConfigurationRepository,
+      final WsCoreResponseDataRepository responseDataRepository,
+      final WsCoreResponseUrlDataRepository responseUrlDataRepository,
+      final WsCoreNotificationWebServiceConfigurationRepository
+          notificationWebServiceConfigurationRepository,
+      final WsCoreApplicationKeyConfigurationRepository applicationKeyConfigurationRepository,
       @Qualifier("wsCoreNotificationApplicationName") final String notificationApplicationName,
       @Qualifier("wsCoreNotificationTargetUri") final String notificationTargetUri,
       @Qualifier("wsCoreNotificationMarshallerContextPath")

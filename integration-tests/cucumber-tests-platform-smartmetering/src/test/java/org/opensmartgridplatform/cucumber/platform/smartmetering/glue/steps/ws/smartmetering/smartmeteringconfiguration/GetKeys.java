@@ -30,7 +30,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.G
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SecretType;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.SmartMeteringApplicationKeyConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.WsSmartMeteringApplicationKeyConfigurationRepository;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetKeysRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,8 @@ public class GetKeys {
   @Autowired private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
 
   @Autowired
-  private SmartMeteringApplicationKeyConfigurationRepository applicationKeyConfigurationRepository;
+  private WsSmartMeteringApplicationKeyConfigurationRepository
+      applicationKeyConfigurationRepository;
 
   @When("^a get keys request is received$")
   public void aGetKeysRequestIsReceived(final Map<String, String> settings) throws Throwable {

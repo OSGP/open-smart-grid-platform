@@ -1,20 +1,18 @@
 /*
- * Copyright 2022 Alliander N.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws;
+package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.lang.reflect.Field;
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
@@ -28,29 +26,20 @@ import org.opensmartgridplatform.cucumber.platform.glue.steps.database.ws.Respon
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
-public class CoreResponseDataSteps extends BaseDeviceSteps {
+public class WsMicrogridsResponseDataSteps extends BaseDeviceSteps {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CoreResponseDataSteps.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(WsMicrogridsResponseDataSteps.class);
 
-  @Autowired private CoreResponseDataRepository coreResponseDataRepository;
+  @Autowired private WsMicrogridsResponseDataRepository microgridsResponseDataRepository;
 
-  @Given("^a response data record in ws-core$")
-  //  @Transactional("txMgrWsCore")
+  @Given("^a response data record$")
+  @Transactional("txMgrWsMicrogrids")
   public ResponseData aResponseDataRecord(final Map<String, String> settings) {
 
-    final ResponseData responseData =
-        this.coreResponseDataRepository.save(
-            new ResponseDataBuilder().fromSettings(settings).build());
-
-    final Date creationTime =
-        DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate();
-
-    LOGGER.info(
-        "Creating resonse data record for correlationUid: {} and creationTime: {}",
-        responseData.getCorrelationUid(),
-        creationTime);
-
+    ResponseData responseData = new ResponseDataBuilder().fromSettings(settings).build();
+    responseData = this.microgridsResponseDataRepository.save(responseData);
     ScenarioContext.current()
         .put(PlatformKeys.KEY_CORRELATION_UID, responseData.getCorrelationUid());
 
@@ -61,51 +50,36 @@ public class CoreResponseDataSteps extends BaseDeviceSteps {
       if (settings.containsKey(PlatformKeys.KEY_CREATION_TIME)) {
         final Field fld = responseData.getClass().getSuperclass().getDeclaredField("creationTime");
         fld.setAccessible(true);
-        fld.set(responseData, creationTime);
-        this.coreResponseDataRepository.saveAndFlush(responseData);
+        fld.set(
+            responseData,
+            DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
+        this.microgridsResponseDataRepository.saveAndFlush(responseData);
       }
     } catch (final Exception e) {
       LOGGER.error("Exception", e);
-      Assertions.fail("Failed to create response data record in ws-core.");
+      Assertions.fail("Failed to create response data record.");
     }
 
     return responseData;
   }
 
-  @Then("^the response data record should be deleted in ws-core$")
-  public void theResponseDataRecordShouldBeDeleted() {
-    final String correlationUid =
-        (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
-
-    this.theResponseDataRecordShouldBeDeleted(correlationUid);
-  }
-
-  @Then("^the response data record should not be deleted in ws-core$")
-  public void theResponseDataRecordShouldNotBeDeleted() {
-    final String correlationUid =
-        (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
-
-    this.theResponseDataRecordShouldBeDeleted(correlationUid);
-  }
-
-  @Then("^the response data record with correlation uid \\\"(.*)\\\" should be deleted in ws-core$")
+  @Then("^the response data record with correlation uid \\\"(.*)\\\" should be deleted$")
   public void theResponseDataRecordShouldBeDeleted(final String correlationUid) {
     final ResponseData responseData =
-        this.coreResponseDataRepository.findByCorrelationUid(correlationUid);
+        this.microgridsResponseDataRepository.findByCorrelationUid(correlationUid);
 
-    assertThat(responseData).as("Response data should be deleted in ws-core").isNull();
+    assertThat(responseData).as("Response data should be deleted").isNull();
   }
 
-  @Then(
-      "^the response data record with correlation uid \\\"(.*)\\\" should not be deleted in ws-core$")
+  @Then("^the response data record with correlation uid \\\"(.*)\\\" should not be deleted$")
   public void theResponseDataRecordShouldNotBeDeleted(final String correlationUid) {
     final ResponseData responseData =
-        this.coreResponseDataRepository.findByCorrelationUid(correlationUid);
+        this.microgridsResponseDataRepository.findByCorrelationUid(correlationUid);
 
-    assertThat(responseData).as("Response data should not be deleted in ws-core").isNotNull();
+    assertThat(responseData).as("Response data should not be deleted").isNotNull();
   }
 
-  @Then("^the response data has values in ws-core$")
+  @Then("^the response data has values$")
   public void theResponseDataHasValues(final Map<String, String> settings) {
     final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
     final short expectedNumberOfNotificationsSent =
@@ -114,7 +88,7 @@ public class CoreResponseDataSteps extends BaseDeviceSteps {
 
     RetryableAssert.assertWithRetries(
         () ->
-            this.assertResponseDataHasNotificationsAndMessageType(
+            WsMicrogridsResponseDataSteps.this.assertResponseDataHasNotificationsAndMessageType(
                 correlationUid, expectedNumberOfNotificationsSent, expectedMessageType),
         3,
         200,
@@ -127,12 +101,11 @@ public class CoreResponseDataSteps extends BaseDeviceSteps {
       final String expectedMessageType) {
 
     final ResponseData responseData =
-        this.coreResponseDataRepository.findByCorrelationUid(correlationUid);
+        this.microgridsResponseDataRepository.findByCorrelationUid(correlationUid);
 
     assertThat(responseData.getNumberOfNotificationsSent())
         .as(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT)
         .isEqualTo(expectedNumberOfNotificationsSent);
-
     assertThat(responseData.getMessageType())
         .as(PlatformKeys.KEY_MESSAGE_TYPE)
         .isEqualTo(expectedMessageType);

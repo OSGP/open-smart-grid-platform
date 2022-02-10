@@ -14,11 +14,11 @@ import java.util.Map;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.ws.ResponseUrlDataSteps;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class SmartMeteringResponseUrlDataSteps extends ResponseUrlDataSteps {
+public class WsSmartMeteringResponseUrlDataSteps extends ResponseUrlDataSteps {
 
   @Autowired
-  public SmartMeteringResponseUrlDataSteps(
-      final SmartMeteringResponseUrlDataRepository responseUrlDataRepository) {
+  public WsSmartMeteringResponseUrlDataSteps(
+      final WsSmartMeteringResponseUrlDataRepository responseUrlDataRepository) {
     super(responseUrlDataRepository);
   }
 

@@ -12,9 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 import org.opensmartgridplatform.adapter.kafka.da.domain.repositories.LocationRepository;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
+import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps.database.ws.WsDistributionAutomationNotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps.database.ws.WsDistributionAutomationResponseDataRepository;
 import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,13 +23,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class Database {
 
-  @Autowired
-  @Qualifier("wsDistributionAutomationResponseDataRepository")
-  private ResponseDataRepository responseDataRepository;
+  @Autowired private WsDistributionAutomationResponseDataRepository responseDataRepository;
 
   @Autowired
-  @Qualifier("wsDistributionAutomationNotificationWebServiceConfigurationRepository")
-  private NotificationWebServiceConfigurationRepository
+  private WsDistributionAutomationNotificationWebServiceConfigurationRepository
       notificationWebServiceConfigurationRepository;
 
   @Autowired

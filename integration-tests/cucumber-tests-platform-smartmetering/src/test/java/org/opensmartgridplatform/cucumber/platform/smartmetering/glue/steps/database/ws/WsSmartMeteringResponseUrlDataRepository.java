@@ -9,9 +9,8 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws;
 
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ApplicationKeyConfigurationRepository;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository("wsSmartMeteringApplicationKeyConfigurationRepository")
-public interface SmartMeteringApplicationKeyConfigurationRepository
-    extends ApplicationKeyConfigurationRepository {}
+@Repository
+public interface WsSmartMeteringResponseUrlDataRepository extends ResponseUrlDataRepository {}

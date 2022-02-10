@@ -29,12 +29,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
+public class WsSmartMeteringResponseDataSteps extends BaseDeviceSteps {
 
   private static final Logger LOGGER =
-      LoggerFactory.getLogger(SmartMeteringResponseDataSteps.class);
+      LoggerFactory.getLogger(WsSmartMeteringResponseDataSteps.class);
 
-  @Autowired private SmartMeteringResponseDataRepository smartMeteringResponseDataRepository;
+  @Autowired private WsSmartMeteringResponseDataRepository smartMeteringResponseDataRepository;
 
   @Given("^a response data record$")
   @Transactional("txMgrWsSmartMetering")
@@ -114,7 +114,7 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
 
     RetryableAssert.assertWithRetries(
         () ->
-            SmartMeteringResponseDataSteps.this.assertResponseDataHasNotificationsAndMessageType(
+            WsSmartMeteringResponseDataSteps.this.assertResponseDataHasNotificationsAndMessageType(
                 correlationUid, expectedNumberOfNotificationsSent, expectedMessageType),
         3,
         200,

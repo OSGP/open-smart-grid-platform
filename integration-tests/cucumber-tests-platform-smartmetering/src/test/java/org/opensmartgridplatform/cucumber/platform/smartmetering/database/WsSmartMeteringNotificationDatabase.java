@@ -9,11 +9,11 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.database;
 
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ApplicationKeyConfigurationRepository;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.database.WsNotificationDatabase;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.WsSmartMeteringApplicationKeyConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.WsSmartMeteringNotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.WsSmartMeteringResponseDataRepository;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.WsSmartMeteringResponseUrlDataRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,15 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class WsSmartMeteringNotificationDatabase extends WsNotificationDatabase {
 
   public WsSmartMeteringNotificationDatabase(
-      @Qualifier("wsSmartMeteringResponseDataRepository")
-          final ResponseDataRepository responseDataRepository,
-      @Qualifier("wsSmartMeteringResponseUrlDataRepository")
-          final ResponseUrlDataRepository responseUrlDataRepository,
-      @Qualifier("wsSmartMeteringNotificationWebServiceConfigurationRepository")
-          final NotificationWebServiceConfigurationRepository
-              notificationWebServiceConfigurationRepository,
-      @Qualifier("wsSmartMeteringApplicationKeyConfigurationRepository")
-          final ApplicationKeyConfigurationRepository applicationKeyConfigurationRepository,
+      final WsSmartMeteringResponseDataRepository responseDataRepository,
+      final WsSmartMeteringResponseUrlDataRepository responseUrlDataRepository,
+      final WsSmartMeteringNotificationWebServiceConfigurationRepository
+          notificationWebServiceConfigurationRepository,
+      final WsSmartMeteringApplicationKeyConfigurationRepository
+          applicationKeyConfigurationRepository,
       @Qualifier("wsSmartMeteringNotificationApplicationName")
           final String notificationApplicationName,
       @Qualifier("wsSmartMeteringNotificationMarshallerContextPath")
