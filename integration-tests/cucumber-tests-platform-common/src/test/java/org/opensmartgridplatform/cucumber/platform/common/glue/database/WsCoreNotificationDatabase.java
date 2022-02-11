@@ -9,11 +9,11 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.database;
 
-import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.CoreApplicationKeyConfigurationRepository;
-import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.CoreNotificationWebServiceConfigurationRepository;
-import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.CoreResponseDataRepository;
-import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.CoreResponseUrlDataRepository;
-import org.springframework.beans.factory.annotation.Value;
+import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.WsCoreApplicationKeyConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.WsCoreNotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.WsCoreResponseDataRepository;
+import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.WsCoreResponseUrlDataRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,19 +21,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class WsCoreNotificationDatabase extends WsNotificationDatabase {
 
   public WsCoreNotificationDatabase(
-      final CoreResponseDataRepository responseDataRepository,
-      final CoreResponseUrlDataRepository responseUrlDataRepository,
-      final CoreNotificationWebServiceConfigurationRepository
+      final WsCoreResponseDataRepository responseDataRepository,
+      final WsCoreResponseUrlDataRepository responseUrlDataRepository,
+      final WsCoreNotificationWebServiceConfigurationRepository
           notificationWebServiceConfigurationRepository,
-      final CoreApplicationKeyConfigurationRepository applicationKeyConfigurationRepository,
-      @Value("${web.service.notification.port}") final int webServiceNotificationPort,
-      @Value("${web.service.notification.context}") final String webServiceNotificationContext) {
+      final WsCoreApplicationKeyConfigurationRepository applicationKeyConfigurationRepository,
+      @Qualifier("wsCoreNotificationApplicationName") final String notificationApplicationName,
+      @Qualifier("wsCoreNotificationTargetUri") final String notificationTargetUri,
+      @Qualifier("wsCoreNotificationMarshallerContextPath")
+          final String notificationMarshallerContextPath) {
     super(
-        "OSGP",
-        String.format(
-            "http://localhost:%s%s", webServiceNotificationPort, webServiceNotificationContext),
+        notificationApplicationName,
+        notificationTargetUri,
         false,
-        "org.opensmartgridplatform.adapter.ws.schema.core.notification",
+        notificationMarshallerContextPath,
         responseDataRepository,
         responseUrlDataRepository,
         notificationWebServiceConfigurationRepository,

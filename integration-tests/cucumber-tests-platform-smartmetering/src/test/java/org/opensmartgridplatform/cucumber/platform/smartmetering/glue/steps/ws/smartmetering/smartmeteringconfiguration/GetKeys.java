@@ -30,23 +30,25 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.G
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SecretType;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.SmartMeteringApplicationKeyConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.WsSmartMeteringApplicationKeyConfigurationRepository;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetKeysRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class GetKeys {
 
   private static final String OPERATION = "Get keys";
 
-  @Value("${web.service.notification.application.name}")
+  @Autowired
+  @Qualifier("wsSmartMeteringNotificationApplicationName")
   private String applicationName;
 
   @Autowired private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
 
   @Autowired
-  private SmartMeteringApplicationKeyConfigurationRepository applicationKeyConfigurationRepository;
+  private WsSmartMeteringApplicationKeyConfigurationRepository
+      applicationKeyConfigurationRepository;
 
   @When("^a get keys request is received$")
   public void aGetKeysRequestIsReceived(final Map<String, String> settings) throws Throwable {
@@ -61,8 +63,8 @@ public class GetKeys {
         .put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
   }
 
-  @Given("^a application key is configured$")
-  public void aApplicationKeyIsConnfigured(final Map<String, String> settings) throws Throwable {
+  @Given("^an application key is configured$")
+  public void anApplicationKeyIsConfigured(final Map<String, String> settings) throws Throwable {
     final ApplicationDataLookupKey applicationDataLookupKey =
         new ApplicationDataLookupKey(
             settings.get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION), this.applicationName);

@@ -7,11 +7,11 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws;
+package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws;
 
-import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ApplicationKeyConfigurationRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MicrogridsNotificationWebServiceConfigurationRepository
-    extends NotificationWebServiceConfigurationRepository {}
+public interface WsSmartMeteringApplicationKeyConfigurationRepository
+    extends ApplicationKeyConfigurationRepository {}

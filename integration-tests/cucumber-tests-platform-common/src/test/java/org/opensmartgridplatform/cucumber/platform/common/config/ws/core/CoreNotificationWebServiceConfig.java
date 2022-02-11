@@ -15,6 +15,8 @@ import java.util.List;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,34 +38,36 @@ import org.springframework.ws.transport.http.WebServiceMessageReceiverHttpHandle
 @Configuration
 public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
 
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(CoreNotificationWebServiceConfig.class);
+
   private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
 
   @Value("${jaxb2.marshaller.context.path.core.notification}")
-  private String contextPathCoreNotification;
+  private String notificationMarshallerContextPath;
 
-  @Value("${web.service.notification.context}")
+  @Value("${web.service.core.notification.application.name}")
+  private String notificationApplicationName;
+
+  @Value("${web.service.core.notification.context}")
   private String notificationContextPath;
 
-  @Value("${web.service.notification.port}")
+  @Value("${web.service.core.notification.port}")
   private int notificationPort;
 
-  @Bean
-  public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
-    final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter =
-        new DefaultMethodEndpointAdapter();
+  @Bean("wsCoreNotificationApplicationName")
+  public String notificationApplicationName() {
+    return this.notificationApplicationName;
+  }
 
-    final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
-    methodArgumentResolvers.add(this.coreNotificationMarshallingPayloadMethodProcessor());
-    methodArgumentResolvers.add(
-        new AnnotationMethodArgumentResolver(
-            ORGANISATION_IDENTIFICATION_HEADER, OrganisationIdentification.class));
-    defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
+  @Bean("wsCoreNotificationMarshallerContextPath")
+  public String notificationMarshallerContextPath() {
+    return this.notificationMarshallerContextPath;
+  }
 
-    final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
-    methodReturnValueHandlers.add(this.coreNotificationMarshallingPayloadMethodProcessor());
-    defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
-
-    return defaultMethodEndpointAdapter;
+  @Bean("wsCoreNotificationTargetUri")
+  public String notificationTargetUri() {
+    return "http://localhost:" + this.notificationPort + this.notificationContextPath;
   }
 
   @Override
@@ -73,16 +77,20 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
             ORGANISATION_IDENTIFICATION_HEADER, ORGANISATION_IDENTIFICATION_HEADER));
   }
 
-  @Bean
+  @Bean("wsCoreNotificationHttpServer")
   public SimpleHttpServerFactoryBean httpServer(
       final SaajSoapMessageFactory messageFactory,
-      final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter,
       final PayloadRootAnnotationMethodEndpointMapping mapping) {
+
+    LOGGER.info(
+        "Initializing core notifications HTTP server with context path: '{}' and port: '{}'",
+        this.notificationContextPath,
+        this.notificationPort);
 
     final SoapMessageDispatcher soapMessageDispatcher = new SoapMessageDispatcher();
     soapMessageDispatcher.setEndpointMappings(Collections.singletonList(mapping));
     soapMessageDispatcher.setEndpointAdapters(
-        Collections.singletonList(defaultMethodEndpointAdapter));
+        Collections.singletonList(this.defaultMethodEndpointAdapter()));
 
     final WebServiceMessageReceiverHttpHandler httpHandler =
         new WebServiceMessageReceiverHttpHandler();
@@ -96,16 +104,46 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
     return httpServer;
   }
 
-  @Bean
-  public Jaxb2Marshaller coreNotificationMarshaller() {
-    final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-    marshaller.setContextPath(this.contextPathCoreNotification);
-    return marshaller;
+  private DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
+    final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter =
+        new DefaultMethodEndpointAdapter();
+
+    final MarshallingPayloadMethodProcessor processor = this.marshallingPayloadMethodProcessor();
+    final AnnotationMethodArgumentResolver resolver = this.annotationMethodArgumentResolver();
+
+    final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
+    methodArgumentResolvers.add(processor);
+    methodArgumentResolvers.add(resolver);
+    defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
+
+    final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
+    methodReturnValueHandlers.add(processor);
+    defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
+
+    return defaultMethodEndpointAdapter;
   }
 
-  @Bean
-  public MarshallingPayloadMethodProcessor coreNotificationMarshallingPayloadMethodProcessor() {
-    return new MarshallingPayloadMethodProcessor(
-        this.coreNotificationMarshaller(), this.coreNotificationMarshaller());
+  private AnnotationMethodArgumentResolver annotationMethodArgumentResolver() {
+    final AnnotationMethodArgumentResolver resolver =
+        new AnnotationMethodArgumentResolver(
+            ORGANISATION_IDENTIFICATION_HEADER, OrganisationIdentification.class);
+    return resolver;
+  }
+
+  private MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor() {
+    final Jaxb2Marshaller marshaller = this.notificationMarshaller();
+    final MarshallingPayloadMethodProcessor processor =
+        new MarshallingPayloadMethodProcessor(marshaller, marshaller);
+    return processor;
+  }
+
+  private Jaxb2Marshaller notificationMarshaller() {
+    LOGGER.info(
+        "Initializing core notification marshaller with context path '{}'",
+        this.notificationMarshallerContextPath);
+
+    final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+    marshaller.setContextPath(this.notificationMarshallerContextPath);
+    return marshaller;
   }
 }
