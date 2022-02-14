@@ -11,7 +11,6 @@ package org.opensmartgridplatform.simulator.protocol.mqtt;
 
 import io.moquette.BrokerConstants;
 import io.moquette.broker.config.MemoryConfig;
-import java.io.IOException;
 import java.util.Properties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -60,7 +59,7 @@ public class SimulatorBrokerConfig {
   }
 
   @Bean(initMethod = "start", destroyMethod = "stop")
-  public Broker broker(final Properties mqttBrokerProperties) throws IOException {
+  public Broker broker(final Properties mqttBrokerProperties) {
     return new Broker(new MemoryConfig(mqttBrokerProperties));
   }
 }

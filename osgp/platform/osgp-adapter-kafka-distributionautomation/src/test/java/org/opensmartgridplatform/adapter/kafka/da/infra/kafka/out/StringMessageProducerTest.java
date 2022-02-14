@@ -64,25 +64,31 @@ class StringMessageProducerTest {
 
   @Test
   void sendTest() {
-
-    // send a message to the kafka bus
     this.producer.send(PAYLOAD);
+    this.assertMessageCanBeConsumedWithExpectedPayload(PAYLOAD);
+  }
 
-    // consume the message with embeddedKafka
+  private void assertMessageCanBeConsumedWithExpectedPayload(final String payload) {
+    final String actualMessage = this.retrieveMessageFromKafka();
+    assertThat(actualMessage).isEqualTo(payload);
+  }
+
+  private String retrieveMessageFromKafka() {
+    final Consumer<String, String> consumer = this.createConsumer();
+    this.embeddedKafka.consumeFromAnEmbeddedTopic(consumer, this.topic);
+    final ConsumerRecord<String, String> received =
+        KafkaTestUtils.getSingleRecord(consumer, this.topic);
+    return received.value();
+  }
+
+  private Consumer<String, String> createConsumer() {
     final Map<String, Object> consumerProps =
         KafkaTestUtils.consumerProps("testGroup", "true", this.embeddedKafka);
     consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
     final ConsumerFactory<String, String> consumerFactory =
         new DefaultKafkaConsumerFactory<>(
             consumerProps, new StringDeserializer(), new StringDeserializer());
-    final Consumer<String, String> consumer = consumerFactory.createConsumer();
-    this.embeddedKafka.consumeFromAnEmbeddedTopic(consumer, this.topic);
-    final ConsumerRecord<String, String> received =
-        KafkaTestUtils.getSingleRecord(consumer, this.topic);
-
-    // check the consumed message
-    final String actualMessage = received.value();
-    assertThat(actualMessage).isEqualTo(PAYLOAD);
+    return consumerFactory.createConsumer();
   }
 
   @AfterEach
