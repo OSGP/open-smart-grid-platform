@@ -13,4 +13,4 @@ import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepo
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CoreResponseDataRepository extends ResponseDataRepository {}
+public interface WsCoreResponseDataRepository extends ResponseDataRepository {}

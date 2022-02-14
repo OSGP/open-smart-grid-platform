@@ -7,10 +7,10 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps.database.ws;
+package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws;
 
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface DistributionAutomationResponseDataRepository extends ResponseDataRepository {}
+@Repository("wsMicrogridsResponseDataRepository")
+public interface WsMicrogridsResponseDataRepository extends ResponseDataRepository {}

@@ -28,30 +28,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-public class PublicLightingResponseDataSteps {
+public class WsPublicLightingResponseDataSteps {
 
   private static final Logger LOGGER =
-      LoggerFactory.getLogger(PublicLightingResponseDataSteps.class);
+      LoggerFactory.getLogger(WsPublicLightingResponseDataSteps.class);
 
-  @Autowired private PublicLightingResponseDataRepository publicLightingResponseDataRepository;
-
-  // @Autowired
-  // private TariffSwitchingResponseDataRepository
-  // tariffSwitchingResponseDataRepository;
+  @Autowired private WsPublicLightingResponseDataRepository responseDataRepository;
 
   @Given("^a public lighting response data record$")
   @Transactional("txMgrWsPublicLighting")
   public ResponseData aPublicLightingResponseDataRecord(final Map<String, String> settings) {
-    return this.createResponseDataRecord(settings, this.publicLightingResponseDataRepository);
+    return this.createResponseDataRecord(settings, this.responseDataRepository);
   }
-
-  // @Given("^a tariff switching response data record$")
-  // @Transactional("txMgrWsTariffSwitching")
-  // public ResponseData aTariffSwitchingResponseDataRecord(final Map<String,
-  // String> settings) {
-  // return this.createResponseDataRecord(settings,
-  // this.tariffSwitchingResponseDataRepository);
-  // }
 
   private ResponseData createResponseDataRecord(
       final Map<String, String> settings, final ResponseDataRepository responseDataRepository) {
@@ -84,18 +72,8 @@ public class PublicLightingResponseDataSteps {
       "^the public lighting response data record with correlation uid \\\"(.*)\\\" should be deleted$")
   @Transactional("txMgrWsPublicLighting")
   public void thePublicLightingResponseDataRecordShouldBeDeleted(final String correlationUid) {
-    this.theResponseDataRecordShouldBeDeleted(
-        correlationUid, this.publicLightingResponseDataRepository);
+    this.theResponseDataRecordShouldBeDeleted(correlationUid, this.responseDataRepository);
   }
-
-  // @Then("^the tariff switching response data record with correlation uid
-  // \\\"(.*)\\\" should be deleted$")
-  // @Transactional("txMgrWsTariffSwitching")
-  // public void theTariffSwitchingResponseDataRecordShouldBeDeleted(final
-  // String correlationUid) {
-  // this.theResponseDataRecordShouldBeDeleted(correlationUid,
-  // this.tariffSwitchingResponseDataRepository);
-  // }
 
   public void theResponseDataRecordShouldBeDeleted(
       final String correlationUid, final ResponseDataRepository responseDataRespository) {
@@ -108,18 +86,8 @@ public class PublicLightingResponseDataSteps {
       "^the public lighting response data record with correlation uid \\\"(.*)\\\" should not be deleted$")
   @Transactional("txMgrWsPublicLighting")
   public void thePublicLightingResponseDataRecordShouldNotBeDeleted(final String correlationUid) {
-    this.theResponseDataRecordShouldNotBeDeleted(
-        correlationUid, this.publicLightingResponseDataRepository);
+    this.theResponseDataRecordShouldNotBeDeleted(correlationUid, this.responseDataRepository);
   }
-
-  // @Then("^the tariff switching response data record with correlation uid
-  // \\\"(.*)\\\" should not be deleted$")
-  // @Transactional("txMgrWsTariffSwitching")
-  // public void theTariffSwitchingResponseDataRecordShouldNotBeDeleted(final
-  // String correlationUid) {
-  // this.theResponseDataRecordShouldNotBeDeleted(correlationUid,
-  // this.tariffSwitchingResponseDataRepository);
-  // }
 
   public void theResponseDataRecordShouldNotBeDeleted(
       final String correlationUid, final ResponseDataRepository responseDataRespository) {
@@ -131,16 +99,8 @@ public class PublicLightingResponseDataSteps {
   @Then("^the public lighting response data has values$")
   @Transactional("txMgrWsPublicLighting")
   public void thePublicLightingResponseDataHasValues(final Map<String, String> settings) {
-    this.theResponseDataHasValues(settings, this.publicLightingResponseDataRepository);
+    this.theResponseDataHasValues(settings, this.responseDataRepository);
   }
-
-  // @Then("^the tariff switching response data has values$")
-  // @Transactional("txMgrWsTariffSwitching")
-  // public void theTariffSwitchingResponseDataHasValues(final Map<String,
-  // String> settings) {
-  // this.theResponseDataHasValues(settings,
-  // this.tariffSwitchingResponseDataRepository);
-  // }
 
   private void theResponseDataHasValues(
       final Map<String, String> settings, final ResponseDataRepository responseDataRespository) {
@@ -151,7 +111,7 @@ public class PublicLightingResponseDataSteps {
 
     RetryableAssert.assertWithRetries(
         () ->
-            PublicLightingResponseDataSteps.this.assertResponseDataHasNotificationsAndMessageType(
+            WsPublicLightingResponseDataSteps.this.assertResponseDataHasNotificationsAndMessageType(
                 correlationUid,
                 expectedNumberOfNotificationsSent,
                 expectedMessageType,

@@ -13,10 +13,11 @@ import java.util.List;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
-import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws.MicrogridsNotificationWebServiceConfigurationRepository;
-import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws.MicrogridsResponseDataRepository;
+import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws.WsMicrogridsNotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws.WsMicrogridsResponseDataRepository;
 import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,25 +25,37 @@ public class Database {
 
   @Autowired private Iec61850DeviceRepository iec61850DeviceRepository;
 
-  @Autowired private MicrogridsResponseDataRepository microgridsResponseDataRepository;
+  @Autowired private WsMicrogridsResponseDataRepository responseDataRepository;
 
   @Autowired
-  private MicrogridsNotificationWebServiceConfigurationRepository
-      microgridsNotificationWebServiceConfigurationRepository;
+  private WsMicrogridsNotificationWebServiceConfigurationRepository
+      notificationWebServiceConfigurationRepository;
+
+  @Autowired
+  @Qualifier("wsMicrogridsNotificationApplicationName")
+  private String notificationApplicationName;
+
+  @Autowired
+  @Qualifier("wsMicrogridsNotificationMarshallerContextPath")
+  private String notificationMarshallerContextPath;
+
+  @Autowired
+  @Qualifier("wsMicrogridsNotificationTargetUri")
+  private String notificationTargetUri;
 
   @Autowired private RtuDeviceRepository rtuDeviceRepository;
 
   private void insertDefaultData() {
-    this.microgridsNotificationWebServiceConfigurationRepository.saveAll(
+    this.notificationWebServiceConfigurationRepository.saveAll(
         this.notificationEndpointConfigurations());
   }
 
   private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
     final NotificationWebServiceConfigurationBuilder builder =
         new NotificationWebServiceConfigurationBuilder()
-            .withApplicationName("ZownStream")
-            .withMarshallerContextPath(
-                "org.opensmartgridplatform.adapter.ws.schema.microgrids.notification")
+            .withApplicationName(this.notificationApplicationName)
+            .withMarshallerContextPath(this.notificationMarshallerContextPath)
+            .withTargetUri(this.notificationTargetUri)
             .withoutCircuitBreakerConfig();
 
     final NotificationWebServiceConfiguration testOrgConfig =
@@ -58,7 +71,7 @@ public class Database {
     this.iec61850DeviceRepository.deleteAll();
 
     // Then remove stuff from the osgp_adapter_ws_microgrids
-    this.microgridsResponseDataRepository.deleteAll();
+    this.responseDataRepository.deleteAll();
 
     // Now remove all from the core.
     this.rtuDeviceRepository.deleteAll();
