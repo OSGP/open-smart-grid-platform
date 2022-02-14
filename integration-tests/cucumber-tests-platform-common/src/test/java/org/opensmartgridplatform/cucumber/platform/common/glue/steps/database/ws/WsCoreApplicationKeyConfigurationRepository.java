@@ -13,5 +13,5 @@ import org.opensmartgridplatform.adapter.ws.domain.repositories.ApplicationKeyCo
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CoreApplicationKeyConfigurationRepository
+public interface WsCoreApplicationKeyConfigurationRepository
     extends ApplicationKeyConfigurationRepository {}

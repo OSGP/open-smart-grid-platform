@@ -9,8 +9,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws;
 
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CoreResponseUrlDataRepository extends ResponseUrlDataRepository {}
+public interface WsCoreNotificationWebServiceConfigurationRepository
+    extends NotificationWebServiceConfigurationRepository {}

@@ -7,11 +7,10 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws;
+package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws;
 
-import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CoreNotificationWebServiceConfigurationRepository
-    extends NotificationWebServiceConfigurationRepository {}
+public interface WsSmartMeteringResponseUrlDataRepository extends ResponseUrlDataRepository {}

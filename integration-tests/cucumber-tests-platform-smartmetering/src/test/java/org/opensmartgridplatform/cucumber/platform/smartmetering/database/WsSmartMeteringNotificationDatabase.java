@@ -10,10 +10,11 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.database;
 
 import org.opensmartgridplatform.cucumber.platform.common.glue.database.WsNotificationDatabase;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.SmartMeteringApplicationKeyConfigurationRepository;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.SmartMeteringNotificationWebServiceConfigurationRepository;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.SmartMeteringResponseDataRepository;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.SmartMeteringResponseUrlDataRepository;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.WsSmartMeteringApplicationKeyConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.WsSmartMeteringNotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.WsSmartMeteringResponseDataRepository;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.WsSmartMeteringResponseUrlDataRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,17 +22,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class WsSmartMeteringNotificationDatabase extends WsNotificationDatabase {
 
   public WsSmartMeteringNotificationDatabase(
-      final SmartMeteringResponseDataRepository responseDataRepository,
-      final SmartMeteringResponseUrlDataRepository responseUrlDataRepository,
-      final SmartMeteringNotificationWebServiceConfigurationRepository
+      final WsSmartMeteringResponseDataRepository responseDataRepository,
+      final WsSmartMeteringResponseUrlDataRepository responseUrlDataRepository,
+      final WsSmartMeteringNotificationWebServiceConfigurationRepository
           notificationWebServiceConfigurationRepository,
-      final SmartMeteringApplicationKeyConfigurationRepository
-          applicationKeyConfigurationRepository) {
+      final WsSmartMeteringApplicationKeyConfigurationRepository
+          applicationKeyConfigurationRepository,
+      @Qualifier("wsSmartMeteringNotificationApplicationName")
+          final String notificationApplicationName,
+      @Qualifier("wsSmartMeteringNotificationMarshallerContextPath")
+          final String notificationMarshallerContextPath,
+      @Qualifier("wsSmartMeteringNotificationTargetUri") final String notificationTargetUri) {
     super(
-        "SMART_METERS",
-        "http://localhost:8088/notifications",
+        notificationApplicationName,
+        notificationTargetUri,
         false,
-        "org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification",
+        notificationMarshallerContextPath,
         responseDataRepository,
         responseUrlDataRepository,
         notificationWebServiceConfigurationRepository,

@@ -7,11 +7,11 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps.database.ws;
+package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws;
 
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DistributionAutomationNotificationWebServiceConfigurationRepository
+public interface WsPublicLightingNotificationWebServiceConfigurationRepository
     extends NotificationWebServiceConfigurationRepository {}
