@@ -212,6 +212,14 @@
                     </xsd:restriction>
                 </xsd:simpleType>
             </xsd:element>
+            
+            <xsd:element name="ProtocolVariant" minOccurs="1">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="10" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
 
             <xsd:element name="NetworkAddress" minOccurs="1">
                 <xsd:simpleType>
