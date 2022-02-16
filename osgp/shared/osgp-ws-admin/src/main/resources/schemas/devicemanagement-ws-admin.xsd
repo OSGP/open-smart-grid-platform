@@ -211,6 +211,7 @@
       <xsd:element type="xsd:long" name="Id" />
       <xsd:element name="Protocol" type="tns:ProtocolType" />
       <xsd:element name="ProtocolVersion" type="tns:ProtocolVersionType" />
+      <xsd:element name="ProtocolVariant" type="tns:ProtocolVariantType" />
     </xsd:sequence>
   </xsd:complexType>
 
@@ -222,6 +223,13 @@
   </xsd:simpleType>
 
   <xsd:simpleType name="ProtocolVersionType">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="255" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ProtocolVariantType">
     <xsd:restriction base="xsd:string">
       <xsd:minLength value="1" />
       <xsd:maxLength value="255" />
