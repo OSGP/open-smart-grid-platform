@@ -296,7 +296,7 @@ public class ConfigurationService {
 
     final DlmsDevice mbusDevice =
         this.domainHelperService.findMbusDevice(
-            Long.valueOf(channelElementValues.getIdentificationNumber()),
+            channelElementValues.getIdentificationNumber(),
             channelElementValues.getManufacturerIdentification());
 
     return new GMeterInfoDto(
@@ -308,7 +308,7 @@ public class ConfigurationService {
       final DlmsDevice device,
       final ActivityCalendarDto activityCalendar,
       final MessageMetadata messageMetadata)
-      throws ProtocolAdapterException {
+      throws ProtocolAdapterException, FunctionalException {
 
     LOGGER.info("Device for Activity Calendar is: {}", device);
 
@@ -381,8 +381,8 @@ public class ConfigurationService {
       throws OsgpException {
     try {
 
-      this.generateAndReplaceKeyCommandExecutor.executeBundleAction(
-          conn, device, null, messageMetadata);
+      this.generateAndReplaceKeyCommandExecutor.execute(conn, device, null, messageMetadata);
+
     } catch (final ProtocolAdapterException e) {
       LOGGER.error("Unexpected exception during replaceKeys.", e);
       throw e;
@@ -397,13 +397,9 @@ public class ConfigurationService {
       throws OsgpException {
 
     try {
-      /*
-       * Call executeBundleAction, since it knows to deal with the
-       * SetKeysRequestDto containing authentication and encryption key,
-       * while execute deals with a single key only.
-       */
+
       keySet.setGeneratedKeys(false);
-      this.replaceKeyCommandExecutor.executeBundleAction(conn, device, keySet, messageMetadata);
+      this.replaceKeyCommandExecutor.execute(conn, device, keySet, messageMetadata);
 
     } catch (final ProtocolAdapterException e) {
       LOGGER.error("Unexpected exception during replaceKeys.", e);

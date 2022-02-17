@@ -43,6 +43,7 @@ import org.opensmartgridplatform.dto.valueobjects.EventNotificationMessageDataCo
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -220,6 +221,7 @@ public class DeviceManagementServiceTest {
             .withCorrelationUid(TEST_UID)
             .withOrganisationIdentification(TEST_ORGANISATION)
             .withDeviceIdentification(TEST_DEVICE)
+            .withMessageType(MessageType.SET_DEVICE_LIFECYCLE_STATUS.name())
             .withResult(ResponseMessageResultType.OK)
             .build();
 
@@ -250,6 +252,7 @@ public class DeviceManagementServiceTest {
             .withCorrelationUid(TEST_UID)
             .withOrganisationIdentification(TEST_ORGANISATION)
             .withDeviceIdentification(TEST_DEVICE)
+            .withMessageType(MessageType.UPDATE_DEVICE_CDMA_SETTINGS.name())
             .withResult(ResponseMessageResultType.OK)
             .build();
 

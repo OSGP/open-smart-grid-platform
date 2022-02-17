@@ -9,6 +9,14 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto.CLOCK_ADJUSTED;
+import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto.CLOCK_INVALID;
+import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto.CRITICAL_ERROR;
+import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto.DATA_NOT_VALID;
+import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto.DAYLIGHT_SAVING;
+import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto.NOT_USED;
+import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto.POWER_DOWN;
+import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto.RECOVERED_VALUE;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -125,6 +133,9 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
   private final long PERIOD_1_LONG_VALUE = 1000L;
   private final long PERIOD_2_LONG_VALUE = 1500L;
+
+  private final short PERIOD1_AMR_STATUS_VALUE = 0x0F; // First 4 status bits set
+  private final short PERIOD2_AMR_STATUS_VALUE = 0xF0; // Last 4 status bits set
 
   @BeforeEach
   public void setUp() {
@@ -280,6 +291,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     this.checkClockValues(periodicMeterReads, type, useNullData);
     this.checkValues(periodicMeterReads);
+    this.checkAmrStatus(periodicMeterReads, protocol, type);
   }
 
   private DlmsDevice createDlmsDevice(final Protocol protocol) {
@@ -352,8 +364,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     // PERIOD 1
 
     final DataObject period1Clock = this.PERIOD_1_CLOCK;
-    final byte AMR_STATUS_VALUE = 8;
-    final DataObject period1Status = DataObject.newUInteger8Data(AMR_STATUS_VALUE);
+    final DataObject period1Status = DataObject.newUInteger8Data(this.PERIOD1_AMR_STATUS_VALUE);
     final DataObject period1Value = DataObject.newUInteger32Data(this.PERIOD_1_LONG_VALUE);
     final DataObject period1CaptureTime = DataObject.newDateTimeData(this.PERIOD_1_CAPTURE_TIME);
 
@@ -371,14 +382,16 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     // PERIOD 2
 
     final DataObject period2Clock;
+    final DataObject period2CaptureTime;
     if (useNullData) {
       period2Clock = DataObject.newNullData();
+      period2CaptureTime = DataObject.newNullData();
     } else {
       period2Clock = this.PERIOD_2_CLOCK;
+      period2CaptureTime = DataObject.newDateTimeData(this.PERIOD_2_CAPTURE_TIME);
     }
-    final DataObject period2Status = DataObject.newUInteger8Data(AMR_STATUS_VALUE);
+    final DataObject period2Status = DataObject.newUInteger8Data(this.PERIOD2_AMR_STATUS_VALUE);
     final DataObject period2Value = DataObject.newUInteger32Data(this.PERIOD_2_LONG_VALUE);
-    final DataObject period2CaptureTime = DataObject.newDateTimeData(this.PERIOD_2_CAPTURE_TIME);
 
     final DataObject periodItem2;
     if (type == PeriodTypeDto.MONTHLY && protocol == Protocol.DSMR_4_2_2) {
@@ -451,6 +464,25 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     assertThat(period1.getConsumption().getValue().longValue()).isEqualTo(this.PERIOD_1_LONG_VALUE);
     assertThat(period2.getConsumption().getValue().longValue()).isEqualTo(this.PERIOD_2_LONG_VALUE);
+  }
+
+  private void checkAmrStatus(
+      final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads,
+      final Protocol protocol,
+      final PeriodTypeDto type) {
+
+    final PeriodicMeterReadsGasResponseItemDto period1 = periodicMeterReads.get(0);
+    final PeriodicMeterReadsGasResponseItemDto period2 = periodicMeterReads.get(1);
+
+    if (protocol == Protocol.DSMR_4_2_2 && type == PeriodTypeDto.MONTHLY) {
+      assertThat(period1.getAmrProfileStatusCode()).isNull();
+      assertThat(period2.getAmrProfileStatusCode()).isNull();
+    } else {
+      assertThat(period1.getAmrProfileStatusCode().getAmrProfileStatusCodeFlags())
+          .containsExactly(CRITICAL_ERROR, CLOCK_INVALID, DATA_NOT_VALID, DAYLIGHT_SAVING);
+      assertThat(period2.getAmrProfileStatusCode().getAmrProfileStatusCodeFlags())
+          .containsExactlyInAnyOrder(NOT_USED, CLOCK_ADJUSTED, RECOVERED_VALUE, POWER_DOWN);
+    }
   }
 
   // DSMR4

@@ -404,6 +404,10 @@
       <xsd:enumeration value="COMMUNICATION_MODULE_REMOVED"/>
       <!-- 22 - communication module inserted -  -  -  -->
       <xsd:enumeration value="COMMUNICATION_MODULE_INSERTED"/>
+      <!-- 23 - communication module inserted -  -  -  -->
+      <xsd:enumeration value="ERROR_REGISTER_2_CLEARED"/>
+      <!-- 24 - communication module inserted -  -  -  -->
+      <xsd:enumeration value="ALARM_REGISTER_2_CLEARED"/>
       <!-- 40 - terminal cover removed -  -  -  -->
       <xsd:enumeration value="TERMINAL_COVER_REMOVED"/>
       <!-- 41 - terminal cover closed -  -  -  -->
@@ -937,16 +941,6 @@
       <xsd:enumeration value="KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_4"/>
       <!-- 0x83A1 - Key is acknowledged by the M-Bus device on channel 4 -->
       <xsd:enumeration value="KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_4"/>
-
-      <!-- the following events are System Events -->
-      <xsd:enumeration value="SET_MAINTENANCE_STATE_E_SUCCESS"/>
-      <xsd:enumeration value="SET_MAINTENANCE_STATE_G_SUCCESS"/>
-      <xsd:enumeration value="SET_MAINTENANCE_STATE_E_FAILED"/>
-      <xsd:enumeration value="SET_MAINTENANCE_STATE_G_FAILED"/>
-      <xsd:enumeration value="COMMUNICATION_NETWORK_INFORMATION_UPDATED"/>
-      <xsd:enumeration value="CLEAN_UP_M_BUS_CHANNEL"/>
-      <xsd:enumeration value="FIRMWARE_UPDATE_STARTED"/>
-      <xsd:enumeration value="INVOCATION_COUNTER_THRESHOLD_REACHED"/>
 
     </xsd:restriction>
   </xsd:simpleType>

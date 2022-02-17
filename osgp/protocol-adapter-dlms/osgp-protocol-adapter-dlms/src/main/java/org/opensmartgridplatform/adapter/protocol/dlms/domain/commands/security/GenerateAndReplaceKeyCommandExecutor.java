@@ -14,12 +14,12 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DeviceKeyProcessingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceKeyProcessAlreadyRunningException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GenerateAndReplaceKeysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
@@ -36,42 +36,45 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GenerateAndReplaceKeyCommandExecutor
-    extends AbstractCommandExecutor<ActionRequestDto, ActionResponseDto> {
+    extends AbstractReplaceKeyCommandExecutor<GenerateAndReplaceKeysRequestDataDto> {
 
   private static final Logger LOGGER =
       LoggerFactory.getLogger(GenerateAndReplaceKeyCommandExecutor.class);
 
-  @Autowired private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
-
   @Autowired private SecretManagementService secretManagementService;
+
+  @Autowired private DeviceKeyProcessingService deviceKeyProcessingService;
 
   public GenerateAndReplaceKeyCommandExecutor() {
     super(GenerateAndReplaceKeysRequestDataDto.class);
   }
 
   @Override
-  public ActionResponseDto executeBundleAction(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final ActionRequestDto actionRequestDto,
-      final MessageMetadata messageMetadata)
-      throws OsgpException {
-
-    return this.execute(conn, device, actionRequestDto, messageMetadata);
-  }
-
-  @Override
   public ActionResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ActionRequestDto actionRequestDto,
+      final GenerateAndReplaceKeysRequestDataDto actionRequestDto,
       final MessageMetadata messageMetadata)
       throws OsgpException {
-    LOGGER.info("Generate new keys for device {}", device.getDeviceIdentification());
-    final SetKeysRequestDto setKeysRequest =
-        this.generateSetKeysRequest(messageMetadata, device.getDeviceIdentification());
-    return this.replaceKeyCommandExecutor.executeBundleAction(
-        conn, device, setKeysRequest, messageMetadata);
+
+    try {
+      this.deviceKeyProcessingService.startProcessing(messageMetadata.getDeviceIdentification());
+    } catch (final DeviceKeyProcessAlreadyRunningException e) {
+      // This exception will be caught in the DeviceRequestMessageProcessor.
+      // The request will NOT be sent back to Core to retry but put back on the queue
+      LOGGER.info(
+          "Key changing process already running on device :{}", device.getDeviceIdentification());
+      throw e;
+    }
+
+    try {
+      LOGGER.info("Generate new keys for device {}", device.getDeviceIdentification());
+      final SetKeysRequestDto setKeysRequest =
+          this.generateSetKeysRequest(messageMetadata, device.getDeviceIdentification());
+      return this.replaceKeys(conn, device, setKeysRequest, messageMetadata);
+    } finally {
+      this.deviceKeyProcessingService.stopProcessing(messageMetadata.getDeviceIdentification());
+    }
   }
 
   private SetKeysRequestDto generateSetKeysRequest(

@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.time.Instant;
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceKeyProcessAlreadyRunningException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ThrowingConsumer;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -31,6 +33,7 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.throttling.ThrottlingPermitDeniedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor implementation should be
@@ -44,6 +47,9 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
 
   /** Constant to signal that message processor doesn't (have to) send a response. */
   protected static final String NO_RESPONSE = "NO-RESPONSE";
+
+  @Value("#{T(java.time.Duration).parse('${device.key.processing.timeout:PT5M}')}")
+  private Duration deviceKeyProcessingTimeout;
 
   @Autowired protected DeviceResponseMessageSender responseMessageSender;
 
@@ -82,18 +88,26 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
     final Serializable messageObject = message.getObject();
 
-    final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
-        connectionManager ->
-            this.processMessageTasks(messageObject, messageMetadata, connectionManager);
-
     try {
-      if (this.usesDeviceConnection()) {
-        this.createAndHandleConnectionForDevice(
-            this.domainHelperService.findDlmsDevice(messageMetadata),
-            messageMetadata,
-            taskForConnectionManager);
+      final DlmsDevice device;
+      if (this.requiresExistingDevice()) {
+        device = this.domainHelperService.findDlmsDevice(messageMetadata);
       } else {
-        this.processMessageTasks(messageObject, messageMetadata, null);
+        device = null;
+      }
+      if (this.usesDeviceConnection()) {
+        /*
+         * Set up a consumer to be called back with a DlmsConnectionManager for which the connection
+         * with the device has been created. Note that when usesDeviceConnection is true, in this
+         * way all logic in processMessageTasks is executed only after the connection to the device
+         * has successfully been established.
+         */
+        final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
+            connectionManager ->
+                this.processMessageTasks(messageObject, messageMetadata, connectionManager, device);
+        this.createAndHandleConnectionForDevice(device, messageMetadata, taskForConnectionManager);
+      } else {
+        this.processMessageTasks(messageObject, messageMetadata, null, device);
       }
     } catch (final ThrottlingPermitDeniedException exception) {
 
@@ -102,8 +116,12 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
        * picked up again a little later by the message listener for device requests.
        */
       this.deviceRequestMessageSender.send(
-          messageObject, messageMetadata, this.throttlingClientConfig.delay());
+          messageObject, messageMetadata, this.throttlingClientConfig.permitRejectedDelay());
 
+    } catch (final DeviceKeyProcessAlreadyRunningException exception) {
+
+      this.deviceRequestMessageSender.send(
+          messageObject, messageMetadata, this.deviceKeyProcessingTimeout);
     } catch (final Exception exception) {
       this.sendErrorResponse(messageMetadata, exception, messageObject);
     }
@@ -112,7 +130,8 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
   public void processMessageTasks(
       final Serializable messageObject,
       final MessageMetadata messageMetadata,
-      final DlmsConnectionManager connectionManager)
+      final DlmsConnectionManager connectionManager,
+      final DlmsDevice device)
       throws OsgpException {
     DlmsDevice device = null;
     try {
@@ -129,10 +148,6 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
                 FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED, ComponentType.PROTOCOL_DLMS),
             messageObject);
         return;
-      }
-
-      if (this.requiresExistingDevice()) {
-        device = this.domainHelperService.findDlmsDevice(messageMetadata);
       }
 
       log.info(

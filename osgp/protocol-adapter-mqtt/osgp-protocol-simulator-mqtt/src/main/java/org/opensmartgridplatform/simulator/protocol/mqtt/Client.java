@@ -51,6 +51,7 @@ public abstract class Client extends Thread {
               .serverHost(this.host)
               .serverPort(this.port)
               .sslConfig(this.mqttClientSslConfig)
+              .automaticReconnectWithDefaultConfig()
               .buildBlocking();
 
       final Mqtt3ConnAck ack = this.mqtt3BlockingClient.connect();

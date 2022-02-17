@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.config;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +28,11 @@ import org.springframework.core.io.Resource;
 @Configuration
 public class SecurityConfig {
 
-  @Value("${soap.public.key.resource:#{null}}")
-  private Optional<Resource> soapPublicKeyResource;
+  @Value("${encryption.rsa.public.key.secret.management.client}")
+  private Resource rsaPublicKeySecretManagementClient;
 
-  @Value("${soap.private.key.resource:#{null}}")
-  private Optional<Resource> soapPrivateKeyResource;
+  @Value("${encryption.rsa.private.key.secret.management}")
+  private Resource rsaPrivateKeySecretManagement;
 
   @Value("${jre.encryption.key.resource}")
   private Resource jreEncryptionKeyResource;
@@ -42,7 +43,7 @@ public class SecurityConfig {
   @Value("${encryption.provider.type}")
   private String encryptionProviderTypeName;
 
-  @Bean("DefaultEncryptionDelegate")
+  @Bean("DefaultEncryptionDelegateForKeyStorage")
   public DefaultEncryptionDelegate getEncryptionDelegate() {
     return new DefaultEncryptionDelegate(this.getDefaultEncryptionProviders());
   }
@@ -62,24 +63,34 @@ public class SecurityConfig {
       }
 
       return encryptionProviderList;
-    } catch (IOException | EncrypterException e) {
+    } catch (final IOException | EncrypterException e) {
       throw new IllegalStateException("Error creating default encryption providers", e);
     }
   }
 
-  @Bean
-  public RsaEncrypter getSoapEncrypter() {
+  // RsaEncrypter for encrypting secrets to be sent to the client of Secret Management.
+  @Bean(name = "encrypterForSecretManagementClient")
+  public RsaEncrypter encrypterForSecretManagementClient() {
     try {
-      final RsaEncrypter rsaEncryptionProvider = new RsaEncrypter();
-      if (this.soapPrivateKeyResource.isPresent()) {
-        rsaEncryptionProvider.setPrivateKeyStore(this.soapPrivateKeyResource.get().getFile());
-      }
-      if (this.soapPublicKeyResource.isPresent()) {
-        rsaEncryptionProvider.setPublicKeyStore(this.soapPublicKeyResource.get().getFile());
-      }
-      return rsaEncryptionProvider;
-    } catch (IOException | EncrypterException e) {
-      throw new IllegalStateException("Error creating default encryption providers", e);
+      final File publicKeySecretManagementFile = this.rsaPublicKeySecretManagementClient.getFile();
+      final RsaEncrypter rsaEncrypter = new RsaEncrypter();
+      rsaEncrypter.setPublicKeyStore(publicKeySecretManagementFile);
+      return rsaEncrypter;
+    } catch (final IOException e) {
+      throw new IllegalStateException("Could not initialize encrypterForSecretManagementClient", e);
+    }
+  }
+
+  // RsaEncrypter for decrypting secrets received by Secret Management.
+  @Bean(name = "decrypterForSecretManagement")
+  public RsaEncrypter decrypterForSecretManagement() {
+    try {
+      final File privateKeySecretManagementFile = this.rsaPrivateKeySecretManagement.getFile();
+      final RsaEncrypter rsaEncrypter = new RsaEncrypter();
+      rsaEncrypter.setPrivateKeyStore(privateKeySecretManagementFile);
+      return rsaEncrypter;
+    } catch (final IOException e) {
+      throw new IllegalStateException("Could not initialize decrypterForSecretManagement", e);
     }
   }
 

@@ -294,15 +294,11 @@ public class DaylightSavingTimeTransition {
         return false;
       }
       final int hours;
-      if (time.indexOf(':') == -1) {
-        try {
+      try {
+        if (time.indexOf(':') == -1) {
           hours = Integer.parseInt(time);
-        } catch (final NumberFormatException nfe) {
-          return false;
-        }
-      } else {
-        final String[] timeParts = time.split(":");
-        try {
+        } else {
+          final String[] timeParts = time.split(":");
           if (timeParts.length > 3) {
             return false;
           }
@@ -313,9 +309,9 @@ public class DaylightSavingTimeTransition {
               return false;
             }
           }
-        } catch (final NumberFormatException nfe) {
-          return false;
         }
+      } catch (final NumberFormatException nfe) {
+        return false;
       }
       return hours >= -167 && hours <= 167;
     }

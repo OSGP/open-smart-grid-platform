@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-dlms</artifactId>
-    <version>5.18.6</version>
+    <version>5.21.0</version>
     <relativePath>../parent-pa-dlms/pom.xml</relativePath>
   </parent>
 

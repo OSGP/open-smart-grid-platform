@@ -16,6 +16,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationType;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationMessageDataContainerDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -158,6 +159,7 @@ public class DeviceManagementService extends AbstractService {
             .withCorrelationUid(correlationUid)
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(deviceIdentification)
+            .withMessageType(MessageType.SET_DEVICE_LIFECYCLE_STATUS.name())
             .withResult(result)
             .build();
     this.webServiceResponseMessageSender.send(responseMessage);
@@ -187,6 +189,7 @@ public class DeviceManagementService extends AbstractService {
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(deviceIdentification)
             .withResult(result)
+            .withMessageType(MessageType.UPDATE_DEVICE_CDMA_SETTINGS.name())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage);
   }

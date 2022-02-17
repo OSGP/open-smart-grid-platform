@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static java.util.stream.Collectors.toList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -40,6 +41,7 @@ import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret;
 import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -50,12 +52,18 @@ import org.springframework.stereotype.Service;
 public class SecretManagementService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementService.class);
-  private final RsaEncrypter soapRsaEncrypter;
+  private final RsaEncrypter encrypterForSecretManagement;
+  private final RsaEncrypter decrypterForProtocolAdapterDlms;
   private final SecretManagementClient secretManagementClient;
 
   public SecretManagementService(
-      final RsaEncrypter soapRsaEncrypter, final SecretManagementClient secretManagementClient) {
-    this.soapRsaEncrypter = soapRsaEncrypter;
+      @Qualifier(value = "encrypterForSecretManagement")
+          final RsaEncrypter encrypterForSecretManagement,
+      @Qualifier(value = "decrypterForProtocolAdapterDlms")
+          final RsaEncrypter decrypterForProtocolAdapterDlms,
+      final SecretManagementClient secretManagementClient) {
+    this.encrypterForSecretManagement = encrypterForSecretManagement;
+    this.decrypterForProtocolAdapterDlms = decrypterForProtocolAdapterDlms;
     this.secretManagementClient = secretManagementClient;
   }
 
@@ -109,31 +117,62 @@ public class SecretManagementService {
       final MessageMetadata messageMetadata,
       final String deviceIdentification,
       final SecurityKeyType keyType) {
+
     if (LOGGER.isInfoEnabled()) {
       LOGGER.info("Retrieving new {} for device {}", keyType.name(), deviceIdentification);
     }
-    return this.getNewKeys(messageMetadata, deviceIdentification, Arrays.asList(keyType))
-        .get(keyType);
+
+    final GetNewSecretsRequest getNewSecretsRequest =
+        this.createGetNewSecretsRequest(deviceIdentification, Arrays.asList(keyType));
+    final GetNewSecretsResponse getNewSecretsResponse =
+        this.secretManagementClient.getNewSecretsRequest(messageMetadata, getNewSecretsRequest);
+    final List<TypedSecret> typedSecrets = getNewSecretsResponse.getTypedSecrets().getTypedSecret();
+    if (typedSecrets.isEmpty()) {
+      return null;
+    }
+    return this.convertSoapSecretsToSecretMapByType(typedSecrets).get(keyType);
   }
 
   /**
-   * Retrieves the new (not yet activated) keys of requested types for a specified device
+   * Requests the New key for a specific device identification. Depending on the New key type
+   * (Authentication or Encryption) that will be retrieved, the other Active key type
+   * (Authentication or Encryption) will be requested. Once both key types are retrieved, this new
+   * keypair can be returned for connection with this device.
    *
    * @param messageMetadata the metadata of the request message
    * @param deviceIdentification the device identification string of the device
    * @param keyTypes the requested key types
    * @return the requested keys in a map by key type, with value NULL if not present
    */
-  public Map<SecurityKeyType, byte[]> getNewKeys(
+  public Map<SecurityKeyType, byte[]> getNewOrActiveKeyPerSecretType(
       final MessageMetadata messageMetadata,
       final String deviceIdentification,
       final List<SecurityKeyType> keyTypes) {
-    final GetNewSecretsRequest request =
+    final List<TypedSecret> newKeyPairForConnection = new ArrayList<>();
+
+    final GetNewSecretsRequest getNewSecretsRequest =
         this.createGetNewSecretsRequest(deviceIdentification, keyTypes);
-    final GetNewSecretsResponse response =
-        this.secretManagementClient.getNewSecretsRequest(messageMetadata, request);
-    this.validateGetNewResponse(keyTypes, response);
-    return this.convertSoapSecretsToSecretMapByType(response.getTypedSecrets().getTypedSecret());
+    final GetNewSecretsResponse getNewSecretsResponse =
+        this.secretManagementClient.getNewSecretsRequest(messageMetadata, getNewSecretsRequest);
+    this.validateGetNewResponse(keyTypes, getNewSecretsResponse);
+
+    for (final TypedSecret secretTypeNewKey :
+        getNewSecretsResponse.getTypedSecrets().getTypedSecret()) {
+      if (secretTypeNewKey.getSecret() != null && secretTypeNewKey.getSecret().length() > 0) {
+        newKeyPairForConnection.add(secretTypeNewKey);
+      } else {
+        final SecurityKeyType keyTypeActiveKey =
+            SecurityKeyType.fromSecretType(secretTypeNewKey.getType());
+        final GetSecretsRequest getSecretsRequest =
+            this.createGetSecretsRequest(deviceIdentification, Arrays.asList(keyTypeActiveKey));
+        final GetSecretsResponse getSecretsResponse =
+            this.secretManagementClient.getSecretsRequest(messageMetadata, getSecretsRequest);
+        this.validateGetResponse(Arrays.asList(keyTypeActiveKey), getSecretsResponse);
+        newKeyPairForConnection.add(getSecretsResponse.getTypedSecrets().getTypedSecret().get(0));
+      }
+    }
+
+    return this.convertSoapSecretsToSecretMapByType(newKeyPairForConnection);
   }
 
   private void validateGetResponse(
@@ -293,16 +332,19 @@ public class SecretManagementService {
     this.secretManagementClient.activateSecretsRequest(messageMetadata, request);
   }
 
-  public boolean hasNewSecretOfType(
-      final MessageMetadata messageMetadata,
-      final String deviceIdentification,
-      final SecurityKeyType keyType) {
-    final HasNewSecretRequest request = new HasNewSecretRequest();
-    request.setDeviceId(deviceIdentification);
-    request.setSecretType(keyType.toSecretType());
-    final HasNewSecretResponse response =
-        this.secretManagementClient.hasNewSecretRequest(messageMetadata, request);
-    return response.isHasNewSecret();
+  public boolean hasNewSecret(
+      final MessageMetadata messageMetadata, final String deviceIdentification) {
+    final HasNewSecretRequest requestAKey = new HasNewSecretRequest();
+    final HasNewSecretRequest requestEKey = new HasNewSecretRequest();
+    requestAKey.setDeviceId(deviceIdentification);
+    requestAKey.setSecretType(SecretType.E_METER_AUTHENTICATION_KEY);
+    final HasNewSecretResponse responseAKey =
+        this.secretManagementClient.hasNewSecretRequest(messageMetadata, requestAKey);
+    requestEKey.setDeviceId(deviceIdentification);
+    requestEKey.setSecretType(SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
+    final HasNewSecretResponse responseEKey =
+        this.secretManagementClient.hasNewSecretRequest(messageMetadata, requestEKey);
+    return responseAKey.isHasNewSecret() || responseEKey.isHasNewSecret();
   }
 
   public byte[] generate128BitsKeyAndStoreAsNewKey(
@@ -397,7 +439,7 @@ public class SecretManagementService {
     }
     try {
       final byte[] encryptedDecodedSoapSecret = Hex.decodeHex(typedSecret.getSecret());
-      return this.soapRsaEncrypter.decrypt(encryptedDecodedSoapSecret);
+      return this.decrypterForProtocolAdapterDlms.decrypt(encryptedDecodedSoapSecret);
     } catch (final Exception e) {
       throw new IllegalStateException("Error decoding/decrypting SOAP key", e);
     }
@@ -411,7 +453,7 @@ public class SecretManagementService {
       return null;
     }
     try {
-      final byte[] encrypted = this.soapRsaEncrypter.encrypt(secret);
+      final byte[] encrypted = this.encrypterForSecretManagement.encrypt(secret);
       return Hex.encodeHexString(encrypted);
     } catch (final Exception e) {
       throw new IllegalStateException("Error encoding/encrypting SOAP key", e);

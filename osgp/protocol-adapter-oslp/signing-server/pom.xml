@@ -15,12 +15,12 @@
   <name>signing-server</name>
   <packaging>war</packaging>
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
-  <description>Signing Server for RSA or ECDSA.</description>
+  <description>Signing Server for ECDSA.</description>
 
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-oslp</artifactId>
-    <version>5.18.6</version>
+    <version>5.21.0</version>
     <relativePath>../parent-pa-oslp/pom.xml</relativePath>
   </parent>
 

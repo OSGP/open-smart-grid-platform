@@ -17,9 +17,7 @@ import org.opensmartgridplatform.adapter.ws.schema.core.adhocmanagement.SetReboo
 import org.opensmartgridplatform.adapter.ws.schema.core.adhocmanagement.SetRebootResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
@@ -32,12 +30,11 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint(value = "coreAdHocManagementEndpoint")
-public class AdHocManagementEndpoint {
+public class AdHocManagementEndpoint extends CoreEndpoint {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementEndpoint.class);
   private static final String NAMESPACE =
       "http://www.opensmartgridplatform.org/schemas/adhocmanagement/2014/10";
-  private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
   private final AdHocManagementService adHocManagementService;
 
@@ -100,29 +97,15 @@ public class AdHocManagementEndpoint {
     final SetRebootResponse response = new SetRebootResponse();
 
     try {
-      final ResponseMessage message =
-          this.adHocManagementService.dequeueSetRebootResponse(
-              request.getAsyncRequest().getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "rebooting");
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);
     }
 
     return response;
-  }
-
-  private void handleException(final Exception e) throws OsgpException {
-    // Rethrow exception if it already is a functional or technical
-    // exception,
-    // otherwise throw new technical exception.
-    if (e instanceof OsgpException) {
-      LOGGER.error("Exception occurred: ", e);
-      throw (OsgpException) e;
-    } else {
-      LOGGER.error("Exception occurred: ", e);
-      throw new TechnicalException(COMPONENT_WS_CORE, e);
-    }
   }
 }

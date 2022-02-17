@@ -14,13 +14,13 @@
 
   <artifactId>protocol-adapter-iec61850</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>5.18.6</version>
+  <version>5.21.0</version>
   <packaging>pom</packaging>
   <name>protocol-adapter-iec61850</name>
   <properties>
     <jxr.version>3.0.0</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
-    <maven.site.plugin>3.7.1</maven.site.plugin>
+    <maven.site.plugin>3.9.0</maven.site.plugin>
   </properties>
 
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->

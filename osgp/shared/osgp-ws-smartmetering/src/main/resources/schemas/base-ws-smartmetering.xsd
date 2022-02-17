@@ -594,7 +594,9 @@
       <xsd:enumeration value="CLOCK_INVALID"/>
       <xsd:enumeration value="DATA_NOT_VALID"/>
       <xsd:enumeration value="DAYLIGHT_SAVING"/>
+      <xsd:enumeration value="NOT_USED"/>
       <xsd:enumeration value="CLOCK_ADJUSTED"/>
+      <xsd:enumeration value="RECOVERED_VALUE"/>
       <xsd:enumeration value="POWER_DOWN"/>
     </xsd:restriction>
   </xsd:simpleType>

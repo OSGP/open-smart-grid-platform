@@ -72,31 +72,30 @@ public class DomainHelperService {
   }
 
   public DlmsDevice findDlmsDevice(final MessageMetadata messageMetadata) throws OsgpException {
-    return this.findDlmsDevice(
-        messageMetadata.getDeviceIdentification(), messageMetadata.getIpAddress());
+    return this.findDlmsDevice(messageMetadata.getDeviceIdentification());
   }
 
-  public DlmsDevice findDlmsDevice(final String deviceIdentification, final String ipAddress)
-      throws OsgpException {
-    final DlmsDevice dlmsDevice =
-        this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
-    if (dlmsDevice == null) {
-      final String errorMessage = String.format("Unable to find device: %s", deviceIdentification);
-      LOGGER.error(errorMessage);
-
-      throw new FunctionalException(
-          FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.PROTOCOL_DLMS);
-    }
+  /**
+   * Sets the transient ipAddress field of the given DLMS device to the IP address from the message
+   * metadata if the device has a static IP address, or to an IP address obtained from the session
+   * provider otherwise.
+   *
+   * @param dlmsDevice the device on which the IP address will be set
+   * @param messageMetadata the message metadata containing the IP address to be used for devices
+   *     with a static IP address
+   * @throws OsgpException if such exception occurs getting the IP address from the session provider
+   */
+  public void setIpAddressFromMessageMetadataOrSessionProvider(
+      final DlmsDevice dlmsDevice, final MessageMetadata messageMetadata) throws OsgpException {
 
     /* Ip Address is a transient attribute for DlmsDevice, so save is not required */
     if (dlmsDevice.isIpAddressIsStatic()) {
-      dlmsDevice.setIpAddress(ipAddress);
+      dlmsDevice.setIpAddress(messageMetadata.getIpAddress());
     } else {
       final String ipAddressFromSessionProvider =
           this.getDeviceIpAddressFromSessionProvider(dlmsDevice);
       dlmsDevice.setIpAddress(ipAddressFromSessionProvider);
     }
-    return dlmsDevice;
   }
 
   public String getDeviceIpAddressFromSessionProvider(final DlmsDevice dlmsDevice)
@@ -147,6 +146,7 @@ public class DomainHelperService {
         }
       }
     } catch (final InterruptedException e) {
+      Thread.currentThread().interrupt();
       throw new ProtocolAdapterException(
           "Interrupted while sleeping before calling the sessionProvider.getIpAddress", e);
     } catch (final SessionProviderException e) {
@@ -156,7 +156,7 @@ public class DomainHelperService {
   }
 
   public DlmsDevice findMbusDevice(
-      final Long mbusIdentificationNumber, final String mbusManufacturerIdentification)
+      final String mbusIdentificationNumber, final String mbusManufacturerIdentification)
       throws FunctionalException {
     final DlmsDevice dlmsDevice =
         this.dlmsDeviceRepository.findByMbusIdentificationNumberAndMbusManufacturerIdentification(

@@ -37,7 +37,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
@@ -50,13 +49,12 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
-public class ConfigurationManagementEndpoint {
+public class ConfigurationManagementEndpoint extends CoreEndpoint {
 
   private static final String NAMESPACE =
       "http://www.opensmartgridplatform.org/schemas/configurationmanagement/2014/10";
   private static final Logger LOGGER =
       LoggerFactory.getLogger(ConfigurationManagementEndpoint.class);
-  private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
   private final ConfigurationManagementService configurationManagementService;
   private final ConfigurationManagementMapper configurationManagementMapper;
@@ -142,11 +140,10 @@ public class ConfigurationManagementEndpoint {
     final SetConfigurationResponse response = new SetConfigurationResponse();
 
     try {
-      final ResponseMessage message =
-          this.configurationManagementService.dequeueSetConfigurationResponse(
-              request.getAsyncRequest().getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "setting configuration");
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);
@@ -223,14 +220,12 @@ public class ConfigurationManagementEndpoint {
     final GetConfigurationResponse response = new GetConfigurationResponse();
 
     try {
-      final ResponseMessage message =
-          this.configurationManagementService.dequeueGetConfigurationResponse(
-              request.getAsyncRequest().getCorrelationUid());
-
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-        if (message.getDataObject() != null) {
-          final Configuration configuration = (Configuration) message.getDataObject();
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "getting configuration");
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
+        if (responseMessage.getDataObject() != null) {
+          final Configuration configuration = (Configuration) responseMessage.getDataObject();
           response.setConfiguration(
               this.configurationManagementMapper.map(
                   configuration,
@@ -302,12 +297,10 @@ public class ConfigurationManagementEndpoint {
     final SwitchConfigurationResponse response = new SwitchConfigurationResponse();
 
     try {
-      final ResponseMessage message =
-          this.configurationManagementService.dequeueSwitchConfigurationResponse(
-              request.getAsyncRequest().getCorrelationUid());
-
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "switching configuration");
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       } else {
         LOGGER.debug("Get Configuration data is null");
       }
@@ -316,18 +309,5 @@ public class ConfigurationManagementEndpoint {
     }
 
     return response;
-  }
-
-  private void handleException(final Exception e) throws OsgpException {
-    // Rethrow exception if it already is a functional or technical
-    // exception,
-    // otherwise throw new technical exception.
-    if (e instanceof OsgpException) {
-      LOGGER.error("Exception occurred: ", e);
-      throw (OsgpException) e;
-    } else {
-      LOGGER.error("Exception occurred: ", e);
-      throw new TechnicalException(COMPONENT_WS_CORE, e);
-    }
   }
 }

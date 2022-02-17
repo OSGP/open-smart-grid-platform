@@ -130,3 +130,25 @@ INSERT INTO public.device_authorization(
 ```
 
 Note: function_group 0 = OWNER
+
+## Managing the Broker at Runtime
+### Start/stop
+To start/stop the broker (used e.g. in reconnection-scenario), `GET` these endpoints:
+
+```shell
+curl localhost:8080/osgp-protocol-simulator-mqtt/broker/start
+curl localhost:8080/osgp-protocol-simulator-mqtt/broker/stop
+```
+
+### Client monitoring
+You can get a list of connected clients:
+
+```shell
+curl localhost:8080/osgp-protocol-simulator-mqtt/broker/clients
+```
+
+Using [watch](https://man7.org/linux/man-pages/man1/watch.1.html) and [jq](https://stedolan.github.io/jq/tutorial/) you can monitor the clients:
+
+```shell
+watch -n1 "curl -s localhost:8080/osgp-protocol-simulator-mqtt/broker/clients|jq"
+```

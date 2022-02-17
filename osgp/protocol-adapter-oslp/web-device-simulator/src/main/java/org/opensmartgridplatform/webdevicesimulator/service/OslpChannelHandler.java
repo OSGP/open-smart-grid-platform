@@ -44,6 +44,7 @@ import org.opensmartgridplatform.oslp.Oslp.GetFirmwareVersionResponse;
 import org.opensmartgridplatform.oslp.Oslp.GetStatusResponse;
 import org.opensmartgridplatform.oslp.Oslp.IndexAddressMap;
 import org.opensmartgridplatform.oslp.Oslp.LightValue;
+import org.opensmartgridplatform.oslp.Oslp.LightValue.Builder;
 import org.opensmartgridplatform.oslp.Oslp.LongTermIntervalType;
 import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.opensmartgridplatform.oslp.Oslp.MeterType;
@@ -308,82 +309,91 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
 
     if (message.isValid()) {
       if (this.isOslpResponse(message)) {
-        LOGGER.info("Received OSLP Response (before callback): {}", message.getPayloadMessage());
-
-        // Lookup correct callback and call handle method
-        final String channelId = ctx.channel().id().asLongText();
-        final Callback callback = this.callbacks.remove(channelId);
-        if (callback == null) {
-          LOGGER.warn(
-              "Callback for channel {} does not longer exist, dropping response.", channelId);
-          return;
-        }
-
-        callback.handle(message);
+        this.channelRead0OslpReponse(ctx, message);
       } else {
-        final String oslpRequest = message.getPayloadMessage().toString().split(" ")[0];
-        LOGGER.info("Received OSLP Request: {}", oslpRequest);
-
-        // Sequence number logic
-        byte[] sequenceNumber = message.getSequenceNumber();
-        Integer number = -1;
-        if (!(message.getPayloadMessage().hasRegisterDeviceRequest()
-            || message.getPayloadMessage().hasConfirmRegisterDeviceRequest())) {
-          // Convert byte array to integer
-          number = this.convertByteArrayToInteger(sequenceNumber);
-
-          // Wrap the number back to 0 if the limit is reached or
-          // increment
-          if (number >= this.sequenceNumberMaximum) {
-            LOGGER.info(
-                "wrapping sequence number back to 0, current sequence number: {} next sequence number: 0",
-                number);
-            number = 0;
-          } else {
-            LOGGER.info(
-                "incrementing sequence number, current sequence number: {} next sequence number: {}",
-                number,
-                number + 1);
-            number += 1;
-          }
-
-          // Convert integer back to byte array
-          sequenceNumber = this.convertIntegerToByteArray(number);
-        }
-
-        final byte[] deviceId = message.getDeviceId();
-
-        // Build the OslpEnvelope with the incremented sequence number.
-        final OslpEnvelope.Builder responseBuilder =
-            new OslpEnvelope.Builder()
-                .withSignature(this.oslpSignature)
-                .withProvider(this.oslpSignatureProvider)
-                .withPrimaryKey(this.privateKey)
-                .withDeviceId(deviceId)
-                .withSequenceNumber(sequenceNumber);
-
-        // Pass the incremented sequence number to the handleRequest()
-        // function for checking.
-        responseBuilder.withPayloadMessage(this.handleRequest(message, number));
-        final OslpEnvelope response = responseBuilder.build();
-
-        this.oslpLogItemRepository.save(
-            new OslpLogItem(
-                response.getDeviceId(),
-                this.getDeviceIdentificationFromMessage(response.getPayloadMessage()),
-                false,
-                response.getPayloadMessage()));
-
-        LOGGER.info(
-            "sending OSLP response with sequence number: {}",
-            this.convertByteArrayToInteger(response.getSequenceNumber()));
-        ctx.channel().writeAndFlush(response);
-        final String oslpResponse = response.getPayloadMessage().toString().split(" ")[0];
-        LOGGER.info("Sent OSLP Response: {}", oslpResponse);
+        this.channelRead0OslpRequest(ctx, message);
       }
     } else {
       LOGGER.warn("Received message wasn't properly secured.");
     }
+  }
+
+  private void channelRead0OslpReponse(
+      final ChannelHandlerContext ctx, final OslpEnvelope message) {
+    LOGGER.info("Received OSLP Response (before callback): {}", message.getPayloadMessage());
+
+    // Lookup correct callback and call handle method
+    final String channelId = ctx.channel().id().asLongText();
+    final Callback callback = this.callbacks.remove(channelId);
+    if (callback == null) {
+      LOGGER.warn("Callback for channel {} does not longer exist, dropping response.", channelId);
+      return;
+    }
+
+    callback.handle(message);
+  }
+
+  private void channelRead0OslpRequest(final ChannelHandlerContext ctx, final OslpEnvelope message)
+      throws DeviceSimulatorException {
+    final String oslpRequest = message.getPayloadMessage().toString().split(" ")[0];
+    LOGGER.info("Received OSLP Request: {}", oslpRequest);
+
+    // Sequence number logic
+    byte[] sequenceNumber = message.getSequenceNumber();
+    int number = -1;
+    if (!(message.getPayloadMessage().hasRegisterDeviceRequest()
+        || message.getPayloadMessage().hasConfirmRegisterDeviceRequest())) {
+      // Convert byte array to integer
+      number = this.convertByteArrayToInteger(sequenceNumber);
+
+      // Wrap the number back to 0 if the limit is reached or
+      // increment
+      if (number >= this.sequenceNumberMaximum) {
+        LOGGER.info(
+            "wrapping sequence number back to 0, current sequence number: {} next sequence number: 0",
+            number);
+        number = 0;
+      } else {
+        LOGGER.info(
+            "incrementing sequence number, current sequence number: {} next sequence number: {}",
+            number,
+            number + 1);
+        number += 1;
+      }
+
+      // Convert integer back to byte array
+      sequenceNumber = this.convertIntegerToByteArray(number);
+    }
+
+    final byte[] deviceId = message.getDeviceId();
+
+    // Build the OslpEnvelope with the incremented sequence number.
+    final OslpEnvelope.Builder responseBuilder =
+        new OslpEnvelope.Builder()
+            .withSignature(this.oslpSignature)
+            .withProvider(this.oslpSignatureProvider)
+            .withPrimaryKey(this.privateKey)
+            .withDeviceId(deviceId)
+            .withSequenceNumber(sequenceNumber);
+
+    // Pass the incremented sequence number to the handleRequest()
+    // function for checking.
+    responseBuilder.withPayloadMessage(this.handleRequest(message, number));
+    final OslpEnvelope response = responseBuilder.build();
+
+    this.oslpLogItemRepository.save(
+        new OslpLogItem(
+            response.getDeviceId(),
+            this.getDeviceIdentificationFromMessage(response.getPayloadMessage()),
+            false,
+            response.getPayloadMessage()));
+
+    LOGGER.info(
+        "sending OSLP response with sequence number: {}",
+        this.convertByteArrayToInteger(response.getSequenceNumber()));
+    ctx.channel().writeAndFlush(response);
+    final String oslpResponse = response.getPayloadMessage().toString().split(" ")[0];
+    LOGGER.info("Sent OSLP Response: {}", oslpResponse);
   }
 
   @Override
@@ -427,7 +437,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     this.lock.lock();
 
     // Open connection and send message
-    ChannelFuture channelFuture = null;
+    ChannelFuture channelFuture;
     try {
       channelFuture = this.bootstrap.connect(address);
       channelFuture.awaitUninterruptibly(this.connectionTimeout, TimeUnit.MILLISECONDS);
@@ -460,7 +470,6 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
 
       return response;
     } catch (final IOException | DeviceSimulatorException e) {
-      LOGGER.error("send exception", e);
       // Remove callback when exception has occurred
       this.callbacks.remove(channelFuture.channel().id().asLongText());
       throw e;
@@ -490,7 +499,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     final Oslp.Message request = message.getPayloadMessage();
 
     // Create response message
-    Oslp.Message response = null;
+    final Oslp.Message response;
     final String deviceIdString = Base64.encodeBase64String(message.getDeviceId());
 
     LOGGER.info("request received, sequenceNumber: {}", sequenceNumber);
@@ -507,7 +516,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     }
 
     // Calculate expected sequence number
-    final Integer expectedSequenceNumber = device.doGetNextSequence();
+    final int expectedSequenceNumber = device.doGetNextSequence();
 
     // Check sequence number
     if (Math.abs(expectedSequenceNumber - sequenceNumber) > this.sequenceNumberWindow) {
@@ -554,11 +563,11 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
   }
 
   /**
-   * The cyclomatic complexity of this method is larger than 10. Instead of creating a number of
+   * The cognitive complexity of this method is larger than 15. Instead of creating a number of
    * classes to implement the test and handling of each request, suppress the SonarQube check for
    * now.
    */
-  @SuppressWarnings("squid:MethodCyclomaticComplexity")
+  @SuppressWarnings("squid:S3776")
   private Oslp.Message checkForRequest(final Oslp.Message request, final Device device) {
 
     Oslp.Message response = null;
@@ -810,42 +819,13 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
 
     final List<LightValue> outputValues = new ArrayList<>();
     for (final DeviceOutputSetting dos : device.getOutputSettings()) {
-      final LightValue.Builder lightValue =
-          LightValue.newBuilder().setIndex(OslpUtils.integerToByteString(dos.getInternalId()));
-
-      if (dos.getOutputType().equals(OutputType.LIGHT)) {
-        lightValue.setOn(device.isLightOn());
-
-        if (device.getDimValue() != null) {
-          lightValue.setDimValue(OslpUtils.integerToByteString(device.getDimValue()));
-        }
-
-        // Real device specifies dimvalue 0 when off.
-        if (!device.isLightOn()) {
-          lightValue.setDimValue(OslpUtils.integerToByteString(0));
-        }
-
-      } else if (dos.getOutputType().equals(OutputType.TARIFF)) {
-        lightValue.setOn(device.isTariffOn());
-      }
+      final Builder lightValue = this.getLightValueForDeviceOutputSetting(device, dos);
       outputValues.add(lightValue.build());
     }
 
     // Fallback in case output settings are not yet defined.
     if (outputValues.isEmpty()) {
-      final LightValue.Builder lightValue =
-          LightValue.newBuilder()
-              .setIndex(OslpUtils.integerToByteString(0))
-              .setOn(device.isLightOn());
-
-      if (device.getDimValue() != null) {
-        lightValue.setDimValue(OslpUtils.integerToByteString(device.getDimValue()));
-      }
-
-      // Real device specifies dimvalue 0 when off.
-      if (!device.isLightOn()) {
-        lightValue.setDimValue(OslpUtils.integerToByteString(0));
-      }
+      final Builder lightValue = this.getDefaultLightValue(device);
 
       outputValues.add(lightValue.build());
     }
@@ -880,6 +860,46 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     }
 
     return Oslp.Message.newBuilder().setGetStatusResponse(builder.build()).build();
+  }
+
+  private Builder getLightValueForDeviceOutputSetting(
+      final Device device, final DeviceOutputSetting dos) {
+    final Builder lightValue =
+        LightValue.newBuilder().setIndex(OslpUtils.integerToByteString(dos.getInternalId()));
+
+    if (dos.getOutputType().equals(OutputType.LIGHT)) {
+      lightValue.setOn(device.isLightOn());
+
+      if (device.getDimValue() != null) {
+        lightValue.setDimValue(OslpUtils.integerToByteString(device.getDimValue()));
+      }
+
+      // Real device specifies dimvalue 0 when off.
+      if (!device.isLightOn()) {
+        lightValue.setDimValue(OslpUtils.integerToByteString(0));
+      }
+
+    } else if (dos.getOutputType().equals(OutputType.TARIFF)) {
+      lightValue.setOn(device.isTariffOn());
+    }
+    return lightValue;
+  }
+
+  private Builder getDefaultLightValue(final Device device) {
+    final Builder lightValue =
+        LightValue.newBuilder()
+            .setIndex(OslpUtils.integerToByteString(0))
+            .setOn(device.isLightOn());
+
+    if (device.getDimValue() != null) {
+      lightValue.setDimValue(OslpUtils.integerToByteString(device.getDimValue()));
+    }
+
+    // Real device specifies dimvalue 0 when off.
+    if (!device.isLightOn()) {
+      lightValue.setDimValue(OslpUtils.integerToByteString(0));
+    }
+    return lightValue;
   }
 
   private void handleSetLightRequest(final Device device, final SetLightRequest request) {

@@ -13,7 +13,7 @@ import io.cucumber.java.en.When;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.cucumber.core.RetryableAssert;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.ResponseUrlDataSteps;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.WsSmartMeteringResponseUrlDataSteps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -21,7 +21,7 @@ public class ResponseUrlDataCleanupJobSteps {
 
   private static final TimeUnit TIME_UNIT_RESPONSE_CLEANUP_DELAY = TimeUnit.MILLISECONDS;
 
-  @Autowired private ResponseUrlDataSteps responseUrlDataSteps;
+  @Autowired private WsSmartMeteringResponseUrlDataSteps responseUrlDataSteps;
 
   @Value("${smartmetering.response.cleanup.wait.delay:1000}")
   private long delay;

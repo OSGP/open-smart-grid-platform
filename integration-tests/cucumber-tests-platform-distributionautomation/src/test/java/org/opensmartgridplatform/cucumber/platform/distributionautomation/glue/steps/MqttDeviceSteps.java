@@ -8,12 +8,14 @@
  */
 package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps;
 
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
+
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import io.cucumber.java.en.When;
 import java.io.IOException;
 import java.util.Map;
-import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
-import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.cucumber.core.ReadSettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationDefaults;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys;
@@ -23,31 +25,41 @@ import org.opensmartgridplatform.simulator.protocol.mqtt.spec.Message;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 public class MqttDeviceSteps {
 
-  @Autowired private MqttDeviceRepository mqttDeviceRepository;
-
   private static final Logger LOGGER = LoggerFactory.getLogger(MqttDeviceSteps.class);
+
+  private static String[] getTopics(final Map<String, String> settings) {
+    final String topic = getString(settings, PlatformDistributionAutomationKeys.MQTT_TOPIC);
+    return StringUtils.isEmpty(topic) ? new String[] {} : StringUtils.split(topic, ',');
+  }
 
   @When("MQTT device {string} sends a measurement report")
   public void theDeviceSendsAMeasurementReport(
       final String deviceIdentification, final Map<String, String> parameters) throws IOException {
 
-    final MqttDevice device =
-        this.mqttDeviceRepository.findByDeviceIdentification(deviceIdentification);
-    final String host = device.getHost();
-    final int port = device.getPort();
-    final String topic = device.getTopics();
+    final String host =
+        getString(
+            parameters,
+            PlatformDistributionAutomationKeys.MQTT_HOST,
+            PlatformDistributionAutomationDefaults.MQTT_HOST);
+    final int port =
+        getInteger(
+            parameters,
+            PlatformDistributionAutomationKeys.MQTT_PORT,
+            PlatformDistributionAutomationDefaults.MQTT_PORT);
+    final String[] topics = getTopics(parameters);
 
     final String payload = parameters.get(PlatformDistributionAutomationKeys.PAYLOAD);
     LOGGER.info("Payload: {}", payload);
 
-    this.startPublishingClient(host, port, topic, payload, parameters);
+    for (final String topic : topics) {
+      this.startPublishingClient(host, port, topic, payload, parameters);
+    }
   }
 
   private void startPublishingClient(

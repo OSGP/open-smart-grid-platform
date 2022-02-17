@@ -37,6 +37,18 @@ public class DeviceCommunicationInformationService {
 
     final String deviceIdentification = message.getDeviceIdentification();
     Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+
+    if (device == null) {
+      LOGGER.info(
+          "No device {} found to update connection information for with {} {} response with correlation UID {}."
+              + " This may be appropriate as the device could be expected to be unknown to GXF.",
+          deviceIdentification,
+          message.getMessageType(),
+          message.getResult(),
+          message.getCorrelationUid());
+      return;
+    }
+
     final ResponseMessageResultType result = message.getResult();
 
     if (ResponseMessageResultType.OK == result) {

@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>super-osgp</artifactId>
-    <version>5.18.6</version>
+    <version>5.21.0</version>
     <relativePath>../../../super/pom.xml</relativePath>
   </parent>
 

@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
@@ -19,6 +18,7 @@ import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.SecurityKey;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 
 public class DeviceFactory {
@@ -75,14 +75,15 @@ public class DeviceFactory {
 
     device.setMasterKey(
         RequestFactoryHelper.hexDecodeDeviceKey(
-            settings.get(PlatformKeys.KEY_DEVICE_MASTERKEY), PlatformKeys.KEY_DEVICE_MASTERKEY));
+            getHexDecodeDeviceKey(settings, PlatformKeys.KEY_DEVICE_MASTERKEY),
+            PlatformKeys.KEY_DEVICE_MASTERKEY));
     device.setAuthenticationKey(
         RequestFactoryHelper.hexDecodeDeviceKey(
-            settings.get(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY),
+            getHexDecodeDeviceKey(settings, PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY),
             PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY));
     device.setGlobalEncryptionUnicastKey(
         RequestFactoryHelper.hexDecodeDeviceKey(
-            settings.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY),
+            getHexDecodeDeviceKey(settings, PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY),
             PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
 
     device.setDeliveryDate(
@@ -90,7 +91,7 @@ public class DeviceFactory {
             settings, PlatformKeys.KEY_DEVICE_DELIVERY_DATE));
 
     device.setMbusIdentificationNumber(
-        getLong(settings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER, null));
+        getString(settings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
     device.setMbusManufacturerIdentification(
         getString(settings, PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION));
     device.setMbusVersion(getShort(settings, PlatformSmartmeteringKeys.MBUS_VERSION, null));
@@ -98,9 +99,20 @@ public class DeviceFactory {
         getShort(settings, PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE_IDENTIFICATION, null));
     device.setMbusDefaultKey(
         RequestFactoryHelper.hexDecodeDeviceKey(
-            settings.get(PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY),
+            getHexDecodeDeviceKey(settings, PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY),
             PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY));
 
     return device;
+  }
+
+  private static String getHexDecodeDeviceKey(
+      final Map<String, String> settings, final String platformKey) {
+    final String inputKeyName = settings.get(platformKey);
+    String hexDecodeDeviceKey = null;
+    if (inputKeyName != null) {
+      final SecurityKey securityKey = SecurityKey.valueOf(inputKeyName);
+      hexDecodeDeviceKey = securityKey.getSoapRequestKey();
+    }
+    return hexDecodeDeviceKey;
   }
 }

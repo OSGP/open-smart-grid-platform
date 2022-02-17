@@ -40,6 +40,7 @@ public class WebServiceResponseMessageSender implements ResponseMessageSender {
             final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
             objectMessage.setJMSPriority(responseMessage.getMessagePriority());
             objectMessage.setJMSCorrelationID(responseMessage.getCorrelationUid());
+            objectMessage.setJMSType(responseMessage.getMessageType());
             objectMessage.setStringProperty(
                 Constants.ORGANISATION_IDENTIFICATION,
                 responseMessage.getOrganisationIdentification());

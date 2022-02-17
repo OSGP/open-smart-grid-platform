@@ -12,6 +12,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
+import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderTimestampService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +24,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan(basePackages = {"org.opensmartgridplatform.adapter.protocol.mqtt"})
 @EnableTransactionManagement()
-@Import({MessagingConfig.class, MqttPersistenceConfig.class})
+@Import({MessagingConfig.class})
 @PropertySource("classpath:osgp-adapter-protocol-mqtt.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterProtocolMqtt/config}", ignoreResourceNotFound = true)
@@ -48,5 +50,10 @@ public class ApplicationContext extends AbstractConfig {
   @Bean
   public Integer timeZoneOffsetMinutes() {
     return TIME_ZONE_OFFSET_MINUTES;
+  }
+
+  @Bean
+  public CorrelationIdProviderService correlationIdProviderService() {
+    return new CorrelationIdProviderTimestampService();
   }
 }
