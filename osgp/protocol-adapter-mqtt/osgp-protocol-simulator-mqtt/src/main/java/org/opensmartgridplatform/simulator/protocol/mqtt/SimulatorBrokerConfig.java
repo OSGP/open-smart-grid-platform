@@ -10,6 +10,7 @@
 package org.opensmartgridplatform.simulator.protocol.mqtt;
 
 import io.moquette.BrokerConstants;
+import io.moquette.broker.config.MemoryConfig;
 import java.util.Properties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -55,5 +56,10 @@ public class SimulatorBrokerConfig {
       p.put(BrokerConstants.SSL_PORT_PROPERTY_NAME, String.valueOf(this.sslPort));
     }
     return p;
+  }
+
+  @Bean(initMethod = "start", destroyMethod = "stop")
+  public Broker broker(final Properties mqttBrokerProperties) {
+    return new Broker(new MemoryConfig(mqttBrokerProperties));
   }
 }

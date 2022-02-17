@@ -18,13 +18,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 
 @Configuration
 @ComponentScan("org.opensmartgridplatform.adapter.kafka.da")
-@ComponentScan("org.opensmartgridplatform.domain.da")
-@ComponentScan("org.opensmartgridplatform.domain.core.services")
-@ComponentScan("org.opensmartgridplatform.domain.logging")
-@ComponentScan("org.opensmartgridplatform.shared.application.config")
-@ComponentScan("org.opensmartgridplatform.shared.domain.entities")
-@ComponentScan("org.opensmartgridplatform.shared.domain.services")
-@Import({PersistenceConfig.class, PersistenceConfigCore.class, MessagingConfig.class})
+@Import({MessagingConfig.class})
 @PropertySource("classpath:osgp-adapter-kafka-distributionautomation.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(

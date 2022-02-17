@@ -10,10 +10,8 @@ package org.opensmartgridplatform.simulator.protocol.mqtt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
-import io.moquette.broker.config.MemoryConfig;
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,15 +21,11 @@ public class Simulator {
 
   private static final Logger LOG = LoggerFactory.getLogger(Simulator.class);
 
-  private Broker broker;
-
   public static void main(final String[] args) throws IOException {
     final String spec = getFirstArgOrNull(args);
-    final Properties sslServerProperties = new Properties();
-    final MqttClientSslConfig sslClientProperties = null;
-    final boolean startClient = getSecondArgOrTrue(args);
+    final MqttClientSslConfig clientSslConfig = null;
     final Simulator app = new Simulator();
-    app.run(spec, startClient, sslServerProperties, sslClientProperties);
+    app.run(spec, Default.CLEAN_SESSION, Default.KEEP_ALIVE, clientSslConfig);
   }
 
   private static String getFirstArgOrNull(final String[] args) {
@@ -42,41 +36,30 @@ public class Simulator {
     return result;
   }
 
-  private static boolean getSecondArgOrTrue(final String[] args) {
-    if (args.length < 2) {
-      return true;
-    }
-    return Boolean.parseBoolean(args[1]);
-  }
-
   public void run(
       final String specJsonPath,
-      final boolean startClient,
-      final Properties brokerProperties,
+      final boolean cleanSession,
+      final int keepAlive,
       final MqttClientSslConfig clientSslConfig)
       throws IOException {
-    this.run(this.getSimulatorSpec(specJsonPath), startClient, brokerProperties, clientSslConfig);
+    this.run(this.getSimulatorSpec(specJsonPath), cleanSession, keepAlive, clientSslConfig);
   }
 
   public void run(
       final SimulatorSpec simulatorSpec,
-      final boolean startClient,
-      final Properties brokerProperties,
-      final MqttClientSslConfig clientSslConfig)
-      throws IOException {
-    this.broker = new Broker(new MemoryConfig(brokerProperties));
-    this.broker.start();
+      final boolean cleanSession,
+      final int keepAlive,
+      final MqttClientSslConfig clientSslConfig) {
+
     try {
       Thread.sleep(simulatorSpec.getStartupPauseMillis());
     } catch (final InterruptedException e) {
       LOG.warn("Interrupted sleep", e);
       Thread.currentThread().interrupt();
     }
-    if (startClient) {
-      final SimulatorSpecPublishingClient publishingClient =
-          new SimulatorSpecPublishingClient(simulatorSpec, clientSslConfig);
-      publishingClient.start();
-    }
+    final SimulatorSpecPublishingClient publishingClient =
+        new SimulatorSpecPublishingClient(simulatorSpec, cleanSession, keepAlive, clientSslConfig);
+    publishingClient.start();
   }
 
   private SimulatorSpec getSimulatorSpec(final String jsonPath) throws IOException {
@@ -98,9 +81,5 @@ public class Simulator {
     }
     LOG.info("Simulator spec: {}", simulatorSpec);
     return simulatorSpec;
-  }
-
-  public Broker getBroker() {
-    return this.broker;
   }
 }

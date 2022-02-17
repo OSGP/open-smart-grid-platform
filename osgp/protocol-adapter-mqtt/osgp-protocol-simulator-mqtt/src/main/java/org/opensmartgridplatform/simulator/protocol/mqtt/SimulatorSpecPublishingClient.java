@@ -24,8 +24,16 @@ public class SimulatorSpecPublishingClient extends Client {
   private int i = 0;
 
   public SimulatorSpecPublishingClient(
-      final SimulatorSpec simulatorSpec, final MqttClientSslConfig mqttClientSslConfig) {
-    super(simulatorSpec.getBrokerHost(), simulatorSpec.getBrokerPort(), mqttClientSslConfig);
+      final SimulatorSpec simulatorSpec,
+      final boolean cleanSession,
+      final int keepAlive,
+      final MqttClientSslConfig mqttClientSslConfig) {
+    super(
+        simulatorSpec.getBrokerHost(),
+        simulatorSpec.getBrokerPort(),
+        cleanSession,
+        keepAlive,
+        mqttClientSslConfig);
     this.simulatorSpec = simulatorSpec;
   }
 
@@ -62,6 +70,12 @@ public class SimulatorSpecPublishingClient extends Client {
   }
 
   public void publish(final Mqtt3BlockingClient client, final Message message) {
+    LOG.debug(
+        "{} identified by {} is about to publish on topic {} with payload: {}",
+        SimulatorSpecPublishingClient.class.getSimpleName(),
+        this.uuid,
+        message.getTopic(),
+        message.getPayload());
     client
         .publishWith()
         .topic(message.getTopic())
