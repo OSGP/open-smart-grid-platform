@@ -25,17 +25,25 @@ public abstract class Client extends Thread {
 
   private static final Logger LOG = LoggerFactory.getLogger(Client.class);
 
-  private final UUID uuid;
+  protected final UUID uuid;
   private final String host;
   private final int port;
+  private final boolean cleanSession;
+  private final int keepAlive;
   private final MqttClientSslConfig mqttClientSslConfig;
   private volatile boolean running;
   private Mqtt3BlockingClient mqtt3BlockingClient;
 
   protected Client(
-      final String host, final int port, final MqttClientSslConfig mqttClientSslConfig) {
+      final String host,
+      final int port,
+      final boolean cleanSession,
+      final int keepAlive,
+      final MqttClientSslConfig mqttClientSslConfig) {
     this.host = host;
     this.port = port;
+    this.cleanSession = cleanSession;
+    this.keepAlive = keepAlive;
     this.mqttClientSslConfig = mqttClientSslConfig;
     this.uuid = UUID.randomUUID();
   }
@@ -54,10 +62,24 @@ public abstract class Client extends Thread {
               .automaticReconnectWithDefaultConfig()
               .buildBlocking();
 
-      final Mqtt3ConnAck ack = this.mqtt3BlockingClient.connect();
-      LOG.info("Client {} received Ack {}", this.getClass().getSimpleName(), ack.getType());
+      final Mqtt3ConnAck ack =
+          this.mqtt3BlockingClient
+              .connectWith()
+              .cleanSession(this.cleanSession)
+              .keepAlive(this.keepAlive)
+              .send();
+      LOG.info(
+          "{} identified by {} received {} connecting to {}:{}",
+          this.getClass().getSimpleName(),
+          this.uuid,
+          ack,
+          this.host,
+          this.port);
       this.addShutdownHook();
-      LOG.info("Client {} started", this.getClass().getSimpleName());
+      LOG.info(
+          "{} identified by {} started, begin executing tasks on connect",
+          this.getClass().getSimpleName(),
+          this.uuid);
       this.onConnect(this.mqtt3BlockingClient);
     } catch (final Exception ex) {
       LOG.error("Exception while starting client.", ex);
@@ -77,10 +99,10 @@ public abstract class Client extends Thread {
   }
 
   private void stopClient() {
-    LOG.info("Stopping client {}", this.getClass().getSimpleName());
+    LOG.info("Stopping {} identified by {}", this.getClass().getSimpleName(), this.uuid);
     this.disconnect();
     this.running = false;
-    LOG.info("Client {} stopped", this.getClass().getSimpleName());
+    LOG.info("{} identified by {} stopped", this.getClass().getSimpleName(), this.uuid);
   }
 
   private void disconnect() {

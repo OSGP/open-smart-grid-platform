@@ -10,6 +10,7 @@ package org.opensmartgridplatform.simulator.protocol.mqtt;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import io.moquette.BrokerConstants;
 import io.moquette.broker.ClientDescriptor;
 import io.moquette.broker.Server;
 import io.moquette.broker.config.IConfig;
@@ -79,6 +80,13 @@ public final class Broker {
   }
 
   private void startServer(final Server server, final IConfig config) throws IOException {
+    final String host = config.getProperty(BrokerConstants.HOST_PROPERTY_NAME);
+    final String port = config.getProperty(BrokerConstants.PORT_PROPERTY_NAME);
+    final String sslPort = config.getProperty(BrokerConstants.SSL_PORT_PROPERTY_NAME);
+    final boolean sslConfigured = sslPort != null;
+    final String sslHostAndPort = sslConfigured ? (" and on " + host + ":" + sslPort) : "";
+    LOG.info(
+        "About to start Server for MQTT broker listening on {}:{}{}", host, port, sslHostAndPort);
     server.startServer(
         config,
         Collections.singletonList(

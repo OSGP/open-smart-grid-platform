@@ -9,8 +9,6 @@
 package org.opensmartgridplatform.adapter.kafka.da.application.config;
 
 import org.opensmartgridplatform.adapter.kafka.da.application.config.messaging.InboundDomainResponsesMessagingConfig;
-import org.opensmartgridplatform.adapter.kafka.da.application.config.messaging.OutboundDomainRequestsMessagingConfig;
-import org.opensmartgridplatform.adapter.kafka.da.application.config.messaging.OutboundLoggingRequestsMessagingConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -24,12 +22,7 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource(
     value = "file:${osgp/AdapterKafkaDistributionAutomation/config}",
     ignoreResourceNotFound = true)
-@Import(
-    value = {
-      InboundDomainResponsesMessagingConfig.class,
-      OutboundDomainRequestsMessagingConfig.class,
-      OutboundLoggingRequestsMessagingConfig.class
-    })
+@Import(value = {InboundDomainResponsesMessagingConfig.class})
 public class MessagingConfig extends AbstractConfig {
 
   @Bean
