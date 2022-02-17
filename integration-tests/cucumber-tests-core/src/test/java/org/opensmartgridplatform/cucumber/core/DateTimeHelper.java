@@ -10,8 +10,11 @@ package org.opensmartgridplatform.cucumber.core;
 
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.Location;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.joda.time.DateTime;
@@ -32,6 +35,11 @@ public class DateTimeHelper {
     return DateTimeZone.forID(CET_TIMEZONE);
   }
 
+  /** @return CET/CEST time zone based on ID {@value #CET_TIMEZONE} */
+  public static ZoneId getCentralEuropeanZoneId() {
+    return ZoneId.of(CET_TIMEZONE);
+  }
+
   /**
    * This is a generic method which will translate the given string to a datetime using central
    * European time (CET/CEST). Supported:
@@ -48,8 +56,6 @@ public class DateTimeHelper {
    *   <li>yesterday at midnight
    *   <li>now at midday + 1 week
    * </ul>
-   *
-   * @throws Exception
    */
   public static DateTime getDateTime(final String dateString) {
     if (dateString.isEmpty()) {
@@ -169,6 +175,15 @@ public class DateTimeHelper {
     return retval;
   }
 
+  public static ZonedDateTime getZonedDateTime(final String dateString) {
+    return dateTimeToZonedDateTime(getDateTime(dateString));
+  }
+
+  public static Instant getInstant(final String dateString) {
+    final ZonedDateTime dateTime = getZonedDateTime(dateString);
+    return dateTime.toInstant();
+  }
+
   public static DateTime getDateTime2(final String startDate, final DateTime defaultStartDate) {
     if (startDate == null) {
       return defaultStartDate;
@@ -185,6 +200,12 @@ public class DateTimeHelper {
       return defaultStartDate;
     }
     return dateTime;
+  }
+
+  public static ZonedDateTime getZonedDateTime2(
+      final String startDate, final ZonedDateTime defaultStartDate) {
+    return dateTimeToZonedDateTime(
+        getDateTime2(startDate, zonedDateTimeToDateTime(defaultStartDate)));
   }
 
   /** Get time of sunrise/sunset */
@@ -209,6 +230,12 @@ public class DateTimeHelper {
     }
 
     return new DateTime(officialTransition.getTimeInMillis());
+  }
+
+  public static ZonedDateTime getSunriseSunsetZonedDateTime(
+      final String actionTimeType, final ZonedDateTime date, final Location location) {
+    return dateTimeToZonedDateTime(
+        getSunriseSunsetTime(actionTimeType, zonedDateTimeToDateTime(date), location));
   }
 
   /**
@@ -270,5 +297,24 @@ public class DateTimeHelper {
             .plusHours(offsetHours);
 
     return timeFormatter.print(shiftedTime);
+  }
+
+  public static ZonedDateTime dateTimeToZonedDateTime(final DateTime dateTime) {
+    if (dateTime == null) {
+      return null;
+    }
+
+    return dateTime.toGregorianCalendar().toZonedDateTime();
+  }
+
+  private static DateTime zonedDateTimeToDateTime(final ZonedDateTime zonedDateTime) {
+    if (zonedDateTime == null) {
+      return null;
+    }
+
+    final long millis = zonedDateTime.toInstant().toEpochMilli();
+    final DateTimeZone dateTimeZone =
+        DateTimeZone.forTimeZone(TimeZone.getTimeZone(zonedDateTime.getZone()));
+    return new DateTime(millis, dateTimeZone);
   }
 }
