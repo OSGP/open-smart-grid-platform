@@ -9,8 +9,13 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.util.Date;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.ObisCode;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SystemEventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SystemEventTypeDto;
@@ -31,6 +36,8 @@ public class SystemEventService {
   private final OsgpRequestMessageSender osgpRequestMessageSender;
   private final CorrelationIdProviderService correlationIdProviderService;
   private final long invocationCounterEventThreshold;
+  private static final AttributeAddress ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE =
+      new AttributeAddress(1, new ObisCode(new byte[] {0, 0, 43, 1, 0, -1}), 2);
 
   @Autowired
   public SystemEventService(
@@ -63,7 +70,43 @@ public class SystemEventService {
             SystemEventTypeDto.INVOCATION_COUNTER_THRESHOLD_REACHED,
             new Date(),
             message);
+    this.sendMessage(systemEventDto, sourceMessageMetadata, device);
+  }
 
+  public boolean receivedInvocationCounterIsLowerThanCurrentValue(
+      final DlmsDevice device,
+      final MessageMetadata sourceMessageMetadata,
+      final DlmsConnectionManager conn) {
+    final Optional<Long> receivedInvocationCounter = this.getReceivedInvocationCounter(conn);
+
+    if (device.getInvocationCounter() == null
+        || !receivedInvocationCounter.isPresent()
+        || device.getInvocationCounter() < receivedInvocationCounter.get()) {
+      return false;
+    }
+
+    final String message =
+        String.format(
+            "Received invocation counter for device %s, has a lower value %s than the actual invocation counter of the device %s, an event will be published",
+            device.getDeviceIdentification(),
+            receivedInvocationCounter.get(),
+            device.getInvocationCounter());
+    log.info(message);
+
+    final SystemEventDto systemEventDto =
+        new SystemEventDto(
+            device.getDeviceIdentification(),
+            SystemEventTypeDto.INVOCATION_COUNTER_LOWERED,
+            new Date(),
+            message);
+    this.sendMessage(systemEventDto, sourceMessageMetadata, device);
+    return true;
+  }
+
+  private void sendMessage(
+      final SystemEventDto systemEventDto,
+      final MessageMetadata sourceMessageMetadata,
+      final DlmsDevice device) {
     final String correlationId =
         this.correlationIdProviderService.getCorrelationId(
             sourceMessageMetadata.getOrganisationIdentification(),
@@ -86,5 +129,19 @@ public class SystemEventService {
     log.info("Sending system event to GXF with correlation ID: {}", correlationId);
     this.osgpRequestMessageSender.send(
         requestMessage, MessageType.SYSTEM_EVENT.name(), messageMetadata);
+  }
+
+  private Optional<Long> getReceivedInvocationCounter(
+      final DlmsConnectionManager connectionManager) {
+    final DlmsHelper dlmsHelper = new DlmsHelper();
+    try {
+      final Number invocationCounter =
+          dlmsHelper
+              .getAttributeValue(connectionManager, ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)
+              .getValue();
+      return Optional.of(invocationCounter.longValue());
+    } catch (final Exception e) {
+      return Optional.empty();
+    }
   }
 }

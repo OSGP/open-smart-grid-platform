@@ -147,9 +147,13 @@ public abstract class DlmsConnectionMessageProcessor {
     }
 
     if (device.needsInvocationCounter()) {
-      this.updateInvocationCounterForDevice(device, conn);
-
-      this.systemEventService.verifySystemEventThresholdReachedEvent(device, messageMetadata);
+      final boolean invocationCounterLowered =
+          this.systemEventService.receivedInvocationCounterIsLowerThanCurrentValue(
+              device, messageMetadata, conn);
+      if (!invocationCounterLowered) {
+        this.updateInvocationCounterForDevice(device, conn);
+        this.systemEventService.verifySystemEventThresholdReachedEvent(device, messageMetadata);
+      }
     }
   }
 
