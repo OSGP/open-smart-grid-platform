@@ -152,8 +152,8 @@ public abstract class DlmsConnectionMessageProcessor {
               device, messageMetadata, conn);
       if (!invocationCounterLowered) {
         this.updateInvocationCounterForDevice(device, conn);
-        this.systemEventService.verifySystemEventThresholdReachedEvent(device, messageMetadata);
       }
+      this.systemEventService.verifySystemEventThresholdReachedEvent(device, messageMetadata);
     }
   }
 
