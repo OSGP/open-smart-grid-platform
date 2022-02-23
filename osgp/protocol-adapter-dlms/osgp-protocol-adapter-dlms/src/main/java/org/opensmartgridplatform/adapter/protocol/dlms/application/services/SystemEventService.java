@@ -96,7 +96,7 @@ public class SystemEventService {
     final SystemEventDto systemEventDto =
         new SystemEventDto(
             device.getDeviceIdentification(),
-            SystemEventTypeDto.INVOCATION_COUNTER_LOWERED,
+            SystemEventTypeDto.ATTEMPT_TO_LOWER_INVOCATION_COUNTER,
             new Date(),
             message);
     this.sendMessage(systemEventDto, sourceMessageMetadata, device);

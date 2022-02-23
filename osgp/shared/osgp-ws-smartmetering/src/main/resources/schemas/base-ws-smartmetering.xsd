@@ -245,7 +245,7 @@
   <xsd:simpleType name="SystemEventType">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="INVOCATION_COUNTER_THRESHOLD_REACHED"/>
-      <xsd:enumeration value="INVOCATION_COUNTER_LOWERED"/>
+      <xsd:enumeration value="ATTEMPT_TO_LOWER_INVOCATION_COUNTER"/>
     </xsd:restriction>
   </xsd:simpleType>
 

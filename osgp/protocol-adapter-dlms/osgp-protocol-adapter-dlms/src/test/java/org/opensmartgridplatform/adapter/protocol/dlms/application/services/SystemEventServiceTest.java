@@ -198,7 +198,7 @@ class SystemEventServiceTest {
     assertThat(systemEventDto.getDeviceIdentification())
         .isEqualTo(this.device.getDeviceIdentification());
     assertThat(systemEventDto.getSystemEventType())
-        .isEqualTo(SystemEventTypeDto.INVOCATION_COUNTER_LOWERED);
+        .isEqualTo(SystemEventTypeDto.ATTEMPT_TO_LOWER_INVOCATION_COUNTER);
     assertThat(systemEventDto.getTimestamp()).isNotNull();
 
     final MessageMetadata metadata = messageMetadataCaptor.getValue();
