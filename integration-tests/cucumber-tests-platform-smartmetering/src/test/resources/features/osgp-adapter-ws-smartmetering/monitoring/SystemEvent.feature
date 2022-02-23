@@ -41,8 +41,8 @@ Feature: SmartMetering Monitoring - System Events
       | BeginDate            | 2015-09-01T00:00:00.000Z |
       | EndDate              | 2015-09-01T01:00:00.000Z |
     Then a system event should be returned
-      | DeviceIdentification | TEST1027000000001           |
-      | SystemEventType      | INVOCATION_COUNTER_LOWERED  |
+      | DeviceIdentification | TEST1027000000001                    |
+      | SystemEventType      | ATTEMPT_TO_LOWER_INVOCATION_COUNTER  |
 
   Scenario: No system event occurs when the invocation counter with a device is in normal operation range
     Given a dlms device
