@@ -29,6 +29,9 @@ public class Smr52Profile {
   @Value("${alarmobject.register2.value}")
   private int alarmRegister2Value;
 
+  @Value("${invocation.counter}")
+  private long invocationCounter;
+
   @Bean
   public AlarmObject alarmObject2(final DynamicValues dynamicValues) {
     dynamicValues.setDefaultAttributeValue(
