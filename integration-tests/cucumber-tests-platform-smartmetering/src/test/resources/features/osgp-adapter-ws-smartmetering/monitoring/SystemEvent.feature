@@ -12,7 +12,7 @@ Feature: SmartMetering Monitoring - System Events
       | CommunicationMethod      | GPRS              |
       | Protocol                 | SMR               |
       | ProtocolVersion          |               5.1 |
-      | InvocationCounter        |        2000000000 |
+      | InvocationCounter        |          20000000 |
       | Port                     |              1027 |
     When the get "INTERVAL" meter reads request is received
       | DeviceIdentification | TEST1027000000001        |
