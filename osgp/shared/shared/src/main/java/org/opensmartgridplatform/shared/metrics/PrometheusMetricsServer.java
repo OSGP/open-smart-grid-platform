@@ -20,6 +20,7 @@ import java.net.InetSocketAddress;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ import org.springframework.beans.factory.annotation.Value;
  * public PrometheusMetricsServer prometheusMetricsServer(PrometheusMeterRegistry prometheusMeterRegistry) {
  *     return new PrometheusMetricsServer(prometheusMeterRegistry);
  * }</pre>
- *       or use {@link org.opensmartgridplatform.shared.config.PrometheusConfig}
+ *       or use {@link MetricsConfig}
  *   <li>In the application properties, specify port and path to use to publish the metrics, and the
  *       name of the component:
  *       <pre>
