@@ -7,6 +7,7 @@ Feature: GXF notifications (WS Core) - Resend notifications
   # When running separately this scenario succeeds,
   # but it still fails in the nightly build...
 #  @Skip
+  @Isolated
   Scenario: Resend missed notifications
     Given a response data record in ws-core
       | DeviceIdentification      | TEST1024000000001                                      |
@@ -25,6 +26,7 @@ Feature: GXF notifications (WS Core) - Resend notifications
   # When running separately this scenario succeeds,
   # but it still fails in the nightly build...
 #  @Skip
+  @Isolated
   Scenario: Resend missed notifications with response url
     Given a response data record in ws-core
       | DeviceIdentification      | TEST1024000000001                                      |
