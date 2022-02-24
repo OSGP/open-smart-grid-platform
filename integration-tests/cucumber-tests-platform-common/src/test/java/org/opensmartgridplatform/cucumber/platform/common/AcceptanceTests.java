@@ -16,7 +16,7 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(
     features = {"classpath:features/common"},
-    tags = {"@Isolated"},
+    tags = {"not @Skip", "@NightlyBuildOnly"},
     glue = {
       "classpath:org.opensmartgridplatform.cucumber.platform.glue",
       "classpath:org.opensmartgridplatform.cucumber.platform.common.glue"

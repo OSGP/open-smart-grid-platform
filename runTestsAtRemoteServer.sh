@@ -53,7 +53,7 @@ ${CMD}
 echo "- Executing cucumber project ${PROJECT} remote on ${SERVER} ..."
 CMD="sudo java -javaagent:/usr/share/tomcat/lib/jacocoagent.jar=destfile=target/code-coverage/jacoco-it.exec ${ADDITIONAL_PARAMETERS}\
  -Dcucumber.execution.strict=true\
- -Dcucumber.filter.tags=\"@Isolated\"\
+ -Dcucumber.filter.tags=\"not @Skip ${ADDITIONAL_CUCUMBER_OPTIONS}\"\
  -DskipITs=false\
  -Dtimeout=30\
  -DskipITCoverage=false\
