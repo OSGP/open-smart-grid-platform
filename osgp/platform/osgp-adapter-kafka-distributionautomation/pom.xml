@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>5.21.0-SNAPSHOT</version>
+    <version>5.22.0-SNAPSHOT</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
@@ -50,10 +50,6 @@
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-adapter-ws-shared</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opensmartgridplatform</groupId>
-      <artifactId>osgp-kafka-distributionautomation</artifactId>
     </dependency>
 
     <!-- Spring Framework -->
@@ -153,7 +149,7 @@
       <artifactId>lombok</artifactId>
       <scope>provided</scope>
     </dependency>
-    
+
     <!-- Orika (mapping framework) -->
     <dependency>
       <groupId>ma.glasnost.orika</groupId>
@@ -259,7 +255,6 @@
 
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven.surefire.plugin.version}</version>
         <dependencies>
           <dependency>
             <groupId>org.junit.jupiter</groupId>

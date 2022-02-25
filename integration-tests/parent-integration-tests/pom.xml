@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>super-osgp</artifactId>
-    <version>5.21.0-SNAPSHOT</version>
+    <version>5.22.0-SNAPSHOT</version>
     <relativePath>../../super/pom.xml</relativePath>
   </parent>
   <distributionManagement>
@@ -32,17 +32,6 @@
   </distributionManagement>
 
   <properties>
-    <!-- Default always skip integration tests, to ensure all developer data
-      is retained -->
-    <skipITs>true</skipITs>
-
-    <!-- Skip code coverage gathering with Jacoco on IT tests from Tomcat.
-      Requires jacoco-agent to be setup on remote Tomcat -->
-    <skipITCoverage>true</skipITCoverage>
-
-    <!-- Default always skip creating a test jar with dependencies tests -->
-    <skipTestJarWithDependenciesAssembly>true</skipTestJarWithDependenciesAssembly>
-
     <!-- Address of Tomcat instance -->
     <addressITCoverage>localhost</addressITCoverage>
   </properties>
