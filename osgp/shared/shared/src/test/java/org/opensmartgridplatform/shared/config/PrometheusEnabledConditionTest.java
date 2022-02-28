@@ -29,7 +29,7 @@ class PrometheusEnabledConditionTest {
   @Mock private ConditionContext conditionContext;
 
   @Test
-  void shoudBeTrueOnTrueProperty() {
+  void shouldBeTrueOnTrueProperty() {
     final MockEnvironment mockEnvironment =
         new MockEnvironment().withProperty("metrics.prometheus.enabled", "true");
     when(this.conditionContext.getEnvironment()).thenReturn(mockEnvironment);
@@ -47,7 +47,7 @@ class PrometheusEnabledConditionTest {
 
   @ParameterizedTest
   @ValueSource(strings = {"false", "no", "yes", "banana", ""})
-  void shoudBeFalseOnPropertyOtherThanTrueProperty(final String propertyValue) {
+  void shouldBeFalseOnPropertyOtherThanTrueProperty(final String propertyValue) {
     final MockEnvironment mockEnvironment =
         new MockEnvironment().withProperty("metrics.prometheus.enabled", propertyValue);
     when(this.conditionContext.getEnvironment()).thenReturn(mockEnvironment);

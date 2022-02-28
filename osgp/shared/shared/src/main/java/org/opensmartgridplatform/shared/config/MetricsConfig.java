@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
@@ -41,8 +40,6 @@ import org.springframework.context.annotation.Configuration;
  * <p>The provided {@link PrometheusMeterRegistry} bean can be used to add custom metrics.
  */
 @Configuration
-// Instantiate appropriate MetricsService implementation
-@ComponentScan(basePackages = {"org.opensmartgridplatform.shared.metrics"})
 public class MetricsConfig extends AbstractConfig {
   private static final Logger LOGGER = LoggerFactory.getLogger(MetricsConfig.class);
 
@@ -56,7 +53,6 @@ public class MetricsConfig extends AbstractConfig {
    * @return registry
    */
   @Bean
-  @Conditional(PrometheusEnabledCondition.class)
   public PrometheusMeterRegistry getMeterRegistry(final DataSource dataSource) {
     LOGGER.info("Enabling Prometheus metrics");
     final PrometheusMeterRegistry registry =
