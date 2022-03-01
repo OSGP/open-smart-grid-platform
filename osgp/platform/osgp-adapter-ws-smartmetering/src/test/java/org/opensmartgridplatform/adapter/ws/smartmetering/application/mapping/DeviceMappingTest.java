@@ -30,6 +30,7 @@ public class DeviceMappingTest {
   private static final String ICC_ID = "iccId1";
   private static final String PROTOCOL_NAME = "test-protocol-name";
   private static final String PROTOCOL_VERSION = "test-protocol-version";
+  private static final String PROTOCOL_VARIANT = "test-protocol-variant";
   private static final String SUPPLIER = "supplier1";
   private static final boolean IS_ACTIVE = true;
   private static final byte[] KEY = "key".getBytes();
@@ -49,6 +50,7 @@ public class DeviceMappingTest {
     assertThat(smartMeteringDevice.getIccId()).isEqualTo(ICC_ID);
     assertThat(smartMeteringDevice.getProtocolName()).isEqualTo(PROTOCOL_NAME);
     assertThat(smartMeteringDevice.getProtocolVersion()).isEqualTo(PROTOCOL_VERSION);
+    assertThat(smartMeteringDevice.getProtocolVariant()).isEqualTo(PROTOCOL_VARIANT);
     assertThat(smartMeteringDevice.getSupplier()).isEqualTo(SUPPLIER);
     assertThat(smartMeteringDevice.isHls3Active()).isEqualTo(IS_ACTIVE);
     assertThat(smartMeteringDevice.isHls4Active()).isEqualTo(IS_ACTIVE);
@@ -77,6 +79,7 @@ public class DeviceMappingTest {
     assertThat(device.getIccId()).isEqualTo(ICC_ID);
     assertThat(device.getProtocolName()).isEqualTo(PROTOCOL_NAME);
     assertThat(device.getProtocolVersion()).isEqualTo(PROTOCOL_VERSION);
+    assertThat(device.getProtocolVariant()).isEqualTo(PROTOCOL_VARIANT);
     assertThat(device.getSupplier()).isEqualTo(SUPPLIER);
     assertThat(device.isHls3Active()).isEqualTo(IS_ACTIVE);
     assertThat(device.isHls4Active()).isEqualTo(IS_ACTIVE);
@@ -112,6 +115,7 @@ public class DeviceMappingTest {
     device.setIccId(ICC_ID);
     device.setProtocolName(PROTOCOL_NAME);
     device.setProtocolVersion(PROTOCOL_VERSION);
+    device.setProtocolVariant(PROTOCOL_VARIANT);
     device.setSupplier(SUPPLIER);
     device.setHls3Active(IS_ACTIVE);
     device.setHls4Active(IS_ACTIVE);
@@ -134,6 +138,7 @@ public class DeviceMappingTest {
     smartMeteringDevice.setIccId(ICC_ID);
     smartMeteringDevice.setProtocolName(PROTOCOL_NAME);
     smartMeteringDevice.setProtocolVersion(PROTOCOL_VERSION);
+    smartMeteringDevice.setProtocolVariant(PROTOCOL_VARIANT);
     smartMeteringDevice.setSupplier(SUPPLIER);
     smartMeteringDevice.setHls3Active(IS_ACTIVE);
     smartMeteringDevice.setHls4Active(IS_ACTIVE);

@@ -211,7 +211,7 @@
       <xsd:element type="xsd:long" name="Id" />
       <xsd:element name="Protocol" type="tns:ProtocolType" />
       <xsd:element name="ProtocolVersion" type="tns:ProtocolVersionType" />
-      <xsd:element name="ProtocolVariant" type="tns:ProtocolVariantType" />
+      <xsd:element name="ProtocolVariant" type="tns:ProtocolVariantType" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 

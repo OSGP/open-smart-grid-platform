@@ -1,3 +1,12 @@
+/*
+ * Copyright 2022 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,9 +37,17 @@ public class ProtocolInfoSteps {
     final ProtocolInfo actual =
         this.protocolInfoRepository.findByProtocolAndProtocolVersion(
             getProtocol(settings), getProtocolVersion(settings));
-    assertThat(expected.getProtocol()).isEqualTo(actual.getProtocol());
-    assertThat(expected.getProtocolVersion()).isEqualTo(actual.getProtocolVersion());
-    assertThat(expected.getProtocolVariant()).isEqualTo(actual.getProtocolVariant());
+    assertThat(actual.getProtocol()).isEqualTo(expected.getProtocol());
+    assertThat(actual.getProtocolVersion()).isEqualTo(expected.getProtocolVersion());
+    assertThat(actual.getProtocolVariant()).isEqualTo(expected.getProtocolVariant());
+  }
+
+  @Then("^I delete the protocol record$")
+  public void iDeleteTheProtocolRecord(final Map<String, String> settings) {
+    final ProtocolInfo record =
+        this.protocolInfoRepository.findByProtocolAndProtocolVersion(
+            getProtocol(settings), getProtocolVersion(settings));
+    this.protocolInfoRepository.delete(record);
   }
 
   private ProtocolInfo getProtocolFromMap(final Map<String, String> settings) {
@@ -38,6 +55,10 @@ public class ProtocolInfoSteps {
     builder.withProtocol(getProtocol(settings));
     builder.withProtocolVersion(getProtocolVersion(settings));
     builder.withProtocolVariant(getProtocolVariant(settings));
+    builder.withOutgoingRequestsPropertyPrefix("property");
+    builder.withIncomingResponsesPropertyPrefix("property");
+    builder.withOutgoingResponsesPropertyPrefix("property");
+    builder.withIncomingRequestsPropertyPrefix("property");
     return builder.build();
   }
 
