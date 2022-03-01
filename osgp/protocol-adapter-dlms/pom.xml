@@ -13,7 +13,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>protocol-adapter-dlms</artifactId>
-  <version>5.21.0</version>
+  <version>5.21.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   
   <properties>
