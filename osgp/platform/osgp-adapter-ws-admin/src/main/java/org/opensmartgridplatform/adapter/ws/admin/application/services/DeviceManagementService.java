@@ -74,6 +74,7 @@ import org.springframework.validation.annotation.Validated;
 @Transactional(value = "transactionManager")
 @Validated
 public class DeviceManagementService {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
   @Autowired private PagingSettings pagingSettings;
@@ -714,7 +715,8 @@ public class DeviceManagementService {
             protocol, protocolVersion, protocolVariant);
     if (protocolInfo == null) {
       throw new FunctionalException(
-          FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION_OR_VARIANT, ComponentType.WS_ADMIN);
+          FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION_OR_VARIANT,
+          ComponentType.WS_ADMIN);
     }
     return protocolInfo;
   }
