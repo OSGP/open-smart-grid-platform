@@ -118,7 +118,7 @@ public class InstallationServiceTest {
       this.instance.addMeter(this.deviceMessageMetadata, this.addSmartMeterRequest);
     } catch (final FunctionalException e) {
       assertThat(e.getExceptionType())
-          .isEqualTo(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION);
+          .isEqualTo(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION_OR_VARIANT);
       assertThat(e.getComponentType()).isEqualTo(ComponentType.DOMAIN_SMART_METERING);
     }
   }
