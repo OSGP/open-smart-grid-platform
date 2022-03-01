@@ -99,7 +99,7 @@ public class AuxiliaryEventLog extends ProfileGeneric {
 
     this.buffer = DataObject.newNullData();
     this.captureObjects = DataObject.newNullData();
-    this.capturePeriod = DataObject.newInteger32Data(CAPTURE_PERIOD);
+    this.capturePeriod = DataObject.newUInteger32Data(CAPTURE_PERIOD);
     this.sortMethod = DataObject.newEnumerateData(SortMethod.FIFO.value());
     this.sortObject = DataObject.newNullData();
     this.entriesInUse = DataObject.newNullData();
