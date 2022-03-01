@@ -2,7 +2,7 @@
 Feature: BasicOsgpFunctions Protocol functions
   I want to check the protocol version and variant
 
-  Scenario Outline: Instances of one protocol with/without variant
+  Scenario Outline: Instances of one protocol with or without variant
     Given a protocol
       | Protocol        | <Protocol>        |
       | ProtocolVersion | <ProtocolVersion> |
