@@ -15,6 +15,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.AlarmFilter;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.AlarmObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityExtendedEventLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
@@ -29,6 +30,9 @@ public class Smr52Profile {
   @Value("${alarmobject.register2.value}")
   private int alarmRegister2Value;
 
+  @Value("${alarmfilter2.value}")
+  private int alarmFilter2Value;
+
   @Bean
   public AlarmObject alarmObject2(final DynamicValues dynamicValues) {
     dynamicValues.setDefaultAttributeValue(
@@ -37,6 +41,11 @@ public class Smr52Profile {
         DataAttribute.VALUE.attributeId(),
         DataObject.newUInteger32Data(this.alarmRegister2Value));
     return new AlarmObject(ALARM_OBJECT_2);
+  }
+
+  @Bean
+  public AlarmFilter alarmFilter2() {
+    return new AlarmFilter("0.0.97.98.11.255", this.alarmFilter2Value);
   }
 
   @Bean
