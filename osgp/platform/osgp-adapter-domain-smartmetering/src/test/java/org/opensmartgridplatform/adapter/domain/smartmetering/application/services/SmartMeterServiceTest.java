@@ -66,7 +66,7 @@ class SmartMeterServiceTest {
     when(this.smartMeterRepository.findByDeviceIdentification(deviceIdentification))
         .thenReturn(new SmartMeter());
 
-    FunctionalException exception =
+    final FunctionalException exception =
         Assertions.assertThrows(
             FunctionalException.class,
             () -> {
@@ -88,7 +88,7 @@ class SmartMeterServiceTest {
     when(this.protocolInfoRepository.findByProtocolAndProtocolVersion(any(), any()))
         .thenReturn(null);
 
-    FunctionalException exception =
+    final FunctionalException exception =
         Assertions.assertThrows(
             FunctionalException.class,
             () -> {
@@ -96,7 +96,7 @@ class SmartMeterServiceTest {
                   organisationIdentification, addSmartMeterRequest, smartMeter);
             });
     assertThat(exception.getExceptionType())
-        .isEqualTo(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION);
+        .isEqualTo(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION_OR_VARIANT);
   }
 
   @Test
