@@ -27,6 +27,7 @@ import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.metrics.PrometheusMetricsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -46,6 +47,9 @@ public class MetricsConfig extends AbstractConfig {
   @Value("${metrics.prometheus.enabledDefaultMetrics:true}")
   private boolean enableDefaultMetrics;
 
+  @Autowired(required = false)
+  private DataSource dataSource;
+
   /**
    * MeterRegistry to publish custom metrics. This bean is required because custom metrics depend on
    * it.
@@ -53,13 +57,13 @@ public class MetricsConfig extends AbstractConfig {
    * @return registry
    */
   @Bean
-  public PrometheusMeterRegistry getMeterRegistry(final DataSource dataSource) {
+  public PrometheusMeterRegistry getMeterRegistry() {
     LOGGER.info("Enabling Prometheus metrics");
     final PrometheusMeterRegistry registry =
         new PrometheusMeterRegistry(io.micrometer.prometheus.PrometheusConfig.DEFAULT);
 
     if (this.enableDefaultMetrics) {
-      this.bindDefaultMetrics(registry, dataSource);
+      this.bindDefaultMetrics(registry);
     }
 
     return registry;
@@ -78,8 +82,7 @@ public class MetricsConfig extends AbstractConfig {
     return new PrometheusMetricsServer(meterRegistry);
   }
 
-  private void bindDefaultMetrics(
-      final PrometheusMeterRegistry registry, final DataSource dataSource) {
+  private void bindDefaultMetrics(final PrometheusMeterRegistry registry) {
     LOGGER.info("Enabling default metrics");
     new ClassLoaderMetrics().bindTo(registry);
     new JvmMemoryMetrics().bindTo(registry);
@@ -92,10 +95,10 @@ public class MetricsConfig extends AbstractConfig {
       logbackMetrics.bindTo(registry);
     }
     new DiskSpaceMetrics(new File("/")).bindTo(registry);
-    if (dataSource != null) {
-      try (final Connection connection = dataSource.getConnection()) {
+    if (this.dataSource != null) {
+      try (final Connection connection = this.dataSource.getConnection()) {
         final String databaseName = connection.getCatalog();
-        new PostgreSQLDatabaseMetrics(dataSource, databaseName).bindTo(registry);
+        new PostgreSQLDatabaseMetrics(this.dataSource, databaseName).bindTo(registry);
       } catch (final SQLException e) {
         LOGGER.warn(
             "Prometheus database monitoring disabled: Datasource found, but can't get the name of the database.",
