@@ -103,7 +103,7 @@ public class AuxiliaryEventLog extends ProfileGeneric {
     this.sortMethod = DataObject.newEnumerateData(SortMethod.FIFO.value());
     this.sortObject = DataObject.newNullData();
     this.entriesInUse = DataObject.newNullData();
-    this.profileEntries = DataObject.newUInteger16Data(PROFILE_ENTRIES);
+    this.profileEntries = DataObject.newUInteger32Data(PROFILE_ENTRIES);
 
     this.initBufferData();
   }
