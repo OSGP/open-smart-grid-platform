@@ -31,6 +31,7 @@ public class SmartMeteringDevice implements Serializable {
 
   private String protocolName;
   private String protocolVersion;
+  private String protocolVariant;
 
   private byte[] masterKey;
 

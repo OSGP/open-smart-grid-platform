@@ -560,7 +560,8 @@ public class DeviceManagementEndpoint {
           organisationIdentification,
           request.getDeviceIdentification(),
           protocolInfo.getProtocol(),
-          protocolInfo.getProtocolVersion());
+          protocolInfo.getProtocolVersion(),
+          protocolInfo.getProtocolVariant());
     } catch (final ConstraintViolationException e) {
       throw new FunctionalException(
           FunctionalExceptionType.VALIDATION_ERROR,

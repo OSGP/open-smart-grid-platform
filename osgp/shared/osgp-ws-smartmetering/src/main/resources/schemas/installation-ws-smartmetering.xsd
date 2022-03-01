@@ -258,8 +258,8 @@
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
-      
-  	  <xsd:element name="protocolVariant" minOccurs="0">
+
+      <xsd:element name="protocolVariant" minOccurs="0">
         <xsd:simpleType>
           <xsd:restriction base="xsd:string">
             <xsd:maxLength value="10" />

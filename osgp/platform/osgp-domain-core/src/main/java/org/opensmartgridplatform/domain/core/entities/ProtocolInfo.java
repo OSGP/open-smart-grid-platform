@@ -104,7 +104,7 @@ public class ProtocolInfo extends AbstractEntity {
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.protocol, this.protocolVersion);
+    return Objects.hash(this.protocol, this.protocolVersion, this.protocolVariant);
   }
 
   public String getProtocol() {
@@ -142,12 +142,12 @@ public class ProtocolInfo extends AbstractEntity {
   public static class Builder {
     private String protocol;
     private String protocolVersion;
-    private String protocolVariant;
+    private String protocolVariant = null;
     private String outgoingRequestsPropertyPrefix;
     private String incomingResponsesPropertyPrefix;
     private String incomingRequestsPropertyPrefix;
     private String outgoingResponsesPropertyPrefix;
-    private Boolean parallelRequestsAllowed;
+    private Boolean parallelRequestsAllowed = true;
 
     public Builder() {
       // Default constructor.
