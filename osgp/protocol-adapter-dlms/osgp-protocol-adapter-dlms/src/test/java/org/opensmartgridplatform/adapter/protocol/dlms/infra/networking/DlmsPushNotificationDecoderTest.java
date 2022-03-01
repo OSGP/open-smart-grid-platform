@@ -36,7 +36,7 @@ import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 
 @ExtendWith(MockitoExtension.class)
-public class DlmsPushNotificationDecoderTest {
+class DlmsPushNotificationDecoderTest {
 
   private static final int EQUIPMENT_IDENTIFIER_LENGTH = 17;
   private static final int LOGICAL_NAME_LENGTH = 6;
