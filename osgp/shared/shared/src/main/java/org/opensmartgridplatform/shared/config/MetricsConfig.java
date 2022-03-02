@@ -49,7 +49,7 @@ public class MetricsConfig extends AbstractConfig {
   @Value("${metrics.prometheus.enabled:false}")
   private boolean metricsEnabled;
 
-  @Value("${metrics.prometheus.enabledDefaultMetrics:true}")
+  @Value("${metrics.prometheus.enableDefaultMetrics:true}")
   private boolean enableDefaultMetrics;
 
   @Autowired(required = false)
