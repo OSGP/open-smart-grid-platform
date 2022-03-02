@@ -13,6 +13,7 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.opensmartgridplatform.ws.publiclighting.config.PublicLightingWebServiceConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -45,7 +46,8 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
   MessagingConfig.class,
   PersistenceConfigCore.class,
   WebServiceConfig.class,
-  PublicLightingWebServiceConfig.class
+  PublicLightingWebServiceConfig.class,
+  MetricsConfig.class
 })
 @PropertySource("classpath:osgp-adapter-ws-publiclighting.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
