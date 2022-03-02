@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.ws.microgrids.application.config;
 
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.opensmartgridplatform.ws.microgrids.config.MicroGridsWebServiceConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -36,7 +37,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
       "org.opensmartgridplatform.shared.application.config"
     })
 @ImportResource("classpath:applicationContext.xml")
-@Import({MicroGridsWebServiceConfig.class})
+@Import({MicroGridsWebServiceConfig.class, MetricsConfig.class})
 @PropertySource("classpath:osgp-adapter-ws-microgrids.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true)

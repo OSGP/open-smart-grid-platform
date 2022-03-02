@@ -12,6 +12,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderTimestampService;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +25,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan(basePackages = {"org.opensmartgridplatform.adapter.protocol.mqtt"})
 @EnableTransactionManagement()
-@Import({MessagingConfig.class})
+@Import({MessagingConfig.class, MetricsConfig.class})
 @PropertySource("classpath:osgp-adapter-protocol-mqtt.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterProtocolMqtt/config}", ignoreResourceNotFound = true)
