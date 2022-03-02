@@ -1,4 +1,4 @@
-@Common @Platform @AdminDeviceManagement @ProtocolInfo @Sander
+@Common @Platform @AdminDeviceManagement @ProtocolInfo
 Feature: Manage protocol info records
 
   Scenario Outline: Get protocol info
