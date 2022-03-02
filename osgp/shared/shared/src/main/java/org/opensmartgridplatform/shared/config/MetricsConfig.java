@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Configuration;
  * <p>The provided {@link PrometheusMeterRegistry} bean can be used to add custom metrics.
  */
 @Configuration
-// Starts the PrometheusMetricsServer
+// Points Spring to the PrometheusMetricsServer service.
 @ComponentScan(basePackages = {"org.opensmartgridplatform.shared.metrics"})
 public class MetricsConfig extends AbstractConfig {
   private static final Logger LOGGER = LoggerFactory.getLogger(MetricsConfig.class);
@@ -62,7 +62,7 @@ public class MetricsConfig extends AbstractConfig {
    * @return registry
    */
   @Bean
-  public PrometheusMeterRegistry getMeterRegistry() {
+  public PrometheusMeterRegistry meterRegistry() {
     LOGGER.info("Enabling Prometheus metrics");
     final PrometheusMeterRegistry registry =
         new PrometheusMeterRegistry(io.micrometer.prometheus.PrometheusConfig.DEFAULT);
