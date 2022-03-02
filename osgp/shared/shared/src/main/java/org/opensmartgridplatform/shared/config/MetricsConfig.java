@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -41,8 +41,13 @@ import org.springframework.context.annotation.Configuration;
  * <p>The provided {@link PrometheusMeterRegistry} bean can be used to add custom metrics.
  */
 @Configuration
+// Starts the PrometheusMetricsServer
+@ComponentScan(basePackages = {"org.opensmartgridplatform.shared.metrics"})
 public class MetricsConfig extends AbstractConfig {
   private static final Logger LOGGER = LoggerFactory.getLogger(MetricsConfig.class);
+
+  @Value("${metrics.prometheus.enabled:false}")
+  private boolean metricsEnabled;
 
   @Value("${metrics.prometheus.enabledDefaultMetrics:true}")
   private boolean enableDefaultMetrics;
@@ -62,24 +67,11 @@ public class MetricsConfig extends AbstractConfig {
     final PrometheusMeterRegistry registry =
         new PrometheusMeterRegistry(io.micrometer.prometheus.PrometheusConfig.DEFAULT);
 
-    if (this.enableDefaultMetrics) {
+    if (this.metricsEnabled && this.enableDefaultMetrics) {
       this.bindDefaultMetrics(registry);
     }
 
     return registry;
-  }
-
-  /**
-   * The HTTP server providing Prometheus with metrics. Only started when configured to do so.
-   *
-   * @param meterRegistry The registry to publish
-   * @return Prometheus HTTP server (runs automatically)
-   */
-  @Bean
-  @Conditional(PrometheusEnabledCondition.class)
-  public PrometheusMetricsServer prometheusMetricsServer(
-      final PrometheusMeterRegistry meterRegistry) {
-    return new PrometheusMetricsServer(meterRegistry);
   }
 
   private void bindDefaultMetrics(final PrometheusMeterRegistry registry) {

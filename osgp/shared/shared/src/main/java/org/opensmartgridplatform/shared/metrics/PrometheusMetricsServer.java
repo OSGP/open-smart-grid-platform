@@ -21,10 +21,13 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.shared.config.MetricsConfig;
+import org.opensmartgridplatform.shared.config.PrometheusEnabledCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.stereotype.Service;
 
 /**
  * Component that exposes custom metrics, created using Micrometer, for Prometheus. Based on the
@@ -61,6 +64,8 @@ import org.springframework.beans.factory.annotation.Value;
 // Suppress warnings, since HttpServer and HttpExchange are "suitable for use outside of the JDK
 // implementation itself".
 @SuppressWarnings({"squid:S1191", "restriction"})
+@Service
+@Conditional(PrometheusEnabledCondition.class)
 public class PrometheusMetricsServer {
   private static final Logger LOGGER = LoggerFactory.getLogger(PrometheusMetricsServer.class);
 
