@@ -772,6 +772,9 @@
       <xsd:enumeration value="NEW_IN_INVENTORY"/>
       <xsd:enumeration value="READY_FOR_USE"/>
       <xsd:enumeration value="REGISTERED"/>
+      <xsd:enumeration value="REGISTERED_BUILD_IN_FAILED"/>
+      <xsd:enumeration value="REGISTERED_INSTALL_FAILED"/>
+      <xsd:enumeration value="REGISTERED_UPDATE_FAILED"/>
       <xsd:enumeration value="IN_USE"/>
       <xsd:enumeration value="RETURNED_TO_INVENTORY"/>
       <xsd:enumeration value="UNDER_TEST"/>

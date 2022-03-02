@@ -719,7 +719,7 @@ public class DefaultDeviceProfile {
   @Scope("prototype")
   @Bean
   public AlarmFilter alarmFilter() {
-    return new AlarmFilter(this.alarmFilterValue);
+    return new AlarmFilter("0.0.97.98.10.255", this.alarmFilterValue);
   }
 
   @Bean
