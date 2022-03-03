@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -108,6 +109,7 @@ class InvocationCounterManagerTest {
     final Logger invocationManagerLogger =
         (Logger) LoggerFactory.getLogger(InvocationCounterManager.class);
     final ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+    final List<ILoggingEvent> logsList = listAppender.list;
     final long invocationCounterValueOnDevice = 1;
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
     final DataObject dataObject = DataObject.newUInteger32Data(invocationCounterValueOnDevice);
@@ -119,21 +121,20 @@ class InvocationCounterManagerTest {
     listAppender.start();
     invocationManagerLogger.addAppender(listAppender);
 
-    final FunctionalException thrown =
+    final FunctionalException thrownException =
         catchThrowableOfType(
             () ->
                 this.manager.initializeWithInvocationCounterStoredOnDeviceTask(
                     this.device, connectionManager),
             FunctionalException.class);
 
-    final List<ILoggingEvent> logsList = listAppender.list;
-
+    assertTrue(logsList.size() > 0);
     assertEquals(
         "[ERROR] Attempt to lower invocationCounter of device device-1",
         logsList.get(0).toString());
 
-    assertThat(thrown).isNotNull();
-    assertThat(thrown.getExceptionType())
+    assertThat(thrownException).isNotNull();
+    assertThat(thrownException.getExceptionType())
         .isEqualTo(FunctionalExceptionType.ATTEMPT_TO_LOWER_INVOCATION_COUNTER);
   }
 }
