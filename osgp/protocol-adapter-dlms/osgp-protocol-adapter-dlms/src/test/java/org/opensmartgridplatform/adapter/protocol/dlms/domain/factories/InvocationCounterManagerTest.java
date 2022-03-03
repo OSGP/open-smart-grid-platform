@@ -10,8 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -128,10 +126,13 @@ class InvocationCounterManagerTest {
                     this.device, connectionManager),
             FunctionalException.class);
 
-    assertTrue(logsList.size() > 0);
-    assertEquals(
-        "[ERROR] Attempt to lower invocationCounter of device device-1",
-        logsList.get(0).toString());
+    assertThat(logsList.size() > 0).isTrue();
+    assertThat(
+            logsList
+                .get(0)
+                .toString()
+                .contains("[ERROR] Attempt to lower invocationCounter of device"))
+        .isTrue();
 
     assertThat(thrownException).isNotNull();
     assertThat(thrownException.getExceptionType())
