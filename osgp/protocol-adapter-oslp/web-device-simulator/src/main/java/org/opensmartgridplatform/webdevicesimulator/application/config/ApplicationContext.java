@@ -16,6 +16,7 @@ import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.opensmartgridplatform.webdevicesimulator.domain.repositories.DeviceRepository;
 import org.opensmartgridplatform.webdevicesimulator.service.RegisterDevice;
 import org.opensmartgridplatform.webdevicesimulator.service.SwitchingServices;
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -50,6 +52,7 @@ import org.springframework.web.servlet.view.JstlView;
  */
 @Configuration
 @ComponentScan(basePackages = {"org.opensmartgridplatform.webdevicesimulator"})
+@Import({MetricsConfig.class})
 @EnableJpaRepositories(
     entityManagerFactoryRef = "entityManagerFactory",
     basePackageClasses = {DeviceRepository.class})

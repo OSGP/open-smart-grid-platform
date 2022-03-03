@@ -12,6 +12,7 @@ import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaEventSpecifi
 import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.opensmartgridplatform.ws.smartmetering.config.SmartmeteringWebServiceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,8 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
   PersistenceConfigCore.class,
   MessagingConfig.class,
   WebServiceConfig.class,
-  SmartmeteringWebServiceConfig.class
+  SmartmeteringWebServiceConfig.class,
+  MetricsConfig.class
 })
 @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)

@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.ws.da.application.config;
 
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.opensmartgridplatform.ws.da.config.DistributionAutomationWebServiceConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -35,7 +36,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
       "org.opensmartgridplatform.shared.application.config"
     })
 @ImportResource("classpath:applicationContext.xml")
-@Import({DistributionAutomationWebServiceConfig.class})
+@Import({DistributionAutomationWebServiceConfig.class, MetricsConfig.class})
 @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(
