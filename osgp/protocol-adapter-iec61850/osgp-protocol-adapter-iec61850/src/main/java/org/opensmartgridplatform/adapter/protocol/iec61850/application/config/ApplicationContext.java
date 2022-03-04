@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.application.config;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.FirmwareLocation;
 import org.opensmartgridplatform.core.db.api.iec61850.application.config.Iec61850OsgpCoreDbApiPersistenceConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -27,7 +28,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
       "org.opensmartgridplatform.core.db.api"
     })
 @EnableTransactionManagement()
-@Import({MessagingConfig.class, Iec61850OsgpCoreDbApiPersistenceConfig.class, Iec61850Config.class})
+@Import({
+  MessagingConfig.class,
+  Iec61850OsgpCoreDbApiPersistenceConfig.class,
+  Iec61850Config.class,
+  MetricsConfig.class
+})
 @PropertySource("classpath:osgp-adapter-protocol-iec61850.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(

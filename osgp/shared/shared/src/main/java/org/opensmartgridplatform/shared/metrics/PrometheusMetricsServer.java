@@ -19,10 +19,15 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
+import org.opensmartgridplatform.shared.config.PrometheusEnabledCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.stereotype.Service;
 
 /**
  * Component that exposes custom metrics, created using Micrometer, for Prometheus. Based on the
@@ -42,6 +47,7 @@ import org.springframework.beans.factory.annotation.Value;
  * public PrometheusMetricsServer prometheusMetricsServer(PrometheusMeterRegistry prometheusMeterRegistry) {
  *     return new PrometheusMetricsServer(prometheusMeterRegistry);
  * }</pre>
+ *       or use {@link MetricsConfig}
  *   <li>In the application properties, specify port and path to use to publish the metrics, and the
  *       name of the component:
  *       <pre>
@@ -58,6 +64,8 @@ import org.springframework.beans.factory.annotation.Value;
 // Suppress warnings, since HttpServer and HttpExchange are "suitable for use outside of the JDK
 // implementation itself".
 @SuppressWarnings({"squid:S1191", "restriction"})
+@Service
+@Conditional(PrometheusEnabledCondition.class)
 public class PrometheusMetricsServer {
   private static final Logger LOGGER = LoggerFactory.getLogger(PrometheusMetricsServer.class);
 
@@ -67,7 +75,7 @@ public class PrometheusMetricsServer {
   @Value("${metrics.prometheus.path}")
   private String path;
 
-  @Value("${metrics.componentname}")
+  @Value("${metrics.componentname:}")
   private String componentName;
 
   private final PrometheusMeterRegistry prometheusMeterRegistry;
@@ -84,7 +92,9 @@ public class PrometheusMetricsServer {
     requireNonNull(this.path, "Path not set");
     requireNonNull(this.componentName, "Component name not set");
 
-    this.prometheusMeterRegistry.config().commonTags("component", this.componentName);
+    if (!StringUtils.isEmpty(this.componentName)) {
+      this.prometheusMeterRegistry.config().commonTags("component", this.componentName);
+    }
     this.createHttpServer();
     LOGGER.debug("Prometheus metrics server created.");
 

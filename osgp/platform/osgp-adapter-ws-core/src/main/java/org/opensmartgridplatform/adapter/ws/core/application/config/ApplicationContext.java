@@ -19,6 +19,7 @@ import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareLocation;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.opensmartgridplatform.ws.core.config.CoreWebServiceConfig;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -48,7 +49,8 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
   PersistenceConfigWs.class,
   WritablePersistenceConfigCore.class,
   WebServiceConfig.class,
-  CoreWebServiceConfig.class
+  CoreWebServiceConfig.class,
+  MetricsConfig.class
 })
 @PropertySource("classpath:osgp-adapter-ws-core.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)

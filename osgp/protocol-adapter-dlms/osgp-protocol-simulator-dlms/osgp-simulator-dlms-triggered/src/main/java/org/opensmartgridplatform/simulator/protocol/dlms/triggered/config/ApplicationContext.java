@@ -20,6 +20,7 @@ import org.apache.cxf.interceptor.AbstractLoggingInterceptor;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.opensmartgridplatform.shared.filters.NoCacheResponseFilter;
 import org.opensmartgridplatform.simulator.protocol.dlms.dynamic.DlmsAttributeValuesResource;
 import org.opensmartgridplatform.simulator.protocol.dlms.triggered.api.SimulatorTriggerResource;
@@ -27,10 +28,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 
 @Configuration
 @ComponentScan(basePackages = {"org.opensmartgridplatform.simulator.protocol.dlms.triggered"})
+@Import({MetricsConfig.class})
 @ImportResource({"classpath:applicationContext.xml"})
 public class ApplicationContext {
 
