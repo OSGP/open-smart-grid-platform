@@ -45,8 +45,8 @@ public class ProtocolInfoSteps {
   @Then("^I delete the protocol record$")
   public void iDeleteTheProtocolRecord(final Map<String, String> settings) {
     final ProtocolInfo record =
-        this.protocolInfoRepository.findByProtocolAndProtocolVersion(
-            getProtocol(settings), getProtocolVersion(settings));
+        this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
+            getProtocol(settings), getProtocolVersion(settings), getProtocolVariant(settings));
     this.protocolInfoRepository.delete(record);
   }
 

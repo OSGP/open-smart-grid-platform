@@ -16,15 +16,20 @@ Feature: Manage protocol info records
       | ProtocolVersion | <ProtocolVersion> |
       | ProtocolVariant | <ProtocolVariant> |
 
-    Examples: 
+    Examples:
       | Protocol | ProtocolVersion | ProtocolVariant |
       | test     |             1.0 | null            |
       | test     |             1.0 | test            |
 
   Scenario Outline: Update protocol for device
+    Also checks that specifying a 'null' variant actually retrieves that variant.
     Given a device
       | DeviceIdentification       | TEST1024000000001 |
       | OrganizationIdentification | test-org          |
+    And a protocol
+      | Protocol        | <Protocol>           |
+      | ProtocolVersion | <ProtocolVersion>    |
+      | ProtocolVariant | should-not-find-this |
     When receiving a update device protocol request
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
@@ -36,8 +41,12 @@ Feature: Manage protocol info records
       | Protocol             | <Protocol>        |
       | ProtocolVersion      | <ProtocolVersion> |
       | ProtocolVariant      | <ProtocolVariant> |
+    And I delete the protocol record
+      | Protocol        | <Protocol>           |
+      | ProtocolVersion | <ProtocolVersion>    |
+      | ProtocolVariant | should-not-find-this |
 
-    Examples: 
+    Examples:
       | Protocol    | ProtocolVersion | ProtocolVariant |
       | OSLP ELSTER |             1.0 | null            |
       | IEC61850    |             1.0 | null            |
@@ -54,7 +63,7 @@ Feature: Manage protocol info records
     Then the update device protocol response contains an error
       | FaultString | UNKNOWN_PROTOCOL_NAME_OR_VERSION_OR_VARIANT |
 
-    Examples: 
+    Examples:
       | Protocol    | ProtocolVersion | ProtocolVariant |
       | OSLP ELSTER |             1.0 | does-not-exist  |
       | IEC61850    |             1.0 | does-not-exist  |
