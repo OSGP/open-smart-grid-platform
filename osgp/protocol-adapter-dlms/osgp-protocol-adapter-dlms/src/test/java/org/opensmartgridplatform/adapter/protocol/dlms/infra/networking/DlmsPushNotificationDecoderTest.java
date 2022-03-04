@@ -20,6 +20,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_4;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_1;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.PHASE_OUTAGE_DETECTED_L1;
+import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.PHASE_OUTAGE_TEST_INDICATION;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.REPLACE_BATTERY;
 
 import io.netty.buffer.ByteBuf;
@@ -197,8 +198,7 @@ class DlmsPushNotificationDecoderTest {
   }
 
   @Test
-  public void decodeSmr5AlarmsWithLogicalNames()
-      throws UnknownDecodingStateException, UnrecognizedMessageDataException {
+  public void decodeSmr5AlarmsWithLogicalNames() throws UnrecognizedMessageDataException {
 
     // Test the 4 possible logical names (2 different trigger types)
     this.decodeSmr5AlarmsWithLogicalName(SCHEDULER_OBISCODE_BYTES, PUSH_SCHEDULER_TRIGGER);
@@ -210,8 +210,7 @@ class DlmsPushNotificationDecoderTest {
   }
 
   @Test
-  public void decodeSmr5AlarmsWithDateTime()
-      throws UnknownDecodingStateException, UnrecognizedMessageDataException {
+  public void decodeSmr5AlarmsWithDateTime() throws UnrecognizedMessageDataException {
 
     this.decodeSmr5AlarmsWithLogicalName(SCHEDULER_OBISCODE_BYTES, PUSH_SCHEDULER_TRIGGER, true);
   }
@@ -224,9 +223,8 @@ class DlmsPushNotificationDecoderTest {
     this.decoder = new DlmsPushNotificationDecoder();
     final ByteBuf buffer = mock(ByteBuf.class);
 
-    // Create alarm register with 4 alarms: replace battery, 2 mbus alarms
-    // and phase outage detected (new in SMR5.1)
-    final byte[] alarmRegister = new byte[] {0x10, 0x18, 0x00, 0x02};
+    // Create alarm register with 5 alarms
+    final byte[] alarmRegister = new byte[] {(byte) 0x90, 0x18, 0x00, 0x02};
 
     this.setupSmr5BufferWithAlarm(buffer, IDENTIFIER, ALARM_OBISCODE_BYTES, alarmRegister);
 
@@ -244,11 +242,13 @@ class DlmsPushNotificationDecoderTest {
     assertThat(dlmsPushNotification.getTriggerType()).isEqualTo(PUSH_ALARM_TRIGGER);
 
     final Set<AlarmTypeDto> alarms = dlmsPushNotification.getAlarms();
-    assertThat(alarms.size()).isEqualTo(4);
-    assertThat(alarms.contains(REPLACE_BATTERY)).isTrue();
-    assertThat(alarms.contains(COMMUNICATION_ERROR_M_BUS_CHANNEL_4)).isTrue();
-    assertThat(alarms.contains(FRAUD_ATTEMPT_M_BUS_CHANNEL_1)).isTrue();
-    assertThat(alarms.contains(PHASE_OUTAGE_DETECTED_L1)).isTrue();
+    assertThat(alarms)
+        .containsExactlyInAnyOrder(
+            REPLACE_BATTERY,
+            COMMUNICATION_ERROR_M_BUS_CHANNEL_4,
+            FRAUD_ATTEMPT_M_BUS_CHANNEL_1,
+            PHASE_OUTAGE_DETECTED_L1,
+            PHASE_OUTAGE_TEST_INDICATION);
 
     this.verifySmr5BufferCallsWithAlarm(buffer, alarmRegister);
 
@@ -260,7 +260,7 @@ class DlmsPushNotificationDecoderTest {
 
   private void decodeSmr5AlarmsWithLogicalName(
       final byte[] logicalName, final String expecterTriggerType)
-      throws UnknownDecodingStateException, UnrecognizedMessageDataException {
+      throws UnrecognizedMessageDataException {
     this.decodeSmr5AlarmsWithLogicalName(logicalName, expecterTriggerType, false);
   }
 
@@ -307,13 +307,18 @@ class DlmsPushNotificationDecoderTest {
       final String identifier,
       final byte[] logicalName,
       final boolean withDateTime) {
-    /**
-     * Alarm example for SMR5, without alarm register: 0F // Data-notification 00 00 00 01 //
-     * Long-invoke-id-and-priority (can be ignored) 00 // Date-time (length 0) 02 02 // Structure
-     * (0x02), 2 elements 09 11 // Octetstring (0x09), length 11 45 58 58 58 58 31 32 33 34 35 36 37
-     * 38 39 30 31 32 // Equipment id EXXXX123456789012 09 06 // Octetstring (0x09), length 6 00 00
-     * 19 09 00 FF // Logical name: Push setup schedule
-     */
+    /*
+     Alarm example for SMR5, without alarm register:
+     0F                                                     Data-notification
+     00 00 00 01                                            Invoke-id-and-prioruty (can be ignored)
+     00                                                     Date-time (length 0)
+     02 02                                                  Structure (0x02), 2 elements
+       09 11                                                Octetstring (0x09), length 11
+         45 58 58 58 58 31 32 33 34 35 36 37 38 39 30 31 32 Equipment id EXXXX123456789012
+       09 06                                                Octetstring (0x09), length 6
+         00 00 19 09 00 FF                                  Logical name: Push setup schedule
+    */
+
     int dateTimeLength = 0;
     if (withDateTime) {
       dateTimeLength = SMR5_NUMBER_OF_BYTES_FOR_DATETIME;
@@ -363,14 +368,20 @@ class DlmsPushNotificationDecoderTest {
       final String identifier,
       final byte[] logicalName,
       final byte[] alarmRegister) {
-    /**
-     * Alarm example for SMR5, with alarm register: 0F // Data-notification 00 00 00 01 //
-     * Long-invoke-id-and-priority (can be ignored) 00 // Date-time (length 0) 02 03 // Structure
-     * (0x02), 3 elements 09 11 // Octetstring (0x09), length 11 45 58 58 58 58 31 32 33 34 35 36 37
-     * 38 39 30 31 32 // Equipment id EXXXX123456789012 09 06 // Octetstring (0x09), length 6 00 01
-     * 19 09 00 FF // Logical name: Push setup alarms 06 // Double long unsigned (0x06) 00 00 00 02
-     * // Alarm register, with Replace battery set
-     */
+    /*
+     Alarm example for SMR5, with alarm register:
+     0F                                                     Data-notification
+     00 00 00 01                                            Invoke-id-and-priority (can be ignored)
+     00                                                     Date-time (length 0)
+     02 03                                                  Structure (0x02), 3 elements
+       09 11                                                Octetstring (0x09), length 11
+         45 58 58 58 58 31 32 33 34 35 36 37 38 39 30 31 32 Equipment id EXXXX123456789012
+       09 06                                                Octetstring (0x09), length 6
+         00 01 19 09 00 FF                                  Logical name: Push setup alarms
+       06                                                   Double long unsigned (0x06)
+         00 00 00 02                                        Alarm register, Replace battery set
+    */
+
     when(buffer.getByte(8)).thenReturn((byte) 0x0F); // Data-notification
 
     when(buffer.readByte())
