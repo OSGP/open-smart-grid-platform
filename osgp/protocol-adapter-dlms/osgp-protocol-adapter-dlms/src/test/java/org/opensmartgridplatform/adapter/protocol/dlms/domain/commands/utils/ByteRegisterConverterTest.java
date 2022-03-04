@@ -87,7 +87,7 @@ class ByteRegisterConverterTest {
 
   @Test
   void testToLongValue() {
-    //    assertThat(this.converter.toLongValue(Collections.emptySet())).isEqualTo(0x00L);
+    assertThat(this.converter.toLongValue(Collections.emptySet())).isEqualTo(0x00L);
     assertThat(this.converter.toLongValue(this.createSet(TestType.TYPE_0))).isEqualTo(0x01L);
     assertThat(this.converter.toLongValue(this.createSet(TestType.TYPE_1))).isEqualTo(0x02L);
     assertThat(this.converter.toLongValue(this.createSet(TestType.TYPE_0, TestType.TYPE_1)))
