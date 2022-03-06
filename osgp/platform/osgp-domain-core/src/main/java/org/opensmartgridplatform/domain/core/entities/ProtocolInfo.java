@@ -12,7 +12,6 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
-import org.springframework.util.StringUtils;
 
 @Entity
 public class ProtocolInfo extends AbstractEntity {
@@ -62,26 +61,8 @@ public class ProtocolInfo extends AbstractEntity {
     return createKey(protocol, protocolVersion);
   }
 
-  public static String getKey(
-      final String protocol, final String protocolVersion, final String protocolVariant) {
-    return createKey(protocol, protocolVersion, protocolVariant);
-  }
-
-  public String getKey() {
-    if (StringUtils.hasText(this.protocolVariant)) {
-      return createKey(this.protocol, this.protocolVersion, this.protocolVariant);
-    } else {
-      return createKey(this.protocol, this.protocolVersion);
-    }
-  }
-
   private static String createKey(final String protocol, final String version) {
     return protocol + "-" + version;
-  }
-
-  private static String createKey(
-      final String protocol, final String version, final String variant) {
-    return protocol + "-" + version + "-" + variant;
   }
 
   @Override
