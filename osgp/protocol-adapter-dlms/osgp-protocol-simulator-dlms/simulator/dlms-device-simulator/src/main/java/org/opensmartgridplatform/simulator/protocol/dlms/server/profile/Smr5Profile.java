@@ -21,6 +21,7 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ConfigurationObje
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDriverActiveFirmwareIdentifier;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDriverActiveFirmwareSignature;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.OctetStringExtendedRegister;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityEventLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile1;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.UnitType;
@@ -101,6 +102,11 @@ public class Smr5Profile {
   public MBusDriverActiveFirmwareSignature mBusDriverActiveFirmwareSignature() {
     return new MBusDriverActiveFirmwareSignature(
         Hex.decode(this.mBusDriverActiveFirmwareSignature.getBytes()));
+  }
+
+  @Bean
+  public PowerQualityEventLog powerQualityEventLog(final Calendar cal) {
+    return new PowerQualityEventLog(cal);
   }
 
   @Bean

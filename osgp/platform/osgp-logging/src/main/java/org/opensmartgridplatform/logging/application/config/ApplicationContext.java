@@ -13,6 +13,7 @@ import org.opensmartgridplatform.logging.application.config.messaging.InboundPro
 import org.opensmartgridplatform.logging.infra.jms.LoggingMessageListener;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -31,11 +32,11 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:osgp-logging.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true)
-@Import(
-    value = {
-      InboundLoggingRequestsMessagingConfig.class,
-      InboundProtocolLogItemRequestsMessagingConfig.class
-    })
+@Import({
+  InboundLoggingRequestsMessagingConfig.class,
+  InboundProtocolLogItemRequestsMessagingConfig.class,
+  MetricsConfig.class
+})
 public class ApplicationContext extends AbstractConfig {
 
   @Value(value = "${max.retry.count:3}")

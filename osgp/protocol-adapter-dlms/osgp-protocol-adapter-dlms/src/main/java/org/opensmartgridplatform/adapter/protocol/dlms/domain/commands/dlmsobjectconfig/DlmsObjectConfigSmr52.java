@@ -38,7 +38,7 @@ public class DlmsObjectConfigSmr52 extends DlmsObjectConfigSmr51 {
     final List<DlmsObject> objectList = super.initObjects();
 
     // Abstract objects
-    final DlmsObject alarmFilter2 = new DlmsData(ALARM_FILTER_2, "0.0.97.98.10.255");
+    final DlmsObject alarmFilter2 = new DlmsData(ALARM_FILTER_2, "0.0.97.98.11.255");
     final DlmsObject alarmRegister2 = new DlmsData(ALARM_REGISTER_2, "0.0.97.98.1.255");
 
     objectList.addAll(Arrays.asList(alarmFilter2, alarmRegister2));

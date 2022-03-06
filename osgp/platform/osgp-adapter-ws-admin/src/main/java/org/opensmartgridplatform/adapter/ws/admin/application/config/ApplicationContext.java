@@ -15,6 +15,7 @@ import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
 import org.opensmartgridplatform.logging.domain.config.ReadOnlyLoggingConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.opensmartgridplatform.ws.admin.config.AdminWebServiceConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -41,7 +42,8 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
   PersistenceConfig.class,
   WebServiceConfig.class,
   ReadOnlyLoggingConfig.class,
-  AdminWebServiceConfig.class
+  AdminWebServiceConfig.class,
+  MetricsConfig.class
 })
 @PropertySource("classpath:osgp-adapter-ws-admin.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)

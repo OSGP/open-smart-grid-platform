@@ -12,9 +12,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.annotation.Resource;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.SetTransitionService;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -28,6 +30,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
       "org.opensmartgridplatform.domain.core",
       "org.opensmartgridplatform.adapter.domain.publiclighting"
     })
+@Import({MetricsConfig.class})
 @EnableTransactionManagement
 public class ApplicationContext {
 

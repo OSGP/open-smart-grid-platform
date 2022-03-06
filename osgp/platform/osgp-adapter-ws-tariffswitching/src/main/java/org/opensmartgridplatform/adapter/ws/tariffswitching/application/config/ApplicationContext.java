@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.ws.tariffswitching.application.config;
 
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.opensmartgridplatform.ws.tariffswitching.config.TariffSwitchingWebServiceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +44,8 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
   PersistenceConfigCore.class,
   MessagingConfig.class,
   WebServiceConfig.class,
-  TariffSwitchingWebServiceConfig.class
+  TariffSwitchingWebServiceConfig.class,
+  MetricsConfig.class
 })
 @PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)

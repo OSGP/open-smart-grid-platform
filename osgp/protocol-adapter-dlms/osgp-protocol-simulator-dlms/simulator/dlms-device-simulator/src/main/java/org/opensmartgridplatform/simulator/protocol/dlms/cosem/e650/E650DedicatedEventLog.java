@@ -191,11 +191,11 @@ public class E650DedicatedEventLog extends ProfileWithTime {
     this.captureObjectDefinitions = this.initCaptureObjects();
     this.buffer = DataObject.newNullData();
     this.captureObjects = DataObject.newNullData();
-    this.capturePeriod = DataObject.newInteger32Data(CAPTURE_PERIOD);
+    this.capturePeriod = DataObject.newUInteger32Data(CAPTURE_PERIOD);
     this.sortMethod = DataObject.newEnumerateData(SortMethod.FIFO.value());
     this.sortObject = DataObject.newNullData();
     this.entriesInUse = DataObject.newUInteger32Data(0);
-    this.profileEntries = DataObject.newInteger32Data(PROFILE_ENTRIES);
+    this.profileEntries = DataObject.newUInteger32Data(PROFILE_ENTRIES);
 
     this.initBufferData();
   }

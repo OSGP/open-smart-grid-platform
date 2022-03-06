@@ -17,6 +17,7 @@ import org.opensmartgridplatform.core.infra.jms.domain.outbound.DomainResponseMe
 import org.opensmartgridplatform.core.infra.jms.protocol.outbound.ProtocolRequestMessageSender;
 import org.opensmartgridplatform.core.infra.jms.protocol.outbound.ProtocolResponseMessageSender;
 import org.opensmartgridplatform.core.infra.messaging.CoreLogItemRequestMessageSender;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +38,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
       "org.opensmartgridplatform.core"
     })
 @EnableTransactionManagement()
-@Import({MessagingConfig.class})
+@Import({
+  MessagingConfig.class,
+  MetricsConfig.class,
+})
 public class ApplicationContext {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
