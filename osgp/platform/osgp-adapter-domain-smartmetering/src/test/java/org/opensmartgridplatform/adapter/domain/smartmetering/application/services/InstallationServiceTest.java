@@ -48,6 +48,7 @@ public class InstallationServiceTest {
   private static final String DEVICE_IDENTIFICATION = "test-device-identification";
   private static final String PROTOCOL_NAME = "test-protocol-name";
   private static final String PROTOCOL_VERSION = "test-protocol-version";
+  private static final String PROTOCOL_VARIANT = "test-protocol-variant";
 
   @InjectMocks private SmartMeterService smartMeterService;
   @InjectMocks private InstallationService instance;
@@ -89,8 +90,11 @@ public class InstallationServiceTest {
         .thenReturn(null);
     when(this.smartMeteringDevice.getProtocolName()).thenReturn(PROTOCOL_NAME);
     when(this.smartMeteringDevice.getProtocolVersion()).thenReturn(PROTOCOL_VERSION);
-    when(this.protocolInfoRepository.findByProtocolAndProtocolVersion(
-            this.smartMeteringDevice.getProtocolInfoLookupName(), PROTOCOL_VERSION))
+    when(this.smartMeteringDevice.getProtocolVariant()).thenReturn(PROTOCOL_VARIANT);
+    when(this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
+            this.smartMeteringDevice.getProtocolInfoLookupName(),
+            PROTOCOL_VERSION,
+            PROTOCOL_VARIANT))
         .thenReturn(this.protocolInfo);
 
     // CALL
