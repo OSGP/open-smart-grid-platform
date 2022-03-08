@@ -58,10 +58,6 @@ public class ProtocolInfo extends AbstractEntity {
     this.parallelRequestsAllowed = builder.parallelRequestsAllowed;
   }
 
-  public static String getKey(final String protocol, final String protocolVersion) {
-    return createKey(protocol, protocolVersion);
-  }
-
   public String getKey() {
     if (StringUtils.hasText(this.protocolVariant)) {
       return createKey(this.protocol, this.protocolVersion, this.protocolVariant);
