@@ -19,6 +19,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
@@ -108,9 +109,10 @@ class InvocationCounterManagerTest {
         (Logger) LoggerFactory.getLogger(InvocationCounterManager.class);
     final ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
     final List<ILoggingEvent> logsList = listAppender.list;
-    final long invocationCounterValueOnDevice = 1;
+    final long newInvocationCounterValueOnDevice = 1;
+    final DlmsDevice deviceWithPreviouslyKnownInvocationCounterSeven = this.device;
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-    final DataObject dataObject = DataObject.newUInteger32Data(invocationCounterValueOnDevice);
+    final DataObject dataObject = DataObject.newUInteger32Data(newInvocationCounterValueOnDevice);
 
     when(this.dlmsHelper.getAttributeValue(
             eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
@@ -123,16 +125,13 @@ class InvocationCounterManagerTest {
         catchThrowableOfType(
             () ->
                 this.manager.initializeWithInvocationCounterStoredOnDeviceTask(
-                    this.device, connectionManager),
+                    deviceWithPreviouslyKnownInvocationCounterSeven, connectionManager),
             FunctionalException.class);
 
-    assertThat(logsList.size() > 0).isTrue();
-    assertThat(
-            logsList
-                .get(0)
-                .toString()
-                .contains("[ERROR] Attempt to lower invocationCounter of device"))
-        .isTrue();
+    assertThat(logsList).isNotEmpty();
+    final ILoggingEvent loggingEvent = logsList.get(0);
+    assertThat(loggingEvent).asString().contains("Attempt to lower invocationCounter of device");
+    assertThat(loggingEvent.getLevel()).isEqualTo(Level.ERROR);
 
     assertThat(thrownException).isNotNull();
     assertThat(thrownException.getExceptionType())
