@@ -38,17 +38,20 @@ class AlarmHelperServiceTest {
 
   @Test
   void testConvertToAlarmTypes() {
-    final long registerValue = Long.parseLong("00000001000100010001000100000001", 2);
+    final long registerValue = Long.parseLong("10000001000100010001000100000001", 2);
 
     final Set<AlarmTypeDto> alarmTypes =
         this.alarmHelperService.toAlarmTypes(DlmsObjectType.ALARM_REGISTER_1, registerValue);
 
-    assertThat(alarmTypes.contains(AlarmTypeDto.CLOCK_INVALID)).isTrue();
-    assertThat(alarmTypes.contains(AlarmTypeDto.PROGRAM_MEMORY_ERROR)).isTrue();
-    assertThat(alarmTypes.contains(AlarmTypeDto.WATCHDOG_ERROR)).isTrue();
-    assertThat(alarmTypes.contains(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_1)).isTrue();
-    assertThat(alarmTypes.contains(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_1)).isTrue();
-    assertThat(alarmTypes.contains(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1)).isTrue();
+    assertThat(alarmTypes)
+        .containsExactlyInAnyOrder(
+            AlarmTypeDto.CLOCK_INVALID,
+            AlarmTypeDto.PROGRAM_MEMORY_ERROR,
+            AlarmTypeDto.WATCHDOG_ERROR,
+            AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_1,
+            AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_1,
+            AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1,
+            AlarmTypeDto.PHASE_OUTAGE_TEST_INDICATION);
   }
 
   @Test
@@ -82,17 +85,19 @@ class AlarmHelperServiceTest {
 
   @Test
   void testConvertToAlarmTypesAlarmRegister2() {
-    final long registerValue = Long.parseLong("00000000000000000000000001111111", 2);
+    final long registerValue = Long.parseLong("00000000000000000000000000111111", 2);
 
     final Set<AlarmTypeDto> alarmTypes =
         this.alarmHelperService.toAlarmTypes(DlmsObjectType.ALARM_REGISTER_2, registerValue);
 
-    assertThat(alarmTypes.contains(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L1)).isTrue();
-    assertThat(alarmTypes.contains(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L2)).isTrue();
-    assertThat(alarmTypes.contains(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L3)).isTrue();
-    assertThat(alarmTypes.contains(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L1)).isTrue();
-    assertThat(alarmTypes.contains(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L2)).isTrue();
-    assertThat(alarmTypes.contains(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3)).isTrue();
+    assertThat(alarmTypes)
+        .containsExactlyInAnyOrder(
+            AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L1,
+            AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L2,
+            AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L3,
+            AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L1,
+            AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L2,
+            AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3);
   }
 
   @Test
