@@ -173,8 +173,8 @@
         name="DecoupleMbusDeviceResponse">
       </wsdl:output>
     </wsdl:operation>
-    
-        <wsdl:operation name="CoupleMbusDeviceByChannel">
+
+    <wsdl:operation name="CoupleMbusDeviceByChannel">
       <wsdl:input message="tns:CoupleMbusDeviceByChannelRequest" name="CoupleMbusDeviceByChannelRequest">
       </wsdl:input>
       <wsdl:output message="tns:CoupleMbusDeviceByChannelAsyncResponse"
@@ -308,8 +308,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    
-     <wsdl:operation name="CoupleMbusDeviceByChannel">
+
+    <wsdl:operation name="CoupleMbusDeviceByChannel">
       <soap:operation soapAction="" />
       <wsdl:input name="CoupleMbusDeviceByChannelRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"

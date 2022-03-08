@@ -12,6 +12,7 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
+import org.springframework.util.StringUtils;
 
 @Entity
 public class ProtocolInfo extends AbstractEntity {
@@ -24,6 +25,9 @@ public class ProtocolInfo extends AbstractEntity {
 
   @Column(nullable = false, length = 255)
   private String protocolVersion;
+
+  @Column(nullable = true, length = 255)
+  private String protocolVariant;
 
   @Column(nullable = false, length = 255)
   private String outgoingRequestsPropertyPrefix;
@@ -46,6 +50,7 @@ public class ProtocolInfo extends AbstractEntity {
   private ProtocolInfo(final Builder builder) {
     this.protocol = builder.protocol;
     this.protocolVersion = builder.protocolVersion;
+    this.protocolVariant = builder.protocolVariant;
     this.outgoingRequestsPropertyPrefix = builder.outgoingRequestsPropertyPrefix;
     this.incomingResponsesPropertyPrefix = builder.incomingResponsesPropertyPrefix;
     this.incomingRequestsPropertyPrefix = builder.incomingRequestsPropertyPrefix;
@@ -53,16 +58,21 @@ public class ProtocolInfo extends AbstractEntity {
     this.parallelRequestsAllowed = builder.parallelRequestsAllowed;
   }
 
-  public static String getKey(final String protocol, final String protocolVersion) {
-    return createKey(protocol, protocolVersion);
-  }
-
   public String getKey() {
-    return createKey(this.protocol, this.protocolVersion);
+    if (StringUtils.hasText(this.protocolVariant)) {
+      return createKey(this.protocol, this.protocolVersion, this.protocolVariant);
+    } else {
+      return createKey(this.protocol, this.protocolVersion);
+    }
   }
 
   private static String createKey(final String protocol, final String version) {
     return protocol + "-" + version;
+  }
+
+  private static String createKey(
+      final String protocol, final String version, final String variant) {
+    return protocol + "-" + version + "-" + variant;
   }
 
   @Override
@@ -77,13 +87,15 @@ public class ProtocolInfo extends AbstractEntity {
     final boolean isProtocolEqual = Objects.equals(this.protocol, protocolInfo.protocol);
     final boolean isProtocolVersionEqual =
         Objects.equals(this.protocolVersion, protocolInfo.protocolVersion);
+    final boolean isProtocolVariantEqual =
+        Objects.equals(this.protocolVariant, protocolInfo.protocolVariant);
 
-    return isProtocolEqual && isProtocolVersionEqual;
+    return isProtocolEqual && isProtocolVersionEqual && isProtocolVariantEqual;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.protocol, this.protocolVersion);
+    return Objects.hash(this.protocol, this.protocolVersion, this.protocolVariant);
   }
 
   public String getProtocol() {
@@ -92,6 +104,10 @@ public class ProtocolInfo extends AbstractEntity {
 
   public String getProtocolVersion() {
     return this.protocolVersion;
+  }
+
+  public String getProtocolVariant() {
+    return this.protocolVariant;
   }
 
   public String getOutgoingRequestsPropertyPrefix() {
@@ -117,11 +133,12 @@ public class ProtocolInfo extends AbstractEntity {
   public static class Builder {
     private String protocol;
     private String protocolVersion;
+    private String protocolVariant = null;
     private String outgoingRequestsPropertyPrefix;
     private String incomingResponsesPropertyPrefix;
     private String incomingRequestsPropertyPrefix;
     private String outgoingResponsesPropertyPrefix;
-    private Boolean parallelRequestsAllowed;
+    private Boolean parallelRequestsAllowed = true;
 
     public Builder() {
       // Default constructor.
@@ -134,6 +151,11 @@ public class ProtocolInfo extends AbstractEntity {
 
     public Builder withProtocolVersion(final String protocolVersion) {
       this.protocolVersion = protocolVersion;
+      return this;
+    }
+
+    public Builder withProtocolVariant(final String protocolVariant) {
+      this.protocolVariant = protocolVariant;
       return this;
     }
 

@@ -118,6 +118,7 @@ public class PlatformDefaults {
   public static final String DEFAULT_PREFIX = "MAA";
   public static final String DEFAULT_PROTOCOL = "OSLP ELSTER";
   public static final String DEFAULT_PROTOCOL_VERSION = "1.0";
+  public static final String DEFAULT_PROTOCOL_VARIANT = null;
   public static final String DEFAULT_PUBLIC_KEY = "123456abcdef";
   public static final Boolean DEFAULT_PUBLICKEYPRESENT = true;
   public static final String DEFAULT_PUBLICLIGHTING_DESCRIPTION = "";
