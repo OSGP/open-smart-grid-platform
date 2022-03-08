@@ -109,10 +109,11 @@ class InvocationCounterManagerTest {
         (Logger) LoggerFactory.getLogger(InvocationCounterManager.class);
     final ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
     final List<ILoggingEvent> logsList = listAppender.list;
-    final long newInvocationCounterValueOnDevice = 1;
-    final DlmsDevice deviceWithPreviouslyKnownInvocationCounterSeven = this.device;
+    final long invocationCounterValueOnDevice = 1;
+    final long previouslyKnownInvocationCounter = 7; // bigger than invocationCounterValueOnDevice
+    this.device.setInvocationCounter(previouslyKnownInvocationCounter);
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-    final DataObject dataObject = DataObject.newUInteger32Data(newInvocationCounterValueOnDevice);
+    final DataObject dataObject = DataObject.newUInteger32Data(invocationCounterValueOnDevice);
 
     when(this.dlmsHelper.getAttributeValue(
             eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
@@ -125,7 +126,7 @@ class InvocationCounterManagerTest {
         catchThrowableOfType(
             () ->
                 this.manager.initializeWithInvocationCounterStoredOnDeviceTask(
-                    deviceWithPreviouslyKnownInvocationCounterSeven, connectionManager),
+                    this.device, connectionManager),
             FunctionalException.class);
 
     assertThat(logsList).isNotEmpty();
