@@ -48,10 +48,6 @@ public class ProtocolRequestMessageJmsTemplateFactory implements InitializingBea
     return this.jmsTemplateRegistry.getValue(protocolInfo.getKey());
   }
 
-  public JmsTemplate getJmsTemplate(final String protocol, final String protocolVersion) {
-    return this.jmsTemplateRegistry.getValue(ProtocolInfo.getKey(protocol, protocolVersion));
-  }
-
   @Override
   public void afterPropertiesSet() throws SSLException {
     for (final ProtocolInfo protocolInfo : this.protocolInfos) {

@@ -214,6 +214,7 @@ public class PlatformKeys extends Keys {
 
   public static final String KEY_PROTOCOL_INFO_ID = "ProtocolInfoId";
   public static final String KEY_PROTOCOL_VERSION = "ProtocolVersion";
+  public static final String KEY_PROTOCOL_VARIANT = "ProtocolVariant";
   public static final String KEY_PUBLIC_KEY = "PublicKey";
 
   public static final String KEY_PUBLICKEYPRESENT = "PublicKeyPresent";
