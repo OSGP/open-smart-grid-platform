@@ -72,7 +72,7 @@ public class CoreNotificationService {
       return CompletableFuture.supplyAsync(
               () -> {
                 final Predicate<Notification> correlationUidEquals =
-                    notification -> notification.getCorrelationUid().equals(correlationUid);
+                    notification -> correlationUid.equals(notification.getCorrelationUid());
                 return this.getNotification(correlationUidEquals, maxTimeout);
               })
           .get(maxTimeout, TimeUnit.MILLISECONDS);
