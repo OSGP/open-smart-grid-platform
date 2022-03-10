@@ -78,14 +78,10 @@ public class MetricsConfig extends AbstractConfig {
     LOGGER.info("Enabling default metrics");
     new ClassLoaderMetrics().bindTo(registry);
     new JvmMemoryMetrics().bindTo(registry);
-    try (final JvmGcMetrics jvmGcMetrics = new JvmGcMetrics()) {
-      jvmGcMetrics.bindTo(registry);
-    }
+    new JvmGcMetrics().bindTo(registry); // do not auto-close, no metrics after that
     new ProcessorMetrics().bindTo(registry);
     new JvmThreadMetrics().bindTo(registry);
-    try (final LogbackMetrics logbackMetrics = new LogbackMetrics()) {
-      logbackMetrics.bindTo(registry);
-    }
+    new LogbackMetrics().bindTo(registry); // do not auto-close, no metrics after that
     new DiskSpaceMetrics(new File("/")).bindTo(registry);
     if (this.dataSource != null) {
       try (final Connection connection = this.dataSource.getConnection()) {
