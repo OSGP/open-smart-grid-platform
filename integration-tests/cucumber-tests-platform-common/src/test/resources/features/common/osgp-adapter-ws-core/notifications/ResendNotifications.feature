@@ -1,11 +1,9 @@
-@Common @Platform
+@Common @Platform @NightlyBuildOnly
 Feature: GXF notifications (WS Core) - Resend notifications
   As an OSGP user
   I want the platform to resend missed notifications
   So the notification mechanism is more robust
 
-  # When running separately this scenario succeeds,
-  # but it still fails in the nightly build...
   Scenario: Resend missed notifications
     Given a response data record in ws-core
       | DeviceIdentification      | TEST1024000000001                                      |
@@ -21,8 +19,6 @@ Feature: GXF notifications (WS Core) - Resend notifications
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101010000000 |
       | NumberOfNotificationsSent |                                                      1 |
 
-  # When running separately this scenario succeeds,
-  # but it still fails in the nightly build...
   Scenario: Resend missed notifications with response url
     Given a response data record in ws-core
       | DeviceIdentification      | TEST1024000000001                                      |
@@ -32,12 +28,12 @@ Feature: GXF notifications (WS Core) - Resend notifications
       | NumberOfNotificationsSent |                                                      0 |
     And a response url data record in ws-core
       | CorrelationUid | test-org\|\|\|TEST1024000000001\|\|\|20170101020000000 |
-      | ResponseUrl    | http://localhost:8088/notifications/                   |
+      | ResponseUrl    | http://localhost:8188/notifications/                   |
     When OSGP checks for which response data a notification has to be resend
     Then a notification is sent in ws-core
     And the response url data in ws-core has values
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101020000000 |
-      | ResponseUrl               | http://localhost:8088/notifications/                   |
+      | ResponseUrl               | http://localhost:8188/notifications/                   |
 
   Scenario: Don't send notifications when the configurable time has not passed
     Given a response data record in ws-core
