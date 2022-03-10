@@ -19,6 +19,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Predicate;
+import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.Notification;
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.NotificationType;
 import org.slf4j.Logger;
@@ -80,8 +81,8 @@ public class CoreNotificationService {
       Thread.currentThread().interrupt();
       LOGGER.trace("getNotification for correlation UID {} was interrupted", correlationUid, e);
     } catch (final ExecutionException e) {
-      LOGGER.error(
-          "An exception occurred getting a notification for correlation UID {}", correlationUid, e);
+      Assertions.fail(
+          "An exception occurred getting a notification for correlation UID " + correlationUid, e);
     } catch (final TimeoutException e) {
       LOGGER.trace("getNotification for correlation UID {} timed out", correlationUid, e);
     }
