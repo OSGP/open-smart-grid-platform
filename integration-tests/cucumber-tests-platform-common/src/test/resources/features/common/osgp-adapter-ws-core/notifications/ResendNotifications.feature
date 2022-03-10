@@ -1,4 +1,4 @@
-@Common @Platform @NightlyBuildOnly
+@Common @Platform
 Feature: GXF notifications (WS Core) - Resend notifications
   As an OSGP user
   I want the platform to resend missed notifications
