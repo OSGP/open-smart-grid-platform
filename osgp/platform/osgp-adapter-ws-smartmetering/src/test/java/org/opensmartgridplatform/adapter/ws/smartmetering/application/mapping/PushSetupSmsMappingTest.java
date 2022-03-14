@@ -23,7 +23,7 @@ public class PushSetupSmsMappingTest {
   private static final String DESTINATION = "host:10";
   private static final TransportServiceType TRANSPORTSERVICETYPE = TransportServiceType.TCP;
   private static final MessageType MESSAGETYPE = MessageType.MANUFACTURER_SPECIFIC;
-  private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+  private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
   /** Tests if a PushSetupSms object can be mapped successfully. */
   @Test
@@ -46,8 +46,8 @@ public class PushSetupSmsMappingTest {
     assertThat(pushSetupSmsMapped).isNotNull();
     assertThat(pushSetupSmsMapped.getSendDestinationAndMethod()).isNotNull();
     assertThat(pushSetupSmsMapped.getSendDestinationAndMethod().getDestination()).isNotNull();
-    assertThat(pushSetupSmsMapped.getSendDestinationAndMethod().getTransportService()).isNotNull();
-    assertThat(pushSetupSmsMapped.getSendDestinationAndMethod().getMessage()).isNotNull();
+    assertThat(pushSetupSmsMapped.getSendDestinationAndMethod().getTransportService()).isNull();
+    assertThat(pushSetupSmsMapped.getSendDestinationAndMethod().getMessage()).isNull();
 
     // Only a SendDestinationAndMethod is mapped:
     assertThat(pushSetupSmsMapped.getLogicalName()).isNull();

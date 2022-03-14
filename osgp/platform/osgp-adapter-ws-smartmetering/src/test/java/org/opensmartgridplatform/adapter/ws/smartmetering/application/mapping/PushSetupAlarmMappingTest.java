@@ -56,14 +56,12 @@ public class PushSetupAlarmMappingTest {
 
     assertThat(pushSetupAlarmMapped).isNotNull();
 
-    // port and host are combined into destination. The converter sets default values for the other
+    // port and host are combined into destination. The converter sets null values for the other
     // two variables of a SendDestinationAndMethod.
     assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getDestination())
         .isEqualTo(DESTINATION);
-    assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getTransportService().name())
-        .isEqualTo(TRANSPORTSERVICETYPE.name());
-    assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getMessage().name())
-        .isEqualTo(MESSAGETYPE.name());
+    assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getTransportService()).isNull();
+    assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getMessage()).isNull();
 
     // check mapping of PushObjectList
     assertThat(pushSetupAlarmMapped.getPushObjectList()).hasSize(1);
