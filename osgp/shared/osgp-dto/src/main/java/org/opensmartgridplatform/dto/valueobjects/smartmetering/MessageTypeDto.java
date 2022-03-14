@@ -14,7 +14,7 @@ import java.util.Optional;
 public enum MessageTypeDto {
   A_XDR_ENCODED_X_DLMS_APDU(0),
   XML_ENCODED_X_DLMS_APDU(1),
-  MANUFACTURER_SPECIFIC(255);
+  MANUFACTURER_SPECIFIC(128);
 
   private final int dlmsEnumValue;
 

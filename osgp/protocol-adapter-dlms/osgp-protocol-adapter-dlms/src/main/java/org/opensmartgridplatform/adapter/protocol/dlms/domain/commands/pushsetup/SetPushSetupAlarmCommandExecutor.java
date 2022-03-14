@@ -81,7 +81,7 @@ public class SetPushSetupAlarmCommandExecutor
     AccessResultCode resultCode = null;
 
     if (pushSetupAlarm.hasSendDestinationAndMethod()) {
-      resultCode = this.setSendDestinationAndMethod(conn, pushSetupAlarm);
+      resultCode = this.setSendDestinationAndMethod(conn, pushSetupAlarm, device);
 
       if (resultCode != AccessResultCode.SUCCESS) {
         return resultCode;
@@ -96,14 +96,16 @@ public class SetPushSetupAlarmCommandExecutor
   }
 
   private AccessResultCode setSendDestinationAndMethod(
-      final DlmsConnectionManager conn, final PushSetupAlarmDto pushSetupAlarm)
+      final DlmsConnectionManager conn,
+      final PushSetupAlarmDto pushSetupAlarm,
+      final DlmsDevice device)
       throws ProtocolAdapterException {
     LOGGER.info(
         "Setting Send destination and method of Push Setup Alarm: {}",
         pushSetupAlarm.getSendDestinationAndMethod());
 
     final SetParameter setParameterSendDestinationAndMethod =
-        this.getSetParameterSendDestinationAndMethod(pushSetupAlarm);
+        this.getSetParameterSendDestinationAndMethod(pushSetupAlarm, device);
     final AccessResultCode resultCode =
         this.doSetRequest(
             "PushSetupAlarm, Send destination and method",
@@ -119,12 +121,15 @@ public class SetPushSetupAlarmCommandExecutor
   }
 
   private SetParameter getSetParameterSendDestinationAndMethod(
-      final PushSetupAlarmDto pushSetupAlarm) {
+      final PushSetupAlarmDto pushSetupAlarm, final DlmsDevice device) {
 
     final AttributeAddress sendDestinationAndMethodAddress =
         new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD);
     final DataObject value =
-        this.pushSetupMapper.map(pushSetupAlarm.getSendDestinationAndMethod(), DataObject.class);
+        this.pushSetupMapper.map(
+            this.getUpdatedSendDestinationAndMethod(
+                pushSetupAlarm.getSendDestinationAndMethod(), device),
+            DataObject.class);
 
     return new SetParameter(sendDestinationAndMethodAddress, value);
   }
