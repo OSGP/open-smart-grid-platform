@@ -78,10 +78,10 @@ public class MetricsConfig extends AbstractConfig {
     LOGGER.info("Enabling default metrics");
     new ClassLoaderMetrics().bindTo(registry);
     new JvmMemoryMetrics().bindTo(registry);
-    new JvmGcMetrics().bindTo(registry); // do not auto-close, no metrics after that
+    this.jvmGcMetrics().bindTo(registry); // do not auto-close, no metrics after that
     new ProcessorMetrics().bindTo(registry);
     new JvmThreadMetrics().bindTo(registry);
-    new LogbackMetrics().bindTo(registry); // do not auto-close, no metrics after that
+    this.logbackMetrics().bindTo(registry); // do not auto-close, no metrics after that
     new DiskSpaceMetrics(new File("/")).bindTo(registry);
     if (this.dataSource != null) {
       try (final Connection connection = this.dataSource.getConnection()) {
@@ -94,5 +94,17 @@ public class MetricsConfig extends AbstractConfig {
       }
     }
     LOGGER.info("Default metrics enabled");
+  }
+
+  // Created as a bean to satisfy SonarQube (try-with-resources)
+  @Bean
+  LogbackMetrics logbackMetrics() {
+    return new LogbackMetrics();
+  }
+
+  // Created as a bean to satisfy SonarQube (try-with-resources)
+  @Bean
+  JvmGcMetrics jvmGcMetrics() {
+    return new JvmGcMetrics();
   }
 }
