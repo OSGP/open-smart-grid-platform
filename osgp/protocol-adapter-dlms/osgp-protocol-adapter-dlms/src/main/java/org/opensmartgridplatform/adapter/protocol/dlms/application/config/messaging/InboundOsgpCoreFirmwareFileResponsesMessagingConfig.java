@@ -74,7 +74,7 @@ public class InboundOsgpCoreFirmwareFileResponsesMessagingConfig {
    * 'reply-to' queue. This ensures that the response messages for this protocol adapter instance
    * are sent back to this instance.
    */
-  @Bean
+  @Bean(name = "protocolDlmsReplyToQueue")
   public ActiveMQDestination replyToQueue() {
     final String queueName =
         this.createUniqueQueueName(PROPERTY_NAME_FIRMWARE_FILE_RESPONSES_QUEUE);
