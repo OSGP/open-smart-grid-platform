@@ -15,10 +15,8 @@ import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.PushObject;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CosemObjectDefinition;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MessageType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SendDestinationAndMethod;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.TransportServiceType;
 
 public class PushSetupAlarmConverter
     extends BidirectionalConverter<
@@ -77,10 +75,11 @@ public class PushSetupAlarmConverter
     final PushSetupAlarm.Builder builder = new PushSetupAlarm.Builder();
 
     if (source.getHost() != null && source.getPort() != null) {
+      // Create send destination object. Note: TransportService and MessageType are set in protocol
+      // adapter, based on the protocol version
       final String destination = source.getHost() + ":" + source.getPort();
       final SendDestinationAndMethod sendDestinationAndMethod =
-          new SendDestinationAndMethod(
-              TransportServiceType.TCP, destination, MessageType.A_XDR_ENCODED_X_DLMS_APDU);
+          new SendDestinationAndMethod(null, destination, null);
       builder.withSendDestinationAndMethod(sendDestinationAndMethod);
     }
 
