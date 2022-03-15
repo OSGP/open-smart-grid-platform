@@ -106,12 +106,9 @@ public class InvocationCounterManager {
        * doConnectionPostProcessing in DlmsConnectionMessageProcessor) set the version on the
        * device that was passed on as a parameter to the InvocationCounterManager.
        */
-      final DlmsDevice freshDevice = this.deviceRepository.getOne(device.getId());
-      freshDevice.setInvocationCounter(invocationCounterFromDevice);
-      final DlmsDevice updatedDevice = this.deviceRepository.save(freshDevice);
-
-      device.setInvocationCounter(updatedDevice.getInvocationCounter());
-      device.setVersion(updatedDevice.getVersion());
+      this.deviceRepository.updateInvocationCounter(
+          device.getDeviceIdentification(), invocationCounterFromDevice);
+      device.setInvocationCounter(invocationCounterFromDevice);
       LOGGER.info(
           "Property invocationCounter of device {} initialized to the value of the invocation counter "
               + "stored on the device: {}{}",
