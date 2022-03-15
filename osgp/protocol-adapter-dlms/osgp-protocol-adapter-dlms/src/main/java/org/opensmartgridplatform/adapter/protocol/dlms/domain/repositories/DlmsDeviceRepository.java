@@ -35,4 +35,14 @@ public interface DlmsDeviceRepository extends JpaRepository<DlmsDevice, Long> {
   int setProcessingStartTime(
       @Param("deviceIdentification") String deviceIdentification,
       @Param("oldestStartTimeNotConsiderTimedOut") Instant oldestStartTimeNotConsiderTimedOut);
+
+  @Modifying
+  @Query(
+      value =
+          "UPDATE DlmsDevice"
+              + "   SET invocationCounter = :invocationCounter"
+              + " WHERE deviceIdentification = :deviceIdentification")
+  int updateInvocationCounter(
+      @Param("deviceIdentification") String deviceIdentification,
+      @Param("invocationCounter") Long invocationCounter);
 }

@@ -88,25 +88,12 @@ class InvocationCounterManagerTest {
     when(this.dlmsHelper.getAttributeValue(
             eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
         .thenReturn(dataObject);
-    when(this.deviceRepository.getOne(this.device.getId()))
-        .thenReturn(
-            new DlmsDeviceBuilder()
-                .withDeviceIdentification(this.device.getDeviceIdentification())
-                .withInvocationCounter(0L)
-                .withVersion(this.device.getVersion())
-                .build());
-    when(this.deviceRepository.save(this.device))
-        .thenReturn(
-            new DlmsDeviceBuilder()
-                .withDeviceIdentification(this.device.getDeviceIdentification())
-                .withInvocationCounter(invocationCounterValueOnDevice)
-                .withVersion(this.device.getVersion() + 1)
-                .build());
 
     this.manager.initializeWithInvocationCounterStoredOnDeviceTask(this.device, connectionManager);
 
-    verify(this.deviceRepository).save(this.device);
-    assertThat(this.device.getVersion()).isGreaterThan(this.initialDeviceVersion);
+    verify(this.deviceRepository)
+        .updateInvocationCounter(
+            this.device.getDeviceIdentification(), invocationCounterValueOnDevice);
     assertThat(this.device.getInvocationCounter()).isEqualTo(invocationCounterValueOnDevice);
   }
 
