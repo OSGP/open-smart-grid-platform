@@ -100,14 +100,17 @@ public class InvocationCounterManager {
       throw new FunctionalException(
           FunctionalExceptionType.ATTEMPT_TO_LOWER_INVOCATION_COUNTER, ComponentType.PROTOCOL_DLMS);
     } else {
-      device.setInvocationCounter(invocationCounterFromDevice);
       /*
        * After saving the version is incremented. To prevent optimistic locking failures if the
        * device gets saved again (for instance from updateInvocationCounterForDevice, called from
        * doConnectionPostProcessing in DlmsConnectionMessageProcessor) set the version on the
        * device that was passed on as a parameter to the InvocationCounterManager.
        */
-      final DlmsDevice updatedDevice = this.deviceRepository.save(device);
+      final DlmsDevice freshDevice = this.deviceRepository.getOne(device.getId());
+      freshDevice.setInvocationCounter(invocationCounterFromDevice);
+      final DlmsDevice updatedDevice = this.deviceRepository.save(freshDevice);
+
+      device.setInvocationCounter(updatedDevice.getInvocationCounter());
       device.setVersion(updatedDevice.getVersion());
       LOGGER.info(
           "Property invocationCounter of device {} initialized to the value of the invocation counter "
