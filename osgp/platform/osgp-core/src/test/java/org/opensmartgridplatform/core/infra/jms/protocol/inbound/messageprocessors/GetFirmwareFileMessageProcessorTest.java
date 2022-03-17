@@ -102,11 +102,12 @@ public class GetFirmwareFileMessageProcessorTest {
 
     // assert
     verify(this.protocolResponseMessageSender, times(1))
-        .send(
+        .sendWithDestination(
             responseMessageArgumentCaptor.capture(),
             messageTypeCaptor.capture(),
             nullable(ProtocolInfo.class),
-            any(MessageMetadata.class));
+            any(MessageMetadata.class),
+            any());
 
     final FirmwareFileDto actualFirmwareFileDto =
         (FirmwareFileDto) responseMessageArgumentCaptor.getValue().getDataObject();

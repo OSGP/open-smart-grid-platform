@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.core.infra.jms.protocol.outbound;
 
+import java.util.Objects;
+import javax.jms.Destination;
 import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.core.domain.model.protocol.ProtocolResponseService;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
@@ -32,21 +34,43 @@ public class ProtocolResponseMessageSender implements ProtocolResponseService {
       final ProtocolInfo protocolInfo,
       final MessageMetadata messageMetadata) {
 
+    this.sendWithDestination(responseMessage, messageType, protocolInfo, messageMetadata, null);
+  }
+
+  @Override
+  public void sendWithDestination(
+      final ResponseMessage responseMessage,
+      final String messageType,
+      final ProtocolInfo protocolInfo,
+      final MessageMetadata messageMetadata,
+      final Destination destination) {
+
     final String key = protocolInfo.getKey();
 
     final JmsTemplate jmsTemplate = this.factory.getJmsTemplate(key);
 
-    this.send(responseMessage, messageType, jmsTemplate, messageMetadata);
+    this.send(responseMessage, messageType, jmsTemplate, messageMetadata, destination);
   }
 
-  public void send(
+  private void send(
       final ResponseMessage responseMessage,
       final String messageType,
       final JmsTemplate jmsTemplate,
-      final MessageMetadata messageMetadata) {
+      final MessageMetadata messageMetadata,
+      final Destination destination) {
     LOGGER.info("Sending response message to protocol responses incoming queue");
 
+    Destination replyTo = destination;
+    if (destination == null) {
+      replyTo = jmsTemplate.getDefaultDestination();
+    }
+
+    // The replyTo destination should always be non null, because the default destination should
+    // always be available.
+    Objects.requireNonNull(replyTo);
+
     jmsTemplate.send(
+        replyTo,
         session -> {
           final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
           objectMessage.setJMSCorrelationID(messageMetadata.getCorrelationUid());
