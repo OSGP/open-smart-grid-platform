@@ -152,7 +152,9 @@ class RecoverKeyProcessTest {
             this.messageMetadata,
             DEVICE_IDENTIFICATION,
             Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION));
-    verify(this.dlmsDeviceRepository).save(this.dlmsDevice);
+    verify(this.dlmsDeviceRepository)
+        .updateInvocationCounter(
+            this.dlmsDevice.getDeviceIdentification(), this.dlmsDevice.getInvocationCounter());
   }
 
   @Test

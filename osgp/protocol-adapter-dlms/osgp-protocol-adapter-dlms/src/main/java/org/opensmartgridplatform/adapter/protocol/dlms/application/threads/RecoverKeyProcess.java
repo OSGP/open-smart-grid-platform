@@ -252,7 +252,8 @@ public class RecoverKeyProcess implements Runnable {
       if (dlmsMessageListener != null) {
         final int numberOfSentMessages = dlmsMessageListener.getNumberOfSentMessages();
         device.incrementInvocationCounter(numberOfSentMessages);
-        this.deviceRepository.save(device);
+        this.deviceRepository.updateInvocationCounter(
+            device.getDeviceIdentification(), device.getInvocationCounter());
       }
     }
   }
