@@ -92,8 +92,10 @@ public class GetFirmwareFileMessageProcessor extends AbstractProtocolRequestMess
       final OsgpException osgpException =
           new OsgpException(
               ComponentType.OSGP_CORE, "Exception while retrieving firmware file.", e);
-      this.sendFailureResponse(
-          metadata, device.getProtocolInfo(), osgpException, message.getJMSReplyTo());
+      if (device != null) {
+        this.sendFailureResponse(
+            metadata, device.getProtocolInfo(), osgpException, message.getJMSReplyTo());
+      }
     }
   }
 

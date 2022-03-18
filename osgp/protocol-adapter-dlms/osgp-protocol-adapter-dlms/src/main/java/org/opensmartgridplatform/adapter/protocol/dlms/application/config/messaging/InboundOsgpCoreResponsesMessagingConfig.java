@@ -45,7 +45,7 @@ public class InboundOsgpCoreResponsesMessagingConfig {
     return this.jmsConfigurationFactory.getPooledConnectionFactory();
   }
 
-  @Bean(name = "protcolDlmsInboundOsgpCoreResponsesMessageListenerContainer")
+  @Bean(name = "protocolDlmsInboundOsgpCoreResponsesMessageListenerContainer")
   public DefaultMessageListenerContainer messageListenerContainer(
       @Qualifier("protocolDlmsInboundOsgpCoreResponsesMessageListener")
           final MessageListener messageListener) {
