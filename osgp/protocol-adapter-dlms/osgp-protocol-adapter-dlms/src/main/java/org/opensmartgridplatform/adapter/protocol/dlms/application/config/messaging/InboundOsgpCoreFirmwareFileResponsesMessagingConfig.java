@@ -70,9 +70,9 @@ public class InboundOsgpCoreFirmwareFileResponsesMessagingConfig {
   /**
    * Instead of a fixed name for the responses queue, a 'reply-to' responses queue is used. This
    * 'reply-to' responses queue is communicated to OSGP core by this protocol adapter instance when
-   * a request message is sent to OSGP core. OSGP core will send signed response messages to the
-   * 'reply-to' queue. This ensures that the response messages for this protocol adapter instance
-   * are sent back to this instance.
+   * a request message is sent to OSGP core. OSGP core will send response messages to the 'reply-to'
+   * queue. This ensures that the response messages for this protocol adapter instance are sent back
+   * to this instance.
    */
   @Bean(name = "protocolDlmsReplyToQueue")
   public ActiveMQDestination replyToQueue() {

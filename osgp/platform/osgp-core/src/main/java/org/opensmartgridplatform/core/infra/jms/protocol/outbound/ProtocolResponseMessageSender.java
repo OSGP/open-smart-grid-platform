@@ -65,8 +65,7 @@ public class ProtocolResponseMessageSender implements ProtocolResponseService {
       replyTo = jmsTemplate.getDefaultDestination();
     }
 
-    // The replyTo destination should always be non null, because the default destination should
-    // always be available.
+    // The default destination should always be available, so replyTo should always be null here
     Objects.requireNonNull(replyTo);
 
     jmsTemplate.send(
