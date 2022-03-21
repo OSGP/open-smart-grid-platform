@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.core.infra.jms.protocol.inbound.messageprocessors;
 
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import org.apache.commons.lang3.StringUtils;
@@ -83,21 +84,28 @@ public class GetFirmwareFileMessageProcessor extends AbstractProtocolRequestMess
               firmwareFile.getFile(),
               firmwareFile.getImageIdentifier());
 
-      this.sendSuccesResponse(metadata, device.getProtocolInfo(), firmwareFileDto);
+      this.sendSuccessResponse(
+          metadata, device.getProtocolInfo(), firmwareFileDto, message.getJMSReplyTo());
 
     } catch (final Exception e) {
       LOGGER.error("Exception while retrieving firmware file: {}", firmwareFileIdentification);
       final OsgpException osgpException =
           new OsgpException(
               ComponentType.OSGP_CORE, "Exception while retrieving firmware file.", e);
-      this.sendFailureResponse(metadata, device.getProtocolInfo(), osgpException);
+      if (device != null) {
+        this.sendFailureResponse(
+            metadata, device.getProtocolInfo(), osgpException, message.getJMSReplyTo());
+      } else {
+        LOGGER.error("Unable to send failure response because device is null", osgpException);
+      }
     }
   }
 
-  private void sendSuccesResponse(
+  private void sendSuccessResponse(
       final MessageMetadata metadata,
       final ProtocolInfo protocolInfo,
-      final FirmwareFileDto firmwareFileDto) {
+      final FirmwareFileDto firmwareFileDto,
+      final Destination destination) {
 
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
@@ -107,14 +115,19 @@ public class GetFirmwareFileMessageProcessor extends AbstractProtocolRequestMess
             .dataObject(firmwareFileDto)
             .build();
 
-    this.protocolResponseMessageSender.send(
-        responseMessage, DeviceFunction.GET_FIRMWARE_FILE.name(), protocolInfo, metadata);
+    this.protocolResponseMessageSender.sendWithDestination(
+        responseMessage,
+        DeviceFunction.GET_FIRMWARE_FILE.name(),
+        protocolInfo,
+        metadata,
+        destination);
   }
 
   private void sendFailureResponse(
       final MessageMetadata metadata,
       final ProtocolInfo protocolInfo,
-      final OsgpException exception) {
+      final OsgpException exception,
+      final Destination destination) {
 
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
@@ -124,7 +137,11 @@ public class GetFirmwareFileMessageProcessor extends AbstractProtocolRequestMess
             .dataObject(null)
             .build();
 
-    this.protocolResponseMessageSender.send(
-        responseMessage, DeviceFunction.GET_FIRMWARE_FILE.name(), protocolInfo, metadata);
+    this.protocolResponseMessageSender.sendWithDestination(
+        responseMessage,
+        DeviceFunction.GET_FIRMWARE_FILE.name(),
+        protocolInfo,
+        metadata,
+        destination);
   }
 }
