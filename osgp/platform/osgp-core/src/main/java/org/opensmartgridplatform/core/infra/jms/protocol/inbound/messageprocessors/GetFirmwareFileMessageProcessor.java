@@ -95,6 +95,8 @@ public class GetFirmwareFileMessageProcessor extends AbstractProtocolRequestMess
       if (device != null) {
         this.sendFailureResponse(
             metadata, device.getProtocolInfo(), osgpException, message.getJMSReplyTo());
+      } else {
+        LOGGER.error("Unable to send failure response because device is null", osgpException);
       }
     }
   }
