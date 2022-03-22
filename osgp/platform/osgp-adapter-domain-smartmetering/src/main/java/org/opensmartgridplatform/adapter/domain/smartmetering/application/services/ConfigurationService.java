@@ -672,19 +672,12 @@ public class ConfigurationService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
-    final Device connectToDevice;
-    if (smartMeter.getGatewayDevice() != null) {
-      connectToDevice = smartMeter.getGatewayDevice();
-    } else {
-      connectToDevice = smartMeter;
-    }
     this.osgpCoreRequestMessageSender.send(
         null,
         messageMetadata
             .builder()
-            .withDeviceIdentification(connectToDevice.getDeviceIdentification())
-            .withIpAddress(connectToDevice.getIpAddress())
-            .withNetworkSegmentIds(connectToDevice.getBtsId(), connectToDevice.getCellId())
+            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
 
