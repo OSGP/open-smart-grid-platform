@@ -87,6 +87,9 @@ public class Smr5Profile {
   @Value("#{'${configurationobject.flags}'.split(',')}")
   private List<Byte> configurationObjectFlags;
 
+  @Value("${mbus.identification.number}")
+  private long mbusIdentificationNumber;
+
   @Bean
   public InvocationCounter invocationCounter() {
     return new InvocationCounter(this.invocationCounter);
@@ -205,5 +208,10 @@ public class Smr5Profile {
             DataObject.newBitStringData(new BitString(ArrayUtils.toPrimitive(bytes), 16)));
 
     return new ConfigurationObject();
+  }
+
+  @Bean
+  public Long mbusIdentificationNumberHolder() {
+    return this.mbusIdentificationNumber;
   }
 }
