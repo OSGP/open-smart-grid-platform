@@ -15,6 +15,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface DlmsDeviceRepository extends JpaRepository<DlmsDevice, Long> {
@@ -35,4 +36,15 @@ public interface DlmsDeviceRepository extends JpaRepository<DlmsDevice, Long> {
   int setProcessingStartTime(
       @Param("deviceIdentification") String deviceIdentification,
       @Param("oldestStartTimeNotConsiderTimedOut") Instant oldestStartTimeNotConsiderTimedOut);
+
+  @Transactional
+  @Modifying
+  @Query(
+      value =
+          "UPDATE DlmsDevice"
+              + "   SET invocationCounter = :invocationCounter"
+              + " WHERE deviceIdentification = :deviceIdentification")
+  int updateInvocationCounter(
+      @Param("deviceIdentification") String deviceIdentification,
+      @Param("invocationCounter") Long invocationCounter);
 }
