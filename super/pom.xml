@@ -98,7 +98,7 @@
     <spotbugs.maven.plugin.version>4.6.0.0</spotbugs.maven.plugin.version>
     <pmd.maven.plugin.version>3.16.0</pmd.maven.plugin.version>
     <checkstyle.maven.plugin.version>3.1.2</checkstyle.maven.plugin.version>
-    <dependency-check.maven.plugin.version>7.0.1</dependency-check.maven.plugin.version>
+    <dependency-check.maven.plugin.version>7.0.2</dependency-check.maven.plugin.version>
     <versions.maven.plugin.version>2.10.0</versions.maven.plugin.version>
     <fmt-maven-plugin.version>2.9.1</fmt-maven-plugin.version>
     <apache.activemq.version>5.16.0</apache.activemq.version>
