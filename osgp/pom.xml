@@ -9,7 +9,7 @@
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp</artifactId>
   <packaging>pom</packaging>
-  <version>5.22.0-SNAPSHOT</version>
+  <version>5.22.0</version>
 
   <modules>
     <module>platform</module>
