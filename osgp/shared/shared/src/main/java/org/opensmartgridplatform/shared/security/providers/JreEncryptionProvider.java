@@ -14,13 +14,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.spec.AlgorithmParameterSpec;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 
@@ -28,8 +28,8 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider {
 
   private static final String DEFAULT_SINGLE_KEY_REFERENCE = "1";
   private static final String ALG = "AES";
-  private static final String ALGORITHM = "AES/CBC/PKCS5PADDING";
-  private static final String PROVIDER = "SunJCE";
+  private static final String ALGORITHM = "AES/GCM/NoPadding";
+  private static final BouncyCastleProvider PROVIDER = new BouncyCastleProvider();
   private static final String FORMAT = "RAW";
   private static final byte[] IV = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
   private static final int KEY_LENGTH = 16;
@@ -49,7 +49,7 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider {
   protected Cipher getCipher() {
     try {
       return Cipher.getInstance(ALGORITHM, PROVIDER);
-    } catch (NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException e) {
+    } catch (final NoSuchPaddingException | NoSuchAlgorithmException e) {
       throw new EncrypterException("Could not get cipher", e);
     }
   }
