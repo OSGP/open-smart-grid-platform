@@ -11,7 +11,6 @@ package org.opensmartgridplatform.secretmanagement.application.services.encrypti
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.security.InvalidAlgorithmParameterException;
@@ -58,26 +57,13 @@ public class JreEncryptionProviderTest {
     final String encryptedSecretAsString = HexUtils.toHexString(encryptedSecret.getSecret());
 
     assertEquals(
-        "f2edbdc2ad1dab1458f1b866c5a5e6a68873d5738b3742bf3fa5d673133313b6",
+        "f7bd9d697a0daa8cdfc3ae50dec3caede18e017aa2b4944efc89da23d2aece18",
         encryptedSecretAsString);
 
     final byte[] decryptedSecret = this.jreEncryptionProvider.decrypt(encryptedSecret, JRE_KEY_REF);
     final String decryptedSecretAsString = HexUtils.toHexString(decryptedSecret);
 
     assertEquals(this.secretString, decryptedSecretAsString);
-  }
-
-  @Test
-  public void doErrorTest() throws EncrypterException {
-    final byte[] secret = HexUtils.fromHexString("00000000000000000000000000000000");
-
-    final EncryptedSecret encryptedSecret =
-        new EncryptedSecret(this.jreEncryptionProvider.getType(), secret);
-
-    assertThrows(
-        EncrypterException.class,
-        () -> this.jreEncryptionProvider.decrypt(encryptedSecret, this.JRE_KEY_REF),
-        "Expected decrypt() to throw javax.crypto.BadPaddingException, but it didn't");
   }
 
   @Test
