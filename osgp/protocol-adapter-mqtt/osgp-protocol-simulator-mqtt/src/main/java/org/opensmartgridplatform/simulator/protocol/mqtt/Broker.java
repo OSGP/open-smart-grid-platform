@@ -15,11 +15,15 @@ import io.moquette.broker.ClientDescriptor;
 import io.moquette.broker.Server;
 import io.moquette.broker.config.IConfig;
 import io.moquette.interception.AbstractInterceptHandler;
+import io.moquette.interception.messages.InterceptConnectMessage;
+import io.moquette.interception.messages.InterceptDisconnectMessage;
 import io.moquette.interception.messages.InterceptPublishMessage;
 import io.netty.buffer.ByteBuf;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,17 +95,55 @@ public final class Broker {
         config,
         Collections.singletonList(
             new AbstractInterceptHandler() {
+              // The protocol adapter is not considered a publishing client and ignored in client
+              // detection
+              private static final String PROTOCOL_ADAPTER_CLIENT = "gxf-mqtt-client";
+              private final Set<String> otherClients = new HashSet<>();
+
               @Override
               public String getID() {
                 return LISTENER_ID;
               }
 
+              /**
+               * Client detection: only one testing client is considered active. If more than one
+               * testing clients are active, warnings are logged. Connecting adds client to the
+               * client list.
+               *
+               * @param msg interceptor message
+               */
+              @Override
+              public void onConnect(final InterceptConnectMessage msg) {
+                LOG.info("Connect by client {}", msg.getClientID());
+                if (!PROTOCOL_ADAPTER_CLIENT.equals(msg.getClientID())) {
+                  if (!this.otherClients.isEmpty()) {
+                    LOG.warn(
+                        "MQTT client {} is connecting with other clients active: {}",
+                        msg.getClientID(),
+                        String.join(", ", this.otherClients));
+                  }
+                  this.otherClients.add(msg.getClientID());
+                }
+              }
+
+              /**
+               * Client detection: only one testing client is considered active. Disconnecting
+               * removes client from the client list.
+               *
+               * @param msg interceptor message
+               */
+              @Override
+              public void onDisconnect(final InterceptDisconnectMessage msg) {
+                LOG.info("Disconnect by client {}", msg.getClientID());
+                this.otherClients.remove(msg.getClientID());
+              }
+
               @Override
               public void onPublish(final InterceptPublishMessage msg) {
                 LOG.info(
-                    String.format(
-                        "Broker received on topic: %s content: %s%n",
-                        msg.getTopicName(), new String(getBytes(msg), UTF_8)));
+                    "Broker received on topic: {} content: {}",
+                    msg.getTopicName(),
+                    new String(getBytes(msg), UTF_8));
               }
             }));
     this.running = true;
