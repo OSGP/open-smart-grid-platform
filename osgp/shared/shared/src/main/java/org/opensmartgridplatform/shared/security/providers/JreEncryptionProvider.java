@@ -28,8 +28,6 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider {
 
   private static final String DEFAULT_SINGLE_KEY_REFERENCE = "1";
   private static final String ALG = "AES";
-  //  private static final String ALGORITHM = "AES/GCM/NoPadding";
-  //  private static final BouncyCastleProvider PROVIDER = new BouncyCastleProvider();
   private static final String ALGORITHM = "AES/CBC/NoPADDING";
   private static final String PROVIDER = "SunJCE";
   private static final String FORMAT = "RAW";
