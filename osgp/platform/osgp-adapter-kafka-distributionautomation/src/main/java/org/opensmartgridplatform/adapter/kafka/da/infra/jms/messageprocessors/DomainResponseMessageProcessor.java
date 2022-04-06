@@ -79,8 +79,8 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
       LOGGER.info(
           "Handle message of type {} for device {}{} with result: {}, description {}.",
           messageType,
-          fromTopic,
           deviceIdentification,
+          fromTopic,
           resultType,
           resultDescription);
       this.handleMessage(messageType, dataObject);
