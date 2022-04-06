@@ -139,6 +139,9 @@ public class Constants {
   /** JMS constant for delivery count of the message. */
   public static final String DELIVERY_COUNT = "JMSXDeliveryCount";
 
+  /** JMS constant for a topic associated with the message. */
+  public static final String TOPIC = "Topic";
+
   // === DEPRECATED ===
 
   /** DEPRECATED JMS constant for message field: ErrorMessage. */
