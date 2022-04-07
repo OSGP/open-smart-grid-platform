@@ -12,6 +12,7 @@ import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Optional;
 import java.util.TimeZone;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -28,10 +29,13 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 /** Web application Java configuration class. */
 public abstract class AbstractApplicationInitializer {
 
+  private static final String DEFAULT_LOG_LOCATION = "classpath:logback-config.xml";
+  private static final String GLOBAL_LOG_JNDI_NAME = "java:/comp/env/osgp/Global/log-config";
+
   protected final Logger logger;
   private final Class<?> contextClass;
   private final String logConfig;
-  protected AnnotationConfigWebApplicationContext rootContext;
+  protected final AnnotationConfigWebApplicationContext rootContext;
 
   /**
    * Constructs instance of ApplicationInitializer
@@ -39,7 +43,7 @@ public abstract class AbstractApplicationInitializer {
    * @param contextClass the class holding application specific Spring ApplicationContext
    * @param logConfig jndi property which points to logback configuration
    */
-  public AbstractApplicationInitializer(final Class<?> contextClass, final String logConfig) {
+  protected AbstractApplicationInitializer(final Class<?> contextClass, final String logConfig) {
     this.contextClass = contextClass;
     this.logger = LoggerFactory.getLogger(this.contextClass);
     this.logConfig = logConfig;
@@ -66,25 +70,45 @@ public abstract class AbstractApplicationInitializer {
   }
 
   private void initializeLogging() throws ServletException {
-    Context initialContext;
-    String customLogLocation;
-    final String defaultLogLocation = "classpath:logback-config.xml";
-
     try {
-      initialContext = new InitialContext();
-      customLogLocation = (String) initialContext.lookup(this.logConfig);
+      final InitialContext initialContext = new InitialContext();
+      final Optional<String> customLogLocation =
+          this.getLogConfigLocation(this.logConfig, initialContext);
+      final Optional<String> globalLogLocation =
+          this.getLogConfigLocation(GLOBAL_LOG_JNDI_NAME, initialContext);
 
-      // Load specific logback configuration, otherwise fallback to
-      // classpath logback.xml
-      if (new File(customLogLocation).exists()) {
-        this.initializeLoggingContext(customLogLocation);
-      } else {
-        this.initializeLoggingContext(defaultLogLocation);
-      }
+      final String logLocation =
+          customLogLocation.orElse(globalLogLocation.orElse(DEFAULT_LOG_LOCATION));
+      this.initializeLoggingContext(logLocation);
     } catch (final NamingException | FileNotFoundException | JoranException e) {
-      this.logger.info(
-          "Failed to initialize logging using {} or {}", this.logConfig, defaultLogLocation, e);
-      throw new ServletException(e);
+      throw new ServletException("Failed to initialize logging", e);
+    }
+  }
+
+  /**
+   * Get a log config location based on the given JNDI name. If the file referenced by the JNDI
+   * entry exist, the location will be returned.
+   *
+   * @param jndiName JNDI name where a location could be found
+   * @param initialContext Servlet context
+   * @return Optional String: present if a file exists in the referenced location, empty otherwise
+   */
+  private Optional<String> getLogConfigLocation(
+      final String jndiName, final Context initialContext) {
+    try {
+      final String location = (String) initialContext.lookup(jndiName);
+      if (new File(location).exists()) {
+        this.logger.debug("Using log config {} found through JNDI name {}", location, jndiName);
+        return Optional.of(location);
+      } else {
+        return Optional.empty();
+      }
+    } catch (final NamingException e) {
+      // The GLOBAL_LOG_JNDI_NAME is optional. If not defined in the ServletContext, a
+      // NamingException will occur. No problem.
+      this.logger.debug(
+          "Error performing JNDI lookup for {}, probably an unknown name.", jndiName, e);
+      return Optional.empty();
     }
   }
 
