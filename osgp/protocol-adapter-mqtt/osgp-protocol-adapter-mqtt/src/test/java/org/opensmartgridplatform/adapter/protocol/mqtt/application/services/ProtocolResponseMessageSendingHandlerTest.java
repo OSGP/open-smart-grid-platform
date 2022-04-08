@@ -84,6 +84,7 @@ class ProtocolResponseMessageSendingHandlerTest {
     assertThat(actualMessageMetadata.getOrganisationIdentification())
         .isEqualTo(organisationIdentification);
     assertThat(actualMessageMetadata.getDeviceIdentification()).isEqualTo(deviceIdentification);
+    assertThat(actualMessageMetadata.getTopic()).isEqualTo(topic);
     assertThat(actualMessageMetadata.getCorrelationUid()).isEqualTo(correlationId);
   }
 
