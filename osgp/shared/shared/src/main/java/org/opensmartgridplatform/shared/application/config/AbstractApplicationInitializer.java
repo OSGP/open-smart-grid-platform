@@ -106,7 +106,7 @@ public abstract class AbstractApplicationInitializer {
     } catch (final NamingException e) {
       // The GLOBAL_LOG_JNDI_NAME is optional. If not defined in the ServletContext, a
       // NamingException will occur. No problem.
-      this.logger.debug(
+      this.logger.trace(
           "Error performing JNDI lookup for {}, probably an unknown name.", jndiName, e);
       return Optional.empty();
     }
