@@ -15,24 +15,27 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
+
 @Component
 public class MqqtMetricsService {
   private final MeterRegistry registry;
   private final Counter receivedMessagesCounter;
-  private final Gauge disconnectedGauge;
-  private Object[] disconnectedList;
-  private static final Object[] CONNECTED = {};
-  private static final Object[] RECONNECTING = {1};
-  private static final Object[] DISCONNECTED = {0, 1};
+  private final AtomicInteger disconnected = new AtomicInteger(1);
+  private final AtomicInteger connected = new AtomicInteger(0);
+  private final AtomicInteger reconnecting = new AtomicInteger(0);
 
   public MqqtMetricsService(final MeterRegistry registry) {
     this.registry = registry;
-    this.disconnectedList = DISCONNECTED;
     this.receivedMessagesCounter =
-        this.createCounter("flexovl.nrg.pull.succeeded", "Successful NRG pull jobs");
-    this.disconnectedGauge =
-        this.createGauge(
-            "flexovl.nrg.pull.succeeded", "Successful NRG pull jobs", this.disconnectedList, "3");
+            this.createCounter("mqtt.metrics.counter.received.messages", "Counter with the amount of received messages by the MQTT layer");
+    this.createGauge(
+            "mqtt.metrics.gauge.disconnected", this.disconnected::get,"Gauge to show if the MQTT layer is disconnected to the provided MQTT broker");
+    this.createGauge(
+            "mqtt.metrics.gauge.connected", this.connected::get,"Gauge to show if the MQTT layer is connected to the provided MQTT broker");
+    this.createGauge(
+            "mqtt.metrics.gauge.reconnecting", this.reconnecting::get,"Gauge to show if the MQTT layer is reconnecting to the provided MQTT broker");
   }
 
   public void receivedMessage() {
@@ -40,30 +43,27 @@ public class MqqtMetricsService {
   }
 
   public void disconnected() {
-    if (!this.disconnectedList.equals(DISCONNECTED)) {
-      this.disconnectedList = DISCONNECTED;
-    }
+    disconnected.set(1);
+    connected.set(0);
+    reconnecting.set(0);
   }
 
   public void reconnecting() {
-    if (!this.disconnectedList.equals(RECONNECTING)) {
-      this.disconnectedList = RECONNECTING;
-    }
+    disconnected.set(0);
+    connected.set(0);
+    reconnecting.set(1);
   }
 
   public void connected() {
-    if (!this.disconnectedList.equals(CONNECTED)) {
-      this.disconnectedList = CONNECTED;
-      this.disconnectedGauge
-    }
+    disconnected.set(0);
+    connected.set(1);
+    reconnecting.set(0);
   }
 
-  private Gauge createGauge(
-      final String name, final String description, final Object[] list, final String baseUnit) {
-    return Gauge.builder(name, () -> list.length)
-        .description(description)
-        .baseUnit(baseUnit)
-        .register(this.registry);
+  private void createGauge(
+          final String name, final Supplier<Number> numberSupplier, final String description) {
+
+    Gauge.builder(name, numberSupplier).description(description).register(this.registry);
   }
 
   private Counter createCounter(final String name, final String description) {
