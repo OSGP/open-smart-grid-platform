@@ -38,13 +38,12 @@ public class BaseResponseMessageSender {
     jmsTemplate.send(
         (final Session session) -> {
           final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
-          objectMessage.setJMSCorrelationID(responseMessage.getCorrelationUid());
-          objectMessage.setJMSType(messageType);
-          objectMessage.setStringProperty(
-              Constants.ORGANISATION_IDENTIFICATION,
-              responseMessage.getOrganisationIdentification());
-          objectMessage.setStringProperty(
-              Constants.DEVICE_IDENTIFICATION, responseMessage.getDeviceIdentification());
+          responseMessage
+              .messageMetadata()
+              .builder()
+              .withMessageType(messageType)
+              .build()
+              .applyTo(objectMessage);
           objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
           if (responseMessage.getOsgpException() != null) {
             objectMessage.setStringProperty(
