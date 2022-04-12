@@ -857,18 +857,24 @@ public class DefaultDeviceProfile {
   }
 
   @Bean
-  public ConfigurationObject configurationObject() {
+  public DataObject configurationObjectDataObjectHolder() {
     final Byte[] bytes = new Byte[this.configurationObjectFlags.size()];
     this.configurationObjectFlags.toArray(bytes);
 
+    return DataObject.newStructureData(
+        DataObject.newEnumerateData(this.gprsOperationMode),
+        DataObject.newBitStringData(new BitString(ArrayUtils.toPrimitive(bytes), 16)));
+  }
+
+  @Bean
+  public ConfigurationObject configurationObject(
+      final DataObject configurationObjectDataObjectHolder) {
     this.dynamicValues()
         .setDefaultAttributeValue(
             InterfaceClass.DATA.id(),
             new ObisCode(0, 1, 94, 31, 3, 255),
             ConfigurationObject.ATTRIBUTE_ID_VALUE,
-            DataObject.newStructureData(
-                DataObject.newEnumerateData(this.gprsOperationMode),
-                DataObject.newBitStringData(new BitString(ArrayUtils.toPrimitive(bytes), 16))));
+            configurationObjectDataObjectHolder);
 
     return new ConfigurationObject();
   }

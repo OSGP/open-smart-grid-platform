@@ -12,12 +12,9 @@ import java.util.Calendar;
 import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 import org.bouncycastle.util.encoders.Hex;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ConfigurationObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDriverActiveFirmwareIdentifier;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDriverActiveFirmwareSignature;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.OctetStringExtendedRegister;
@@ -196,18 +193,11 @@ public class Smr5Profile {
   }
 
   @Bean
-  public ConfigurationObject configurationObject() {
+  public DataObject configurationObjectDataObjectHolder() {
     final Byte[] bytes = new Byte[this.configurationObjectFlags.size()];
     this.configurationObjectFlags.toArray(bytes);
 
-    this.dynamicValues()
-        .setDefaultAttributeValue(
-            InterfaceClass.DATA.id(),
-            new ObisCode(0, 1, 94, 31, 3, 255),
-            ConfigurationObject.ATTRIBUTE_ID_VALUE,
-            DataObject.newBitStringData(new BitString(ArrayUtils.toPrimitive(bytes), 16)));
-
-    return new ConfigurationObject();
+    return DataObject.newBitStringData(new BitString(ArrayUtils.toPrimitive(bytes), 16));
   }
 
   @Bean
