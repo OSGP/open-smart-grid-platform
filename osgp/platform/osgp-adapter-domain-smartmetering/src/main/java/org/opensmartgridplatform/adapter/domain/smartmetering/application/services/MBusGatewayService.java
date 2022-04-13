@@ -235,6 +235,7 @@ public class MBusGatewayService {
                 .getManufacturerIdentification());
 
     this.checkAndHandleIfMbusDeviceNotFound(mbusDevice, coupleMbusDeviceByChannelResponseDto);
+    this.checkAndHandleIfMbusDeviceIsInUse(mbusDevice, coupleMbusDeviceByChannelResponseDto);
 
     final short channel =
         coupleMbusDeviceByChannelResponseDto.getChannelElementValues().getChannel();
@@ -371,6 +372,23 @@ public class MBusGatewayService {
                   + responseDto.getChannelElementValues().getIdentificationNumber()
                   + " and mbusManufacturerIdentification: "
                   + responseDto.getChannelElementValues().getManufacturerIdentification()));
+    }
+  }
+
+  private void checkAndHandleIfMbusDeviceIsInUse(
+      final SmartMeter mbusDevice, final CoupleMbusDeviceByChannelResponseDto responseDto)
+      throws FunctionalException {
+    if (DeviceLifecycleStatus.IN_USE == mbusDevice.getDeviceLifecycleStatus()) {
+      throw new FunctionalException(
+          FunctionalExceptionType.MBUS_DEVICE_IS_IN_USE,
+          ComponentType.DOMAIN_SMART_METERING,
+          new OsgpException(
+              ComponentType.DOMAIN_SMART_METERING,
+              String.format(
+                  "Mbus device found on channel: %d with mbusIdentificationNumber: %s and mbusManufacturerIdentification: %s is IN_USE",
+                  responseDto.getChannelElementValues().getChannel(),
+                  responseDto.getChannelElementValues().getIdentificationNumber(),
+                  responseDto.getChannelElementValues().getManufacturerIdentification())));
     }
   }
 
