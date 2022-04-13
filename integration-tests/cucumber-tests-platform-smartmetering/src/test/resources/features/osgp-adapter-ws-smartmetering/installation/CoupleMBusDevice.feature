@@ -375,28 +375,3 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusManufacturerIdentification | LGB      |
       | MbusVersion                    | 66       |
       | MbusDeviceTypeIdentification   | 3        |
-
-  @NightlyBuildOnly
-  Scenario: Couple a connected and bound G-meter "TESTG101205673117" to E-meter "TEST1024000000001" on channel 1
-    Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
-      | MbusPrimaryAddress             | 3        |
-      | MbusIdentificationNumber       | 12056731 |
-      | MbusManufacturerIdentification | LGB      |
-      | MbusVersion                    | 66       |
-      | MbusDeviceTypeIdentification   | 3        |
-    And a dlms device
-      | DeviceIdentification           | TESTG101205673117 |
-      | DeviceType                     | SMART_METER_G     |
-      | MbusIdentificationNumber       | 12056731          |
-      | MbusPrimaryAddress             | 9                 |
-      | MbusManufacturerIdentification | LGB               |
-      | MbusVersion                    | 66                |
-      | MbusDeviceTypeIdentification   | 3                 |
-    When the Couple M-Bus Device By Channel request is received
-      | DeviceIdentification | TEST1024000000001 |
-      | Channel              | 1                 |
-    Then the Couple M-Bus Device By Channel response is "OK"
-    And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"

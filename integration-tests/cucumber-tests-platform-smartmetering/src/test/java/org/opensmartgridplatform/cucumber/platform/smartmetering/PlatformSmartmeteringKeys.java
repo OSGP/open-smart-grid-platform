@@ -28,9 +28,11 @@ public class PlatformSmartmeteringKeys
   public static final String CONTAINER_STREET = "ContainerStreet";
   public static final String CORRELATION_UID = "CorrelationUid";
   public static final String SMART_METER_E = "SmartMeterE";
+
   // Default keys for dlms_device
   public static final String DEVICE_IDENTIFICATION = "DeviceIdentification";
   public static final String DEVICE_MODEL_CODE = "DeviceModelCode";
+  public static final String DEVICE_LIFECYCLE_STATUS = "DeviceLifecycleStatus";
 
   // other
   public static final String DEVICE_TYPE = "DeviceType";
@@ -78,7 +80,6 @@ public class PlatformSmartmeteringKeys
   public static final String OBIS_CODE_F = "ObisCodeF";
 
   // Default keys for security_key
-  public static final String DLMS_DEVICE_ID = "DlmsDeviceId";
   public static final String INVOCATION_COUNTER = "InvocationCounter";
   public static final String KEY_BASE_TRANSCEIVER_STATION_ID = "BtsId";
   public static final String KEY_CELL_ID = "CellId";
@@ -90,21 +91,17 @@ public class PlatformSmartmeteringKeys
   public static final String SUPPLIER = "Supplier";
   public static final String TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";
   public static final String VALID_FROM = "ValidFrom";
-  public static final String VALID_TO = "ValidTo";
   public static final String VERSION = "Version";
   public static final String WITH_LIST_SUPPORTED = "WithListSupported";
   public static final String MODULE_ACTIVE_FIRMWARE_VERSION = "ModuleActiveFirmwareVersion";
 
   public static final String DAYLIGHT_SAVINGS_BEGIN = "DaylightSavingsBegin";
   public static final String DAYLIGHT_SAVINGS_END = "DaylightSavingsEnd";
-  public static final String DAYLIGHT_SAVINGS_DEVIATION = "DaylightSavingsDeviation";
   public static final String DAYLIGHT_SAVINGS_ENABLED = "DaylightSavingsEnabled";
   public static final String TIME_ZONE_OFFSET = "TimeZoneOffset";
 
   public static final String RESULT = "Result";
   public static final String RESULT_STRING = "ResultString";
-  public static final String DAYLIGHT_SAVINGS_ACTIVE = "DST";
-  public static final String DEVIATION = "Deviation";
 
   public static final String CLASS_ID = "ClassId";
 
