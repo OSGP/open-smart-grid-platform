@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,7 +24,6 @@ import java.util.TreeMap;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.openmuc.jdlms.AccessResultCode;
@@ -64,10 +64,14 @@ import org.springframework.stereotype.Service;
 @Service(value = "dlmsHelper")
 public class DlmsHelper {
 
+  public static final int MILLISECONDS_PER_MINUTE = 60000;
+
   private static final Logger LOGGER = LoggerFactory.getLogger(DlmsHelper.class);
 
   private static final Map<Integer, TransportServiceTypeDto> TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE =
       new TreeMap<>();
+
+  private static final int MAX_CONCURRENT_ATTRIBUTE_ADDRESSES = 32;
 
   static {
     TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(0, TransportServiceTypeDto.TCP);
@@ -80,8 +84,27 @@ public class DlmsHelper {
     TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(7, TransportServiceTypeDto.ZIG_BEE);
   }
 
-  public static final int MILLISECONDS_PER_MINUTE = 60000;
-  private static final int MAX_CONCURRENT_ATTRIBUTE_ADDRESSES = 32;
+  private static String getDataType(final DataObject dataObject) {
+    final String dataType;
+    if (dataObject.isBitString()) {
+      dataType = "BitString";
+    } else if (dataObject.isBoolean()) {
+      dataType = "Boolean";
+    } else if (dataObject.isByteArray()) {
+      dataType = "ByteArray";
+    } else if (dataObject.isComplex()) {
+      dataType = "Complex";
+    } else if (dataObject.isCosemDateFormat()) {
+      dataType = "CosemDateFormat";
+    } else if (dataObject.isNull()) {
+      dataType = "Null";
+    } else if (dataObject.isNumber()) {
+      dataType = "Number";
+    } else {
+      dataType = "?";
+    }
+    return dataType;
+  }
 
   /**
    * Gets a single result from a meter, and returns the result data if retrieval was successful
@@ -444,10 +467,6 @@ public class DlmsHelper {
    * <p>The deviation and clock status (is daylight saving active or not) are based on the zone of
    * the given {@code dateTime}.
    *
-   * <p>To use a DateTime as indication of the instant of time to be used with a specific deviation
-   * (that does not have to match the zone of the DateTime), use {@link #asDataObject(DateTime, int,
-   * boolean)} instead.
-   *
    * @param dateTime a DateTime to translate into COSEM date-time format.
    * @return a DataObject having a CosemDateTime matching the given DateTime as value.
    */
@@ -476,55 +495,39 @@ public class DlmsHelper {
   }
 
   /**
-   * Creates a COSEM date-time object based on the given {@code dateTime}. This COSEM date-time will
-   * be for the same instant in time as the given {@code dateTime} but may be for another time zone.
+   * Creates a COSEM date-time object based on the given {@code zonedTime}.
    *
-   * <p>Because the time zone with the {@code deviation} may be different than the one with the
-   * {@code dateTime}, and the {@code deviation} alone does not provide sufficient information on
-   * whether daylight savings is active for the given instant in time, {@code dst} has to be
-   * provided to indicate whether daylight savings are active.
+   * <p>The deviation and clock status (is daylight saving active or not) are based on the zone of
+   * the given {@code zonedTime}.
    *
-   * <p>If a DateTime for an instant in time is known with the correct time zone set, you can use
-   * {@link #asDataObject(DateTime)} as a simpler alternative.
-   *
-   * @param dateTime a DateTime indicating an instant in time to be used for the COSEM date-time.
-   * @param deviation the deviation in minutes of local time to GMT to be included in the COSEM
-   *     date-time.
-   * @param dst {@code true} if daylight savings are active for the instant of the COSEM date-time,
-   *     otherwise {@code false}.
-   * @return a DataObject having a CosemDateTime for the instant of the given DateTime, with the
-   *     given deviation and DST status information, as value.
+   * @param zonedTime a ZonedDateTime to translate into COSEM date-time format.
+   * @return a DataObject having a CosemDateTime matching the given ZonedDateTime as value.
    */
-  public DataObject asDataObject(final DateTime dateTime, final int deviation, final boolean dst) {
-    /*
-     * Create a date time that may not point to the right instant in time,
-     * but that will give proper values getting the different fields for the
-     * COSEM date and time objects.
-     */
-    final DateTime dateTimeWithOffset =
-        dateTime.toDateTime(DateTimeZone.UTC).minusMinutes(deviation);
+  public DataObject asDataObject(final ZonedDateTime zonedTime) {
     final CosemDate cosemDate =
-        new CosemDate(
-            dateTimeWithOffset.getYear(),
-            dateTimeWithOffset.getMonthOfYear(),
-            dateTimeWithOffset.getDayOfMonth());
+        new CosemDate(zonedTime.getYear(), zonedTime.getMonthValue(), zonedTime.getDayOfMonth());
+
     final CosemTime cosemTime =
         new CosemTime(
-            dateTimeWithOffset.getHourOfDay(),
-            dateTimeWithOffset.getMinuteOfHour(),
-            dateTimeWithOffset.getSecondOfMinute(),
-            dateTimeWithOffset.getMillisOfSecond() / 10);
+            zonedTime.getHour(),
+            zonedTime.getMinute(),
+            zonedTime.getSecond(),
+            zonedTime.getNano() / 10_000_000);
+
+    final int deviationInMinutes =
+        -(zonedTime.getZone().getRules().getOffset(zonedTime.toInstant()).getTotalSeconds() / 60);
+
     final ClockStatus[] clockStatusBits;
 
-    if (dst) {
+    if (zonedTime.getZone().getRules().isDaylightSavings(zonedTime.toInstant())) {
       clockStatusBits = new ClockStatus[1];
       clockStatusBits[0] = ClockStatus.DAYLIGHT_SAVING_ACTIVE;
     } else {
       clockStatusBits = new ClockStatus[0];
     }
-    final CosemDateTime cosemDateTime =
-        new CosemDateTime(cosemDate, cosemTime, deviation, clockStatusBits);
-    return DataObject.newDateTimeData(cosemDateTime);
+
+    return DataObject.newDateTimeData(
+        new CosemDateTime(cosemDate, cosemTime, deviationInMinutes, clockStatusBits));
   }
 
   public DataObject asDataObject(final CosemDateDto date) {
@@ -784,28 +787,6 @@ public class DlmsHelper {
       }
       builder.append(System.lineSeparator());
     }
-  }
-
-  private static String getDataType(final DataObject dataObject) {
-    final String dataType;
-    if (dataObject.isBitString()) {
-      dataType = "BitString";
-    } else if (dataObject.isBoolean()) {
-      dataType = "Boolean";
-    } else if (dataObject.isByteArray()) {
-      dataType = "ByteArray";
-    } else if (dataObject.isComplex()) {
-      dataType = "Complex";
-    } else if (dataObject.isCosemDateFormat()) {
-      dataType = "CosemDateFormat";
-    } else if (dataObject.isNull()) {
-      dataType = "Null";
-    } else if (dataObject.isNumber()) {
-      dataType = "Number";
-    } else {
-      dataType = "?";
-    }
-    return dataType;
   }
 
   public String getDebugInfoByteArray(final byte[] bytes) {

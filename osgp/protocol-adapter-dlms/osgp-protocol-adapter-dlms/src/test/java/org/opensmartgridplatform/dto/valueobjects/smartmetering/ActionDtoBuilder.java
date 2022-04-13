@@ -128,7 +128,7 @@ public class ActionDtoBuilder {
   }
 
   public SynchronizeTimeRequestDto makeSynchronizeTimeRequestDataDto() {
-    return new SynchronizeTimeRequestDto(120, true);
+    return new SynchronizeTimeRequestDto("Europe/Amsterdam");
   }
 
   public GetAllAttributeValuesRequestDto makeGetAllAttributeValuesRequestDto() {
