@@ -1,4 +1,4 @@
-@SmartMetering @Platform @Jack
+@SmartMetering @Platform
 Feature: SmartMetering Installation - Couple M-Bus Device by Channel
   As a grid operator
   I want to be able to couple an M-Bus device to a smart meter on a specific channel
@@ -9,23 +9,23 @@ Feature: SmartMetering Installation - Couple M-Bus Device by Channel
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
-      | MbusPrimaryAddress             | 3        |
+      | MbusPrimaryAddress             |        3 |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |
-      | MbusVersion                    | 66       |
-      | MbusDeviceTypeIdentification   | 3        |
+      | MbusVersion                    |       66 |
+      | MbusDeviceTypeIdentification   |        3 |
     And a dlms device
       | DeviceIdentification           | TESTG101205673117       |
       | DeviceType                     | SMART_METER_G           |
       | DeviceLifecycleStatus          | <DeviceLifeCycleStatus> |
-      | MbusIdentificationNumber       | 12056731                |
-      | MbusPrimaryAddress             | 9                       |
+      | MbusIdentificationNumber       |                12056731 |
+      | MbusPrimaryAddress             |                       9 |
       | MbusManufacturerIdentification | LGB                     |
-      | MbusVersion                    | 66                      |
-      | MbusDeviceTypeIdentification   | 3                       |
+      | MbusVersion                    |                      66 |
+      | MbusDeviceTypeIdentification   |                       3 |
     When the Couple M-Bus Device By Channel request is received
       | DeviceIdentification | TEST1024000000001 |
-      | Channel              | 1                 |
+      | Channel              |                 1 |
     Then the Couple M-Bus Device By Channel response is "OK"
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
 
@@ -47,25 +47,25 @@ Feature: SmartMetering Installation - Couple M-Bus Device by Channel
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
-      | MbusPrimaryAddress             | 3        |
+      | MbusPrimaryAddress             |        3 |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |
-      | MbusVersion                    | 66       |
-      | MbusDeviceTypeIdentification   | 3        |
+      | MbusVersion                    |       66 |
+      | MbusDeviceTypeIdentification   |        3 |
     And a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
       | DeviceLifecycleStatus          | IN_USE            |
-      | MbusIdentificationNumber       | 12056731          |
-      | MbusPrimaryAddress             | 9                 |
+      | MbusIdentificationNumber       |          12056731 |
+      | MbusPrimaryAddress             |                 9 |
       | MbusManufacturerIdentification | LGB               |
-      | MbusVersion                    | 66                |
-      | MbusDeviceTypeIdentification   | 3                 |
+      | MbusVersion                    |                66 |
+      | MbusDeviceTypeIdentification   |                 3 |
     When the Couple M-Bus Device By Channel request is received
       | DeviceIdentification | TEST1024000000001 |
-      | Channel              | 1                 |
+      | Channel              |                 1 |
     Then retrieving the Couple response results in an exception
     And a SOAP fault should have been returned
-      | Code    | 222                   |
+      | Code    |                   222 |
       | Message | MBUS_DEVICE_IS_IN_USE |
     And the mbus device "TESTG101205673117" is not coupled to the device "TEST1024000000001"
