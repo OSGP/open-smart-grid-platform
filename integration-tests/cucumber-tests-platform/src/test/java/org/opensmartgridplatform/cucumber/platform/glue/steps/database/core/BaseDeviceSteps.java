@@ -261,12 +261,18 @@ public abstract class BaseDeviceSteps {
     return this.updateDevice(device, settings);
   }
 
-  public DeviceAuthorization setDefaultDeviceAuthorizationForDevice(Device device) {
-    device.addOrganisation(PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+  public DeviceAuthorization setDefaultDeviceAuthorizationForDevice(final Device device) {
+    return this.setDeviceAuthorizationForDeviceOwnedByOrganization(
+        device, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+  }
+
+  public DeviceAuthorization setDeviceAuthorizationForDeviceOwnedByOrganization(
+      Device device, final String organizationIdentification) {
+
+    device.addOrganisation(organizationIdentification);
 
     final Organisation organization =
-        this.organizationRepository.findByOrganisationIdentification(
-            PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+        this.organizationRepository.findByOrganisationIdentification(organizationIdentification);
 
     device = this.deviceRepository.save(device);
 
