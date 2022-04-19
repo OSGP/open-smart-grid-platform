@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.adapter.protocol.mqtt.application.metrics.MqttMetricsService;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttClientDefaults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,15 +40,18 @@ public class MqttClient {
   private final MessageHandler messageHandler;
   private final String clientIdentifier;
   private final Mqtt3AsyncClient client;
+  private final MqttMetricsService metricsService;
 
   public MqttClient(
       final MqttClientDefaults mqttClientDefaults,
       final MqttClientSslConfig mqttClientSslConfig,
-      final MessageHandler messageHandler) {
+      final MessageHandler messageHandler,
+      final MqttMetricsService metricsService) {
 
     this.mqttClientDefaults = mqttClientDefaults;
     this.messageHandler = messageHandler;
     this.clientIdentifier = getClientId(mqttClientDefaults);
+    this.metricsService = metricsService;
     this.client = this.createClient(mqttClientDefaults, mqttClientSslConfig, this.clientIdentifier);
   }
 
@@ -119,6 +123,7 @@ public class MqttClient {
   }
 
   public CompletableFuture<Mqtt3ConnAck> connect() {
+    this.metricsService.reconnecting();
     return this.client
         .connectWith()
         .cleanSession(this.mqttClientDefaults.isDefaultCleanSession())
@@ -142,15 +147,18 @@ public class MqttClient {
 
   private void onConnectSuccess() {
     LOGGER.info("MQTT Client {} connected", this.clientIdentifier);
+    this.metricsService.connected();
     this.subscribe();
   }
 
   private void onConnectFailure(final Mqtt3ConnAck ack, final Throwable throwable) {
     LOGGER.warn("MQTT Client {} connect failed, ack: {}", this.clientIdentifier, ack, throwable);
+    this.metricsService.disconnected();
   }
 
   public void disconnect() {
     if (!this.isDisconnected()) {
+      this.metricsService.disconnecting();
       this.client.disconnect().whenComplete(this::onDisconnect);
     }
   }
@@ -162,8 +170,10 @@ public class MqttClient {
           this.clientIdentifier,
           this.client.getState(),
           throwable);
+      this.metricsService.connected();
     } else {
       LOGGER.info("MQTT Client {} connection disconnected.", this.clientIdentifier);
+      this.metricsService.disconnected();
     }
   }
 
