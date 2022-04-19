@@ -43,7 +43,7 @@ public class Hls5Connector extends SecureDlmsConnector {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Hls5Connector.class);
 
-  private static final int AES_GMC_128 = 128;
+  private static final int AES_GMC_256 = 256;
 
   private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
@@ -151,7 +151,7 @@ public class Hls5Connector extends SecureDlmsConnector {
             .setAuthenticationKey(dlmsAuthenticationKey)
             .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
             .setGlobalUnicastEncryptionKey(dlmsEncryptionKey)
-            .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
+            .setEncryptionMechanism(EncryptionMechanism.AES_GCM_256)
             .build();
 
     tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientId);
@@ -222,7 +222,7 @@ public class Hls5Connector extends SecureDlmsConnector {
   }
 
   private boolean checkLenghtKey(final byte[] key) {
-    return key.length * 8 != AES_GMC_128;
+    return key.length * 8 != AES_GMC_256;
   }
 
   private void throwFunctionalException(final String msg, final FunctionalExceptionType type)
