@@ -1,4 +1,4 @@
-@blablabla
+@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly
 Feature: SmartMetering Configuration - Set Special Days
   As a grid operator
   I want to be able to set special days on a device
