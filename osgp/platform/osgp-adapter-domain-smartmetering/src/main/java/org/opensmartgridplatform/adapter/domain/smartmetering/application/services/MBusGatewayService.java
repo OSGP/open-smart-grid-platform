@@ -83,7 +83,7 @@ public class MBusGatewayService {
     final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
     final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
-    this.checkAndHandleInactiveMbusDevice(mbusDevice);
+    this.checkAndHandleIfMbusDeviceIsInUse(mbusDevice);
     this.checkAndHandleIfGivenMBusAlreadyCoupled(mbusDevice);
 
     this.checkAndHandleIfAllMBusChannelsAreAlreadyOccupied(gatewayDevice);
@@ -375,17 +375,32 @@ public class MBusGatewayService {
     }
   }
 
+  private void checkAndHandleIfMbusDeviceIsInUse(final SmartMeter mbusDevice)
+      throws FunctionalException {
+    if (DeviceLifecycleStatus.IN_USE == mbusDevice.getDeviceLifecycleStatus()) {
+      throw new FunctionalException(
+          FunctionalExceptionType.MBUS_DEVICE_NOT_MOVED_TO_ANOTHER_EMETER,
+          ComponentType.DOMAIN_SMART_METERING,
+          new OsgpException(
+              ComponentType.DOMAIN_SMART_METERING,
+              String.format(
+                  "Mbus device {} not moved to another E meter",
+                  mbusDevice.getDeviceIdentification())));
+    }
+  }
+
   private void checkAndHandleIfMbusDeviceIsInUse(
       final SmartMeter mbusDevice, final CoupleMbusDeviceByChannelResponseDto responseDto)
       throws FunctionalException {
     if (DeviceLifecycleStatus.IN_USE == mbusDevice.getDeviceLifecycleStatus()) {
       throw new FunctionalException(
-          FunctionalExceptionType.MBUS_DEVICE_IS_IN_USE,
+          FunctionalExceptionType.MBUS_DEVICE_NOT_MOVED_TO_ANOTHER_EMETER,
           ComponentType.DOMAIN_SMART_METERING,
           new OsgpException(
               ComponentType.DOMAIN_SMART_METERING,
               String.format(
-                  "Mbus device found on channel: %d with mbusIdentificationNumber: %s and mbusManufacturerIdentification: %s is IN_USE",
+                  "Mbus device {} found on channel: %d with mbusIdentificationNumber: %s and mbusManufacturerIdentification: %s not moved to another E meter",
+                  mbusDevice.getDeviceIdentification(),
                   responseDto.getChannelElementValues().getChannel(),
                   responseDto.getChannelElementValues().getIdentificationNumber(),
                   responseDto.getChannelElementValues().getManufacturerIdentification())));

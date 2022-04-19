@@ -10,6 +10,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
+      | DeviceLifecycleStatus          | READY_FOR_USE     |
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
@@ -32,6 +33,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
+      | DeviceLifecycleStatus          | READY_FOR_USE     |
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | ITG               |
     And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
@@ -52,6 +54,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
+      | DeviceLifecycleStatus          | READY_FOR_USE     |
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
@@ -83,6 +86,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
+      | DeviceLifecycleStatus          | READY_FOR_USE     |
       | GatewayDeviceIdentification    | TEST1024000000001 |
       | Channel                        |                 1 |
       | MbusIdentificationNumber       |          12056731 |
@@ -105,6 +109,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And a dlms device
       | DeviceIdentification           | TESTG102400000001 |
       | DeviceType                     | SMART_METER_G     |
+      | DeviceLifecycleStatus          | READY_FOR_USE     |
       | GatewayDeviceIdentification    | TEST1024000000001 |
       | Channel                        |                 1 |
       | MbusIdentificationNumber       |          12056700 |
@@ -114,6 +119,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
+      | DeviceLifecycleStatus          | READY_FOR_USE     |
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
@@ -142,6 +148,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
+      | DeviceLifecycleStatus          | READY_FOR_USE     |
       | GatewayDeviceIdentification    | TEST1024000000001 |
       | Channel                        |                 1 |
       | MbusIdentificationNumber       |          12056731 |
@@ -170,12 +177,14 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And a dlms device
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
+      | DeviceLifecycleStatus       | READY_FOR_USE     |
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     |                 1 |
       | MbusPrimaryAddress          |                 3 |
     And a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
+      | DeviceLifecycleStatus          | READY_FOR_USE     |
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
@@ -226,6 +235,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
+      | DeviceLifecycleStatus          | READY_FOR_USE     |
       | MbusPrimaryAddress             |                 3 |
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | LGB               |
@@ -255,6 +265,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
+      | DeviceLifecycleStatus          | READY_FOR_USE     |
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | ITG               |
       | MbusVersion                    |                66 |
@@ -288,6 +299,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
+      | DeviceLifecycleStatus          | READY_FOR_USE     |
       | MbusPrimaryAddress             |                 3 |
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | LGB               |
@@ -317,6 +329,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
+      | DeviceLifecycleStatus          | READY_FOR_USE     |
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
@@ -343,6 +356,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And a dlms device
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
+      | DeviceLifecycleStatus       | READY_FOR_USE     |
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     |                 2 |
       | MbusPrimaryAddress          |                 3 |
@@ -355,6 +369,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
+      | DeviceLifecycleStatus          | READY_FOR_USE     |
       | MbusPrimaryAddress             |                 3 |
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | LGB               |
@@ -375,3 +390,24 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusManufacturerIdentification | LGB      |
       | MbusVersion                    |       66 |
       | MbusDeviceTypeIdentification   |        3 |
+
+  @NightlyBuildOnly
+  Scenario: Couple G-meter to an E-meter when G-meter is IN_USE
+    Given a dlms device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
+    And a dlms device
+      | DeviceIdentification           | TESTG101205673117 |
+      | DeviceType                     | SMART_METER_G     |
+      | DeviceLifecycleStatus          | IN_USE            |
+      | MbusIdentificationNumber       |          12056731 |
+      | MbusManufacturerIdentification | LGB               |
+      | MbusVersion                    |                66 |
+      | MbusDeviceTypeIdentification   |                 3 |
+    And all mbus channels are occupied for E-meter "TEST1024000000001"
+    When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
+    Then retrieving the Couple response results in an exception
+    And a SOAP fault should have been returned
+      | Code    |                                     222 |
+      | Message | MBUS_DEVICE_NOT_MOVED_TO_ANOTHER_EMETER |
+    And the mbus device "TESTG101205673117" is not coupled to the device "TEST1024000000001"
