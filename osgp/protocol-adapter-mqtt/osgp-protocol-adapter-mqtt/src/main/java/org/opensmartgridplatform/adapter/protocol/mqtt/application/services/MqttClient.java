@@ -225,12 +225,12 @@ public class MqttClient {
         .subscribeWith()
         .topicFilter(topic)
         .qos(qos)
-        .callback(mqttPublish -> this.published(mqttPublish, messageHandler))
+        .callback(mqttPublish -> this.received(mqttPublish, messageHandler))
         .send()
         .whenComplete((subAck, throwable) -> this.onSubscribe(topic, qos, subAck, throwable));
   }
 
-  private void published(final Mqtt3Publish publish, final MessageHandler messageHandler) {
+  private void received(final Mqtt3Publish publish, final MessageHandler messageHandler) {
     messageHandler.handlePublishedMessage(
         publish.getTopic().toString(), publish.getPayloadAsBytes());
   }

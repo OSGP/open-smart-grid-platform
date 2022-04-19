@@ -11,7 +11,6 @@ package org.opensmartgridplatform.adapter.protocol.mqtt.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
@@ -39,7 +38,6 @@ class MqttClientIT {
 
   private static final Logger MQTT_BROKER_LOGGER = LoggerFactory.getLogger("MqttBroker");
 
-  private final MqttMetricsService meterService;
   private final PrometheusMeterRegistry meterRegistry;
 
   @ClassRule
@@ -56,13 +54,18 @@ class MqttClientIT {
 
   MqttClientIT() {
     this.meterRegistry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-    this.meterService = new MqttMetricsService(this.meterRegistry);
-    this.mqttClient =
-        new MqttClient(
-            this.mqttClientDefaults,
-            this.mqttClientSslConfig,
-            this.messageHandler,
-            this.meterService);
+    final MqttMetricsService meterService = new MqttMetricsService(this.meterRegistry);
+    final MqttClientDefaults mqttClientDefaults =
+        new MqttClientDefaults.Builder()
+            .withClientId("test-client-id")
+            .withCleanSession(false)
+            .withHost("localhost")
+            .withKeepAlive(60)
+            .withPort(containerMqttPort)
+            .withQos(MqttQos.EXACTLY_ONCE.name())
+            .withTopics(new String[] {this.measurementTopic("+")})
+            .build();
+    this.mqttClient = new MqttClient(mqttClientDefaults, null, this.messageHandler, meterService);
   }
 
   @BeforeAll
@@ -78,31 +81,18 @@ class MqttClientIT {
     eclipseMosquittoContainer.stop();
   }
 
-  private final MqttClientDefaults mqttClientDefaults =
-      new MqttClientDefaults.Builder()
-          .withClientId("test-client-id")
-          .withCleanSession(false)
-          .withHost("localhost")
-          .withKeepAlive(60)
-          .withPort(containerMqttPort)
-          .withQos(MqttQos.EXACTLY_ONCE.name())
-          .withTopics(new String[] {this.measurementTopic("+")})
-          .build();
-
-  private final MqttClientSslConfig mqttClientSslConfig = null;
-
   private final QueuingMessageHandler messageHandler = new QueuingMessageHandler();
 
   final MqttClient mqttClient;
 
   @Test
   void messageHandlerHandlesPublishedMessages() throws Exception {
-    assertThat(this.isMqttGaugeStatusAsExpected(MqttMetricsService.BROKER_DISCONNECTED)).isTrue();
+    this.assertMqttGaugeStatus(MqttMetricsService.BROKER_DISCONNECTED);
     final Mqtt3ConnAck mqtt3ConnAck = this.mqttClient.connect().get(10, TimeUnit.SECONDS);
     assertThat(this.mqttClient.isConnected())
         .as("MqttClient connect resulted in: %s", mqtt3ConnAck)
         .isTrue();
-    assertThat(this.isMqttGaugeStatusAsExpected(MqttMetricsService.BROKER_CONNECTED)).isTrue();
+    this.assertMqttGaugeStatus(MqttMetricsService.BROKER_CONNECTED);
 
     try {
       final PublishedMessage message1 = this.publishedMessage("TST-01", "test-1");
@@ -111,30 +101,28 @@ class MqttClientIT {
 
       assertThat(this.messageHandler.publishedMessages())
           .containsExactlyInAnyOrder(message1, message2);
-      assertThat(this.isMqttCounterAsExpected(2)).isTrue();
 
     } finally {
       this.mqttClient.disconnect();
       // Wait one second
       Thread.sleep(1000);
-      assertThat(this.isMqttGaugeStatusAsExpected(MqttMetricsService.BROKER_DISCONNECTED)).isTrue();
+      this.assertMqttGaugeStatus(MqttMetricsService.BROKER_DISCONNECTED);
     }
   }
 
   @Test
   void mqttClientRestoresBrokerConnection() throws Exception {
-    assertThat(this.isMqttGaugeStatusAsExpected(MqttMetricsService.BROKER_DISCONNECTED)).isTrue();
+    this.assertMqttGaugeStatus(MqttMetricsService.BROKER_DISCONNECTED);
     final Mqtt3ConnAck mqtt3ConnAck = this.mqttClient.connect().get(10, TimeUnit.SECONDS);
     assertThat(this.mqttClient.isConnected())
         .as("MqttClient connect resulted in: %s", mqtt3ConnAck)
         .isTrue();
-    assertThat(this.isMqttGaugeStatusAsExpected(MqttMetricsService.BROKER_CONNECTED)).isTrue();
+    this.assertMqttGaugeStatus(MqttMetricsService.BROKER_CONNECTED);
     final PublishedMessage message1 = this.publishedMessage("TST-01", "test-1");
     final PublishedMessage message2 = this.publishedMessage("TST-02", "test-2");
     this.publishMessages(message1, message2);
     assertThat(this.messageHandler.publishedMessages())
         .containsExactlyInAnyOrder(message1, message2);
-    assertThat(this.isMqttCounterAsExpected(2)).isTrue();
 
     eclipseMosquittoContainer.stop();
 
@@ -149,13 +137,12 @@ class MqttClientIT {
     eclipseMosquittoContainer.start();
 
     this.theClientWillBeConnected();
-    assertThat(this.isMqttGaugeStatusAsExpected(MqttMetricsService.BROKER_CONNECTED)).isTrue();
+    this.assertMqttGaugeStatus(MqttMetricsService.BROKER_CONNECTED);
     final PublishedMessage message3 = this.publishedMessage("TST-03", "test-3");
     final PublishedMessage message4 = this.publishedMessage("TST-04", "test-4");
     this.publishMessages(message3, message4);
 
     this.theClientWillHaveReceivedThePublishedMessages(message1, message2, message3, message4);
-    assertThat(this.isMqttCounterAsExpected(4)).isTrue();
   }
 
   private void theClientWillBeWaitingForReconnect() throws InterruptedException {
@@ -247,13 +234,8 @@ class MqttClientIT {
     return String.format("%s/measurement", fieldDeviceIdentification);
   }
 
-  private boolean isMqttCounterAsExpected(final int expected) {
-    return this.meterRegistry.find(MqttMetricsService.MESSAGE_COUNTER).counter().count()
-        == expected;
-  }
-
-  private boolean isMqttGaugeStatusAsExpected(final int expected) {
-    return this.meterRegistry.find(MqttMetricsService.CONNECTION_STATUS).gauge().value()
-        == expected;
+  private void assertMqttGaugeStatus(final int expected) {
+    assertThat(this.meterRegistry.find(MqttMetricsService.CONNECTION_STATUS).gauge().value())
+        .isEqualTo(expected);
   }
 }

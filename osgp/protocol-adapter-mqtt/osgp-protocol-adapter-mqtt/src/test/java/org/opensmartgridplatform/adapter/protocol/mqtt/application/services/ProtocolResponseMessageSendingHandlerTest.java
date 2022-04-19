@@ -41,14 +41,13 @@ class ProtocolResponseMessageSendingHandlerTest {
   @Test
   void sendsOkProtocolResponseMessageWithPayloadAsStringDataObject() {
     final String organisationIdentification = ORGANISATION_IDENTIFICATION;
-    final String deviceIdentification = DEVICE_IDENTIFICATION;
     final String topic = "test/topic";
     final String expectedDataObject = "payload-as-string";
     final byte[] payload = expectedDataObject.getBytes(StandardCharsets.UTF_8);
     final String correlationId = "correlation-id-from-provider";
     final ProtocolResponseMessageSendingHandler protocolResponseMessageSendingHandler =
         this.aProtocolResponseMessageSendingHandler(
-            organisationIdentification, deviceIdentification);
+            organisationIdentification, DEVICE_IDENTIFICATION);
     when(this.correlationIdProviderService.getCorrelationId(organisationIdentification, topic))
         .thenReturn(correlationId);
 
@@ -63,12 +62,11 @@ class ProtocolResponseMessageSendingHandlerTest {
   @Test
   void sendsProtocolResponseMessageWithExpectedMetadata() {
     final String organisationIdentification = ORGANISATION_IDENTIFICATION;
-    final String deviceIdentification = DEVICE_IDENTIFICATION;
     final String topic = "test/topic";
     final String correlationId = "correlation-id-from-provider";
     final ProtocolResponseMessageSendingHandler protocolResponseMessageSendingHandler =
         this.aProtocolResponseMessageSendingHandler(
-            organisationIdentification, deviceIdentification);
+            organisationIdentification, DEVICE_IDENTIFICATION);
     when(this.correlationIdProviderService.getCorrelationId(organisationIdentification, topic))
         .thenReturn(correlationId);
 
@@ -83,7 +81,7 @@ class ProtocolResponseMessageSendingHandlerTest {
     assertThat(actualMessageMetadata.getMessageType()).isEqualTo(MessageType.GET_DATA.name());
     assertThat(actualMessageMetadata.getOrganisationIdentification())
         .isEqualTo(organisationIdentification);
-    assertThat(actualMessageMetadata.getDeviceIdentification()).isEqualTo(deviceIdentification);
+    assertThat(actualMessageMetadata.getDeviceIdentification()).isEqualTo(DEVICE_IDENTIFICATION);
     assertThat(actualMessageMetadata.getTopic()).isEqualTo(topic);
     assertThat(actualMessageMetadata.getCorrelationUid()).isEqualTo(correlationId);
   }
@@ -121,6 +119,7 @@ class ProtocolResponseMessageSendingHandlerTest {
     return new ProtocolResponseMessageSendingHandler(
         this.outboundOsgpCoreResponseMessageSender,
         this.correlationIdProviderService,
+        null,
         organisationIdentification,
         deviceIdentification);
   }
