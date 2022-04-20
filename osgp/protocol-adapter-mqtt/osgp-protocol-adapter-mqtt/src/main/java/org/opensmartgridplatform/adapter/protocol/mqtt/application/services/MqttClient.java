@@ -55,6 +55,7 @@ public class MqttClient {
     this.clientIdentifier = getClientId(mqttClientDefaults);
     this.metricsService = metricsService;
     this.client = this.createClient(mqttClientDefaults, mqttClientSslConfig, this.clientIdentifier);
+    this.metricsService.monitorConnectionStatus(this.client);
   }
 
   private static String getClientId(final MqttClientDefaults mqttClientDefaults) {
@@ -86,8 +87,8 @@ public class MqttClient {
             .serverPort(mqttClientDefaults.getDefaultPort())
             .sslConfig(mqttClientSslConfig)
             .automaticReconnectWithDefaultConfig()
-            .addConnectedListener(this::addConnectListener)
-            .addDisconnectedListener(this::addDisconnectListener);
+            .addConnectedListener(this::onConnectListener)
+            .addDisconnectedListener(this::onDisconnectListener);
 
     if (StringUtils.isNotEmpty(mqttClientDefaults.getDefaultUsername())) {
       LOGGER.debug("Using username/password for MQTT connection");
@@ -102,36 +103,37 @@ public class MqttClient {
     return clientBuilder.buildAsync();
   }
 
-  private void addConnectListener(final MqttClientConnectedContext context) {
-    LOGGER.info(
-        "{} client {} connected to broker at {}:{}",
-        context.getClientConfig().getMqttVersion(),
-        context
-            .getClientConfig()
-            .getClientIdentifier()
-            .map(MqttClientIdentifier::toString)
-            .orElse(this.clientIdentifier),
-        context.getClientConfig().getServerHost(),
-        context.getClientConfig().getServerPort());
-    this.metricsService.connected();
+  private void onConnectListener(final MqttClientConnectedContext context) {
+    if (LOGGER.isInfoEnabled()) {
+      LOGGER.info(
+          "{} client {} connected to broker at {}:{}",
+          context.getClientConfig().getMqttVersion(),
+          context
+              .getClientConfig()
+              .getClientIdentifier()
+              .map(MqttClientIdentifier::toString)
+              .orElse(this.clientIdentifier),
+          context.getClientConfig().getServerHost(),
+          context.getClientConfig().getServerPort());
+    }
   }
 
-  private void addDisconnectListener(final MqttClientDisconnectedContext context) {
-    LOGGER.info(
-        "{} client {} disconnected from broker at {}:{}",
-        context.getClientConfig().getMqttVersion(),
-        context
-            .getClientConfig()
-            .getClientIdentifier()
-            .map(MqttClientIdentifier::toString)
-            .orElse(this.clientIdentifier),
-        context.getClientConfig().getServerHost(),
-        context.getClientConfig().getServerPort());
-    this.metricsService.disconnected();
+  private void onDisconnectListener(final MqttClientDisconnectedContext context) {
+    if (LOGGER.isInfoEnabled()) {
+      LOGGER.info(
+          "{} client {} disconnected from broker at {}:{}",
+          context.getClientConfig().getMqttVersion(),
+          context
+              .getClientConfig()
+              .getClientIdentifier()
+              .map(MqttClientIdentifier::toString)
+              .orElse(this.clientIdentifier),
+          context.getClientConfig().getServerHost(),
+          context.getClientConfig().getServerPort());
+    }
   }
 
   public CompletableFuture<Mqtt3ConnAck> connect() {
-    this.metricsService.reconnecting();
     return this.client
         .connectWith()
         .cleanSession(this.mqttClientDefaults.isDefaultCleanSession())
@@ -155,18 +157,15 @@ public class MqttClient {
 
   private void onConnectSuccess() {
     LOGGER.info("MQTT Client {} connected", this.clientIdentifier);
-    this.metricsService.connected();
     this.subscribe();
   }
 
   private void onConnectFailure(final Mqtt3ConnAck ack, final Throwable throwable) {
     LOGGER.warn("MQTT Client {} connect failed, ack: {}", this.clientIdentifier, ack, throwable);
-    this.metricsService.disconnected();
   }
 
   public void disconnect() {
     if (!this.isDisconnected()) {
-      this.metricsService.disconnecting();
       this.client.disconnect().whenComplete(this::onDisconnect);
     }
   }
@@ -178,10 +177,8 @@ public class MqttClient {
           this.clientIdentifier,
           this.client.getState(),
           throwable);
-      this.metricsService.connected();
     } else {
       LOGGER.info("MQTT Client {} connection disconnected.", this.clientIdentifier);
-      this.metricsService.disconnected();
     }
   }
 

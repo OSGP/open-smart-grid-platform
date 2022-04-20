@@ -11,62 +11,75 @@
 package org.opensmartgridplatform.adapter.protocol.mqtt.application.metrics;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
+import com.hivemq.client.mqtt.MqttClientState;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class MqttMetricsServiceTest {
 
-  private final MqttMetricsService service;
+  @InjectMocks private MqttMetricsService service;
 
-  private final PrometheusMeterRegistry meterRegistry;
+  @Spy
+  private final PrometheusMeterRegistry meterRegistry =
+      new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
 
-  MqttMetricsServiceTest() {
-    this.meterRegistry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-    this.service = new MqttMetricsService(this.meterRegistry);
+  @Mock private Mqtt3AsyncClient mqttClient;
+
+  @BeforeEach
+  void setUp() {
+    this.service.monitorConnectionStatus(this.mqttClient);
   }
 
   @Test
   void testIncreaseReceivedMessage() {
     this.service.receivedMessage();
-    assertThat(this.isMqttCounterAsExpected(1)).isTrue();
+    this.assertMqttCounter(1);
     this.service.receivedMessage();
-    assertThat(this.isMqttCounterAsExpected(2)).isTrue();
-    assertThat(this.isMqttCounterAsExpected(1)).isFalse();
+    this.assertMqttCounter(2);
   }
 
   @Test
   void testConnectedGauge() {
-    this.service.connected();
-    assertThat(this.isMqttGaugeStatusAsExpected(MqttMetricsService.BROKER_CONNECTED)).isTrue();
+    when(this.mqttClient.getState()).thenReturn(MqttClientState.CONNECTED);
+    this.assertMqttGaugeStatus(MqttMetricsService.BROKER_CONNECTED);
   }
 
   @Test
   void testDisconnectedGauge() {
-    this.service.disconnected();
-    assertThat(this.isMqttGaugeStatusAsExpected(MqttMetricsService.BROKER_DISCONNECTED)).isTrue();
+    when(this.mqttClient.getState()).thenReturn(MqttClientState.DISCONNECTED);
+    this.assertMqttGaugeStatus(MqttMetricsService.BROKER_DISCONNECTED);
   }
 
   @Test
   void testReconnectingGauge() {
-    this.service.reconnecting();
-    assertThat(this.isMqttGaugeStatusAsExpected(MqttMetricsService.BROKER_RECONNECTING)).isTrue();
+    when(this.mqttClient.getState()).thenReturn(MqttClientState.DISCONNECTED_RECONNECT);
+    this.assertMqttGaugeStatus(MqttMetricsService.BROKER_RECONNECTING);
   }
 
   @Test
   void testDisconnectingGauge() {
-    this.service.disconnecting();
-    assertThat(this.isMqttGaugeStatusAsExpected(MqttMetricsService.BROKER_DISCONNECTING)).isTrue();
+    when(this.mqttClient.getState()).thenReturn(MqttClientState.DISCONNECTED_RECONNECT);
+    this.assertMqttGaugeStatus(MqttMetricsService.BROKER_RECONNECTING);
   }
 
-  private boolean isMqttCounterAsExpected(final int expected) {
-    return this.meterRegistry.find(MqttMetricsService.MESSAGE_COUNTER).counter().count()
-        == expected;
+  private void assertMqttCounter(final int expected) {
+    assertThat(this.meterRegistry.find(MqttMetricsService.MESSAGE_COUNTER).counter().count())
+        .isEqualTo(expected);
   }
 
-  private boolean isMqttGaugeStatusAsExpected(final int expected) {
-    return this.meterRegistry.find(MqttMetricsService.CONNECTION_STATUS).gauge().value()
-        == expected;
+  private void assertMqttGaugeStatus(final int expected) {
+    assertThat(this.meterRegistry.find(MqttMetricsService.CONNECTION_STATUS).gauge().value())
+        .isEqualTo(expected);
   }
 }
