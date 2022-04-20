@@ -384,7 +384,7 @@ public class MBusGatewayService {
           new OsgpException(
               ComponentType.DOMAIN_SMART_METERING,
               String.format(
-                  "Mbus device {} not moved to another E meter",
+                  "Mbus device %s not moved to another E meter",
                   mbusDevice.getDeviceIdentification())));
     }
   }
@@ -399,7 +399,7 @@ public class MBusGatewayService {
           new OsgpException(
               ComponentType.DOMAIN_SMART_METERING,
               String.format(
-                  "Mbus device {} found on channel: %d with mbusIdentificationNumber: %s and mbusManufacturerIdentification: %s not moved to another E meter",
+                  "Mbus device %s found on channel: %d with mbusIdentificationNumber: %s and mbusManufacturerIdentification: %s not moved to another E meter",
                   mbusDevice.getDeviceIdentification(),
                   responseDto.getChannelElementValues().getChannel(),
                   responseDto.getChannelElementValues().getIdentificationNumber(),
