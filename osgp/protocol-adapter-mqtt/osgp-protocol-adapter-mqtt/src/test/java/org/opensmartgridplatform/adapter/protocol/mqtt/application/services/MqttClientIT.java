@@ -137,7 +137,6 @@ class MqttClientIT {
     eclipseMosquittoContainer.start();
 
     this.theClientWillBeConnected();
-    this.assertMqttGaugeStatus(MqttMetricsService.BROKER_CONNECTED);
     final PublishedMessage message3 = this.publishedMessage("TST-03", "test-3");
     final PublishedMessage message4 = this.publishedMessage("TST-04", "test-4");
     this.publishMessages(message3, message4);
@@ -146,6 +145,7 @@ class MqttClientIT {
   }
 
   private void theClientWillBeWaitingForReconnect() throws InterruptedException {
+    this.assertMqttGaugeStatus(MqttMetricsService.BROKER_DISCONNECTED);
     boolean clientIsWaitingForReconnect = this.mqttClient.isWaitingForReconnect();
     final Instant timeout = Instant.now().plus(Duration.ofSeconds(10));
     while (!clientIsWaitingForReconnect && Instant.now().isBefore(timeout)) {
@@ -158,6 +158,7 @@ class MqttClientIT {
   }
 
   private void theClientWillBeConnected() throws InterruptedException {
+    this.assertMqttGaugeStatus(MqttMetricsService.BROKER_DISCONNECTED);
     boolean clientIsConnected = this.mqttClient.isConnected();
     final Instant timeout = Instant.now().plus(Duration.ofSeconds(10));
     while (!clientIsConnected && Instant.now().isBefore(timeout)) {
@@ -167,6 +168,7 @@ class MqttClientIT {
     assertThat(this.mqttClient.isConnected())
         .as("MQTT Broker is back up, client is reconnected")
         .isTrue();
+    this.assertMqttGaugeStatus(MqttMetricsService.BROKER_CONNECTED);
   }
 
   private void theClientWillHaveReceivedThePublishedMessages(
@@ -195,12 +197,7 @@ class MqttClientIT {
             .buildAsync();
 
     final CountDownLatch connectLatch = new CountDownLatch(1);
-    mqtt3AsyncClient
-        .connect()
-        .whenComplete(
-            (ack, t) -> {
-              connectLatch.countDown();
-            });
+    mqtt3AsyncClient.connect().whenComplete((ack, t) -> connectLatch.countDown());
     connectLatch.await();
 
     try {
@@ -213,10 +210,7 @@ class MqttClientIT {
             .payload(publishedMessage.payload())
             .retain(false)
             .send()
-            .whenComplete(
-                (mqtt3Publish, t) -> {
-                  publishLatch.countDown();
-                });
+            .whenComplete((mqtt3Publish, t) -> publishLatch.countDown());
       }
       publishLatch.await();
     } finally {

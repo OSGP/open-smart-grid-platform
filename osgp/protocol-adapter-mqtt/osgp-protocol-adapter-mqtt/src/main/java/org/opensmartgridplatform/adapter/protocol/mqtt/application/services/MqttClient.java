@@ -13,6 +13,8 @@ import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttClientState;
 import com.hivemq.client.mqtt.datatypes.MqttClientIdentifier;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.lifecycle.MqttClientConnectedContext;
+import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedContext;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3ClientBuilder;
@@ -84,30 +86,8 @@ public class MqttClient {
             .serverPort(mqttClientDefaults.getDefaultPort())
             .sslConfig(mqttClientSslConfig)
             .automaticReconnectWithDefaultConfig()
-            .addConnectedListener(
-                context ->
-                    LOGGER.info(
-                        "{} client {} connected to broker at {}:{}",
-                        context.getClientConfig().getMqttVersion(),
-                        context
-                            .getClientConfig()
-                            .getClientIdentifier()
-                            .map(MqttClientIdentifier::toString)
-                            .orElse(clientIdentifier),
-                        context.getClientConfig().getServerHost(),
-                        context.getClientConfig().getServerPort()))
-            .addDisconnectedListener(
-                context ->
-                    LOGGER.info(
-                        "{} client {} disconnected from broker at {}:{}",
-                        context.getClientConfig().getMqttVersion(),
-                        context
-                            .getClientConfig()
-                            .getClientIdentifier()
-                            .map(MqttClientIdentifier::toString)
-                            .orElse(clientIdentifier),
-                        context.getClientConfig().getServerHost(),
-                        context.getClientConfig().getServerPort()));
+            .addConnectedListener(this::addConnectListener)
+            .addDisconnectedListener(this::addDisconnectListener);
 
     if (StringUtils.isNotEmpty(mqttClientDefaults.getDefaultUsername())) {
       LOGGER.debug("Using username/password for MQTT connection");
@@ -120,6 +100,34 @@ public class MqttClient {
     }
 
     return clientBuilder.buildAsync();
+  }
+
+  private void addConnectListener(final MqttClientConnectedContext context) {
+    LOGGER.info(
+        "{} client {} connected to broker at {}:{}",
+        context.getClientConfig().getMqttVersion(),
+        context
+            .getClientConfig()
+            .getClientIdentifier()
+            .map(MqttClientIdentifier::toString)
+            .orElse(this.clientIdentifier),
+        context.getClientConfig().getServerHost(),
+        context.getClientConfig().getServerPort());
+    this.metricsService.connected();
+  }
+
+  private void addDisconnectListener(final MqttClientDisconnectedContext context) {
+    LOGGER.info(
+        "{} client {} disconnected from broker at {}:{}",
+        context.getClientConfig().getMqttVersion(),
+        context
+            .getClientConfig()
+            .getClientIdentifier()
+            .map(MqttClientIdentifier::toString)
+            .orElse(this.clientIdentifier),
+        context.getClientConfig().getServerHost(),
+        context.getClientConfig().getServerPort());
+    this.metricsService.disconnected();
   }
 
   public CompletableFuture<Mqtt3ConnAck> connect() {

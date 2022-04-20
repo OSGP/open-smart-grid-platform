@@ -13,6 +13,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.micrometer.prometheus.PrometheusConfig;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +23,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging.OutboundOsgpCoreResponseMessageSender;
+import org.opensmartgridplatform.adapter.protocol.mqtt.application.metrics.MqttMetricsService;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -38,17 +41,21 @@ class ProtocolResponseMessageSendingHandlerTest {
   @Mock CorrelationIdProviderService correlationIdProviderService;
   @Captor ArgumentCaptor<ResponseMessage> responseMessageCaptor;
 
+  private final PrometheusMeterRegistry meterRegistry;
+
+  ProtocolResponseMessageSendingHandlerTest() {
+    this.meterRegistry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+  }
+
   @Test
   void sendsOkProtocolResponseMessageWithPayloadAsStringDataObject() {
-    final String organisationIdentification = ORGANISATION_IDENTIFICATION;
     final String topic = "test/topic";
     final String expectedDataObject = "payload-as-string";
     final byte[] payload = expectedDataObject.getBytes(StandardCharsets.UTF_8);
     final String correlationId = "correlation-id-from-provider";
     final ProtocolResponseMessageSendingHandler protocolResponseMessageSendingHandler =
-        this.aProtocolResponseMessageSendingHandler(
-            organisationIdentification, DEVICE_IDENTIFICATION);
-    when(this.correlationIdProviderService.getCorrelationId(organisationIdentification, topic))
+        this.aProtocolResponseMessageSendingHandler();
+    when(this.correlationIdProviderService.getCorrelationId(ORGANISATION_IDENTIFICATION, topic))
         .thenReturn(correlationId);
 
     protocolResponseMessageSendingHandler.handlePublishedMessage(topic, payload);
@@ -57,17 +64,16 @@ class ProtocolResponseMessageSendingHandlerTest {
     final ResponseMessage actualResponseMessage = this.responseMessageCaptor.getValue();
     assertThat(actualResponseMessage.getResult()).isEqualTo(ResponseMessageResultType.OK);
     assertThat(actualResponseMessage.getDataObject()).isEqualTo(expectedDataObject);
+    this.assertIncrementReceivedMessage();
   }
 
   @Test
   void sendsProtocolResponseMessageWithExpectedMetadata() {
-    final String organisationIdentification = ORGANISATION_IDENTIFICATION;
     final String topic = "test/topic";
     final String correlationId = "correlation-id-from-provider";
     final ProtocolResponseMessageSendingHandler protocolResponseMessageSendingHandler =
-        this.aProtocolResponseMessageSendingHandler(
-            organisationIdentification, DEVICE_IDENTIFICATION);
-    when(this.correlationIdProviderService.getCorrelationId(organisationIdentification, topic))
+        this.aProtocolResponseMessageSendingHandler();
+    when(this.correlationIdProviderService.getCorrelationId(ORGANISATION_IDENTIFICATION, topic))
         .thenReturn(correlationId);
 
     protocolResponseMessageSendingHandler.handlePublishedMessage(
@@ -80,10 +86,11 @@ class ProtocolResponseMessageSendingHandlerTest {
     assertThat(actualMessageMetadata.getDomainVersion()).isEqualTo("1.0");
     assertThat(actualMessageMetadata.getMessageType()).isEqualTo(MessageType.GET_DATA.name());
     assertThat(actualMessageMetadata.getOrganisationIdentification())
-        .isEqualTo(organisationIdentification);
+        .isEqualTo(ORGANISATION_IDENTIFICATION);
     assertThat(actualMessageMetadata.getDeviceIdentification()).isEqualTo(DEVICE_IDENTIFICATION);
     assertThat(actualMessageMetadata.getTopic()).isEqualTo(topic);
     assertThat(actualMessageMetadata.getCorrelationUid()).isEqualTo(correlationId);
+    this.assertIncrementReceivedMessage();
   }
 
   @Test
@@ -106,21 +113,21 @@ class ProtocolResponseMessageSendingHandlerTest {
       assertThat(retryHeader.getScheduledRetryTime()).isNull();
       assertThat(retryHeader.getMaxRetries()).isZero();
     }
+    this.assertIncrementReceivedMessage();
   }
 
   private ProtocolResponseMessageSendingHandler aProtocolResponseMessageSendingHandler() {
-    return this.aProtocolResponseMessageSendingHandler(
-        ORGANISATION_IDENTIFICATION, DEVICE_IDENTIFICATION);
-  }
-
-  private ProtocolResponseMessageSendingHandler aProtocolResponseMessageSendingHandler(
-      final String organisationIdentification, final String deviceIdentification) {
-
+    final MqttMetricsService metricsService = new MqttMetricsService(this.meterRegistry);
     return new ProtocolResponseMessageSendingHandler(
         this.outboundOsgpCoreResponseMessageSender,
         this.correlationIdProviderService,
-        null,
-        organisationIdentification,
-        deviceIdentification);
+        metricsService,
+        ProtocolResponseMessageSendingHandlerTest.ORGANISATION_IDENTIFICATION,
+        ProtocolResponseMessageSendingHandlerTest.DEVICE_IDENTIFICATION);
+  }
+
+  private void assertIncrementReceivedMessage() {
+    assertThat(this.meterRegistry.find(MqttMetricsService.MESSAGE_COUNTER).counter().count())
+        .isEqualTo(1);
   }
 }
