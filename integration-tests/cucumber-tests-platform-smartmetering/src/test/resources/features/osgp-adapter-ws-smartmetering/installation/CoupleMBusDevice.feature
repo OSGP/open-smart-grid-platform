@@ -3,18 +3,18 @@ Feature: SmartMetering Installation - Couple M-Bus Device
   As a grid operator
   I want to be able to couple an M-Bus device to a smart meter
 
-  Scenario: Couple G-meter "TESTG101205673117" to E-meter "TEST1024000000001" on first channel
+  Scenario Outline: Couple G-meter "TESTG101205673117" to E-meter "TEST1024000000001" on first channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     And a dlms device
-      | DeviceIdentification           | TESTG101205673117 |
-      | DeviceType                     | SMART_METER_G     |
-      | DeviceLifecycleStatus          | READY_FOR_USE     |
-      | MbusIdentificationNumber       |          12056731 |
-      | MbusManufacturerIdentification | LGB               |
-      | MbusVersion                    |                66 |
-      | MbusDeviceTypeIdentification   |                 3 |
+      | DeviceIdentification           | TESTG101205673117       |
+      | DeviceType                     | SMART_METER_G           |
+      | DeviceLifecycleStatus          | <DeviceLifeCycleStatus> |
+      | MbusIdentificationNumber       |                12056731 |
+      | MbusManufacturerIdentification | LGB                     |
+      | MbusVersion                    |                      66 |
+      | MbusDeviceTypeIdentification   |                       3 |
     And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             |        9 |
       | MbusIdentificationNumber       | 12056731 |
@@ -24,6 +24,18 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
     Then the Couple response is "OK"
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "9"
+
+    Examples:
+      | DeviceLifeCycleStatus      |
+      | NEW_IN_INVENTORY           |
+      | READY_FOR_USE              |
+      | REGISTERED                 |
+      | REGISTERED_BUILD_IN_FAILED |
+      | REGISTERED_INSTALL_FAILED  |
+      | REGISTERED_UPDATE_FAILED   |
+      | RETURNED_TO_INVENTORY      |
+      | UNDER_TEST                 |
+      | DESTROYED                  |
 
   @NightlyBuildOnly
   Scenario: Couple G-meter "TESTG101205673117" with missing attributes to E-meter "TEST1024000000001" on first channel
