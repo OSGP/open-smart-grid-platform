@@ -9,12 +9,14 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 import org.opensmartgridplatform.cucumber.platform.core.builders.CucumberBuilder;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 
 public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
@@ -132,6 +134,11 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_PRIMARY_ADDRESS)) {
       this.setMbusPrimaryAddress(
           getShort(inputSettings, PlatformSmartmeteringKeys.MBUS_PRIMARY_ADDRESS));
+    }
+    if (inputSettings.containsKey(PlatformSmartmeteringKeys.DEVICE_LIFECYCLE_STATUS)) {
+      this.deviceLifeCycleStatus =
+          DeviceLifecycleStatus.valueOf(
+              getString(inputSettings, PlatformSmartmeteringKeys.DEVICE_LIFECYCLE_STATUS));
     }
 
     return this;
