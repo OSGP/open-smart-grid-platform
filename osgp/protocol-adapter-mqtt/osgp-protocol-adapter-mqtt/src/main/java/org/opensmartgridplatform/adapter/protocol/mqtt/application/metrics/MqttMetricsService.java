@@ -33,17 +33,15 @@ public class MqttMetricsService {
   public static final String CONNECTION_STATUS = "mqtt.metrics.gauge.connection.status";
 
   /**
-   * @param registry
+   * Prometheus' metrics service to count the amount of messages received by the MQTT client and to
+   * get a connection status from the MQTT client.
+   *
+   * @param registry the Prometheus meter registry
    */
   public MqttMetricsService(final MeterRegistry registry) {
     this.registry = registry;
-    this.receivedMessagesCounter =
-        this.createCounter(
-            MESSAGE_COUNTER, "Counter with the amount of received messages by the MQTT layer");
-    this.createGauge(
-        CONNECTION_STATUS,
-        this.connectionStatus::get,
-        "Gauge to show if the MQTT layer is connected to the provided MQTT broker");
+    this.receivedMessagesCounter = this.createCounter();
+    this.createGauge(this.connectionStatus::get);
   }
 
   public void receivedMessage() {
@@ -66,13 +64,15 @@ public class MqttMetricsService {
     this.connectionStatus.set(BROKER_DISCONNECTED);
   }
 
-  private void createGauge(
-      final String name, final Supplier<Number> numberSupplier, final String description) {
-
-    Gauge.builder(name, numberSupplier).description(description).register(this.registry);
+  private void createGauge(final Supplier<Number> numberSupplier) {
+    Gauge.builder(MqttMetricsService.CONNECTION_STATUS, numberSupplier)
+        .description("Gauge to show if the MQTT layer is connected to the provided MQTT broker")
+        .register(this.registry);
   }
 
-  private Counter createCounter(final String name, final String description) {
-    return Counter.builder(name).description(description).register(this.registry);
+  private Counter createCounter() {
+    return Counter.builder(MqttMetricsService.MESSAGE_COUNTER)
+        .description("Counter with the amount of received messages by the MQTT layer")
+        .register(this.registry);
   }
 }
