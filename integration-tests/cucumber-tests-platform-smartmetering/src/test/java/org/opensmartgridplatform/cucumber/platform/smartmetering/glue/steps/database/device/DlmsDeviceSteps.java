@@ -579,9 +579,12 @@ public class DlmsDeviceSteps {
   private Device createDeviceInCoreDatabase(final Map<String, String> inputSettings) {
 
     Device device;
+
     final ProtocolInfo protocolInfo = this.getProtocolInfo(inputSettings);
     final DeviceModel deviceModel = this.getDeviceModel(inputSettings);
+
     final boolean isSmartMeter = this.isSmartMeter(inputSettings);
+
     if (isSmartMeter) {
       final SmartMeter smartMeter =
           new SmartMeterBuilder()
