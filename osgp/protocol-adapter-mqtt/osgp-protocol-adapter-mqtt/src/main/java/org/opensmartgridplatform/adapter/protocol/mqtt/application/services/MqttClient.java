@@ -13,6 +13,8 @@ import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttClientState;
 import com.hivemq.client.mqtt.datatypes.MqttClientIdentifier;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.lifecycle.MqttClientConnectedContext;
+import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedContext;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3ClientBuilder;
@@ -27,6 +29,7 @@ import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.adapter.protocol.mqtt.application.metrics.MqttMetricsService;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttClientDefaults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,16 +42,20 @@ public class MqttClient {
   private final MessageHandler messageHandler;
   private final String clientIdentifier;
   private final Mqtt3AsyncClient client;
+  private final MqttMetricsService metricsService;
 
   public MqttClient(
       final MqttClientDefaults mqttClientDefaults,
       final MqttClientSslConfig mqttClientSslConfig,
-      final MessageHandler messageHandler) {
+      final MessageHandler messageHandler,
+      final MqttMetricsService metricsService) {
 
     this.mqttClientDefaults = mqttClientDefaults;
     this.messageHandler = messageHandler;
     this.clientIdentifier = getClientId(mqttClientDefaults);
+    this.metricsService = metricsService;
     this.client = this.createClient(mqttClientDefaults, mqttClientSslConfig, this.clientIdentifier);
+    this.metricsService.monitorConnectionStatus(this.client);
   }
 
   private static String getClientId(final MqttClientDefaults mqttClientDefaults) {
@@ -80,30 +87,8 @@ public class MqttClient {
             .serverPort(mqttClientDefaults.getDefaultPort())
             .sslConfig(mqttClientSslConfig)
             .automaticReconnectWithDefaultConfig()
-            .addConnectedListener(
-                context ->
-                    LOGGER.info(
-                        "{} client {} connected to broker at {}:{}",
-                        context.getClientConfig().getMqttVersion(),
-                        context
-                            .getClientConfig()
-                            .getClientIdentifier()
-                            .map(MqttClientIdentifier::toString)
-                            .orElse(clientIdentifier),
-                        context.getClientConfig().getServerHost(),
-                        context.getClientConfig().getServerPort()))
-            .addDisconnectedListener(
-                context ->
-                    LOGGER.info(
-                        "{} client {} disconnected from broker at {}:{}",
-                        context.getClientConfig().getMqttVersion(),
-                        context
-                            .getClientConfig()
-                            .getClientIdentifier()
-                            .map(MqttClientIdentifier::toString)
-                            .orElse(clientIdentifier),
-                        context.getClientConfig().getServerHost(),
-                        context.getClientConfig().getServerPort()));
+            .addConnectedListener(this::onConnectListener)
+            .addDisconnectedListener(this::onDisconnectListener);
 
     if (StringUtils.isNotEmpty(mqttClientDefaults.getDefaultUsername())) {
       LOGGER.debug("Using username/password for MQTT connection");
@@ -116,6 +101,36 @@ public class MqttClient {
     }
 
     return clientBuilder.buildAsync();
+  }
+
+  private void onConnectListener(final MqttClientConnectedContext context) {
+    if (LOGGER.isInfoEnabled()) {
+      LOGGER.info(
+          "{} client {} connected to broker at {}:{}",
+          context.getClientConfig().getMqttVersion(),
+          context
+              .getClientConfig()
+              .getClientIdentifier()
+              .map(MqttClientIdentifier::toString)
+              .orElse(this.clientIdentifier),
+          context.getClientConfig().getServerHost(),
+          context.getClientConfig().getServerPort());
+    }
+  }
+
+  private void onDisconnectListener(final MqttClientDisconnectedContext context) {
+    if (LOGGER.isInfoEnabled()) {
+      LOGGER.info(
+          "{} client {} disconnected from broker at {}:{}",
+          context.getClientConfig().getMqttVersion(),
+          context
+              .getClientConfig()
+              .getClientIdentifier()
+              .map(MqttClientIdentifier::toString)
+              .orElse(this.clientIdentifier),
+          context.getClientConfig().getServerHost(),
+          context.getClientConfig().getServerPort());
+    }
   }
 
   public CompletableFuture<Mqtt3ConnAck> connect() {
@@ -215,12 +230,12 @@ public class MqttClient {
         .subscribeWith()
         .topicFilter(topic)
         .qos(qos)
-        .callback(mqttPublish -> this.published(mqttPublish, messageHandler))
+        .callback(mqttPublish -> this.received(mqttPublish, messageHandler))
         .send()
         .whenComplete((subAck, throwable) -> this.onSubscribe(topic, qos, subAck, throwable));
   }
 
-  private void published(final Mqtt3Publish publish, final MessageHandler messageHandler) {
+  private void received(final Mqtt3Publish publish, final MessageHandler messageHandler) {
     messageHandler.handlePublishedMessage(
         publish.getTopic().toString(), publish.getPayloadAsBytes());
   }

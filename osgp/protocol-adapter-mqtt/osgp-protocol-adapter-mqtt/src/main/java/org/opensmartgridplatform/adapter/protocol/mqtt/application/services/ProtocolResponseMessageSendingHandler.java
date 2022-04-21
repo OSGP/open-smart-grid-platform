@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.mqtt.application.services;
 
 import java.nio.charset.StandardCharsets;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging.OutboundOsgpCoreResponseMessageSender;
+import org.opensmartgridplatform.adapter.protocol.mqtt.application.metrics.MqttMetricsService;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -46,17 +47,20 @@ public class ProtocolResponseMessageSendingHandler implements MessageHandler {
 
   private final OutboundOsgpCoreResponseMessageSender outboundOsgpCoreResponseMessageSender;
   private final CorrelationIdProviderService correlationIdProviderService;
+  private final MqttMetricsService metricsService;
   private final String organisationIdentification;
   private final String deviceIdentification;
 
   public ProtocolResponseMessageSendingHandler(
       final OutboundOsgpCoreResponseMessageSender outboundOsgpCoreResponseMessageSender,
       final CorrelationIdProviderService correlationIdProviderService,
+      final MqttMetricsService metricsService,
       @Value("${mqtt.broker.organisation.identification}") final String organisationIdentification,
       @Value("${mqtt.broker.device.identification}") final String deviceIdentification) {
 
     this.outboundOsgpCoreResponseMessageSender = outboundOsgpCoreResponseMessageSender;
     this.correlationIdProviderService = correlationIdProviderService;
+    this.metricsService = metricsService;
     this.organisationIdentification = organisationIdentification;
     this.deviceIdentification = deviceIdentification;
   }
@@ -94,12 +98,15 @@ public class ProtocolResponseMessageSendingHandler implements MessageHandler {
             .build();
     LOGGER.info(
         "Handling message published on topic {}, received payload: {}", topic, payloadAsText);
+    // Increment counter
+    this.metricsService.receivedMessage();
     final ResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
             .messageMetadata(messageMetadata)
             .dataObject(payloadAsText)
             .result(ResponseMessageResultType.OK)
             .build();
+
     this.outboundOsgpCoreResponseMessageSender.send(responseMessage);
   }
 }
