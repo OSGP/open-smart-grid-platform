@@ -28,6 +28,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.metrics.MqttMetricsService;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttClientDefaults;
+import org.opensmartgridplatform.shared.metrics.MetricsNameService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
@@ -39,6 +40,7 @@ class MqttClientIT {
   private static final Logger MQTT_BROKER_LOGGER = LoggerFactory.getLogger("MqttBroker");
 
   private final PrometheusMeterRegistry meterRegistry;
+  private final MetricsNameService metricsNameService = new MetricsNameService();
 
   @ClassRule
   private static final GenericContainer<?> eclipseMosquittoContainer =
@@ -54,7 +56,8 @@ class MqttClientIT {
 
   MqttClientIT() {
     this.meterRegistry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-    final MqttMetricsService meterService = new MqttMetricsService(this.meterRegistry);
+    final MqttMetricsService meterService =
+        new MqttMetricsService(this.meterRegistry, this.metricsNameService);
     final MqttClientDefaults mqttClientDefaults =
         new MqttClientDefaults.Builder()
             .withClientId("test-client-id")

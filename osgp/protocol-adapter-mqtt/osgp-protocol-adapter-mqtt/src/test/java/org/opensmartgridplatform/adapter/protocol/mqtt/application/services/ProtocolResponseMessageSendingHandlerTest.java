@@ -30,6 +30,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
+import org.opensmartgridplatform.shared.metrics.MetricsNameService;
 
 @ExtendWith(MockitoExtension.class)
 class ProtocolResponseMessageSendingHandlerTest {
@@ -42,6 +43,7 @@ class ProtocolResponseMessageSendingHandlerTest {
   @Captor ArgumentCaptor<ResponseMessage> responseMessageCaptor;
 
   private final PrometheusMeterRegistry meterRegistry;
+  private final MetricsNameService metricsNameService = new MetricsNameService();
 
   ProtocolResponseMessageSendingHandlerTest() {
     this.meterRegistry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
@@ -117,7 +119,8 @@ class ProtocolResponseMessageSendingHandlerTest {
   }
 
   private ProtocolResponseMessageSendingHandler aProtocolResponseMessageSendingHandler() {
-    final MqttMetricsService metricsService = new MqttMetricsService(this.meterRegistry);
+    final MqttMetricsService metricsService =
+        new MqttMetricsService(this.meterRegistry, this.metricsNameService);
     return new ProtocolResponseMessageSendingHandler(
         this.outboundOsgpCoreResponseMessageSender,
         this.correlationIdProviderService,

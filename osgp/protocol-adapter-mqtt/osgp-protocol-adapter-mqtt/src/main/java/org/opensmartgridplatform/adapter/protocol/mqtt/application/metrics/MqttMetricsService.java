@@ -15,6 +15,7 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.util.function.Supplier;
+import org.opensmartgridplatform.shared.metrics.MetricsNameService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,6 +26,7 @@ public class MqttMetricsService {
   public static final int BROKER_CONNECTED = 2;
 
   private final MeterRegistry registry;
+  private final MetricsNameService metricsNameService;
   private final Counter receivedMessagesCounter;
 
   public static final String MESSAGE_COUNTER = "mqtt.metrics.counter.received.messages";
@@ -36,9 +38,12 @@ public class MqttMetricsService {
    * get a connection status from the MQTT client.
    *
    * @param registry the Prometheus meter registry
+   * @param metricsNameService Service for creating application-specific metric names
    */
-  public MqttMetricsService(final MeterRegistry registry) {
+  public MqttMetricsService(
+      final MeterRegistry registry, final MetricsNameService metricsNameService) {
     this.registry = registry;
+    this.metricsNameService = metricsNameService;
     this.receivedMessagesCounter = this.createCounter();
     this.createGauge(this::getMappedState);
   }
@@ -67,13 +72,13 @@ public class MqttMetricsService {
   }
 
   private void createGauge(final Supplier<Number> numberSupplier) {
-    Gauge.builder(MqttMetricsService.CONNECTION_STATUS, numberSupplier)
+    Gauge.builder(this.metricsNameService.createName(CONNECTION_STATUS), numberSupplier)
         .description("Gauge to show if the MQTT layer is connected to the provided MQTT broker")
         .register(this.registry);
   }
 
   private Counter createCounter() {
-    return Counter.builder(MqttMetricsService.MESSAGE_COUNTER)
+    return Counter.builder(this.metricsNameService.createName(MESSAGE_COUNTER))
         .description("Counter with the amount of received messages by the MQTT layer")
         .register(this.registry);
   }
