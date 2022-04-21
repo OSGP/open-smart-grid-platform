@@ -236,6 +236,27 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
       final String code,
       final String color,
       final short digitalInput) {
+
+    return this.createLightMeasurementDevice(
+        PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
+        deviceIdentification,
+        code,
+        color,
+        digitalInput);
+  }
+
+  /**
+   * Create a single light measurement device, including rights for the organization identified by
+   * {@code organizationIdentification}.
+   */
+  @Transactional("txMgrCore")
+  public LightMeasurementDevice createLightMeasurementDevice(
+      final String organizationIdentification,
+      final String deviceIdentification,
+      final String code,
+      final String color,
+      final short digitalInput) {
+
     final String deviceType = "LMD";
     final InetAddress networkAddress = InetAddress.getLoopbackAddress();
     final Date technicalInstallationDate = DateTime.now().withZone(DateTimeZone.UTC).toDate();
@@ -254,9 +275,10 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
     lightMeasurementDevice.setLastCommunicationTime(technicalInstallationDate.toInstant());
     lightMeasurementDevice.setDigitalInput(digitalInput);
 
-    // Setting the default authorization both creates the device and adds
-    // the device authorization.
-    this.setDefaultDeviceAuthorizationForDevice(lightMeasurementDevice);
+    // Both creates the device and adds the device authorization as owner for the identified
+    // organization.
+    this.setDeviceAuthorizationForDeviceOwnedByOrganization(
+        lightMeasurementDevice, organizationIdentification);
 
     return this.lightMeasurementDeviceRepository.findByDeviceIdentification(deviceIdentification);
   }
