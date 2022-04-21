@@ -24,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.shared.metrics.MetricsNameService;
 
 @ExtendWith(MockitoExtension.class)
 class MqttMetricsServiceTest {
@@ -33,6 +34,8 @@ class MqttMetricsServiceTest {
   @Spy
   private final PrometheusMeterRegistry meterRegistry =
       new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+
+  @Spy private MetricsNameService metricsNameService;
 
   @Mock private Mqtt3AsyncClient mqttClient;
 
