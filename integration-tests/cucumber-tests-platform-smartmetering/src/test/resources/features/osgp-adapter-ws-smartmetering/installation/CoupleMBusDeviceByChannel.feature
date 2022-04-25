@@ -66,6 +66,6 @@ Feature: SmartMetering Installation - Couple M-Bus Device by Channel
       | Channel              |                 1 |
     Then retrieving the Couple response results in an exception
     And a SOAP fault should have been returned
-      | Code    |                   222 |
-      | Message | MBUS_DEVICE_IS_IN_USE |
+      | Code    |                                     222 |
+      | Message | MBUS_DEVICE_NOT_MOVED_TO_ANOTHER_EMETER |
     And the mbus device "TESTG101205673117" is not coupled to the device "TEST1024000000001"
