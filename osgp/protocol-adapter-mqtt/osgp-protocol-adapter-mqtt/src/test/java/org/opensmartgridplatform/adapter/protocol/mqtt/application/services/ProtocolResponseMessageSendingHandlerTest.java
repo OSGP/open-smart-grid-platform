@@ -50,10 +50,9 @@ class ProtocolResponseMessageSendingHandlerTest {
   }
 
   @Test
-  void sendsOkProtocolResponseMessageWithPayloadAsStringDataObject() {
+  void sendsOkProtocolResponseMessageWithSamePayload() {
     final String topic = "test/topic";
-    final String expectedDataObject = "payload-as-string";
-    final byte[] payload = expectedDataObject.getBytes(StandardCharsets.UTF_8);
+    final byte[] payload = "payload-as-string".getBytes(StandardCharsets.UTF_8);
     final String correlationId = "correlation-id-from-provider";
     final ProtocolResponseMessageSendingHandler protocolResponseMessageSendingHandler =
         this.aProtocolResponseMessageSendingHandler();
@@ -65,7 +64,7 @@ class ProtocolResponseMessageSendingHandlerTest {
     verify(this.outboundOsgpCoreResponseMessageSender).send(this.responseMessageCaptor.capture());
     final ResponseMessage actualResponseMessage = this.responseMessageCaptor.getValue();
     assertThat(actualResponseMessage.getResult()).isEqualTo(ResponseMessageResultType.OK);
-    assertThat(actualResponseMessage.getDataObject()).isEqualTo(expectedDataObject);
+    assertThat(actualResponseMessage.getDataObject()).isEqualTo(payload);
     this.assertIncrementReceivedMessage();
   }
 
