@@ -9,7 +9,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.mqtt.application.services;
 
-import java.nio.charset.StandardCharsets;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging.OutboundOsgpCoreResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.metrics.MqttMetricsService;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
@@ -71,8 +70,6 @@ public class ProtocolResponseMessageSendingHandler implements MessageHandler {
    */
   @Override
   public void handlePublishedMessage(final String topic, final byte[] payload) {
-    final String payloadAsText = new String(payload, StandardCharsets.UTF_8);
-
     final MessageMetadata messageMetadata =
         MessageMetadata.newBuilder()
             .withOrganisationIdentification(this.organisationIdentification)
@@ -96,14 +93,13 @@ public class ProtocolResponseMessageSendingHandler implements MessageHandler {
             .withBypassRetry(true)
             .withScheduled(false)
             .build();
-    LOGGER.info(
-        "Handling message published on topic {}, received payload: {}", topic, payloadAsText);
+    LOGGER.info("Handling message published on topic {}", topic);
     // Increment counter
     this.metricsService.receivedMessage();
     final ResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
             .messageMetadata(messageMetadata)
-            .dataObject(payloadAsText)
+            .dataObject(payload)
             .result(ResponseMessageResultType.OK)
             .build();
 
