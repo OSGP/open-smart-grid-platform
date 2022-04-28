@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.kafka.da.infra.jms.messageprocessors;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import org.apache.commons.lang3.StringUtils;
@@ -30,8 +31,6 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(DomainResponseMessageProcessor.class);
 
-  private static final MessageType GET_DATA = MessageType.GET_DATA;
-
   @Autowired private StringMessageProducer producer;
 
   @Override
@@ -44,9 +43,9 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
     String deviceIdentification = null;
     String topic = null;
 
-    ResponseMessageResultType resultType;
-    String resultDescription;
-    ResponseMessage dataObject;
+    final ResponseMessageResultType resultType;
+    final String resultDescription;
+    final ResponseMessage dataObject;
 
     try {
       correlationUid = message.getJMSCorrelationID();
@@ -93,9 +92,14 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
     final Serializable dataObject = message.getDataObject();
 
-    if (dataObject instanceof String && GET_DATA.equals(messageType)) {
-
-      this.producer.send((String) dataObject);
+    if (messageType == MessageType.GET_DATA) {
+      final String textPayload;
+      if (message.getDataObject() instanceof String) {
+        textPayload = (String) message.getDataObject();
+      } else {
+        textPayload = new String((byte[]) message.getDataObject(), StandardCharsets.UTF_8);
+      }
+      this.producer.send(textPayload);
     } else {
       LOGGER.warn(
           "Discarding the message. For this component we only handle (MQTT) GET_DATA responses. "
