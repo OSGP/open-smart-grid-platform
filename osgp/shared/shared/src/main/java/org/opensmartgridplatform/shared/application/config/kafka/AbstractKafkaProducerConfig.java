@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.shared.application.config.kafka;
 
 import java.util.Map;
-import org.apache.kafka.clients.admin.AdminClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -22,7 +21,7 @@ public abstract class AbstractKafkaProducerConfig<K, V> extends KafkaConfig {
 
   private KafkaTemplate<K, V> kafkaTemplate;
 
-  private AdminClient adminClient;
+  private final Map<String, Object> producerConfigs;
 
   protected AbstractKafkaProducerConfig(
       final Environment environment, final String propertiesPrefix, final String topic) {
@@ -36,7 +35,8 @@ public abstract class AbstractKafkaProducerConfig<K, V> extends KafkaConfig {
     LOGGER.debug(
         "=================================================================================");
 
-    this.initKafkaTemplate(propertiesPrefix, topic);
+    this.producerConfigs = this.producerConfigs(propertiesPrefix);
+    this.initKafkaTemplate(topic);
   }
 
   public abstract KafkaTemplate<K, V> kafkaTemplate();
@@ -45,24 +45,22 @@ public abstract class AbstractKafkaProducerConfig<K, V> extends KafkaConfig {
     return this.kafkaTemplate;
   }
 
-  protected AdminClient getAdminClient() {
-    return this.adminClient;
+  protected Map<String, Object> getProducerConfigs() {
+    return this.producerConfigs;
   }
 
   private static String getProducerPropertiesPrefix(final String propertiesPrefix) {
     return propertiesPrefix + ".producer";
   }
 
-  private void initKafkaTemplate(final String propertiesPrefix, final String topic) {
-    final Map<String, Object> producerConfigs = this.producerConfigs(propertiesPrefix);
+  private void initKafkaTemplate(final String topic) {
     final KafkaTemplate<K, V> template =
-        new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs));
+        new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(this.producerConfigs));
     template.setDefaultTopic(topic);
     this.kafkaTemplate = template;
-    this.adminClient = AdminClient.create(producerConfigs);
   }
 
-  private Map<String, Object> producerConfigs(final String propertiesPrefix) {
+  protected Map<String, Object> producerConfigs(final String propertiesPrefix) {
     final Map<String, Object> properties = this.createCommonProperties(propertiesPrefix);
     KafkaProperties.producerProperties()
         .forEach(
