@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.shared.application.config.kafka;
 
 import java.util.Map;
+import org.apache.kafka.clients.admin.AdminClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -21,7 +22,9 @@ public abstract class AbstractKafkaProducerConfig<K, V> extends KafkaConfig {
 
   private KafkaTemplate<K, V> kafkaTemplate;
 
-  public AbstractKafkaProducerConfig(
+  private AdminClient adminClient;
+
+  protected AbstractKafkaProducerConfig(
       final Environment environment, final String propertiesPrefix, final String topic) {
     super(environment);
 
@@ -42,6 +45,10 @@ public abstract class AbstractKafkaProducerConfig<K, V> extends KafkaConfig {
     return this.kafkaTemplate;
   }
 
+  protected AdminClient getAdminClient() {
+    return this.adminClient;
+  }
+
   private static String getProducerPropertiesPrefix(final String propertiesPrefix) {
     return propertiesPrefix + ".producer";
   }
@@ -52,6 +59,7 @@ public abstract class AbstractKafkaProducerConfig<K, V> extends KafkaConfig {
         new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs));
     template.setDefaultTopic(topic);
     this.kafkaTemplate = template;
+    this.adminClient = AdminClient.create(producerConfigs);
   }
 
   private Map<String, Object> producerConfigs(final String propertiesPrefix) {
