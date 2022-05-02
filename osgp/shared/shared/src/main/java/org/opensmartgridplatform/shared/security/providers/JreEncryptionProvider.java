@@ -10,43 +10,46 @@ package org.opensmartgridplatform.shared.security.providers;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.GCMParameterSpec;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
+import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 
-public class JreEncryptionProvider extends AbstractEncryptionProvider {
+public class JreEncryptionProvider implements EncryptionProvider {
 
   private static final String DEFAULT_SINGLE_KEY_REFERENCE = "1";
   private static final String ALG = "AES";
-  private static final String ALGORITHM = "AES/CBC/NoPADDING";
+  private static final String ALGORITHM = "AES/GCM/NoPadding";
   private static final String PROVIDER = "SunJCE";
   private static final String FORMAT = "RAW";
-  private static final byte[] IV = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
   private static final int KEY_LENGTH = 16;
+  private static final int GCM_IV_LENGTH = 16;
 
   private final byte[] key;
 
+  private final SecureRandom secureRandom = new SecureRandom();
+
   public JreEncryptionProvider(final File keyStoreFile) {
     try {
-      super.setKeyFile(keyStoreFile);
       this.key = Files.readAllBytes(Paths.get(keyStoreFile.getAbsolutePath()));
     } catch (final IOException e) {
       throw new EncrypterException("Could not read keystore", e);
     }
   }
 
-  @Override
-  protected Cipher getCipher() {
+  private Cipher getCipher() {
     try {
       return Cipher.getInstance(ALGORITHM, PROVIDER);
     } catch (final NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException e) {
@@ -54,8 +57,7 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider {
     }
   }
 
-  @Override
-  protected Key getSecretEncryptionKey(final String keyReference, final int cipherMode) {
+  private Key getSecretEncryptionKey(final String keyReference) {
 
     if (!keyReference.equals(DEFAULT_SINGLE_KEY_REFERENCE)) {
       throw new EncrypterException("Only keyReference '1' is valid in this implementation.");
@@ -82,18 +84,13 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider {
   }
 
   @Override
-  protected AlgorithmParameterSpec getAlgorithmParameterSpec() {
-    return new IvParameterSpec(IV);
-  }
-
-  @Override
   public byte[] generateAes128BitsSecret(final String keyReference) {
     try {
-      final KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+      final KeyGenerator keyGenerator = KeyGenerator.getInstance(ALG);
       keyGenerator.init(KEY_LENGTH * 8);
       return this.encrypt(keyGenerator.generateKey().getEncoded(), keyReference).getSecret();
-    } catch (final NoSuchAlgorithmException exc) {
-      throw new EncrypterException("Could not generate secret", exc);
+    } catch (final NoSuchAlgorithmException e) {
+      throw new EncrypterException("Could not generate secret", e);
     }
   }
 
@@ -105,5 +102,53 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider {
   @Override
   public int getSecretByteLength() {
     return KEY_LENGTH;
+  }
+
+  @Override
+  public EncryptedSecret encrypt(final byte[] secret, final String keyReference) {
+    try {
+      final Cipher cipher = this.getCipher();
+
+      final byte[] iv = new byte[GCM_IV_LENGTH]; // NEVER REUSE THIS IV WITH SAME KEY
+      this.secureRandom.nextBytes(iv);
+
+      final GCMParameterSpec parameterSpec = new GCMParameterSpec(KEY_LENGTH * 8, iv);
+
+      cipher.init(Cipher.ENCRYPT_MODE, this.getSecretEncryptionKey(keyReference), parameterSpec);
+
+      final byte[] bytes = cipher.doFinal(secret);
+      final ByteBuffer byteBuffer = ByteBuffer.allocate(GCM_IV_LENGTH + bytes.length);
+      byteBuffer.put(iv);
+      byteBuffer.put(bytes);
+
+      return new EncryptedSecret(this.getType(), byteBuffer.array());
+
+    } catch (final Exception e) {
+      throw new EncrypterException("Could not encrypt secret with keyReference " + keyReference, e);
+    }
+  }
+
+  @Override
+  public byte[] decrypt(final EncryptedSecret secret, final String keyReference) {
+
+    if (secret.getType() != this.getType()) {
+      throw new EncrypterException(
+          String.format(
+              "EncryptionProvider for type %s cannot decrypt secrets of type %s",
+              this.getType().name(), secret.getType().name()));
+    }
+
+    try {
+      final Cipher cipher = this.getCipher();
+      final AlgorithmParameterSpec gcmIv =
+          new GCMParameterSpec(KEY_LENGTH * 8, secret.getSecret(), 0, GCM_IV_LENGTH);
+      cipher.init(Cipher.DECRYPT_MODE, this.getSecretEncryptionKey(keyReference), gcmIv);
+
+      return cipher.doFinal(
+          secret.getSecret(), GCM_IV_LENGTH, secret.getSecret().length - GCM_IV_LENGTH);
+
+    } catch (final Exception e) {
+      throw new EncrypterException("Could not decrypt secret with keyReference " + keyReference, e);
+    }
   }
 }
