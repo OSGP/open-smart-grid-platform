@@ -856,6 +856,7 @@ public class DefaultDeviceProfile {
     return new CurrentlyActiveTariff();
   }
 
+  @Profile("default & !smr5")
   @Bean
   public ConfigurationObject configurationObject() {
     final Byte[] bytes = new Byte[this.configurationObjectFlags.size()];
