@@ -15,11 +15,14 @@ import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
+import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ConfigurationObject;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DoubleLongUnsignedExtendedRegister;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDriverActiveFirmwareIdentifier;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDriverActiveFirmwareSignature;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusMasterLoadProfilePeriod1SMR;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.OctetStringExtendedRegister;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityEventLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile1;
@@ -89,6 +92,45 @@ public class Smr5Profile {
 
   @Value("${mbus.identification.number}")
   private long mbusIdentificationNumber;
+
+  @Value("${command.hourlymeterreads.mbus.value}")
+  private long mBusValue;
+
+  @Value("${command.hourlymeterreads.mbus.scaler}")
+  private byte mBusScaler;
+
+  @Value("${command.hourlymeterreads.mbus.unit}")
+  private UnitType mBusUnit;
+
+  @Value("${command.hourlymeterreads.mbus.capturetime.year}")
+  private int mBusCaptureTimeYear;
+
+  @Value("${command.hourlymeterreads.mbus.capturetime.month}")
+  private int mBusCaptureTimeMonth;
+
+  @Value("${command.hourlymeterreads.mbus.capturetime.dayOfMonth}")
+  private int mBusCaptureTimeDayOfMonth;
+
+  @Value("${command.hourlymeterreads.mbus.capturetime.dayOfWeek}")
+  private int mBusCaptureTimeDayOfWeek;
+
+  @Value("${command.hourlymeterreads.mbus.capturetime.hour}")
+  private int mBusCaptureTimeHour;
+
+  @Value("${command.hourlymeterreads.mbus.capturetime.minute}")
+  private int mBusCaptureTimeMinute;
+
+  @Value("${command.hourlymeterreads.mbus.capturetime.second}")
+  private int mBusCaptureTimeSecond;
+
+  @Value("${command.hourlymeterreads.mbus.capturetime.hundredths}")
+  private int mBusCaptureTimeHundredths;
+
+  @Value("${command.hourlymeterreads.mbus.capturetime.deviation}")
+  private int mBusCaptureTimeDeviation;
+
+  @Value("${command.hourlymeterreads.mbus.capturetime.clockstatus}")
+  private byte mBusCaptureTimeStatus;
 
   @Bean
   public InvocationCounter invocationCounter() {
@@ -213,5 +255,65 @@ public class Smr5Profile {
   @Bean
   public Long mbusIdentificationNumberHolder() {
     return this.mbusIdentificationNumber;
+  }
+
+  @Bean
+  public DoubleLongUnsignedExtendedRegister mBusScalerUnitVolumeHourlyChannel1() {
+    return this.defaultScalerUnitVolumeHourly("0.1.24.2.2.255");
+  }
+
+  @Bean
+  public DoubleLongUnsignedExtendedRegister mBusScalerUnitVolumeHourlyChannel2() {
+    return this.defaultScalerUnitVolumeHourly("0.2.24.2.2.255");
+  }
+
+  @Bean
+  public DoubleLongUnsignedExtendedRegister mBusScalerUnitVolumeHourlyChannel3() {
+    return this.defaultScalerUnitVolumeHourly("0.3.24.2.2.255");
+  }
+
+  @Bean
+  public DoubleLongUnsignedExtendedRegister mBusScalerUnitVolumeHourlyChannel4() {
+    return this.defaultScalerUnitVolumeHourly("0.4.24.2.2.255");
+  }
+
+  private DoubleLongUnsignedExtendedRegister defaultScalerUnitVolumeHourly(
+      final String logicalName) {
+    return new DoubleLongUnsignedExtendedRegister(
+        logicalName,
+        this.mBusValue,
+        this.mBusScaler,
+        this.mBusUnit,
+        new CosemDateTime(
+            this.mBusCaptureTimeYear,
+            this.mBusCaptureTimeMonth,
+            this.mBusCaptureTimeDayOfMonth,
+            this.mBusCaptureTimeDayOfWeek,
+            this.mBusCaptureTimeHour,
+            this.mBusCaptureTimeMinute,
+            this.mBusCaptureTimeSecond,
+            this.mBusCaptureTimeHundredths,
+            this.mBusCaptureTimeDeviation,
+            ClockStatus.clockStatusFrom(this.mBusCaptureTimeStatus).toArray(new ClockStatus[0])));
+  }
+
+  @Bean
+  public MBusMasterLoadProfilePeriod1SMR mBus1MasterLoadProfilePeriod1(final Calendar cal) {
+    return new MBusMasterLoadProfilePeriod1SMR(cal, 1);
+  }
+
+  @Bean
+  public MBusMasterLoadProfilePeriod1SMR mBus2MasterLoadProfilePeriod1(final Calendar cal) {
+    return new MBusMasterLoadProfilePeriod1SMR(cal, 2);
+  }
+
+  @Bean
+  public MBusMasterLoadProfilePeriod1SMR mBus3MasterLoadProfilePeriod1(final Calendar cal) {
+    return new MBusMasterLoadProfilePeriod1SMR(cal, 3);
+  }
+
+  @Bean
+  public MBusMasterLoadProfilePeriod1SMR mBus4MasterLoadProfilePeriod1(final Calendar cal) {
+    return new MBusMasterLoadProfilePeriod1SMR(cal, 4);
   }
 }

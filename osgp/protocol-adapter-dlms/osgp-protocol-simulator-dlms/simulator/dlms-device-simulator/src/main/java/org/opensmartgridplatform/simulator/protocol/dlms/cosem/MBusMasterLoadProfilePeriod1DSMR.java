@@ -1,11 +1,13 @@
 /*
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2022 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package org.opensmartgridplatform.simulator.protocol.dlms.cosem;
 
 import java.util.Arrays;
@@ -23,16 +25,11 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteg
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger8DataProcessor;
 
 @CosemClass(id = 7)
-public class MBus4MasterLoadProfilePeriod1 extends ProfileGeneric {
-
-  private static final int CHANNEL = 4;
+public class MBusMasterLoadProfilePeriod1DSMR extends ProfileGeneric {
 
   private static final int CAPTURE_PERIOD = 3600;
 
   private static final int PROFILE_ENTRIES = 240;
-
-  private static final CaptureObjectDefinitionCollection CAPTURE_OBJECT_DEFINITIONS =
-      initCaptureObjects();
 
   /**
    * Only for cosem attribute definition, data remains untouched. Attribute data is gathered from
@@ -97,11 +94,15 @@ public class MBus4MasterLoadProfilePeriod1 extends ProfileGeneric {
   public DataObject profileEntries;
 
   private final Calendar time;
+  private final int channel;
+  private final CaptureObjectDefinitionCollection captureObjectsDefinitions;
 
-  public MBus4MasterLoadProfilePeriod1(final Calendar time) {
-    super(String.format("0.%1$d.24.3.0.255", CHANNEL));
+  public MBusMasterLoadProfilePeriod1DSMR(final Calendar time, final int channel) {
+    super(String.format("0.%1$d.24.3.0.255", channel));
 
     this.time = time;
+    this.channel = channel;
+
     this.buffer = DataObject.newNullData();
     this.captureObjects = DataObject.newNullData();
     this.capturePeriod = DataObject.newUInteger32Data(CAPTURE_PERIOD);
@@ -110,15 +111,16 @@ public class MBus4MasterLoadProfilePeriod1 extends ProfileGeneric {
     this.entriesInUse = DataObject.newNullData();
     this.profileEntries = DataObject.newUInteger32Data(PROFILE_ENTRIES);
 
+    this.captureObjectsDefinitions = this.initCaptureObjects();
     this.initBufferData();
   }
 
   @Override
   protected CaptureObjectDefinitionCollection getCaptureObjectDefinitionCollection() {
-    return CAPTURE_OBJECT_DEFINITIONS;
+    return this.captureObjectsDefinitions;
   }
 
-  private static CaptureObjectDefinitionCollection initCaptureObjects() {
+  private CaptureObjectDefinitionCollection initCaptureObjects() {
 
     final CaptureObjectDefinitionCollection definitions = new CaptureObjectDefinitionCollection();
     definitions.add(
@@ -128,18 +130,18 @@ public class MBus4MasterLoadProfilePeriod1 extends ProfileGeneric {
     // AMR Profile status code M-Bus
     definitions.add(
         new CaptureObjectDefinition(
-            new CaptureObject(1, String.format("0.%1$d.96.10.3.255", CHANNEL), (byte) 2, 0),
+            new CaptureObject(1, String.format("0.%1$d.96.10.3.255", this.channel), (byte) 2, 0),
             new UInteger8DataProcessor()));
 
     // Measurement Value
     definitions.add(
         new CaptureObjectDefinition(
-            new CaptureObject(4, String.format("0.%1$d.24.2.1.255", CHANNEL), (byte) 2, 0),
+            new CaptureObject(4, String.format("0.%1$d.24.2.1.255", this.channel), (byte) 2, 0),
             new UInteger32DataProcessor()));
     // Measurement Time
     definitions.add(
         new CaptureObjectDefinition(
-            new CaptureObject(4, String.format("0.%1$d.24.2.1.255", CHANNEL), (byte) 5, 0),
+            new CaptureObject(4, String.format("0.%1$d.24.2.1.255", this.channel), (byte) 5, 0),
             new CosemDateTimeProcessor()));
 
     return definitions;
@@ -155,7 +157,7 @@ public class MBus4MasterLoadProfilePeriod1 extends ProfileGeneric {
     for (int i = 1; i < PROFILE_ENTRIES; i++) {
       // Increase by channel to show difference in channels in result
       // data.
-      measurementValue += CHANNEL;
+      measurementValue += this.channel;
 
       final Calendar cal = this.getNextDateTime();
       this.bufferData.add(Arrays.asList(cal, amrProfileStatusCode, measurementValue, cal));
