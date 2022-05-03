@@ -25,11 +25,11 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteg
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger8DataProcessor;
 
 @CosemClass(id = 7)
-public class MBusMasterLoadProfilePeriod1DSMR extends ProfileGeneric {
+public class MBusMonthlyBillingValuesPeriod1SMR5 extends ProfileGeneric {
 
-  private static final int CAPTURE_PERIOD = 3600;
+  private static final int CAPTURE_PERIOD = 0;
 
-  private static final int PROFILE_ENTRIES = 240;
+  private static final int PROFILE_ENTRIES = 13;
 
   /**
    * Only for cosem attribute definition, data remains untouched. Attribute data is gathered from
@@ -97,8 +97,8 @@ public class MBusMasterLoadProfilePeriod1DSMR extends ProfileGeneric {
   private final int channel;
   private final CaptureObjectDefinitionCollection captureObjectsDefinitions;
 
-  public MBusMasterLoadProfilePeriod1DSMR(final Calendar time, final int channel) {
-    super(String.format("0.%1$d.24.3.0.255", channel));
+  public MBusMonthlyBillingValuesPeriod1SMR5(final Calendar time, final int channel) {
+    super(String.format("0.%d.24.3.2.255", channel));
 
     this.time = time;
     this.channel = channel;
@@ -115,13 +115,7 @@ public class MBusMasterLoadProfilePeriod1DSMR extends ProfileGeneric {
     this.initBufferData();
   }
 
-  @Override
-  protected CaptureObjectDefinitionCollection getCaptureObjectDefinitionCollection() {
-    return this.captureObjectsDefinitions;
-  }
-
   private CaptureObjectDefinitionCollection initCaptureObjects() {
-
     final CaptureObjectDefinitionCollection definitions = new CaptureObjectDefinitionCollection();
     definitions.add(
         new CaptureObjectDefinition(
@@ -130,21 +124,26 @@ public class MBusMasterLoadProfilePeriod1DSMR extends ProfileGeneric {
     // AMR Profile status code M-Bus
     definitions.add(
         new CaptureObjectDefinition(
-            new CaptureObject(1, String.format("0.%1$d.96.10.3.255", this.channel), (byte) 2, 0),
+            new CaptureObject(1, String.format("0.%1$d.96.10.7.255", this.channel), (byte) 2, 0),
             new UInteger8DataProcessor()));
 
     // Measurement Value
     definitions.add(
         new CaptureObjectDefinition(
-            new CaptureObject(4, String.format("0.%1$d.24.2.1.255", this.channel), (byte) 2, 0),
+            new CaptureObject(4, String.format("0.%1$d.24.2.2.255", this.channel), (byte) 2, 0),
             new UInteger32DataProcessor()));
     // Measurement Time
     definitions.add(
         new CaptureObjectDefinition(
-            new CaptureObject(4, String.format("0.%1$d.24.2.1.255", this.channel), (byte) 5, 0),
+            new CaptureObject(4, String.format("0.%1$d.24.2.2.255", this.channel), (byte) 5, 0),
             new CosemDateTimeProcessor()));
 
     return definitions;
+  }
+
+  @Override
+  protected CaptureObjectDefinitionCollection getCaptureObjectDefinitionCollection() {
+    return this.captureObjectsDefinitions;
   }
 
   /** Initializes buffer with some data. */
@@ -166,7 +165,7 @@ public class MBusMasterLoadProfilePeriod1DSMR extends ProfileGeneric {
 
   private Calendar getNextDateTime() {
     final Calendar next = (Calendar) this.time.clone();
-    this.time.add(Calendar.HOUR_OF_DAY, 1);
+    this.time.add(Calendar.MONTH, 1);
     return next;
   }
 }

@@ -20,9 +20,11 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ConfigurationObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DoubleLongUnsignedExtendedRegister;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDailyBillingValuesPeriod1SMR5;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDriverActiveFirmwareIdentifier;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDriverActiveFirmwareSignature;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusMasterLoadProfilePeriod1SMR;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusMasterLoadProfilePeriod1SMR5;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusMonthlyBillingValuesPeriod1SMR5;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.OctetStringExtendedRegister;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityEventLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile1;
@@ -298,22 +300,62 @@ public class Smr5Profile {
   }
 
   @Bean
-  public MBusMasterLoadProfilePeriod1SMR mBus1MasterLoadProfilePeriod1(final Calendar cal) {
-    return new MBusMasterLoadProfilePeriod1SMR(cal, 1);
+  public MBusMasterLoadProfilePeriod1SMR5 mBus1MasterLoadProfilePeriod1(final Calendar cal) {
+    return new MBusMasterLoadProfilePeriod1SMR5(cal, 1);
   }
 
   @Bean
-  public MBusMasterLoadProfilePeriod1SMR mBus2MasterLoadProfilePeriod1(final Calendar cal) {
-    return new MBusMasterLoadProfilePeriod1SMR(cal, 2);
+  public MBusMasterLoadProfilePeriod1SMR5 mBus2MasterLoadProfilePeriod1(final Calendar cal) {
+    return new MBusMasterLoadProfilePeriod1SMR5(cal, 2);
   }
 
   @Bean
-  public MBusMasterLoadProfilePeriod1SMR mBus3MasterLoadProfilePeriod1(final Calendar cal) {
-    return new MBusMasterLoadProfilePeriod1SMR(cal, 3);
+  public MBusMasterLoadProfilePeriod1SMR5 mBus3MasterLoadProfilePeriod1(final Calendar cal) {
+    return new MBusMasterLoadProfilePeriod1SMR5(cal, 3);
   }
 
   @Bean
-  public MBusMasterLoadProfilePeriod1SMR mBus4MasterLoadProfilePeriod1(final Calendar cal) {
-    return new MBusMasterLoadProfilePeriod1SMR(cal, 4);
+  public MBusMasterLoadProfilePeriod1SMR5 mBus4MasterLoadProfilePeriod1(final Calendar cal) {
+    return new MBusMasterLoadProfilePeriod1SMR5(cal, 4);
+  }
+
+  @Bean
+  public MBusDailyBillingValuesPeriod1SMR5 mBus1DailyBillingValuesPeriod1(final Calendar cal) {
+    return new MBusDailyBillingValuesPeriod1SMR5(cal, 1);
+  }
+
+  @Bean
+  public MBusDailyBillingValuesPeriod1SMR5 mBus2DailyBillingValuesPeriod1(final Calendar cal) {
+    return new MBusDailyBillingValuesPeriod1SMR5(cal, 2);
+  }
+
+  @Bean
+  public MBusDailyBillingValuesPeriod1SMR5 mBus3DailyBillingValuesPeriod1(final Calendar cal) {
+    return new MBusDailyBillingValuesPeriod1SMR5(cal, 3);
+  }
+
+  @Bean
+  public MBusDailyBillingValuesPeriod1SMR5 mBus4DailyBillingValuesPeriod1(final Calendar cal) {
+    return new MBusDailyBillingValuesPeriod1SMR5(cal, 4);
+  }
+
+  @Bean
+  public MBusMonthlyBillingValuesPeriod1SMR5 mBus1MonthlyBillingValuesPeriod1(final Calendar cal) {
+    return new MBusMonthlyBillingValuesPeriod1SMR5(cal, 1);
+  }
+
+  @Bean
+  public MBusMonthlyBillingValuesPeriod1SMR5 mBus2MonthlyBillingValuesPeriod1(final Calendar cal) {
+    return new MBusMonthlyBillingValuesPeriod1SMR5(cal, 2);
+  }
+
+  @Bean
+  public MBusMonthlyBillingValuesPeriod1SMR5 mBus3MonthlyBillingValuesPeriod1(final Calendar cal) {
+    return new MBusMonthlyBillingValuesPeriod1SMR5(cal, 3);
+  }
+
+  @Bean
+  public MBusMonthlyBillingValuesPeriod1SMR5 mBus4MonthlyBillingValuesPeriod1(final Calendar cal) {
+    return new MBusMonthlyBillingValuesPeriod1SMR5(cal, 4);
   }
 }

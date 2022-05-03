@@ -25,7 +25,7 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteg
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger8DataProcessor;
 
 @CosemClass(id = 7)
-public class MBusMasterLoadProfilePeriod1SMR extends ProfileGeneric {
+public class MBusMasterLoadProfilePeriod1SMR5 extends ProfileGeneric {
 
   private static final int CAPTURE_PERIOD = 3600;
   private static final int PROFILE_ENTRIES = 240;
@@ -96,8 +96,8 @@ public class MBusMasterLoadProfilePeriod1SMR extends ProfileGeneric {
   private final int channel;
   private final CaptureObjectDefinitionCollection captureObjectsDefinitions;
 
-  public MBusMasterLoadProfilePeriod1SMR(final Calendar time, final int channel) {
-    super(String.format("0.%1$d.24.3.0.255", channel));
+  public MBusMasterLoadProfilePeriod1SMR5(final Calendar time, final int channel) {
+    super(String.format("0.%d.24.3.0.255", channel));
 
     this.time = time;
     this.channel = channel;

@@ -85,7 +85,7 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.LongUnsignedData;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.LongUnsignedRegister;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusClientSetup;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusEventLog;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusMasterLoadProfilePeriod1DSMR;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusMasterLoadProfilePeriod1DSMR4;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ModuleActiveFirmwareIdentifier;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ModuleFirmwareSignature;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.OctetStringData;
@@ -872,23 +872,23 @@ public class DefaultDeviceProfile {
   }
 
   @Bean
-  public MBusMasterLoadProfilePeriod1DSMR mBus1MasterLoadProfilePeriod1(final Calendar cal) {
-    return new MBusMasterLoadProfilePeriod1DSMR(cal, 1);
+  public MBusMasterLoadProfilePeriod1DSMR4 mBus1MasterLoadProfilePeriod1(final Calendar cal) {
+    return new MBusMasterLoadProfilePeriod1DSMR4(cal, 1);
   }
 
   @Bean
-  public MBusMasterLoadProfilePeriod1DSMR mBus2MasterLoadProfilePeriod1(final Calendar cal) {
-    return new MBusMasterLoadProfilePeriod1DSMR(cal, 2);
+  public MBusMasterLoadProfilePeriod1DSMR4 mBus2MasterLoadProfilePeriod1(final Calendar cal) {
+    return new MBusMasterLoadProfilePeriod1DSMR4(cal, 2);
   }
 
   @Bean
-  public MBusMasterLoadProfilePeriod1DSMR mBus3MasterLoadProfilePeriod1(final Calendar cal) {
-    return new MBusMasterLoadProfilePeriod1DSMR(cal, 3);
+  public MBusMasterLoadProfilePeriod1DSMR4 mBus3MasterLoadProfilePeriod1(final Calendar cal) {
+    return new MBusMasterLoadProfilePeriod1DSMR4(cal, 3);
   }
 
   @Bean
-  public MBusMasterLoadProfilePeriod1DSMR mBus4MasterLoadProfilePeriod1(final Calendar cal) {
-    return new MBusMasterLoadProfilePeriod1DSMR(cal, 4);
+  public MBusMasterLoadProfilePeriod1DSMR4 mBus4MasterLoadProfilePeriod1(final Calendar cal) {
+    return new MBusMasterLoadProfilePeriod1DSMR4(cal, 4);
   }
 
   @Bean
