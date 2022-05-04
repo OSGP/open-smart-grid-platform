@@ -23,7 +23,6 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.Captur
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CosemDateTimeProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger32DataProcessor;
 
-@SuppressWarnings("DuplicatedCode")
 @CosemClass(id = 7)
 public class EMonthlyBillingValuesPeriod1DSMR4 extends ProfileGeneric {
 

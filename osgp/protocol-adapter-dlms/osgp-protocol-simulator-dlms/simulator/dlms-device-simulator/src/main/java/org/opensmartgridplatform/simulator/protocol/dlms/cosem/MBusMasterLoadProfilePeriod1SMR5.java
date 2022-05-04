@@ -24,7 +24,6 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CosemD
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger32DataProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger8DataProcessor;
 
-@SuppressWarnings("DuplicatedCode")
 @CosemClass(id = 7)
 public class MBusMasterLoadProfilePeriod1SMR5 extends ProfileGeneric {
 
