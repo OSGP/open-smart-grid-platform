@@ -170,6 +170,7 @@ public class EMonthlyBillingValuesPeriod1DSMR4 extends ProfileGeneric {
   }
 
   /** Initializes buffer with some data. */
+  @SuppressWarnings("DuplicatedCode")
   private void initBufferData() {
     this.bufferData = new CircularFifoQueue<>(PROFILE_ENTRIES);
 
