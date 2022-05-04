@@ -23,6 +23,7 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.Captur
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CosemDateTimeProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger32DataProcessor;
 
+@SuppressWarnings("DuplicatedCode")
 @CosemClass(id = 7)
 public class EMonthlyBillingValuesPeriod1DSMR4 extends ProfileGeneric {
 
@@ -172,7 +173,6 @@ public class EMonthlyBillingValuesPeriod1DSMR4 extends ProfileGeneric {
   }
 
   /** Initializes buffer with some data. */
-  @SuppressWarnings("DuplicatedCode")
   private void initBufferData() {
     this.bufferData = new CircularFifoQueue<>(PROFILE_ENTRIES);
 

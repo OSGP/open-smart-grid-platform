@@ -24,6 +24,7 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CosemD
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger32DataProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger8DataProcessor;
 
+@SuppressWarnings("DuplicatedCode")
 @CosemClass(id = 7)
 public class EMonthlyBillingValuesPeriod1SMR5 extends ProfileGeneric {
 
@@ -145,7 +146,6 @@ public class EMonthlyBillingValuesPeriod1SMR5 extends ProfileGeneric {
   }
 
   /** Initializes buffer with some data. */
-  @SuppressWarnings("DuplicatedCode")
   private void initBufferData() {
     this.bufferData = new CircularFifoQueue<>(PROFILE_ENTRIES);
 

@@ -14,10 +14,14 @@ import org.openmuc.jdlms.CosemInterfaceObject;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @CosemClass(id = 1)
 public class ConfigurationObject extends CosemInterfaceObject {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationObject.class);
 
   public static final int ATTRIBUTE_ID_VALUE = 2;
 
@@ -31,10 +35,14 @@ public class ConfigurationObject extends CosemInterfaceObject {
   }
 
   public DataObject getValue() {
-    return this.dynamicValues.getDlmsAttributeValue(this, ATTRIBUTE_ID_VALUE);
+    final DataObject dlmsAttributeValue =
+        this.dynamicValues.getDlmsAttributeValue(this, ATTRIBUTE_ID_VALUE);
+    LOGGER.info("ConfigurationObject#getValue -> " + dlmsAttributeValue);
+    return dlmsAttributeValue;
   }
 
   public void setValue(final DataObject configurationObjectValue) {
+    LOGGER.info("ConfigurationObject#setValue(" + configurationObjectValue + ")");
     this.dynamicValues.setDlmsAttributeValue(this, ATTRIBUTE_ID_VALUE, configurationObjectValue);
   }
 }
