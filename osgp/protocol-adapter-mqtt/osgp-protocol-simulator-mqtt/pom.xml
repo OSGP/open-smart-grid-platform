@@ -19,7 +19,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-protocol-simulator-mqtt</artifactId>
-  <version>5.23.1</version>
+  <version>5.24.0-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>osgp-protocol-simulator-mqtt</name>
   <description>Simulator for MQTT Protocol.</description>

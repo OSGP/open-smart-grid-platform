@@ -36,6 +36,8 @@ public class ResponseMessage implements Serializable {
   private final OsgpException osgpException;
   private final Serializable dataObject;
 
+  private final String topic;
+
   protected ResponseMessage(final Builder builder) {
     this.deviceIdentification = builder.deviceIdentification;
     this.organisationIdentification = builder.organisationIdentification;
@@ -49,6 +51,7 @@ public class ResponseMessage implements Serializable {
     this.result = builder.result;
     this.osgpException = builder.osgpException;
     this.dataObject = builder.dataObject;
+    this.topic = builder.topic;
   }
 
   @Override
@@ -87,6 +90,7 @@ public class ResponseMessage implements Serializable {
         .withScheduled(this.scheduled)
         .withMaxScheduleTime(this.maxScheduleTime)
         .withBypassRetry(this.bypassRetry)
+        .withTopic(this.topic)
         .build();
   }
 
@@ -108,6 +112,7 @@ public class ResponseMessage implements Serializable {
     private Long maxScheduleTime = null;
     private boolean bypassRetry = DEFAULT_BYPASS_RETRY;
     private RetryHeader retryHeader;
+    private String topic = null;
 
     public Builder withMessageType(final String messageType) {
       this.messageType = messageType;
@@ -176,6 +181,11 @@ public class ResponseMessage implements Serializable {
       return this;
     }
 
+    public Builder withTopic(final String topic) {
+      this.topic = topic;
+      return this;
+    }
+
     public Builder withMessageMetadata(final MessageMetadata messageMetadata) {
       this.deviceIdentification = messageMetadata.getDeviceIdentification();
       this.organisationIdentification = messageMetadata.getOrganisationIdentification();
@@ -186,6 +196,7 @@ public class ResponseMessage implements Serializable {
       this.maxScheduleTime = messageMetadata.getMaxScheduleTime();
       this.bypassRetry = messageMetadata.isBypassRetry();
       this.retryHeader = new RetryHeader();
+      this.topic = messageMetadata.getTopic();
       return this;
     }
 

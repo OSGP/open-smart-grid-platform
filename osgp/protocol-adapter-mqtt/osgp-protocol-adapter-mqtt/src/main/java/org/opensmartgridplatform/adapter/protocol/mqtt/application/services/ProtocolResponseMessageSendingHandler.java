@@ -73,6 +73,7 @@ public class ProtocolResponseMessageSendingHandler implements MessageHandler {
         MessageMetadata.newBuilder()
             .withOrganisationIdentification(this.organisationIdentification)
             .withDeviceIdentification(this.deviceIdentification)
+            .withTopic(topic)
             .withCorrelationUid(
                 this.correlationIdProviderService.getCorrelationId(
                     this.organisationIdentification, topic))

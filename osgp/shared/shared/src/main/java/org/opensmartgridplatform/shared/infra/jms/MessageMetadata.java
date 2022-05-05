@@ -37,6 +37,7 @@ public class MessageMetadata implements Serializable {
   private boolean bypassRetry;
   private int retryCount;
   private int jmsxDeliveryCount;
+  private String topic;
 
   private MessageMetadata() {
     // Default private constructor.
@@ -59,6 +60,7 @@ public class MessageMetadata implements Serializable {
     this.bypassRetry = builder.bypassRetry;
     this.retryCount = builder.retryCount;
     this.jmsxDeliveryCount = builder.jmsxDeliveryCount;
+    this.topic = builder.topic;
   }
 
   public static MessageMetadata fromMessage(final Message message) throws JMSException {
@@ -92,6 +94,8 @@ public class MessageMetadata implements Serializable {
     metadata.retryCount = metadata.getIntProperty(message, Constants.RETRY_COUNT, 0);
     metadata.bypassRetry = metadata.getBooleanProperty(message, Constants.BYPASS_RETRY, false);
     metadata.jmsxDeliveryCount = metadata.getIntProperty(message, Constants.DELIVERY_COUNT, 0);
+
+    metadata.topic = metadata.getStringProperty(message, Constants.TOPIC, StringUtils.EMPTY);
 
     return metadata;
   }
@@ -138,6 +142,10 @@ public class MessageMetadata implements Serializable {
 
     message.setIntProperty(Constants.RETRY_COUNT, this.retryCount);
     message.setBooleanProperty(Constants.BYPASS_RETRY, this.bypassRetry);
+
+    if (StringUtils.isNotBlank(this.topic)) {
+      message.setStringProperty(Constants.TOPIC, this.topic);
+    }
 
     /*
      * Not setting the jmsxDeliveryCount as int property named Constants.DELIVERY_COUNT, because
@@ -205,6 +213,7 @@ public class MessageMetadata implements Serializable {
     private int retryCount = 0;
     private boolean bypassRetry = false;
     private int jmsxDeliveryCount = 0;
+    private String topic = StringUtils.EMPTY;
 
     public Builder(final MessageMetadata otherMetadata) {
       this.correlationUid = otherMetadata.getCorrelationUid();
@@ -223,6 +232,7 @@ public class MessageMetadata implements Serializable {
       this.bypassRetry = otherMetadata.isBypassRetry();
       this.retryCount = otherMetadata.getRetryCount();
       this.jmsxDeliveryCount = otherMetadata.getJmsxDeliveryCount();
+      this.topic = otherMetadata.getTopic();
     }
 
     public Builder(
@@ -313,6 +323,11 @@ public class MessageMetadata implements Serializable {
 
     public Builder withJmsxDeliveryCount(final int jmsxDeliveryCount) {
       this.jmsxDeliveryCount = jmsxDeliveryCount;
+      return this;
+    }
+
+    public Builder withTopic(final String topic) {
+      this.topic = topic;
       return this;
     }
 

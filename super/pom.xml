@@ -14,7 +14,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>super-osgp</artifactId>
-  <version>5.23.1</version>
+  <version>5.24.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
   <!-- Description, Organization, Licences, URL and Distribution Management
@@ -46,11 +46,11 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>5.23.1</osgp.version>
-    <osgp.dlms.version>5.23.1</osgp.dlms.version>
-    <osgp.shared.version>5.23.1</osgp.shared.version>
-    <osgp.jasper-interface.version>5.23.1</osgp.jasper-interface.version>
-    <spring.version>5.2.6.RELEASE</spring.version>
+    <osgp.version>5.24.0-SNAPSHOT</osgp.version>
+    <osgp.dlms.version>5.24.0-SNAPSHOT</osgp.dlms.version>
+    <osgp.shared.version>5.24.0-SNAPSHOT</osgp.shared.version>
+    <osgp.jasper-interface.version>5.24.0-SNAPSHOT</osgp.jasper-interface.version>
+    <spring.version>5.3.2</spring.version>
     <spring.data.version>2.2.3.RELEASE</spring.data.version>
     <spring.data.commons.version>2.2.4.RELEASE</spring.data.commons.version>
     <spring.security.version>4.2.14.RELEASE</spring.security.version>
@@ -79,10 +79,10 @@
     <apache.httpcomponents.httpcore.version>4.4.13</apache.httpcomponents.httpcore.version>
     <commons.codec.version>1.14</commons.codec.version>
     <orika.version>1.5.4</orika.version>
-    <jxr.version>3.0.0</jxr.version>
-    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
-    <maven.site.plugin>3.9.0</maven.site.plugin>
-    <maven.javadoc.version>3.2.0</maven.javadoc.version>
+    <jxr.version>3.1.1</jxr.version>
+    <maven.project.info.reports.plugin.version>3.2.2</maven.project.info.reports.plugin.version>
+    <maven.site.plugin>3.11.0</maven.site.plugin>
+    <maven.javadoc.version>3.3.2</maven.javadoc.version>
     <maven.jar.plugin.version>3.2.2</maven.jar.plugin.version>
     <maven.war.plugin.version>3.3.2</maven.war.plugin.version>
     <maven.dependency.plugin.version>3.3.0</maven.dependency.plugin.version>
@@ -95,15 +95,16 @@
     <maven.enforcer.maven.version>3.8.5</maven.enforcer.maven.version>
     <jaxb2.maven.plugin.version>2.5.0</jaxb2.maven.plugin.version>
     <jaxb.api.version>2.3.1</jaxb.api.version>
-    <spotbugs.maven.plugin.version>4.5.3.0</spotbugs.maven.plugin.version>
+    <spotbugs.maven.plugin.version>4.6.0.0</spotbugs.maven.plugin.version>
     <pmd.maven.plugin.version>3.16.0</pmd.maven.plugin.version>
     <checkstyle.maven.plugin.version>3.1.2</checkstyle.maven.plugin.version>
-    <dependency-check.maven.plugin.version>7.0.1</dependency-check.maven.plugin.version>
+    <dependency-check.maven.plugin.version>7.0.2</dependency-check.maven.plugin.version>
     <versions.maven.plugin.version>2.10.0</versions.maven.plugin.version>
     <fmt-maven-plugin.version>2.9.1</fmt-maven-plugin.version>
     <apache.activemq.version>5.16.0</apache.activemq.version>
     <logback.version>1.2.8</logback.version>
     <apache.commons.schema>2.2.5</apache.commons.schema>
+    <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
     <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
     <netty.version>4.1.53.Final</netty.version>
     <openmuc.jdlms.version>1.7.1</openmuc.jdlms.version>
@@ -1144,6 +1145,12 @@
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>${maven.clean.plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven.compiler.plugin.version}</version>
         </plugin>
@@ -1236,6 +1243,11 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
           <version>${checkstyle.maven.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${maven.javadoc.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

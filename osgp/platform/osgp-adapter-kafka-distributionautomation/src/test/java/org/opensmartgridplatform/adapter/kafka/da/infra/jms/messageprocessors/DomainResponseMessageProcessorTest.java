@@ -41,6 +41,7 @@ class DomainResponseMessageProcessorTest {
     final String organisationIdentification = "test-org";
     final String deviceIdentification = "device1";
     final ResponseMessageResultType resultType = ResponseMessageResultType.OK;
+    final String topic = "the topic";
     final String payload = "the payload";
 
     final ResponseMessage responseMessage =
@@ -49,6 +50,7 @@ class DomainResponseMessageProcessorTest {
             .withMessageType(messageType)
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(deviceIdentification)
+            .withTopic(topic)
             .withResult(resultType)
             .withDataObject(payload)
             .build();
@@ -59,6 +61,7 @@ class DomainResponseMessageProcessorTest {
         .thenReturn(organisationIdentification);
     when(this.receivedMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION))
         .thenReturn(deviceIdentification);
+    when(this.receivedMessage.getStringProperty(Constants.TOPIC)).thenReturn(topic);
     when(this.receivedMessage.getStringProperty(Constants.RESULT))
         .thenReturn(resultType.toString());
     when(this.receivedMessage.getObject()).thenReturn(responseMessage);
