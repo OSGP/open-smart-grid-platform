@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-shared</artifactId>
-    <version>5.22.0</version>
+    <version>5.23.0</version>
     <relativePath>../parent-shared/pom.xml</relativePath>
   </parent>
 
@@ -37,7 +37,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.hibernate.validator</groupId>
+      <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
 
