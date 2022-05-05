@@ -118,7 +118,8 @@ class UpdateFirmwareRequestMessageProcessorTest {
 
     // Assert
     verify(this.osgpRequestMessageSender, times(1))
-        .send(any(RequestMessage.class), any(String.class), any(MessageMetadata.class));
+        .sendWithReplyToThisInstance(
+            any(RequestMessage.class), any(String.class), any(MessageMetadata.class));
   }
 
   @Test
@@ -143,7 +144,8 @@ class UpdateFirmwareRequestMessageProcessorTest {
 
     // Assert
     verify(this.osgpRequestMessageSender, never())
-        .send(any(RequestMessage.class), any(String.class), any(MessageMetadata.class));
+        .sendWithReplyToThisInstance(
+            any(RequestMessage.class), any(String.class), any(MessageMetadata.class));
   }
 
   @Test

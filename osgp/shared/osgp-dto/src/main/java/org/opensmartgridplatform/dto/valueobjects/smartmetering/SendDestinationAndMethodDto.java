@@ -23,9 +23,7 @@ public class SendDestinationAndMethodDto implements Serializable {
       final TransportServiceTypeDto transportService,
       final String destination,
       final MessageTypeDto message) {
-    Objects.requireNonNull(transportService, "transportService must not be null");
     Objects.requireNonNull(destination, "destination must not be null");
-    Objects.requireNonNull(message, "message must not be null");
     this.transportService = transportService;
     this.destination = destination;
     this.message = message;

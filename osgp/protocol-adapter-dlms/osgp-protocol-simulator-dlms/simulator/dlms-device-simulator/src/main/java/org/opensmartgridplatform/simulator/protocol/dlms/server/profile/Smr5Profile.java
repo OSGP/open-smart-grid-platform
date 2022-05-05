@@ -21,6 +21,7 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ConfigurationObje
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDriverActiveFirmwareIdentifier;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDriverActiveFirmwareSignature;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.OctetStringExtendedRegister;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityEventLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile1;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.UnitType;
@@ -86,6 +87,9 @@ public class Smr5Profile {
   @Value("#{'${configurationobject.flags}'.split(',')}")
   private List<Byte> configurationObjectFlags;
 
+  @Value("${mbus.identification.number}")
+  private long mbusIdentificationNumber;
+
   @Bean
   public InvocationCounter invocationCounter() {
     return new InvocationCounter(this.invocationCounter);
@@ -101,6 +105,11 @@ public class Smr5Profile {
   public MBusDriverActiveFirmwareSignature mBusDriverActiveFirmwareSignature() {
     return new MBusDriverActiveFirmwareSignature(
         Hex.decode(this.mBusDriverActiveFirmwareSignature.getBytes()));
+  }
+
+  @Bean
+  public PowerQualityEventLog powerQualityEventLog(final Calendar cal) {
+    return new PowerQualityEventLog(cal);
   }
 
   @Bean
@@ -199,5 +208,10 @@ public class Smr5Profile {
             DataObject.newBitStringData(new BitString(ArrayUtils.toPrimitive(bytes), 16)));
 
     return new ConfigurationObject();
+  }
+
+  @Bean
+  public Long mbusIdentificationNumberHolder() {
+    return this.mbusIdentificationNumber;
   }
 }

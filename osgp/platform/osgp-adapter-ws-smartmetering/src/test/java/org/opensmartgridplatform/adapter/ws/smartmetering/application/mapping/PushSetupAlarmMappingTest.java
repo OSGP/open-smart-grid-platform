@@ -19,16 +19,12 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.P
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CosemObisCode;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CosemObjectDefinition;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MessageType;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.TransportServiceType;
 
 public class PushSetupAlarmMappingTest {
 
   private static final String HOST = "host";
   private static final BigInteger PORT = BigInteger.TEN;
   private static final String DESTINATION = "host:10";
-  private static final TransportServiceType TRANSPORTSERVICETYPE = TransportServiceType.TCP;
-  private static final MessageType MESSAGETYPE = MessageType.A_XDR_ENCODED_X_DLMS_APDU;
   private static final int PUSH_OBJECT_CLASS_ID = 1;
   private static final CosemObisCode PUSH_OBJECT_OBIS_CODE = new CosemObisCode(1, 2, 3, 4, 5, 6);
   private static final int PUSH_OBJECT_ATTRIBUTE_ID = 2;
@@ -56,14 +52,12 @@ public class PushSetupAlarmMappingTest {
 
     assertThat(pushSetupAlarmMapped).isNotNull();
 
-    // port and host are combined into destination. The converter sets default values for the other
+    // port and host are combined into destination. The converter sets null values for the other
     // two variables of a SendDestinationAndMethod.
     assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getDestination())
         .isEqualTo(DESTINATION);
-    assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getTransportService().name())
-        .isEqualTo(TRANSPORTSERVICETYPE.name());
-    assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getMessage().name())
-        .isEqualTo(MESSAGETYPE.name());
+    assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getTransportService()).isNull();
+    assertThat(pushSetupAlarmMapped.getSendDestinationAndMethod().getMessage()).isNull();
 
     // check mapping of PushObjectList
     assertThat(pushSetupAlarmMapped.getPushObjectList()).hasSize(1);

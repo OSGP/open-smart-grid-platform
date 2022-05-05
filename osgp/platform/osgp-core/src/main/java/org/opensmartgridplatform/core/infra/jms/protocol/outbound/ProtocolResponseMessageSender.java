@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.core.infra.jms.protocol.outbound;
 
+import javax.jms.Destination;
 import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.core.domain.model.protocol.ProtocolResponseService;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
@@ -36,17 +37,40 @@ public class ProtocolResponseMessageSender implements ProtocolResponseService {
 
     final JmsTemplate jmsTemplate = this.factory.getJmsTemplate(key);
 
-    this.send(responseMessage, messageType, jmsTemplate, messageMetadata);
+    this.sendWithDestination(
+        responseMessage,
+        messageType,
+        protocolInfo,
+        messageMetadata,
+        jmsTemplate.getDefaultDestination());
   }
 
-  public void send(
+  @Override
+  public void sendWithDestination(
+      final ResponseMessage responseMessage,
+      final String messageType,
+      final ProtocolInfo protocolInfo,
+      final MessageMetadata messageMetadata,
+      final Destination destination) {
+
+    final String key = protocolInfo.getKey();
+
+    final JmsTemplate jmsTemplate = this.factory.getJmsTemplate(key);
+
+    this.sendWithDestination(
+        responseMessage, messageType, jmsTemplate, messageMetadata, destination);
+  }
+
+  private void sendWithDestination(
       final ResponseMessage responseMessage,
       final String messageType,
       final JmsTemplate jmsTemplate,
-      final MessageMetadata messageMetadata) {
+      final MessageMetadata messageMetadata,
+      final Destination destination) {
     LOGGER.info("Sending response message to protocol responses incoming queue");
 
     jmsTemplate.send(
+        destination,
         session -> {
           final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
           objectMessage.setJMSCorrelationID(messageMetadata.getCorrelationUid());

@@ -16,7 +16,7 @@ public class NotificationWebServiceConfigurationBuilder {
   private String organisationIdentification = "test-org";
   private String applicationName = "application-name";
   private String marshallerContextPath = "org.opensmartgridplatform.adapter.ws.schema";
-  private String targetUri = "http://localhost:8088/notifications";
+  private String targetUri = "http://localhost:8188/notifications";
   private String keyStoreType = "pkcs12";
   private String keyStoreLocation = "/etc/ssl/certs/OSGP.pfx";
   private String keyStorePassword = "1234";

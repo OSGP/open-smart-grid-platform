@@ -9,7 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.networking;
 
 import io.netty.buffer.ByteBuf;
-import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Set;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.AlarmHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
@@ -36,12 +36,20 @@ public class AlarmDecoder {
   void decodeAlarmRegisterData(
       final ByteBuf buffer,
       final DlmsPushNotification.Builder builder,
-      final DlmsObjectType dlmsObjectType) {
+      final DlmsObjectType dlmsObjectType)
+      throws UnrecognizedMessageDataException {
 
     final byte[] alarmBytes = this.read(buffer, NUMBER_OF_BYTES_FOR_ALARM);
 
+    final Long alarmsAsLongValue = this.convertToLongValue(alarmBytes);
+
     final Set<AlarmTypeDto> alarms =
-        this.alarmHelperService.toAlarmTypes(dlmsObjectType, ByteBuffer.wrap(alarmBytes).getInt());
+        this.alarmHelperService.toAlarmTypes(dlmsObjectType, alarmsAsLongValue);
+
+    if (alarms.contains(null)) {
+      throw new UnrecognizedMessageDataException(
+          "Received alarm with unused bits set: " + Arrays.toString(alarmBytes));
+    }
 
     builder.withTriggerType(PUSH_ALARM_TRIGGER);
     builder.addAlarms(alarms);
@@ -52,5 +60,14 @@ public class AlarmDecoder {
     final byte[] result = new byte[size];
     buffer.readBytes(result, 0, size);
     return result;
+  }
+
+  private Long convertToLongValue(final byte[] bytes) {
+    long value = 0;
+    for (final byte aByte : bytes) {
+      value = (value << 8) + (aByte & 0xff);
+    }
+
+    return value;
   }
 }

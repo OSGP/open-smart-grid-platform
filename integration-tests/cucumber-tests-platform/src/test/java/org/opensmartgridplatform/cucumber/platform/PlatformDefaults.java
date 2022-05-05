@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform;
 
+import java.time.ZonedDateTime;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
@@ -117,6 +118,7 @@ public class PlatformDefaults {
   public static final String DEFAULT_PREFIX = "MAA";
   public static final String DEFAULT_PROTOCOL = "OSLP ELSTER";
   public static final String DEFAULT_PROTOCOL_VERSION = "1.0";
+  public static final String DEFAULT_PROTOCOL_VARIANT = null;
   public static final String DEFAULT_PUBLIC_KEY = "123456abcdef";
   public static final Boolean DEFAULT_PUBLICKEYPRESENT = true;
   public static final String DEFAULT_PUBLICLIGHTING_DESCRIPTION = "";
@@ -127,6 +129,8 @@ public class PlatformDefaults {
   public static final String DEFAULT_SMART_METER_GAS_DEVICE_IDENTIFICATION = "TESTG102400000001";
   public static final String DEFAULT_SUPPLIER = "Kaifa";
   public static final DateTime DEFAULT_TECHNICAL_INSTALLATION_DATE = DateTime.now().minusDays(1);
+  public static final ZonedDateTime DEFAULT_TECHNICAL_INSTALLATION_DATE_ZONED =
+      ZonedDateTime.now().minusDays(1);
   public static final Integer DEFAULT_TOTAL_LIGHTING_HOURS = 144;
 
   public static final Boolean DEFAULT_USE_PAGES = true;

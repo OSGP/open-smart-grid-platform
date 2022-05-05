@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-integration-tests</artifactId>
-    <version>5.21.2</version>
+    <version>5.22.0</version>
     <relativePath>../parent-integration-tests/pom.xml</relativePath>
   </parent>
 
@@ -103,10 +103,6 @@
     <!-- OSGP -->
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
-      <artifactId>osgp-kafka-distributionautomation</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>cucumber-tests-core</artifactId>
       <type>test-jar</type>
     </dependency>
@@ -192,8 +188,7 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>
-    
-    
+
   </dependencies>
 
   <build>

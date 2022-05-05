@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -18,6 +19,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,8 +36,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.slf4j.LoggerFactory;
 
 @ExtendWith(MockitoExtension.class)
 class InvocationCounterManagerTest {
@@ -79,19 +88,49 @@ class InvocationCounterManagerTest {
     when(this.dlmsHelper.getAttributeValue(
             eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
         .thenReturn(dataObject);
-    when(this.deviceRepository.save(this.device))
-        .thenReturn(
-            new DlmsDeviceBuilder()
-                .withDeviceIdentification(this.device.getDeviceIdentification())
-                .withInvocationCounter(this.device.getInvocationCounter())
-                .withVersion(this.device.getVersion() + 1)
-                .build());
 
     this.manager.initializeWithInvocationCounterStoredOnDeviceTask(this.device, connectionManager);
     verify(this.deviceRepository).save(this.device);
 
-    verify(this.deviceRepository).save(this.device);
-    assertThat(this.device.getVersion()).isGreaterThan(this.initialDeviceVersion);
+    verify(this.deviceRepository)
+        .updateInvocationCounter(
+            this.device.getDeviceIdentification(), invocationCounterValueOnDevice);
     assertThat(this.device.getInvocationCounter()).isEqualTo(invocationCounterValueOnDevice);
+  }
+
+  @Test
+  void attemptToLowerInvocationCounterForDeviceLogsErrorAndThrowsException() throws Exception {
+    final Logger invocationManagerLogger =
+        (Logger) LoggerFactory.getLogger(InvocationCounterManager.class);
+    final ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+    final List<ILoggingEvent> logsList = listAppender.list;
+    final long invocationCounterValueOnDevice = 1;
+    final long previouslyKnownInvocationCounter = 7; // bigger than invocationCounterValueOnDevice
+    this.device.setInvocationCounter(previouslyKnownInvocationCounter);
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DataObject dataObject = DataObject.newUInteger32Data(invocationCounterValueOnDevice);
+
+    when(this.dlmsHelper.getAttributeValue(
+            eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
+        .thenReturn(dataObject);
+
+    listAppender.start();
+    invocationManagerLogger.addAppender(listAppender);
+
+    final FunctionalException thrownException =
+        catchThrowableOfType(
+            () ->
+                this.manager.initializeWithInvocationCounterStoredOnDeviceTask(
+                    this.device, connectionManager),
+            FunctionalException.class);
+
+    assertThat(logsList).isNotEmpty();
+    final ILoggingEvent loggingEvent = logsList.get(0);
+    assertThat(loggingEvent).asString().contains("Attempt to lower invocationCounter of device");
+    assertThat(loggingEvent.getLevel()).isEqualTo(Level.ERROR);
+
+    assertThat(thrownException).isNotNull();
+    assertThat(thrownException.getExceptionType())
+        .isEqualTo(FunctionalExceptionType.ATTEMPT_TO_LOWER_INVOCATION_COUNTER);
   }
 }

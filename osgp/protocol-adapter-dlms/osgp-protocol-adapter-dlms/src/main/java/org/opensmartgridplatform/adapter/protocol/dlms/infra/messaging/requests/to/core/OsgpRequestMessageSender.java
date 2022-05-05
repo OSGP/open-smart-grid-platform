@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.activemq.command.ActiveMQDestination;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
@@ -27,10 +28,29 @@ public class OsgpRequestMessageSender {
   @Qualifier("protocolDlmsOutboundOsgpCoreRequestsJmsTemplate")
   private JmsTemplate jmsTemplate;
 
+  @Autowired
+  @Qualifier("protocolDlmsReplyToQueue")
+  private ActiveMQDestination replyToQueue;
+
   public void send(
       final RequestMessage requestMessage,
       final String messageType,
       final MessageMetadata messageMetadata) {
+    this.send(requestMessage, messageType, messageMetadata, false);
+  }
+
+  public void sendWithReplyToThisInstance(
+      final RequestMessage requestMessage,
+      final String messageType,
+      final MessageMetadata messageMetadata) {
+    this.send(requestMessage, messageType, messageMetadata, true);
+  }
+
+  private void send(
+      final RequestMessage requestMessage,
+      final String messageType,
+      final MessageMetadata messageMetadata,
+      final boolean replyToThisInstance) {
     log.info("Sending request message to GXF.");
 
     this.jmsTemplate.send(
@@ -53,6 +73,9 @@ public class OsgpRequestMessageSender {
             objectMessage.setIntProperty(Constants.RETRY_COUNT, messageMetadata.getRetryCount());
             objectMessage.setBooleanProperty(
                 Constants.BYPASS_RETRY, messageMetadata.isBypassRetry());
+          }
+          if (replyToThisInstance) {
+            objectMessage.setJMSReplyTo(this.replyToQueue);
           }
           return objectMessage;
         });

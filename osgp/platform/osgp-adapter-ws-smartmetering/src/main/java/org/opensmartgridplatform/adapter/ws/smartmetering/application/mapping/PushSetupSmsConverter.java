@@ -12,10 +12,8 @@ import java.math.BigInteger;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MessageType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SendDestinationAndMethod;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.TransportServiceType;
 
 public class PushSetupSmsConverter
     extends BidirectionalConverter<
@@ -65,11 +63,13 @@ public class PushSetupSmsConverter
     }
     final PushSetupSms.Builder builder = new PushSetupSms.Builder();
 
+    // Create send destination object. Note: TransportService and MessageType are set in protocol
+    // adapter, based on the protocol version
     final String destination = source.getHost() + ":" + source.getPort();
     final SendDestinationAndMethod sendDestinationAndMethod =
-        new SendDestinationAndMethod(
-            TransportServiceType.TCP, destination, MessageType.MANUFACTURER_SPECIFIC);
+        new SendDestinationAndMethod(null, destination, null);
     builder.withSendDestinationAndMethod(sendDestinationAndMethod);
+
     return builder.build();
   }
 }

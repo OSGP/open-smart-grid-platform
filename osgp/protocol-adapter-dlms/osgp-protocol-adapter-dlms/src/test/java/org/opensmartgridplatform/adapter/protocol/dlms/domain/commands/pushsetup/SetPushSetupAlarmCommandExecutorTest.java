@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -37,6 +39,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.PushS
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
@@ -59,14 +62,10 @@ class SetPushSetupAlarmCommandExecutorTest {
 
   private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
 
-  private static final TransportServiceTypeDto TRANSPORT_SERVICE = TransportServiceTypeDto.TCP;
-
   private static final String DESTINATION = "destination";
 
-  private static final MessageTypeDto MESSAGE_TYPE = MessageTypeDto.A_XDR_ENCODED_X_DLMS_APDU;
-
   private static final SendDestinationAndMethodDto SEND_DESTINATION_AND_METHOD =
-      new SendDestinationAndMethodDto(TRANSPORT_SERVICE, DESTINATION, MESSAGE_TYPE);
+      new SendDestinationAndMethodDto(null, DESTINATION, null);
 
   private static final int PUSH_OBJECT_1_CLASS_ID = 1;
 
@@ -103,7 +102,7 @@ class SetPushSetupAlarmCommandExecutorTest {
   private static final List<CosemObjectDefinitionDto> PUSH_OBJECT_LIST =
       Arrays.asList(PUSH_OBJECT_1, PUSH_OBJECT_2);
 
-  private final DlmsDevice DLMS_DEVICE = new DlmsDevice();
+  private final DlmsDevice DLMS_DEVICE = this.createDlmsDevice(Protocol.SMR_5_0_0);
 
   @Captor ArgumentCaptor<SetParameter> setParameterArgumentCaptor;
 
@@ -118,9 +117,12 @@ class SetPushSetupAlarmCommandExecutorTest {
   private final SetPushSetupAlarmCommandExecutor executor =
       new SetPushSetupAlarmCommandExecutor(new DlmsHelper(), new PushSetupMapper());
 
-  @Test
-  void testSetSendDestinationAndMethod() throws ProtocolAdapterException, IOException {
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  void testSetSendDestinationAndMethod(final Protocol protocol)
+      throws ProtocolAdapterException, IOException {
     // SETUP
+    final DlmsDevice device = this.createDlmsDevice(protocol);
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
@@ -132,13 +134,13 @@ class SetPushSetupAlarmCommandExecutorTest {
 
     // CALL
     final AccessResultCode resultCode =
-        this.executor.execute(this.conn, this.DLMS_DEVICE, pushSetupAlarmDto, this.messageMetadata);
+        this.executor.execute(this.conn, device, pushSetupAlarmDto, this.messageMetadata);
 
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
     verify(this.dlmsConnection, times(1)).set(this.setParameterArgumentCaptor.capture());
     final List<SetParameter> setParameters = this.setParameterArgumentCaptor.getAllValues();
-    this.verifySendDestinationAndMethodParameter(setParameters.get(0));
+    this.verifySendDestinationAndMethodParameter(setParameters.get(0), protocol);
   }
 
   @Test
@@ -188,7 +190,8 @@ class SetPushSetupAlarmCommandExecutorTest {
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
     verify(this.dlmsConnection, times(2)).set(this.setParameterArgumentCaptor.capture());
     final List<SetParameter> setParameters = this.setParameterArgumentCaptor.getAllValues();
-    this.verifySendDestinationAndMethodParameter(setParameters.get(0));
+    this.verifySendDestinationAndMethodParameter(
+        setParameters.get(0), Protocol.forDevice(this.DLMS_DEVICE));
     this.verifyPushObjectListParameter(setParameters.get(1));
   }
 
@@ -232,7 +235,8 @@ class SetPushSetupAlarmCommandExecutorTest {
     assertThat(thrown).isInstanceOf(ProtocolAdapterException.class);
   }
 
-  private void verifySendDestinationAndMethodParameter(final SetParameter setParameter) {
+  private void verifySendDestinationAndMethodParameter(
+      final SetParameter setParameter, final Protocol protocol) {
     final AttributeAddress attributeAddress = setParameter.getAttributeAddress();
     assertThat(attributeAddress.getClassId()).isEqualTo(CLASS_ID);
     assertThat(attributeAddress.getInstanceId()).isEqualTo(OBIS_CODE);
@@ -247,7 +251,8 @@ class SetPushSetupAlarmCommandExecutorTest {
 
     // Transport Service Type
     assertThat(values.get(0).getType()).isEqualTo((Type.ENUMERATE));
-    assertThat((int) values.get(0).getValue()).isEqualTo(TRANSPORT_SERVICE.getDlmsEnumValue());
+    assertThat((int) values.get(0).getValue())
+        .isEqualTo(TransportServiceTypeDto.TCP.getDlmsEnumValue());
 
     // Destination
     assertThat(values.get(1).getType()).isEqualTo((Type.OCTET_STRING));
@@ -255,7 +260,13 @@ class SetPushSetupAlarmCommandExecutorTest {
 
     // Message Type
     assertThat(values.get(2).getType()).isEqualTo((Type.ENUMERATE));
-    assertThat((int) values.get(2).getValue()).isEqualTo(MESSAGE_TYPE.getDlmsEnumValue());
+    if (protocol.isSmr5()) {
+      assertThat((int) values.get(2).getValue())
+          .isEqualTo(MessageTypeDto.A_XDR_ENCODED_X_DLMS_APDU.getDlmsEnumValue());
+    } else {
+      assertThat((int) values.get(2).getValue())
+          .isEqualTo(MessageTypeDto.MANUFACTURER_SPECIFIC.getDlmsEnumValue());
+    }
   }
 
   private void verifyPushObjectListParameter(final SetParameter setParameter) {
@@ -311,5 +322,11 @@ class SetPushSetupAlarmCommandExecutorTest {
     // DataIndex
     assertThat(pushObject2Values.get(3).getType()).isEqualTo((Type.LONG_UNSIGNED));
     assertThat((int) pushObject2Values.get(3).getValue()).isEqualTo(dataIndex);
+  }
+
+  private DlmsDevice createDlmsDevice(final Protocol protocol) {
+    final DlmsDevice device = new DlmsDevice();
+    device.setProtocol(protocol);
+    return device;
   }
 }

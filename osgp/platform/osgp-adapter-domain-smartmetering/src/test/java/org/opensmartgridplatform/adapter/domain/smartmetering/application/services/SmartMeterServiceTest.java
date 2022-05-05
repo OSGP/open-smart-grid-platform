@@ -66,7 +66,7 @@ class SmartMeterServiceTest {
     when(this.smartMeterRepository.findByDeviceIdentification(deviceIdentification))
         .thenReturn(new SmartMeter());
 
-    FunctionalException exception =
+    final FunctionalException exception =
         Assertions.assertThrows(
             FunctionalException.class,
             () -> {
@@ -85,10 +85,11 @@ class SmartMeterServiceTest {
         new AddSmartMeterRequest(smartMeteringDevice, deviceModel);
     final SmartMeter smartMeter = new SmartMeter();
 
-    when(this.protocolInfoRepository.findByProtocolAndProtocolVersion(any(), any()))
+    when(this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
+            any(), any(), any()))
         .thenReturn(null);
 
-    FunctionalException exception =
+    final FunctionalException exception =
         Assertions.assertThrows(
             FunctionalException.class,
             () -> {
@@ -96,7 +97,7 @@ class SmartMeterServiceTest {
                   organisationIdentification, addSmartMeterRequest, smartMeter);
             });
     assertThat(exception.getExceptionType())
-        .isEqualTo(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION);
+        .isEqualTo(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION_OR_VARIANT);
   }
 
   @Test
@@ -113,7 +114,8 @@ class SmartMeterServiceTest {
 
     final ProtocolInfo protocolInfo = mock(ProtocolInfo.class);
 
-    when(this.protocolInfoRepository.findByProtocolAndProtocolVersion(any(), any()))
+    when(this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
+            any(), any(), any()))
         .thenReturn(protocolInfo);
     when(this.manufacturerRepository.findByCode(any())).thenReturn(manufacturer);
     when(this.deviceModelRepository.findByManufacturerAndModelCode(any(), any()))
@@ -122,7 +124,8 @@ class SmartMeterServiceTest {
 
     this.smartMeterService.storeMeter(organisationIdentification, addSmartMeterRequest, smartMeter);
 
-    verify(this.protocolInfoRepository).findByProtocolAndProtocolVersion(any(), any());
+    verify(this.protocolInfoRepository)
+        .findByProtocolAndProtocolVersionAndProtocolVariant(any(), any(), any());
     verify(this.manufacturerRepository).findByCode(any());
     verify(this.deviceModelRepository).findByManufacturerAndModelCode(any(), any());
     verify(this.deviceAuthorizationRepository).save(any());

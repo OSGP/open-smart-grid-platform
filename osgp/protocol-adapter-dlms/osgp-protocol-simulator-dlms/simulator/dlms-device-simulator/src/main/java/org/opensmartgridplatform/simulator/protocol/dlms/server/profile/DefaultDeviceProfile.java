@@ -719,7 +719,7 @@ public class DefaultDeviceProfile {
   @Scope("prototype")
   @Bean
   public AlarmFilter alarmFilter() {
-    return new AlarmFilter(this.alarmFilterValue);
+    return new AlarmFilter("0.0.97.98.10.255", this.alarmFilterValue);
   }
 
   @Bean
@@ -906,16 +906,21 @@ public class DefaultDeviceProfile {
         this.imageTransferFailureChance);
   }
 
+  @Bean
+  public Long mbusIdentificationNumberHolder() {
+    return this.mbusIdentificationNumber;
+  }
+
   /*
    * The mbus clients are setup (in the default profile) in such a way, that
    * on channel 1 a match can be found.
    */
   @Bean
-  public MBusClientSetup mbusClientSetup1() {
+  public MBusClientSetup mbusClientSetup1(final Long mbusIdentificationNumberHolder) {
     this.setMbusClientSetupDefaults(
         1,
         this.mbusPrimaryAdress,
-        this.mbusIdentificationNumber,
+        mbusIdentificationNumberHolder,
         this.mbusManufacturerId,
         this.mbusVersion,
         this.mbusDeviceType,
