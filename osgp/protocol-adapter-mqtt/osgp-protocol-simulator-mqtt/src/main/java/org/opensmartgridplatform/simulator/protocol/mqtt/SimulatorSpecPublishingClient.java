@@ -42,6 +42,10 @@ public class SimulatorSpecPublishingClient extends Client {
     if (this.hasMessages()) {
       while (this.isRunning()) {
         final Message message = this.getNextMessage();
+        if (message == null) {
+          this.stopClient();
+          return;
+        }
         this.publish(client, message);
         this.pause(message.getPauseMillis());
       }
@@ -51,7 +55,11 @@ public class SimulatorSpecPublishingClient extends Client {
   private Message getNextMessage() {
     final Message[] messages = this.simulatorSpec.getMessages();
     if (this.i >= messages.length) {
-      this.i = 0;
+      if (this.simulatorSpec.keepReplayingMessages()) {
+        this.i = 0;
+      } else {
+        return null;
+      }
     }
     return messages[this.i++];
   }
@@ -80,7 +88,7 @@ public class SimulatorSpecPublishingClient extends Client {
         .publishWith()
         .topic(message.getTopic())
         .qos(MqttQos.AT_LEAST_ONCE)
-        .payload(message.getPayload().getBytes())
+        .payload(message.getPayloadAsBytes())
         .send();
   }
 }

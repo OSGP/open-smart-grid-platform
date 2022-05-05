@@ -19,12 +19,19 @@ import io.moquette.interception.messages.InterceptConnectMessage;
 import io.moquette.interception.messages.InterceptDisconnectMessage;
 import io.moquette.interception.messages.InterceptPublishMessage;
 import io.netty.buffer.ByteBuf;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +39,13 @@ public final class Broker {
 
   private static final Logger LOG = LoggerFactory.getLogger(Broker.class);
   private static final String LISTENER_ID = "MoquetteBroker";
+
+  /*
+   * Reserve topics that match the following pattern to be topics where text is sent as zipped bytes
+   * instead of plain UTF-8 bytes representing a text message.
+   */
+  private final Pattern zipTopicPattern =
+      Pattern.compile("\\A[^/]++/[^/]++/data/.++\\Z", Pattern.CASE_INSENSITIVE);
 
   private boolean running;
   private final IConfig config;
@@ -140,10 +154,14 @@ public final class Broker {
 
               @Override
               public void onPublish(final InterceptPublishMessage msg) {
+                String messageText;
+                if (Broker.this.zipTopicPattern.matcher(msg.getTopicName()).matches()) {
+                  messageText = unzip(getBytes(msg));
+                } else {
+                  messageText = new String(getBytes(msg), UTF_8);
+                }
                 LOG.info(
-                    "Broker received on topic: {} content: {}",
-                    msg.getTopicName(),
-                    new String(getBytes(msg), UTF_8));
+                    "Broker received on topic: {} content: {}", msg.getTopicName(), messageText);
               }
             }));
     this.running = true;
@@ -156,6 +174,17 @@ public final class Broker {
     final int readerIndex = buf.readerIndex();
     buf.getBytes(readerIndex, bytes);
     return bytes;
+  }
+
+  private static String unzip(final byte[] bytes) {
+    final ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+    try (BufferedReader reader =
+        new BufferedReader(
+            new InputStreamReader(new GZIPInputStream(inputStream), StandardCharsets.UTF_8))) {
+      return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    } catch (final IOException e) {
+      throw new UncheckedIOException("Can't unzip bytes to UTF-8 String", e);
+    }
   }
 
   private void handleShutdown(final Broker broker) {
