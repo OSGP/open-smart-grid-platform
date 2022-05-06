@@ -79,16 +79,15 @@ public class SimulatorSpecPublishingClient extends Client {
 
   public void publish(final Mqtt3BlockingClient client, final Message message) {
     LOG.debug(
-        "{} identified by {} is about to publish on topic {} with payload: {}",
+        "{} identified by {} is about to publish on topic {}",
         SimulatorSpecPublishingClient.class.getSimpleName(),
         this.uuid,
-        message.getTopic(),
-        message.getPayload());
+        message.getTopic());
     client
         .publishWith()
         .topic(message.getTopic())
         .qos(MqttQos.AT_LEAST_ONCE)
-        .payload(message.getPayloadAsBytes())
+        .payload(message.getPayload())
         .send();
   }
 }
