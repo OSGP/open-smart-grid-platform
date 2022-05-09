@@ -75,7 +75,6 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.CurrentlyActiveTa
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DoubleLongUnsignedExtendedRegister;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DoubleLongUnsignedRegister;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.EMonthlyBillingValuesPeriod1DSMR4;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ErrorObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.FraudDetectionLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ImageTransfer;
@@ -88,6 +87,7 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusEventLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusMasterLoadProfilePeriod1DSMR4;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ModuleActiveFirmwareIdentifier;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ModuleFirmwareSignature;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MonthlyBillingValuesPeriod1DSMR4;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.OctetStringData;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.P1PortDsmrVersion;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerOutages;
@@ -746,8 +746,8 @@ public class DefaultDeviceProfile {
   }
 
   @Bean
-  public EMonthlyBillingValuesPeriod1DSMR4 dataOfBillingPeriod1(final Calendar cal) {
-    return new EMonthlyBillingValuesPeriod1DSMR4(cal);
+  public MonthlyBillingValuesPeriod1DSMR4 dataOfBillingPeriod1(final Calendar cal) {
+    return new MonthlyBillingValuesPeriod1DSMR4(cal);
   }
 
   @Bean

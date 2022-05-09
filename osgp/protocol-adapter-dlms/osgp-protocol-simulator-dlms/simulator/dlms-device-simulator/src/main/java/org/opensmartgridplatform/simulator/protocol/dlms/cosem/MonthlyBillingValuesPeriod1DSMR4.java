@@ -24,7 +24,7 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CosemD
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger32DataProcessor;
 
 @CosemClass(id = 7)
-public class EMonthlyBillingValuesPeriod1DSMR4 extends ProfileGeneric {
+public class MonthlyBillingValuesPeriod1DSMR4 extends ProfileGeneric {
 
   private static final int CAPTURE_PERIOD = 0;
 
@@ -97,7 +97,7 @@ public class EMonthlyBillingValuesPeriod1DSMR4 extends ProfileGeneric {
 
   private final Calendar time;
 
-  public EMonthlyBillingValuesPeriod1DSMR4(final Calendar time) {
+  public MonthlyBillingValuesPeriod1DSMR4(final Calendar time) {
     super("0.0.98.1.0.255");
     this.time = time;
 
