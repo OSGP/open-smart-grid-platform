@@ -98,7 +98,7 @@ public abstract class Client extends Thread {
     Runtime.getRuntime().addShutdownHook(new Thread(this::stopClient));
   }
 
-  private void stopClient() {
+  protected void stopClient() {
     LOG.info("Stopping {} identified by {}", this.getClass().getSimpleName(), this.uuid);
     this.disconnect();
     this.running = false;

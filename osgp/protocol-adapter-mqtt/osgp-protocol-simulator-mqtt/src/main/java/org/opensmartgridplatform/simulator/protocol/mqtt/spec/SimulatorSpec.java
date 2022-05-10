@@ -14,6 +14,7 @@ public class SimulatorSpec {
   private int brokerPort;
   private int startupPauseMillis;
   private Message[] messages;
+  private boolean keepReplayingMessages = true;
 
   public SimulatorSpec() {
     // when instantiated from JSON
@@ -30,6 +31,14 @@ public class SimulatorSpec {
 
   public void setMessages(final Message[] messages) {
     this.messages = messages;
+  }
+
+  public void processMessagesOnlyOnce() {
+    this.keepReplayingMessages = false;
+  }
+
+  public boolean keepReplayingMessages() {
+    return this.keepReplayingMessages;
   }
 
   public String getBrokerHost() {
