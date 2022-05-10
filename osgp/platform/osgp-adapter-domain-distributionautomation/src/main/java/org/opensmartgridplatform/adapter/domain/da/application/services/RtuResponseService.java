@@ -35,8 +35,14 @@ public class RtuResponseService {
       "#{T(java.time.Duration).parse('${communication.monitoring.minimum.duration.between.communication.time.updates:PT1M}')}")
   private Duration minimumDurationBetweenCommunicationTimeUpdates;
 
+  /**
+   * @return {@code true} if the device identified by {@code deviceIdentification} is known, {@code
+   *     false} if the device is unknown, but not expected to be known.
+   * @throws FunctionalException if the device identified by {@code deviceIdentification} is
+   *     unknown, while it is expected to be known
+   */
   @Transactional(value = "transactionManager")
-  public void handleResponseMessageReceived(
+  public boolean handleResponseMessageReceived(
       final Logger logger, final String deviceIdentification, final boolean expectDeviceToBeKnown)
       throws FunctionalException {
     try {
@@ -52,7 +58,7 @@ public class RtuResponseService {
             "No RTU device {} found to update communication time information for."
                 + " This may be appropriate as the device could be expected to be unknown to GXF.",
             deviceIdentification);
-        return;
+        return false;
       }
       if (this.shouldUpdateCommunicationTime(
           device, this.minimumDurationBetweenCommunicationTimeUpdates)) {
@@ -66,6 +72,7 @@ public class RtuResponseService {
     } catch (final OptimisticLockException | JpaOptimisticLockingFailureException ex) {
       logger.warn("Last communication time not updated due to optimistic lock exception", ex);
     }
+    return true;
   }
 
   private boolean shouldUpdateCommunicationTime(

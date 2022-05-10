@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.domain.da.application.services;
 
 import org.opensmartgridplatform.adapter.domain.da.application.mapping.DomainDistributionAutomationMapper;
 import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.valueobjects.IntegrationType;
 import org.opensmartgridplatform.domain.da.valueobjects.GetDeviceModelRequest;
 import org.opensmartgridplatform.domain.da.valueobjects.GetDeviceModelResponse;
 import org.opensmartgridplatform.dto.da.GetDeviceModelRequestDto;
@@ -118,14 +119,26 @@ public class AdHocManagementService extends BaseService {
     LOGGER.info(
         "Forward {} response {} for device: {}", messageType, response, deviceIdentification);
 
+    final boolean deviceIsKnown;
     try {
       // For GET_DATA responses device data is not always expected to be known to GXF.
-      this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification, false);
+      deviceIsKnown =
+          this.rtuResponseService.handleResponseMessageReceived(
+              LOGGER, deviceIdentification, false);
     } catch (final FunctionalException e) {
       LOGGER.error("FunctionalException", e);
       return;
     }
 
-    this.responseMessageRouter.send(response, messageType.toString());
+    /*
+     * Make sure KAFKA routing is used when the device that is not necessarily expected to be known,
+     * is actually unknown. Otherwise let the responseMessageRouter do its regular work based on the
+     * kwnown device identified in the responseMessage.
+     */
+    if (deviceIsKnown) {
+      this.responseMessageRouter.send(response, messageType.toString());
+    } else {
+      this.responseMessageRouter.send(response, messageType.toString(), IntegrationType.KAFKA);
+    }
   }
 }
