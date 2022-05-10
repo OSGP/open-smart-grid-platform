@@ -261,27 +261,26 @@ public class Smr5Profile {
   }
 
   @Bean
-  public DoubleLongUnsignedExtendedRegister mBusScalerUnitVolumeHourlyChannel1() {
-    return this.defaultScalerUnitVolumeHourly("0.1.24.2.2.255");
+  public DoubleLongUnsignedExtendedRegister mBusVolumeHourlyChannel1() {
+    return this.defaultVolumeHourly("0.1.24.2.2.255");
   }
 
   @Bean
-  public DoubleLongUnsignedExtendedRegister mBusScalerUnitVolumeHourlyChannel2() {
-    return this.defaultScalerUnitVolumeHourly("0.2.24.2.2.255");
+  public DoubleLongUnsignedExtendedRegister mBusVolumeHourlyChannel2() {
+    return this.defaultVolumeHourly("0.2.24.2.2.255");
   }
 
   @Bean
-  public DoubleLongUnsignedExtendedRegister mBusScalerUnitVolumeHourlyChannel3() {
-    return this.defaultScalerUnitVolumeHourly("0.3.24.2.2.255");
+  public DoubleLongUnsignedExtendedRegister mBusVolumeHourlyChannel3() {
+    return this.defaultVolumeHourly("0.3.24.2.2.255");
   }
 
   @Bean
-  public DoubleLongUnsignedExtendedRegister mBusScalerUnitVolumeHourlyChannel4() {
-    return this.defaultScalerUnitVolumeHourly("0.4.24.2.2.255");
+  public DoubleLongUnsignedExtendedRegister mBusVolumeHourlyChannel4() {
+    return this.defaultVolumeHourly("0.4.24.2.2.255");
   }
 
-  private DoubleLongUnsignedExtendedRegister defaultScalerUnitVolumeHourly(
-      final String logicalName) {
+  private DoubleLongUnsignedExtendedRegister defaultVolumeHourly(final String logicalName) {
     return new DoubleLongUnsignedExtendedRegister(
         logicalName,
         this.mBusValue,
