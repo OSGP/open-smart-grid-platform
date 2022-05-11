@@ -133,7 +133,7 @@ public class AdHocManagementService extends BaseService {
     /*
      * Make sure KAFKA routing is used when the device that is not necessarily expected to be known,
      * is actually unknown. Otherwise let the responseMessageRouter do its regular work based on the
-     * kwnown device identified in the responseMessage.
+     * known device identified in the responseMessage.
      */
     if (deviceIsKnown) {
       this.responseMessageRouter.send(response, messageType.toString());
