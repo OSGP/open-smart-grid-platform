@@ -43,9 +43,15 @@ public class ResponseMessageRouter implements NotificationResponseMessageSender 
 
   @Override
   public void send(final ResponseMessage responseMessage, final String messageType) {
-
     final IntegrationType integrationType =
         this.getIntegrationType(responseMessage.getDeviceIdentification());
+    this.send(responseMessage, messageType, integrationType);
+  }
+
+  public void send(
+      final ResponseMessage responseMessage,
+      final String messageType,
+      final IntegrationType integrationType) {
 
     switch (integrationType) {
       case BOTH:
