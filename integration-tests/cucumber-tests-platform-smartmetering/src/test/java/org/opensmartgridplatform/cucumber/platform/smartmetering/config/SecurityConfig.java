@@ -4,6 +4,7 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.config;
 
 import java.io.IOException;
+import org.apache.commons.io.IOUtils;
 import org.opensmartgridplatform.shared.security.providers.JreEncryptionProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +20,8 @@ public class SecurityConfig {
   @Bean
   public JreEncryptionProvider getJreEncryptionProvider() {
     try {
-      return new JreEncryptionProvider(this.jreEncryptionKeyResource.getFile());
+      return new JreEncryptionProvider(
+          IOUtils.toByteArray(this.jreEncryptionKeyResource.getInputStream()));
     } catch (final IOException e) {
       throw new IllegalStateException("Error creating JRE encryption provider", e);
     }

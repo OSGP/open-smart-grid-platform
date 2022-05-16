@@ -49,6 +49,10 @@ public class JreEncryptionProvider implements EncryptionProvider {
     }
   }
 
+  public JreEncryptionProvider(final byte[] keyStore) {
+    this.key = keyStore;
+  }
+
   private Cipher getCipher() {
     try {
       return Cipher.getInstance(ALGORITHM, PROVIDER);
