@@ -17,7 +17,7 @@ Feature: SmartMetering Configuration - Recover Keys
     Then after 15 seconds, the new E_METER_ENCRYPTION_KEY_UNICAST key is recovered
       | DeviceIdentification | TEST1024000000001 |
       | Authentication_key   | SECURITY_KEY_A    |
-    And after 15 seconds, the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
+    And after 30 seconds, the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
       | SECURITY_KEY_1 | EXPIRED |
     And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"
 
