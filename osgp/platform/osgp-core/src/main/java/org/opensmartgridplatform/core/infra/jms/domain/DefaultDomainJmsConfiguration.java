@@ -43,6 +43,9 @@ public class DefaultDomainJmsConfiguration implements JmsConfiguration {
   @Value("${jms.domain.default.connection.queue.prefetch:1000}")
   private int jmsDefaultConnectionQueuePrefetch;
 
+  @Value("${jms.domain.default.connection.message.priority.supported:true}")
+  private boolean jmsDefaultConnectionMessagePrioritySupported;
+
   @Value("${jms.domain.default.connection.send.timeout:0}")
   private int jmsDefaultConnectionSendTimeout;
 
@@ -156,6 +159,11 @@ public class DefaultDomainJmsConfiguration implements JmsConfiguration {
   @Override
   public int getConnectionQueuePrefetch() {
     return this.jmsDefaultConnectionQueuePrefetch;
+  }
+
+  @Override
+  public boolean isConnectionMessagePrioritySupported() {
+    return this.jmsDefaultConnectionMessagePrioritySupported;
   }
 
   @Override
