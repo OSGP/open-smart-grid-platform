@@ -17,6 +17,7 @@ import static org.opensmartgridplatform.shared.application.config.messaging.JmsP
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_BROKER_URL;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_BROKER_USERNAME;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONCURRENT_CONSUMERS;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_MESSAGE_PRIORITY_SUPPORTED;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_POOL_BLOCK_IF_SESSION_POOL_IS_FULL;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_POOL_BLOCK_IF_SESSION_POOL_IS_FULL_TIMEOUT;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_POOL_EXPIRY_TIMEOUT;
@@ -221,6 +222,11 @@ public class JmsConfigurationFactory {
             this.propertyReader.get(PROPERTY_NAME_BROKER_CLIENT_TRUST_STORE, String.class),
             this.propertyReader.get(PROPERTY_NAME_BROKER_CLIENT_TRUST_STORE_SECRET, String.class));
     jmsBrokerSslSettings.applyToFactory(activeMQConnectionFactory);
+
+    // Enable message priority
+    activeMQConnectionFactory.setMessagePrioritySupported(
+        this.propertyReader.get(
+            PROPERTY_NAME_CONNECTION_MESSAGE_PRIORITY_SUPPORTED, boolean.class));
 
     return activeMQConnectionFactory;
   }
