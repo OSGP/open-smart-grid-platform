@@ -801,6 +801,13 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
       @BypassRetry final String bypassRetry)
       throws OsgpException {
 
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateProtocolData
+        requestData =
+            this.managementMapper.map(
+                request.getUpdateProtocolData(),
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateProtocolData
+                    .class);
+
     final RequestMessageMetadata requestMessageMetadata =
         RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
@@ -813,7 +820,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             .build();
 
     final AsyncResponse asyncResponse =
-        this.requestService.enqueueAndSendRequest(requestMessageMetadata, null);
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
 
     this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 

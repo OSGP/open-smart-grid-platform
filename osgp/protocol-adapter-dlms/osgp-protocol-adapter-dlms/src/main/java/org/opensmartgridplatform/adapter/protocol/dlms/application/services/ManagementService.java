@@ -30,6 +30,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceCommuni
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateProtocolRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateProtocolResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,5 +143,15 @@ public class ManagementService {
 
     this.clearMBusStatusOnAllChannelsCommandExecutor.execute(
         conn, device, clearMBusStatusOnAllChannelsRequestDto, messageMetadata);
+  }
+
+  public UpdateProtocolResponseDto updateProtocol(
+      final DlmsDevice device, final UpdateProtocolRequestDto requestDto) {
+
+    device.setProtocol(requestDto.getProtocol(), requestDto.getProtocolVersion());
+    this.dlmsDeviceRepository.save(device);
+
+    return new UpdateProtocolResponseDto(
+        requestDto.getProtocol(), requestDto.getProtocolVersion(), requestDto.getProtocolVariant());
   }
 }
