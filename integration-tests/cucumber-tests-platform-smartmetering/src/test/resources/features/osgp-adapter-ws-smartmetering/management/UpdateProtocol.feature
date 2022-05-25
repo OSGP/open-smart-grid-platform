@@ -1,7 +1,6 @@
 @SmartMetering @Platform @SmartMeteringManagement @NightlyBuildOnly
 Feature: Update protocol
 
-  @Jack
   Scenario Outline: Update protocol for device to <Protocol> <ProtocolVersion> <ProtocolVariant>
     Given a dlms device
       | DeviceIdentification | TEST1027000000001 |
