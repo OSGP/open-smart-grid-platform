@@ -18,5 +18,5 @@ Feature: BasicOsgpFunctions Protocol functions
 
     Examples: 
       | Protocol    | ProtocolVersion | ProtocolVariant |
-      | test        |             1.0 |                 |
+      | test        |             1.0 | null            |
       | test        |             1.0 | test            |
