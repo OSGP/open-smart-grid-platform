@@ -26,6 +26,16 @@ Feature: Update protocol
       | DeviceIdentification | TEST1027000000001 |
       | Protocol             | <Protocol>        |
       | ProtocolVersion      | <ProtocolVersion> |
+    When an update protocol request is received
+      | DeviceIdentification | TEST1027000000001 |
+      | Protocol             | SMR               |
+      | ProtocolVersion      | 5.0.0             |
+      | ProtocolVariant      | null              |
+    Then the update protocol response should be returned
+    And I delete the protocol record
+      | Protocol        | <Protocol>             |
+      | ProtocolVersion | <ProtocolVersion>      |
+      | ProtocolVariant | <ProtocolVariant>      |
 
     Examples:
       | Protocol | ProtocolVersion | ProtocolVariant |
@@ -33,4 +43,3 @@ Feature: Update protocol
       | SMR      |             5.2 | GPRS            |
       | SMR      |             5.5 | CDMA            |
       | SMR      |             5.1 | LTE-M           |
-      | SMR      |           5.0.0 | null            |
