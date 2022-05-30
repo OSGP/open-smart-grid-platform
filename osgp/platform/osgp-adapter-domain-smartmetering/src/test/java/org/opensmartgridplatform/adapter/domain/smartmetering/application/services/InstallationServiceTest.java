@@ -92,9 +92,7 @@ public class InstallationServiceTest {
     when(this.smartMeteringDevice.getProtocolVersion()).thenReturn(PROTOCOL_VERSION);
     when(this.smartMeteringDevice.getProtocolVariant()).thenReturn(PROTOCOL_VARIANT);
     when(this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
-            this.smartMeteringDevice.getProtocolInfoLookupName(),
-            PROTOCOL_VERSION,
-            PROTOCOL_VARIANT))
+            PROTOCOL_NAME, PROTOCOL_VERSION, PROTOCOL_VARIANT))
         .thenReturn(this.protocolInfo);
 
     // CALL
