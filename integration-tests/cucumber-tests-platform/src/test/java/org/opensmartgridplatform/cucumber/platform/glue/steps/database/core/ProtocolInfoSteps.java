@@ -35,8 +35,8 @@ public class ProtocolInfoSteps {
   public void validateProtocol(final Map<String, String> settings) {
     final ProtocolInfo expected = this.getProtocolFromMap(settings);
     final ProtocolInfo actual =
-        this.protocolInfoRepository.findByProtocolAndProtocolVersion(
-            getProtocol(settings), getProtocolVersion(settings));
+        this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
+            getProtocol(settings), getProtocolVersion(settings), getProtocolVariant(settings));
     assertThat(actual.getProtocol()).isEqualTo(expected.getProtocol());
     assertThat(actual.getProtocolVersion()).isEqualTo(expected.getProtocolVersion());
     assertThat(actual.getProtocolVariant()).isEqualTo(expected.getProtocolVariant());
