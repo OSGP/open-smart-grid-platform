@@ -31,6 +31,8 @@ public interface JmsConfiguration {
 
   int getConnectionQueuePrefetch();
 
+  boolean isConnectionMessagePrioritySupported();
+
   int getConnectionSendTimeout();
 
   boolean isTrustAllPackages();

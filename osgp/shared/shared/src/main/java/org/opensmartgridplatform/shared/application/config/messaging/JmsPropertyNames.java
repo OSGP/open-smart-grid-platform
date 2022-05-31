@@ -29,6 +29,8 @@ public final class JmsPropertyNames {
   public static final String PROPERTY_NAME_CONNECTION_POOL_IDLE_TIMEOUT =
       "connection.pool.idle.timeout";
   public static final String PROPERTY_NAME_CONNECTION_QUEUE_PREFETCH = "connection.queue.prefetch";
+  public static final String PROPERTY_NAME_CONNECTION_MESSAGE_PRIORITY_SUPPORTED =
+      "connection.message.priority.supported";
   public static final String PROPERTY_NAME_CONNECTION_SEND_TIMEOUT = "connection.send.timeout";
 
   public static final String PROPERTY_NAME_MAX_THREAD_POOL_SIZE = "max.thread.pool.size";
