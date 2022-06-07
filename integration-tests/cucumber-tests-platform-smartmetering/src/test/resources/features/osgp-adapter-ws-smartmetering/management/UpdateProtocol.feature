@@ -32,5 +32,5 @@ Feature: Update protocol
       | SMR      |             5.1 | CDMA            |
       | SMR      |             5.2 | GPRS            |
       | SMR      |             5.5 | CDMA            |
-      | SMR      |             5.1 | LTE-M           |
+      | SMR      |             5.1 | LTE             |
       | SMR      |           5.0.0 | null            |
