@@ -47,7 +47,7 @@ public class DlmsObjectConfigSmr51 extends DlmsObjectConfigSmr50 {
     final DlmsObject gsmDiagnosticCdma =
         new DlmsGsmDiagnostic(GSM_DIAGNOSTIC, "0.1.25.6.0.255", CommunicationMethod.CDMA);
     final DlmsObject gsmDiagnosticLteM =
-        new DlmsGsmDiagnostic(GSM_DIAGNOSTIC, "0.2.25.6.0.255", CommunicationMethod.LTE_M);
+        new DlmsGsmDiagnostic(GSM_DIAGNOSTIC, "0.2.25.6.0.255", CommunicationMethod.LTE);
 
     objectList.addAll(Arrays.asList(gsmDiagnosticGprs, gsmDiagnosticCdma, gsmDiagnosticLteM));
 

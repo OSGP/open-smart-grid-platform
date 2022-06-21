@@ -14,7 +14,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 public enum CommunicationMethod {
   GPRS("GPRS"),
   CDMA("CDMA"),
-  LTE_M("LTE-M");
+  LTE("LTE");
 
   private final String methodName;
 
@@ -33,8 +33,8 @@ public enum CommunicationMethod {
         return GPRS;
       case "CDMA":
         return CDMA;
-      case "LTE-M":
-        return LTE_M;
+      case "LTE":
+        return LTE;
       default:
         throw new ProtocolAdapterException("Unknown communication method: " + method);
     }

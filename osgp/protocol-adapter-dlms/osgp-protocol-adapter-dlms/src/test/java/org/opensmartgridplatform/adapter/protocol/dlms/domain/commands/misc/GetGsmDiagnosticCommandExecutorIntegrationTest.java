@@ -194,7 +194,7 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
       return new AttributeAddress(47, new ObisCode(0, 0, 25, 6, 0, 255), attributeId);
     } else if (method == CommunicationMethod.CDMA) {
       return new AttributeAddress(47, new ObisCode(0, 1, 25, 6, 0, 255), attributeId);
-    } else if (method == CommunicationMethod.LTE_M) {
+    } else if (method == CommunicationMethod.LTE) {
       return new AttributeAddress(47, new ObisCode(0, 2, 25, 6, 0, 255), attributeId);
     }
 
