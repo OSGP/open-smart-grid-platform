@@ -17,7 +17,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-shared</artifactId>
-    <version>5.26.0</version>
+    <version>5.26.1-SNAPSHOT</version>
     <relativePath>../parent-shared/pom.xml</relativePath>
   </parent>
 
