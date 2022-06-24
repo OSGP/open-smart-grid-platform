@@ -9,7 +9,7 @@
 package org.opensmartgridplatform.simulator.protocol.dlms.config;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 import org.openmuc.jdlms.CosemInterfaceObject;
 import org.openmuc.jdlms.DlmsServer;
 import org.openmuc.jdlms.DlmsServer.TcpServerBuilder;
@@ -18,6 +18,7 @@ import org.openmuc.jdlms.sessionlayer.server.ServerSessionLayerFactories;
 import org.openmuc.jdlms.settings.client.ReferencingMethod;
 import org.opensmartgridplatform.simulator.protocol.dlms.interceptor.OsgpServerConnectionListener;
 import org.opensmartgridplatform.simulator.protocol.dlms.server.LogicalDeviceBuilder;
+import org.opensmartgridplatform.simulator.protocol.dlms.server.ObjectListCreator;
 import org.opensmartgridplatform.simulator.protocol.dlms.server.SecurityLevel;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.KeyPathProvider;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.LogicalDeviceIdsConverter;
@@ -94,12 +95,11 @@ public class DlmsServerConfig implements ApplicationContextAware {
   }
 
   private LogicalDeviceBuilder buildDevice(final int logicalDeviceId) {
-    final Map<String, CosemInterfaceObject> cosemClasses =
-        (Map<String, CosemInterfaceObject>) this.applicationContext.getBean("cosemClasses");
+    final List<CosemInterfaceObject> cosemClasses = new ObjectListCreator().create();
 
     final LogicalDeviceBuilder builder =
         new LogicalDeviceBuilder()
-            .addCosemClasses(cosemClasses.values().toArray(new CosemInterfaceObject[0]))
+            .setCosemClasses(cosemClasses)
             .setDeviceId(DEVICE_ID)
             .setLogicalDeviceId(logicalDeviceId)
             .setLogicalDeviceName(LOGICAL_DEVICE_NAME)

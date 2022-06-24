@@ -17,4 +17,11 @@ public class CosemObject {
   public String group;
   public ArrayList<String> meterTypes;
   public ArrayList<Attribute> attributes;
+
+  public Attribute getAttribute(final int id) {
+    return this.attributes.stream()
+        .filter(attribute -> attribute.id == id)
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("Attribute " + id + " not found"));
+  }
 }
