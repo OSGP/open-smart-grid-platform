@@ -1,7 +1,9 @@
 package org.opensmartgridplatform.domain.smartmetering.config;
 
 import java.util.ArrayList;
+import lombok.Data;
 
+@Data
 public class MeterConfig {
   public String profile;
   public String version;

@@ -1,5 +1,10 @@
 package org.opensmartgridplatform.domain.smartmetering.config;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.ArrayList;
+import lombok.Data;
+
+@Data
 public class CosumObject {
   public String tag;
   public String description;
