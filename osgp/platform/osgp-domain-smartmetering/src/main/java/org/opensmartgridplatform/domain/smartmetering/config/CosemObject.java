@@ -2,9 +2,13 @@ package org.opensmartgridplatform.domain.smartmetering.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@Builder
 public class CosemObject {
   public String tag;
   public String description;

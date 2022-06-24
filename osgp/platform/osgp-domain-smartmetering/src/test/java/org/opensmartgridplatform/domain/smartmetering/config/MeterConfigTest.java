@@ -12,21 +12,28 @@ package org.opensmartgridplatform.domain.smartmetering.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.nio.file.Paths;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
-public class MeterConfigTest {
+@Slf4j
+class MeterConfigTest {
 
   @Test
   void loadJsonFile() throws IOException {
 
     final ObjectMapper objectMapper = new ObjectMapper();
 
-    final MeterConfig meterConfig =
-        objectMapper.readValue(
-            Paths.get("meter-profile-config-SMR-5.0.json").toFile(), MeterConfig.class);
+    final Resource resource = new ClassPathResource("/meter-profile-config-SMR-5.0.json");
+
+    final MeterConfig meterConfig = objectMapper.readValue(resource.getFile(), MeterConfig.class);
 
     Assertions.assertNotNull(meterConfig);
+    Assertions.assertEquals(
+        "MeterConfig(profile=SMR, version=5.0, description=Profile for Smart Meter Requirements 5.0, settings=[Setting(firmwareUpdateType=SMR)], cosemObjects=[CosemObject(tag=CLOCK, description=Clock, classId=8, version=0, obis=0-0:1.0.0.255, group=ABSTRACT, meterTypes=[SP, PP], attributes=[Attribute(id=2, description=time, datatype=octet-string, valuetype=DYNAMIC, value=CURRENT_LOCAL_DATE_AND_TIME, access=RW), Attribute(id=3, description=time_zone, datatype=long, valuetype=FIXED_IN_PROFILE, value=-60, access=RW), Attribute(id=4, description=status, datatype=clock_status, valuetype=DYNAMIC, value=OK, access=R)]), CosemObject(tag=ACTIVE_FIRMWARE_VERSION, description=Active firmware version, classId=1, version=0, obis=1-0:0.2.0.255, group=ABSTRACT, meterTypes=[SP, PP], attributes=[Attribute(id=2, description=value, datatype=octet-string, valuetype=FIXED_IN_METER, value=firmware id 1, access=R)]), CosemObject(tag=ACTIVE_ENERGY_IMPORT, description=Active energy import (+A), classId=3, version=0, obis=1-0:1.8.0.255, group=ELECTRICITY, meterTypes=[SP, PP], attributes=[Attribute(id=2, description=value, datatype=double-long-unsigned, valuetype=DYNAMIC, value=100, access=R), Attribute(id=3, description=scaler_unit, datatype=scal_unit_type, valuetype=FIXED_IN_PROFILE, value=0, Wh, access=R)]), CosemObject(tag=ACTIVE_ENERGY_EXPORT, description=Active energy export (-A), classId=3, version=0, obis=1-0:2.8.0.255, group=ELECTRICITY, meterTypes=[SP, PP], attributes=[Attribute(id=2, description=value, datatype=double-long-unsigned, valuetype=DYNAMIC, value=RANDOM(0,1000), access=R), Attribute(id=3, description=scaler_unit, datatype=scal_unit_type, valuetype=FIXED_IN_PROFILE, value=0, Wh, access=R)]), CosemObject(tag=MBUS_CLIENT_SETUP, description=M-Bus client setup, classId=72, version=1, obis=0-c:24.1.0.255, group=GAS, meterTypes=[SP, PP], attributes=[Attribute(id=2, description=mbus_port_reference, datatype=octet-string, valuetype=FIXED_IN_PROFILE, value=0-0:24.6.0.255, access=R), Attribute(id=3, description=capture_definition, datatype=array, valuetype=DYNAMIC, value=EMPTY_ARRAY, access=R), Attribute(id=4, description=capture_period, datatype=double-long-unsigned, valuetype=FIXED_IN_PROFILE, value=0, access=RW), Attribute(id=5, description=primary_address, datatype=unsigned, valuetype=FIXED_IN_PROFILE, value=0, access=RW)])])",
+        meterConfig.toString());
+    log.debug("meterConfig=[{}]", meterConfig.toString());
   }
 }
