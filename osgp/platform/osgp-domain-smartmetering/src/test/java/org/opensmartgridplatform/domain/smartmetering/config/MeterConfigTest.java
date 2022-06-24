@@ -10,17 +10,23 @@
 
 package org.opensmartgridplatform.domain.smartmetering.config;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.nio.file.Paths;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class MeterConfigTest {
 
   @Test
-  void loadJsonFile() throws JsonProcessingException {
+  void loadJsonFile() throws IOException {
 
     final ObjectMapper objectMapper = new ObjectMapper();
 
-    objectMapper.readValue("meter-profile-config-SMR-5.0.json", MeterConfig.class);
+    final MeterConfig meterConfig =
+        objectMapper.readValue(
+            Paths.get("meter-profile-config-SMR-5.0.json").toFile(), MeterConfig.class);
+
+    Assertions.assertNotNull(meterConfig);
   }
 }
