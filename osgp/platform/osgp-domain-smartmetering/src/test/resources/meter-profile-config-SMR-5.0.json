@@ -7,7 +7,7 @@
       "firmware update type": "SMR"
     }
   ],
-  "cosumObjects": [
+  "cosemObjects": [
     {
       "tag": "CLOCK",
       "description": "Clock",

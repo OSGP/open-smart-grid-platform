@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import lombok.Data;
 
 @Data
-public class CosumObject {
+public class CosemObject {
   public String tag;
   public String description;
 

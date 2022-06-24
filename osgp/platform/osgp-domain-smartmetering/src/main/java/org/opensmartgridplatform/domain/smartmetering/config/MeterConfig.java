@@ -9,5 +9,5 @@ public class MeterConfig {
   public String version;
   public String description;
   public ArrayList<Setting> settings;
-  public ArrayList<CosumObject> cosumObjects;
+  public ArrayList<CosemObject> cosemObjects;
 }
