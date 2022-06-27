@@ -219,6 +219,11 @@
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-domain-smartmetering</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-domain-distributionautomation</artifactId>
         <version>${osgp.version}</version>
       </dependency>

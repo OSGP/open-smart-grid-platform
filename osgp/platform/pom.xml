@@ -134,6 +134,7 @@
       </activation>
       <modules>
         <module>osgp-adapter-domain-smartmetering</module>
+        <module>osgp-domain-smartmetering</module>
         <module>osgp-adapter-ws-smartmetering</module>
         <module>osgp-secret-management</module>
       </modules>

@@ -87,6 +87,8 @@
       <artifactId>jdlms-annotation-processor</artifactId>
       <scope>provided</scope>
     </dependency>
+
+    <!-- osgp -->
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-dlms</artifactId>
