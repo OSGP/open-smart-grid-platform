@@ -9,14 +9,17 @@
  */
 package org.opensmartgridplatform.simulator.protocol.dlms.server;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.openmuc.jdlms.CosemInterfaceObject;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.domain.smartmetering.config.Attribute;
 import org.opensmartgridplatform.domain.smartmetering.config.CosemObject;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.Clock;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DoubleLongUnsignedRegister;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.LongUnsignedData;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.LongUnsignedRegister;
@@ -46,6 +49,8 @@ public class ObjectListCreator {
           return this.convertData(cosemObject);
         case 3:
           return this.convertRegister(cosemObject);
+        case 8:
+          return this.convertClock(cosemObject);
         default:
           throw new IllegalArgumentException("Unknown classId in profile: " + cosemObject.classId);
       }
@@ -100,6 +105,16 @@ public class ObjectListCreator {
     }
   }
 
+  private CosemInterfaceObject convertClock(final CosemObject cosemObject)
+      throws IllegalArgumentException {
+    final Attribute time = cosemObject.getAttribute(ClockAttribute.TIME.attributeId());
+    if (time.getValue().equals("CURRENT_LOCAL_DATE_AND_TIME")) {
+      return new Clock(LocalDateTime.now());
+    } else {
+      throw new IllegalArgumentException("Unknown value for clock in profile: " + time.getValue());
+    }
+  }
+
   private int getScaler(final String scaler_unit) {
     return Integer.parseInt(scaler_unit.split(",")[0]);
   }
@@ -120,31 +135,43 @@ public class ObjectListCreator {
   private List<CosemObject> createDummyList() {
     final List<CosemObject> objectListFromProfile = new ArrayList<>();
 
-    final CosemObject object1 = new CosemObject();
-    object1.setClassId(3);
-    object1.setObis("1.0.1.8.0.255");
-
-    final ArrayList<Attribute> attributesObject1 = new ArrayList<>();
-    attributesObject1.add(this.createDummyAttribute(2, "double-long-unsigned", "100"));
-    attributesObject1.add(this.createDummyAttribute(3, "scal_unit_type", "0, Wh"));
-
-    object1.setAttributes(attributesObject1);
-
-    objectListFromProfile.add(object1);
-
-    final CosemObject object2 = new CosemObject();
-    object2.setClassId(3);
-    object2.setObis("1.0.1.8.1.255");
-
-    final ArrayList<Attribute> attributesObject2 = new ArrayList<>();
-    attributesObject2.add(this.createDummyAttribute(2, "double-long-unsigned", "101"));
-    attributesObject2.add(this.createDummyAttribute(3, "scal_unit_type", "0, Wh"));
-
-    object2.setAttributes(attributesObject2);
-
-    objectListFromProfile.add(object2);
+    objectListFromProfile.add(this.createDummyRegister("1.0.1.8.0.255", "10001"));
+    objectListFromProfile.add(this.createDummyRegister("1.0.2.8.0.255", "20001"));
+    objectListFromProfile.add(this.createDummyRegister("1.0.1.8.1.255", "10002"));
+    objectListFromProfile.add(this.createDummyRegister("1.0.1.8.2.255", "10003"));
+    objectListFromProfile.add(this.createDummyRegister("1.0.2.8.1.255", "20002"));
+    objectListFromProfile.add(this.createDummyRegister("1.0.2.8.2.255", "20003"));
+    objectListFromProfile.add(
+        this.createDummyClock("0.0.1.0.0.255", "CURRENT_LOCAL_DATE_AND_TIME"));
 
     return objectListFromProfile;
+  }
+
+  private CosemObject createDummyRegister(final String obis, final String value) {
+    final CosemObject newObject = new CosemObject();
+    newObject.setClassId(3);
+    newObject.setObis(obis);
+
+    final ArrayList<Attribute> attributesObject = new ArrayList<>();
+    attributesObject.add(this.createDummyAttribute(2, "double-long-unsigned", value));
+    attributesObject.add(this.createDummyAttribute(3, "scal_unit_type", "0, Wh"));
+
+    newObject.setAttributes(attributesObject);
+
+    return newObject;
+  }
+
+  private CosemObject createDummyClock(final String obis, final String value) {
+    final CosemObject newObject = new CosemObject();
+    newObject.setClassId(8);
+    newObject.setObis(obis);
+
+    final ArrayList<Attribute> attributesObject = new ArrayList<>();
+    attributesObject.add(this.createDummyAttribute(2, "octet-string", value));
+
+    newObject.setAttributes(attributesObject);
+
+    return newObject;
   }
 
   private Attribute createDummyAttribute(final int id, final String dataType, final String value) {

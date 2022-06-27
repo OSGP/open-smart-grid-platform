@@ -23,6 +23,6 @@ public class ObjectListCreatorTest {
   void createObjectList() {
     final List<CosemInterfaceObject> objectList = this.objectListCreator.create();
 
-    assertThat(objectList).hasSize(2);
+    assertThat(objectList).hasSize(7);
   }
 }
