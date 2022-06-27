@@ -34,7 +34,7 @@
     <maven.failsafe.plugin.version>3.0.0-M5</maven.failsafe.plugin.version>
     <spring.boot.maven.plugin.version>2.4.0</spring.boot.maven.plugin.version>
     <osgp-ws-secret-management-version>${project.parent.version}</osgp-ws-secret-management-version>
-    <h2database.version>2.0.204</h2database.version>
+    <h2database.version>2.1.214</h2database.version>
     <failOnMissingWebXml>false</failOnMissingWebXml>
   </properties>
 
