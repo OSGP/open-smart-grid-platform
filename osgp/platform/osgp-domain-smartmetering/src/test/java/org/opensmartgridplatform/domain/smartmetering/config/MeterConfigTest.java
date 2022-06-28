@@ -14,21 +14,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 @Slf4j
 class MeterConfigTest {
 
+  private ObjectMapper objectMapper;
+
+  @BeforeEach
+  void init() {
+    this.objectMapper = new ObjectMapper();
+  }
+
   @Test
   void loadJsonFile() throws IOException {
 
-    final ObjectMapper objectMapper = new ObjectMapper();
-
-    final Resource resource = new ClassPathResource("/meter-profile-config-SMR-5.0.json");
-
-    final MeterConfig meterConfig = objectMapper.readValue(resource.getFile(), MeterConfig.class);
+    final MeterConfig meterConfig =
+        this.objectMapper.readValue(
+            new ClassPathResource("/meter-profile-config-SMR-5.0.json").getFile(),
+            MeterConfig.class);
 
     Assertions.assertNotNull(meterConfig);
     Assertions.assertEquals(
@@ -40,14 +46,16 @@ class MeterConfigTest {
   @Test
   void loadJsonFileAndGetActualMeterReads() throws IOException {
 
-    final ObjectMapper objectMapper = new ObjectMapper();
-
-    final Resource resource =
-        new ClassPathResource("/meter-profile-config-SMR-5.0-GetActualMeterReads.json");
-
-    final MeterConfig meterConfig = objectMapper.readValue(resource.getFile(), MeterConfig.class);
+    final MeterConfig meterConfig =
+        this.objectMapper.readValue(
+            new ClassPathResource("/meter-profile-config-SMR-5.0-GetActualMeterReads.json")
+                .getFile(),
+            MeterConfig.class);
 
     Assertions.assertNotNull(meterConfig);
+    Assertions.assertEquals(
+        "MeterConfig(profile=SMR, version=5.0, description=Profile for Smart Meter Requirements 5.0 nieuw, settings=[Setting(firmwareUpdateType=SMR)], cosemObjects=[CosemObject(tag=CLOCK, description=Clock, classId=8, version=0, obis=0-0:1.0.0.255, group=ABSTRACT, meterTypes=[SP, PP], attributes=[Attribute(id=2, description=time, datatype=octet-string, valuetype=DYNAMIC, value=CURRENT_LOCAL_DATE_AND_TIME, access=RW), Attribute(id=3, description=time_zone, datatype=long, valuetype=FIXED_IN_PROFILE, value=-60, access=RW), Attribute(id=4, description=status, datatype=clock_status, valuetype=DYNAMIC, value=OK, access=R)]), CosemObject(tag=ACTIVE_ENERGY_IMPORT, description=Active energy import (+A), classId=3, version=0, obis=1-0:1.8.0.255, group=ELECTRICITY, meterTypes=[SP, PP], attributes=[Attribute(id=2, description=value, datatype=double-long-unsigned, valuetype=DYNAMIC, value=10001, access=R), Attribute(id=3, description=scaler_unit, datatype=scal_unit_type, valuetype=FIXED_IN_PROFILE, value=0, Wh, access=R)]), CosemObject(tag=ACTIVE_ENERGY_EXPORT, description=Active energy export (-A), classId=3, version=0, obis=1-0:2.8.0.255, group=ELECTRICITY, meterTypes=[SP, PP], attributes=[Attribute(id=2, description=value, datatype=double-long-unsigned, valuetype=DYNAMIC, value=20001, access=R), Attribute(id=3, description=scaler_unit, datatype=scal_unit_type, valuetype=FIXED_IN_PROFILE, value=0, Wh, access=R)]), CosemObject(tag=ACTIVE_ENERGY_IMPORT_RATE_1, description=Active energy import (+A) rate 1, classId=3, version=0, obis=1-0:1.8.1.255, group=ELECTRICITY, meterTypes=[SP, PP], attributes=[Attribute(id=2, description=value, datatype=double-long-unsigned, valuetype=DYNAMIC, value=10002, access=R), Attribute(id=3, description=scaler_unit, datatype=scal_unit_type, valuetype=FIXED_IN_PROFILE, value=0, Wh, access=R)]), CosemObject(tag=ACTIVE_ENERGY_IMPORT_RATE_2, description=Active energy import (+A) rate 2, classId=3, version=0, obis=1-0:1.8.2.255, group=ELECTRICITY, meterTypes=[SP, PP], attributes=[Attribute(id=2, description=value, datatype=double-long-unsigned, valuetype=DYNAMIC, value=10003, access=R), Attribute(id=3, description=scaler_unit, datatype=scal_unit_type, valuetype=FIXED_IN_PROFILE, value=0, Wh, access=R)]), CosemObject(tag=ACTIVE_ENERGY_EXPORT_RATE_1, description=Active energy export (+A) rate 1, classId=3, version=0, obis=1-0:2.8.1.255, group=ELECTRICITY, meterTypes=[SP, PP], attributes=[Attribute(id=2, description=value, datatype=double-long-unsigned, valuetype=DYNAMIC, value=20002, access=R), Attribute(id=3, description=scaler_unit, datatype=scal_unit_type, valuetype=FIXED_IN_PROFILE, value=0, Wh, access=R)]), CosemObject(tag=ACTIVE_ENERGY_EXPORT_RATE_2, description=Active energy export (+A) rate 2, classId=3, version=0, obis=1-0:2.8.2.255, group=ELECTRICITY, meterTypes=[SP, PP], attributes=[Attribute(id=2, description=value, datatype=double-long-unsigned, valuetype=DYNAMIC, value=20003, access=R), Attribute(id=3, description=scaler_unit, datatype=scal_unit_type, valuetype=FIXED_IN_PROFILE, value=0, Wh, access=R)])])",
+        meterConfig.toString());
     log.debug("meterConfig=[{}]", meterConfig);
   }
 }
