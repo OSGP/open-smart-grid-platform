@@ -15,8 +15,9 @@ import java.util.Map;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.SecurityKey;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.database.DlmsDatabase;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.database.WsSmartMeteringNotificationDatabase;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.simulator.DeviceSimulatorSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration.ReplaceKeysSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ServiceEndpoint;
@@ -32,7 +33,8 @@ public class ScenarioHooks {
   @Value("${alarm.notifications.port}")
   private int alarmNotificationsPort;
 
-  @Autowired private DlmsDatabase dlmsDatabaseSteps;
+  @Autowired private DlmsDatabase dlmsDatabase;
+  @Autowired private WsSmartMeteringNotificationDatabase wsSmartMeteringNotificationDatabase;
 
   @Autowired private ReplaceKeysSteps replaceKeysSteps;
 
@@ -54,7 +56,8 @@ public class ScenarioHooks {
   @Before(order = 1000)
   public void beforeScenario() {
     this.deviceSimulatorSteps.clearDlmsAttributeValues();
-    this.dlmsDatabaseSteps.prepareDatabaseForScenario();
+    this.dlmsDatabase.prepareDatabaseForScenario();
+    this.wsSmartMeteringNotificationDatabase.prepareDatabaseForScenario();
     this.prepareServiceEndpoint();
   }
 
@@ -89,11 +92,8 @@ public class ScenarioHooks {
     map.put(
         PlatformKeys.KEY_DEVICE_IDENTIFICATION,
         PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
-    map.put(
-        PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY,
-        PlatformSmartmeteringDefaults.SECURITY_KEY_A_XML);
-    map.put(
-        PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY, PlatformSmartmeteringDefaults.SECURITY_KEY_E_XML);
+    map.put(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY, SecurityKey.SECURITY_KEY_A.name());
+    map.put(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY, SecurityKey.SECURITY_KEY_E.name());
     return map;
   }
 

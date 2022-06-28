@@ -202,13 +202,12 @@ public class SoapServiceSecretManagementIT {
         .sendRequest(withSoapEnvelope(storeRequest))
         .andExpect(ResponseMatchers.noFault())
         .andExpect(ResponseMatchers.payload(expectedStoreResponse));
-    // Store secrets again, while previously stored secret still have status NEW
-    final String errorMessage =
-        "Expected 0 new secrets of type E_METER_AUTHENTICATION_KEY for device "
-            + "E0000000000000000, but 1 new secret(s) present";
+    // Store secrets again, while first request is still being processed
+    // Second request will be processed after the first has finished
     this.mockWebServiceClient
         .sendRequest(withSoapEnvelope(storeRequest))
-        .andExpect(ResponseMatchers.serverOrReceiverFault(errorMessage));
+        .andExpect(ResponseMatchers.noFault())
+        .andExpect(ResponseMatchers.payload(expectedStoreResponse));
   }
 
   @Test
@@ -317,15 +316,18 @@ public class SoapServiceSecretManagementIT {
   public void generateAndStoreSecretsAlreadyNewSecretPresent() throws IOException {
     // Store secrets
     final Resource storeRequest = new ClassPathResource("test-requests/storeSecrets.xml");
+    final Resource expectedStoreResponse = new ClassPathResource("test-responses/storeSecrets.xml");
     this.mockWebServiceClient
         .sendRequest(withSoapEnvelope(storeRequest))
-        .andExpect(ResponseMatchers.noFault());
-    // Generate and store secret: this should result in a fault message
+        .andExpect(ResponseMatchers.noFault())
+        .andExpect(ResponseMatchers.payload(expectedStoreResponse));
+
+    // Generate and store secret: this should NOT result in a fault message
     final Resource generateAndStoreRequest =
         new ClassPathResource("test-requests/generateAndStoreSecrets.xml");
     this.mockWebServiceClient
         .sendRequest(withSoapEnvelope(generateAndStoreRequest))
-        .andExpect(ResponseMatchers.serverOrReceiverFault());
+        .andExpect(ResponseMatchers.noFault());
   }
 
   /**

@@ -14,29 +14,24 @@ import static org.mockito.Mockito.when;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.VoltageMessageProducer;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.StringMessageProducer;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
+@ExtendWith(MockitoExtension.class)
 class DomainResponseMessageProcessorTest {
 
   @InjectMocks DomainResponseMessageProcessor domainResponseMessageProcessor;
 
-  @Mock private VoltageMessageProducer producer;
+  @Mock private StringMessageProducer producer;
 
   @Mock private ObjectMessage receivedMessage;
-
-  @BeforeEach
-  public void setup() {
-    this.domainResponseMessageProcessor = new DomainResponseMessageProcessor();
-    MockitoAnnotations.initMocks(this);
-  }
 
   @Test
   void processMessageTest() throws JMSException {
@@ -46,6 +41,7 @@ class DomainResponseMessageProcessorTest {
     final String organisationIdentification = "test-org";
     final String deviceIdentification = "device1";
     final ResponseMessageResultType resultType = ResponseMessageResultType.OK;
+    final String topic = "the topic";
     final String payload = "the payload";
 
     final ResponseMessage responseMessage =
@@ -54,6 +50,7 @@ class DomainResponseMessageProcessorTest {
             .withMessageType(messageType)
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(deviceIdentification)
+            .withTopic(topic)
             .withResult(resultType)
             .withDataObject(payload)
             .build();
@@ -64,6 +61,7 @@ class DomainResponseMessageProcessorTest {
         .thenReturn(organisationIdentification);
     when(this.receivedMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION))
         .thenReturn(deviceIdentification);
+    when(this.receivedMessage.getStringProperty(Constants.TOPIC)).thenReturn(topic);
     when(this.receivedMessage.getStringProperty(Constants.RESULT))
         .thenReturn(resultType.toString());
     when(this.receivedMessage.getObject()).thenReturn(responseMessage);

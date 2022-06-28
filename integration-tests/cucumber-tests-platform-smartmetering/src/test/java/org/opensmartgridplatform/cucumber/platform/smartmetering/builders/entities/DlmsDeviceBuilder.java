@@ -40,7 +40,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
   private Long clientId = PlatformSmartmeteringDefaults.CLIENT_ID;
   private Long logicalId = PlatformSmartmeteringDefaults.LOGICAL_ID;
   private boolean inDebugMode = PlatformSmartmeteringDefaults.IN_DEBUG_MODE;
-  private Long mbusIdentificationNumber = null;
+  private String mbusIdentificationNumber = null;
   private String mbusManufacturerIdentification = null;
   private String protocolName = PlatformSmartmeteringDefaults.PROTOCOL;
   private String protocolVersion = PlatformSmartmeteringDefaults.PROTOCOL_VERSION;
@@ -146,7 +146,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     return this;
   }
 
-  public DlmsDeviceBuilder setMbusIdentificationNumber(final Long value) {
+  public DlmsDeviceBuilder setMbusIdentificationNumber(final String value) {
     this.mbusIdentificationNumber = value;
     return this;
   }
@@ -239,7 +239,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     }
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER)) {
       this.setMbusIdentificationNumber(
-          getLong(inputSettings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
+          inputSettings.get(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
     }
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION)) {
       this.setMbusManufacturerIdentification(

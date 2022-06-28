@@ -8,7 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
-import java.nio.charset.StandardCharsets;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import ma.glasnost.orika.CustomConverter;
@@ -32,7 +32,7 @@ public class WeekProfileConverter extends CustomConverter<WeekProfileDto, DataOb
 
     weekElements.add(
         DataObject.newOctetStringData(
-            source.getWeekProfileName().getBytes(StandardCharsets.UTF_8)));
+            new BigInteger(source.getWeekProfileName(), 10).toByteArray()));
     weekElements.add(DataObject.newUInteger8Data(source.getMonday().getDayId().shortValue()));
     weekElements.add(DataObject.newUInteger8Data(source.getTuesday().getDayId().shortValue()));
     weekElements.add(DataObject.newUInteger8Data(source.getWednesday().getDayId().shortValue()));

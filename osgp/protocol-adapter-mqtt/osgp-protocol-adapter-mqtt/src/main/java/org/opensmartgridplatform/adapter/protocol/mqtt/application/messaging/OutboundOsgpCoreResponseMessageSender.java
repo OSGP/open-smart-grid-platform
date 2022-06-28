@@ -70,26 +70,13 @@ public class OutboundOsgpCoreResponseMessageSender implements ResponseMessageSen
     @Override
     public Message createMessage(final Session session) throws JMSException {
       final ObjectMessage objectMessage = session.createObjectMessage(this.responseMessage);
-      objectMessage.setJMSCorrelationID(this.responseMessage.getCorrelationUid());
-      objectMessage.setStringProperty(Constants.DOMAIN, this.responseMessage.getDomain());
-      objectMessage.setStringProperty(
-          Constants.DOMAIN_VERSION, this.responseMessage.getDomainVersion());
-      objectMessage.setJMSType(this.responseMessage.getMessageType());
-      objectMessage.setJMSPriority(this.responseMessage.getMessagePriority());
-      objectMessage.setStringProperty(
-          Constants.ORGANISATION_IDENTIFICATION,
-          this.responseMessage.getOrganisationIdentification());
-      objectMessage.setStringProperty(
-          Constants.DEVICE_IDENTIFICATION, this.responseMessage.getDeviceIdentification());
+      this.responseMessage.messageMetadata().applyTo(objectMessage);
       objectMessage.setStringProperty(
           Constants.RESULT, this.responseMessage.getResult().toString());
       if (this.responseMessage.getOsgpException() != null) {
         objectMessage.setStringProperty(
             Constants.DESCRIPTION, this.responseMessage.getOsgpException().getMessage());
       }
-      objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, this.responseMessage.isScheduled());
-      objectMessage.setIntProperty(Constants.RETRY_COUNT, this.responseMessage.getRetryCount());
-      objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, this.responseMessage.bypassRetry());
 
       if (this.responseMessage.getRetryHeader().shouldRetry()) {
         objectMessage.setIntProperty(

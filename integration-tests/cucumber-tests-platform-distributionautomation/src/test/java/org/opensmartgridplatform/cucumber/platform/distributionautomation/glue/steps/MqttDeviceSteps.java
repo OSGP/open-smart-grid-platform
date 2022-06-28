@@ -8,12 +8,16 @@
  */
 package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps;
 
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
+
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import io.cucumber.java.en.When;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
-import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.cucumber.core.ReadSettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationDefaults;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys;
@@ -23,40 +27,66 @@ import org.opensmartgridplatform.simulator.protocol.mqtt.spec.Message;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 public class MqttDeviceSteps {
 
-  @Autowired private MqttDeviceRepository mqttDeviceRepository;
-
   private static final Logger LOGGER = LoggerFactory.getLogger(MqttDeviceSteps.class);
 
-  @When("MQTT device {string} sends a measurement report")
-  public void theDeviceSendsAMeasurementReport(
-      final String deviceIdentification, final Map<String, String> parameters) throws IOException {
+  private static String[] getTopics(final Map<String, String> settings) {
+    final String topic = getString(settings, PlatformDistributionAutomationKeys.MQTT_TOPIC);
+    return StringUtils.isEmpty(topic) ? new String[] {} : StringUtils.split(topic, ',');
+  }
 
-    final MqttDevice device =
-        this.mqttDeviceRepository.findByDeviceIdentification(deviceIdentification);
-    final String host = device.getHost();
-    final int port = device.getPort();
-    final String[] topics = device.getTopics();
+  @When("an MQTT message is published")
+  public void anMqttMessageIsPublished(final Map<String, String> parameters) throws IOException {
+
+    final String host =
+        getString(
+            parameters,
+            PlatformDistributionAutomationKeys.MQTT_HOST,
+            PlatformDistributionAutomationDefaults.MQTT_HOST);
+    final int port =
+        getInteger(
+            parameters,
+            PlatformDistributionAutomationKeys.MQTT_PORT,
+            PlatformDistributionAutomationDefaults.MQTT_PORT);
+    final boolean cleanSession =
+        getBoolean(
+            parameters,
+            PlatformDistributionAutomationKeys.MQTT_CLIENT_CLEAN_SESSION,
+            PlatformDistributionAutomationDefaults.MQTT_CLIENT_CLEAN_SESSION);
+    final int keepAlive =
+        getInteger(
+            parameters,
+            PlatformDistributionAutomationKeys.MQTT_CLIENT_KEEP_ALIVE,
+            PlatformDistributionAutomationDefaults.MQTT_CLIENT_KEEP_ALIVE);
+    final String[] topics = getTopics(parameters);
 
     final String payload = parameters.get(PlatformDistributionAutomationKeys.PAYLOAD);
     LOGGER.info("Payload: {}", payload);
 
     for (final String topic : topics) {
-      this.startPublishingClient(host, port, topic, payload, parameters);
+      this.startPublishingClient(
+          host,
+          port,
+          cleanSession,
+          keepAlive,
+          topic,
+          payload.getBytes(StandardCharsets.UTF_8),
+          parameters);
     }
   }
 
   private void startPublishingClient(
       final String host,
       final int port,
+      final boolean cleanSession,
+      final int keepAlive,
       final String topic,
-      final String payload,
+      final byte[] payload,
       final Map<String, String> parameters) {
     final SimulatorSpec spec = new SimulatorSpec(host, port);
     spec.setStartupPauseMillis(2000);
@@ -99,7 +129,7 @@ public class MqttDeviceSteps {
     }
 
     final SimulatorSpecPublishingClient publishingClient =
-        new SimulatorSpecPublishingClient(spec, mqttClientSslConfig);
+        new SimulatorSpecPublishingClient(spec, cleanSession, keepAlive, mqttClientSslConfig);
     publishingClient.start();
   }
 }

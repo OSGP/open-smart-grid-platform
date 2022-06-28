@@ -88,12 +88,13 @@ public class SmartMeterService {
       throws FunctionalException {
 
     final ProtocolInfo protocolInfo =
-        this.protocolInfoRepository.findByProtocolAndProtocolVersion(
-            smartMeteringDevice.getProtocolInfoLookupName(),
-            smartMeteringDevice.getProtocolVersion());
+        this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
+            smartMeteringDevice.getProtocolName(),
+            smartMeteringDevice.getProtocolVersion(),
+            smartMeteringDevice.getProtocolVariant());
     if (protocolInfo == null) {
       throw new FunctionalException(
-          FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION,
+          FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION_OR_VARIANT,
           ComponentType.DOMAIN_SMART_METERING);
     }
     return protocolInfo;

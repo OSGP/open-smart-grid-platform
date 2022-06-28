@@ -10,6 +10,7 @@ package org.opensmartgridplatform.core.infra.jms.protocol.inbound.messageprocess
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
+import org.apache.activemq.command.ActiveMQDestination;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -53,6 +55,8 @@ public class GetFirmwareFileMessageProcessorTest {
 
   @Mock private FirmwareFile firmwareFileMock;
 
+  @Mock private ActiveMQDestination destinationMock;
+
   @InjectMocks private GetFirmwareFileMessageProcessor getFirmwareFileMessageProcessor;
 
   @Test
@@ -80,6 +84,7 @@ public class GetFirmwareFileMessageProcessorTest {
             .withDeviceIdentification(deviceIdentification)
             .withObject(requestMessage)
             .build();
+    message.setJMSReplyTo(this.destinationMock);
 
     when(this.deviceMock.getDeviceIdentification()).thenReturn(deviceIdentification);
     when(this.deviceRepository.findByDeviceIdentification(deviceIdentification))
@@ -102,11 +107,12 @@ public class GetFirmwareFileMessageProcessorTest {
 
     // assert
     verify(this.protocolResponseMessageSender, times(1))
-        .send(
+        .sendWithDestination(
             responseMessageArgumentCaptor.capture(),
             messageTypeCaptor.capture(),
             nullable(ProtocolInfo.class),
-            any(MessageMetadata.class));
+            any(MessageMetadata.class),
+            eq(this.destinationMock));
 
     final FirmwareFileDto actualFirmwareFileDto =
         (FirmwareFileDto) responseMessageArgumentCaptor.getValue().getDataObject();

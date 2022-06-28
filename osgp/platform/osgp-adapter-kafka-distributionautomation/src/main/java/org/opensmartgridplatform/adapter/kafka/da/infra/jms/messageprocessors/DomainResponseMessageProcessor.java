@@ -9,9 +9,11 @@
 package org.opensmartgridplatform.adapter.kafka.da.infra.jms.messageprocessors;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.VoltageMessageProducer;
+import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.StringMessageProducer;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -29,9 +31,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(DomainResponseMessageProcessor.class);
 
-  private static final MessageType GET_DATA = MessageType.GET_DATA;
-
-  @Autowired private VoltageMessageProducer producer;
+  @Autowired private StringMessageProducer producer;
 
   @Override
   public void processMessage(final ObjectMessage message) {
@@ -41,15 +41,17 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
     MessageType messageType = null;
     String organisationIdentification = null;
     String deviceIdentification = null;
+    String topic = null;
 
-    ResponseMessageResultType resultType;
-    String resultDescription;
-    ResponseMessage dataObject;
+    final ResponseMessageResultType resultType;
+    final String resultDescription;
+    final ResponseMessage dataObject;
 
     try {
       correlationUid = message.getJMSCorrelationID();
       organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
       deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+      topic = message.getStringProperty(Constants.TOPIC);
 
       messageType = MessageType.valueOf(message.getJMSType());
 
@@ -60,22 +62,24 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
     } catch (final IllegalArgumentException e) {
       LOGGER.error("UNRECOVERABLE ERROR, received messageType {} is unknown.", messageType, e);
       logDebugInformation(
-          messageType, correlationUid, organisationIdentification, deviceIdentification);
+          messageType, correlationUid, organisationIdentification, deviceIdentification, topic);
 
       return;
     } catch (final JMSException e) {
       LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
       logDebugInformation(
-          messageType, correlationUid, organisationIdentification, deviceIdentification);
+          messageType, correlationUid, organisationIdentification, deviceIdentification, topic);
 
       return;
     }
 
     try {
+      final String fromTopic = StringUtils.isBlank(topic) ? "" : " from topic " + topic;
       LOGGER.info(
-          "Handle message of type {} for device {} with result: {}, description {}.",
+          "Handle message of type {} for device {}{} with result: {}, description {}.",
           messageType,
           deviceIdentification,
+          fromTopic,
           resultType,
           resultDescription);
       this.handleMessage(messageType, dataObject);
@@ -88,9 +92,14 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
     final Serializable dataObject = message.getDataObject();
 
-    if (dataObject instanceof String && GET_DATA.equals(messageType)) {
-
-      this.producer.send((String) dataObject);
+    if (messageType == MessageType.GET_DATA) {
+      final String textPayload;
+      if (message.getDataObject() instanceof String) {
+        textPayload = (String) message.getDataObject();
+      } else {
+        textPayload = new String((byte[]) message.getDataObject(), StandardCharsets.UTF_8);
+      }
+      this.producer.send(textPayload);
     } else {
       LOGGER.warn(
           "Discarding the message. For this component we only handle (MQTT) GET_DATA responses. "
@@ -112,10 +121,12 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
       final MessageType messageType,
       final String correlationUid,
       final String organisationIdentification,
-      final String deviceIdentification) {
+      final String deviceIdentification,
+      final String topic) {
     LOGGER.debug("messageType: {}", messageType);
     LOGGER.debug("CorrelationUid: {}", correlationUid);
     LOGGER.debug("organisationIdentification: {}", organisationIdentification);
     LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+    LOGGER.debug("topic: {}", topic);
   }
 }

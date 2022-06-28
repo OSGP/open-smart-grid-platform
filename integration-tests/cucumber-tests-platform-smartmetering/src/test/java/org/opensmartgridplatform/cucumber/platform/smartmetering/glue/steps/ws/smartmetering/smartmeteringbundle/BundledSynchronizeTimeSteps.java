@@ -12,16 +12,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.zone.ZoneRules;
 import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SynchronizeTimeRequestDataFactory;
 
 public class BundledSynchronizeTimeSteps extends BaseBundleSteps {
 
@@ -33,34 +29,10 @@ public class BundledSynchronizeTimeSteps extends BaseBundleSteps {
     this.theBundleRequestContainsAValidSynchronizeTimeAction(DEFAULT_TIMEZONE);
   }
 
-  @Given("^the bundle request contains a synchronize time action with parameters$")
-  public void theBundleRequestContainsASynchronizeTimeAction(final Map<String, String> settings)
-      throws Throwable {
-
-    final SynchronizeTimeRequest action =
-        this.mapperFacade.map(
-            SynchronizeTimeRequestDataFactory.fromParameterMap(settings),
-            SynchronizeTimeRequest.class);
-
-    this.addActionToBundleRequest(action);
-  }
-
   @Given("^the bundle request contains a valid synchronize time action for timezone \"([^\"]*)\"")
-  public void theBundleRequestContainsAValidSynchronizeTimeAction(final String timeZoneId)
-      throws Throwable {
-
+  public void theBundleRequestContainsAValidSynchronizeTimeAction(final String timeZoneId) {
     final SynchronizeTimeRequest action = new SynchronizeTimeRequest();
-
-    final ZoneId zone = ZoneId.of(timeZoneId);
-    final Instant now = Instant.now();
-    final ZoneRules rules = zone.getRules();
-
-    final int offset = (rules.getOffset(now).getTotalSeconds() / 60) * -1;
-    final boolean dst = rules.isDaylightSavings(now);
-
-    action.setDeviation(offset);
-    action.setDst(dst);
-
+    action.setTimeZone(timeZoneId);
     this.addActionToBundleRequest(action);
   }
 

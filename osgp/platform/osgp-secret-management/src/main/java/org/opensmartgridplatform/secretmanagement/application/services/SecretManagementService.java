@@ -52,9 +52,10 @@ import org.springframework.stereotype.Service;
  * Likewise, any public method will return RSA-encrypted secrets by reencrypting the AES-encrypted
  * secrets to RSA.
  */
-@Service
 @Slf4j
+@Service
 public class SecretManagementService {
+
   // Internal datastructure to keep track of (intermediate) secret details
   private static class EncryptedTypedSecret {
     byte[] encryptedSecret;
@@ -256,14 +257,33 @@ public class SecretManagementService {
   }
 
   public synchronized void storeSecrets(
-      final String deviceIdentification, final List<TypedSecret> secrets) {
-    secrets.forEach(s -> this.checkNrNewSecretsOfType(deviceIdentification, s.getSecretType(), 0));
+      final String deviceIdentification, final List<TypedSecret> typedSecrets) {
+    for (final TypedSecret typedSecret : typedSecrets) {
+      this.withdrawExistingKeysWithStatusNew(deviceIdentification, typedSecret.getSecretType());
+    }
     final List<EncryptedTypedSecret> aesSecrets =
-        secrets.stream()
+        typedSecrets.stream()
             .map(ts -> new EncryptedTypedSecret(ts.getSecret(), ts.getSecretType()))
             .map(this::reencryptRsa2Aes)
             .collect(toList());
     this.storeAesSecrets(deviceIdentification, aesSecrets);
+  }
+
+  private void withdrawExistingKeysWithStatusNew(
+      final String deviceIdentification, final SecretType secretType) {
+    // All NEW keys of the device and type are set to status WITHDRAWN.
+    final List<DbEncryptedSecret> foundSecrets =
+        this.secretRepository.findSecrets(deviceIdentification, secretType, SecretStatus.NEW);
+
+    for (final DbEncryptedSecret foundSecret : foundSecrets) {
+      foundSecret.setSecretStatus(SecretStatus.WITHDRAWN);
+      this.secretRepository.save(foundSecret);
+      log.warn(
+          String.format(
+              "During (GenerateOr)Replace Key Process one or more keys with status NEW of type %s for "
+                  + "device %s have been found. These keys will be withdrawn (status WITHDRAWN)",
+              secretType.name(), deviceIdentification));
+    }
   }
 
   private void storeAesSecrets(
@@ -313,24 +333,17 @@ public class SecretManagementService {
     return updatedSecrets;
   }
 
-  private void checkNrNewSecretsOfType(
-      final String deviceIdentification, final SecretType t, final int expectedNr) {
-    final int nrNewSecretsOfType =
-        this.secretRepository.getSecretCount(deviceIdentification, t, SecretStatus.NEW);
-    if (nrNewSecretsOfType != expectedNr) {
-      final String errorMsg =
-          "Expected %s new secrets of type %s for device %s, but %s new secret(s) present";
-      throw new IllegalStateException(
-          String.format(errorMsg, expectedNr, t, deviceIdentification, nrNewSecretsOfType));
-    }
-  }
-
   public synchronized List<TypedSecret> generateAndStoreSecrets(
       final String deviceIdentification, final List<SecretType> secretTypes) {
-    secretTypes.forEach(st -> this.checkNrNewSecretsOfType(deviceIdentification, st, 0));
+
+    for (final SecretType secretType : secretTypes) {
+      this.withdrawExistingKeysWithStatusNew(deviceIdentification, secretType);
+    }
     final List<EncryptedTypedSecret> encryptedTypedSecrets =
         secretTypes.stream().map(this::generateAes128BitsSecret).collect(Collectors.toList());
+
     this.storeAesSecrets(deviceIdentification, encryptedTypedSecrets);
+
     return encryptedTypedSecrets.stream()
         .map(this::reencryptAes2Rsa)
         .map(EncryptedTypedSecret::toTypedSecret)

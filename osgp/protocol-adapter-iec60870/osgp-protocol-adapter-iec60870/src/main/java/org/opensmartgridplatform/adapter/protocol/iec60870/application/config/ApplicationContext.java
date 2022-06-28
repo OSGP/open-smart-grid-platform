@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.config;
 
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -31,7 +32,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
           pattern = "org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.*")
     })
 @EnableTransactionManagement()
-@Import({Iec60870MessagingConfig.class, Iec60870Config.class})
+@Import({Iec60870MessagingConfig.class, Iec60870Config.class, MetricsConfig.class})
 @PropertySource("classpath:osgp-adapter-protocol-iec60870.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(

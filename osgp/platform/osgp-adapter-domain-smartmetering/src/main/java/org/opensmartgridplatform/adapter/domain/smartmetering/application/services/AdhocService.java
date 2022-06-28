@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import java.io.Serializable;
+import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
@@ -30,21 +32,18 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service(value = "domainSmartMeteringAdhocService")
 @Transactional(value = "transactionManager")
 public class AdhocService {
 
   private static final String DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION =
-      "Device Response not ok. Unexpected " + "Exception";
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
+      "Device Response not ok. Unexpected Exception";
 
   @Autowired
   @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
@@ -69,7 +68,7 @@ public class AdhocService {
       final SynchronizeTimeRequestData synchronizeTimeRequestData)
       throws FunctionalException {
 
-    LOGGER.debug(
+    log.debug(
         "synchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
         messageMetadata.getOrganisationIdentification(),
         messageMetadata.getDeviceIdentification());
@@ -96,28 +95,18 @@ public class AdhocService {
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
-    LOGGER.debug(
+    log.debug(
         "handleSynchronizeTimeResponse for MessageType: {}", messageMetadata.getMessageType());
 
-    ResponseMessageResultType result = deviceResult;
-    if (exception != null) {
-      LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
-      result = ResponseMessageResultType.NOT_OK;
-    }
-
     final ResponseMessage responseMessage =
-        ResponseMessage.newResponseMessageBuilder()
-            .withMessageMetadata(messageMetadata)
-            .withResult(result)
-            .withOsgpException(exception)
-            .build();
+        this.createMetadataOnlyResponseMessage(messageMetadata, deviceResult, exception);
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
   public void getAllAttributeValues(final MessageMetadata messageMetadata)
       throws FunctionalException {
 
-    LOGGER.debug(
+    log.debug(
         "retrieveAllAttributeValues for organisationIdentification: {} for deviceIdentification: {}",
         messageMetadata.getOrganisationIdentification(),
         messageMetadata.getDeviceIdentification());
@@ -142,29 +131,20 @@ public class AdhocService {
       final OsgpException exception,
       final String resultData) {
 
-    LOGGER.debug(
+    log.debug(
         "handleGetAllAttributeValuesResponse for MessageType: {}",
         messageMetadata.getMessageType());
 
-    ResponseMessageResultType result = deviceResult;
-    if (exception != null) {
-      LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
-      result = ResponseMessageResultType.NOT_OK;
-    }
-
     final ResponseMessage responseMessage =
-        ResponseMessage.newResponseMessageBuilder()
-            .withMessageMetadata(messageMetadata)
-            .withResult(result)
-            .withOsgpException(exception)
-            .withDataObject(resultData)
-            .build();
+        this.createResponseMessageWithDataObject(
+            deviceResult, exception, messageMetadata, resultData);
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
   public void getAssociationLnObjects(final MessageMetadata messageMetadata)
       throws FunctionalException {
-    LOGGER.debug(
+
+    log.debug(
         "getAssociationLnObjects for organisationIdentification: {} for deviceIdentification: {}",
         messageMetadata.getOrganisationIdentification(),
         messageMetadata.getDeviceIdentification());
@@ -189,22 +169,12 @@ public class AdhocService {
       final OsgpException exception,
       final AssociationLnListTypeDto resultData) {
 
-    ResponseMessageResultType result = deviceResult;
-    if (exception != null) {
-      LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
-      result = ResponseMessageResultType.NOT_OK;
-    }
-
     final AssociationLnListType associationLnListValueDomain =
         this.configurationMapper.map(resultData, AssociationLnListType.class);
 
     final ResponseMessage responseMessage =
-        ResponseMessage.newResponseMessageBuilder()
-            .withMessageMetadata(messageMetadata)
-            .withResult(result)
-            .withOsgpException(exception)
-            .withDataObject(associationLnListValueDomain)
-            .build();
+        this.createResponseMessageWithDataObject(
+            deviceResult, exception, messageMetadata, associationLnListValueDomain);
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
@@ -212,7 +182,7 @@ public class AdhocService {
       final MessageMetadata messageMetadata, final SpecificAttributeValueRequest request)
       throws FunctionalException {
 
-    LOGGER.debug(
+    log.debug(
         "getSpecificAttributeValue for organisationIdentification: {} for deviceIdentification: {}",
         messageMetadata.getOrganisationIdentification(),
         messageMetadata.getDeviceIdentification());
@@ -242,29 +212,20 @@ public class AdhocService {
       final ResponseMessageResultType deviceResult,
       final OsgpException exception,
       final String resultData) {
-    LOGGER.debug(
+
+    log.debug(
         "handleGetSpecificAttributeValueResponse for MessageType: {}",
         messageMetadata.getMessageType());
 
-    ResponseMessageResultType result = deviceResult;
-    if (exception != null) {
-      LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
-      result = ResponseMessageResultType.NOT_OK;
-    }
-
     final ResponseMessage responseMessage =
-        ResponseMessage.newResponseMessageBuilder()
-            .withMessageMetadata(messageMetadata)
-            .withResult(result)
-            .withOsgpException(exception)
-            .withDataObject(resultData)
-            .build();
+        this.createResponseMessageWithDataObject(
+            deviceResult, exception, messageMetadata, resultData);
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
   public void scanMbusChannels(final MessageMetadata messageMetadata) throws FunctionalException {
 
-    LOGGER.debug(
+    log.debug(
         "ScanMbusChannels for organisationIdentification: {} for deviceIdentification: {}",
         messageMetadata.getOrganisationIdentification(),
         messageMetadata.getDeviceIdentification());
@@ -288,25 +249,58 @@ public class AdhocService {
       final ResponseMessageResultType deviceResult,
       final OsgpException exception,
       final ScanMbusChannelsResponseDto resultData) {
-    LOGGER.debug(
-        "handleScanMbusChannelsResponse for MessageType: {}", messageMetadata.getMessageType());
 
-    ResponseMessageResultType result = deviceResult;
-    if (exception != null) {
-      LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
-      result = ResponseMessageResultType.NOT_OK;
-    }
+    log.debug(
+        "handleScanMbusChannelsResponse for MessageType: {}", messageMetadata.getMessageType());
 
     final ScanMbusChannelsResponseData scanMbusChannelsResponseData =
         this.mapperFactory.getMapperFacade().map(resultData, ScanMbusChannelsResponseData.class);
 
     final ResponseMessage responseMessage =
-        ResponseMessage.newResponseMessageBuilder()
-            .withMessageMetadata(messageMetadata)
-            .withResult(result)
-            .withOsgpException(exception)
-            .withDataObject(scanMbusChannelsResponseData)
-            .build();
+        this.createResponseMessageWithDataObject(
+            deviceResult, exception, messageMetadata, scanMbusChannelsResponseData);
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
+  }
+
+  private ResponseMessage createMetadataOnlyResponseMessage(
+      final MessageMetadata messageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception) {
+
+    final ResponseMessageResultType result = this.determineResult(deviceResult, exception);
+
+    return ResponseMessage.newResponseMessageBuilder()
+        .withMessageMetadata(messageMetadata)
+        .withResult(result)
+        .withOsgpException(exception)
+        .build();
+  }
+
+  private ResponseMessage createResponseMessageWithDataObject(
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception,
+      final MessageMetadata messageMetadata,
+      final Serializable resultData) {
+
+    final ResponseMessageResultType result = this.determineResult(deviceResult, exception);
+
+    return ResponseMessage.newResponseMessageBuilder()
+        .withMessageMetadata(messageMetadata)
+        .withResult(result)
+        .withOsgpException(exception)
+        .withDataObject(resultData)
+        .build();
+  }
+
+  private ResponseMessageResultType determineResult(
+      final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+    if (exception == null) {
+      return deviceResult;
+
+    } else {
+      log.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
+      return ResponseMessageResultType.NOT_OK;
+    }
   }
 }

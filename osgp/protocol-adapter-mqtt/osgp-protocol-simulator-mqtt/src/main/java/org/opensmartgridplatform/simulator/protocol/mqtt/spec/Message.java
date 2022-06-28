@@ -8,16 +8,17 @@
  */
 package org.opensmartgridplatform.simulator.protocol.mqtt.spec;
 
+import java.nio.charset.StandardCharsets;
+
 public class Message {
 
   private String topic;
-  private String payload;
+  private byte[] payload;
   private long pauseMillis;
 
   public Message() {}
 
-  public Message(final String topic, final String payload, final long pauseMillis) {
-    super();
+  public Message(final String topic, final byte[] payload, final long pauseMillis) {
     this.topic = topic;
     this.payload = payload;
     this.pauseMillis = pauseMillis;
@@ -27,8 +28,16 @@ public class Message {
     return this.topic;
   }
 
-  public String getPayload() {
+  public byte[] getPayload() {
     return this.payload;
+  }
+
+  public void setPayload(final byte[] payload) {
+    this.payload = payload;
+  }
+
+  public void setPayload(final String payload) {
+    this.payload = payload.getBytes(StandardCharsets.UTF_8);
   }
 
   public long getPauseMillis() {

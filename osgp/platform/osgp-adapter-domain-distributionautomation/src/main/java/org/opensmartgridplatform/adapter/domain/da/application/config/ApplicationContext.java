@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.application.config;
 
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -27,6 +28,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @PropertySource(
     value = "file:${osgp/AdapterDomainDistributionAutomation/config}",
     ignoreResourceNotFound = true)
-@Import({MessagingConfig.class, OsgpSchedulerConfig.class, PersistenceConfig.class})
+@Import({
+  MessagingConfig.class,
+  OsgpSchedulerConfig.class,
+  PersistenceConfig.class,
+  MetricsConfig.class
+})
 @EnableTransactionManagement
 public class ApplicationContext {}

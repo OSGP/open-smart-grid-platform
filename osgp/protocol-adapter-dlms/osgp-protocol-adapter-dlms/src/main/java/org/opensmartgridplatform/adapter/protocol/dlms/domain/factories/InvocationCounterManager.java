@@ -9,13 +9,15 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ThrowingConsumer;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.throttling.api.Permit;
@@ -73,37 +75,48 @@ public class InvocationCounterManager {
       final MessageMetadata messageMetadata, final DlmsDevice device, final Permit permit)
       throws OsgpException {
 
-    final Consumer<DlmsConnectionManager> taskForConnectionManager =
+    final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
         connectionManager ->
             this.initializeWithInvocationCounterStoredOnDeviceTask(device, connectionManager);
+
     this.connectionFactory.createAndHandlePublicClientConnection(
         messageMetadata, device, null, permit, taskForConnectionManager);
   }
 
   void initializeWithInvocationCounterStoredOnDeviceTask(
-      final DlmsDevice device, final DlmsConnectionManager connectionManager) {
-    try {
-      final Long previousKnownInvocationCounter = device.getInvocationCounter();
-      final Long invocationCounterFromDevice = this.getInvocationCounter(connectionManager);
-      if (Objects.equals(previousKnownInvocationCounter, invocationCounterFromDevice)) {
-        LOGGER.warn(
-            "Initializing invocationCounter of device {} with the value that was already known: {}",
-            device.getDeviceIdentification(),
-            previousKnownInvocationCounter);
-      } else {
-        device.setInvocationCounter(invocationCounterFromDevice);
-        this.deviceRepository.save(device);
-        LOGGER.info(
-            "Property invocationCounter of device {} initialized to the value of the invocation counter "
-                + "stored on the device: {}{}",
-            device.getDeviceIdentification(),
-            device.getInvocationCounter(),
-            previousKnownInvocationCounter == null
-                ? ""
-                : " (previous known value: " + previousKnownInvocationCounter + ")");
-      }
-    } catch (final FunctionalException e) {
-      LOGGER.warn("Something went wrong while trying to get the invocation counter", e);
+      final DlmsDevice device, final DlmsConnectionManager connectionManager)
+      throws FunctionalException {
+
+    final Long previousKnownInvocationCounter = device.getInvocationCounter();
+    final Long invocationCounterFromDevice = this.getInvocationCounter(connectionManager);
+    if (Objects.equals(previousKnownInvocationCounter, invocationCounterFromDevice)) {
+      LOGGER.warn(
+          "Initializing invocationCounter of device {} with the value that was already known: {}",
+          device.getDeviceIdentification(),
+          previousKnownInvocationCounter);
+    } else if (invocationCounterFromDevice < previousKnownInvocationCounter) {
+      LOGGER.error(
+          "Attempt to lower invocationCounter of device {}", device.getDeviceIdentification());
+      throw new FunctionalException(
+          FunctionalExceptionType.ATTEMPT_TO_LOWER_INVOCATION_COUNTER, ComponentType.PROTOCOL_DLMS);
+    } else {
+      /*
+       * To prevent optimistic locking failures if the device gets saved again
+       * (for instance from updateInvocationCounterForDevice, called from
+       * doConnectionPostProcessing in DlmsConnectionMessageProcessor)
+       * we update the invocation counter in a query.
+       */
+      device.setInvocationCounter(invocationCounterFromDevice);
+      this.deviceRepository.updateInvocationCounter(
+          device.getDeviceIdentification(), device.getInvocationCounter());
+      LOGGER.info(
+          "Property invocationCounter of device {} initialized to the value of the invocation counter "
+              + "stored on the device: {}{}",
+          device.getDeviceIdentification(),
+          device.getInvocationCounter(),
+          previousKnownInvocationCounter == null
+              ? ""
+              : " (previous known value: " + previousKnownInvocationCounter + ")");
     }
   }
 

@@ -8,24 +8,14 @@
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public class SynchronizeTimeRequestDto implements ActionRequestDto {
 
-  private static final long serialVersionUID = -4724182593235620894L;
+  private static final long serialVersionUID = 4501989071785153393L;
 
-  private final int deviation;
-
-  private final boolean dst;
-
-  public SynchronizeTimeRequestDto(final int deviation, final boolean dst) {
-    this.deviation = deviation;
-    this.dst = dst;
-  }
-
-  public int getDeviation() {
-    return this.deviation;
-  }
-
-  public boolean isDst() {
-    return this.dst;
-  }
+  private final String timeZone;
 }

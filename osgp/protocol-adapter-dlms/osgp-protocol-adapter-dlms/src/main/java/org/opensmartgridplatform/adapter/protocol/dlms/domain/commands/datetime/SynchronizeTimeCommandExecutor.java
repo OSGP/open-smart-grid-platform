@@ -9,7 +9,10 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime;
 
 import java.io.IOException;
-import org.joda.time.DateTime;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
@@ -72,17 +75,17 @@ public class SynchronizeTimeCommandExecutor
       final SynchronizeTimeRequestDto synchronizeTimeRequestDto,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
-    final DateTime dt = DateTime.now();
-    final DataObject time =
-        this.dlmsHelper.asDataObject(
-            dt, synchronizeTimeRequestDto.getDeviation(), synchronizeTimeRequestDto.isDst());
+
+    final ZoneId zoneId = ZoneId.of(synchronizeTimeRequestDto.getTimeZone());
+    final ZonedDateTime zonedTime = ZonedDateTime.now(ZoneOffset.UTC).withZoneSameLocal(zoneId);
+    final DataObject time = this.dlmsHelper.asDataObject(zonedTime);
 
     final SetParameter setParameter = new SetParameter(ATTRIBUTE_TIME, time);
 
     conn.getDlmsMessageListener()
         .setDescription(
             "SynchronizeTime to "
-                + dt
+                + Instant.now()
                 + ", set attribute: "
                 + JdlmsObjectToStringUtil.describeAttributes(ATTRIBUTE_TIME));
 

@@ -1122,8 +1122,9 @@
   </xsd:complexType>
 
   <xsd:simpleType name="NameType">
-    <xsd:restriction base="common:AlphaNumericType">
-      <xsd:length value="8" />
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="8" />
     </xsd:restriction>
   </xsd:simpleType>
 

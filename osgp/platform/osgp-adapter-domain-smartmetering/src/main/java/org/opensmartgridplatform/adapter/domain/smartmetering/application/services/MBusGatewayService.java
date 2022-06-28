@@ -83,7 +83,7 @@ public class MBusGatewayService {
     final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
     final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
-    this.checkAndHandleInactiveMbusDevice(mbusDevice);
+    this.checkAndHandleIfMbusDeviceIsInUse(mbusDevice);
     this.checkAndHandleIfGivenMBusAlreadyCoupled(mbusDevice);
 
     this.checkAndHandleIfAllMBusChannelsAreAlreadyOccupied(gatewayDevice);
@@ -161,7 +161,7 @@ public class MBusGatewayService {
       final ChannelElementValuesDto channelElementValuesDto) {
     final SmartMeter mbusDevice =
         this.smartMeteringDeviceRepository.findByMBusIdentificationNumber(
-            Long.valueOf(channelElementValuesDto.getIdentificationNumber()),
+            channelElementValuesDto.getIdentificationNumber(),
             channelElementValuesDto.getManufacturerIdentification());
 
     return Optional.ofNullable(mbusDevice);
@@ -227,15 +227,15 @@ public class MBusGatewayService {
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
     final SmartMeter mbusDevice =
         this.smartMeteringDeviceRepository.findByMBusIdentificationNumber(
-            Long.valueOf(
-                coupleMbusDeviceByChannelResponseDto
-                    .getChannelElementValues()
-                    .getIdentificationNumber()),
+            coupleMbusDeviceByChannelResponseDto
+                .getChannelElementValues()
+                .getIdentificationNumber(),
             coupleMbusDeviceByChannelResponseDto
                 .getChannelElementValues()
                 .getManufacturerIdentification());
 
     this.checkAndHandleIfMbusDeviceNotFound(mbusDevice, coupleMbusDeviceByChannelResponseDto);
+    this.checkAndHandleIfMbusDeviceIsInUse(mbusDevice, coupleMbusDeviceByChannelResponseDto);
 
     final short channel =
         coupleMbusDeviceByChannelResponseDto.getChannelElementValues().getChannel();
@@ -325,12 +325,6 @@ public class MBusGatewayService {
   private MbusChannelElementsDto makeMbusChannelElementsDto(final SmartMeter mbusDevice) {
 
     final String mbusDeviceIdentification = mbusDevice.getDeviceIdentification();
-    final String mbusIdentificationNumber;
-    if (mbusDevice.getMbusIdentificationNumber() == null) {
-      mbusIdentificationNumber = null;
-    } else {
-      mbusIdentificationNumber = String.format("%08d", mbusDevice.getMbusIdentificationNumber());
-    }
     final String mbusManufacturerIdentification = mbusDevice.getMbusManufacturerIdentification();
     final Short mbusVersion = mbusDevice.getMbusVersion();
     final Short mbusDeviceTypeIdentification = mbusDevice.getMbusDeviceTypeIdentification();
@@ -343,7 +337,7 @@ public class MBusGatewayService {
     return new MbusChannelElementsDto(
         primaryAddress,
         mbusDeviceIdentification,
-        mbusIdentificationNumber,
+        mbusDevice.getMbusIdentificationNumber(),
         mbusManufacturerIdentification,
         mbusVersion,
         mbusDeviceTypeIdentification);
@@ -378,6 +372,38 @@ public class MBusGatewayService {
                   + responseDto.getChannelElementValues().getIdentificationNumber()
                   + " and mbusManufacturerIdentification: "
                   + responseDto.getChannelElementValues().getManufacturerIdentification()));
+    }
+  }
+
+  private void checkAndHandleIfMbusDeviceIsInUse(final SmartMeter mbusDevice)
+      throws FunctionalException {
+    if (DeviceLifecycleStatus.IN_USE == mbusDevice.getDeviceLifecycleStatus()) {
+      throw new FunctionalException(
+          FunctionalExceptionType.MBUS_DEVICE_NOT_MOVED_TO_ANOTHER_EMETER,
+          ComponentType.DOMAIN_SMART_METERING,
+          new OsgpException(
+              ComponentType.DOMAIN_SMART_METERING,
+              String.format(
+                  "Mbus device %s not moved to another E meter",
+                  mbusDevice.getDeviceIdentification())));
+    }
+  }
+
+  private void checkAndHandleIfMbusDeviceIsInUse(
+      final SmartMeter mbusDevice, final CoupleMbusDeviceByChannelResponseDto responseDto)
+      throws FunctionalException {
+    if (DeviceLifecycleStatus.IN_USE == mbusDevice.getDeviceLifecycleStatus()) {
+      throw new FunctionalException(
+          FunctionalExceptionType.MBUS_DEVICE_NOT_MOVED_TO_ANOTHER_EMETER,
+          ComponentType.DOMAIN_SMART_METERING,
+          new OsgpException(
+              ComponentType.DOMAIN_SMART_METERING,
+              String.format(
+                  "Mbus device %s found on channel: %d with mbusIdentificationNumber: %s and mbusManufacturerIdentification: %s not moved to another E meter",
+                  mbusDevice.getDeviceIdentification(),
+                  responseDto.getChannelElementValues().getChannel(),
+                  responseDto.getChannelElementValues().getIdentificationNumber(),
+                  responseDto.getChannelElementValues().getManufacturerIdentification())));
     }
   }
 

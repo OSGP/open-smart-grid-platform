@@ -10,30 +10,37 @@ package org.opensmartgridplatform.cucumber.platform.distributionautomation.datab
 
 import java.util.Arrays;
 import java.util.List;
-import org.opensmartgridplatform.adapter.kafka.da.domain.repositories.LocationRepository;
-import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
+import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps.database.ws.WsDistributionAutomationNotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps.database.ws.WsDistributionAutomationResponseDataRepository;
 import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Database {
 
-  @Autowired private MqttDeviceRepository mqttDeviceRepository;
-
-  @Autowired private ResponseDataRepository responseDataRepository;
+  @Autowired private WsDistributionAutomationResponseDataRepository responseDataRepository;
 
   @Autowired
-  private NotificationWebServiceConfigurationRepository
+  private WsDistributionAutomationNotificationWebServiceConfigurationRepository
       notificationWebServiceConfigurationRepository;
 
-  @Autowired private RtuDeviceRepository rtuDeviceRepository;
+  @Autowired
+  @Qualifier("wsDistributionAutomationNotificationMarshallerContextPath")
+  private String notificationMarshallerContextPath;
 
-  @Autowired private LocationRepository locationRepository;
+  @Autowired
+  @Qualifier("wsDistributionAutomationNotificationApplicationName")
+  private String notificationApplicationName;
+
+  @Autowired
+  @Qualifier("wsDistributionAutomationNotificationTargetUri")
+  private String notificationTargetUri;
+
+  @Autowired private RtuDeviceRepository rtuDeviceRepository;
 
   private void insertDefaultData() {
     this.notificationWebServiceConfigurationRepository.saveAll(
@@ -43,9 +50,9 @@ public class Database {
   private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
     final NotificationWebServiceConfigurationBuilder builder =
         new NotificationWebServiceConfigurationBuilder()
-            .withApplicationName("DISTRIBUTION_AUTOMATION")
-            .withMarshallerContextPath(
-                "org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification");
+            .withApplicationName(this.notificationApplicationName)
+            .withMarshallerContextPath(this.notificationMarshallerContextPath)
+            .withTargetUri(this.notificationTargetUri);
 
     final NotificationWebServiceConfiguration osgpOrganizationConfig =
         builder.withOrganisationIdentification("OSGP").build();
@@ -56,17 +63,11 @@ public class Database {
   public void prepareDatabaseForScenario() {
     // Removes all test related data from the various databases
 
-    // Remove from osgp_adapter_protocol_mqtt
-    this.mqttDeviceRepository.deleteAll();
-
     // Remove from osgp_adapter_ws_distributionautomation
     this.responseDataRepository.deleteAll();
 
     // Remove from osgp_core
     this.rtuDeviceRepository.deleteAll();
-
-    // Remove from osgp_adapter_kafka_distributionautomation
-    this.locationRepository.deleteAll();
 
     this.insertDefaultData();
   }

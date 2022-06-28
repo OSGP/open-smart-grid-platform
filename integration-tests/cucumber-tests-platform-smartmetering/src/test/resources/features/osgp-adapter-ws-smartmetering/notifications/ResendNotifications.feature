@@ -26,14 +26,14 @@ Feature: SmartMetering notifications - Resend notifications
       | MessageType               | REQUEST_PERIODIC_METER_DATA                            |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      0 |
-    And a response url data record
+    And a response url data record in ws-smartmetering
       | CorrelationUid | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
-      | ResponseUrl    | http://localhost:8843/notifications                    |
+      | ResponseUrl    | http://localhost:8189/notifications/                   |
     When OSGP checks for which response data a notification has to be resend
     Then a notification is sent
-    And the response url data has values
+    And the response url data in ws-smartmetering has values
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
-      | ResponseUrl               | http://localhost:8843/notifications                    |
+      | ResponseUrl               | http://localhost:8189/notifications/                   |
 
   Scenario: Don't send notifications when the configurable time has not passed
     Given a response data record

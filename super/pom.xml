@@ -14,7 +14,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>super-osgp</artifactId>
-  <version>5.20.0-SNAPSHOT</version>
+  <version>5.27.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
   <!-- Description, Organization, Licences, URL and Distribution Management
@@ -46,10 +46,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>5.20.0-SNAPSHOT</osgp.version>
-    <osgp.dlms.version>5.20.0-SNAPSHOT</osgp.dlms.version>
-    <osgp.shared.version>5.20.0-SNAPSHOT</osgp.shared.version>
-    <osgp.jasper-interface.version>5.20.0-SNAPSHOT</osgp.jasper-interface.version>
+    <osgp.version>5.27.0-SNAPSHOT</osgp.version>
+    <osgp.dlms.version>5.27.0-SNAPSHOT</osgp.dlms.version>
+    <osgp.shared.version>5.27.0-SNAPSHOT</osgp.shared.version>
+    <osgp.jasper-interface.version>5.27.0-SNAPSHOT</osgp.jasper-interface.version>
     <spring.version>5.3.2</spring.version>
     <spring.data.version>2.2.3.RELEASE</spring.data.version>
     <spring.data.commons.version>2.2.4.RELEASE</spring.data.commons.version>
@@ -79,31 +79,33 @@
     <apache.httpcomponents.httpcore.version>4.4.13</apache.httpcomponents.httpcore.version>
     <commons.codec.version>1.14</commons.codec.version>
     <orika.version>1.5.4</orika.version>
-    <jxr.version>3.0.0</jxr.version>
-    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
-    <maven.site.plugin>3.9.0</maven.site.plugin>
-    <maven.javadoc.version>3.2.0</maven.javadoc.version>
-    <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
-    <maven.war.plugin.version>3.2.3</maven.war.plugin.version>
-    <maven.surefire.plugin.version>3.0.0-M4</maven.surefire.plugin.version>
+    <jxr.version>3.1.1</jxr.version>
+    <maven.project.info.reports.plugin.version>3.2.2</maven.project.info.reports.plugin.version>
+    <maven.site.plugin>3.11.0</maven.site.plugin>
+    <maven.javadoc.version>3.3.2</maven.javadoc.version>
+    <maven.jar.plugin.version>3.2.2</maven.jar.plugin.version>
+    <maven.war.plugin.version>3.3.2</maven.war.plugin.version>
+    <maven.dependency.plugin.version>3.3.0</maven.dependency.plugin.version>
+    <maven.surefire.plugin.version>3.0.0-M5</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>3.0.0-M5</maven.failsafe.plugin.version>
     <maven.assembly.plugin.version>3.3.0</maven.assembly.plugin.version>
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.exec.plugin.version>1.6.0</maven.exec.plugin.version>
-    <maven.enforcer.plugin.version>3.0.0-M3</maven.enforcer.plugin.version>
-    <maven.enforcer.maven.version>3.0.0</maven.enforcer.maven.version>
+    <maven.enforcer.plugin.version>3.0.0</maven.enforcer.plugin.version>
+    <maven.enforcer.maven.version>3.8.5</maven.enforcer.maven.version>
     <jaxb2.maven.plugin.version>2.5.0</jaxb2.maven.plugin.version>
     <jaxb.api.version>2.3.1</jaxb.api.version>
-    <spotbugs.maven.plugin.version>4.0.0</spotbugs.maven.plugin.version>
-    <pmd.maven.plugin.version>3.13.0</pmd.maven.plugin.version>
-    <checkstyle.maven.plugin.version>3.1.1</checkstyle.maven.plugin.version>
-    <dependency-check.maven.plugin.version>5.3.2</dependency-check.maven.plugin.version>
-    <versions.maven.plugin.version>2.7</versions.maven.plugin.version>
+    <spotbugs.maven.plugin.version>4.6.0.0</spotbugs.maven.plugin.version>
+    <pmd.maven.plugin.version>3.16.0</pmd.maven.plugin.version>
+    <checkstyle.maven.plugin.version>3.1.2</checkstyle.maven.plugin.version>
+    <dependency-check.maven.plugin.version>7.0.2</dependency-check.maven.plugin.version>
+    <versions.maven.plugin.version>2.10.0</versions.maven.plugin.version>
     <fmt-maven-plugin.version>2.9.1</fmt-maven-plugin.version>
     <apache.activemq.version>5.16.0</apache.activemq.version>
     <logback.version>1.2.8</logback.version>
     <apache.commons.schema>2.2.5</apache.commons.schema>
-    <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+    <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
+    <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
     <netty.version>4.1.53.Final</netty.version>
     <openmuc.jdlms.version>1.7.1</openmuc.jdlms.version>
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
@@ -119,14 +121,14 @@
     <micrometer.version>1.6.3</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
     <guava.version>29.0-jre</guava.version>
-    <spotbugs.version>4.0.4</spotbugs.version>
+    <spotbugs.version>4.6.0</spotbugs.version>
     <jacoco.version>0.8.5</jacoco.version>
     <selenium.java.version>3.141.59</selenium.java.version>
     <SunriseSunsetCalculator.version>1.2</SunriseSunsetCalculator.version>
     <ant.junit.version>1.10.8</ant.junit.version>
     <args4j.version>2.33</args4j.version>
     <cucumber.version>5.6.0</cucumber.version>
-    <testcontainers.version>1.16.0</testcontainers.version>
+    <testcontainers.version>1.16.2</testcontainers.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <postgresql.version>42.2.12</postgresql.version>
     <javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
@@ -138,6 +140,15 @@
     <scala.lang.version>2.12.11</scala.lang.version>
     <lombok.version>1.18.12</lombok.version>
     <hivemq-mqtt-client.version>1.2.0</hivemq-mqtt-client.version>
+    <apache.commons.io.version>1.3.2</apache.commons.io.version>
+    <!-- Default always skip integration tests, to ensure all developer data
+      is retained -->
+    <skipITs>true</skipITs>
+    <!-- Skip code coverage gathering with Jacoco on IT tests from Tomcat.
+      Requires jacoco-agent to be setup on remote Tomcat -->
+    <skipITCoverage>true</skipITCoverage>
+    <!-- Default always skip creating a test jar with dependencies tests -->
+    <skipTestJarWithDependenciesAssembly>true</skipTestJarWithDependenciesAssembly>
   </properties>
 
   <dependencyManagement>
@@ -260,11 +271,6 @@
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-ws-distributionautomation</artifactId>
-        <version>${osgp.shared.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opensmartgridplatform</groupId>
-        <artifactId>osgp-kafka-distributionautomation</artifactId>
         <version>${osgp.shared.version}</version>
       </dependency>
       <dependency>
@@ -1079,6 +1085,11 @@
         <scope>provided</scope>
       </dependency>
 
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${apache.commons.io.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -1140,8 +1151,70 @@
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>${maven.clean.plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven.compiler.plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${maven.jar.plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>${maven.dependency.plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${maven.surefire.plugin.version}</version>
+          <configuration>
+            <argLine>${surefireArgLine}</argLine>
+            <excludes>
+              <exclude>**/*$*</exclude>
+              <!-- Cucumber integration tests, included with Failsafe. -->
+              <exclude>**/cucumber/**/AcceptanceTests.java</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${maven.failsafe.plugin.version}</version>
+          <executions>
+            <execution>
+              <id>integration-test</id>
+              <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <skipITs>${skipITs}</skipITs>
+            <includes>
+              <include>**/IT*.java</include>
+              <include>**/*IT.java</include>
+              <include>**/*ITCase.java</include>
+              <!-- Cucumber integration tests, excluded with Surefire. -->
+              <include>**/cucumber/**/AcceptanceTests.java</include>
+            </includes>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco.version}</version>
         </plugin>
 
         <plugin>
@@ -1176,6 +1249,11 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
           <version>${checkstyle.maven.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${maven.javadoc.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

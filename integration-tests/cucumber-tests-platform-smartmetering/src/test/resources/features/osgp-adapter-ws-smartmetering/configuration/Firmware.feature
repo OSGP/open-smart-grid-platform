@@ -93,7 +93,7 @@ Feature: SmartMetering Configuration - Firmware
   @NightlyBuildOnly @UpdateFirmware
   Scenario: successful update of firmware
     Given a manufacturer
-      | ManufacturerCode | KAIF  |
+      | ManufacturerCode | KAI   |
       | ManufacturerName | Kaifa |
     And a device model
       | ManufacturerName | Kaifa |
@@ -101,7 +101,7 @@ Feature: SmartMetering Configuration - Firmware
     And a dlms device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
-      | ManufacturerCode     | KAIF              |
+      | ManufacturerCode     | KAI               |
       | DeviceModelCode      | MA105             |
     And a firmware
       | FirmwareFileIdentification  | TEST_FW_FILE_0001                        |
@@ -129,7 +129,7 @@ Feature: SmartMetering Configuration - Firmware
   @NightlyBuildOnly @UpdateFirmware
   Scenario: update of firmware, no firmware file found with firmwareFileIdentification
     Given a manufacturer
-      | ManufacturerCode | KAIF  |
+      | ManufacturerCode | KAI   |
       | ManufacturerName | Kaifa |
     And a device model
       | ManufacturerName | Kaifa |
@@ -137,7 +137,7 @@ Feature: SmartMetering Configuration - Firmware
     And a dlms device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
-      | ManufacturerCode     | KAIF              |
+      | ManufacturerCode     | KAI               |
       | DeviceModelCode      | MA105             |
     And a firmware
       | FirmwareFileIdentification  | TEST_FW_FILE_0001                        |
@@ -170,7 +170,7 @@ Feature: SmartMetering Configuration - Firmware
   @NightlyBuildOnly @UpdateFirmware
   Scenario: update of firmware, firmware has no imageIdentifier 
     Given a manufacturer
-      | ManufacturerCode | KAIF  |
+      | ManufacturerCode | KAI   |
       | ManufacturerName | Kaifa |
     And a device model
       | ManufacturerName | Kaifa |
@@ -178,7 +178,7 @@ Feature: SmartMetering Configuration - Firmware
     And a dlms device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
-      | ManufacturerCode     | KAIF              |
+      | ManufacturerCode     | KAI               |
       | DeviceModelCode      | MA105             |
     And a firmware
       | FirmwareFileIdentification | TEST_FW_FILE_0002                        |
@@ -210,7 +210,7 @@ Feature: SmartMetering Configuration - Firmware
   @NightlyBuildOnly @UpdateFirmware
   Scenario: upgrade of firmware, firmware does not support device model
     Given a manufacturer
-      | ManufacturerCode | KAIF  |
+      | ManufacturerCode | KAI   |
       | ManufacturerName | Kaifa |
     And a device model
       | ManufacturerName | Kaifa |
@@ -218,7 +218,7 @@ Feature: SmartMetering Configuration - Firmware
     And a dlms device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
-      | ManufacturerCode     | KAIF              |
+      | ManufacturerCode     | KAI               |
       | DeviceModelCode      | MA105             |
     And a firmware
       | FirmwareFileIdentification  | TEST_FW_FILE_0001                        |
@@ -273,8 +273,8 @@ Feature: SmartMetering Configuration - Firmware
       | ManufacturerCode            | GMAN              |
       | DeviceModelCode             | G_METER_MODEL_1   |
       | GatewayDeviceIdentification | ETEST102400000002 |
-      | MbusIdentificationNumber    | 0000000           |
-      | FirmwareUpdateKey           | 867424ac75b6d53c89276d304608321f0a1f6e401f453f84adf3477c7ee1623c |
+      | MbusIdentificationNumber    | 00000000          |
+      | FirmwareUpdateKey           | SECURITY_KEY_2    |
     And a firmware
       | FirmwareFileIdentification  | TEST_FW_FILE_GAS_0002          |
       | FirmwareFile                | 534d523500230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4ffbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d5fa821c678e71c05c47e1c69c4bfffe1fd |

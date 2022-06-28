@@ -12,17 +12,14 @@ import javax.validation.Valid;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.valueobjects.Configuration;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.validation.Identification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +41,6 @@ public class ConfigurationManagementService {
   @Autowired private CorrelationIdProviderService correlationIdProviderService;
 
   @Autowired private CommonRequestMessageSender commonRequestMessageSender;
-
-  @Autowired private CommonResponseMessageFinder commonResponseMessageFinder;
 
   public ConfigurationManagementService() {
     // Parameterless constructor required for transactions
@@ -96,11 +91,6 @@ public class ConfigurationManagementService {
     return correlationUid;
   }
 
-  public ResponseMessage dequeueSetConfigurationResponse(final String correlationUid)
-      throws OsgpException {
-    return this.commonResponseMessageFinder.findMessage(correlationUid);
-  }
-
   public String enqueueGetConfigurationRequest(
       @Identification final String organisationIdentification,
       @Identification final String deviceIdentification,
@@ -138,11 +128,6 @@ public class ConfigurationManagementService {
     this.commonRequestMessageSender.send(message);
 
     return correlationUid;
-  }
-
-  public ResponseMessage dequeueGetConfigurationResponse(final String correlationUid)
-      throws OsgpException {
-    return this.commonResponseMessageFinder.findMessage(correlationUid);
   }
 
   public String enqueueSwitchConfigurationRequest(
@@ -186,10 +171,5 @@ public class ConfigurationManagementService {
     this.commonRequestMessageSender.send(message);
 
     return correlationUid;
-  }
-
-  public ResponseMessage dequeueSwitchConfigurationResponse(final String correlationUid)
-      throws OsgpException {
-    return this.commonResponseMessageFinder.findMessage(correlationUid);
   }
 }

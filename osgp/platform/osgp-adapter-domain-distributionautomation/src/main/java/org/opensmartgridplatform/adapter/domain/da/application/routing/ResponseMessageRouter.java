@@ -13,6 +13,8 @@ import org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.WebServiceRespon
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.valueobjects.IntegrationType;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.slf4j.Logger;
@@ -41,9 +43,15 @@ public class ResponseMessageRouter implements NotificationResponseMessageSender 
 
   @Override
   public void send(final ResponseMessage responseMessage, final String messageType) {
-
     final IntegrationType integrationType =
         this.getIntegrationType(responseMessage.getDeviceIdentification());
+    this.send(responseMessage, messageType, integrationType);
+  }
+
+  public void send(
+      final ResponseMessage responseMessage,
+      final String messageType,
+      final IntegrationType integrationType) {
 
     switch (integrationType) {
       case BOTH:
@@ -63,11 +71,30 @@ public class ResponseMessageRouter implements NotificationResponseMessageSender 
     try {
       final Device device = this.deviceDomainService.searchDevice(deviceIdentification);
       return device.getIntegrationType();
+    } catch (final FunctionalException e) {
+      if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_DEVICE) {
+        return this.integrationTypeForUnknownDevice(deviceIdentification);
+      } else {
+        return this.integrationTypeForUnexpectedException(e);
+      }
     } catch (final Exception e) {
-      LOGGER.error(
-          "Could not determine integration type based on the device; we are using the default value WEB_SERVICE",
-          e);
-      return IntegrationType.WEB_SERVICE;
+      return this.integrationTypeForUnexpectedException(e);
     }
+  }
+
+  private IntegrationType integrationTypeForUnknownDevice(final String deviceIdentification) {
+    LOGGER.info(
+        "Unable to determine integration type for unknown device {};"
+            + " we are using the value KAFKA as this is used in flows where device data is not registered.",
+        deviceIdentification);
+    return IntegrationType.KAFKA;
+  }
+
+  private IntegrationType integrationTypeForUnexpectedException(
+      final Exception unexpectedException) {
+    LOGGER.error(
+        "Could not determine integration type based on the device; we are using the default value WEB_SERVICE",
+        unexpectedException);
+    return IntegrationType.WEB_SERVICE;
   }
 }

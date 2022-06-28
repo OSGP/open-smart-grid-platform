@@ -29,14 +29,10 @@ public class RecoverKeyProcessInitiator {
     this.recoverKeyDelay = recoverKeyDelay;
   }
 
-  public void initiate(
-      final MessageMetadata messageMetadata,
-      final String deviceIdentification,
-      final String ipAddress) {
+  public void initiate(final MessageMetadata messageMetadata, final String deviceIdentification) {
     final RecoverKeyProcess process = this.recoverKeyProcessProvider.get();
     process.setMessageMetadata(messageMetadata);
     process.setDeviceIdentification(deviceIdentification);
-    process.setIpAddress(ipAddress);
     this.executorService.schedule(process, this.recoverKeyDelay, TimeUnit.MILLISECONDS);
   }
 }

@@ -107,7 +107,7 @@ public class MonitoringService extends BaseService {
         throw osgpException;
       }
 
-      this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification);
+      this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification, true);
 
       getPQValuesResponse = this.mapper.map(getPQValuesResponseDto, GetPQValuesResponse.class);
 
@@ -156,7 +156,8 @@ public class MonitoringService extends BaseService {
         throw osgpException;
       }
 
-      this.rtuResponseService.handleResponseMessageReceived(LOGGER, ids.getDeviceIdentification());
+      this.rtuResponseService.handleResponseMessageReceived(
+          LOGGER, ids.getDeviceIdentification(), true);
 
       measurementReport = this.mapper.map(measurementReportDto, MeasurementReport.class);
 

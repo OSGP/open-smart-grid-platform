@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.domain.core.repositories;
 
+import java.util.List;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -15,5 +16,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProtocolInfoRepository extends JpaRepository<ProtocolInfo, Long> {
 
-  ProtocolInfo findByProtocolAndProtocolVersion(String protocol, String protocolVersion);
+  default ProtocolInfo findByProtocolAndProtocolVersion(
+      final String protocol, final String protocolVersion) {
+    return this.findByProtocolAndProtocolVersionAndProtocolVariant(protocol, protocolVersion, null);
+  }
+
+  List<ProtocolInfo> findAllByProtocolAndProtocolVersion(String protocol, String protocolVersion);
+
+  ProtocolInfo findByProtocolAndProtocolVersionAndProtocolVariant(
+      String protocol, String protocolVersion, String protocolVariant);
 }

@@ -13,9 +13,14 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.SetParameter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.MessageTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SendDestinationAndMethodDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.TransportServiceTypeDto;
 
 public abstract class SetPushSetupCommandExecutor<T, R> extends AbstractCommandExecutor<T, R> {
 
@@ -48,6 +53,22 @@ public abstract class SetPushSetupCommandExecutor<T, R> extends AbstractCommandE
       return conn.getConnection().set(setParameter);
     } catch (final IOException e) {
       throw new ConnectionException(e);
+    }
+  }
+
+  protected SendDestinationAndMethodDto getUpdatedSendDestinationAndMethod(
+      final SendDestinationAndMethodDto sendDestinationAndMethodDto, final DlmsDevice device) {
+    return new SendDestinationAndMethodDto(
+        TransportServiceTypeDto.TCP,
+        sendDestinationAndMethodDto.getDestination(),
+        this.getMessageType(device));
+  }
+
+  private MessageTypeDto getMessageType(final DlmsDevice device) {
+    if (Protocol.forDevice(device).isSmr5()) {
+      return MessageTypeDto.A_XDR_ENCODED_X_DLMS_APDU;
+    } else {
+      return MessageTypeDto.MANUFACTURER_SPECIFIC;
     }
   }
 }

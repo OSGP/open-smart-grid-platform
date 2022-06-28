@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateMidnight;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableLightMeasurementDeviceRepository;
@@ -36,10 +35,8 @@ import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderSer
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.validation.Identification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,8 +70,6 @@ public class DeviceInstallationService {
   @Autowired private CorrelationIdProviderService correlationIdProviderService;
 
   @Autowired private CommonRequestMessageSender commonRequestMessageSender;
-
-  @Autowired private CommonResponseMessageFinder commonResponseMessageFinder;
 
   DeviceInstallationService() {
     // Parameterless constructor required for transactions
@@ -373,12 +368,6 @@ public class DeviceInstallationService {
     return correlationUid;
   }
 
-  @Transactional(value = "transactionManager")
-  public ResponseMessage dequeueGetStatusResponse(final String correlationUid)
-      throws OsgpException {
-    return this.commonResponseMessageFinder.findMessage(correlationUid);
-  }
-
   // === START DEVICE TEST ===
 
   @Transactional(value = "transactionManager")
@@ -422,14 +411,6 @@ public class DeviceInstallationService {
     return correlationUid;
   }
 
-  @Transactional(value = "transactionManager")
-  public ResponseMessage dequeueStartDeviceTestResponse(final String correlationUid)
-      throws OsgpException {
-    LOGGER.debug("Dequeue Start Device Test response");
-
-    return this.commonResponseMessageFinder.findMessage(correlationUid);
-  }
-
   // === STOP DEVICE TEST ===
 
   @Transactional(value = "transactionManager")
@@ -471,13 +452,5 @@ public class DeviceInstallationService {
     this.commonRequestMessageSender.send(message);
 
     return correlationUid;
-  }
-
-  @Transactional(value = "transactionManager")
-  public ResponseMessage dequeueStopDeviceTestResponse(final String correlationUid)
-      throws OsgpException {
-    LOGGER.debug("Dequeue Stop Device Test response");
-
-    return this.commonResponseMessageFinder.findMessage(correlationUid);
   }
 }

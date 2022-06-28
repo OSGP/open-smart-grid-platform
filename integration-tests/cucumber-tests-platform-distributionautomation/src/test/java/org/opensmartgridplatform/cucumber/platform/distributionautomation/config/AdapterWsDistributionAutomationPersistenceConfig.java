@@ -10,8 +10,8 @@ package org.opensmartgridplatform.cucumber.platform.distributionautomation.confi
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.platform.config.ApplicationPersistenceConfiguration;
+import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps.database.ws.WsDistributionAutomationResponseDataRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +24,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @EnableJpaRepositories(
     entityManagerFactoryRef = "entityMgrFactWsDistributionAutomation",
     transactionManagerRef = "txMgrWsDistributionAutomation",
-    basePackageClasses = {ResponseDataRepository.class})
+    basePackageClasses = {WsDistributionAutomationResponseDataRepository.class})
 public class AdapterWsDistributionAutomationPersistenceConfig
     extends ApplicationPersistenceConfiguration {
 

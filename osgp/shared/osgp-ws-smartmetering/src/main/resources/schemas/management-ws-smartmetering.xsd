@@ -404,6 +404,10 @@
       <xsd:enumeration value="COMMUNICATION_MODULE_REMOVED"/>
       <!-- 22 - communication module inserted -  -  -  -->
       <xsd:enumeration value="COMMUNICATION_MODULE_INSERTED"/>
+      <!-- 23 - communication module inserted -  -  -  -->
+      <xsd:enumeration value="ERROR_REGISTER_2_CLEARED"/>
+      <!-- 24 - communication module inserted -  -  -  -->
+      <xsd:enumeration value="ALARM_REGISTER_2_CLEARED"/>
       <!-- 40 - terminal cover removed -  -  -  -->
       <xsd:enumeration value="TERMINAL_COVER_REMOVED"/>
       <!-- 41 - terminal cover closed -  -  -  -->
@@ -1247,6 +1251,69 @@
       <xsd:enumeration value="RXQUAL_7"/>
       <!-- 99 - not known or not detectable -->
       <xsd:enumeration value="NOT_KNOWN_OR_NOT_DETECTABLE"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="UpdateProtocolRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="UpdateProtocolData" type="tns:UpdateProtocolData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="UpdateProtocolAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="UpdateProtocolAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="UpdateProtocolResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="Description" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="UpdateProtocolData">
+    <xsd:sequence>
+      <xsd:element name="Protocol" type="tns:ProtocolType"/>
+      <xsd:element name="ProtocolVersion" type="tns:ProtocolVersionType"/>
+      <xsd:element name="ProtocolVariant" type="tns:ProtocolVariantType" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="ProtocolType">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
+      <xsd:maxLength value="255"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ProtocolVersionType">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
+      <xsd:maxLength value="255"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ProtocolVariantType">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
+      <xsd:maxLength value="255"/>
     </xsd:restriction>
   </xsd:simpleType>
 

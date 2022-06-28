@@ -69,7 +69,8 @@ public class SetPushSetupSmsCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(pushSetupSms);
+    final SetParameter setParameterSendDestinationAndMethod =
+        this.getSetParameter(pushSetupSms, device);
 
     final AccessResultCode resultCode =
         this.doSetRequest(
@@ -84,7 +85,7 @@ public class SetPushSetupSmsCommandExecutor
     }
   }
 
-  private SetParameter getSetParameter(final PushSetupSmsDto pushSetupSms)
+  private SetParameter getSetParameter(final PushSetupSmsDto pushSetupSms, final DlmsDevice device)
       throws ProtocolAdapterException {
 
     this.checkPushSetupSms(pushSetupSms);
@@ -92,7 +93,10 @@ public class SetPushSetupSmsCommandExecutor
     final AttributeAddress sendDestinationAndMethodAddress =
         new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD);
     final DataObject value =
-        this.pushSetupMapper.map(pushSetupSms.getSendDestinationAndMethod(), DataObject.class);
+        this.pushSetupMapper.map(
+            this.getUpdatedSendDestinationAndMethod(
+                pushSetupSms.getSendDestinationAndMethod(), device),
+            DataObject.class);
     return new SetParameter(sendDestinationAndMethodAddress, value);
   }
 

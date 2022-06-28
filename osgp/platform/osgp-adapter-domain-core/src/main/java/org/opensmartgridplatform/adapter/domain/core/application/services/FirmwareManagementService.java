@@ -45,6 +45,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -340,6 +341,7 @@ public class FirmwareManagementService extends AbstractService {
               .withOsgpException(osgpException)
               .withDataObject((Serializable) firmwareVersions)
               .withMessagePriority(messagePriority)
+              .withMessageType(MessageType.GET_FIRMWARE_VERSION.name())
               .build();
       this.webServiceResponseMessageSender.send(responseMessage);
     }

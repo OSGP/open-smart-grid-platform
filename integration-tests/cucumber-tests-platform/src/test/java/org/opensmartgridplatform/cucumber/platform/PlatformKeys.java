@@ -176,6 +176,7 @@ public class PlatformKeys extends Keys {
   public static final String KEY_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganizationIdentification";
   public static final String KEY_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP =
       "NewPlatformFunctionGroup";
+  public static final String KEY_NOTIFICATION_TYPE = "NotificationType";
   public static final String KEY_NUMBER = "containerNumber";
   public static final String KEY_NUMBER_ADDITION = "ContainerNumberAddition";
   public static final String KEY_NUMBER_OF_MEASUREMENTS = "NumberOfMeasurements";
@@ -213,6 +214,7 @@ public class PlatformKeys extends Keys {
 
   public static final String KEY_PROTOCOL_INFO_ID = "ProtocolInfoId";
   public static final String KEY_PROTOCOL_VERSION = "ProtocolVersion";
+  public static final String KEY_PROTOCOL_VARIANT = "ProtocolVariant";
   public static final String KEY_PUBLIC_KEY = "PublicKey";
 
   public static final String KEY_PUBLICKEYPRESENT = "PublicKeyPresent";

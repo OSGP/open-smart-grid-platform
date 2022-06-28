@@ -109,6 +109,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
             .withOsgpException(osgpException)
             .withDataObject(e)
             .withMessagePriority(messagePriority)
+            .withMessageType(messageType)
             .build();
     this.responseMessageSender.send(responseMessage);
   }

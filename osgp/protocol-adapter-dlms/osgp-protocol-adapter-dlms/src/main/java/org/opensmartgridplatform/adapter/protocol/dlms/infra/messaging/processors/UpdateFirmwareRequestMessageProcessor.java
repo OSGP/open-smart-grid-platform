@@ -84,7 +84,7 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
               organisationIdentification,
               deviceIdentification,
               updateFirmwareRequestDto);
-      this.osgpRequestMessageSender.send(
+      this.osgpRequestMessageSender.sendWithReplyToThisInstance(
           message, MessageType.GET_FIRMWARE_FILE.name(), messageMetadata);
       return NO_RESPONSE;
     }

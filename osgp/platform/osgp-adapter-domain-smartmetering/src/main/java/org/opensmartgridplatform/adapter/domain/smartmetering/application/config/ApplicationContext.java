@@ -10,9 +10,11 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.confi
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
       "org.opensmartgridplatform.domain.core",
       "org.opensmartgridplatform.adapter.domain.smartmetering"
     })
+@Import({MetricsConfig.class})
 @EnableTransactionManagement
 public class ApplicationContext {
 

@@ -29,7 +29,9 @@ public class AmrProfileStatusCodeHelper {
     map.put(AmrProfileStatusCodeFlagDto.CLOCK_INVALID, 1);
     map.put(AmrProfileStatusCodeFlagDto.DATA_NOT_VALID, 2);
     map.put(AmrProfileStatusCodeFlagDto.DAYLIGHT_SAVING, 3);
+    map.put(AmrProfileStatusCodeFlagDto.NOT_USED, 4);
     map.put(AmrProfileStatusCodeFlagDto.CLOCK_ADJUSTED, 5);
+    map.put(AmrProfileStatusCodeFlagDto.RECOVERED_VALUE, 6);
     map.put(AmrProfileStatusCodeFlagDto.POWER_DOWN, 7);
 
     BYTE_REGISTER_CONVERTER =

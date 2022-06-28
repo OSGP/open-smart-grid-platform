@@ -84,6 +84,10 @@ public class ByteRegisterConverter<T extends Enum<T>> {
       bitSet.set(this.toBitPosition(T), true);
     }
 
-    return bitSet.toLongArray()[0];
+    long value = 0L;
+    for (int i = 0; i < bitSet.length(); ++i) {
+      value += bitSet.get(i) ? (1L << i) : 0L;
+    }
+    return value;
   }
 }

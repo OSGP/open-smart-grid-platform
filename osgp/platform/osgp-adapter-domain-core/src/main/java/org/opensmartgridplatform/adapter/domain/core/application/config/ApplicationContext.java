@@ -8,8 +8,10 @@
  */
 package org.opensmartgridplatform.adapter.domain.core.application.config;
 
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -22,5 +24,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
       "org.opensmartgridplatform.domain.core",
       "org.opensmartgridplatform.adapter.domain.core"
     })
+@Import({MetricsConfig.class})
 @EnableTransactionManagement
 public class ApplicationContext {}

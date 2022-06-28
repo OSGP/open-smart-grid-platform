@@ -195,6 +195,26 @@
     </wsdl:part>
   </wsdl:message>
 
+  <wsdl:message name="UpdateProtocolRequest">
+    <wsdl:part element="smman:UpdateProtocolRequest" name="UpdateProtocolRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="UpdateProtocolAsyncResponse">
+    <wsdl:part element="smman:UpdateProtocolAsyncResponse"
+      name="UpdateProtocolAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="UpdateProtocolAsyncRequest">
+    <wsdl:part element="smman:UpdateProtocolAsyncRequest"
+      name="UpdateProtocolAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="UpdateProtocolResponse">
+    <wsdl:part element="smman:UpdateProtocolResponse" name="UpdateProtocolResponse">
+    </wsdl:part>
+  </wsdl:message>
+
   <wsdl:portType name="SmartMeteringManagementPort">
 
     <wsdl:operation name="FindEvents">
@@ -336,6 +356,22 @@
       </wsdl:output>
     </wsdl:operation>
 
+    <wsdl:operation name="UpdateProtocol">
+      <wsdl:input message="tns:UpdateProtocolRequest" name="UpdateProtocolRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:UpdateProtocolAsyncResponse"
+        name="UpdateProtocolAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetUpdateProtocolResponse">
+      <wsdl:input message="tns:UpdateProtocolAsyncRequest"
+        name="UpdateProtocolAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:UpdateProtocolResponse"
+        name="UpdateProtocolResponse">
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:portType>
 
   <wsdl:binding name="SmartMeteringManagementPortSoap11"
@@ -617,6 +653,37 @@
       </wsdl:output>
     </wsdl:operation>
 
+    <wsdl:operation name="UpdateProtocol">
+      <soap:operation soapAction="" />
+      <wsdl:input name="UpdateProtocolRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="UpdateProtocolAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetUpdateProtocolResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="UpdateProtocolAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="UpdateProtocolResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
 
   <wsdl:service name="SmartMeteringManagementPortService">

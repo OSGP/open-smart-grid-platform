@@ -14,6 +14,8 @@ import java.util.List;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,35 +37,36 @@ import org.springframework.ws.transport.http.WebServiceMessageReceiverHttpHandle
 @Configuration
 public class PublicLightingNotificationWebServiceConfig extends WsConfigurerAdapter {
 
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(PublicLightingNotificationWebServiceConfig.class);
+
   private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
 
   @Value("${jaxb2.marshaller.context.path.publiclighting.notification}")
-  private String contextPathMicrogridsNotification;
+  private String notificationMarshallerContextPath;
 
-  @Value("${web.service.notification.context}")
+  @Value("${web.service.publiclighting.notification.application.name}")
+  private String notificationApplicationName;
+
+  @Value("${web.service.publiclighting.notification.context}")
   private String notificationContextPath;
 
-  @Value("${web.service.notification.port}")
+  @Value("${web.service.publiclighting.notification.port}")
   private int notificationPort;
 
-  @Bean
-  public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
-    final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter =
-        new DefaultMethodEndpointAdapter();
+  @Bean("wsPublicLightingNotificationApplicationName")
+  public String notificationApplicationName() {
+    return this.notificationApplicationName;
+  }
 
-    final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
-    methodArgumentResolvers.add(this.publicLightingNotificationMarshallingPayloadMethodProcessor());
-    methodArgumentResolvers.add(
-        new AnnotationMethodArgumentResolver(
-            ORGANISATION_IDENTIFICATION_HEADER, OrganisationIdentification.class));
-    defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
+  @Bean("wsPublicLightingNotificationMarshallerContextPath")
+  public String notificationMarshallerContextPath() {
+    return this.notificationMarshallerContextPath;
+  }
 
-    final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
-    methodReturnValueHandlers.add(
-        this.publicLightingNotificationMarshallingPayloadMethodProcessor());
-    defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
-
-    return defaultMethodEndpointAdapter;
+  @Bean("wsPublicLightingNotificationTargetUri")
+  public String notificationTargetUri() {
+    return "http://localhost:" + this.notificationPort + this.notificationContextPath;
   }
 
   @Override
@@ -74,14 +77,18 @@ public class PublicLightingNotificationWebServiceConfig extends WsConfigurerAdap
   }
 
   @Bean
-  public SimpleHttpServerFactoryBean httpServer(
+  public SimpleHttpServerFactoryBean publicLightingNotificationsHttpServer(
       final SaajSoapMessageFactory messageFactory,
-      final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter,
       final PayloadRootAnnotationMethodEndpointMapping mapping) {
+
+    LOGGER.info(
+        "Initializing public lighting notifications HTTP server with context path: '{}' and port: '{}'",
+        this.notificationContextPath,
+        this.notificationPort);
 
     final SoapMessageDispatcher soapMessageDispatcher = new SoapMessageDispatcher();
     soapMessageDispatcher.setEndpointMappings(Arrays.asList(mapping));
-    soapMessageDispatcher.setEndpointAdapters(Arrays.asList(defaultMethodEndpointAdapter));
+    soapMessageDispatcher.setEndpointAdapters(Arrays.asList(this.defaultMethodEndpointAdapter()));
 
     final WebServiceMessageReceiverHttpHandler httpHandler =
         new WebServiceMessageReceiverHttpHandler();
@@ -95,19 +102,42 @@ public class PublicLightingNotificationWebServiceConfig extends WsConfigurerAdap
     return httpServer;
   }
 
-  @Bean
-  public Jaxb2Marshaller publicLightingNotificationMarshaller() {
-    final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+  private DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
+    final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter =
+        new DefaultMethodEndpointAdapter();
 
-    marshaller.setContextPath(this.contextPathMicrogridsNotification);
+    final MarshallingPayloadMethodProcessor processor = this.marshallingPayloadMethodProcessor();
+    final AnnotationMethodArgumentResolver resolver = this.annotationMethodArgumentResolver();
 
-    return marshaller;
+    final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
+    methodArgumentResolvers.add(processor);
+    methodArgumentResolvers.add(resolver);
+    defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
+
+    final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
+    methodReturnValueHandlers.add(processor);
+    defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
+
+    return defaultMethodEndpointAdapter;
   }
 
-  @Bean
-  public MarshallingPayloadMethodProcessor
-      publicLightingNotificationMarshallingPayloadMethodProcessor() {
-    return new MarshallingPayloadMethodProcessor(
-        this.publicLightingNotificationMarshaller(), this.publicLightingNotificationMarshaller());
+  private AnnotationMethodArgumentResolver annotationMethodArgumentResolver() {
+    return new AnnotationMethodArgumentResolver(
+        ORGANISATION_IDENTIFICATION_HEADER, OrganisationIdentification.class);
+  }
+
+  private MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor() {
+    final Jaxb2Marshaller marshaller = this.notificationMarshaller();
+    return new MarshallingPayloadMethodProcessor(marshaller, marshaller);
+  }
+
+  private Jaxb2Marshaller notificationMarshaller() {
+    LOGGER.info(
+        "Initializing public lighting notification marshaller with context path: '{}'",
+        this.notificationMarshallerContextPath);
+
+    final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+    marshaller.setContextPath(this.notificationMarshallerContextPath);
+    return marshaller;
   }
 }

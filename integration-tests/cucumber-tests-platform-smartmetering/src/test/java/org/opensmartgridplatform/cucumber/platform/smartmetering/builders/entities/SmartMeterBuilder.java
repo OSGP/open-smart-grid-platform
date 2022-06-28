@@ -8,14 +8,15 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities;
 
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 import org.opensmartgridplatform.cucumber.platform.core.builders.CucumberBuilder;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 
 public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
@@ -23,7 +24,7 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
 
   private String supplier;
   private Short channel;
-  private Long mbusIdentificationNumber;
+  private String mbusIdentificationNumber;
   private String mbusManufacturerIdentification;
   private Short mbusVersion;
   private Short mbusDeviceTypeIdentification;
@@ -39,7 +40,7 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
     return this;
   }
 
-  public SmartMeterBuilder setMbusIdentificationNumber(final Long value) {
+  public SmartMeterBuilder setMbusIdentificationNumber(final String value) {
     this.mbusIdentificationNumber = value;
     return this;
   }
@@ -117,7 +118,7 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
     }
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER)) {
       this.setMbusIdentificationNumber(
-          getLong(inputSettings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
+          inputSettings.get(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
     }
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION)) {
       this.setMbusManufacturerIdentification(
@@ -133,6 +134,11 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_PRIMARY_ADDRESS)) {
       this.setMbusPrimaryAddress(
           getShort(inputSettings, PlatformSmartmeteringKeys.MBUS_PRIMARY_ADDRESS));
+    }
+    if (inputSettings.containsKey(PlatformSmartmeteringKeys.DEVICE_LIFECYCLE_STATUS)) {
+      this.deviceLifeCycleStatus =
+          DeviceLifecycleStatus.valueOf(
+              getString(inputSettings, PlatformSmartmeteringKeys.DEVICE_LIFECYCLE_STATUS));
     }
 
     return this;

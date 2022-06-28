@@ -74,6 +74,7 @@ import org.springframework.validation.annotation.Validated;
 @Transactional(value = "transactionManager")
 @Validated
 public class DeviceManagementService {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
   @Autowired private PagingSettings pagingSettings;
@@ -619,27 +620,31 @@ public class DeviceManagementService {
       final String organisationIdentification,
       @Identification final String deviceIdentification,
       final String protocol,
-      final String protocolVersion)
+      final String protocolVersion,
+      final String protocolVariant)
       throws FunctionalException {
 
     LOGGER.debug(
-        "Updating protocol for device [{}] on behalf of organisation [{}] to protocol: {}, version: {}",
+        "Updating protocol for device [{}] on behalf of organisation [{}] to protocol: {}, version: {}, variant: {}",
         deviceIdentification,
         organisationIdentification,
         protocol,
-        protocolVersion);
+        protocolVersion,
+        protocolVariant);
 
     final Organisation organisation = this.findOrganisation(organisationIdentification);
     this.isAllowed(organisation, PlatformFunction.UPDATE_DEVICE_PROTOCOL);
 
     final Device device = this.findDevice(deviceIdentification);
-    final ProtocolInfo protocolInfo = this.findProtocolInfo(protocol, protocolVersion);
+    final ProtocolInfo protocolInfo =
+        this.findProtocolInfo(protocol, protocolVersion, protocolVariant);
 
     if (protocolInfo.equals(device.getProtocolInfo())) {
       LOGGER.info(
-          "Not updating protocol: {}, version: {} on device {} since it is already configured",
+          "Not updating protocol: {}, version: {}, variant: {} on device {} since it is already configured",
           protocol,
           protocolVersion,
+          protocolVariant,
           deviceIdentification);
       return;
     }
@@ -648,10 +653,11 @@ public class DeviceManagementService {
     this.deviceRepository.save(device);
 
     LOGGER.info(
-        "Organisation {} configured protocol: {}, version: {} on device {}",
+        "Organisation {} configured protocol: {}, version: {}, variant: {} on device {}",
         organisationIdentification,
         protocol,
         protocolVersion,
+        protocolVariant,
         deviceIdentification);
   }
 
@@ -701,13 +707,16 @@ public class DeviceManagementService {
     return this.deviceDomainService.searchDevice(deviceIdentification);
   }
 
-  private ProtocolInfo findProtocolInfo(final String protocol, final String protocolVersion)
+  private ProtocolInfo findProtocolInfo(
+      final String protocol, final String protocolVersion, final String protocolVariant)
       throws FunctionalException {
     final ProtocolInfo protocolInfo =
-        this.protocolRepository.findByProtocolAndProtocolVersion(protocol, protocolVersion);
+        this.protocolRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
+            protocol, protocolVersion, protocolVariant);
     if (protocolInfo == null) {
       throw new FunctionalException(
-          FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION, ComponentType.WS_ADMIN);
+          FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION_OR_VARIANT,
+          ComponentType.WS_ADMIN);
     }
     return protocolInfo;
   }
