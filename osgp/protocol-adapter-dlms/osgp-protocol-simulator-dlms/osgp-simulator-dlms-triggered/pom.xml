@@ -18,7 +18,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>osgp-protocol-simulator-dlms</artifactId>
-    <version>5.23.2-SNAPSHOT</version>
+    <version>5.23.2</version>
   </parent>
 
   <build>
