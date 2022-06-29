@@ -40,7 +40,7 @@ class DlmsObjectServiceTest {
   }
 
   @Test
-  void testGetCosemObject() {
+  void testGetCosemObject() throws IOException {
     final String protocolVersion52 = "5.2";
     final String protocolVersion50 = "5.0";
     final String protocolName = "SMR";
@@ -61,7 +61,7 @@ class DlmsObjectServiceTest {
   }
 
   @Test
-  void testNoCosemObjectFound() {
+  void testNoCosemObjectFound() throws IOException {
     final Map<DlmsObjectType, CosemObject> cosemObjects =
         this.dlmsObjectService.getCosemObjects("ABC", "12");
 
