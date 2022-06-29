@@ -13,6 +13,7 @@ package org.opensmartgridplatform.domain.smartmetering.config;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -40,7 +41,7 @@ class DlmsObjectServiceTest {
   }
 
   @Test
-  void testGetCosemObject() throws IOException {
+  void testGetCosemObject() {
     final String protocolVersion52 = "5.2";
     final String protocolVersion50 = "5.0";
     final String protocolName = "SMR";
@@ -61,11 +62,11 @@ class DlmsObjectServiceTest {
   }
 
   @Test
-  void testNoCosemObjectFound() throws IOException {
+  void testNoCosemObjectFound() {
     final Map<DlmsObjectType, CosemObject> cosemObjects =
         this.dlmsObjectService.getCosemObjects("ABC", "12");
 
-    assertNull(cosemObjects);
+    assertTrue(cosemObjects.isEmpty());
   }
 
   private List<MeterConfig> getMeterConfigList() throws IOException {

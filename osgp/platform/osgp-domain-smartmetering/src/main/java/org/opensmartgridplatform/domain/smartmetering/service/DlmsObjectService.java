@@ -35,27 +35,34 @@ public class DlmsObjectService {
   }
 
   public Map<DlmsObjectType, CosemObject> getCosemObjects(
-      final String protocolName, final String protocolVersion) throws IOException {
+      final String protocolName, final String protocolVersion) {
 
-    if (this.meterConfigList == null || this.meterConfigList.isEmpty()) {
-      this.meterConfigList = this.getMeterConfigListFromResources();
-    }
+    try {
+      if (this.meterConfigList == null || this.meterConfigList.isEmpty()) {
+        this.meterConfigList = this.getMeterConfigListFromResources();
+      }
 
-    final Optional<MeterConfig> meterConfig =
-        this.meterConfigList.stream()
-            .filter(config -> protocolVersion.equalsIgnoreCase(config.version))
-            .filter(config -> protocolName.equalsIgnoreCase(config.profile))
-            .findAny();
-    if (!meterConfig.isPresent()) {
-      return null;
+      final Optional<MeterConfig> meterConfig =
+          this.meterConfigList.stream()
+              .filter(config -> protocolVersion.equalsIgnoreCase(config.version))
+              .filter(config -> protocolName.equalsIgnoreCase(config.profile))
+              .findAny();
+      if (!meterConfig.isPresent()) {
+        return new HashMap<DlmsObjectType, CosemObject>();
+      }
+      return this.getCosemObjectFromMeterConfig(meterConfig.get())
+          .orElseThrow(
+              () ->
+                  new IllegalArgumentException(
+                      String.format(
+                          "no config found for protocol '%s' version '%s' ",
+                          protocolName, protocolVersion)));
+
+    } catch (final IOException exception) {
+      throw new IllegalArgumentException(
+          String.format(
+              "no config found for protocol '%s' version '%s' ", protocolName, protocolVersion));
     }
-    return this.getCosemObjectFromMeterConfig(meterConfig.get())
-        .orElseThrow(
-            () ->
-                new IllegalArgumentException(
-                    String.format(
-                        "no config found for protocol '%s' version '%s' ",
-                        protocolName, protocolVersion)));
   }
 
   private Optional<Map<DlmsObjectType, CosemObject>> getCosemObjectFromMeterConfig(
@@ -71,7 +78,7 @@ public class DlmsObjectService {
   }
 
   private List<MeterConfig> getMeterConfigListFromResources() throws IOException {
-    final ClassPathResource c = new ClassPathResource("/");
+    final ClassPathResource c = new ClassPathResource("/meter_config");
     final ObjectMapper objectMapper = new ObjectMapper();
 
     final List<MeterConfig> meterConfigs = new ArrayList<>();

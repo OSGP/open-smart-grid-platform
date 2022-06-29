@@ -7,7 +7,7 @@ public class Attribute {
   public int id;
   public String description;
   public String datatype;
-  public String valuetype;
+  public ValueType valuetype;
   public String value;
   public String access;
 }

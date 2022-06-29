@@ -8,16 +8,16 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_EXPORT;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_EXPORT_RATE_1;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_EXPORT_RATE_2;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_IMPORT;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_1;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_2;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.CLOCK;
+import static org.opensmartgridplatform.domain.smartmetering.config.ValueType.FIXED_IN_PROFILE;
+import static org.opensmartgridplatform.domain.smartmetering.service.DlmsObjectType.ACTIVE_ENERGY_EXPORT;
+import static org.opensmartgridplatform.domain.smartmetering.service.DlmsObjectType.ACTIVE_ENERGY_EXPORT_RATE_1;
+import static org.opensmartgridplatform.domain.smartmetering.service.DlmsObjectType.ACTIVE_ENERGY_EXPORT_RATE_2;
+import static org.opensmartgridplatform.domain.smartmetering.service.DlmsObjectType.ACTIVE_ENERGY_IMPORT;
+import static org.opensmartgridplatform.domain.smartmetering.service.DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_1;
+import static org.opensmartgridplatform.domain.smartmetering.service.DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_2;
+import static org.opensmartgridplatform.domain.smartmetering.service.DlmsObjectType.CLOCK;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.joda.time.DateTime;
@@ -25,7 +25,6 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -35,6 +34,8 @@ import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.domain.smartmetering.config.Attribute;
 import org.opensmartgridplatform.domain.smartmetering.config.CosemObject;
+import org.opensmartgridplatform.domain.smartmetering.service.DlmsObjectService;
+import org.opensmartgridplatform.domain.smartmetering.service.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActiveEnergyValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
@@ -57,6 +58,8 @@ public class GetActualMeterReadsCommandExecutor
       LoggerFactory.getLogger(GetActualMeterReadsCommandExecutor.class);
 
   @Autowired private DlmsHelper dlmsHelper;
+
+  @Autowired private DlmsObjectService dlmsObjectService;
 
   public GetActualMeterReadsCommandExecutor() {
     super(ActualMeterReadsDataDto.class);
@@ -153,16 +156,16 @@ public class GetActualMeterReadsCommandExecutor
   }
 
   private Map<DlmsObjectType, CosemObject> getCosemObjects(final DlmsDevice device) {
-    final Map<DlmsObjectType, CosemObject> objectMap = new HashMap<>();
+    final Map<DlmsObjectType, CosemObject> objectMap =
+        this.dlmsObjectService.getCosemObjects(
+            device.getProtocolName(), device.getProtocolVersion());
 
-    // TODO: Get objects from service
-    objectMap.put(DlmsObjectType.CLOCK, this.getClock());
-    objectMap.put(ACTIVE_ENERGY_IMPORT, this.getActiveEnergyImport());
-    objectMap.put(ACTIVE_ENERGY_EXPORT, this.getActiveEnergyExport());
-    objectMap.put(ACTIVE_ENERGY_IMPORT_RATE_1, this.getActiveEnergyImportRate1());
-    objectMap.put(ACTIVE_ENERGY_IMPORT_RATE_2, this.getActiveEnergyImportRate2());
-    objectMap.put(ACTIVE_ENERGY_EXPORT_RATE_1, this.getActiveEnergyExportRate1());
-    objectMap.put(ACTIVE_ENERGY_EXPORT_RATE_2, this.getActiveEnergyExportRate2());
+    if (objectMap.isEmpty()) {
+      LOGGER.error(
+          "CosemObject configuration is not found for device protocol {} and version {}",
+          device.getProtocolName(),
+          device.getProtocolVersion());
+    }
 
     return objectMap;
   }
@@ -182,7 +185,7 @@ public class GetActualMeterReadsCommandExecutor
 
     if (object.classId == InterfaceClass.REGISTER.id()) {
       final Attribute scalerUnit = object.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId());
-      if (!scalerUnit.valuetype.equals("FIXED_IN_PROFILE")) {
+      if (!scalerUnit.valuetype.equals(FIXED_IN_PROFILE)) {
         attributeAddresses.add(
             new AttributeAddress(
                 object.classId, object.obis, RegisterAttribute.SCALER_UNIT.attributeId()));
@@ -226,7 +229,7 @@ public class GetActualMeterReadsCommandExecutor
 
     final Attribute scalerUnit =
         cosemObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId());
-    if (!scalerUnit.valuetype.equals("FIXED_IN_PROFILE")) {
+    if (!scalerUnit.valuetype.equals(FIXED_IN_PROFILE)) {
       final int index =
           this.getIndex(
               cosemObject.obis, RegisterAttribute.SCALER_UNIT.attributeId(), attributeAddresses);
@@ -254,67 +257,5 @@ public class GetActualMeterReadsCommandExecutor
       default:
         throw new IllegalArgumentException("Unknown unit in profile: " + unit);
     }
-  }
-
-  // Dummy data
-  private CosemObject getActiveEnergyImport() {
-    return this.createDummyRegister("1.0.1.8.0.255");
-  }
-
-  private CosemObject getActiveEnergyExport() {
-    return this.createDummyRegister("1.0.2.8.0.255");
-  }
-
-  private CosemObject getActiveEnergyImportRate1() {
-    return this.createDummyRegister("1.0.1.8.1.255");
-  }
-
-  private CosemObject getActiveEnergyImportRate2() {
-    return this.createDummyRegister("1.0.1.8.2.255");
-  }
-
-  private CosemObject getActiveEnergyExportRate1() {
-    return this.createDummyRegister("1.0.2.8.1.255");
-  }
-
-  private CosemObject getActiveEnergyExportRate2() {
-    return this.createDummyRegister("1.0.2.8.2.255");
-  }
-
-  private CosemObject getClock() {
-    return this.createDummyClock("0.0.1.0.0.255");
-  }
-
-  private CosemObject createDummyRegister(final String obis) {
-    final CosemObject newObject = new CosemObject();
-    newObject.setClassId(InterfaceClass.REGISTER.id());
-    newObject.setObis(obis);
-
-    final ArrayList<Attribute> attributesObject = new ArrayList<>();
-    attributesObject.add(
-        this.createDummyAttribute(3, "scal_unit_type", "0, Wh", "FIXED_IN_PROFILE"));
-
-    newObject.setAttributes(attributesObject);
-
-    return newObject;
-  }
-
-  private CosemObject createDummyClock(final String obis) {
-    final CosemObject newObject = new CosemObject();
-    newObject.setClassId(InterfaceClass.CLOCK.id());
-    newObject.setObis(obis);
-
-    return newObject;
-  }
-
-  private Attribute createDummyAttribute(
-      final int id, final String dataType, final String value, final String valueType) {
-    final Attribute attribute = new Attribute();
-    attribute.setId(id);
-    attribute.setDatatype(dataType);
-    attribute.setValue(value);
-    attribute.setValuetype(valueType);
-
-    return attribute;
   }
 }
