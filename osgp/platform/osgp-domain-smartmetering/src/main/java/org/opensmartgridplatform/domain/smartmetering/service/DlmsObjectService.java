@@ -78,11 +78,11 @@ public class DlmsObjectService {
   }
 
   private List<MeterConfig> getMeterConfigListFromResources() throws IOException {
-    final ClassPathResource c = new ClassPathResource("/meter_config");
+    final ClassPathResource classPathResource = new ClassPathResource("/meter_config");
     final ObjectMapper objectMapper = new ObjectMapper();
 
     final List<MeterConfig> meterConfigs = new ArrayList<>();
-    try (final Stream<Path> stream = Files.walk(c.getFile().toPath())) {
+    try (final Stream<Path> stream = Files.walk(classPathResource.getFile().toPath())) {
       stream
           .map(Path::normalize)
           .filter(Files::isRegularFile)
