@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,6 +34,21 @@ public class DlmsObjectService {
     this.meterConfigList = meterConfigList;
   }
 
+  public CosemObject getCosemObject(
+      final String protocolName, final String protocolVersion, final DlmsObjectType dlmsObjectType)
+      throws IllegalArgumentException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.getCosemObjects(protocolName, protocolVersion);
+    if (cosemObjects.containsKey(dlmsObjectType)) {
+      return cosemObjects.get(dlmsObjectType);
+    } else {
+      throw new IllegalArgumentException(
+          String.format(
+              "No object found of type %s in profile %s version %s",
+              dlmsObjectType.value(), protocolName, protocolVersion));
+    }
+  }
+
   public Map<DlmsObjectType, CosemObject> getCosemObjects(
       final String protocolName, final String protocolVersion) {
 
@@ -48,7 +63,7 @@ public class DlmsObjectService {
               .filter(config -> protocolName.equalsIgnoreCase(config.profile))
               .findAny();
       if (!meterConfig.isPresent()) {
-        return new HashMap<>();
+        return new EnumMap<>(DlmsObjectType.class);
       }
       return this.getCosemObjectFromMeterConfig(meterConfig.get())
           .orElseThrow(
@@ -67,7 +82,7 @@ public class DlmsObjectService {
 
   private Optional<Map<DlmsObjectType, CosemObject>> getCosemObjectFromMeterConfig(
       final MeterConfig meterConfig) {
-    final Map<DlmsObjectType, CosemObject> cosemObjectMap = new HashMap<>();
+    final Map<DlmsObjectType, CosemObject> cosemObjectMap = new EnumMap<>(DlmsObjectType.class);
     meterConfig
         .getCosemObjects()
         .forEach(
