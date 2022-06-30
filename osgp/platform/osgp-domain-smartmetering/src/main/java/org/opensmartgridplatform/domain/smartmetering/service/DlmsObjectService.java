@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import org.opensmartgridplatform.domain.smartmetering.config.CosemObject;
 import org.opensmartgridplatform.domain.smartmetering.config.MeterConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +28,8 @@ public class DlmsObjectService {
 
   private List<MeterConfig> meterConfigList;
 
-  @Autowired
+  public DlmsObjectService() {}
+
   public DlmsObjectService(final List<MeterConfig> meterConfigList) {
     this.meterConfigList = meterConfigList;
   }
@@ -48,7 +48,7 @@ public class DlmsObjectService {
               .filter(config -> protocolName.equalsIgnoreCase(config.profile))
               .findAny();
       if (!meterConfig.isPresent()) {
-        return new HashMap<DlmsObjectType, CosemObject>();
+        return new HashMap<>();
       }
       return this.getCosemObjectFromMeterConfig(meterConfig.get())
           .orElseThrow(
@@ -71,9 +71,8 @@ public class DlmsObjectService {
     meterConfig
         .getCosemObjects()
         .forEach(
-            cosemObject -> {
-              cosemObjectMap.put(DlmsObjectType.fromValue(cosemObject.getTag()), cosemObject);
-            });
+            cosemObject ->
+                cosemObjectMap.put(DlmsObjectType.fromValue(cosemObject.getTag()), cosemObject));
     return Optional.of(cosemObjectMap);
   }
 
