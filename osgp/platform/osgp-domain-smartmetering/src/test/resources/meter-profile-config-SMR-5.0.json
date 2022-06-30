@@ -13,7 +13,7 @@
       "description": "Clock",
       "class-id": 8,
       "version": 0,
-      "obis": "0-0:1.0.0.255",
+      "obis": "0.0.1.0.0.255",
       "group": "ABSTRACT",
       "meterTypes": [
         "SP",
@@ -51,7 +51,7 @@
       "description": "Active firmware version",
       "class-id": 1,
       "version": 0,
-      "obis": "1-0:0.2.0.255",
+      "obis": "1.0.0.2.0.255",
       "group": "ABSTRACT",
       "meterTypes": [
         "SP",
@@ -73,7 +73,7 @@
       "description": "Active energy import (+A)",
       "class-id": 3,
       "version": 0,
-      "obis": "1-0:1.8.0.255",
+      "obis": "1.0.1.8.0.255",
       "group": "ELECTRICITY",
       "meterTypes": [
         "SP",
@@ -103,7 +103,7 @@
       "description": "Active energy export (-A)",
       "class-id": 3,
       "version": 0,
-      "obis": "1-0:2.8.0.255",
+      "obis": "1.0.2.8.0.255",
       "group": "ELECTRICITY",
       "meterTypes": [
         "SP",
@@ -145,7 +145,7 @@
           "description": "mbus_port_reference",
           "datatype": "octet-string",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0-0:24.6.0.255",
+          "value": "0.0.24.6.0.255",
           "access": "R"
         },
         {
