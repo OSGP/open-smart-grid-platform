@@ -18,6 +18,7 @@ import static org.opensmartgridplatform.domain.smartmetering.service.DlmsObjectT
 import static org.opensmartgridplatform.domain.smartmetering.service.DlmsObjectType.CLOCK;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import org.joda.time.DateTime;
@@ -156,16 +157,28 @@ public class GetActualMeterReadsCommandExecutor
   }
 
   private Map<DlmsObjectType, CosemObject> getCosemObjects(final DlmsDevice device) {
-    final Map<DlmsObjectType, CosemObject> objectMap =
-        this.dlmsObjectService.getCosemObjects(
-            device.getProtocolName(), device.getProtocolVersion());
-
-    if (objectMap.isEmpty()) {
-      LOGGER.error(
-          "CosemObject configuration is not found for device protocol {} and version {}",
-          device.getProtocolName(),
-          device.getProtocolVersion());
-    }
+    final String protocol = device.getProtocolName();
+    final String version = device.getProtocolVersion();
+    final Map<DlmsObjectType, CosemObject> objectMap = new EnumMap<>(DlmsObjectType.class);
+    objectMap.put(CLOCK, this.dlmsObjectService.getCosemObject(protocol, version, CLOCK));
+    objectMap.put(
+        ACTIVE_ENERGY_IMPORT,
+        this.dlmsObjectService.getCosemObject(protocol, version, ACTIVE_ENERGY_IMPORT));
+    objectMap.put(
+        ACTIVE_ENERGY_EXPORT,
+        this.dlmsObjectService.getCosemObject(protocol, version, ACTIVE_ENERGY_EXPORT));
+    objectMap.put(
+        ACTIVE_ENERGY_IMPORT_RATE_1,
+        this.dlmsObjectService.getCosemObject(protocol, version, ACTIVE_ENERGY_IMPORT_RATE_1));
+    objectMap.put(
+        ACTIVE_ENERGY_IMPORT_RATE_2,
+        this.dlmsObjectService.getCosemObject(protocol, version, ACTIVE_ENERGY_IMPORT_RATE_2));
+    objectMap.put(
+        ACTIVE_ENERGY_EXPORT_RATE_1,
+        this.dlmsObjectService.getCosemObject(protocol, version, ACTIVE_ENERGY_EXPORT_RATE_1));
+    objectMap.put(
+        ACTIVE_ENERGY_EXPORT_RATE_2,
+        this.dlmsObjectService.getCosemObject(protocol, version, ACTIVE_ENERGY_EXPORT_RATE_2));
 
     return objectMap;
   }

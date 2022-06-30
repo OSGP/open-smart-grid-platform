@@ -10,9 +10,11 @@
 
 package org.opensmartgridplatform.domain.smartmetering.config;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,7 +43,7 @@ class DlmsObjectServiceTest {
   }
 
   @Test
-  void testGetCosemObject() {
+  void testGetCosemObjects() {
     final String protocolVersion52 = "5.2";
     final String protocolVersion50 = "5.0";
     final String protocolName = "SMR";
@@ -62,11 +64,31 @@ class DlmsObjectServiceTest {
   }
 
   @Test
-  void testNoCosemObjectFound() {
+  void testNoCosemObjectsFound() {
     final Map<DlmsObjectType, CosemObject> cosemObjects =
         this.dlmsObjectService.getCosemObjects("ABC", "12");
 
     assertTrue(cosemObjects.isEmpty());
+  }
+
+  @Test
+  void testGetCosemObject() {
+    final String protocolVersion50 = "5.0";
+    final String protocolName = "SMR";
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          this.dlmsObjectService.getCosemObject(
+              protocolName, protocolVersion50, DlmsObjectType.PUSH_SCHEDULER);
+        });
+
+    final CosemObject cosemObject =
+        this.dlmsObjectService.getCosemObject(
+            protocolName, protocolVersion50, DlmsObjectType.ACTIVE_ENERGY_IMPORT);
+
+    assertNotNull(cosemObject);
+    assertThat(cosemObject.getTag()).isEqualTo(DlmsObjectType.ACTIVE_ENERGY_IMPORT.value());
   }
 
   private List<MeterConfig> getMeterConfigList() throws IOException {
