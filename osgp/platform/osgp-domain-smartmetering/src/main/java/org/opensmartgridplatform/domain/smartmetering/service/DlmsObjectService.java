@@ -10,8 +10,6 @@ package org.opensmartgridplatform.domain.smartmetering.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -20,7 +18,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import org.opensmartgridplatform.domain.smartmetering.config.CosemObject;
 import org.opensmartgridplatform.domain.smartmetering.config.MeterConfig;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -92,26 +91,29 @@ public class DlmsObjectService {
   }
 
   private List<MeterConfig> getMeterConfigListFromResources() throws IOException {
-    final ClassPathResource classPathResource = new ClassPathResource("/meter_config");
+    final String scannedPackage = "meter_config/*";
+    final PathMatchingResourcePatternResolver scanner = new PathMatchingResourcePatternResolver();
+    final Resource[] resources = scanner.getResources(scannedPackage);
+
     final ObjectMapper objectMapper = new ObjectMapper();
 
     final List<MeterConfig> meterConfigs = new ArrayList<>();
-    try (final Stream<Path> stream = Files.walk(classPathResource.getFile().toPath())) {
-      stream
-          .map(Path::normalize)
-          .filter(Files::isRegularFile)
-          .filter(path -> path.getFileName().toString().endsWith(".json"))
-          .map(Path::toFile)
-          .forEach(
-              file -> {
-                try {
-                  final MeterConfig meterConfig = objectMapper.readValue(file, MeterConfig.class);
-                  meterConfigs.add(meterConfig);
-                } catch (final IOException e) {
-                  e.printStackTrace();
-                }
-              });
-    }
+
+    Stream.of(resources)
+        .filter(Resource::isFile)
+        .filter(
+            resource -> resource.getFilename() != null && resource.getFilename().endsWith(".json"))
+        .forEach(
+            resource -> {
+              try {
+                final MeterConfig meterConfig =
+                    objectMapper.readValue(resource.getInputStream(), MeterConfig.class);
+                meterConfigs.add(meterConfig);
+              } catch (final IOException e) {
+                e.printStackTrace();
+              }
+            });
+
     return meterConfigs;
   }
 }

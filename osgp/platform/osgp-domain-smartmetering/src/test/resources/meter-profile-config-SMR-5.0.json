@@ -133,7 +133,7 @@
       "description": "M-Bus client setup",
       "class-id": 72,
       "version": 1,
-      "obis": "0-c:24.1.0.255",
+      "obis": "0.c.24.1.0.255",
       "group": "GAS",
       "meterTypes": [
         "SP",
