@@ -12,6 +12,7 @@ package org.opensmartgridplatform.simulator.protocol.dlms.server;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.openmuc.jdlms.CosemInterfaceObject;
@@ -19,6 +20,8 @@ import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.domain.smartmetering.config.Attribute;
 import org.opensmartgridplatform.domain.smartmetering.config.CosemObject;
+import org.opensmartgridplatform.domain.smartmetering.service.DlmsObjectService;
+import org.opensmartgridplatform.domain.smartmetering.service.DlmsObjectType;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.Clock;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DoubleLongUnsignedRegister;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.LongUnsignedData;
@@ -27,14 +30,17 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.OctetStringData;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.UnitType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ObjectListCreator {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ObjectListCreator.class);
 
-  // TODO: Get object list from profile config service instead of using dummy list
-  public List<CosemInterfaceObject> create() {
-    final List<CosemObject> inputList = this.createDummyList();
+  public List<CosemInterfaceObject> create(final DlmsObjectService dlmsObjectService) {
+    final Map<DlmsObjectType, CosemObject> cosemObjectsMap =
+        dlmsObjectService.getCosemObjects("SMR", "5.0.0");
+    final List<CosemObject> inputList = new ArrayList<>(cosemObjectsMap.values());
 
     return inputList.stream()
         .map(this::convert)

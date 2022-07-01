@@ -100,7 +100,6 @@ public class DlmsObjectService {
     final List<MeterConfig> meterConfigs = new ArrayList<>();
 
     Stream.of(resources)
-        .filter(Resource::isFile)
         .filter(
             resource -> resource.getFilename() != null && resource.getFilename().endsWith(".json"))
         .forEach(

@@ -16,6 +16,7 @@ import org.openmuc.jdlms.DlmsServer.TcpServerBuilder;
 import org.openmuc.jdlms.LogicalDevice;
 import org.openmuc.jdlms.sessionlayer.server.ServerSessionLayerFactories;
 import org.openmuc.jdlms.settings.client.ReferencingMethod;
+import org.opensmartgridplatform.domain.smartmetering.service.DlmsObjectService;
 import org.opensmartgridplatform.simulator.protocol.dlms.interceptor.OsgpServerConnectionListener;
 import org.opensmartgridplatform.simulator.protocol.dlms.server.LogicalDeviceBuilder;
 import org.opensmartgridplatform.simulator.protocol.dlms.server.ObjectListCreator;
@@ -67,6 +68,13 @@ public class DlmsServerConfig implements ApplicationContextAware {
   private boolean useHdlc;
 
   @Bean
+  public DlmsObjectService dlmsObjectService() {
+    return new DlmsObjectService();
+  }
+
+  @Autowired private DlmsObjectService dlmsObjectService;
+
+  @Bean
   public DlmsServer dlmsServer(final OsgpServerConnectionListener osgpServerConnectionListener)
       throws IOException {
     final DlmsServer serverConnection;
@@ -94,8 +102,9 @@ public class DlmsServerConfig implements ApplicationContextAware {
     return serverConnection;
   }
 
-  private LogicalDeviceBuilder buildDevice(final int logicalDeviceId) {
-    final List<CosemInterfaceObject> cosemClasses = new ObjectListCreator().create();
+  private LogicalDeviceBuilder buildDevice(final int logicalDeviceId) throws IOException {
+    final List<CosemInterfaceObject> cosemClasses =
+        new ObjectListCreator().create(this.dlmsObjectService);
 
     final LogicalDeviceBuilder builder =
         new LogicalDeviceBuilder()
