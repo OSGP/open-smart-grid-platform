@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.domain.smartmetering.config.CosemObject;
 import org.opensmartgridplatform.domain.smartmetering.config.MeterConfig;
 import org.springframework.core.io.Resource;
@@ -23,6 +24,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class DlmsObjectService {
 
   private List<MeterConfig> meterConfigList;
@@ -109,7 +111,7 @@ public class DlmsObjectService {
                     objectMapper.readValue(resource.getInputStream(), MeterConfig.class);
                 meterConfigs.add(meterConfig);
               } catch (final IOException e) {
-                e.printStackTrace();
+                log.error(String.format("Cannot read config file %s", resource.getFilename()), e);
               }
             });
 
