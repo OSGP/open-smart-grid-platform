@@ -64,6 +64,11 @@ public class SmartmeteringWebServiceConfig {
     return payloadValidatingInterceptor;
   }
 
+  @Bean(name = "base-ws-smartmetering")
+  public SimpleXsdSchema baseWsSmartmeteringXsd() {
+    return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
+  }
+
   @Bean(name = "common")
   public SimpleXsdSchema commonXsd() {
     return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
