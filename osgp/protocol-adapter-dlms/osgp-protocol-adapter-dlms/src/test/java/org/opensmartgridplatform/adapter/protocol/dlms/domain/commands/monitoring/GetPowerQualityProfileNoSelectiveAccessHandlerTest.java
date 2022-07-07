@@ -98,35 +98,44 @@ public class GetPowerQualityProfileNoSelectiveAccessHandlerTest {
         responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries()) {
       assertThat(profileEntryDto.getProfileEntryValues().size()).isEqualTo(2);
     }
+
+    assertThat(
+            responseDto
+                .getPowerQualityProfileResponseDatas()
+                .get(0)
+                .getProfileEntries()
+                .get(3)
+                .getProfileEntryValues()
+                .get(1)
+                .getValue())
+        .isNull();
   }
 
   private List<GetResult> createProfileEntries() {
 
     final List<DataObject> structures = new ArrayList<>();
 
-    final DataObject structureData1 =
+    structures.add(
         DataObject.newStructureData(
             DataObject.newOctetStringData(
                 new byte[] {7, (byte) 228, 3, 15, 7, 0, 0, 0, 0, (byte) 255, (byte) 196, 0}),
             DataObject.newUInteger32Data(3),
-            DataObject.newUInteger32Data(2));
-
-    structures.add(structureData1);
+            DataObject.newUInteger32Data(2)));
     structures.add(
         DataObject.newStructureData(
-            DataObject.newNullData(),
+            DataObject.newNullData(), // Null-data for time: calculate time based on previous time
             DataObject.newUInteger32Data(3),
             DataObject.newUInteger32Data(2)));
     structures.add(
         DataObject.newStructureData(
-            DataObject.newNullData(),
+            DataObject.newNullData(), // Null-data for time: calculate time based on previous time
             DataObject.newUInteger32Data(3),
             DataObject.newUInteger32Data(2)));
     structures.add(
         DataObject.newStructureData(
-            DataObject.newNullData(),
+            DataObject.newNullData(), // Null-data for time: calculate time based on previous time
             DataObject.newUInteger32Data(3),
-            DataObject.newUInteger32Data(2)));
+            DataObject.newNullData())); // Null-data for value
 
     final GetResult getResult = new GetResultImpl(DataObject.newArrayData(structures));
 
