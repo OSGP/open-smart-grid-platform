@@ -30,7 +30,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupSmsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.GenerateAndReplaceKeyCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.ReplaceKeyCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.SetEncryptionKeyExchangeOnGMeterCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.SetKeyOnGMeterCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -95,9 +95,7 @@ public class ConfigurationService {
 
   @Autowired private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
 
-  @Autowired
-  private SetEncryptionKeyExchangeOnGMeterCommandExecutor
-      setEncryptionKeyExchangeOnGMeterCommandExecutor;
+  @Autowired private SetKeyOnGMeterCommandExecutor setKeyOnGMeterCommandExecutor;
 
   @Autowired private GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor;
 
@@ -254,8 +252,7 @@ public class ConfigurationService {
       throws ProtocolAdapterException {
 
     LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
-    this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(
-        conn, device, gMeterInfo, messageMetadata);
+    this.setKeyOnGMeterCommandExecutor.execute(conn, device, gMeterInfo, messageMetadata);
     return "Set Encryption Key Exchange On G-Meter Result is OK for device id: "
         + device.getDeviceIdentification();
   }
@@ -273,8 +270,7 @@ public class ConfigurationService {
         this.getMbusKeyExchangeData(
             conn, device, setMbusUserKeyByChannelRequestDataDto, messageMetadata);
 
-    this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(
-        conn, device, gMeterInfo, messageMetadata);
+    this.setKeyOnGMeterCommandExecutor.execute(conn, device, gMeterInfo, messageMetadata);
 
     return "Set M-Bus User Key By Channel Result is OK for device id: "
         + device.getDeviceIdentification();

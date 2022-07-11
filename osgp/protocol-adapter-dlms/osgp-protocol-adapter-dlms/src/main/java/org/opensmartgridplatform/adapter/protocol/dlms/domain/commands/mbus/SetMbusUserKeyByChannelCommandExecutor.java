@@ -12,7 +12,7 @@ import org.openmuc.jdlms.MethodResultCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.BundleService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.SetEncryptionKeyExchangeOnGMeterCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.SetKeyOnGMeterCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -29,16 +29,15 @@ import org.springframework.stereotype.Component;
 /**
  * Executor that sets the M-Bus User key for an M-Bus device on a given channel on a gateway device.
  *
- * <p>This executor delegates meter communication to the {@link
- * SetEncryptionKeyExchangeOnGMeterCommandExecutor} for which the actual M-Bus device (with its
- * M-Bus master key) needs to be known ahead of execution.
+ * <p>This executor delegates meter communication to the {@link SetKeyOnGMeterCommandExecutor} for
+ * which the actual M-Bus device (with its M-Bus master key) needs to be known ahead of execution.
  *
  * <p>This is implemented as a command executor in order to be able to link it to a {@link
  * SetMbusUserKeyByChannelRequestDataDto} from a bundle, as there does not appear to be a simple way
- * to use the {@link SetEncryptionKeyExchangeOnGMeterCommandExecutor} from the {@link BundleService}
- * for both the {@link GMeterInfoDto} and the {@link SetMbusUserKeyByChannelRequestDataDto} (where
- * in the latter case the M-Bus device has to be retrieved by the channel and the gateway device,
- * while in the former case it can be looked up by device identification).
+ * to use the {@link SetKeyOnGMeterCommandExecutor} from the {@link BundleService} for both the
+ * {@link GMeterInfoDto} and the {@link SetMbusUserKeyByChannelRequestDataDto} (where in the latter
+ * case the M-Bus device has to be retrieved by the channel and the gateway device, while in the
+ * former case it can be looked up by device identification).
  */
 @Component()
 public class SetMbusUserKeyByChannelCommandExecutor
@@ -46,9 +45,7 @@ public class SetMbusUserKeyByChannelCommandExecutor
 
   @Autowired private ConfigurationService configurationService;
 
-  @Autowired
-  private SetEncryptionKeyExchangeOnGMeterCommandExecutor
-      setEncryptionKeyExchangeOnGMeterCommandExecutor;
+  @Autowired private SetKeyOnGMeterCommandExecutor setKeyOnGMeterCommandExecutor;
 
   public SetMbusUserKeyByChannelCommandExecutor() {
     super(SetMbusUserKeyByChannelRequestDataDto.class);
@@ -87,7 +84,6 @@ public class SetMbusUserKeyByChannelCommandExecutor
       final GMeterInfoDto gMeterInfo,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException, FunctionalException {
-    return this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(
-        conn, device, gMeterInfo, messageMetadata);
+    return this.setKeyOnGMeterCommandExecutor.execute(conn, device, gMeterInfo, messageMetadata);
   }
 }

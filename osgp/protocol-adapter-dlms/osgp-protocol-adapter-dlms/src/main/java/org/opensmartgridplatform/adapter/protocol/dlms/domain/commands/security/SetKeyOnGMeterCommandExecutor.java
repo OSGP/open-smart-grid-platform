@@ -12,18 +12,8 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_MASTER;
 
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
@@ -48,11 +38,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
-public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
+public class SetKeyOnGMeterCommandExecutor
     extends AbstractCommandExecutor<GMeterInfoDto, MethodResultCode> {
 
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(SetEncryptionKeyExchangeOnGMeterCommandExecutor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SetKeyOnGMeterCommandExecutor.class);
 
   private static final int CLASS_ID = 72;
   private static final ObisCode OBIS_CODE_INTERVAL_MBUS_1 = new ObisCode("0.1.24.1.0.255");
@@ -61,6 +50,9 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
   private static final ObisCode OBIS_CODE_INTERVAL_MBUS_4 = new ObisCode("0.4.24.1.0.255");
 
   private static final Map<Integer, ObisCode> OBIS_HASHMAP = new HashMap<>();
+
+  private final SetKeyOnGMeterKeyEncryptionAndMacGeneration keyEncryptionAndMacGeneration =
+      new SetKeyOnGMeterKeyEncryptionAndMacGeneration();
 
   static {
     OBIS_HASHMAP.put(1, OBIS_CODE_INTERVAL_MBUS_1);
@@ -73,7 +65,7 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
 
   @Autowired private DlmsDeviceRepository dlmsDeviceRepository;
 
-  public SetEncryptionKeyExchangeOnGMeterCommandExecutor() {
+  public SetKeyOnGMeterCommandExecutor() {
     super(GMeterInfoDto.class);
   }
 
@@ -168,7 +160,8 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
     final byte[] mbusDefaultKey =
         this.secretManagementService.getKey(
             messageMetadata, mbusDeviceIdentification, G_METER_MASTER);
-    final byte[] encryptedUserKey = this.encryptMbusUserKey(mbusDefaultKey, gMeterUserKey);
+    final byte[] encryptedUserKey =
+        this.keyEncryptionAndMacGeneration.encryptMbusUserKeyDsmr4(mbusDefaultKey, gMeterUserKey);
     final DataObject methodParameter = DataObject.newOctetStringData(encryptedUserKey);
     final MBusClientMethod method = MBusClientMethod.TRANSFER_KEY;
     return new MethodParameter(
@@ -205,41 +198,5 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
     final MBusClientMethod method = MBusClientMethod.SET_ENCRYPTION_KEY;
     return new MethodParameter(
         method.getInterfaceClass().id(), obisCode, method.getMethodId(), methodParameter);
-  }
-
-  /**
-   * Encrypts a new M-Bus User key with the M-Bus Default key for use as M-Bus Client Setup
-   * transfer_key parameter.
-   *
-   * <p>Note that the specifics of the encryption of the M-Bus User key depend on the M-Bus version
-   * the devices support. This method should be appropriate for use with DSMR 4 M-Bus devices.
-   *
-   * <p>The encryption is performed by applying an AES/CBC/NoPadding cipher initialized for
-   * encryption with the given mbusDefaultKey and an initialization vector of 16 zero-bytes to the
-   * given mbusUserKey.
-   *
-   * @return the properly wrapped User key for a DSMR 4 M-Bus User key change.
-   */
-  private byte[] encryptMbusUserKey(final byte[] mbusDefaultKey, final byte[] mbusUserKey)
-      throws ProtocolAdapterException {
-
-    final Key secretkeySpec = new SecretKeySpec(mbusDefaultKey, "AES");
-
-    try {
-      final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
-      final IvParameterSpec params = new IvParameterSpec(new byte[16]);
-      cipher.init(Cipher.ENCRYPT_MODE, secretkeySpec, params);
-      return cipher.doFinal(mbusUserKey);
-
-    } catch (final NoSuchAlgorithmException
-        | NoSuchPaddingException
-        | InvalidKeyException
-        | InvalidAlgorithmParameterException
-        | IllegalBlockSizeException
-        | BadPaddingException e) {
-      final String message = "Error encrypting M-Bus User key with M-Bus Default key for transfer.";
-      LOGGER.error(message, e);
-      throw new ProtocolAdapterException(message);
-    }
   }
 }

@@ -45,7 +45,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-class SetEncryptionKeyExchangeOnGMeterCommandExecutorTest {
+class SetKeyOnGMeterCommandExecutorTest {
 
   private final String DEVICE_IDENTIFICATION_E = "E-meter DeviceId";
   private final String DEVICE_IDENTIFICATION_G = "G-meter DeviceId";
@@ -71,7 +71,7 @@ class SetEncryptionKeyExchangeOnGMeterCommandExecutorTest {
 
   @Mock private DlmsDeviceRepository dlmsDeviceRepository;
 
-  @InjectMocks private SetEncryptionKeyExchangeOnGMeterCommandExecutor executor;
+  @InjectMocks private SetKeyOnGMeterCommandExecutor executor;
 
   @Captor ArgumentCaptor<MethodParameter> methodParameterArgumentCaptor;
 
