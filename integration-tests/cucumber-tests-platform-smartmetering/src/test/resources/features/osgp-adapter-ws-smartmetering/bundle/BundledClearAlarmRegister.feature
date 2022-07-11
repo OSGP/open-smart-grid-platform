@@ -10,6 +10,7 @@ Feature: SmartMetering Bundle - ClearAlarmRegister
       | SelectiveAccessSupported | true              |
       | Protocol                 | SMR               |
       | ProtocolVersion          | 5.1               |
+      | Port                     |              1028 |
     And device "TEST1028000000002" has alarm register "1" with some value
     And a bundle request
       | DeviceIdentification | TEST1028000000002 |
