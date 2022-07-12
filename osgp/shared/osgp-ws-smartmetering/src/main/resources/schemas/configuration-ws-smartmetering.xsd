@@ -421,7 +421,8 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+          <xsd:element name="secretType" type="tns:SecretType" />
+          <xsd:element name="close" type="xsd:boolean" minOccurs="0" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -431,6 +432,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="SetEncryptionKeyExchangeOnGMeterRequestData" type="tns:SetEncryptionKeyExchangeOnGMeterRequestData" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -450,6 +452,7 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+
   <xsd:element name="SetEncryptionKeyExchangeOnGMeterResponse">
     <xsd:complexType>
       <xsd:sequence>
