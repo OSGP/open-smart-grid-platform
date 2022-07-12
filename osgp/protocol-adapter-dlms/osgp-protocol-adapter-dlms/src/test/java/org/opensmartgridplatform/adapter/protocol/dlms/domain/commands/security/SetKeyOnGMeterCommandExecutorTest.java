@@ -20,8 +20,9 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 
 import java.io.IOException;
 import java.util.List;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -32,7 +33,6 @@ import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -49,15 +49,20 @@ class SetKeyOnGMeterCommandExecutorTest {
 
   private final String DEVICE_IDENTIFICATION_E = "E-meter DeviceId";
   private final String DEVICE_IDENTIFICATION_G = "G-meter DeviceId";
-  private final DlmsDevice DEVICE_E =
-      this.createDlmsDevice(Protocol.DSMR_4_2_2, this.DEVICE_IDENTIFICATION_E);
-  private final DlmsDevice DEVICE_G =
-      this.createDlmsDevice(Protocol.DSMR_4_2_2, this.DEVICE_IDENTIFICATION_G);
+  private final DlmsDevice DEVICE_E_DSMR4 =
+      this.createEMeter(Protocol.DSMR_4_2_2, this.DEVICE_IDENTIFICATION_E);
+  private final DlmsDevice DEVICE_G_DSMR4 =
+      this.createGMeter(Protocol.DSMR_4_2_2, this.DEVICE_IDENTIFICATION_G, "12345678", "ABC");
+  private final DlmsDevice DEVICE_E_SMR5 =
+      this.createEMeter(Protocol.SMR_5_0_0, this.DEVICE_IDENTIFICATION_E);
+  private final DlmsDevice DEVICE_G_SMR5 =
+      this.createGMeter(Protocol.SMR_5_0_0, this.DEVICE_IDENTIFICATION_G, "12345678", "ABC");
   private final byte[] MASTER_KEY =
       new byte[] {11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26};
   private final byte[] NEW_KEY = new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-
-  @Captor ArgumentCaptor<SetParameter> setParameterArgumentCaptor;
+  private final int KEY_SIZE = 16;
+  private final int KEY_DATA_SIZE_SMR5 = 26; // KEY_SIZE + 10 bytes (keyId, keySize and mac)
+  private final int CLASS_ID = 72; // M-Bus client setup
 
   @Mock private DlmsConnectionManager conn;
 
@@ -75,8 +80,9 @@ class SetKeyOnGMeterCommandExecutorTest {
 
   @Captor ArgumentCaptor<MethodParameter> methodParameterArgumentCaptor;
 
-  @Test
-  void testSetEncryptionKeyDsmr4() throws ProtocolAdapterException, IOException {
+  @ParameterizedTest
+  @ValueSource(ints = {1, 2, 3, 4})
+  void testSetEncryptionKeyDsmr4(final int channel) throws ProtocolAdapterException, IOException {
     // SETUP
     final MethodResult methodResult = mock(MethodResult.class);
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
@@ -84,7 +90,7 @@ class SetKeyOnGMeterCommandExecutorTest {
     when(this.dlmsConnection.action(any(MethodParameter.class))).thenReturn(methodResult);
     when(methodResult.getResultCode()).thenReturn(MethodResultCode.SUCCESS);
     when(this.dlmsDeviceRepository.findByDeviceIdentification(this.DEVICE_IDENTIFICATION_G))
-        .thenReturn(this.DEVICE_G);
+        .thenReturn(this.DEVICE_G_DSMR4);
     when(this.secretManagementService.generate128BitsKeyAndStoreAsNewKey(
             this.messageMetadata, this.DEVICE_IDENTIFICATION_G, G_METER_ENCRYPTION))
         .thenReturn(this.NEW_KEY);
@@ -92,11 +98,11 @@ class SetKeyOnGMeterCommandExecutorTest {
             this.messageMetadata, this.DEVICE_IDENTIFICATION_G, G_METER_MASTER))
         .thenReturn(this.MASTER_KEY);
 
-    final GMeterInfoDto gMeterInfo = new GMeterInfoDto(1, this.DEVICE_IDENTIFICATION_G);
+    final GMeterInfoDto gMeterInfo = new GMeterInfoDto(channel, this.DEVICE_IDENTIFICATION_G);
 
     // CALL
     final MethodResultCode resultCode =
-        this.executor.execute(this.conn, this.DEVICE_E, gMeterInfo, this.messageMetadata);
+        this.executor.execute(this.conn, this.DEVICE_E_DSMR4, gMeterInfo, this.messageMetadata);
 
     // VERIFY
     assertThat(resultCode).isEqualTo(MethodResultCode.SUCCESS);
@@ -104,17 +110,19 @@ class SetKeyOnGMeterCommandExecutorTest {
     final List<MethodParameter> methodParameters =
         this.methodParameterArgumentCaptor.getAllValues();
     final MethodParameter methodParameterTransfer = methodParameters.get(0);
-    assertThat(methodParameterTransfer.getClassId()).isEqualTo(72);
-    assertThat(methodParameterTransfer.getInstanceId()).isEqualTo(new ObisCode("0.1.24.1.0.255"));
+    assertThat(methodParameterTransfer.getClassId()).isEqualTo(this.CLASS_ID);
+    assertThat(methodParameterTransfer.getInstanceId()).isEqualTo(this.obisCodeForChannel(channel));
     assertThat(methodParameterTransfer.getId()).isEqualTo(8); // MethodID 8: TransferKey
+    assertThat(((byte[]) ((DataObject) methodParameterTransfer.getParameter()).getValue()))
+        .hasSize(this.KEY_SIZE);
     assertThat(methodParameterTransfer.getParameter())
         .usingRecursiveComparison()
         .isNotEqualTo(
             DataObject.newOctetStringData(
                 this.NEW_KEY)); // Note: should be different, because it's encrypted
     final MethodParameter methodParameterSet = methodParameters.get(1);
-    assertThat(methodParameterSet.getClassId()).isEqualTo(72);
-    assertThat(methodParameterSet.getInstanceId()).isEqualTo(new ObisCode("0.1.24.1.0.255"));
+    assertThat(methodParameterSet.getClassId()).isEqualTo(this.CLASS_ID);
+    assertThat(methodParameterSet.getInstanceId()).isEqualTo(this.obisCodeForChannel(channel));
     assertThat(methodParameterSet.getId()).isEqualTo(7); // MethodID 7: SetEncryptionKey
     assertThat(methodParameterSet.getParameter())
         .usingRecursiveComparison()
@@ -123,10 +131,81 @@ class SetKeyOnGMeterCommandExecutorTest {
                 this.NEW_KEY)); // Note: should be equal, because it's not encrypted
   }
 
-  private DlmsDevice createDlmsDevice(final Protocol protocol, final String deviceIdentification) {
+  @ParameterizedTest
+  @ValueSource(ints = {1, 2, 3, 4})
+  //  @CsvSource({
+  //      "1,G_METER_ENCRYPTION",
+  //      "2,G_METER_ENCRYPTION",
+  //      "3,G_METER_ENCRYPTION",
+  //      "4,G_METER_ENCRYPTION",
+  //      "1,G_METER_FIRMWARE_UPDATE_AUTHENTICATION",
+  //      "2,G_METER_OPTICAL_PORT_KEY"
+  //  })
+  void testSetEncryptionKeySmr5(final int channel) throws ProtocolAdapterException, IOException {
+    // SETUP
+    final MethodResult methodResult = mock(MethodResult.class);
+    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
+    when(this.dlmsConnection.action(any(MethodParameter.class))).thenReturn(methodResult);
+    when(methodResult.getResultCode()).thenReturn(MethodResultCode.SUCCESS);
+    when(this.dlmsDeviceRepository.findByDeviceIdentification(this.DEVICE_IDENTIFICATION_G))
+        .thenReturn(this.DEVICE_G_SMR5);
+    when(this.secretManagementService.generate128BitsKeyAndStoreAsNewKey(
+            this.messageMetadata, this.DEVICE_IDENTIFICATION_G, G_METER_ENCRYPTION))
+        .thenReturn(this.NEW_KEY);
+    when(this.secretManagementService.getKey(
+            this.messageMetadata, this.DEVICE_IDENTIFICATION_G, G_METER_MASTER))
+        .thenReturn(this.MASTER_KEY);
+
+    final GMeterInfoDto gMeterInfo = new GMeterInfoDto(channel, this.DEVICE_IDENTIFICATION_G);
+
+    // CALL
+    final MethodResultCode resultCode =
+        this.executor.execute(this.conn, this.DEVICE_E_SMR5, gMeterInfo, this.messageMetadata);
+
+    // VERIFY
+    assertThat(resultCode).isEqualTo(MethodResultCode.SUCCESS);
+    verify(this.dlmsConnection, times(2)).action(this.methodParameterArgumentCaptor.capture());
+    final List<MethodParameter> methodParameters =
+        this.methodParameterArgumentCaptor.getAllValues();
+    final MethodParameter methodParameterTransfer = methodParameters.get(0);
+    assertThat(methodParameterTransfer.getClassId()).isEqualTo(this.CLASS_ID);
+    assertThat(methodParameterTransfer.getInstanceId()).isEqualTo(this.obisCodeForChannel(channel));
+    assertThat(methodParameterTransfer.getId()).isEqualTo(8); // MethodID 8: TransferKey
+    assertThat(((byte[]) ((DataObject) methodParameterTransfer.getParameter()).getValue()))
+        .hasSize(this.KEY_DATA_SIZE_SMR5);
+    final MethodParameter methodParameterSet = methodParameters.get(1);
+    assertThat(methodParameterSet.getClassId()).isEqualTo(this.CLASS_ID);
+    assertThat(methodParameterSet.getInstanceId()).isEqualTo(this.obisCodeForChannel(channel));
+    assertThat(methodParameterSet.getId()).isEqualTo(7); // MethodID 7: SetEncryptionKey
+    assertThat(methodParameterSet.getParameter())
+        .usingRecursiveComparison()
+        .isEqualTo(
+            DataObject.newOctetStringData(
+                this.NEW_KEY)); // Note: should be equal, because it's not encrypted
+  }
+
+  private DlmsDevice createEMeter(final Protocol protocol, final String deviceIdentification) {
     final DlmsDevice device = new DlmsDevice();
     device.setProtocol(protocol);
     device.setDeviceIdentification(deviceIdentification);
     return device;
+  }
+
+  private DlmsDevice createGMeter(
+      final Protocol protocol,
+      final String deviceIdentification,
+      final String mbusIdentificationNumber,
+      final String mbusManufacturer) {
+    final DlmsDevice device = new DlmsDevice();
+    device.setProtocol(protocol);
+    device.setDeviceIdentification(deviceIdentification);
+    device.setMbusIdentificationNumber(mbusIdentificationNumber);
+    device.setMbusManufacturerIdentification(mbusManufacturer);
+    return device;
+  }
+
+  private ObisCode obisCodeForChannel(final int channel) {
+    return new ObisCode(String.format("0.%d.24.1.0.255", channel));
   }
 }

@@ -89,7 +89,7 @@ public class SetKeyOnGMeterKeyEncryptionAndMacGeneration {
    *
    * <p>The encryption is performed by applying an AES/GCM/NoPadding cipher initialized for
    * encryption with the given mbusDefaultKey and an initialization vector containing a key change
-   * counter.
+   * counter. If the kcc is null, then the number of seconds since january 2000 is used.
    *
    * @return the properly wrapped User key for a DSMR 4 M-Bus User key change.
    */
