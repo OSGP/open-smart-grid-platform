@@ -32,7 +32,7 @@ public class SetEncryptionKeyExchangeOnGMeterDataConverter
       throws FunctionalException {
 
     final SmartMeter gasDevice =
-        this.domainHelperService.findSmartMeter(value.getDeviceIdentification());
+        this.domainHelperService.findSmartMeter(value.getMbusDeviceIdentification());
 
     final Device gatewayDevice = gasDevice.getGatewayDevice();
     if (gatewayDevice == null) {

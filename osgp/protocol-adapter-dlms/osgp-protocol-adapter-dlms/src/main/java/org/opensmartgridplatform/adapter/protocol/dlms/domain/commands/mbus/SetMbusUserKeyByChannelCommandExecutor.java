@@ -19,6 +19,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -41,7 +42,7 @@ import org.springframework.stereotype.Component;
  */
 @Component()
 public class SetMbusUserKeyByChannelCommandExecutor
-    extends AbstractCommandExecutor<GMeterInfoDto, MethodResultCode> {
+    extends AbstractCommandExecutor<SetEncryptionKeyExchangeOnGMeterRequestDto, MethodResultCode> {
 
   @Autowired private ConfigurationService configurationService;
 
@@ -62,11 +63,11 @@ public class SetMbusUserKeyByChannelCommandExecutor
     this.checkActionRequestType(actionRequestDto);
     final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData =
         (SetMbusUserKeyByChannelRequestDataDto) actionRequestDto;
-    final GMeterInfoDto gMeterInfo =
+    final SetEncryptionKeyExchangeOnGMeterRequestDto setEncryptionKeyRequestData =
         this.configurationService.getMbusKeyExchangeData(
             conn, device, setMbusUserKeyByChannelRequestData, messageMetadata);
     final MethodResultCode executionResult =
-        this.execute(conn, device, gMeterInfo, messageMetadata);
+        this.execute(conn, device, setEncryptionKeyRequestData, messageMetadata);
     return this.asBundleResponse(executionResult);
   }
 
@@ -81,9 +82,10 @@ public class SetMbusUserKeyByChannelCommandExecutor
   public MethodResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final GMeterInfoDto gMeterInfo,
+      final SetEncryptionKeyExchangeOnGMeterRequestDto setEncryptionKeyRequestData,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException, FunctionalException {
-    return this.setKeyOnGMeterCommandExecutor.execute(conn, device, gMeterInfo, messageMetadata);
+    return this.setKeyOnGMeterCommandExecutor.execute(
+        conn, device, setEncryptionKeyRequestData, messageMetadata);
   }
 }

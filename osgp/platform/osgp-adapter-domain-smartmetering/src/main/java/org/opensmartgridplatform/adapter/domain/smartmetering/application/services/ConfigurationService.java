@@ -37,6 +37,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetu
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SecretType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
@@ -51,7 +52,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeSt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionQueryDto;
@@ -67,6 +67,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
@@ -505,7 +506,9 @@ public class ConfigurationService {
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
-  public void setEncryptionKeyExchangeOnGMeter(final MessageMetadata messageMetadata)
+  public void setEncryptionKeyExchangeOnGMeter(
+      final MessageMetadata messageMetadata,
+      final SetEncryptionKeyExchangeOnGMeterRequestData requestData)
       throws FunctionalException {
 
     log.info(
@@ -531,8 +534,12 @@ public class ConfigurationService {
           new GatewayDeviceNotSetForMbusDeviceException());
     }
 
-    final GMeterInfoDto requestDto =
-        new GMeterInfoDto(gasDevice.getChannel(), gasDevice.getDeviceIdentification());
+    final SetEncryptionKeyExchangeOnGMeterRequestDto requestDto =
+        new SetEncryptionKeyExchangeOnGMeterRequestDto(
+            requestData.getMbusDeviceIdentification(),
+            gasDevice.getChannel(),
+            SecretTypeDto.valueOf(requestData.getSecretType().name()),
+            requestData.getCloseOpticalPort());
 
     this.osgpCoreRequestMessageSender.send(
         requestDto,

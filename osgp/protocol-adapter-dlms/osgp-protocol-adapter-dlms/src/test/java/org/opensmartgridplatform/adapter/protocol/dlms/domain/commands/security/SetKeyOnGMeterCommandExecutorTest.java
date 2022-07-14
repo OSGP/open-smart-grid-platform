@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -41,7 +42,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
@@ -98,11 +100,13 @@ class SetKeyOnGMeterCommandExecutorTest {
             this.messageMetadata, this.DEVICE_IDENTIFICATION_G, G_METER_MASTER))
         .thenReturn(this.MASTER_KEY);
 
-    final GMeterInfoDto gMeterInfo = new GMeterInfoDto(channel, this.DEVICE_IDENTIFICATION_G);
+    final SetEncryptionKeyExchangeOnGMeterRequestDto requestDto =
+        new SetEncryptionKeyExchangeOnGMeterRequestDto(
+            this.DEVICE_IDENTIFICATION_G, channel, SecretTypeDto.G_METER_ENCRYPTION_KEY, false);
 
     // CALL
     final MethodResultCode resultCode =
-        this.executor.execute(this.conn, this.DEVICE_E_DSMR4, gMeterInfo, this.messageMetadata);
+        this.executor.execute(this.conn, this.DEVICE_E_DSMR4, requestDto, this.messageMetadata);
 
     // VERIFY
     assertThat(resultCode).isEqualTo(MethodResultCode.SUCCESS);
@@ -132,16 +136,17 @@ class SetKeyOnGMeterCommandExecutorTest {
   }
 
   @ParameterizedTest
-  @ValueSource(ints = {1, 2, 3, 4})
-  //  @CsvSource({
-  //      "1,G_METER_ENCRYPTION",
-  //      "2,G_METER_ENCRYPTION",
-  //      "3,G_METER_ENCRYPTION",
-  //      "4,G_METER_ENCRYPTION",
-  //      "1,G_METER_FIRMWARE_UPDATE_AUTHENTICATION",
-  //      "2,G_METER_OPTICAL_PORT_KEY"
-  //  })
-  void testSetEncryptionKeySmr5(final int channel) throws ProtocolAdapterException, IOException {
+  //  @ValueSource(ints = {1, 2, 3, 4})
+  @CsvSource({
+    "1,G_METER_ENCRYPTION_KEY",
+    "2,G_METER_ENCRYPTION_KEY",
+    "3,G_METER_ENCRYPTION_KEY",
+    "4,G_METER_ENCRYPTION_KEY",
+    "1,G_METER_FIRMWARE_UPDATE_AUTHENTICATION_KEY",
+    "2,G_METER_OPTICAL_PORT_KEY"
+  })
+  void testSetEncryptionKeySmr5(final int channel, final String secretType)
+      throws ProtocolAdapterException, IOException {
     // SETUP
     final MethodResult methodResult = mock(MethodResult.class);
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
@@ -157,11 +162,13 @@ class SetKeyOnGMeterCommandExecutorTest {
             this.messageMetadata, this.DEVICE_IDENTIFICATION_G, G_METER_MASTER))
         .thenReturn(this.MASTER_KEY);
 
-    final GMeterInfoDto gMeterInfo = new GMeterInfoDto(channel, this.DEVICE_IDENTIFICATION_G);
+    final SetEncryptionKeyExchangeOnGMeterRequestDto requestDto =
+        new SetEncryptionKeyExchangeOnGMeterRequestDto(
+            this.DEVICE_IDENTIFICATION_G, channel, SecretTypeDto.valueOf(secretType), false);
 
     // CALL
     final MethodResultCode resultCode =
-        this.executor.execute(this.conn, this.DEVICE_E_SMR5, gMeterInfo, this.messageMetadata);
+        this.executor.execute(this.conn, this.DEVICE_E_SMR5, requestDto, this.messageMetadata);
 
     // VERIFY
     assertThat(resultCode).isEqualTo(MethodResultCode.SUCCESS);

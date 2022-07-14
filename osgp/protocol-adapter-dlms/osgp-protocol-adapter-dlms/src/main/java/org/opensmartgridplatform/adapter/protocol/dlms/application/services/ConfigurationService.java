@@ -41,7 +41,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementVa
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionQueryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDto;
@@ -54,8 +53,10 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptio
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
@@ -247,12 +248,13 @@ public class ConfigurationService {
   public String setEncryptionKeyExchangeOnGMeter(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final GMeterInfoDto gMeterInfo,
+      final SetEncryptionKeyExchangeOnGMeterRequestDto setEncryptionKeyRequest,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
-    this.setKeyOnGMeterCommandExecutor.execute(conn, device, gMeterInfo, messageMetadata);
+    this.setKeyOnGMeterCommandExecutor.execute(
+        conn, device, setEncryptionKeyRequest, messageMetadata);
     return "Set Encryption Key Exchange On G-Meter Result is OK for device id: "
         + device.getDeviceIdentification();
   }
@@ -266,7 +268,7 @@ public class ConfigurationService {
 
     LOGGER.info("Device for Set M-Bus User Key By Channel is: {}", device);
 
-    final GMeterInfoDto gMeterInfo =
+    final SetEncryptionKeyExchangeOnGMeterRequestDto gMeterInfo =
         this.getMbusKeyExchangeData(
             conn, device, setMbusUserKeyByChannelRequestDataDto, messageMetadata);
 
@@ -276,7 +278,7 @@ public class ConfigurationService {
         + device.getDeviceIdentification();
   }
 
-  public GMeterInfoDto getMbusKeyExchangeData(
+  public SetEncryptionKeyExchangeOnGMeterRequestDto getMbusKeyExchangeData(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
       final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData,
@@ -295,8 +297,11 @@ public class ConfigurationService {
             channelElementValues.getIdentificationNumber(),
             channelElementValues.getManufacturerIdentification());
 
-    return new GMeterInfoDto(
-        setMbusUserKeyByChannelRequestData.getChannel(), mbusDevice.getDeviceIdentification());
+    return new SetEncryptionKeyExchangeOnGMeterRequestDto(
+        mbusDevice.getDeviceIdentification(),
+        setMbusUserKeyByChannelRequestData.getChannel(),
+        SecretTypeDto.G_METER_ENCRYPTION_KEY,
+        false);
   }
 
   public String setActivityCalendar(

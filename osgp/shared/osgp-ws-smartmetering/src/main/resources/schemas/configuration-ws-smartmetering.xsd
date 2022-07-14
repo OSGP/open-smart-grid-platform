@@ -421,8 +421,9 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
+          <xsd:element name="MbusDeviceIdentification" type="common:DeviceIdentification" />
           <xsd:element name="secretType" type="tns:SecretType" />
-          <xsd:element name="close" type="xsd:boolean" minOccurs="0" />
+          <xsd:element name="closeOpticalPort" type="xsd:boolean" minOccurs="0" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

@@ -36,8 +36,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.ws.schema.core.secret.management.SecretType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +47,7 @@ import org.springframework.stereotype.Component;
 
 @Component()
 public class SetKeyOnGMeterCommandExecutor
-    extends AbstractCommandExecutor<GMeterInfoDto, MethodResultCode> {
+    extends AbstractCommandExecutor<SetEncryptionKeyExchangeOnGMeterRequestDto, MethodResultCode> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SetKeyOnGMeterCommandExecutor.class);
 
@@ -92,14 +94,16 @@ public class SetKeyOnGMeterCommandExecutor
   public MethodResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final GMeterInfoDto gMeterInfo,
+      final SetEncryptionKeyExchangeOnGMeterRequestDto setEncryptionKeyRequest,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
     LOGGER.debug("SetKeyOnGMeterCommandExecutor.execute called");
 
-    final SecurityKeyType keyType = SecurityKeyType.G_METER_ENCRYPTION; // Todo: get from request
+    final SecurityKeyType keyType =
+        SecurityKeyType.fromSecretType(
+            SecretType.fromValue(setEncryptionKeyRequest.getSecretType().name()));
 
-    final String mbusDeviceIdentification = gMeterInfo.getDeviceIdentification();
+    final String mbusDeviceIdentification = setEncryptionKeyRequest.getMbusDeviceIdentification();
     final DlmsDevice mBusDevice = this.getAndValidateDevice(mbusDeviceIdentification);
 
     final byte[] newKey = this.generateNewKey(keyType, messageMetadata, mbusDeviceIdentification);
@@ -108,7 +112,7 @@ public class SetKeyOnGMeterCommandExecutor
         this.encryptKey(
             messageMetadata, mbusDeviceIdentification, device, mBusDevice, keyType, newKey);
 
-    final int channel = gMeterInfo.getChannel();
+    final int channel = setEncryptionKeyRequest.getChannel();
 
     try {
       if (keyType == G_METER_OPTICAL_PORT_KEY
