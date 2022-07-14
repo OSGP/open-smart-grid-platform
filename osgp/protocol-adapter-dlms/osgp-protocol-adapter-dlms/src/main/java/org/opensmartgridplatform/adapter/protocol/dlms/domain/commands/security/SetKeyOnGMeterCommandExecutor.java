@@ -106,7 +106,12 @@ public class SetKeyOnGMeterCommandExecutor
     final String mbusDeviceIdentification = setEncryptionKeyRequest.getMbusDeviceIdentification();
     final DlmsDevice mBusDevice = this.getAndValidateDevice(mbusDeviceIdentification);
 
-    final byte[] newKey = this.generateNewKey(keyType, messageMetadata, mbusDeviceIdentification);
+    final byte[] newKey =
+        this.generateNewKey(
+            keyType,
+            messageMetadata,
+            mbusDeviceIdentification,
+            setEncryptionKeyRequest.getCloseOpticalPort());
 
     final byte[] encryptedKey =
         this.encryptKey(
@@ -264,12 +269,17 @@ public class SetKeyOnGMeterCommandExecutor
   private byte[] generateNewKey(
       final SecurityKeyType keyType,
       final MessageMetadata messageMetadata,
-      final String mbusDeviceIdentification)
+      final String mbusDeviceIdentification,
+      final boolean closeOpticalPort)
       throws ProtocolAdapterException {
 
     if (!validKeyTypes.contains(keyType)) {
       throw new ProtocolAdapterException(
           String.format("Invalid key type %s in request to set key on g-meter", keyType.name()));
+    }
+
+    if (keyType.equals(G_METER_OPTICAL_PORT_KEY) && closeOpticalPort) {
+      return new byte[KEY_SIZE];
     }
 
     return this.secretManagementService.generate128BitsKeyAndStoreAsNewKey(

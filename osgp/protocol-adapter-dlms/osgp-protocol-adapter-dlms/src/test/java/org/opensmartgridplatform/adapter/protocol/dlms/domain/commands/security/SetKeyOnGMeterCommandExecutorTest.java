@@ -10,7 +10,9 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -20,6 +22,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 
 import java.io.IOException;
 import java.util.List;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -65,6 +68,9 @@ class SetKeyOnGMeterCommandExecutorTest {
   private final int KEY_SIZE = 16;
   private final int KEY_DATA_SIZE_SMR5 = 26; // KEY_SIZE + 10 bytes (keyId, keySize and mac)
   private final int CLASS_ID = 72; // M-Bus client setup
+  private final int METHOD_ID_DATA_SEND = 6;
+  private final int METHOD_ID_SET_ENCRYPTION_KEY = 7;
+  private final int METHOD_ID_TRANSFER_KEY = 8;
 
   @Mock private DlmsConnectionManager conn;
 
@@ -113,41 +119,32 @@ class SetKeyOnGMeterCommandExecutorTest {
     verify(this.dlmsConnection, times(2)).action(this.methodParameterArgumentCaptor.capture());
     final List<MethodParameter> methodParameters =
         this.methodParameterArgumentCaptor.getAllValues();
-    final MethodParameter methodParameterTransfer = methodParameters.get(0);
-    assertThat(methodParameterTransfer.getClassId()).isEqualTo(this.CLASS_ID);
-    assertThat(methodParameterTransfer.getInstanceId()).isEqualTo(this.obisCodeForChannel(channel));
-    assertThat(methodParameterTransfer.getId()).isEqualTo(8); // MethodID 8: TransferKey
-    assertThat(((byte[]) ((DataObject) methodParameterTransfer.getParameter()).getValue()))
-        .hasSize(this.KEY_SIZE);
-    assertThat(methodParameterTransfer.getParameter())
-        .usingRecursiveComparison()
-        .isNotEqualTo(
-            DataObject.newOctetStringData(
-                this.NEW_KEY)); // Note: should be different, because it's encrypted
-    final MethodParameter methodParameterSet = methodParameters.get(1);
-    assertThat(methodParameterSet.getClassId()).isEqualTo(this.CLASS_ID);
-    assertThat(methodParameterSet.getInstanceId()).isEqualTo(this.obisCodeForChannel(channel));
-    assertThat(methodParameterSet.getId()).isEqualTo(7); // MethodID 7: SetEncryptionKey
-    assertThat(methodParameterSet.getParameter())
-        .usingRecursiveComparison()
-        .isEqualTo(
-            DataObject.newOctetStringData(
-                this.NEW_KEY)); // Note: should be equal, because it's not encrypted
+
+    // Verify parameters in call to perform transfer_key (note: new key is encrypted)
+    this.verifyMethodParameter(
+        methodParameters.get(0), channel, this.METHOD_ID_TRANSFER_KEY, this.KEY_SIZE, false);
+
+    // Verify parameters in call to perform set_encryption_key (note: new key is not encrypted)
+    this.verifyMethodParameter(
+        methodParameters.get(1), channel, this.METHOD_ID_SET_ENCRYPTION_KEY, this.KEY_SIZE, true);
   }
 
   @ParameterizedTest
   //  @ValueSource(ints = {1, 2, 3, 4})
   @CsvSource({
-    "1,G_METER_ENCRYPTION_KEY",
-    "2,G_METER_ENCRYPTION_KEY",
-    "3,G_METER_ENCRYPTION_KEY",
-    "4,G_METER_ENCRYPTION_KEY",
-    "1,G_METER_FIRMWARE_UPDATE_AUTHENTICATION_KEY",
-    "2,G_METER_OPTICAL_PORT_KEY"
+    "1,G_METER_ENCRYPTION_KEY,false",
+    "2,G_METER_ENCRYPTION_KEY,false",
+    "3,G_METER_ENCRYPTION_KEY,false",
+    "4,G_METER_ENCRYPTION_KEY,false",
+    "1,G_METER_FIRMWARE_UPDATE_AUTHENTICATION_KEY,false",
+    "2,G_METER_OPTICAL_PORT_KEY,false",
+    "3,G_METER_OPTICAL_PORT_KEY,true"
   })
-  void testSetEncryptionKeySmr5(final int channel, final String secretType)
+  void testSetEncryptionKeySmr5(
+      final int channel, final String secretType, final boolean closeOpticalPort)
       throws ProtocolAdapterException, IOException {
     // SETUP
+    final SecretTypeDto secretTypeDto = SecretTypeDto.valueOf(secretType);
     final MethodResult methodResult = mock(MethodResult.class);
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
@@ -155,16 +152,22 @@ class SetKeyOnGMeterCommandExecutorTest {
     when(methodResult.getResultCode()).thenReturn(MethodResultCode.SUCCESS);
     when(this.dlmsDeviceRepository.findByDeviceIdentification(this.DEVICE_IDENTIFICATION_G))
         .thenReturn(this.DEVICE_G_SMR5);
-    when(this.secretManagementService.generate128BitsKeyAndStoreAsNewKey(
-            this.messageMetadata, this.DEVICE_IDENTIFICATION_G, G_METER_ENCRYPTION))
-        .thenReturn(this.NEW_KEY);
     when(this.secretManagementService.getKey(
             this.messageMetadata, this.DEVICE_IDENTIFICATION_G, G_METER_MASTER))
         .thenReturn(this.MASTER_KEY);
+    if (!secretTypeDto.equals(SecretTypeDto.G_METER_OPTICAL_PORT_KEY) || !closeOpticalPort) {
+      // When the optical port has to be closed, no new key needs to be generated.
+      when(this.secretManagementService.generate128BitsKeyAndStoreAsNewKey(
+              eq(this.messageMetadata), eq(this.DEVICE_IDENTIFICATION_G), any()))
+          .thenReturn(this.NEW_KEY);
+    }
 
     final SetEncryptionKeyExchangeOnGMeterRequestDto requestDto =
         new SetEncryptionKeyExchangeOnGMeterRequestDto(
-            this.DEVICE_IDENTIFICATION_G, channel, SecretTypeDto.valueOf(secretType), false);
+            this.DEVICE_IDENTIFICATION_G,
+            channel,
+            SecretTypeDto.valueOf(secretType),
+            closeOpticalPort);
 
     // CALL
     final MethodResultCode resultCode =
@@ -172,24 +175,91 @@ class SetKeyOnGMeterCommandExecutorTest {
 
     // VERIFY
     assertThat(resultCode).isEqualTo(MethodResultCode.SUCCESS);
-    verify(this.dlmsConnection, times(2)).action(this.methodParameterArgumentCaptor.capture());
-    final List<MethodParameter> methodParameters =
-        this.methodParameterArgumentCaptor.getAllValues();
-    final MethodParameter methodParameterTransfer = methodParameters.get(0);
-    assertThat(methodParameterTransfer.getClassId()).isEqualTo(this.CLASS_ID);
-    assertThat(methodParameterTransfer.getInstanceId()).isEqualTo(this.obisCodeForChannel(channel));
-    assertThat(methodParameterTransfer.getId()).isEqualTo(8); // MethodID 8: TransferKey
-    assertThat(((byte[]) ((DataObject) methodParameterTransfer.getParameter()).getValue()))
-        .hasSize(this.KEY_DATA_SIZE_SMR5);
-    final MethodParameter methodParameterSet = methodParameters.get(1);
-    assertThat(methodParameterSet.getClassId()).isEqualTo(this.CLASS_ID);
-    assertThat(methodParameterSet.getInstanceId()).isEqualTo(this.obisCodeForChannel(channel));
-    assertThat(methodParameterSet.getId()).isEqualTo(7); // MethodID 7: SetEncryptionKey
-    assertThat(methodParameterSet.getParameter())
-        .usingRecursiveComparison()
-        .isEqualTo(
-            DataObject.newOctetStringData(
-                this.NEW_KEY)); // Note: should be equal, because it's not encrypted
+
+    if (secretTypeDto.equals(SecretTypeDto.G_METER_ENCRYPTION_KEY)) {
+
+      verify(this.dlmsConnection, times(2)).action(this.methodParameterArgumentCaptor.capture());
+      final List<MethodParameter> methodParameters =
+          this.methodParameterArgumentCaptor.getAllValues();
+
+      // Verify parameters in call to perform transfer_key (note: new key is encrypted)
+      this.verifyMethodParameter(
+          methodParameters.get(0),
+          channel,
+          this.METHOD_ID_TRANSFER_KEY,
+          this.KEY_DATA_SIZE_SMR5,
+          false);
+
+      // Verify parameters in call to perform set_encryption_key (note: new key is not encrypted)
+      this.verifyMethodParameter(
+          methodParameters.get(1), channel, this.METHOD_ID_SET_ENCRYPTION_KEY, this.KEY_SIZE, true);
+
+    } else {
+
+      verify(this.dlmsConnection, times(1)).action(this.methodParameterArgumentCaptor.capture());
+      final List<MethodParameter> methodParameters =
+          this.methodParameterArgumentCaptor.getAllValues();
+
+      // Verify parameters in call to perform data_send (note: new key is encrypted)
+      this.verifyMethodParameter(
+          methodParameters.get(0),
+          channel,
+          this.METHOD_ID_DATA_SEND,
+          this.KEY_DATA_SIZE_SMR5,
+          false);
+    }
+  }
+
+  @Test
+  void testSetEncryptionKeyWithUnknownDevice() {
+    // SETUP
+    when(this.dlmsDeviceRepository.findByDeviceIdentification(this.DEVICE_IDENTIFICATION_G))
+        .thenReturn(null);
+
+    final SetEncryptionKeyExchangeOnGMeterRequestDto requestDto =
+        new SetEncryptionKeyExchangeOnGMeterRequestDto(
+            this.DEVICE_IDENTIFICATION_G, 1, SecretTypeDto.G_METER_ENCRYPTION_KEY, false);
+
+    // CALL
+    assertThrows(
+        ProtocolAdapterException.class,
+        () ->
+            this.executor.execute(this.conn, this.DEVICE_E_SMR5, requestDto, this.messageMetadata));
+  }
+
+  @Test
+  void testSetEncryptionKeyWithInvalidKeyType() {
+    // SETUP
+    when(this.dlmsDeviceRepository.findByDeviceIdentification(this.DEVICE_IDENTIFICATION_G))
+        .thenReturn(this.DEVICE_G_SMR5);
+
+    final SetEncryptionKeyExchangeOnGMeterRequestDto requestDto =
+        new SetEncryptionKeyExchangeOnGMeterRequestDto(
+            this.DEVICE_IDENTIFICATION_G, 1, SecretTypeDto.E_METER_MASTER_KEY, false);
+
+    // CALL
+    assertThrows(
+        ProtocolAdapterException.class,
+        () ->
+            this.executor.execute(this.conn, this.DEVICE_E_SMR5, requestDto, this.messageMetadata));
+  }
+
+  @Test
+  void testSetEncryptionKeyWithInvalidCombinationOfProtocolAndKeyType() {
+    // SETUP
+    when(this.dlmsDeviceRepository.findByDeviceIdentification(this.DEVICE_IDENTIFICATION_G))
+        .thenReturn(this.DEVICE_G_DSMR4);
+
+    final SetEncryptionKeyExchangeOnGMeterRequestDto requestDto =
+        new SetEncryptionKeyExchangeOnGMeterRequestDto(
+            this.DEVICE_IDENTIFICATION_G, 1, SecretTypeDto.G_METER_OPTICAL_PORT_KEY, false);
+
+    // CALL
+    assertThrows(
+        ProtocolAdapterException.class,
+        () ->
+            this.executor.execute(
+                this.conn, this.DEVICE_E_DSMR4, requestDto, this.messageMetadata));
   }
 
   private DlmsDevice createEMeter(final Protocol protocol, final String deviceIdentification) {
@@ -214,5 +284,31 @@ class SetKeyOnGMeterCommandExecutorTest {
 
   private ObisCode obisCodeForChannel(final int channel) {
     return new ObisCode(String.format("0.%d.24.1.0.255", channel));
+  }
+
+  private void verifyMethodParameter(
+      final MethodParameter methodParameter,
+      final int channel,
+      final int methodId,
+      final int expectedKeyDataSize,
+      final boolean shouldBeEqualToNewKey) {
+    assertThat(methodParameter.getClassId()).isEqualTo(this.CLASS_ID);
+    assertThat(methodParameter.getInstanceId()).isEqualTo(this.obisCodeForChannel(channel));
+    assertThat(methodParameter.getId()).isEqualTo(methodId);
+
+    assertThat(((byte[]) ((DataObject) methodParameter.getParameter()).getValue()))
+        .hasSize(expectedKeyDataSize);
+
+    if (shouldBeEqualToNewKey) {
+      assertThat(methodParameter.getParameter())
+          .withFailMessage("The unencrypted key should be equal to the original new key")
+          .usingRecursiveComparison()
+          .isEqualTo(DataObject.newOctetStringData(this.NEW_KEY));
+    } else {
+      assertThat(methodParameter.getParameter())
+          .withFailMessage("The encrypted key should not be equal to the original new key")
+          .usingRecursiveComparison()
+          .isNotEqualTo(DataObject.newOctetStringData(this.NEW_KEY));
+    }
   }
 }
