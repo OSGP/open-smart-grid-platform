@@ -23,28 +23,35 @@ Feature: SmartMetering Configuration - Exchange User Key on M-Bus Device
   @Skip
   Scenario: Exchange user key on a gas device with no existing user key
     Given a dlms device
-      | DeviceIdentification | TEST2560000000001 |
-      | DeviceType           | SMART_METER_E     |
+      | DeviceIdentification | <DeviceIdDlms> |
+      | DeviceType           | SMART_METER_E  |
+      | Protocol             | <Protocol>     |
+      | ProtocolVersion      | <Version>      |
     And a dlms device
-      | DeviceIdentification           | TESTG102411111111 |
-      | DeviceType                     | SMART_METER_G     |
-      | GatewayDeviceIdentification    | TEST2560000000001 |
-      | Channel                        |                 1 |
-      | MbusIdentificationNumber       |          24111111 |
-      | MbusManufacturerIdentification | LGB               |
+      | DeviceIdentification           | <DeviceIdMbus> |
+      | DeviceType                     | SMART_METER_G  |
+      | GatewayDeviceIdentification    | <DeviceIdDlms> |
+      | Channel                        | 1              |
+      | MbusIdentificationNumber       | <IdNumber>     |
+      | MbusManufacturerIdentification | LGB            |
     When the exchange user key request is received
-      | DeviceIdentification | TESTG102411111111 |
-    Then a valid m-bus user key is stored
-      | DeviceIdentification | TESTG102411111111 |
-
-  Scenario: Exchange user key on a gas device with existing user key
-    When the exchange user key request is received
-      | DeviceIdentification | TESTG102400000001 |
+      | DeviceIdentification | <DeviceIdMbus>     |
+      | SecretType           | <SecretType>       |
+      | CloseOpticalPort     | <CloseOpticalPort> |
     Then the exchange user key response should be returned
-      | DeviceIdentification | TESTG102400000001 |
-      | Result               | OK                |
-    And a valid m-bus user key is stored
-      | DeviceIdentification | TESTG102400000001 |
+      | DeviceIdentification | <DeviceIdMbus> |
+      | Result               | OK             |
+    And <StoredKeyCount> valid m-bus keys are stored
+      | DeviceIdentification | <DeviceIdMbus> |
+      | SecretType           | <SecretType>   |
+
+    Examples:
+      | Protocol | Version | DeviceIdDlms      | DeviceIdMbus      | IdNumber | SecretType                                 | CloseOpticalPort | StoredKeyCount |
+      | DSMR     | 4.2.2   | TEST1024000000001 | TESTG102400000001 | 24000000 | G_METER_ENCRYPTION_KEY                     | false            | 1              |
+      | SMR      | 5.0.0   | TEST1027000000001 | TESTG102700000001 | 27000000 | G_METER_ENCRYPTION_KEY                     | false            | 1              |
+      | SMR      | 5.0.0   | TEST1027000000001 | TESTG102700000001 | 27000000 | G_METER_FIRMWARE_UPDATE_AUTHENTICATION_KEY | false            | 1              |
+      | SMR      | 5.0.0   | TEST1027000000001 | TESTG102700000001 | 27000000 | G_METER_OPTICAL_PORT_KEY                   | false            | 1              |
+      | SMR      | 5.0.0   | TEST1027000000001 | TESTG102700000001 | 27000000 | G_METER_OPTICAL_PORT_KEY                   | true             | 0              |
 
   Scenario: Exchange user key on an m-bus device identified by channel
     Given a dlms device
@@ -64,5 +71,6 @@ Feature: SmartMetering Configuration - Exchange User Key on M-Bus Device
     Then the set m-bus user key by channel response should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
-    And a valid m-bus user key is stored
-      | DeviceIdentification | TESTG101205673117 |
+    And a valid m-bus key is stored
+      | DeviceIdentification | TESTG101205673117      |
+      | SecretType           | G_METER_ENCRYPTION_KEY |

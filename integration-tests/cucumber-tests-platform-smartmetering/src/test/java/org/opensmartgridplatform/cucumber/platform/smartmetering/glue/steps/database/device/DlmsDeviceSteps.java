@@ -469,8 +469,9 @@ public class DlmsDeviceSteps {
         .isNotEqualTo(receivedMbusDefaultKey);
   }
 
-  @Then("^a valid m-bus user key is stored$")
-  public void aValidMbusUserKeyIsStored(final Map<String, String> settings) {
+  @Then("^(\\d+) valid m-bus keys are stored$")
+  public void aValidMbusUserKeyIsStored(
+      final int storedKeyCount, final Map<String, String> settings) {
     final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
     final String deviceIdentification = settings.get(keyDeviceIdentification);
     assertThat(deviceIdentification)
@@ -478,6 +479,14 @@ public class DlmsDeviceSteps {
             "The M-Bus device identification must be in the step data for key "
                 + keyDeviceIdentification)
         .isNotNull();
+
+    final String keyType = settings.get(PlatformSmartmeteringKeys.SECRET_TYPE);
+    assertThat(keyType)
+        .as(
+            "The keyType must be in the step data with key "
+                + PlatformSmartmeteringKeys.SECRET_TYPE)
+        .isNotNull();
+    final SecretType secretType = SecretType.valueOf(keyType);
 
     final String deviceDescription = "M-Bus device with identification " + deviceIdentification;
     final DlmsDevice dlmsDevice =
@@ -487,28 +496,31 @@ public class DlmsDeviceSteps {
     final List<DbEncryptedSecret> securityKeys = this.findAllSecretsForDevice(deviceIdentification);
 
     int numberOfMbusDefaultKeys = 0;
-    int numberOfMbusUserKeys = 0;
-    int numberOfValidMbusUserKeys = 0;
+    int numberOfMbusKeys = 0;
+    int numberOfActiveMbusKeys = 0;
 
     for (final DbEncryptedSecret securityKey : securityKeys) {
-      switch (securityKey.getSecretType()) {
-        case G_METER_MASTER_KEY:
-          numberOfMbusDefaultKeys += 1;
-          break;
-        case G_METER_ENCRYPTION_KEY:
-          numberOfMbusUserKeys += 1;
-          if (securityKey.getSecretStatus().equals(SecretStatus.ACTIVE)) {
-            numberOfValidMbusUserKeys += 1;
-          }
-          break;
-        default:
-          // other keys are not counted
+      if (securityKey.getSecretType().equals(G_METER_MASTER_KEY)) {
+        numberOfMbusDefaultKeys += 1;
+      } else if (securityKey.getSecretType().equals(secretType)) {
+        numberOfMbusKeys += 1;
+        if (securityKey.getSecretStatus().equals(SecretStatus.ACTIVE)) {
+          numberOfActiveMbusKeys += 1;
+        }
       }
     }
 
     assertThat(numberOfMbusDefaultKeys).as("Number of M-Bus Default keys stored").isEqualTo(1);
-    assertThat(numberOfMbusUserKeys > 0).as("At least one M-Bus User key must be stored").isTrue();
-    assertThat(numberOfValidMbusUserKeys).as("Number of valid M-Bus User keys stored").isEqualTo(1);
+    assertThat(numberOfMbusKeys >= storedKeyCount)
+        .as(
+            "At least " + storedKeyCount + " M-Bus key of the specified type must be stored",
+            storedKeyCount)
+        .isTrue();
+    if (storedKeyCount > 0) {
+      assertThat(numberOfActiveMbusKeys)
+          .as("Number of active M-Bus keys of the specified type stored")
+          .isEqualTo(1);
+    }
   }
 
   @Then(
