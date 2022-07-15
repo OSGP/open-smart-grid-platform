@@ -35,7 +35,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionExce
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -80,7 +79,7 @@ public class SetKeyOnGMeterCommandExecutor
   @Autowired private DlmsDeviceRepository dlmsDeviceRepository;
 
   public SetKeyOnGMeterCommandExecutor() {
-    super(GMeterInfoDto.class);
+    super(SetEncryptionKeyExchangeOnGMeterRequestDto.class);
   }
 
   @Override
