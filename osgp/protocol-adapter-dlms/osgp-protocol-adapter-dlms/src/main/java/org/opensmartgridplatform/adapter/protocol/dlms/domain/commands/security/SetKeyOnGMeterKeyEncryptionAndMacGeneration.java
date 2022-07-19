@@ -37,7 +37,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 @Slf4j
 public class SetKeyOnGMeterKeyEncryptionAndMacGeneration {
 
-  private static final int IV_LENGTH = 12;
+  private static final int IV_LENGTH_SMR5 = 12;
+  private static final int IV_LENGTH_DSMR4 = 16;
+  private static final int KCC_LENGTH = 4;
   private static final int MBUS_VERSION = 6;
   private static final int MEDIUM = 3; // Gas
 
@@ -63,7 +65,7 @@ public class SetKeyOnGMeterKeyEncryptionAndMacGeneration {
       final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 
       @SuppressWarnings("java:S3329") // IV is always the same, this is defined in the P2 standard.
-      final IvParameterSpec params = new IvParameterSpec(new byte[16]);
+      final IvParameterSpec params = new IvParameterSpec(new byte[IV_LENGTH_DSMR4]);
 
       cipher.init(Cipher.ENCRYPT_MODE, secretkeySpec, params);
       return cipher.doFinal(mbusUserKey);
@@ -124,7 +126,7 @@ public class SetKeyOnGMeterKeyEncryptionAndMacGeneration {
   protected byte[] createIV(
       final DlmsDevice device, final Integer kcc, final int mBusVersion, final int medium)
       throws ProtocolAdapterException {
-    return ByteBuffer.allocate(IV_LENGTH)
+    return ByteBuffer.allocate(IV_LENGTH_SMR5)
         .put(Arrays.reverse(this.getMbusIdentificationNnumber(device)))
         .put(this.getMbusManufacturerId(device))
         .put((byte) mBusVersion)
@@ -136,7 +138,7 @@ public class SetKeyOnGMeterKeyEncryptionAndMacGeneration {
   private byte[] getKCC(final Integer kcc) throws ProtocolAdapterException {
     if (kcc != null) {
       final byte[] byteArrayWithKcc = BigInteger.valueOf(kcc).toByteArray();
-      return this.addPadding(byteArrayWithKcc, 4);
+      return this.addPadding(byteArrayWithKcc, KCC_LENGTH);
     } else {
       // If kcc is null, then use number of seconds since 2000
       final LocalDateTime january2000 = LocalDateTime.of(2000, 1, 1, 0, 0);

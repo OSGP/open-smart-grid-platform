@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2022 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -278,6 +278,7 @@ public class SetKeyOnGMeterCommandExecutor
     }
 
     if (keyType.equals(G_METER_OPTICAL_PORT_KEY) && closeOpticalPort) {
+      // To close the optical port, a key of 16 zero bytes is used
       return new byte[KEY_SIZE];
     }
 

@@ -130,7 +130,6 @@ class SetKeyOnGMeterCommandExecutorTest {
   }
 
   @ParameterizedTest
-  //  @ValueSource(ints = {1, 2, 3, 4})
   @CsvSource({
     "1,G_METER_ENCRYPTION_KEY,false",
     "2,G_METER_ENCRYPTION_KEY,false",
