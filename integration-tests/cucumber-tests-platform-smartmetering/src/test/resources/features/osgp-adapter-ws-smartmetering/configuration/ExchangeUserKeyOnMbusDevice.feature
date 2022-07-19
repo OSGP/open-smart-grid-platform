@@ -4,24 +4,7 @@ Feature: SmartMetering Configuration - Exchange User Key on M-Bus Device
   I want to be able to exchange the user key on an M-Bus device coupled on a device
   In order to setup secure communications between the M-Bus device and the host
 
-  Background: 
-    Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
-    And a dlms device
-      | DeviceIdentification           | TESTG102400000001 |
-      | DeviceType                     | SMART_METER_G     |
-      | GatewayDeviceIdentification    | TEST1024000000001 |
-      | Channel                        |                 1 |
-      | MbusIdentificationNumber       |          24000000 |
-      | MbusManufacturerIdentification | LGB               |
-      | MbusUserKey                    | MBUS_USER_KEY     |
-
-  # This test runs mostly OK in isolation. However, when run with other tests it fails.
-  # Somehow the M-Bus User key is stored in the database, but is not seen in the device
-  # as it is inspected in Then-step: "a valid m-bus user key is stored".
-  @Skip
-  Scenario: Exchange user key on a gas device with no existing user key
+  Scenario Outline: Exchange <SecretType> on a <Protocol> <Version> device
     Given a dlms device
       | DeviceIdentification | <DeviceIdDlms> |
       | DeviceType           | SMART_METER_E  |
@@ -71,6 +54,6 @@ Feature: SmartMetering Configuration - Exchange User Key on M-Bus Device
     Then the set m-bus user key by channel response should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
-    And a valid m-bus key is stored
+    And 1 valid m-bus keys are stored
       | DeviceIdentification | TESTG101205673117      |
       | SecretType           | G_METER_ENCRYPTION_KEY |
