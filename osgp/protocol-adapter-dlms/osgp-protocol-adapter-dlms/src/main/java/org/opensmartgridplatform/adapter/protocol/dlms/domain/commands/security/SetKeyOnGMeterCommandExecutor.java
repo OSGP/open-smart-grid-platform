@@ -152,11 +152,7 @@ public class SetKeyOnGMeterCommandExecutor
       throws IOException {
     final MethodParameter methodDataSend = this.getDataSendMethodParameter(channel, encryptedKey);
     conn.getDlmsMessageListener()
-        .setDescription(
-            "SetKeyOnGMeter for channel "
-                + channel
-                + ", call M-Bus Setup data_send method: "
-                + JdlmsObjectToStringUtil.describeMethod(methodDataSend));
+        .setDescription(this.describeMethod(channel, "data_send", methodDataSend));
 
     return conn.getConnection().action(methodDataSend);
   }
@@ -193,11 +189,7 @@ public class SetKeyOnGMeterCommandExecutor
     final MethodParameter methodSetEncryptionKey =
         this.getSetEncryptionKeyMethodParameter(OBIS_HASHMAP.get(channel), encryptedKey);
     conn.getDlmsMessageListener()
-        .setDescription(
-            "SetKeyOnGMeter for channel "
-                + channel
-                + ", call M-Bus Setup set_encryption_key method: "
-                + JdlmsObjectToStringUtil.describeMethod(methodSetEncryptionKey));
+        .setDescription(this.describeMethod(channel, "set_encryption_key", methodSetEncryptionKey));
     return conn.getConnection().action(methodSetEncryptionKey);
   }
 
@@ -207,11 +199,7 @@ public class SetKeyOnGMeterCommandExecutor
     final MethodParameter methodTransferKey =
         this.getTransferKeyMethodParameter(channel, encryptedKey);
     conn.getDlmsMessageListener()
-        .setDescription(
-            "SetKeyOnGMeter for channel "
-                + channel
-                + ", call M-Bus Setup transfer_key method: "
-                + JdlmsObjectToStringUtil.describeMethod(methodTransferKey));
+        .setDescription(this.describeMethod(channel, "transfer_key", methodTransferKey));
 
     return conn.getConnection().action(methodTransferKey);
   }
@@ -316,5 +304,15 @@ public class SetKeyOnGMeterCommandExecutor
               "Unsupported combination of protocol %s %s and key type %s in request to set key on g-meter",
               protocol.getName(), protocol.getVersion(), keyType.name()));
     }
+  }
+
+  private String describeMethod(
+      final int channel, final String method, final MethodParameter parameter) {
+    return "SetKeyOnGMeter for channel "
+        + channel
+        + ", call M-Bus Setup "
+        + method
+        + ": "
+        + JdlmsObjectToStringUtil.describeMethod(parameter);
   }
 }
