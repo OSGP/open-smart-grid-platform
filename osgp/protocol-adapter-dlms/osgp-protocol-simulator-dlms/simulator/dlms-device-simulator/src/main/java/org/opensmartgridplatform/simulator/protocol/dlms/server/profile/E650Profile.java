@@ -71,7 +71,7 @@ public class E650Profile {
 
   @Bean
   public KeyPathProvider keyPathProvider() {
-    return new KeyPathProvider("", "", "");
+    return new KeyPathProvider(null, null, null);
   }
 
   @Bean

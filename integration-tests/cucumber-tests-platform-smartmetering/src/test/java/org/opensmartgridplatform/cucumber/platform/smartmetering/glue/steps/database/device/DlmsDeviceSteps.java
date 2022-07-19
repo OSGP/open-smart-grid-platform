@@ -116,6 +116,8 @@ public class DlmsDeviceSteps {
 
   @Autowired private JreEncryptionProvider jreEncryptionProvider;
 
+  @Autowired private SimulatorDeviceRegister simulatorDeviceRegister;
+
   private final Map<String, SecurityKeyType> securityKeyTypesByInputName = new HashMap<>();
 
   private final List<SecretBuilder> defaultSecretBuilders =
@@ -162,6 +164,20 @@ public class DlmsDeviceSteps {
     this.createDeviceAuthorisationInCoreDatabase(device);
 
     this.createDlmsDeviceInProtocolAdapterDatabase(inputSettings);
+  }
+
+  /*
+   * This methodd makes sure that every used device, gets a unique logicalId for the simulator
+   * the logical id is used to make sure the simulator is unique
+   */
+  private void setLogicalDeviceId(final DlmsDevice dlmsDevice) {
+    if (dlmsDevice.getPort() == null || dlmsDevice.getDeviceIdentification() == null) {
+      return;
+    }
+    final Long logicalId =
+        this.simulatorDeviceRegister.getLogicalId(
+            dlmsDevice.getPort(), dlmsDevice.getDeviceIdentification());
+    dlmsDevice.setLogicalId(logicalId);
   }
 
   @Given("^all mbus channels are occupied for E-meter \"([^\"]*)\"$")
@@ -656,9 +672,10 @@ public class DlmsDeviceSteps {
     final DlmsDeviceBuilder dlmsDeviceBuilder =
         new DlmsDeviceBuilder().setProtocolName(protocolInfo);
     final DlmsDevice dlmsDevice = dlmsDeviceBuilder.withSettings(inputSettings).build();
-    this.dlmsDeviceRepository.save(dlmsDevice);
+    this.setLogicalDeviceId(dlmsDevice);
+    final DlmsDevice createdDlmsDevice = this.dlmsDeviceRepository.save(dlmsDevice);
 
-    this.createDlmsDeviceInSecretManagementDatabase(dlmsDevice, inputSettings);
+    this.createDlmsDeviceInSecretManagementDatabase(createdDlmsDevice, inputSettings);
   }
 
   private void createDlmsDeviceInSecretManagementDatabase(
