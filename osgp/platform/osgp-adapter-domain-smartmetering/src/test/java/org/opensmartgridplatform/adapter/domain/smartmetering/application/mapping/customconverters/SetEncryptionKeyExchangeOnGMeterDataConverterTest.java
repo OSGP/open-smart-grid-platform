@@ -25,7 +25,7 @@ import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SecretType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,7 +51,7 @@ class SetEncryptionKeyExchangeOnGMeterDataConverterTest {
         new SetEncryptionKeyExchangeOnGMeterRequestData(
             mbusDeviceIdentification, secretType, closeOpticalPort);
 
-    final SetEncryptionKeyExchangeOnGMeterRequestDto convertedData =
+    final SetKeyOnGMeterRequestDto convertedData =
         this.setEncryptionKeyExchangeOnGMeterDataConverter.convert(data, new SmartMeter());
 
     assertThat(convertedData).isNotNull();

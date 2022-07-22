@@ -67,7 +67,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
@@ -534,8 +534,8 @@ public class ConfigurationService {
           new GatewayDeviceNotSetForMbusDeviceException());
     }
 
-    final SetEncryptionKeyExchangeOnGMeterRequestDto requestDto =
-        new SetEncryptionKeyExchangeOnGMeterRequestDto(
+    final SetKeyOnGMeterRequestDto requestDto =
+        new SetKeyOnGMeterRequestDto(
             requestData.getMbusDeviceIdentification(),
             gasDevice.getChannel(),
             SecretTypeDto.valueOf(requestData.getSecretType().name()),

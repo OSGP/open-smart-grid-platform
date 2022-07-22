@@ -13,7 +13,7 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -23,12 +23,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class SetEncryptionKeyExchangeOnGMeterDataConverter
     implements CustomValueToDtoConverter<
-        SetEncryptionKeyExchangeOnGMeterRequestData, SetEncryptionKeyExchangeOnGMeterRequestDto> {
+        SetEncryptionKeyExchangeOnGMeterRequestData, SetKeyOnGMeterRequestDto> {
 
   @Autowired private DomainHelperService domainHelperService;
 
   @Override
-  public SetEncryptionKeyExchangeOnGMeterRequestDto convert(
+  public SetKeyOnGMeterRequestDto convert(
       final SetEncryptionKeyExchangeOnGMeterRequestData value, final SmartMeter smartMeter)
       throws FunctionalException {
 
@@ -49,7 +49,7 @@ public class SetEncryptionKeyExchangeOnGMeterDataConverter
           new AssertionError("Meter for gas reads should have an energy meter as gateway device."));
     }
 
-    return new SetEncryptionKeyExchangeOnGMeterRequestDto(
+    return new SetKeyOnGMeterRequestDto(
         gasDevice.getDeviceIdentification(),
         gasDevice.getChannel(),
         SecretTypeDto.values()[value.getSecretType().ordinal()],

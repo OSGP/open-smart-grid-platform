@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequestData;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 
@@ -37,7 +38,9 @@ public class SetEncryptionKeyExchangeOnGMeterRequestFactory {
         SecretType.valueOf(requestParameters.get(PlatformSmartmeteringKeys.SECRET_TYPE)));
     data.setCloseOpticalPort(
         Boolean.valueOf(
-            requestParameters.getOrDefault(PlatformSmartmeteringKeys.CLOSE_OPTICAL_PORT, "false")));
+            requestParameters.getOrDefault(
+                PlatformSmartmeteringKeys.CLOSE_OPTICAL_PORT,
+                String.valueOf(PlatformSmartmeteringDefaults.CLOSE_OPTICAL_PORT))));
 
     setEncryptionKeyExchangeOnGMeterRequest.setSetEncryptionKeyExchangeOnGMeterRequestData(data);
 

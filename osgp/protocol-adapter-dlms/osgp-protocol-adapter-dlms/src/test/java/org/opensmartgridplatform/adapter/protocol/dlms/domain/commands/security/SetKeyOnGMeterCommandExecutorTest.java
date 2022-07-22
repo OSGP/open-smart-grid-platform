@@ -46,7 +46,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsD
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
@@ -106,8 +106,8 @@ class SetKeyOnGMeterCommandExecutorTest {
             this.messageMetadata, this.DEVICE_IDENTIFICATION_G, G_METER_MASTER))
         .thenReturn(this.MASTER_KEY);
 
-    final SetEncryptionKeyExchangeOnGMeterRequestDto requestDto =
-        new SetEncryptionKeyExchangeOnGMeterRequestDto(
+    final SetKeyOnGMeterRequestDto requestDto =
+        new SetKeyOnGMeterRequestDto(
             this.DEVICE_IDENTIFICATION_G, channel, SecretTypeDto.G_METER_ENCRYPTION_KEY, false);
 
     // CALL
@@ -161,8 +161,8 @@ class SetKeyOnGMeterCommandExecutorTest {
           .thenReturn(this.NEW_KEY);
     }
 
-    final SetEncryptionKeyExchangeOnGMeterRequestDto requestDto =
-        new SetEncryptionKeyExchangeOnGMeterRequestDto(
+    final SetKeyOnGMeterRequestDto requestDto =
+        new SetKeyOnGMeterRequestDto(
             this.DEVICE_IDENTIFICATION_G,
             channel,
             SecretTypeDto.valueOf(secretType),
@@ -215,8 +215,8 @@ class SetKeyOnGMeterCommandExecutorTest {
     when(this.dlmsDeviceRepository.findByDeviceIdentification(this.DEVICE_IDENTIFICATION_G))
         .thenReturn(null);
 
-    final SetEncryptionKeyExchangeOnGMeterRequestDto requestDto =
-        new SetEncryptionKeyExchangeOnGMeterRequestDto(
+    final SetKeyOnGMeterRequestDto requestDto =
+        new SetKeyOnGMeterRequestDto(
             this.DEVICE_IDENTIFICATION_G, 1, SecretTypeDto.G_METER_ENCRYPTION_KEY, false);
 
     // CALL
@@ -232,8 +232,8 @@ class SetKeyOnGMeterCommandExecutorTest {
     when(this.dlmsDeviceRepository.findByDeviceIdentification(this.DEVICE_IDENTIFICATION_G))
         .thenReturn(this.DEVICE_G_SMR5);
 
-    final SetEncryptionKeyExchangeOnGMeterRequestDto requestDto =
-        new SetEncryptionKeyExchangeOnGMeterRequestDto(
+    final SetKeyOnGMeterRequestDto requestDto =
+        new SetKeyOnGMeterRequestDto(
             this.DEVICE_IDENTIFICATION_G, 1, SecretTypeDto.E_METER_MASTER_KEY, false);
 
     // CALL
@@ -249,8 +249,8 @@ class SetKeyOnGMeterCommandExecutorTest {
     when(this.dlmsDeviceRepository.findByDeviceIdentification(this.DEVICE_IDENTIFICATION_G))
         .thenReturn(this.DEVICE_G_DSMR4);
 
-    final SetEncryptionKeyExchangeOnGMeterRequestDto requestDto =
-        new SetEncryptionKeyExchangeOnGMeterRequestDto(
+    final SetKeyOnGMeterRequestDto requestDto =
+        new SetKeyOnGMeterRequestDto(
             this.DEVICE_IDENTIFICATION_G, 1, SecretTypeDto.G_METER_OPTICAL_PORT_KEY, false);
 
     // CALL

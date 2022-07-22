@@ -35,7 +35,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionExce
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.ws.schema.core.secret.management.SecretType;
@@ -46,7 +46,7 @@ import org.springframework.stereotype.Component;
 
 @Component()
 public class SetKeyOnGMeterCommandExecutor
-    extends AbstractCommandExecutor<SetEncryptionKeyExchangeOnGMeterRequestDto, MethodResultCode> {
+    extends AbstractCommandExecutor<SetKeyOnGMeterRequestDto, MethodResultCode> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SetKeyOnGMeterCommandExecutor.class);
 
@@ -79,7 +79,7 @@ public class SetKeyOnGMeterCommandExecutor
   @Autowired private DlmsDeviceRepository dlmsDeviceRepository;
 
   public SetKeyOnGMeterCommandExecutor() {
-    super(SetEncryptionKeyExchangeOnGMeterRequestDto.class);
+    super(SetKeyOnGMeterRequestDto.class);
   }
 
   @Override
@@ -93,7 +93,7 @@ public class SetKeyOnGMeterCommandExecutor
   public MethodResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final SetEncryptionKeyExchangeOnGMeterRequestDto setEncryptionKeyRequest,
+      final SetKeyOnGMeterRequestDto setEncryptionKeyRequest,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
     LOGGER.debug("SetKeyOnGMeterCommandExecutor.execute called");

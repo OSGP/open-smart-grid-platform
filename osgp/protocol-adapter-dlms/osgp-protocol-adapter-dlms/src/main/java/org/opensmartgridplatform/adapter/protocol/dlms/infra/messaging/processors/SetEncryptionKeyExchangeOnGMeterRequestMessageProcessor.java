@@ -13,7 +13,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -39,10 +39,10 @@ public class SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor
       final MessageMetadata messageMetadata)
       throws OsgpException {
 
-    this.assertRequestObjectType(SetEncryptionKeyExchangeOnGMeterRequestDto.class, requestObject);
+    this.assertRequestObjectType(SetKeyOnGMeterRequestDto.class, requestObject);
 
-    final SetEncryptionKeyExchangeOnGMeterRequestDto setEncryptionKeyRequest =
-        (SetEncryptionKeyExchangeOnGMeterRequestDto) requestObject;
+    final SetKeyOnGMeterRequestDto setEncryptionKeyRequest =
+        (SetKeyOnGMeterRequestDto) requestObject;
     return this.configurationService.setEncryptionKeyExchangeOnGMeter(
         conn, device, setEncryptionKeyRequest, messageMetadata);
   }

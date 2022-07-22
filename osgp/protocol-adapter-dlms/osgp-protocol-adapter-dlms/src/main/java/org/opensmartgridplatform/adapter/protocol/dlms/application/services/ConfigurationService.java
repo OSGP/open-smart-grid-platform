@@ -56,7 +56,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
@@ -248,7 +248,7 @@ public class ConfigurationService {
   public String setEncryptionKeyExchangeOnGMeter(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final SetEncryptionKeyExchangeOnGMeterRequestDto setEncryptionKeyRequest,
+      final SetKeyOnGMeterRequestDto setEncryptionKeyRequest,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
@@ -268,7 +268,7 @@ public class ConfigurationService {
 
     LOGGER.info("Device for Set M-Bus User Key By Channel is: {}", device);
 
-    final SetEncryptionKeyExchangeOnGMeterRequestDto gMeterInfo =
+    final SetKeyOnGMeterRequestDto gMeterInfo =
         this.getMbusKeyExchangeData(
             conn, device, setMbusUserKeyByChannelRequestDataDto, messageMetadata);
 
@@ -278,7 +278,7 @@ public class ConfigurationService {
         + device.getDeviceIdentification();
   }
 
-  public SetEncryptionKeyExchangeOnGMeterRequestDto getMbusKeyExchangeData(
+  public SetKeyOnGMeterRequestDto getMbusKeyExchangeData(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
       final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData,
@@ -297,7 +297,7 @@ public class ConfigurationService {
             channelElementValues.getIdentificationNumber(),
             channelElementValues.getManufacturerIdentification());
 
-    return new SetEncryptionKeyExchangeOnGMeterRequestDto(
+    return new SetKeyOnGMeterRequestDto(
         mbusDevice.getDeviceIdentification(),
         setMbusUserKeyByChannelRequestData.getChannel(),
         SecretTypeDto.G_METER_ENCRYPTION_KEY,

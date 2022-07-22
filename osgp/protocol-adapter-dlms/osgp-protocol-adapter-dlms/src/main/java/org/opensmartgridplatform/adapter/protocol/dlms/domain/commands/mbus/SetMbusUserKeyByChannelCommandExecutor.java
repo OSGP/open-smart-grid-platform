@@ -19,7 +19,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
  */
 @Component()
 public class SetMbusUserKeyByChannelCommandExecutor
-    extends AbstractCommandExecutor<SetEncryptionKeyExchangeOnGMeterRequestDto, MethodResultCode> {
+    extends AbstractCommandExecutor<SetKeyOnGMeterRequestDto, MethodResultCode> {
 
   @Autowired private ConfigurationService configurationService;
 
@@ -63,7 +63,7 @@ public class SetMbusUserKeyByChannelCommandExecutor
     this.checkActionRequestType(actionRequestDto);
     final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData =
         (SetMbusUserKeyByChannelRequestDataDto) actionRequestDto;
-    final SetEncryptionKeyExchangeOnGMeterRequestDto setEncryptionKeyRequestData =
+    final SetKeyOnGMeterRequestDto setEncryptionKeyRequestData =
         this.configurationService.getMbusKeyExchangeData(
             conn, device, setMbusUserKeyByChannelRequestData, messageMetadata);
     final MethodResultCode executionResult =
@@ -82,7 +82,7 @@ public class SetMbusUserKeyByChannelCommandExecutor
   public MethodResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final SetEncryptionKeyExchangeOnGMeterRequestDto setEncryptionKeyRequestData,
+      final SetKeyOnGMeterRequestDto setEncryptionKeyRequestData,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException, FunctionalException {
     return this.setKeyOnGMeterCommandExecutor.execute(

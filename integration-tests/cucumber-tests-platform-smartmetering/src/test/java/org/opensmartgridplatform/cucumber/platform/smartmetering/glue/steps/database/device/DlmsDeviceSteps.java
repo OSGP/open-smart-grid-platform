@@ -527,11 +527,11 @@ public class DlmsDeviceSteps {
     }
 
     assertThat(numberOfMbusDefaultKeys).as("Number of M-Bus Default keys stored").isEqualTo(1);
-    assertThat(numberOfMbusKeys >= storedKeyCount)
+    assertThat(numberOfMbusKeys)
         .as(
             "At least " + storedKeyCount + " M-Bus key of the specified type must be stored",
             storedKeyCount)
-        .isTrue();
+        .isGreaterThanOrEqualTo(storedKeyCount);
     if (storedKeyCount > 0) {
       assertThat(numberOfActiveMbusKeys)
           .as("Number of active M-Bus keys of the specified type stored")
@@ -579,11 +579,11 @@ public class DlmsDeviceSteps {
     final List<DbEncryptedSecret> validSecrets =
         this.encryptedSecretRepository.findSecrets(
             dlmsDevice.getDeviceIdentification(), secretType, SecretStatus.ACTIVE);
-    assertThat(validSecrets.size())
-        .isEqualTo(1)
+    assertThat(validSecrets)
         .as(
             "Device %s should have 1 active secret of type %s, but found %s",
-            dlmsDevice.getDeviceIdentification(), secretType, validSecrets.size());
+            dlmsDevice.getDeviceIdentification(), secretType, validSecrets.size())
+        .hasSize(1);
     final DbEncryptedSecret secret = validSecrets.get(0);
     assertThat(secret)
         .as(
@@ -982,7 +982,7 @@ public class DlmsDeviceSteps {
 
     final List<DbEncryptedSecret> keys =
         this.encryptedSecretRepository.findSecrets(deviceIdentification, secretType, secretStatus);
-    assertThat(keys.size()).isEqualTo(expectedNumberOfKeys);
+    assertThat(keys).hasSize(expectedNumberOfKeys);
   }
 
   @Then(

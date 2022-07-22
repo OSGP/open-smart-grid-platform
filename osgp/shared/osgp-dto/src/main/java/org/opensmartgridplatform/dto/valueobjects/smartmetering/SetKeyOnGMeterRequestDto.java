@@ -9,7 +9,7 @@
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
-public class SetEncryptionKeyExchangeOnGMeterRequestDto implements ActionRequestDto {
+public class SetKeyOnGMeterRequestDto implements ActionRequestDto {
 
   private static final long serialVersionUID = -5864741384305038393L;
 
@@ -18,7 +18,7 @@ public class SetEncryptionKeyExchangeOnGMeterRequestDto implements ActionRequest
   private final SecretTypeDto secretType;
   private final boolean closeOpticalPort;
 
-  public SetEncryptionKeyExchangeOnGMeterRequestDto(
+  public SetKeyOnGMeterRequestDto(
       final String mbusDeviceIdentification,
       final int channel,
       final SecretTypeDto secretType,
