@@ -38,6 +38,7 @@ import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
@@ -200,12 +201,7 @@ class SetKeyOnGMeterCommandExecutorTest {
           this.methodParameterArgumentCaptor.getAllValues();
 
       // Verify parameters in call to perform data_send (note: new key is encrypted)
-      this.verifyMethodParameter(
-          methodParameters.get(0),
-          channel,
-          this.METHOD_ID_DATA_SEND,
-          this.KEY_DATA_SIZE_SMR5,
-          false);
+      this.verifyMethodParameterDataSend(methodParameters.get(0), channel, this.KEY_DATA_SIZE_SMR5);
     }
   }
 
@@ -309,5 +305,44 @@ class SetKeyOnGMeterCommandExecutorTest {
           .usingRecursiveComparison()
           .isNotEqualTo(DataObject.newOctetStringData(this.NEW_KEY));
     }
+  }
+
+  private void verifyMethodParameterDataSend(
+      final MethodParameter methodParameter, final int channel, final int expectedKeyDataSize) {
+    assertThat(methodParameter.getClassId()).isEqualTo(this.CLASS_ID);
+    assertThat(methodParameter.getInstanceId()).isEqualTo(this.obisCodeForChannel(channel));
+    assertThat(methodParameter.getId()).isEqualTo(this.METHOD_ID_DATA_SEND);
+
+    // The parameter for the data_send method is an array with 1 element, consisting of:
+    // - data_information_block: value 0x0D meaning variable length data
+    // - value_information_block: value 0xFD19 meaning key exchange
+    // - data: the encrypted key
+
+    final List<DataObject> parameters = (((DataObject) methodParameter.getParameter()).getValue());
+    assertThat(parameters).hasSize(1);
+
+    final DataObject dataDefinitionElement = parameters.get(0);
+    assertThat(dataDefinitionElement.getType()).isEqualTo(Type.STRUCTURE);
+
+    final List<DataObject> dataDefinitionElements = dataDefinitionElement.getValue();
+    assertThat(dataDefinitionElements).hasSize(3);
+
+    // data_information_block
+    assertThat(dataDefinitionElements.get(0))
+        .isEqualToComparingFieldByField(DataObject.newOctetStringData(new byte[] {(byte) 0x0D}));
+
+    // value_information_block
+    assertThat(dataDefinitionElements.get(1))
+        .isEqualToComparingFieldByField(
+            DataObject.newOctetStringData(new byte[] {(byte) 0xFD, (byte) 0x19}));
+
+    // data
+    assertThat(((byte[]) ((DataObject) dataDefinitionElements.get(2)).getValue()))
+        .hasSize(expectedKeyDataSize);
+
+    assertThat(methodParameter.getParameter())
+        .withFailMessage("The encrypted key should not be equal to the original new key")
+        .usingRecursiveComparison()
+        .isNotEqualTo(DataObject.newOctetStringData(this.NEW_KEY));
   }
 }

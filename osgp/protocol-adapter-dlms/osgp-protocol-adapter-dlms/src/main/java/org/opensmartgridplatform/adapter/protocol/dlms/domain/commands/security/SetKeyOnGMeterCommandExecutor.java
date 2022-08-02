@@ -15,6 +15,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,13 +159,21 @@ public class SetKeyOnGMeterCommandExecutor
   }
 
   private MethodParameter getDataSendMethodParameter(final int channel, final byte[] encryptedKey) {
-    final DataObject methodParameter = DataObject.newOctetStringData(encryptedKey);
+    // The parameter for the data_send method is an array with 1 element, consisting of:
+    // - data_information_block: value 0x0D meaning variable length data
+    // - value_information_block: value 0xFD19 meaning key exchange
+    // - data: the encrypted key
+    final DataObject dataInformationBlock = DataObject.newOctetStringData(new byte[] {(byte) 0x0D});
+    final DataObject valueInformationBlock =
+        DataObject.newOctetStringData(new byte[] {(byte) 0xFD, (byte) 0x19});
+    final DataObject data = DataObject.newOctetStringData(encryptedKey);
+    final DataObject dataDefinitionElement =
+        DataObject.newStructureData(dataInformationBlock, valueInformationBlock, data);
+    final DataObject array =
+        DataObject.newArrayData(Collections.singletonList(dataDefinitionElement));
     final MBusClientMethod method = MBusClientMethod.DATA_SEND;
     return new MethodParameter(
-        method.getInterfaceClass().id(),
-        OBIS_HASHMAP.get(channel),
-        method.getMethodId(),
-        methodParameter);
+        method.getInterfaceClass().id(), OBIS_HASHMAP.get(channel), method.getMethodId(), array);
   }
 
   private void sendEncryptionKeyUsingTransferKeyAndSetEncryptionKey(
