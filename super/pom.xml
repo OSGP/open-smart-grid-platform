@@ -50,11 +50,11 @@
     <osgp.dlms.version>5.27.0-SNAPSHOT</osgp.dlms.version>
     <osgp.shared.version>5.27.0-SNAPSHOT</osgp.shared.version>
     <osgp.jasper-interface.version>5.27.0-SNAPSHOT</osgp.jasper-interface.version>
-    <spring.version>5.3.2</spring.version>
-    <spring.data.version>2.2.3.RELEASE</spring.data.version>
-    <spring.data.commons.version>2.2.4.RELEASE</spring.data.commons.version>
-    <spring.security.version>5.4.7</spring.security.version>
-    <spring.ws.version>3.0.10.RELEASE</spring.ws.version>
+    <spring.version>5.3.22</spring.version>
+    <spring.data.version>2.2.9.RELEASE</spring.data.version>
+    <spring.data.commons.version>2.2.9.RELEASE</spring.data.commons.version>
+    <spring.security.version>5.5.8</spring.security.version>
+    <spring.ws.version>3.0.12.RELEASE</spring.ws.version>
     <projectreactor.netty.version>1.0.11</projectreactor.netty.version>
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
@@ -420,6 +420,31 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-webflux</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-expression</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jcl</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-messaging</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-oxm</artifactId>
         <version>${spring.version}</version>
       </dependency>
       <dependency>
