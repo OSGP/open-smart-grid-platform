@@ -13,6 +13,7 @@ import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.Message;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
+import org.opensmartgridplatform.simulator.protocol.mqtt.zip.PayloadZipper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,16 +79,25 @@ public class SimulatorSpecPublishingClient extends Client {
   }
 
   public void publish(final Mqtt3BlockingClient client, final Message message) {
-    LOG.debug(
-        "{} identified by {} is about to publish on topic {}",
+
+    LOG.info(
+        "{} identified by {} is about to publish a {} message on topic {}",
         SimulatorSpecPublishingClient.class.getSimpleName(),
         this.uuid,
+        message.getZip() ? "zipped" : "text",
         message.getTopic());
+
+    final byte[] payload;
+    if (message.getZip()) {
+      payload = PayloadZipper.gzip(message.getPayload());
+    } else {
+      payload = message.getPayload();
+    }
     client
         .publishWith()
         .topic(message.getTopic())
         .qos(MqttQos.AT_LEAST_ONCE)
-        .payload(message.getPayload())
+        .payload(payload)
         .send();
   }
 }
