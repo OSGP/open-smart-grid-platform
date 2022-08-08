@@ -14,23 +14,17 @@ package org.opensmartgridplatform.simulator.protocol.mqtt.zip;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.GZIPOutputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PayloadZipper {
-  private static final Logger LOGGER = LoggerFactory.getLogger(PayloadZipper.class);
 
   public static byte[] gzip(final byte[] payload) {
-    try {
-      final ByteArrayOutputStream os = new ByteArrayOutputStream();
-      final GZIPOutputStream gzipOutputStream = new GZIPOutputStream(os);
+    final ByteArrayOutputStream os = new ByteArrayOutputStream();
+    try (final GZIPOutputStream gzipOutputStream = new GZIPOutputStream(os)) {
       gzipOutputStream.write(payload);
-      gzipOutputStream.close();
-      return os.toByteArray();
     } catch (final IOException e) {
-      LOGGER.error("Error zipping message", e);
+      throw new RuntimeException("Error zipping payload", e);
     }
-    return new byte[0];
+    return os.toByteArray();
   }
 
   private PayloadZipper() {}
