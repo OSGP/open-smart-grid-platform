@@ -19,6 +19,10 @@ public class Message {
 
   public Message() {}
 
+  public Message(final String topic, final byte[] payload, final long pauseMillis) {
+    this(topic, payload, pauseMillis, false);
+  }
+
   public Message(
       final String topic, final byte[] payload, final long pauseMillis, final Boolean zip) {
     this.topic = topic;
