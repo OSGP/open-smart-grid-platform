@@ -15,6 +15,7 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import io.cucumber.java.en.When;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.cucumber.core.ReadSettingsHelper;
@@ -68,7 +69,14 @@ public class MqttDeviceSteps {
     LOGGER.info("Payload: {}", payload);
 
     for (final String topic : topics) {
-      this.startPublishingClient(host, port, cleanSession, keepAlive, topic, payload, parameters);
+      this.startPublishingClient(
+          host,
+          port,
+          cleanSession,
+          keepAlive,
+          topic,
+          payload.getBytes(StandardCharsets.UTF_8),
+          parameters);
     }
   }
 
@@ -78,7 +86,7 @@ public class MqttDeviceSteps {
       final boolean cleanSession,
       final int keepAlive,
       final String topic,
-      final String payload,
+      final byte[] payload,
       final Map<String, String> parameters) {
     final SimulatorSpec spec = new SimulatorSpec(host, port);
     spec.setStartupPauseMillis(2000);

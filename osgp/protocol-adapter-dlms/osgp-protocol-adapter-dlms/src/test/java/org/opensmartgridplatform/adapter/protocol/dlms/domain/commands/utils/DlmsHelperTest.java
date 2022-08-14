@@ -16,6 +16,9 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -104,7 +107,6 @@ public class DlmsHelperTest {
 
   @Test
   public void testDateTimeSummerTime() {
-
     final DataObject dateInSummerTimeDataObject =
         this.dlmsHelper.asDataObject(this.dateTimeSummerTime());
 
@@ -117,33 +119,9 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testDateTimeSummerTimeWithDeviationAndDst() {
-
+  public void testDateTimeSummerTimeWithZonedTime() {
     final DataObject dateInSummerTimeDataObject =
-        this.dlmsHelper.asDataObject(this.dateTimeSummerTime(), -120, true);
-
-    assertThat(dateInSummerTimeDataObject.isCosemDateFormat()).isTrue();
-    assertThat(dateInSummerTimeDataObject.getValue() instanceof CosemDateTime).isTrue();
-
-    final CosemDateTime cosemDateTime = dateInSummerTimeDataObject.getValue();
-
-    assertThat(cosemDateTime.encode()).isEqualTo(this.byteArraySummerTime());
-  }
-
-  @Test
-  public void testDateTimeSummerTimeWithDeviationAndDstFromOtherTimeZone() {
-
-    /*
-     * The date and time on the device should be set according to the
-     * deviation and daylight savings information provided as parameters.
-     * The time of the server can be given in another time zone than the
-     * device is in, but the instant in time should remain the same.
-     *
-     * This test has a time input as if a server in the UTC time zone would
-     * be synchronizing time on a device in the Amsterdam time zone.
-     */
-    final DataObject dateInSummerTimeDataObject =
-        this.dlmsHelper.asDataObject(this.dateTimeSummerTimeUtc(), -120, true);
+        this.dlmsHelper.asDataObject(this.convertToZonedDateTime(this.dateTimeSummerTime()));
 
     assertThat(dateInSummerTimeDataObject.isCosemDateFormat()).isTrue();
     assertThat(dateInSummerTimeDataObject.getValue() instanceof CosemDateTime).isTrue();
@@ -155,7 +133,6 @@ public class DlmsHelperTest {
 
   @Test
   public void testDateTimeWinterTime() {
-
     final DataObject dateInWinterTimeDataObject =
         this.dlmsHelper.asDataObject(this.dateTimeWinterTime());
 
@@ -168,33 +145,11 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testDateTimeWinterTimeWithDeviationAndDst() {
+  public void testDateTimeWinterTimeWithZonedTime() {
+    final DateTime dateTime = this.dateTimeWinterTime();
+    final ZonedDateTime zonedDateTime = this.convertToZonedDateTime(dateTime);
 
-    final DataObject dateInWinterTimeDataObject =
-        this.dlmsHelper.asDataObject(this.dateTimeWinterTime(), -60, false);
-
-    assertThat(dateInWinterTimeDataObject.isCosemDateFormat()).isTrue();
-    assertThat(dateInWinterTimeDataObject.getValue() instanceof CosemDateTime).isTrue();
-
-    final CosemDateTime cosemDateTime = dateInWinterTimeDataObject.getValue();
-
-    assertThat(cosemDateTime.encode()).isEqualTo(this.byteArrayWinterTime());
-  }
-
-  @Test
-  public void testDateTimeWinterTimeWithDeviationAndDstFromOtherTimeZone() {
-
-    /*
-     * The date and time on the device should be set according to the
-     * deviation and daylight savings information provided as parameters.
-     * The time of the server can be given in another time zone than the
-     * device is in, but the instant in time should remain the same.
-     *
-     * This test has a time input as if a server in the New York time zone
-     * would be synchronizing time on a device in the Amsterdam time zone.
-     */
-    final DataObject dateInWinterTimeDataObject =
-        this.dlmsHelper.asDataObject(this.dateTimeWinterTimeNewYork(), -60, false);
+    final DataObject dateInWinterTimeDataObject = this.dlmsHelper.asDataObject(zonedDateTime);
 
     assertThat(dateInWinterTimeDataObject.isCosemDateFormat()).isTrue();
     assertThat(dateInWinterTimeDataObject.getValue() instanceof CosemDateTime).isTrue();
@@ -205,8 +160,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testFromByteArraySummerTime() throws Exception {
-
+  public void testFromByteArraySummerTime() {
     final CosemDateTimeDto cosemDateTime =
         this.dlmsHelper.fromDateTimeValue(this.byteArraySummerTime());
 
@@ -219,8 +173,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testFromByteArrayWinterTime() throws Exception {
-
+  public void testFromByteArrayWinterTime() {
     final CosemDateTimeDto cosemDateTime =
         this.dlmsHelper.fromDateTimeValue(this.byteArrayWinterTime());
 
@@ -233,8 +186,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testFromByteArrayUnspecifiedTime() throws Exception {
-
+  public void testFromByteArrayUnspecifiedTime() {
     final CosemDateTimeDto cosemDateTime =
         this.dlmsHelper.fromDateTimeValue(this.byteArrayUnspecifiedTime());
 
@@ -396,5 +348,11 @@ public class DlmsHelperTest {
     bb.put((byte) ClockStatusDto.STATUS_NOT_SPECIFIED);
 
     return bb.array();
+  }
+
+  private ZonedDateTime convertToZonedDateTime(final DateTime dateTime) {
+    final Instant instant = Instant.ofEpochMilli(dateTime.getMillis());
+    final ZoneId zoneId = ZoneId.of(dateTime.getZone().getID(), ZoneId.SHORT_IDS);
+    return ZonedDateTime.ofInstant(instant, zoneId);
   }
 }

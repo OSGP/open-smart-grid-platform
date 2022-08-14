@@ -1,11 +1,13 @@
 /*
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2022 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package org.opensmartgridplatform.simulator.protocol.dlms.cosem;
 
 import java.util.Arrays;
@@ -20,16 +22,13 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.Captur
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CaptureObjectDefinitionCollection;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CosemDateTimeProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger32DataProcessor;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger8DataProcessor;
 
 @CosemClass(id = 7)
-public class MBus4MasterLoadProfilePeriod1 extends ProfileGeneric {
+public class MonthlyBillingValuesPeriod1DSMR4 extends ProfileGeneric {
 
-  private static final int CHANNEL = 4;
+  private static final int CAPTURE_PERIOD = 0;
 
-  private static final int CAPTURE_PERIOD = 3600;
-
-  private static final int PROFILE_ENTRIES = 240;
+  private static final int PROFILE_ENTRIES = 13;
 
   private static final CaptureObjectDefinitionCollection CAPTURE_OBJECT_DEFINITIONS =
       initCaptureObjects();
@@ -98,10 +97,10 @@ public class MBus4MasterLoadProfilePeriod1 extends ProfileGeneric {
 
   private final Calendar time;
 
-  public MBus4MasterLoadProfilePeriod1(final Calendar time) {
-    super(String.format("0.%1$d.24.3.0.255", CHANNEL));
-
+  public MonthlyBillingValuesPeriod1DSMR4(final Calendar time) {
+    super("0.0.98.1.0.255");
     this.time = time;
+
     this.buffer = DataObject.newNullData();
     this.captureObjects = DataObject.newNullData();
     this.capturePeriod = DataObject.newUInteger32Data(CAPTURE_PERIOD);
@@ -113,34 +112,61 @@ public class MBus4MasterLoadProfilePeriod1 extends ProfileGeneric {
     this.initBufferData();
   }
 
-  @Override
-  protected CaptureObjectDefinitionCollection getCaptureObjectDefinitionCollection() {
-    return CAPTURE_OBJECT_DEFINITIONS;
-  }
-
   private static CaptureObjectDefinitionCollection initCaptureObjects() {
-
     final CaptureObjectDefinitionCollection definitions = new CaptureObjectDefinitionCollection();
     definitions.add(
         new CaptureObjectDefinition(
             new CaptureObject(8, "0.0.1.0.0.255", (byte) 2, 0), new CosemDateTimeProcessor()));
 
-    // AMR Profile status code M-Bus
+    // Import Rate 1
     definitions.add(
         new CaptureObjectDefinition(
-            new CaptureObject(1, String.format("0.%1$d.96.10.3.255", CHANNEL), (byte) 2, 0),
-            new UInteger8DataProcessor()));
+            new CaptureObject(3, "1.0.1.8.1.255", (byte) 2, 0), new UInteger32DataProcessor()));
+    // Import Rate 1
+    definitions.add(
+        new CaptureObjectDefinition(
+            new CaptureObject(3, "1.0.1.8.2.255", (byte) 2, 0), new UInteger32DataProcessor()));
+    // Import Rate 1
+    definitions.add(
+        new CaptureObjectDefinition(
+            new CaptureObject(3, "1.0.2.8.1.255", (byte) 2, 0), new UInteger32DataProcessor()));
+    // Import Rate 1
+    definitions.add(
+        new CaptureObjectDefinition(
+            new CaptureObject(3, "1.0.2.8.2.255", (byte) 2, 0), new UInteger32DataProcessor()));
 
-    // Measurement Value
+    // Measurement value M-Bus Channel 1
     definitions.add(
         new CaptureObjectDefinition(
-            new CaptureObject(4, String.format("0.%1$d.24.2.1.255", CHANNEL), (byte) 2, 0),
-            new UInteger32DataProcessor()));
-    // Measurement Time
+            new CaptureObject(4, "0.1.24.2.1.255", (byte) 2, 0), new UInteger32DataProcessor()));
+    // Measurement capture time M-Bus Channel 1
     definitions.add(
         new CaptureObjectDefinition(
-            new CaptureObject(4, String.format("0.%1$d.24.2.1.255", CHANNEL), (byte) 5, 0),
-            new CosemDateTimeProcessor()));
+            new CaptureObject(4, "0.1.24.2.1.255", (byte) 5, 0), new CosemDateTimeProcessor()));
+    // Measurement value M-Bus Channel 2
+    definitions.add(
+        new CaptureObjectDefinition(
+            new CaptureObject(4, "0.2.24.2.1.255", (byte) 2, 0), new UInteger32DataProcessor()));
+    // Measurement capture time M-Bus Channel 2
+    definitions.add(
+        new CaptureObjectDefinition(
+            new CaptureObject(4, "0.2.24.2.1.255", (byte) 5, 0), new CosemDateTimeProcessor()));
+    // Measurement value M-Bus Channel 3
+    definitions.add(
+        new CaptureObjectDefinition(
+            new CaptureObject(4, "0.3.24.2.1.255", (byte) 2, 0), new UInteger32DataProcessor()));
+    // Measurement capture time M-Bus Channel 3
+    definitions.add(
+        new CaptureObjectDefinition(
+            new CaptureObject(4, "0.3.24.2.1.255", (byte) 5, 0), new CosemDateTimeProcessor()));
+    // Measurement value M-Bus Channel 4
+    definitions.add(
+        new CaptureObjectDefinition(
+            new CaptureObject(4, "0.4.24.2.1.255", (byte) 2, 0), new UInteger32DataProcessor()));
+    // Measurement capture time M-Bus Channel 4
+    definitions.add(
+        new CaptureObjectDefinition(
+            new CaptureObject(4, "0.4.24.2.1.255", (byte) 5, 0), new CosemDateTimeProcessor()));
 
     return definitions;
   }
@@ -149,22 +175,52 @@ public class MBus4MasterLoadProfilePeriod1 extends ProfileGeneric {
   private void initBufferData() {
     this.bufferData = new CircularFifoQueue<>(PROFILE_ENTRIES);
 
-    final short amrProfileStatusCode = 0;
-    long measurementValue = 0;
+    long importRate1 = 0;
+    long importRate2 = 0;
+    long exportRate1 = 0;
+    long exportRate2 = 0;
+    long mBusValue1 = 0;
+    long mBusValue2 = 0;
+    long mBusValue3 = 0;
+    long mBusValue4 = 0;
 
-    for (int i = 1; i < PROFILE_ENTRIES; i++) {
-      // Increase by channel to show difference in channels in result
-      // data.
-      measurementValue += CHANNEL;
+    for (int i = 1; i < 13; i++) {
+      importRate1 += 1;
+      importRate2 += 2;
+      exportRate1 += 3;
+      exportRate2 += 4;
+      mBusValue1 += 5;
+      mBusValue2 += 6;
+      mBusValue3 += 7;
+      mBusValue4 += 8;
 
       final Calendar cal = this.getNextDateTime();
-      this.bufferData.add(Arrays.asList(cal, amrProfileStatusCode, measurementValue, cal));
+      this.bufferData.add(
+          Arrays.asList(
+              cal,
+              importRate1,
+              importRate2,
+              exportRate1,
+              exportRate2,
+              mBusValue1,
+              cal,
+              mBusValue2,
+              cal,
+              mBusValue3,
+              cal,
+              mBusValue4,
+              cal));
     }
   }
 
   private Calendar getNextDateTime() {
     final Calendar next = (Calendar) this.time.clone();
-    this.time.add(Calendar.HOUR_OF_DAY, 1);
+    this.time.add(Calendar.MONTH, 1);
     return next;
+  }
+
+  @Override
+  protected CaptureObjectDefinitionCollection getCaptureObjectDefinitionCollection() {
+    return CAPTURE_OBJECT_DEFINITIONS;
   }
 }

@@ -1,11 +1,13 @@
 /*
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2022 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package org.opensmartgridplatform.simulator.protocol.dlms.cosem;
 
 import java.util.Arrays;
@@ -20,16 +22,14 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.Captur
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CaptureObjectDefinitionCollection;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CosemDateTimeProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger32DataProcessor;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger8DataProcessor;
 
 @CosemClass(id = 7)
-public class DataOfBillingPeriod1 extends ProfileGeneric {
+public class MBusMonthlyBillingValuesPeriod1SMR5 extends ProfileGeneric {
 
   private static final int CAPTURE_PERIOD = 0;
 
   private static final int PROFILE_ENTRIES = 13;
-
-  private static final CaptureObjectDefinitionCollection CAPTURE_OBJECT_DEFINITIONS =
-      initCaptureObjects();
 
   /**
    * Only for cosem attribute definition, data remains untouched. Attribute data is gathered from
@@ -94,10 +94,14 @@ public class DataOfBillingPeriod1 extends ProfileGeneric {
   public DataObject profileEntries;
 
   private final Calendar time;
+  private final int channel;
+  private final CaptureObjectDefinitionCollection captureObjectsDefinitions;
 
-  public DataOfBillingPeriod1(final Calendar time) {
-    super("0.0.98.1.0.255");
+  public MBusMonthlyBillingValuesPeriod1SMR5(final Calendar time, final int channel) {
+    super(String.format("0.%d.24.3.2.255", channel));
+
     this.time = time;
+    this.channel = channel;
 
     this.buffer = DataObject.newNullData();
     this.captureObjects = DataObject.newNullData();
@@ -107,107 +111,55 @@ public class DataOfBillingPeriod1 extends ProfileGeneric {
     this.entriesInUse = DataObject.newNullData();
     this.profileEntries = DataObject.newUInteger32Data(PROFILE_ENTRIES);
 
+    this.captureObjectsDefinitions = this.initCaptureObjects();
     this.initBufferData();
   }
 
-  private static CaptureObjectDefinitionCollection initCaptureObjects() {
+  private CaptureObjectDefinitionCollection initCaptureObjects() {
     final CaptureObjectDefinitionCollection definitions = new CaptureObjectDefinitionCollection();
     definitions.add(
         new CaptureObjectDefinition(
             new CaptureObject(8, "0.0.1.0.0.255", (byte) 2, 0), new CosemDateTimeProcessor()));
 
-    // Import Rate 1
+    // AMR Profile status code M-Bus
     definitions.add(
         new CaptureObjectDefinition(
-            new CaptureObject(3, "1.0.1.8.1.255", (byte) 2, 0), new UInteger32DataProcessor()));
-    // Import Rate 1
-    definitions.add(
-        new CaptureObjectDefinition(
-            new CaptureObject(3, "1.0.1.8.2.255", (byte) 2, 0), new UInteger32DataProcessor()));
-    // Import Rate 1
-    definitions.add(
-        new CaptureObjectDefinition(
-            new CaptureObject(3, "1.0.2.8.1.255", (byte) 2, 0), new UInteger32DataProcessor()));
-    // Import Rate 1
-    definitions.add(
-        new CaptureObjectDefinition(
-            new CaptureObject(3, "1.0.2.8.2.255", (byte) 2, 0), new UInteger32DataProcessor()));
+            new CaptureObject(1, String.format("0.%1$d.96.10.7.255", this.channel), (byte) 2, 0),
+            new UInteger8DataProcessor()));
 
-    // Measurement value M-Bus Channel 1
+    // Measurement Value
     definitions.add(
         new CaptureObjectDefinition(
-            new CaptureObject(4, "0.1.24.2.1.255", (byte) 2, 0), new UInteger32DataProcessor()));
-    // Measurement capture time M-Bus Channel 1
+            new CaptureObject(4, String.format("0.%1$d.24.2.2.255", this.channel), (byte) 2, 0),
+            new UInteger32DataProcessor()));
+    // Measurement Time
     definitions.add(
         new CaptureObjectDefinition(
-            new CaptureObject(4, "0.1.24.2.1.255", (byte) 5, 0), new CosemDateTimeProcessor()));
-    // Measurement value M-Bus Channel 2
-    definitions.add(
-        new CaptureObjectDefinition(
-            new CaptureObject(4, "0.2.24.2.1.255", (byte) 2, 0), new UInteger32DataProcessor()));
-    // Measurement capture time M-Bus Channel 2
-    definitions.add(
-        new CaptureObjectDefinition(
-            new CaptureObject(4, "0.2.24.2.1.255", (byte) 5, 0), new CosemDateTimeProcessor()));
-    // Measurement value M-Bus Channel 3
-    definitions.add(
-        new CaptureObjectDefinition(
-            new CaptureObject(4, "0.3.24.2.1.255", (byte) 2, 0), new UInteger32DataProcessor()));
-    // Measurement capture time M-Bus Channel 3
-    definitions.add(
-        new CaptureObjectDefinition(
-            new CaptureObject(4, "0.3.24.2.1.255", (byte) 5, 0), new CosemDateTimeProcessor()));
-    // Measurement value M-Bus Channel 4
-    definitions.add(
-        new CaptureObjectDefinition(
-            new CaptureObject(4, "0.4.24.2.1.255", (byte) 2, 0), new UInteger32DataProcessor()));
-    // Measurement capture time M-Bus Channel 4
-    definitions.add(
-        new CaptureObjectDefinition(
-            new CaptureObject(4, "0.4.24.2.1.255", (byte) 5, 0), new CosemDateTimeProcessor()));
+            new CaptureObject(4, String.format("0.%1$d.24.2.2.255", this.channel), (byte) 5, 0),
+            new CosemDateTimeProcessor()));
 
     return definitions;
+  }
+
+  @Override
+  protected CaptureObjectDefinitionCollection getCaptureObjectDefinitionCollection() {
+    return this.captureObjectsDefinitions;
   }
 
   /** Initializes buffer with some data. */
   private void initBufferData() {
     this.bufferData = new CircularFifoQueue<>(PROFILE_ENTRIES);
 
-    long importRate1 = 0;
-    long importRate2 = 0;
-    long exportRate1 = 0;
-    long exportRate2 = 0;
-    long mBusValue1 = 0;
-    long mBusValue2 = 0;
-    long mBusValue3 = 0;
-    long mBusValue4 = 0;
+    final short amrProfileStatusCode = 0;
+    long measurementValue = 0;
 
-    for (int i = 1; i < 13; i++) {
-      importRate1 += 1;
-      importRate2 += 2;
-      exportRate1 += 3;
-      exportRate2 += 4;
-      mBusValue1 += 5;
-      mBusValue2 += 6;
-      mBusValue3 += 7;
-      mBusValue4 += 8;
+    for (int i = 1; i < PROFILE_ENTRIES; i++) {
+      // Increase by channel to show difference in channels in result
+      // data.
+      measurementValue += this.channel;
 
       final Calendar cal = this.getNextDateTime();
-      this.bufferData.add(
-          Arrays.asList(
-              cal,
-              importRate1,
-              importRate2,
-              exportRate1,
-              exportRate2,
-              mBusValue1,
-              cal,
-              mBusValue2,
-              cal,
-              mBusValue3,
-              cal,
-              mBusValue4,
-              cal));
+      this.bufferData.add(Arrays.asList(cal, amrProfileStatusCode, measurementValue, cal));
     }
   }
 
@@ -215,10 +167,5 @@ public class DataOfBillingPeriod1 extends ProfileGeneric {
     final Calendar next = (Calendar) this.time.clone();
     this.time.add(Calendar.MONTH, 1);
     return next;
-  }
-
-  @Override
-  protected CaptureObjectDefinitionCollection getCaptureObjectDefinitionCollection() {
-    return CAPTURE_OBJECT_DEFINITIONS;
   }
 }

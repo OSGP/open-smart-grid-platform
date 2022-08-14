@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.mqtt.application.config;
 
 import com.hivemq.client.mqtt.MqttClientSslConfig;
+import org.opensmartgridplatform.adapter.protocol.mqtt.application.metrics.MqttMetricsService;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.services.MessageHandler;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.services.MqttClient;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttClientDefaults;
@@ -75,11 +76,15 @@ public class MqttConfig extends AbstractConfig {
   public MqttClient mqttClient(
       final MqttClientDefaults mqttClientDefaults,
       final MqttClientSslConfig mqttClientSslConfig,
-      final MessageHandler protocolResponseMessageSendingHandler) {
+      final MessageHandler protocolResponseMessageSendingHandler,
+      final MqttMetricsService metricsService) {
 
     final MqttClient client =
         new MqttClient(
-            mqttClientDefaults, mqttClientSslConfig, protocolResponseMessageSendingHandler);
+            mqttClientDefaults,
+            mqttClientSslConfig,
+            protocolResponseMessageSendingHandler,
+            metricsService);
     LOG.info(
         "Connecting to MQTT client with address: {}:{}",
         mqttClientDefaults.getDefaultHost(),

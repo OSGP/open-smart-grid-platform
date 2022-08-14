@@ -152,7 +152,7 @@ public abstract class AbstractPushSetupDto implements ActionRequestDto {
   }
 
   public boolean hasPushObjectList() {
-    return this.pushObjectList != null;
+    return this.pushObjectList != null && !this.pushObjectList.isEmpty();
   }
 
   public List<CosemObjectDefinitionDto> getPushObjectList() {

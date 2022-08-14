@@ -8,8 +8,6 @@
  */
 package org.opensmartgridplatform.simulator.protocol.mqtt;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import io.moquette.BrokerConstants;
 import io.moquette.broker.ClientDescriptor;
 import io.moquette.broker.Server;
@@ -18,7 +16,6 @@ import io.moquette.interception.AbstractInterceptHandler;
 import io.moquette.interception.messages.InterceptConnectMessage;
 import io.moquette.interception.messages.InterceptDisconnectMessage;
 import io.moquette.interception.messages.InterceptPublishMessage;
-import io.netty.buffer.ByteBuf;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -140,22 +137,11 @@ public final class Broker {
 
               @Override
               public void onPublish(final InterceptPublishMessage msg) {
-                LOG.info(
-                    "Broker received on topic: {} content: {}",
-                    msg.getTopicName(),
-                    new String(getBytes(msg), UTF_8));
+                LOG.info("Broker received message published on topic: {}", msg.getTopicName());
               }
             }));
     this.running = true;
     LOG.info("Broker started press [CTRL+C] to stop");
-  }
-
-  private static byte[] getBytes(final InterceptPublishMessage msg) {
-    final ByteBuf buf = msg.getPayload();
-    final byte[] bytes = new byte[buf.readableBytes()];
-    final int readerIndex = buf.readerIndex();
-    buf.getBytes(readerIndex, bytes);
-    return bytes;
   }
 
   private void handleShutdown(final Broker broker) {
