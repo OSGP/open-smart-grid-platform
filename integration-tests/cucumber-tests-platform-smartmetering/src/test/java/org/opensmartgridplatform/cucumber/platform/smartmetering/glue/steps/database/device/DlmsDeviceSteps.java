@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
@@ -78,7 +79,9 @@ import org.opensmartgridplatform.secretmanagement.application.domain.SecretStatu
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptedSecretRepository;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptionKeyRepository;
+import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
+import org.opensmartgridplatform.shared.security.providers.JreEncryptionProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.transaction.annotation.Transactional;
@@ -110,6 +113,8 @@ public class DlmsDeviceSteps {
   @Autowired private DbEncryptedSecretRepository encryptedSecretRepository;
 
   @Autowired private DbEncryptionKeyRepository encryptionKeyRepository;
+
+  @Autowired private JreEncryptionProvider jreEncryptionProvider;
 
   private final Map<String, SecurityKeyType> securityKeyTypesByInputName = new HashMap<>();
 
@@ -890,12 +895,28 @@ public class DlmsDeviceSteps {
           dbEncryptedSecret.stream()
               .map(DbEncryptedSecret::getEncodedSecret)
               .collect(Collectors.toList());
-      assertThat(actualEncodedSecrets)
+      assertThat(this.decodeSecrets(actualEncodedSecrets))
           .withFailMessage(
               "Wrong dbEncryptedSecret for %s with status %s expected %s to be contained in: %s",
               secretTypeString, secretStatus, dbEncryptedSecretValue, actualEncodedSecrets)
-          .contains(dbEncryptedSecretValue);
+          .contains(this.decodeSecret(dbEncryptedSecretValue));
     }
+  }
+
+  private List<String> decodeSecrets(final List<String> encodedSecrets) {
+    return encodedSecrets.stream()
+        .map(encodedSecret -> this.decodeSecret(encodedSecret))
+        .collect(Collectors.toList());
+  }
+
+  private String decodeSecret(final String encodedSecret) {
+    final byte[] encryptedSecret = HexUtils.fromHexString(encodedSecret);
+
+    final byte[] decryptedSecret =
+        this.jreEncryptionProvider.decrypt(
+            new EncryptedSecret(EncryptionProviderType.JRE, encryptedSecret), "1");
+
+    return HexUtils.toHexString(decryptedSecret);
   }
 
   @Then(
@@ -949,6 +970,7 @@ public class DlmsDeviceSteps {
                 deviceIdentification, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.ACTIVE)
             .stream()
             .map(DbEncryptedSecret::getEncodedSecret)
+            .map(this::decodeSecret)
             .collect(Collectors.toList());
     final List<String> expiredAuthenticationKeys =
         this.encryptedSecretRepository
@@ -956,6 +978,7 @@ public class DlmsDeviceSteps {
                 deviceIdentification, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.EXPIRED)
             .stream()
             .map(DbEncryptedSecret::getEncodedSecret)
+            .map(this::decodeSecret)
             .collect(Collectors.toList());
     final List<String> activeEncryptionKeys =
         this.encryptedSecretRepository
@@ -965,6 +988,7 @@ public class DlmsDeviceSteps {
                 SecretStatus.ACTIVE)
             .stream()
             .map(DbEncryptedSecret::getEncodedSecret)
+            .map(this::decodeSecret)
             .collect(Collectors.toList());
     final List<String> expiredEncryptionKeys =
         this.encryptedSecretRepository
@@ -974,6 +998,7 @@ public class DlmsDeviceSteps {
                 SecretStatus.EXPIRED)
             .stream()
             .map(DbEncryptedSecret::getEncodedSecret)
+            .map(this::decodeSecret)
             .collect(Collectors.toList());
 
     final String[] authenticationKeyNames =
@@ -987,9 +1012,9 @@ public class DlmsDeviceSteps {
 
     for (int i = 0; i < numberOfRequestsFromWhichKeysAreIncluded; i++) {
       final String authenticationKeyFromRequest =
-          SecurityKey.valueOf(authenticationKeyNames[i]).getDatabaseKey();
+          this.decodeSecret(SecurityKey.valueOf(authenticationKeyNames[i]).getDatabaseKey());
       final String encryptionKeyFromRequest =
-          SecurityKey.valueOf(encryptionKeyNames[i]).getDatabaseKey();
+          this.decodeSecret(SecurityKey.valueOf(encryptionKeyNames[i]).getDatabaseKey());
 
       if (activeAuthenticationKeys.contains(authenticationKeyFromRequest)
           && activeEncryptionKeys.contains(encryptionKeyFromRequest)) {

@@ -100,19 +100,19 @@ Feature: SmartMetering Configuration - Replace Keys
       | Encryption_key       | SECURITY_KEY_E    |
       | Authentication_key   | SECURITY_KEY_A    |
     When multiple replace keys requests are received
-      | DeviceIdentification | TEST1024000000001,TEST1024000000001,TEST1024000000001 |
-      | Encryption_key       | SECURITY_KEY_1,SECURITY_KEY_3,SECURITY_KEY_5       |
-      | Authentication_key   | SECURITY_KEY_2,SECURITY_KEY_4,SECURITY_KEY_6       |
+      | DeviceIdentification | TEST1024000000001,TEST1024000000001 |
+      | Encryption_key       | SECURITY_KEY_1,SECURITY_KEY_3       |
+      | Authentication_key   | SECURITY_KEY_2,SECURITY_KEY_4       |
     Then multiple replace keys responses should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
     And the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
-      | SECURITY_KEY_A | EXPIRED   |
+      | SECURITY_KEY_A | EXPIRED |
     And the encrypted_secret table in the secret management database should contain "Encryption_key" keys for device "TEST1024000000001"
-      | SECURITY_KEY_E | EXPIRED   |
+      | SECURITY_KEY_E | EXPIRED |
     And the encrypted_secret table in the secret management database should contain one or more EXPIRED and just one ACTIVE key for device "TEST1024000000001" in correct combination
-      | Authentication_key | SECURITY_KEY_2,SECURITY_KEY_4,SECURITY_KEY_6 |
-      | Encryption_key     | SECURITY_KEY_1,SECURITY_KEY_3,SECURITY_KEY_5 |
+      | Authentication_key | SECURITY_KEY_2,SECURITY_KEY_4 |
+      | Encryption_key     | SECURITY_KEY_1,SECURITY_KEY_3 |
     And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"
 
   @ResetKeysOnDevice

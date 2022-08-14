@@ -89,7 +89,7 @@ public class SmartMeterService {
 
     final ProtocolInfo protocolInfo =
         this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
-            smartMeteringDevice.getProtocolInfoLookupName(),
+            smartMeteringDevice.getProtocolName(),
             smartMeteringDevice.getProtocolVersion(),
             smartMeteringDevice.getProtocolVariant());
     if (protocolInfo == null) {
