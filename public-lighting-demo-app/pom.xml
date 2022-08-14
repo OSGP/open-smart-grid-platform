@@ -14,7 +14,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>public-lighting-demo-app</artifactId>
-  <version>5.27.0-SNAPSHOT</version>
+  <version>5.28.0</version>
   <packaging>pom</packaging>
 
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin 
