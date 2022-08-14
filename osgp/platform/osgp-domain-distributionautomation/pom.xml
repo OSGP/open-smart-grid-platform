@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>5.28.0</version>
+    <version>5.28.1</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
