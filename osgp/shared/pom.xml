@@ -14,7 +14,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>shared-components</artifactId>
-  <version>5.28.0</version>
+  <version>5.28.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>shared</name>
   <properties>
