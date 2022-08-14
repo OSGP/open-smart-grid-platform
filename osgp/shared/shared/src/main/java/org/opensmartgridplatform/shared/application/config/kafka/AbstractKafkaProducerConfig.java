@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.shared.application.config.kafka;
 
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -21,7 +22,12 @@ public abstract class AbstractKafkaProducerConfig<K, V> extends KafkaConfig {
 
   private KafkaTemplate<K, V> kafkaTemplate;
 
-  public AbstractKafkaProducerConfig(
+  protected AbstractKafkaProducerConfig(
+      final Environment environment, final String propertiesPrefix) {
+    this(environment, propertiesPrefix, null);
+  }
+
+  protected AbstractKafkaProducerConfig(
       final Environment environment, final String propertiesPrefix, final String topic) {
     super(environment);
 
@@ -50,7 +56,9 @@ public abstract class AbstractKafkaProducerConfig<K, V> extends KafkaConfig {
     final Map<String, Object> producerConfigs = this.producerConfigs(propertiesPrefix);
     final KafkaTemplate<K, V> template =
         new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs));
-    template.setDefaultTopic(topic);
+    if (StringUtils.isNotBlank(topic)) {
+      template.setDefaultTopic(topic);
+    }
     this.kafkaTemplate = template;
   }
 

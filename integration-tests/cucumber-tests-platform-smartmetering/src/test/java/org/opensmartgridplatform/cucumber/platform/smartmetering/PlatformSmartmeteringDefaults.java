@@ -59,7 +59,7 @@ public class PlatformSmartmeteringDefaults
   public static final Long PORT = 1024L;
   public static final String PROTOCOL = "DSMR";
   public static final String PROTOCOL_VERSION = "4.2.2";
-  public static final Long INVOCATION_COUNTER = 0L;
+  public static final Long INVOCATION_COUNTER = 12345L;
 
   public static final String SECURITY_KEY_TYPE_A = "E_METER_AUTHENTICATION";
   public static final String SECURITY_KEY_TYPE_E = "E_METER_ENCRYPTION";

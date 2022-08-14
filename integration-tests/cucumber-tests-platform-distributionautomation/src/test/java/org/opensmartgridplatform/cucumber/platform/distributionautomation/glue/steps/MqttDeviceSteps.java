@@ -90,7 +90,7 @@ public class MqttDeviceSteps {
       final Map<String, String> parameters) {
     final SimulatorSpec spec = new SimulatorSpec(host, port);
     spec.setStartupPauseMillis(2000);
-    final Message message = new Message(topic, payload, 10000);
+    final Message message = new Message(topic, payload, 10000, false);
     final Message[] messages = {message};
     spec.setMessages(messages);
 

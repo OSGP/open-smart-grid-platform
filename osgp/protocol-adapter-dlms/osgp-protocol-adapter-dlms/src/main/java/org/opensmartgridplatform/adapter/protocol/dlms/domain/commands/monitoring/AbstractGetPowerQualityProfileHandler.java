@@ -109,7 +109,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     AVERAGE_CURRENT_L3("1.0.71.24.0.255"),
     INSTANTANEOUS_CURRENT_L1("1.0.31.7.0.255");
 
-    private String obisCode;
+    private final String obisCode;
 
     SelectableObisCode(final String obisCode) {
       this.obisCode = obisCode;
@@ -487,6 +487,8 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       return this.makeDateProfileEntryValueDto(dataObject, previousProfileEntryDto, timeInterval);
     } else if (dataObject.isNumber()) {
       return this.createNumericProfileEntryValueDto(dataObject, scalerUnitInfo);
+    } else if (dataObject.isNull()) {
+      return new ProfileEntryValueDto(null);
     } else {
       final String dbgInfo = this.dlmsHelper.getDebugInfo(dataObject);
       LOGGER.debug("creating ProfileEntryDto from {} {} ", dbgInfo, scalerUnitInfo);
