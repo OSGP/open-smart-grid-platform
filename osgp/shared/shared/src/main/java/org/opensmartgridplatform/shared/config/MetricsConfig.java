@@ -98,8 +98,4 @@ public class MetricsConfig extends AbstractConfig {
     }
     LOGGER.info("Default metrics enabled");
   }
-
-  // Created as a bean to satisfy SonarQube (try-with-resources)
-
-  // Created as a bean to satisfy SonarQube (try-with-resources)
 }
