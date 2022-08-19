@@ -67,7 +67,7 @@ class SetKeyOnGMeterCommandExecutorTest {
       new byte[] {11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26};
   private final byte[] NEW_KEY = new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
   private final int KEY_SIZE = 16;
-  private final int KEY_DATA_SIZE_SMR5 = 26; // KEY_SIZE + 10 bytes (keyId, keySize and mac)
+  private final int KEY_DATA_SIZE_SMR5 = 30; // KEY_SIZE + 14 bytes (kcc, keyId, keySize and mac)
   private final int CLASS_ID = 72; // M-Bus client setup
   private final int METHOD_ID_DATA_SEND = 6;
   private final int METHOD_ID_SET_ENCRYPTION_KEY = 7;

@@ -104,7 +104,9 @@ public class SetKeyOnGMeterKeyEncryptionAndMacGeneration {
       final byte[] newKey)
       throws ProtocolAdapterException {
 
-    final byte[] iv = this.createIV(device, kcc, MBUS_VERSION, MEDIUM);
+    final byte[] kccBytes = this.convertKccToBytes(kcc);
+
+    final byte[] iv = this.createIV(device, kccBytes, MBUS_VERSION, MEDIUM);
 
     log.debug("Calculated IV: {}", Hex.toHexString(iv));
 
@@ -120,22 +122,28 @@ public class SetKeyOnGMeterKeyEncryptionAndMacGeneration {
 
     log.debug("Encrypted key data: {}", Hex.toHexString(encryptedKeyData));
 
-    return encryptedKeyData;
+    final byte[] encryptedKeyDataWithKcc = new byte[encryptedKeyData.length + KCC_LENGTH];
+    System.arraycopy(kccBytes, 0, encryptedKeyDataWithKcc, 0, KCC_LENGTH);
+    System.arraycopy(
+        encryptedKeyData, 0, encryptedKeyDataWithKcc, KCC_LENGTH, encryptedKeyData.length);
+
+    log.debug("Encrypted key data with kcc: {}", Hex.toHexString(encryptedKeyDataWithKcc));
+
+    return encryptedKeyDataWithKcc;
   }
 
   protected byte[] createIV(
-      final DlmsDevice device, final Integer kcc, final int mBusVersion, final int medium)
-      throws ProtocolAdapterException {
+      final DlmsDevice device, final byte[] kcc, final int mBusVersion, final int medium) {
     return ByteBuffer.allocate(IV_LENGTH_SMR5)
         .put(Arrays.reverse(this.getMbusIdentificationNnumber(device)))
         .put(this.getMbusManufacturerId(device))
         .put((byte) mBusVersion)
         .put((byte) medium)
-        .put(this.getKCC(kcc))
+        .put(kcc)
         .array();
   }
 
-  private byte[] getKCC(final Integer kcc) throws ProtocolAdapterException {
+  private byte[] convertKccToBytes(final Integer kcc) throws ProtocolAdapterException {
     if (kcc != null) {
       final byte[] byteArrayWithKcc = BigInteger.valueOf(kcc).toByteArray();
       return this.addPadding(byteArrayWithKcc, KCC_LENGTH);
