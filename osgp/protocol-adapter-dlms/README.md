@@ -21,6 +21,9 @@ The jDLMS library is developed by the department "Intelligent Energy Systems" at
 
 jDLMS is licensed under the GPLv3, more information can be found on the OpenMUC web site: https://www.openmuc.org/index.php?id=42
 
+**Note: OpenMuc offers dual licensing agreements for OpenMUC jDLMS Library.** 
+For those who find the GPLv3 too limited, OpenMuc provides individual proprietary licenses for OpenMUC jDLMS Library which give you a higher degree of freedom regarding usage. For more information, see https://www.openmuc.org/services/.
+
 ## Grid eXchange Fabric information and news
 
 High-level project information and news can be found on the Grid eXchange Fabric website:
