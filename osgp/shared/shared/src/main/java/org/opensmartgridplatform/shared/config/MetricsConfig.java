@@ -74,14 +74,17 @@ public class MetricsConfig extends AbstractConfig {
     return registry;
   }
 
+  // IntelliJ suggests you replace this with a try-with-resources. Don't! It will close the
+  // metrics gatherer right after binding it and it will no longer produce metrics
+  @SuppressWarnings("java:S2095")
   private void bindDefaultMetrics(final PrometheusMeterRegistry registry) {
     LOGGER.info("Enabling default metrics");
     new ClassLoaderMetrics().bindTo(registry);
     new JvmMemoryMetrics().bindTo(registry);
-    this.jvmGcMetrics().bindTo(registry); // do not auto-close, no metrics after that
+    new JvmGcMetrics().bindTo(registry); // do not auto-close, no metrics after that
     new ProcessorMetrics().bindTo(registry);
     new JvmThreadMetrics().bindTo(registry);
-    this.logbackMetrics().bindTo(registry); // do not auto-close, no metrics after that
+    new LogbackMetrics().bindTo(registry); // do not auto-close, no metrics after that
     new DiskSpaceMetrics(new File("/")).bindTo(registry);
     if (this.dataSource != null) {
       try (final Connection connection = this.dataSource.getConnection()) {
@@ -94,17 +97,5 @@ public class MetricsConfig extends AbstractConfig {
       }
     }
     LOGGER.info("Default metrics enabled");
-  }
-
-  // Created as a bean to satisfy SonarQube (try-with-resources)
-  @Bean
-  LogbackMetrics logbackMetrics() {
-    return new LogbackMetrics();
-  }
-
-  // Created as a bean to satisfy SonarQube (try-with-resources)
-  @Bean
-  JvmGcMetrics jvmGcMetrics() {
-    return new JvmGcMetrics();
   }
 }
