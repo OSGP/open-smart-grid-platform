@@ -55,7 +55,7 @@
     <spring.data.commons.version>2.2.9.RELEASE</spring.data.commons.version>
     <spring.security.version>5.5.8</spring.security.version>
     <spring.ws.version>3.0.12.RELEASE</spring.ws.version>
-    <projectreactor.netty.version>1.0.11</projectreactor.netty.version>
+    <reactor.version>2020.0.22</reactor.version>
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.core.version>4.1.0</mockito.core.version>
@@ -106,7 +106,7 @@
     <apache.commons.schema>2.2.5</apache.commons.schema>
     <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
     <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
-    <netty.version>4.1.53.Final</netty.version>
+    <netty.version>4.1.80.Final</netty.version>
     <openmuc.jdlms.version>1.7.1</openmuc.jdlms.version>
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
     <openmuc.j60870.version>1.4.0</openmuc.j60870.version>
@@ -448,9 +448,11 @@
         <version>${spring.version}</version>
       </dependency>
       <dependency>
-        <groupId>io.projectreactor.netty</groupId>
-        <artifactId>reactor-netty-http</artifactId>
-        <version>${projectreactor.netty.version}</version>
+        <groupId>io.projectreactor</groupId>
+        <artifactId>reactor-bom</artifactId>
+        <version>${reactor.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
       <!-- Spring JMS -->
@@ -700,9 +702,10 @@
       <!-- Netty (TCP server) -->
       <dependency>
         <groupId>io.netty</groupId>
-        <artifactId>netty-all</artifactId>
+        <artifactId>netty-bom</artifactId>
         <version>${netty.version}</version>
-        <scope>compile</scope>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
       <!-- Jakarta commons codec -->
