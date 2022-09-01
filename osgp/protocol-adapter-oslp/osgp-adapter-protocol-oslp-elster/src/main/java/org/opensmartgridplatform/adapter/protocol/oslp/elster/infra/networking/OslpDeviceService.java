@@ -2381,7 +2381,7 @@ public class OslpDeviceService implements DeviceService {
 
     builder.setOn(lightValue.isOn());
 
-    if (lightValue.getDimValue() != null) {
+    if (lightValue.getDimValue() != null && lightValue.isOn()) {
       builder.setDimValue(ByteString.copyFrom(new byte[] {lightValue.getDimValue().byteValue()}));
     }
 
