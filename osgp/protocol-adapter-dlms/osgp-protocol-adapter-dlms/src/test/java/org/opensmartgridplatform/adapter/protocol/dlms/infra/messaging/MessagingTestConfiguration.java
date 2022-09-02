@@ -140,13 +140,19 @@ public class MessagingTestConfiguration extends AbstractConfig {
 
   @Bean
   public InvocationCounterManager invocationCounterManager(
-      final DlmsDeviceRepository deviceRepository) {
+      final DlmsDeviceRepository deviceRepository,
+      final DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender) {
     return new InvocationCounterManager(
-        this.dlmsConnectionFactory(), this.dlmsHelper(), deviceRepository);
+        this.dlmsConnectionFactory(),
+        this.dlmsHelper(),
+        deviceRepository,
+        dlmsLogItemRequestMessageSender);
   }
 
   @Bean
-  public DlmsConnectionHelper dlmsConnectionHelper(final DlmsDeviceRepository deviceRepository) {
+  public DlmsConnectionHelper dlmsConnectionHelper(
+      final DlmsDeviceRepository deviceRepository,
+      final DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender) {
     final DevicePingConfig devicePingConfig =
         new DevicePingConfig() {
           @Override
@@ -160,7 +166,7 @@ public class MessagingTestConfiguration extends AbstractConfig {
           }
         };
     return new DlmsConnectionHelper(
-        this.invocationCounterManager(deviceRepository),
+        this.invocationCounterManager(deviceRepository, dlmsLogItemRequestMessageSender),
         this.dlmsConnectionFactory(),
         devicePingConfig,
         0);
