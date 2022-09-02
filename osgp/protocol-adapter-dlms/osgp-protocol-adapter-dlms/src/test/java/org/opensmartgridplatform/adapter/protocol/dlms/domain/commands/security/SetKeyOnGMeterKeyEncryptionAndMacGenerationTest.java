@@ -33,43 +33,43 @@ class SetKeyOnGMeterKeyEncryptionAndMacGenerationTest {
   private final int KEY_DATA_SIZE_SMR5 = 30; // KEY_SIZE + 14 bytes (kcc, keyId, keySize and mac)
   private static final int KCC_LENGTH = 4;
 
-  private final byte[] MASTER_KEY =
+  final byte[] MASTER_KEY =
       new byte[] {
-        (byte) 0xfd,
-        (byte) 0xd0,
-        (byte) 0xfd,
-        (byte) 0xd0,
-        (byte) 0xfd,
-        (byte) 0xd0,
-        (byte) 0xfd,
-        (byte) 0xd0,
-        (byte) 0xfd,
-        (byte) 0xd0,
-        (byte) 0xfd,
-        (byte) 0xd0,
-        (byte) 0xfd,
-        (byte) 0xd0,
-        (byte) 0xfd,
-        (byte) 0xd0
+        (byte) 0x00,
+        (byte) 0x01,
+        (byte) 0x02,
+        (byte) 0x03,
+        (byte) 0x04,
+        (byte) 0x05,
+        (byte) 0x06,
+        (byte) 0x07,
+        (byte) 0x08,
+        (byte) 0x09,
+        (byte) 0x0A,
+        (byte) 0x0B,
+        (byte) 0x0C,
+        (byte) 0x0D,
+        (byte) 0x0E,
+        (byte) 0x0F
       };
-  private final byte[] NEW_USER_KEY =
+  final byte[] NEW_KEY =
       new byte[] {
-        (byte) 0xfa,
-        (byte) 0xa0,
-        (byte) 0xfe,
-        (byte) 0xa0,
-        (byte) 0xfe,
-        (byte) 0xa0,
-        (byte) 0xfe,
-        (byte) 0xa0,
-        (byte) 0xfe,
-        (byte) 0xa0,
-        (byte) 0xfe,
-        (byte) 0xa0,
-        (byte) 0xfe,
-        (byte) 0xa0,
-        (byte) 0xfe,
-        (byte) 0xa0
+        (byte) 0x11,
+        (byte) 0x11,
+        (byte) 0x11,
+        (byte) 0x11,
+        (byte) 0x22,
+        (byte) 0x22,
+        (byte) 0x22,
+        (byte) 0x22,
+        (byte) 0x33,
+        (byte) 0x33,
+        (byte) 0x33,
+        (byte) 0x33,
+        (byte) 0x44,
+        (byte) 0x44,
+        (byte) 0x44,
+        (byte) 0x55
       };
 
   private final SetKeyOnGMeterKeyEncryptionAndMacGeneration macGeneration =
@@ -78,47 +78,49 @@ class SetKeyOnGMeterKeyEncryptionAndMacGenerationTest {
   @Test
   void testEncryptDsmr4() throws ProtocolAdapterException {
     final byte[] encryptedKey =
-        this.macGeneration.encryptMbusUserKeyDsmr4(this.MASTER_KEY, this.NEW_USER_KEY);
+        this.macGeneration.encryptMbusUserKeyDsmr4(this.MASTER_KEY, this.NEW_KEY);
 
     assertThat(encryptedKey)
         .containsExactly(
-            0x7b, 0x33, 0x83, 0xe2, 0xc3, 0xec, 0x93, 0x60, 0xd5, 0x4a, 0x05, 0xd0, 0x55, 0x17,
-            0x73, 0x8b);
+            0x08, 0xea, 0xb1, 0x84, 0x36, 0x31, 0x41, 0xf1, 0xe7, 0xb5, 0x54, 0x93, 0x9d, 0xfb,
+            0x75, 0xb8);
   }
 
-  /* Verified example for SMR5 user key:
-   * MASTER_KEY = 0xfdd0fdd0fdd0fdd0fdd0fdd0fdd0fdd0
-   * NEW_USER_KEY = 0xfaa0fea0fea0fea0fea0fea0fea0fea0
+  /* Verified example for SMR5 P0 key:
+   * MASTER_KEY = 0x000102030405060708090a0b0c0d0e0f
+   * NEW_USER_KEY = 0x11111111222222223333333344444455
    *
-   * KeyData(incl keyId 0 and keySize 16) = 0x0010faa0fea0fea0fea0fea0fea0fea0fea0
+   * KeyData(incl keyId 2 and keySize 16) = 0x021011111111222222223333333344444455
    *
-   * identificationNumber = 0x12345678(12345678)
-   * manufacturer = 0x8d3a(NTM)
-   * version = 0x06
+   * identificationNumber = 0x99310014
+   * manufacturer = 0x8f19(FLO)
+   * version = 0x50 (SMR5.0)
    * medium = 0x03
    * keyChangeCounter=1
    *
-   * iv=0x785634123a8d060300000001
+   * iv=0x140031998f15500300000001
    *
    * KeyData (4 bytes KCC, 18 bytes encrypted key (including key id and key size), 8 bytes mac):
    *
-   * 0x00000001 d9ab7dab07ef7c5e00aa66fcd4327e4b890c 6eb17e0f90518c59
+   * 0x00000001 1928dd82e493e489eed5a235E771c2232523 c60ac982f22c820a
    */
 
   @Test
   void testEncryptAndAddGcmAuthenticationTag() throws ProtocolAdapterException {
-    final int keyId = 0;
+    final int keyId = 2;
     final int kcc = 1;
 
     final byte[] encryptedKeyWithMacAndKcc =
         this.macGeneration.encryptAndAddGcmAuthenticationTagSmr5(
-            this.DEVICE_G, keyId, this.KEY_SIZE, kcc, this.MASTER_KEY, this.NEW_USER_KEY);
+            this.DEVICE_G, keyId, this.KEY_SIZE, kcc, this.MASTER_KEY, this.NEW_KEY);
 
-    assertThat(encryptedKeyWithMacAndKcc)
+    final byte[] withoutKcc =
+        Arrays.copyOfRange(encryptedKeyWithMacAndKcc, 4, encryptedKeyWithMacAndKcc.length);
+
+    assertThat(withoutKcc)
         .containsExactly(
-            0x00, 0x00, 0x00, 0x01, 0xd9, 0xab, 0x7d, 0xab, 0x07, 0xef, 0x7c, 0x5e, 0x00, 0xaa,
-            0x66, 0xfc, 0xd4, 0x32, 0x7e, 0x4b, 0x89, 0x0c, 0x6e, 0xb1, 0x7e, 0x0f, 0x90, 0x51,
-            0x8c, 0x59);
+            0x19, 0x28, 0xDD, 0x82, 0xE4, 0x93, 0xE4, 0x89, 0xEE, 0xD5, 0xA2, 0x35, 0xE7, 0x71,
+            0xC2, 0x23, 0x25, 0x23, 0xC6, 0x0A, 0xC9, 0x82, 0xF2, 0x2C, 0x82, 0x0A);
   }
 
   @Test
@@ -128,7 +130,7 @@ class SetKeyOnGMeterKeyEncryptionAndMacGenerationTest {
 
     final byte[] encryptedKeyWithMacAndKcc =
         this.macGeneration.encryptAndAddGcmAuthenticationTagSmr5(
-            this.DEVICE_G, keyId, this.KEY_SIZE, kcc, this.MASTER_KEY, this.NEW_USER_KEY);
+            this.DEVICE_G, keyId, this.KEY_SIZE, kcc, this.MASTER_KEY, this.NEW_KEY);
 
     assertThat(encryptedKeyWithMacAndKcc).hasSize(this.KEY_DATA_SIZE_SMR5);
 
@@ -150,35 +152,35 @@ class SetKeyOnGMeterKeyEncryptionAndMacGenerationTest {
         ProtocolAdapterException.class,
         () -> {
           this.macGeneration.encryptAndAddGcmAuthenticationTagSmr5(
-              this.DEVICE_G, keyId, this.KEY_SIZE, kcc, new byte[] {0x00}, this.NEW_USER_KEY);
+              this.DEVICE_G, keyId, this.KEY_SIZE, kcc, new byte[] {0x00}, this.NEW_KEY);
         });
   }
 
   @Test
-  void testCreateIv() {
+  void testCreateIv() throws ProtocolAdapterException {
     final byte[] kcc = new byte[] {0x00, 0x00, 0x01, 0x02};
-    final int mBusVersion = 6;
+    final int mBusVersion = 0x50;
     final int medium = 3;
     final byte[] initialisationVector =
         this.macGeneration.createIV(this.DEVICE_G, kcc, mBusVersion, medium);
 
     // Initialisation vector contains:
-    // Identification number, 4 bytes, LSB first: "12345678" --> hex 78 56 34 12
-    // Manufacturer id, 2 bytes, LSB first: "NTM" --> hex 3a 8d
+    // Identification number, 4 bytes, LSB first: "99310014" --> hex 14 00 31 99
+    // Manufacturer id, 2 bytes, LSB first: "FLO" --> hex 8f 19
     // Version, 1 byte: hex 06
     // Medium, 1 byte: hex 03
     // KCC, 4 bytes, MSB first: 258 --> hex 00 00 01 02
     assertThat(initialisationVector)
         .containsExactly(
-            0x78, 0x56, 0x34, 0x12, 0x3a, 0x8d, mBusVersion, medium, 0x00, 0x00, 0x01, 0x02);
+            0x14, 0x00, 0x31, 0x99, 0x8f, 0x19, mBusVersion, medium, 0x00, 0x00, 0x01, 0x02);
   }
 
   private DlmsDevice createDlmsDevice(final Protocol protocol, final String deviceIdentification) {
     final DlmsDevice device = new DlmsDevice();
     device.setProtocol(protocol);
     device.setDeviceIdentification(deviceIdentification);
-    device.setMbusManufacturerIdentification("NTM");
-    device.setMbusIdentificationNumber("12345678");
+    device.setMbusManufacturerIdentification("FLO");
+    device.setMbusIdentificationNumber("99310014");
     return device;
   }
 

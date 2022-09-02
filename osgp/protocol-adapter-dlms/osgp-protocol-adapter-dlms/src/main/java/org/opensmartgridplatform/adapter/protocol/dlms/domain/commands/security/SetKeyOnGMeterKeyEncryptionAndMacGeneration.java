@@ -40,7 +40,7 @@ public class SetKeyOnGMeterKeyEncryptionAndMacGeneration {
   private static final int IV_LENGTH_SMR5 = 12;
   private static final int IV_LENGTH_DSMR4 = 16;
   private static final int KCC_LENGTH = 4;
-  private static final int MBUS_VERSION = 6;
+  private static final int MBUS_VERSION = 0x50; // SMR5.0
   private static final int MEDIUM = 3; // Gas
 
   /**
@@ -133,10 +133,11 @@ public class SetKeyOnGMeterKeyEncryptionAndMacGeneration {
   }
 
   protected byte[] createIV(
-      final DlmsDevice device, final byte[] kcc, final int mBusVersion, final int medium) {
+      final DlmsDevice device, final byte[] kcc, final int mBusVersion, final int medium)
+      throws ProtocolAdapterException {
     return ByteBuffer.allocate(IV_LENGTH_SMR5)
-        .put(Arrays.reverse(this.getMbusIdentificationNnumber(device)))
-        .put(this.getMbusManufacturerId(device))
+        .put(Arrays.reverse(this.getMbusIdentificationNumber(device)))
+        .put(Arrays.reverse(this.getMbusManufacturerId(device)))
         .put((byte) mBusVersion)
         .put((byte) medium)
         .put(kcc)
@@ -162,13 +163,26 @@ public class SetKeyOnGMeterKeyEncryptionAndMacGeneration {
     return BigInteger.valueOf(manufacturerId.getId()).toByteArray();
   }
 
-  private byte[] getMbusIdentificationNnumber(final DlmsDevice device) {
+  private byte[] getMbusIdentificationNumber(final DlmsDevice device)
+      throws ProtocolAdapterException {
     final String mbusIdentificationNumber = device.getMbusIdentificationNumber();
     final IdentificationNumber identificationNumber =
         IdentificationNumber.fromTextualRepresentation(mbusIdentificationNumber);
-    return BigInteger.valueOf(
-            identificationNumber.getIdentificationNumberInBcdRepresentationAsLong())
-        .toByteArray();
+    final byte[] bytes =
+        BigInteger.valueOf(identificationNumber.getIdentificationNumberInBcdRepresentationAsLong())
+            .toByteArray();
+    if (bytes.length == 4) {
+      return bytes;
+    } else if (bytes.length == 5 && bytes[0] == 0) {
+      // In some cases BigInteger.toByteArray produces an additional byte with a leading zero. This
+      // should be removed.
+      return Arrays.copyOfRange(bytes, 1, bytes.length);
+    } else {
+      throw new ProtocolAdapterException(
+          String.format(
+              "M-Bus identificationNumber %s doesn't convert to 4 bytes %s",
+              mbusIdentificationNumber, Hex.toHexString(bytes)));
+    }
   }
 
   private byte[] addPadding(final byte[] input, final int size) throws ProtocolAdapterException {
