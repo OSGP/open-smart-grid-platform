@@ -36,21 +36,21 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
     Examples:
       | Protocol    | WeekDay     | StartDay   | EndDay     | ActionTime   | Time         | TriggerWindow | LightValues         | TriggerType   |
       | OSLP ELSTER | ALL         |            |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,             |               |
-      | OSLP ELSTER | ALL         |            |            | ABSOLUTETIME | 8:00:00.000  |               | 0,false,            |               |
+      | OSLP ELSTER | ALL         |            |            | ABSOLUTETIME | 08:00:00.000 |               | 0,false,            |               |
       | OSLP ELSTER | MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,             |               |
-      | OSLP ELSTER | MONDAY      |            |            | ABSOLUTETIME | 8:00:00.000  |               | 0,false,            |               |
+      | OSLP ELSTER | MONDAY      |            |            | ABSOLUTETIME | 08:00:00.000 |               | 0,false,            |               |
       | OSLP ELSTER | MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 2,true,;3,true,50   |               |
-      | OSLP ELSTER | MONDAY      |            |            | ABSOLUTETIME | 8:00:00.000  |               | 2,false,;3,false    |               |
+      | OSLP ELSTER | MONDAY      |            |            | ABSOLUTETIME | 08:00:00.000 |               | 2,false,;3,false,   |               |
       | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,             |               |
-      | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 |            | ABSOLUTETIME | 8:00:00.000  |               | 0,false,            |               |
+      | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 |            | ABSOLUTETIME | 08:00:00.000 |               | 0,false,            |               |
       | OSLP ELSTER | ALL         |            | 2013-12-31 | ABSOLUTETIME | 18:00:00.000 |               | 0,true,             |               |
-      | OSLP ELSTER | ALL         |            | 2013-12-31 | ABSOLUTETIME | 8:00:00.000  |               | 0,false,            |               |
+      | OSLP ELSTER | ALL         |            | 2013-12-31 | ABSOLUTETIME | 08:00:00.000 |               | 0,false,            |               |
       | OSLP ELSTER | MONDAY      |            | 2013-12-31 | ABSOLUTETIME | 18:00:00.000 |               | 0,true,             |               |
-      | OSLP ELSTER | MONDAY      |            | 2013-12-31 | ABSOLUTETIME | 8:00:00.000  |               | 0,false,            |               |
+      | OSLP ELSTER | MONDAY      |            | 2013-12-31 | ABSOLUTETIME | 08:00:00.000 |               | 0,false,            |               |
       | OSLP ELSTER | MONDAY      | 2013-03-01 | 2013-12-31 | ABSOLUTETIME | 18:00:00.000 |               | 2,true,;3,true,50   |               |
-      | OSLP ELSTER | MONDAY      | 2013-03-01 | 2013-12-31 | ABSOLUTETIME | 8:00:00.000  |               | 2,false,;3,false,   |               |
+      | OSLP ELSTER | MONDAY      | 2013-03-01 | 2013-12-31 | ABSOLUTETIME | 08:00:00.000 |               | 2,false,;3,false,   |               |
       | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 | 2013-12-31 | ABSOLUTETIME | 18:00:00.000 |               | 0,true,             |               |
-      | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 | 2013-12-31 | ABSOLUTETIME | 8:00:00.000  |               | 0,false,            |               |
+      | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 | 2013-12-31 | ABSOLUTETIME | 08:00:00.000 |               | 0,false,            |               |
       | OSLP ELSTER | ALL         |            |            | SUNSET       |              |               | 0,true,             | ASTRONOMICAL  |
       | OSLP ELSTER | ALL         |            |            | SUNRISE      |              |               | 0,false,            | ASTRONOMICAL  |
       | OSLP ELSTER | ALL         |            |            | SUNSET       |              | 42,42         | 0,true,             | LIGHT_TRIGGER |
