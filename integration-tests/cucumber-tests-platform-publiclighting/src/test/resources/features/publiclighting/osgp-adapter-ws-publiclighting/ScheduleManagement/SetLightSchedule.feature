@@ -1,4 +1,4 @@
-@PublicLighting @Platform @PublicLightingSetLightSchedule @Jasper
+@PublicLighting @Platform @PublicLightingSetLightSchedule
 Feature: PublicLightingScheduleManagement Set Light Schedule
   In order to ...
   As a platform
