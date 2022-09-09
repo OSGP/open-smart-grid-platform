@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
@@ -36,6 +37,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -57,12 +59,16 @@ class InvocationCounterManagerTest {
 
   @Mock private DlmsHelper dlmsHelper;
   @Mock private DlmsDeviceRepository deviceRepository;
+  private DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
 
   @BeforeEach
   void setUp() {
     this.manager =
         new InvocationCounterManager(
-            this.connectionFactory, this.dlmsHelper, this.deviceRepository);
+            this.connectionFactory,
+            this.dlmsHelper,
+            this.deviceRepository,
+            this.dlmsLogItemRequestMessageSender);
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
     this.device =
         new DlmsDeviceBuilder()
@@ -78,6 +84,16 @@ class InvocationCounterManagerTest {
     verify(this.connectionFactory, times(1))
         .createAndHandlePublicClientConnection(
             any(MessageMetadata.class), eq(this.device), isNull(), isNull(), any());
+  }
+
+  @Test
+  void initializeInvocationCounterForDeviceTaskExecutedDebugEnabled() throws OsgpException {
+    this.device.setInDebugMode(true);
+    this.manager.initializeInvocationCounter(this.messageMetadata, this.device);
+
+    verify(this.connectionFactory, times(1))
+        .createAndHandlePublicClientConnection(
+            any(MessageMetadata.class), eq(this.device), isNotNull(), isNull(), any());
   }
 
   @Test

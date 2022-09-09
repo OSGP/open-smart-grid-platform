@@ -34,6 +34,12 @@
     <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='PHASE_OUTAGE_DETECTED_L3']">
       <jxb:typesafeEnumMember name="PHASE_OUTAGE_DETECTED_L3"/>
     </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='LAST_GASP']">
+      <jxb:typesafeEnumMember name="LAST_GASP"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='LAST_GASP_TEST']">
+      <jxb:typesafeEnumMember name="LAST_GASP_TEST"/>
+    </jxb:bindings>
     <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='VOLTAGE_SAG_IN_PHASE_DETECTED_L1']">
       <jxb:typesafeEnumMember name="VOLTAGE_SAG_IN_PHASE_DETECTED_L1"/>
     </jxb:bindings>

@@ -335,6 +335,8 @@
       <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_2" />
       <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_3" />
       <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_4" />
+      <xsd:enumeration value="LAST_GASP" />
+      <xsd:enumeration value="LAST_GASP_TEST" />
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1" />
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2" />
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3" />
