@@ -53,6 +53,7 @@ public class PlatformSmartmeteringDefaults
   public static final boolean IP_ADDRESS_IS_STATIC = true;
   public static final boolean IS_ACTIVATED = true;
   public static final boolean IS_ACTIVE = true;
+  public static final boolean CLOSE_OPTICAL_PORT = false;
 
   public static final Long LOGICAL_ID = 1L;
   public static final InetAddress NETWORK_ADDRESS;
