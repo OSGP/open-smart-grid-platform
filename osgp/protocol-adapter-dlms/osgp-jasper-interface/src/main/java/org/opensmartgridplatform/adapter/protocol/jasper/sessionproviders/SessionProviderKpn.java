@@ -8,11 +8,10 @@
  */
 package org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders;
 
-import com.jasperwireless.api.ws.service.GetSessionInfoResponse;
-import com.jasperwireless.api.ws.service.SessionInfoType;
 import javax.annotation.PostConstruct;
-import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWirelessTerminalClient;
-import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
+import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
+import org.opensmartgridplatform.adapter.protocol.jasper.rest.client.JasperWirelessTerminalRestClient;
+import org.opensmartgridplatform.adapter.protocol.jasper.rest.json.GetSessionInfoResponse;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -21,14 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.ws.soap.client.SoapFaultClientException;
 
 @Component
 public class SessionProviderKpn extends SessionProvider {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SessionProviderKpn.class);
 
-  @Autowired private JasperWirelessTerminalClient jasperWirelessTerminalClient;
+  @Autowired private JasperWirelessTerminalRestClient jasperWirelessTerminalRestClient;
 
   /**
    * Initialization function executed after dependency injection has finished. The SessionProvider
@@ -41,39 +39,47 @@ public class SessionProviderKpn extends SessionProvider {
 
   @Override
   public String getIpAddress(final String iccId) throws OsgpException {
-    GetSessionInfoResponse response;
+    GetSessionInfoResponse response = null;
     try {
-      response = this.jasperWirelessTerminalClient.getSession(iccId);
-    } catch (final SoapFaultClientException e) {
-      final String errorMessage =
-          String.format("iccId %s is probably not supported in this session provider", iccId);
-      LOGGER.error(errorMessage, e);
-      throw new FunctionalException(
-          FunctionalExceptionType.INVALID_ICCID,
-          ComponentType.PROTOCOL_DLMS,
-          new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage()));
+      response = this.jasperWirelessTerminalRestClient.getSession(iccId);
+    } catch (final OsgpJasperException e) {
+      this.handleException(iccId, e);
     }
-
-    final SessionInfoType sessionInfoType = this.getSessionInfo(response);
-
-    if (sessionInfoType == null) {
-      return null;
-    }
-    return sessionInfoType.getIpAddress();
+    return response.getIpAddress();
   }
 
-  private SessionInfoType getSessionInfo(final GetSessionInfoResponse response)
-      throws SessionProviderException {
-    if ((response == null)
-        || (response.getSessionInfo() == null)
-        || (response.getSessionInfo().getSession() == null)) {
-      final String errorMessage = String.format("Response Object is not ok: %s", response);
-      LOGGER.warn(errorMessage);
-      throw new SessionProviderException(errorMessage);
+  private void handleException(final String iccId, final OsgpJasperException e)
+      throws FunctionalException {
+    String errorMessage = "";
+    FunctionalExceptionType functionalExceptionType;
+    if (e.getJasperError() != null) {
+      switch (e.getJasperError().getHttpStatus()) {
+        case NOT_FOUND:
+          errorMessage =
+              String.format("iccId %s is probably not supported in this session provider", iccId);
+          functionalExceptionType = FunctionalExceptionType.INVALID_ICCID;
+          break;
+        default:
+          errorMessage =
+              String.format(
+                  "Session provider %s returned error %s : %s",
+                  SessionProviderEnum.KPN.name(),
+                  e.getJasperError().getCode(),
+                  e.getJasperError().getMessage());
+          LOGGER.error(errorMessage, e);
+          functionalExceptionType = FunctionalExceptionType.SESSION_PROVIDER_ERROR;
+      }
+    } else {
+      errorMessage =
+          String.format(
+              "Session provider %s returned unknown error message: %s",
+              SessionProviderEnum.KPN.name(), e.getMessage());
+      LOGGER.error(errorMessage, e);
+      functionalExceptionType = FunctionalExceptionType.SESSION_PROVIDER_ERROR;
     }
-    if (response.getSessionInfo().getSession().size() == 1) {
-      return response.getSessionInfo().getSession().get(0);
-    }
-    return null;
+    throw new FunctionalException(
+        functionalExceptionType,
+        ComponentType.PROTOCOL_DLMS,
+        new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage()));
   }
 }

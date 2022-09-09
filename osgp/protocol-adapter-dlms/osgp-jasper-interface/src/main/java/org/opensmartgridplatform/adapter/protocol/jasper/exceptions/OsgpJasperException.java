@@ -8,11 +8,25 @@
  */
 package org.opensmartgridplatform.adapter.protocol.jasper.exceptions;
 
+import org.opensmartgridplatform.adapter.protocol.jasper.rest.JasperError;
+
 public class OsgpJasperException extends Exception {
+
   /** Serial Version UID. */
   private static final long serialVersionUID = 4296034756159213906L;
 
+  private JasperError jasperError;
+
+  public OsgpJasperException(final JasperError jasperError) {
+    super(jasperError.getCode() + ":" + jasperError.getMessage());
+    this.jasperError = jasperError;
+  }
+
   public OsgpJasperException(final String message, final Throwable throwable) {
     super(message, throwable);
+  }
+
+  public JasperError getJasperError() {
+    return this.jasperError;
   }
 }
