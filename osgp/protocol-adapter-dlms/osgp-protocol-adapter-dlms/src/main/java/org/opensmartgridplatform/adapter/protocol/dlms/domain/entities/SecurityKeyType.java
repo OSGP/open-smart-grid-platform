@@ -26,6 +26,8 @@ public enum SecurityKeyType {
   G_METER_ENCRYPTION(SecretType.G_METER_ENCRYPTION_KEY),
   /** M-Bus Firmware update authentication key */
   G_METER_FIRMWARE_UPDATE_AUTHENTICATION(SecretType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION_KEY),
+  /** M-Bus optical port key */
+  G_METER_OPTICAL_PORT_KEY(SecretType.G_METER_OPTICAL_PORT_KEY),
   /** Password (e.g. used as DLMS Low Level Security secret) */
   PASSWORD(SecretType.PPP_PASSWORD);
 
