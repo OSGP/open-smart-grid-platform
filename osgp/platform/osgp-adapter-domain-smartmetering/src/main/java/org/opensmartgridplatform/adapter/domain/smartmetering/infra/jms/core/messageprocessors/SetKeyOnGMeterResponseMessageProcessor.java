@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-/** Class for processing smart metering Set Encryption Key Exchange On G-Meter response messages */
 @Component
 public class SetKeyOnGMeterResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
