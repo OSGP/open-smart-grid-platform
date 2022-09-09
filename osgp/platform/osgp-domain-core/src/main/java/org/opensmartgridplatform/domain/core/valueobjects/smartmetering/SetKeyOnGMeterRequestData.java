@@ -12,7 +12,7 @@ import java.io.Serializable;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
-public class SetEncryptionKeyExchangeOnGMeterRequestData implements Serializable, ActionRequest {
+public class SetKeyOnGMeterRequestData implements Serializable, ActionRequest {
 
   private static final long serialVersionUID = 3965412208032103531L;
 
@@ -22,7 +22,7 @@ public class SetEncryptionKeyExchangeOnGMeterRequestData implements Serializable
 
   private final Boolean closeOpticalPort;
 
-  public SetEncryptionKeyExchangeOnGMeterRequestData(
+  public SetKeyOnGMeterRequestData(
       final String mbusDeviceIdentification,
       final SecretType secretType,
       final Boolean closeOpticalPort) {
@@ -51,6 +51,6 @@ public class SetEncryptionKeyExchangeOnGMeterRequestData implements Serializable
 
   @Override
   public DeviceFunction getDeviceFunction() {
-    return DeviceFunction.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER;
+    return DeviceFunction.SET_KEY_ON_G_METER;
   }
 }

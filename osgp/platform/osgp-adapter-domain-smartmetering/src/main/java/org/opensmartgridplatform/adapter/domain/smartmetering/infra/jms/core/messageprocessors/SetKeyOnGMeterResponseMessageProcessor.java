@@ -23,20 +23,19 @@ import org.springframework.stereotype.Component;
 
 /** Class for processing smart metering Set Encryption Key Exchange On G-Meter response messages */
 @Component
-public class SetEncryptionKeyExchangeOnGMeterResponseMessageProcessor
-    extends OsgpCoreResponseMessageProcessor {
+public class SetKeyOnGMeterResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
   @Autowired private ConfigurationService configurationService;
 
   @Autowired
-  protected SetEncryptionKeyExchangeOnGMeterResponseMessageProcessor(
+  protected SetKeyOnGMeterResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
           final MessageProcessorMap messageProcessorMap) {
     super(
         responseMessageSender,
         messageProcessorMap,
-        MessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER,
+        MessageType.SET_KEY_ON_G_METER,
         ComponentType.DOMAIN_SMART_METERING);
   }
 
@@ -51,7 +50,7 @@ public class SetEncryptionKeyExchangeOnGMeterResponseMessageProcessor
       final ResponseMessage responseMessage,
       final OsgpException osgpException) {
 
-    this.configurationService.handleSetEncryptionKeyExchangeOnGMeterResponse(
+    this.configurationService.handleSetKeyOnGMeterResponse(
         deviceMessageMetadata, responseMessage.getResult(), osgpException);
   }
 }

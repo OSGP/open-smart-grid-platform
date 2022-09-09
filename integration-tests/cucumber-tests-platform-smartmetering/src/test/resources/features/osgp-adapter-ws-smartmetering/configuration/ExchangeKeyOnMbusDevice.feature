@@ -17,11 +17,11 @@ Feature: SmartMetering Configuration - Exchange User Key on M-Bus Device
       | Channel                        | 1              |
       | MbusIdentificationNumber       | <IdNumber>     |
       | MbusManufacturerIdentification | LGB            |
-    When the exchange user key request is received
+    When the set key on GMeter request is received
       | DeviceIdentification | <DeviceIdMbus>     |
       | SecretType           | <SecretType>       |
       | CloseOpticalPort     | <CloseOpticalPort> |
-    Then the exchange user key response should be returned
+    Then the set key on GMeter response should be returned
       | DeviceIdentification | <DeviceIdMbus> |
       | Result               | OK             |
     And <StoredKeyCount> valid m-bus keys are stored

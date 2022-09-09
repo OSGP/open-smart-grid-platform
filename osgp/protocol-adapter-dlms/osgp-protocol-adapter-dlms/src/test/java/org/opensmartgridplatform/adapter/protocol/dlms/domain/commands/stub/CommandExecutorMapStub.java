@@ -61,7 +61,7 @@ public class CommandExecutorMapStub extends CommandExecutorMap {
     this.addCommandExecutor(
         ActivityCalendarDataDto.class, new SetActivityCalendarBundleCommandExecutorStub());
     this.addCommandExecutor(
-        GMeterInfoDto.class, new SetEncryptionKeyExchangeOnGMeterBundleCommandExecutorStub());
+        GMeterInfoDto.class, new SetKeyOnGMeterBundleCommandExecutorStub());
     this.addCommandExecutor(
         SetAlarmNotificationsRequestDto.class,
         new SetAlarmNotificationsBundleCommandExecutorStub());

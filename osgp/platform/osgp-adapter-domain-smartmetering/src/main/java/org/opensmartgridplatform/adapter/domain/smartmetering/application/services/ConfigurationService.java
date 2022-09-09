@@ -37,7 +37,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetu
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SecretType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeyOnGMeterRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
@@ -506,14 +506,12 @@ public class ConfigurationService {
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
-  public void setEncryptionKeyExchangeOnGMeter(
-      final MessageMetadata messageMetadata,
-      final SetEncryptionKeyExchangeOnGMeterRequestData requestData)
+  public void setKeyOnGMeter(
+      final MessageMetadata messageMetadata, final SetKeyOnGMeterRequestData requestData)
       throws FunctionalException {
 
     log.info(
-        "set Encryption Key Exchange On G-Meter for organisationIdentification: {} for deviceIdentification: "
-            + "{}",
+        "set Key On G-Meter for organisationIdentification: {} for deviceIdentification: " + "{}",
         messageMetadata.getOrganisationIdentification(),
         messageMetadata.getDeviceIdentification());
 
@@ -551,19 +549,15 @@ public class ConfigurationService {
             .build());
   }
 
-  public void handleSetEncryptionKeyExchangeOnGMeterResponse(
+  public void handleSetKeyOnGMeterResponse(
       final MessageMetadata messageMetadata,
       final ResponseMessageResultType responseMessageResultType,
       final OsgpException exception) {
-    log.info(
-        "handleSetEncryptionKeyExchangeOnGMeterResponse for MessageType: {}",
-        messageMetadata.getMessageType());
+    log.info("handleSetKeyOnGMeterResponse for MessageType: {}", messageMetadata.getMessageType());
 
     ResponseMessageResultType result = responseMessageResultType;
     if (exception != null) {
-      log.error(
-          "Set Encryption Key Exchange On G-Meter Response not ok. Unexpected Exception",
-          exception);
+      log.error("Set Key On G-Meter Response not ok. Unexpected Exception", exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 

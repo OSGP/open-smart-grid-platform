@@ -115,11 +115,11 @@
     </xsd:complexType>
   </xsd:element>
   <xsd:element
-    name="SetEncryptionKeyExchangeOnGMeterRequest">
+    name="SetKeyOnGMeterRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension
-          base="smconf:SetEncryptionKeyExchangeOnGMeterRequestData" />
+          base="smconf:SetKeyOnGMeterRequestData" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -374,7 +374,7 @@
           ref="tns:SetAdministrativeStatusRequest" />
         <xsd:element ref="tns:SetActivityCalendarRequest" />
         <xsd:element
-          ref="tns:SetEncryptionKeyExchangeOnGMeterRequest" />
+          ref="tns:SetKeyOnGMeterRequest" />
         <xsd:element
           ref="tns:GetMbusEncryptionKeyStatusRequest" />
         <xsd:element ref="tns:SetAlarmNotificationsRequest" />
