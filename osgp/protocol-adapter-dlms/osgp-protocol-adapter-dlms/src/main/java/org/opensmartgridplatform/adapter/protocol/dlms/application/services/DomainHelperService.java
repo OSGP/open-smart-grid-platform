@@ -11,7 +11,8 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWirelessSmsClient;
+import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
+import org.opensmartgridplatform.adapter.protocol.jasper.rest.client.JasperWirelessSmsRestClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProvider;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProviderService;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
@@ -35,7 +36,7 @@ public class DomainHelperService {
 
   private final SessionProviderService sessionProviderService;
 
-  private final JasperWirelessSmsClient jasperWirelessSmsClient;
+  private final JasperWirelessSmsRestClient jasperWirelessSmsRestClient;
 
   private final int jasperGetSessionRetries;
 
@@ -44,12 +45,12 @@ public class DomainHelperService {
   public DomainHelperService(
       final DlmsDeviceRepository dlmsDeviceRepository,
       final SessionProviderService sessionProviderService,
-      final JasperWirelessSmsClient jasperWirelessSmsClient,
+      final JasperWirelessSmsRestClient jasperWirelessSmsRestClient,
       final int jasperGetSessionRetries,
       final int jasperGetSessionSleepBetweenRetries) {
     this.dlmsDeviceRepository = dlmsDeviceRepository;
     this.sessionProviderService = sessionProviderService;
-    this.jasperWirelessSmsClient = jasperWirelessSmsClient;
+    this.jasperWirelessSmsRestClient = jasperWirelessSmsRestClient;
     this.jasperGetSessionRetries = jasperGetSessionRetries;
     this.jasperGetSessionSleepBetweenRetries = jasperGetSessionSleepBetweenRetries;
   }
@@ -112,10 +113,10 @@ public class DomainHelperService {
       // If the result is null then the meter is not in session (not
       // awake).
       // So wake up the meter and start polling for the session
-      this.jasperWirelessSmsClient.sendWakeUpSMS(dlmsDevice.getIccId());
+      this.jasperWirelessSmsRestClient.sendWakeUpSMS(dlmsDevice.getIccId());
       deviceIpAddress = this.pollForSession(sessionProvider, dlmsDevice);
 
-    } catch (final SessionProviderException e) {
+    } catch (final OsgpJasperException e) {
       LOGGER.error("IccId is probably not supported in this session provider", e);
       throw new FunctionalException(
           FunctionalExceptionType.INVALID_ICCID, ComponentType.PROTOCOL_DLMS, e);
