@@ -9,9 +9,10 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -42,9 +43,7 @@ class AdhocMapperTest {
                 org.opensmartgridplatform.domain.core.valueobjects.smartmetering
                     .TestAlarmSchedulerRequestData.class);
 
-    Assertions.assertThat(mapped)
-        .hasToString(
-            "TestAlarmSchedulerRequestData(scheduleTime=Sun Sep 05 13:30:00 CEST 2088, alarmType=PARTIAL_POWER_OUTAGE)");
-    log.debug(mapped.toString());
+    assertThat(mapped.getScheduleTime()).hasToString("Sun Sep 05 13:30:00 CEST 2088");
+    assertThat(mapped.getAlarmType()).hasToString("PARTIAL_POWER_OUTAGE");
   }
 }
