@@ -11,10 +11,10 @@ package org.opensmartgridplatform.adapter.protocol.jasper.rest.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Base64;
+import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
 import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
+import org.opensmartgridplatform.adapter.protocol.jasper.response.JasperErrorResponse;
 import org.opensmartgridplatform.adapter.protocol.jasper.rest.JasperError;
-import org.opensmartgridplatform.adapter.protocol.jasper.rest.config.JasperWirelessRestAccess;
-import org.opensmartgridplatform.adapter.protocol.jasper.rest.json.JasperErrorResponse;
 import org.springframework.web.client.HttpStatusCodeException;
 
 public class JasperWirelessRestClient {
@@ -29,7 +29,7 @@ public class JasperWirelessRestClient {
   }
 
   protected String createAuthorizationCredentials(
-      final JasperWirelessRestAccess jasperWirelessRestAccess) {
+      final JasperWirelessAccess jasperWirelessRestAccess) {
     return Base64.getEncoder()
         .encodeToString(
             (jasperWirelessRestAccess.getUsername()

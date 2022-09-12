@@ -6,17 +6,21 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.jasper.rest.json;
+package org.opensmartgridplatform.adapter.protocol.jasper.response;
 
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-public class JasperErrorResponse {
+@AllArgsConstructor
+public class GetSessionInfoResponse {
 
-  private String errorMessage;
-  private String errorCode;
+  private String iccid;
+  private String ipAddress;
+  private String ipV6Address;
+  private Date dateSessionStarted;
+  private Date dateSessionEnded;
 }

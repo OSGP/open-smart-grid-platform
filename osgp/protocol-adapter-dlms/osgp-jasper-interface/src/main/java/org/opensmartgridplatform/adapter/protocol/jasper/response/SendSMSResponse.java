@@ -6,11 +6,15 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.jasper.rest.json;
+package org.opensmartgridplatform.adapter.protocol.jasper.response;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Data
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class SendSMSResponse {
 
   private long smsMsgId;

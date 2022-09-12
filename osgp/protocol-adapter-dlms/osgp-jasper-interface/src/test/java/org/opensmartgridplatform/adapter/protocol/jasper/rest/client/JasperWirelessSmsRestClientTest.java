@@ -23,9 +23,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
 import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
-import org.opensmartgridplatform.adapter.protocol.jasper.rest.config.JasperWirelessRestAccess;
-import org.opensmartgridplatform.adapter.protocol.jasper.rest.json.SendSMSResponse;
+import org.opensmartgridplatform.adapter.protocol.jasper.response.SendSMSResponse;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -44,21 +44,22 @@ public class JasperWirelessSmsRestClientTest {
   private static final int SMSMSGID = 67890;
   private static final String BASEURL = "http://localhost";
   private static final String APIVERSION = "v1";
+  private static final String APITYPE = "REST";
   private static final String URL =
       String.format(BASEURL + SERVICE_SMS_SEND_SMS, APIVERSION, ICCID);
 
   @Mock private RestTemplate jasperwirelessRestTemplate;
 
-  @Mock private JasperWirelessRestAccess jasperWirelessRestAccess;
+  @Mock private JasperWirelessAccess jasperWirelessAccess;
 
   @InjectMocks private JasperWirelessSmsRestClient jasperWirelessSmsRestClient;
 
   @BeforeEach
   private void init() {
-    when(this.jasperWirelessRestAccess.getUrl()).thenReturn(BASEURL);
-    when(this.jasperWirelessRestAccess.getApiVersion()).thenReturn(APIVERSION);
-    when(this.jasperWirelessRestAccess.getUsername()).thenReturn(USERNAME);
-    when(this.jasperWirelessRestAccess.getLicenseKey()).thenReturn(LICENCEKEY);
+    when(this.jasperWirelessAccess.getUri()).thenReturn(BASEURL);
+    when(this.jasperWirelessAccess.getApiVersion()).thenReturn(APIVERSION);
+    when(this.jasperWirelessAccess.getUsername()).thenReturn(USERNAME);
+    when(this.jasperWirelessAccess.getLicenseKey()).thenReturn(LICENCEKEY);
   }
 
   @Test
@@ -116,8 +117,7 @@ public class JasperWirelessSmsRestClientTest {
   }
 
   private ResponseEntity<SendSMSResponse> createResponseEntity(final HttpStatus httpStatus) {
-    final SendSMSResponse sendSMSResponse = new SendSMSResponse();
-    sendSMSResponse.setSmsMsgId(SMSMSGID);
+    final SendSMSResponse sendSMSResponse = new SendSMSResponse(SMSMSGID);
     return new ResponseEntity<SendSMSResponse>(sendSMSResponse, httpStatus);
   }
 

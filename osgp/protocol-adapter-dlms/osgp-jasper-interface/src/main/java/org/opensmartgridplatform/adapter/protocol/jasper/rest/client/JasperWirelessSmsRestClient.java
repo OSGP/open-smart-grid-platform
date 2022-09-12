@@ -8,45 +8,48 @@
  */
 package org.opensmartgridplatform.adapter.protocol.jasper.rest.client;
 
+import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
+import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
 import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
-import org.opensmartgridplatform.adapter.protocol.jasper.rest.config.JasperWirelessRestAccess;
+import org.opensmartgridplatform.adapter.protocol.jasper.response.SendSMSResponse;
 import org.opensmartgridplatform.adapter.protocol.jasper.rest.json.SendSMSRequest;
-import org.opensmartgridplatform.adapter.protocol.jasper.rest.json.SendSMSResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-@Component
-public class JasperWirelessSmsRestClient extends JasperWirelessRestClient {
+public class JasperWirelessSmsRestClient extends JasperWirelessRestClient
+    implements JasperWirelessSmsClient {
 
   private static final String SERVICE_SMS_SEND_SMS = "%s/rws/api/%s/devices/%s/smsMessages";
 
   @Autowired private RestTemplate jasperwirelessRestTemplate;
 
-  @Autowired private JasperWirelessRestAccess jasperWirelessRestAccess;
+  @Autowired private JasperWirelessAccess jasperWirelessAccess;
 
+  @Autowired private short jasperGetValidityPeriod;
+
+  @Override
   public SendSMSResponse sendWakeUpSMS(final String iccId) throws OsgpJasperException {
 
     final SendSMSRequest sendSMSRequest = new SendSMSRequest();
     sendSMSRequest.setMessageText("");
-    sendSMSRequest.setTpvp((short) 0);
+    sendSMSRequest.setTpvp(this.jasperGetValidityPeriod);
 
     final String authorizationCredentials =
-        this.createAuthorizationCredentials(this.jasperWirelessRestAccess);
+        this.createAuthorizationCredentials(this.jasperWirelessAccess);
 
     final String url =
         String.format(
             SERVICE_SMS_SEND_SMS,
-            this.jasperWirelessRestAccess.getUrl(),
-            this.jasperWirelessRestAccess.getApiVersion(),
+            this.jasperWirelessAccess.getUri(),
+            this.jasperWirelessAccess.getApiVersion(),
             iccId);
 
     final HttpHeaders headers = new HttpHeaders();

@@ -9,9 +9,9 @@
 package org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders;
 
 import javax.annotation.PostConstruct;
+import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessTerminalClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
-import org.opensmartgridplatform.adapter.protocol.jasper.rest.client.JasperWirelessTerminalRestClient;
-import org.opensmartgridplatform.adapter.protocol.jasper.rest.json.GetSessionInfoResponse;
+import org.opensmartgridplatform.adapter.protocol.jasper.response.GetSessionInfoResponse;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -27,7 +27,7 @@ public class SessionProviderKpn extends SessionProvider {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SessionProviderKpn.class);
 
-  @Autowired private JasperWirelessTerminalRestClient jasperWirelessTerminalRestClient;
+  @Autowired private JasperWirelessTerminalClient jasperWirelessTerminalClient;
 
   /**
    * Initialization function executed after dependency injection has finished. The SessionProvider
@@ -42,7 +42,7 @@ public class SessionProviderKpn extends SessionProvider {
   public String getIpAddress(final String iccId) throws OsgpException {
     GetSessionInfoResponse response = null;
     try {
-      response = this.jasperWirelessTerminalRestClient.getSession(iccId);
+      response = this.jasperWirelessTerminalClient.getSession(iccId);
     } catch (final OsgpJasperException e) {
       this.handleException(iccId, e);
     }

@@ -23,9 +23,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
 import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
-import org.opensmartgridplatform.adapter.protocol.jasper.rest.config.JasperWirelessRestAccess;
-import org.opensmartgridplatform.adapter.protocol.jasper.rest.json.GetSessionInfoResponse;
+import org.opensmartgridplatform.adapter.protocol.jasper.response.GetSessionInfoResponse;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -48,16 +48,16 @@ public class JasperWirelessTerminalRestClientTest {
 
   @Mock private RestTemplate jasperwirelessRestTemplate;
 
-  @Mock private JasperWirelessRestAccess jasperWirelessRestAccess;
+  @Mock private JasperWirelessAccess jasperWirelessAccess;
 
   @InjectMocks private JasperWirelessTerminalRestClient jasperWirelessTerminalRestClient;
 
   @BeforeEach
   private void init() {
-    when(this.jasperWirelessRestAccess.getUrl()).thenReturn(BASEURL);
-    when(this.jasperWirelessRestAccess.getApiVersion()).thenReturn(APIVERSION);
-    when(this.jasperWirelessRestAccess.getUsername()).thenReturn(USERNAME);
-    when(this.jasperWirelessRestAccess.getLicenseKey()).thenReturn(LICENCEKEY);
+    when(this.jasperWirelessAccess.getUri()).thenReturn(BASEURL);
+    when(this.jasperWirelessAccess.getApiVersion()).thenReturn(APIVERSION);
+    when(this.jasperWirelessAccess.getUsername()).thenReturn(USERNAME);
+    when(this.jasperWirelessAccess.getLicenseKey()).thenReturn(LICENCEKEY);
   }
 
   @Test
@@ -118,8 +118,8 @@ public class JasperWirelessTerminalRestClientTest {
   }
 
   private ResponseEntity<GetSessionInfoResponse> createResponseEntity(final HttpStatus httpStatus) {
-    final GetSessionInfoResponse getSessionInfoResponse = new GetSessionInfoResponse();
-    getSessionInfoResponse.setIccid(ICCID);
+    final GetSessionInfoResponse getSessionInfoResponse =
+        new GetSessionInfoResponse(ICCID, null, null, null, null);
     return new ResponseEntity<GetSessionInfoResponse>(getSessionInfoResponse, httpStatus);
   }
 

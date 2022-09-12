@@ -27,6 +27,11 @@ public class OsgpJasperException extends Exception {
     this.jasperError = null;
   }
 
+  public OsgpJasperException(final String message) {
+    super(message);
+    this.jasperError = null;
+  }
+
   public JasperError getJasperError() {
     return this.jasperError;
   }

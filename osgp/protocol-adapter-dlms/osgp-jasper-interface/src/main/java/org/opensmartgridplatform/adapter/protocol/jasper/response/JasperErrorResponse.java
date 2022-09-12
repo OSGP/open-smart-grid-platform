@@ -1,24 +1,22 @@
 /*
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2022 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.jasper.config;
+package org.opensmartgridplatform.adapter.protocol.jasper.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
-public class JasperWirelessAccess {
+public class JasperErrorResponse {
 
-  private String uri;
-  private String licenseKey;
-  private String username;
-  private String password;
-  private String apiVersion;
-  private String apiType;
+  private String errorMessage;
+  private String errorCode;
 }
