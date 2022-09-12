@@ -10,6 +10,52 @@
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
     schemaLocation="base-ws-smartmetering.xsd" />
 
+  <xsd:element name="TestAlarmSchedulerAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="TestAlarmSchedulerAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="TestAlarmSchedulerRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="TestAlarmSchedulerRequestData" type="tns:TestAlarmSchedulerRequestData" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="TestAlarmSchedulerResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType" />
+        <xsd:element name="Description" type="xsd:string"
+          minOccurs="0" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="TestAlarmSchedulerRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Command">
+        <xsd:sequence>
+          <xsd:element type="xsd:dateTime" name="ScheduleTime" />
+          <xsd:element type="tns:TestAlarmType" name="AlarmType" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
   <xsd:element name="SynchronizeTimeRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -349,6 +395,13 @@
       <xsd:enumeration value="NO_ACCESS" />
       <xsd:enumeration value="ACCESS" />
       <xsd:enumeration value="AUTHENTICATED_ACCESS" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="TestAlarmType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="PARTIAL_POWER_OUTAGE" />
+      <xsd:enumeration value="LAST_GASP" />
     </xsd:restriction>
   </xsd:simpleType>
 

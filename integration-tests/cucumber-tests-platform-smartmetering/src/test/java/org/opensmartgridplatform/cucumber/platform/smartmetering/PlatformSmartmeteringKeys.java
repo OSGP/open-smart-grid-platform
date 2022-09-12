@@ -161,4 +161,5 @@ public class PlatformSmartmeteringKeys
   public static final String CAPTURE_OBJECT_ATTRIBUTE_INDEX = "CaptureObject_AttributeIndex";
   public static final String CAPTURE_OBJECT_DATA_INDEX = "CaptureObject_DataIndex";
   public static final String CAPTURE_PERIOD = "CapturePeriod";
+  public static final String TEST_ALARM_TYPE = "TestAlarmType";
 }
