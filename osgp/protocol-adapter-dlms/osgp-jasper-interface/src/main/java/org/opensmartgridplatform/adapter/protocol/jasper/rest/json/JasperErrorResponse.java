@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class JasperErrorResponse {
 
-  String errorMessage;
-  String errorCode;
+  private String errorMessage;
+  private String errorCode;
 }

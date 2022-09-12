@@ -30,14 +30,12 @@ public class JasperWirelessRestClient {
 
   protected String createAuthorizationCredentials(
       final JasperWirelessRestAccess jasperWirelessRestAccess) {
-    final String authorizationCredentials =
-        Base64.getEncoder()
-            .encodeToString(
-                (jasperWirelessRestAccess.getUsername()
-                        + ":"
-                        + jasperWirelessRestAccess.getLicenseKey())
-                    .getBytes());
-    return authorizationCredentials;
+    return Base64.getEncoder()
+        .encodeToString(
+            (jasperWirelessRestAccess.getUsername()
+                    + ":"
+                    + jasperWirelessRestAccess.getLicenseKey())
+                .getBytes());
   }
 
   private JasperError getJasperError(final HttpStatusCodeException httpStatusCodeException) {
@@ -48,9 +46,7 @@ public class JasperWirelessRestClient {
           objectMapper.readValue(
               httpStatusCodeException.getResponseBodyAsString(), JasperErrorResponse.class);
       return JasperError.getByCode(error.getErrorCode());
-    } catch (final JsonProcessingException e1) {
-      return null;
-    } catch (final IllegalArgumentException e) {
+    } catch (final JsonProcessingException | IllegalArgumentException e) {
       return null;
     }
   }

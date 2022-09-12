@@ -27,7 +27,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class JasperWirelessSmsRestClient extends JasperWirelessRestClient {
 
-  private static final String SERVICE_SMS_SEND_SMS = "/rws/api/%s/devices/%s/smsMessages";
+  private static final String SERVICE_SMS_SEND_SMS = "%s/rws/api/%s/devices/%s/smsMessages";
 
   @Autowired private RestTemplate jasperwirelessRestTemplate;
 
@@ -44,7 +44,8 @@ public class JasperWirelessSmsRestClient extends JasperWirelessRestClient {
 
     final String url =
         String.format(
-            this.jasperWirelessRestAccess.getUrl() + SERVICE_SMS_SEND_SMS,
+            SERVICE_SMS_SEND_SMS,
+            this.jasperWirelessRestAccess.getUrl(),
             this.jasperWirelessRestAccess.getApiVersion(),
             iccId);
 
@@ -52,8 +53,7 @@ public class JasperWirelessSmsRestClient extends JasperWirelessRestClient {
     headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
     headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
     headers.add(HttpHeaders.AUTHORIZATION, "Basic " + authorizationCredentials);
-    final HttpEntity<SendSMSRequest> entity =
-        new HttpEntity<SendSMSRequest>(sendSMSRequest, headers);
+    final HttpEntity<SendSMSRequest> entity = new HttpEntity<>(sendSMSRequest, headers);
 
     SendSMSResponse sendSmsResponse = null;
     try {

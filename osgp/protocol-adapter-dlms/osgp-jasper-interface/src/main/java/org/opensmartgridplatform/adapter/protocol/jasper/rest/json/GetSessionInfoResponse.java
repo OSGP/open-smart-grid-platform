@@ -14,9 +14,9 @@ import lombok.Data;
 @Data
 public class GetSessionInfoResponse {
 
-  public String iccid;
-  public String ipAddress;
-  public String ipV6Address;
-  public Date dateSessionStarted;
-  public Date dateSessionEnded;
+  private String iccid;
+  private String ipAddress;
+  private String ipV6Address;
+  private Date dateSessionStarted;
+  private Date dateSessionEnded;
 }

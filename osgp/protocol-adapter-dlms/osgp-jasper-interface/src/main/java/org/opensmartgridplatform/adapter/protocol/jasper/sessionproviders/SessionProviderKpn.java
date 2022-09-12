@@ -19,6 +19,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -53,21 +54,17 @@ public class SessionProviderKpn extends SessionProvider {
     String errorMessage = "";
     FunctionalExceptionType functionalExceptionType;
     if (e.getJasperError() != null) {
-      switch (e.getJasperError().getHttpStatus()) {
-        case NOT_FOUND:
-          errorMessage =
-              String.format("iccId %s is probably not supported in this session provider", iccId);
-          functionalExceptionType = FunctionalExceptionType.INVALID_ICCID;
-          break;
-        default:
-          errorMessage =
-              String.format(
-                  "Session provider %s returned error %s : %s",
-                  SessionProviderEnum.KPN.name(),
-                  e.getJasperError().getCode(),
-                  e.getJasperError().getMessage());
-          LOGGER.error(errorMessage, e);
-          functionalExceptionType = FunctionalExceptionType.SESSION_PROVIDER_ERROR;
+      if (e.getJasperError().getHttpStatus() == HttpStatus.NOT_FOUND) {
+        functionalExceptionType = FunctionalExceptionType.INVALID_ICCID;
+      } else {
+        errorMessage =
+            String.format(
+                "Session provider %s returned error %s : %s",
+                SessionProviderEnum.KPN.name(),
+                e.getJasperError().getCode(),
+                e.getJasperError().getMessage());
+        LOGGER.error(errorMessage, e);
+        functionalExceptionType = FunctionalExceptionType.SESSION_PROVIDER_ERROR;
       }
     } else {
       errorMessage =

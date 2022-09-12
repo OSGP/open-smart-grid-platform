@@ -77,7 +77,7 @@ public class JasperWirelessSmsRestClientTest {
             OsgpJasperException.class, () -> this.jasperWirelessSmsRestClient.sendWakeUpSMS(ICCID));
     assertEquals("20000001:Resource not found - Invalid ICCID.", osgpJasperException.getMessage());
     assertNotNull(osgpJasperException.getJasperError());
-    assertEquals(osgpJasperException.getJasperError().getHttpStatus(), HttpStatus.NOT_FOUND);
+    assertEquals(HttpStatus.NOT_FOUND, osgpJasperException.getJasperError().getHttpStatus());
   }
 
   @Test

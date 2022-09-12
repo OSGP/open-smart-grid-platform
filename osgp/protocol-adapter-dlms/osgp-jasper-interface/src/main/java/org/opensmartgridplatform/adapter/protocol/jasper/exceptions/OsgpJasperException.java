@@ -15,7 +15,7 @@ public class OsgpJasperException extends Exception {
   /** Serial Version UID. */
   private static final long serialVersionUID = 4296034756159213906L;
 
-  private JasperError jasperError;
+  private final JasperError jasperError;
 
   public OsgpJasperException(final JasperError jasperError) {
     super(jasperError.getCode() + ":" + jasperError.getMessage());
@@ -24,6 +24,7 @@ public class OsgpJasperException extends Exception {
 
   public OsgpJasperException(final String message, final Throwable throwable) {
     super(message, throwable);
+    this.jasperError = null;
   }
 
   public JasperError getJasperError() {

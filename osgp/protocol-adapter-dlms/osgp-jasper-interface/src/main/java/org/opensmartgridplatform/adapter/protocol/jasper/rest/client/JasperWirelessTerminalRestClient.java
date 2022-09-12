@@ -26,7 +26,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class JasperWirelessTerminalRestClient extends JasperWirelessRestClient {
 
-  private static final String SERVICE_GET_SESSION_INFO = "/rws/api/%s/devices/%s/sessionInfo";
+  private static final String SERVICE_GET_SESSION_INFO = "%s/rws/api/%s/devices/%s/sessionInfo";
 
   @Autowired private RestTemplate jasperwirelessRestTemplate;
 
@@ -39,7 +39,8 @@ public class JasperWirelessTerminalRestClient extends JasperWirelessRestClient {
 
     final String url =
         String.format(
-            this.jasperWirelessRestAccess.getUrl() + SERVICE_GET_SESSION_INFO,
+            SERVICE_GET_SESSION_INFO,
+            this.jasperWirelessRestAccess.getUrl(),
             this.jasperWirelessRestAccess.getApiVersion(),
             iccId);
 
@@ -48,7 +49,7 @@ public class JasperWirelessTerminalRestClient extends JasperWirelessRestClient {
     headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
     headers.add(HttpHeaders.AUTHORIZATION, "Basic " + authorizationCredentials);
 
-    final HttpEntity<String> entity = new HttpEntity<String>(headers);
+    final HttpEntity<String> entity = new HttpEntity<>(headers);
 
     GetSessionInfoResponse getSessionInfoResponse = null;
     try {
