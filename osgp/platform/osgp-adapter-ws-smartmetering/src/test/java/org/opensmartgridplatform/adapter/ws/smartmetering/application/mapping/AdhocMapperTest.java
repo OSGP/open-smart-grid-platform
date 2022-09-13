@@ -12,6 +12,7 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
+import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +29,7 @@ class AdhocMapperTest {
 
   @Test
   void testAlarmSchedulerRequestData() {
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
     final TestAlarmSchedulerRequestData testAlarmSchedulerRequestData =
         new TestAlarmSchedulerRequestData();
@@ -43,7 +45,7 @@ class AdhocMapperTest {
                 org.opensmartgridplatform.domain.core.valueobjects.smartmetering
                     .TestAlarmSchedulerRequestData.class);
 
-    assertThat(mapped.getScheduleTime()).hasToString("Sun Sep 05 13:30:00 CEST 2088");
+    assertThat(mapped.getScheduleTime()).hasToString("Sun Sep 05 13:30:00 UTC 2088");
     assertThat(mapped.getAlarmType()).hasToString("PARTIAL_POWER_OUTAGE");
   }
 }
