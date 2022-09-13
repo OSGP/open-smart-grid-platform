@@ -148,7 +148,7 @@ public class JasperWirelessConfig extends AbstractConfig {
   }
 
   @Bean
-  public RestTemplate jasperWirelessRestTemplate() throws OsgpJasperException {
+  public RestTemplate jasperWirelessRestTemplate() {
 
     final RestTemplate restTemplate = new RestTemplate();
     restTemplate.getMessageConverters().add(0, this.createMappingJacksonHttpMessageConverter());

@@ -44,13 +44,12 @@ public class SessionProviderKpn extends SessionProvider {
     try {
       response = this.jasperWirelessTerminalClient.getSession(iccId);
     } catch (final OsgpJasperException e) {
-      this.handleException(iccId, e);
+      this.handleException(e);
     }
     return response.getIpAddress();
   }
 
-  private void handleException(final String iccId, final OsgpJasperException e)
-      throws FunctionalException {
+  private void handleException(final OsgpJasperException e) throws FunctionalException {
     String errorMessage = "";
     FunctionalExceptionType functionalExceptionType;
     if (e.getJasperError() != null) {

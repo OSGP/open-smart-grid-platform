@@ -21,14 +21,10 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsDomainHelperService")
 public class DomainHelperService {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(DomainHelperService.class);
 
   private static final ComponentType COMPONENT_TYPE = ComponentType.PROTOCOL_DLMS;
 
