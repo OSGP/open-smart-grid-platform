@@ -11,7 +11,6 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -20,19 +19,18 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionTyp
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
 @Getter
-@NoArgsConstructor
 @ToString
 public class TestAlarmSchedulerRequestData implements Serializable, ActionRequest {
 
   private static final long serialVersionUID = -3773273540392997806L;
 
-  private Date scheduleTime;
+  private final Date scheduleTime;
 
-  private TestAlarmType alarmType;
+  private final TestAlarmType alarmType;
 
-  public TestAlarmSchedulerRequestData(final Date scheduleTime, final TestAlarmType testAlarmType) {
+  public TestAlarmSchedulerRequestData(final Date scheduleTime, final TestAlarmType alarmType) {
     this.scheduleTime = scheduleTime;
-    this.alarmType = testAlarmType;
+    this.alarmType = alarmType;
   }
 
   @Override
