@@ -8,15 +8,18 @@
  */
 package org.opensmartgridplatform.adapter.protocol.jasper.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 public class JasperErrorResponse {
 
   private String errorMessage;
   private String errorCode;
+
+  public JasperErrorResponse() {}
+
+  public JasperErrorResponse(final String errorMessage, final String errorCode) {
+    this.errorMessage = errorMessage;
+    this.errorCode = errorCode;
+  }
 }

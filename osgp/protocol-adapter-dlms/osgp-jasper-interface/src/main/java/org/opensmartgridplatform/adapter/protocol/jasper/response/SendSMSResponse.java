@@ -8,14 +8,16 @@
  */
 package org.opensmartgridplatform.adapter.protocol.jasper.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 public class SendSMSResponse {
 
   private long smsMsgId;
+
+  public SendSMSResponse() {}
+
+  public SendSMSResponse(final long smsMsgId) {
+    this.smsMsgId = smsMsgId;
+  }
 }

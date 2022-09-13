@@ -8,11 +8,9 @@
  */
 package org.opensmartgridplatform.adapter.protocol.jasper.config;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class JasperWirelessAccess {
 
   private String uri;
@@ -21,4 +19,19 @@ public class JasperWirelessAccess {
   private String password;
   private String apiVersion;
   private String apiType;
+
+  public JasperWirelessAccess(
+      final String uri,
+      final String licenseKey,
+      final String username,
+      final String password,
+      final String apiVersion,
+      final String apiType) {
+    this.uri = uri;
+    this.licenseKey = licenseKey;
+    this.username = username;
+    this.password = password;
+    this.apiVersion = apiVersion;
+    this.apiType = apiType;
+  }
 }
