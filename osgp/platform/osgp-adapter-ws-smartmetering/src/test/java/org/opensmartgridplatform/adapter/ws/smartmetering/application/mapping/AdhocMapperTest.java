@@ -12,7 +12,6 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
-import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +28,6 @@ class AdhocMapperTest {
 
   @Test
   void testAlarmSchedulerRequestData() {
-    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
     final TestAlarmSchedulerRequestData testAlarmSchedulerRequestData =
         new TestAlarmSchedulerRequestData();
