@@ -86,7 +86,7 @@ public class MBusClientSetup extends CosemInterfaceObject {
      */
   }
 
-  @CosemMethod(id = METHOD_ID_DATA_SEND, consumes = Type.OCTET_STRING)
+  @CosemMethod(id = METHOD_ID_DATA_SEND, consumes = Type.ARRAY)
   public void dataSend(final DataObject param) {
     /*
      * This method does not provide any simulated functionality except for
