@@ -15,6 +15,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ThrowingConsumer;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.InvocationCountingDlmsMessageListener;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.LoggingDlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -39,15 +43,18 @@ public class InvocationCounterManager {
   private final DlmsConnectionFactory connectionFactory;
   private final DlmsHelper dlmsHelper;
   private final DlmsDeviceRepository deviceRepository;
+  private final DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
 
   @Autowired
   public InvocationCounterManager(
       final DlmsConnectionFactory connectionFactory,
       final DlmsHelper dlmsHelper,
-      final DlmsDeviceRepository deviceRepository) {
+      final DlmsDeviceRepository deviceRepository,
+      final DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender) {
     this.connectionFactory = connectionFactory;
     this.dlmsHelper = dlmsHelper;
     this.deviceRepository = deviceRepository;
+    this.dlmsLogItemRequestMessageSender = dlmsLogItemRequestMessageSender;
   }
 
   /**
@@ -79,8 +86,11 @@ public class InvocationCounterManager {
         connectionManager ->
             this.initializeWithInvocationCounterStoredOnDeviceTask(device, connectionManager);
 
+    final DlmsMessageListener dlmsMessageListener =
+        this.createMessageListenerForDeviceConnection(device, messageMetadata);
+
     this.connectionFactory.createAndHandlePublicClientConnection(
-        messageMetadata, device, null, permit, taskForConnectionManager);
+        messageMetadata, device, dlmsMessageListener, permit, taskForConnectionManager);
   }
 
   void initializeWithInvocationCounterStoredOnDeviceTask(
@@ -127,5 +137,20 @@ public class InvocationCounterManager {
             .getAttributeValue(connectionManager, ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)
             .getValue();
     return invocationCounter.longValue();
+  }
+
+  protected DlmsMessageListener createMessageListenerForDeviceConnection(
+      final DlmsDevice device, final MessageMetadata messageMetadata) {
+    final InvocationCountingDlmsMessageListener dlmsMessageListener;
+    if (device.isInDebugMode()) {
+      dlmsMessageListener =
+          new LoggingDlmsMessageListener(
+              device.getDeviceIdentification(), this.dlmsLogItemRequestMessageSender);
+      dlmsMessageListener.setMessageMetadata(messageMetadata);
+      dlmsMessageListener.setDescription("Create connection");
+    } else {
+      dlmsMessageListener = null;
+    }
+    return dlmsMessageListener;
   }
 }

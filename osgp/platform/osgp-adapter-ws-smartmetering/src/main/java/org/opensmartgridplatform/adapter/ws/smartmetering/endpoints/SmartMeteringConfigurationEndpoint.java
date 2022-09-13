@@ -130,6 +130,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmw
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
@@ -670,6 +671,11 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
       @BypassRetry final String bypassRetry)
       throws OsgpException {
 
+    final SetEncryptionKeyExchangeOnGMeterRequestData dataRequest =
+        this.configurationMapper.map(
+            request.getSetEncryptionKeyExchangeOnGMeterRequestData(),
+            SetEncryptionKeyExchangeOnGMeterRequestData.class);
+
     final RequestMessageMetadata requestMessageMetadata =
         RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
@@ -682,7 +688,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .build();
 
     final AsyncResponse asyncResponse =
-        this.requestService.enqueueAndSendRequest(requestMessageMetadata, null);
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, dataRequest);
 
     this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 

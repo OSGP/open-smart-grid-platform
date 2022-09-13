@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.mess
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.BaseRequestMessageProcessor;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -37,6 +38,7 @@ public class SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor
   protected void handleMessage(final MessageMetadata deviceMessageMetadata, final Object dataObject)
       throws FunctionalException {
 
-    this.configurationService.setEncryptionKeyExchangeOnGMeter(deviceMessageMetadata);
+    this.configurationService.setEncryptionKeyExchangeOnGMeter(
+        deviceMessageMetadata, (SetEncryptionKeyExchangeOnGMeterRequestData) dataObject);
   }
 }

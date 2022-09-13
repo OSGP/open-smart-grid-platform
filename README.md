@@ -19,10 +19,10 @@ High-level project information and news can be found on the GXF section of the L
 * [www.lfenergy.org/projects/gxf](https://www.lfenergy.org/projects/gxf/)
 
 GXF wiki with detailed project information:
-* [LF Energy wiki](https://wiki.lfenergy.org/display/HOME/Grid+eXchange+Fabric+-+GXF)
+* [LF Energy wiki](https://wiki.lfenergy.org/display/GEF/Grid+eXchange+Fabric+-+GXF)
 
 GXF detailed documentation:
-* [documentation.gxf.lfenergy.org](https://documentation.gxf.lfenergy.org/)
+* [grid-exchange-fabric.gitbook.io](https://grid-exchange-fabric.gitbook.io/gxf/)
 
 GXF issue tracker:
 * [github.com/OSGP/Documentation/issues](https://github.com/OSGP/Documentation/issues)
@@ -31,10 +31,13 @@ GXF issue tracker:
 
 This project is licensed under the Apache 2.0 license - see the [LICENSE](LICENSE) file for details.
 
+## Licenses third-party libraries
+This project uses third-party libraries, which are licensed under their own respective Open-Source licenses. 
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Contact
 
-If you have a question, please read [GXF wiki contact page](https://documentation.gxf.lfenergy.org/Opensourcecommunity/Communication-and-contact.html) how to best contact us.
+If you have a question, please read [GXF wiki contact page](https://grid-exchange-fabric.gitbook.io/gxf/opensourcecommunity/communication-and-contact) how to best contact us.
