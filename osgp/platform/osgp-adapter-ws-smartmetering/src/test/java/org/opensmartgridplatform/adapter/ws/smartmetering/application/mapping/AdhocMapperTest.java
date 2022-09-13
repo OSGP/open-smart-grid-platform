@@ -12,7 +12,9 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
+import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,6 +27,11 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.TestAlarm
 class AdhocMapperTest {
 
   @InjectMocks private AdhocMapper adhocMapper;
+
+  @BeforeAll
+  static void init() {
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+  }
 
   @Test
   void testAlarmSchedulerRequestData() {
