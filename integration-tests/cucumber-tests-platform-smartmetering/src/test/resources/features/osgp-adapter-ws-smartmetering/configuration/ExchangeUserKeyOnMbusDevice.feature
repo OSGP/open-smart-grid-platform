@@ -38,6 +38,9 @@ Feature: SmartMetering Configuration - Exchange User Key on M-Bus Device
 
   Scenario: Exchange user key on an m-bus device identified by channel
     Given a dlms device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
+    And a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
       | MbusIdentificationNumber       |          12056731 |
