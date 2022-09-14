@@ -69,6 +69,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRando
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.TestAlarmSchedulerRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import org.opensmartgridplatform.domain.smartmetering.exceptions.GatewayDeviceInvalidForMbusDeviceException;
 import org.opensmartgridplatform.domain.smartmetering.exceptions.GatewayDeviceNotSetForMbusDeviceException;
@@ -113,6 +114,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisation
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.TestAlarmSchedulerRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -192,6 +194,7 @@ public class ActionMapperService {
     CLASS_MAP.put(
         ClearMBusStatusOnAllChannelsRequestData.class,
         ClearMBusStatusOnAllChannelsRequestDto.class);
+    CLASS_MAP.put(TestAlarmSchedulerRequestData.class, TestAlarmSchedulerRequestDto.class);
   }
 
   @Autowired

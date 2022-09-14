@@ -25,7 +25,7 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SynchronizeTimeRequestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class SynchronizeTime {
+public class SynchronizeTimeSteps {
 
   @Autowired
   private SmartMeteringAdHocRequestClient<SynchronizeTimeAsyncResponse, SynchronizeTimeRequest>

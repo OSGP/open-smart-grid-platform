@@ -18,11 +18,12 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 
-public class DateMappingTest {
+class DateMappingTest {
 
-  private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+  private final MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
   /** Method creates an instance of XMLGregorianCalendar */
   private XMLGregorianCalendar createCalendar() {
@@ -38,7 +39,7 @@ public class DateMappingTest {
 
   /** Tests the mapping of a Date object to a XMLGregorianCalendar object. */
   @Test
-  public void testDateToXMLGregorianCalendarMapping() {
+  void testDateToXMLGregorianCalendarMapping() {
 
     final Date date = new Date();
     final XMLGregorianCalendar xmlCalendar =
@@ -48,7 +49,7 @@ public class DateMappingTest {
 
     // convert Date to a DateTime to enable comparison (Date has deprecated
     // method and test fails if these are used).
-    final DateTime dateTime = new DateTime(date);
+    final DateTime dateTime = new DateTime(date, DateTimeZone.UTC);
 
     assertThat(xmlCalendar.getYear()).isEqualTo(dateTime.getYear());
     assertThat(xmlCalendar.getMonth()).isEqualTo(dateTime.getMonthOfYear());
@@ -61,7 +62,7 @@ public class DateMappingTest {
 
   /** Test the mapping of an XMLGregorianCalendar to a Date object. */
   @Test
-  public void testXMLGregorianCalendarToDateMapping() {
+  void testXMLGregorianCalendarToDateMapping() {
 
     final XMLGregorianCalendar xmlCalendar = this.createCalendar();
     final Date date = this.mapperFactory.getMapperFacade().map(xmlCalendar, Date.class);
@@ -70,7 +71,7 @@ public class DateMappingTest {
 
     // convert Date to a DateTime to enable comparison (Date has deprecated
     // method and test fails if these are used).
-    final DateTime dateTime = new DateTime(date);
+    final DateTime dateTime = new DateTime(date, DateTimeZone.UTC);
     assertThat(dateTime.getYear()).isEqualTo(xmlCalendar.getYear());
     assertThat(dateTime.getMonthOfYear()).isEqualTo(xmlCalendar.getMonth());
     assertThat(dateTime.getDayOfMonth()).isEqualTo(xmlCalendar.getDay());

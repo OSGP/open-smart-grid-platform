@@ -30,6 +30,7 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.OctetStringExtend
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityEventLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile1;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.SingleActionScheduler;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.UnitType;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.smr5.InvocationCounter;
 import org.opensmartgridplatform.simulator.protocol.dlms.rest.client.DlmsAttributeValuesClient;
@@ -362,5 +363,10 @@ public class Smr5Profile {
   @Bean
   public EMonthlyBillingValuesPeriod1SMR5 eMonthlyBillingValuesPeriod1SMR5(final Calendar cal) {
     return new EMonthlyBillingValuesPeriod1SMR5(cal);
+  }
+
+  @Bean
+  SingleActionScheduler phaseOutageTestScheduler() {
+    return new SingleActionScheduler("0.0.15.1.4.255");
   }
 }
