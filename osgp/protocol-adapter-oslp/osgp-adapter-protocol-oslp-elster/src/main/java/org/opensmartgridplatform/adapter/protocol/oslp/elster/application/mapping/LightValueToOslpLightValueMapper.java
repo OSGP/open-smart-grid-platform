@@ -28,9 +28,9 @@ public class LightValueToOslpLightValueMapper
       index = source.getIndex().byteAt(0);
     }
 
-    int dimValue = 0;
-    if (source.hasDimValue()) {
-      dimValue = source.getDimValue().byteAt(0);
+    Integer dimValue = null;
+    if (source.hasDimValue() && source.hasOn()) {
+      dimValue = (int) source.getDimValue().byteAt(0);
     }
 
     return new LightValueDto(index, source.hasOn(), dimValue);
