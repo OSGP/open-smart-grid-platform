@@ -113,8 +113,8 @@
     <javax.inject.version>1</javax.inject.version>
     <javax.annotation.version>1.3.2</javax.annotation.version>
     <license.maven.plugin>3.0</license.maven.plugin>
-    <jackson.version>2.11.0</jackson.version>
-    <jackson-databind.version>2.13.4</jackson-databind.version>
+    <jackson.version>2.13.3</jackson.version>
+    <jackson-databind.version>2.13.3</jackson-databind.version>
     <cxf.version>3.4.1</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
