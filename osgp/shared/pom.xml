@@ -134,7 +134,6 @@
       <modules>
         <module>osgp-kafka-logger</module>
         <module>osgp-ws-distributionautomation</module>
-        <module>osgp-ws-secret-management</module>
       </modules>
     </profile>
 
