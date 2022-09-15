@@ -61,7 +61,9 @@ public enum DlmsObjectType {
   MBUS_EVENT_LOG(null),
   POWER_QUALITY_EVENT_LOG(null),
   AUXILIARY_EVENT_LOG(null),
-  POWER_QUALITY_EXTENDED_EVENT_LOG(null);
+  POWER_QUALITY_EXTENDED_EVENT_LOG(null),
+  LAST_GASP_TEST(null),
+  PHASE_OUTAGE_TEST(null);
 
   private final PeriodTypeDto relatedPeriodType;
 

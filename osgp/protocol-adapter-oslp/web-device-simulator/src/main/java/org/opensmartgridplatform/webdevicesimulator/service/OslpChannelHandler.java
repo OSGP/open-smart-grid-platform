@@ -909,7 +909,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
 
     device.setLightOn(lightValue.getOn());
 
-    if (lightValue.hasDimValue()) {
+    if (lightValue.hasDimValue() && lightValue.getOn()) {
       final int dimValue = lightValue.getDimValue().byteAt(0);
       device.setDimValue(dimValue);
     } else {

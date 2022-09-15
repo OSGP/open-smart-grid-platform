@@ -33,33 +33,40 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerWindow | <TriggerWindow> |
     And the platform buffers a set light schedule response message for device "TEST1024000000001"
       | Result | OK |
-
     Examples:
       | Protocol    | WeekDay     | StartDay   | EndDay     | ActionTime   | Time         | TriggerWindow | LightValues         | TriggerType   |
       | OSLP ELSTER | ALL         |            |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,             |               |
+      | OSLP ELSTER | ALL         |            |            | ABSOLUTETIME | 08:00:00.000 |               | 0,false,            |               |
       | OSLP ELSTER | MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,             |               |
+      | OSLP ELSTER | MONDAY      |            |            | ABSOLUTETIME | 08:00:00.000 |               | 0,false,            |               |
       | OSLP ELSTER | MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 2,true,;3,true,50   |               |
+      | OSLP ELSTER | MONDAY      |            |            | ABSOLUTETIME | 08:00:00.000 |               | 2,false,;3,false,   |               |
       | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,             |               |
+      | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 |            | ABSOLUTETIME | 08:00:00.000 |               | 0,false,            |               |
       | OSLP ELSTER | ALL         |            | 2013-12-31 | ABSOLUTETIME | 18:00:00.000 |               | 0,true,             |               |
+      | OSLP ELSTER | ALL         |            | 2013-12-31 | ABSOLUTETIME | 08:00:00.000 |               | 0,false,            |               |
       | OSLP ELSTER | MONDAY      |            | 2013-12-31 | ABSOLUTETIME | 18:00:00.000 |               | 0,true,             |               |
+      | OSLP ELSTER | MONDAY      |            | 2013-12-31 | ABSOLUTETIME | 08:00:00.000 |               | 0,false,            |               |
       | OSLP ELSTER | MONDAY      | 2013-03-01 | 2013-12-31 | ABSOLUTETIME | 18:00:00.000 |               | 2,true,;3,true,50   |               |
+      | OSLP ELSTER | MONDAY      | 2013-03-01 | 2013-12-31 | ABSOLUTETIME | 08:00:00.000 |               | 2,false,;3,false,   |               |
       | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 | 2013-12-31 | ABSOLUTETIME | 18:00:00.000 |               | 0,true,             |               |
+      | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 | 2013-12-31 | ABSOLUTETIME | 08:00:00.000 |               | 0,false,            |               |
       | OSLP ELSTER | ALL         |            |            | SUNSET       |              |               | 0,true,             | ASTRONOMICAL  |
-      | OSLP ELSTER | ALL         |            |            | SUNRISE      |              |               | 0,true,             | ASTRONOMICAL  |
+      | OSLP ELSTER | ALL         |            |            | SUNRISE      |              |               | 0,false,            | ASTRONOMICAL  |
       | OSLP ELSTER | ALL         |            |            | SUNSET       |              |         42,42 | 0,true,             | LIGHT_TRIGGER |
-      | OSLP ELSTER | ALL         |            |            | SUNRISE      |              |       150,150 | 0,true,             | LIGHT_TRIGGER |
+      | OSLP ELSTER | ALL         |            |            | SUNRISE      |              |       150,150 | 0,false,            | LIGHT_TRIGGER |
       | OSLP ELSTER | MONDAY      |            |            | SUNSET       |              |               | 2,true,;3,true,50   | ASTRONOMICAL  |
-      | OSLP ELSTER | MONDAY      |            |            | SUNRISE      |              |               | 2,true,;3,true,50   | ASTRONOMICAL  |
+      | OSLP ELSTER | MONDAY      |            |            | SUNRISE      |              |               | 2,false,;3,false,   | ASTRONOMICAL  |
       | OSLP ELSTER | MONDAY      |            |            | SUNSET       |              |         30,30 | 2,true,50;3,true,75 | LIGHT_TRIGGER |
-      | OSLP ELSTER | MONDAY      |            |            | SUNRISE      |              |         60,90 | 2,true,50;3,true,75 | LIGHT_TRIGGER |
+      | OSLP ELSTER | MONDAY      |            |            | SUNRISE      |              |         60,90 | 2,false,;3,false,   | LIGHT_TRIGGER |
       | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 |            | SUNSET       |              |               | 0,true,             | ASTRONOMICAL  |
-      | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 |            | SUNRISE      |              |               | 0,true,             | ASTRONOMICAL  |
+      | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 |            | SUNRISE      |              |               | 0,false,            | ASTRONOMICAL  |
       | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 |            | SUNSET       |              |         30,30 | 0,true,             | LIGHT_TRIGGER |
-      | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 |            | SUNRISE      |              |         60,90 | 0,true,             | LIGHT_TRIGGER |
+      | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 |            | SUNRISE      |              |         60,90 | 0,false,            | LIGHT_TRIGGER |
       | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 | 2013-12-31 | SUNSET       |              |               | 0,true,             | ASTRONOMICAL  |
-      | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 | 2013-12-31 | SUNRISE      |              |               | 0,true,             | ASTRONOMICAL  |
+      | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 | 2013-12-31 | SUNRISE      |              |               | 0,false,            | ASTRONOMICAL  |
       | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 | 2013-12-31 | SUNSET       |              |         30,30 | 0,true,             | LIGHT_TRIGGER |
-      | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 | 2013-12-31 | SUNRISE      |              |         60,90 | 0,true,             | LIGHT_TRIGGER |
+      | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 | 2013-12-31 | SUNRISE      |              |         60,90 | 0,false,            | LIGHT_TRIGGER |
 
   #Note: the astronomical offsets are part of the set schedule request in the web services,
   #      while in the oslp elster protocol adapter they are sent to the device using a set configuration message
@@ -376,9 +383,9 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | Protocol    | WeekDay | StartDay | EndDay | ActionTime   | Time         | TriggerWindow | LightValues | TriggerType   |
       | OSLP ELSTER | ALL     |          |        | ABSOLUTETIME | 18:00:00.000 |               | 2,true,     | ASTRONOMICAL  |
       | OSLP ELSTER | ALL     |          |        | SUNRISE      |              |               | 2,true,     | LIGHT_TRIGGER |
-      | OSLP ELSTER | ALL     |          |        | SUNSET       |              |               | 2,true,     | LIGHT_TRIGGER |
+      | OSLP ELSTER | ALL     |          |        | SUNSET       |              |               | 2,false,    | LIGHT_TRIGGER |
       | OSLP ELSTER | ALL     |          |        | SUNRISE      |              |         30,30 | 2,true,     | ASTRONOMICAL  |
-      | OSLP ELSTER | ALL     |          |        | SUNSET       |              |         30,30 | 2,true,     | ASTRONOMICAL  |
+      | OSLP ELSTER | ALL     |          |        | SUNSET       |              |         30,30 | 2,false,    | ASTRONOMICAL  |
 
   Scenario Outline: Set light schedule with 51 schedules # Fail
     Given an ssld oslp device

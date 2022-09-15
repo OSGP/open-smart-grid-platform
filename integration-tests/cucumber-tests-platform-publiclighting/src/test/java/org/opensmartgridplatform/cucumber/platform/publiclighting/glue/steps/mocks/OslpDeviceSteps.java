@@ -55,6 +55,7 @@ import org.opensmartgridplatform.oslp.Oslp.EventNotificationResponse;
 import org.opensmartgridplatform.oslp.Oslp.IndexAddressMap;
 import org.opensmartgridplatform.oslp.Oslp.LightType;
 import org.opensmartgridplatform.oslp.Oslp.LightValue;
+import org.opensmartgridplatform.oslp.Oslp.LightValue.Builder;
 import org.opensmartgridplatform.oslp.Oslp.LinkType;
 import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.opensmartgridplatform.oslp.Oslp.RegisterDeviceResponse;
@@ -882,14 +883,15 @@ public class OslpDeviceSteps {
               .split(PlatformPubliclightingKeys.SEPARATOR_SEMICOLON)) {
         final String[] parts = lightValueString.split(PlatformPubliclightingKeys.SEPARATOR_COMMA);
 
-        final LightValue lightValue =
+        final Builder lightValueBuilder =
             LightValue.newBuilder()
                 .setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))
-                .setOn(parts[1].toLowerCase().equals("true"))
-                .setDimValue(OslpUtils.integerToByteString(Integer.parseInt(parts[2])))
-                .build();
+                .setOn(parts[1].equalsIgnoreCase("true"));
+        if (lightValueBuilder.getOn()) {
+          lightValueBuilder.setDimValue(OslpUtils.integerToByteString(Integer.parseInt(parts[2])));
+        }
 
-        lightValues.add(lightValue);
+        lightValues.add(lightValueBuilder.build());
       }
     }
 
