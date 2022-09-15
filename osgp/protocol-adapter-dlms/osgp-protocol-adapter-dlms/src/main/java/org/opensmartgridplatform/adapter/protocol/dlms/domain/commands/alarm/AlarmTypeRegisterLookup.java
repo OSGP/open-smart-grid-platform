@@ -92,7 +92,10 @@ public enum AlarmTypeRegisterLookup {
   VOLTAGE_SWELL_IN_PHASE_DETECTED_L2(
       AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L2, DlmsObjectType.ALARM_REGISTER_2, 4),
   VOLTAGE_SWELL_IN_PHASE_DETECTED_L3(
-      AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3, DlmsObjectType.ALARM_REGISTER_2, 5);
+      AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3, DlmsObjectType.ALARM_REGISTER_2, 5),
+
+  LAST_GASP(AlarmTypeDto.LAST_GASP, DlmsObjectType.ALARM_REGISTER_3, 0),
+  LAST_GASP_TEST(AlarmTypeDto.LAST_GASP_TEST, DlmsObjectType.ALARM_REGISTER_3, 1);
 
   final AlarmTypeDto alarmTypeDto;
   final DlmsObjectType alarmRegisterDlmsObjectType;
