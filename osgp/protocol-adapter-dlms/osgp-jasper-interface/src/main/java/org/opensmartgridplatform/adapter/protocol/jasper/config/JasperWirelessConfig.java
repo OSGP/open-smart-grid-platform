@@ -53,7 +53,7 @@ public class JasperWirelessConfig extends AbstractConfig {
   @Value("${jwcc.getsession.sleep.between.retries}")
   private String sleepBetweenRetries;
 
-  @Value("${jwcc.uri}")
+  @Value("${jwcc.uri.sms}")
   private String uri;
 
   @Value("${jwcc.licensekey}")
