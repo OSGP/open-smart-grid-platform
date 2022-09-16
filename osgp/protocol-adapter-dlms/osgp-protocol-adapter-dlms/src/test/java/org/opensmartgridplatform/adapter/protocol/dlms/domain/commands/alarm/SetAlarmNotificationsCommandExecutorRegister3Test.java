@@ -73,6 +73,9 @@ class SetAlarmNotificationsCommandExecutorRegister3Test {
     // Enabled events: REPLACE_BATTERY and AUXILIARY_EVENT
     this.conn.addReturnValue(
         new AttributeAddress(1, "0.0.97.98.10.255", 2), DataObject.newInteger32Data(10));
+    // Set the return value for alarm register 2 to 0 (no alarms set):
+    this.conn.addReturnValue(
+        new AttributeAddress(1, "0.0.97.98.11.255", 2), DataObject.newInteger32Data(0));
 
     this.connMgr = new DlmsConnectionManagerStub(this.conn);
   }
@@ -87,7 +90,7 @@ class SetAlarmNotificationsCommandExecutorRegister3Test {
       final long expectedValue, final String alarmTypesInput) throws OsgpException {
     final DlmsDevice device = this.createDevice(Protocol.SMR_5_5);
 
-    // Set the return value for alarm register 2 to 0 (no alarms set):
+    // Set the return value for alarm register 3 to 0 (no alarms set):
     this.conn.addReturnValue(
         new AttributeAddress(1, "0.0.97.98.12.255", 2), DataObject.newInteger32Data(0));
 
@@ -115,9 +118,9 @@ class SetAlarmNotificationsCommandExecutorRegister3Test {
       final long expectedValue, final String alarmTypesInput) throws OsgpException {
     final DlmsDevice device = this.createDevice(Protocol.SMR_5_5);
 
-    // Set the return value for alarm register 2 to 3F (all alarms set):
+    // Set the return value for alarm register 3 to 3 (all alarms (LAST_GASP & LAST_GASP_TEST) set)
     this.conn.addReturnValue(
-        new AttributeAddress(1, "0.0.97.98.12.255", 2), DataObject.newInteger32Data(0x3F));
+        new AttributeAddress(1, "0.0.97.98.12.255", 2), DataObject.newInteger32Data(3));
 
     final List<AlarmTypeDto> alarmTypes =
         Arrays.stream(alarmTypesInput.split(";")).map(AlarmTypeDto::valueOf).collect(toList());
@@ -137,9 +140,9 @@ class SetAlarmNotificationsCommandExecutorRegister3Test {
   void testSetSettingThatIsAlreadySetInAlarmRegister3() throws OsgpException {
     final DlmsDevice device = this.createDevice(Protocol.SMR_5_5);
 
-    // Set the return value for alarm register 2 to 3F (all alarms set):
+    // Set the return value for alarm register 3 to 3 (all alarms (LAST_GASP & LAST_GASP_TEST) set)
     this.conn.addReturnValue(
-        new AttributeAddress(1, "0.0.97.98.12.255", 2), DataObject.newInteger32Data(0x3F));
+        new AttributeAddress(1, "0.0.97.98.12.255", 2), DataObject.newInteger32Data(3));
 
     // Setting notifications that are not different from what is on the meter already,
     // should always be successful.
@@ -158,7 +161,7 @@ class SetAlarmNotificationsCommandExecutorRegister3Test {
   void testSetDisabledThatIsAlreadySetDisabledInAlarmRegister3() throws OsgpException {
     final DlmsDevice device = this.createDevice(Protocol.SMR_5_5);
 
-    // Set the return value for alarm register 2 to 0 (no alarms set):
+    // Set the return value for alarm register 3 to 0 (no alarms set):
     this.conn.addReturnValue(
         new AttributeAddress(1, "0.0.97.98.12.255", 2), DataObject.newInteger32Data(0));
 
