@@ -285,6 +285,7 @@ public class PlatformKeys extends Keys {
   public static final String SEPARATOR_SPACE_COLON_SPACE = " : ";
   public static final String START_TIME = "StartTime";
   public static final String SUPPLIER = "Supplier";
+  public static final String TEST_ALARM_TYPE = "TestAlarmType";
   public static final String UNTIL_DATE = "UntilDate";
   public static final String USE_PREFIX = "UsePrefix";
   public static final String USERNAME = "Username";
