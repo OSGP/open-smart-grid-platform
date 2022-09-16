@@ -25,8 +25,7 @@
   <properties>
     <display.version>${project.version}-${BUILD_TAG}</display.version>
     <commons.collections.version>4.1</commons.collections.version>
-    <spring.boot.version>2.2.2.RELEASE</spring.boot.version>
-    <apache.commons.io.version>2.6</apache.commons.io.version>
+    <spring.boot.version>2.7.2</spring.boot.version>
 
     <skipITs>true</skipITs>
   </properties>
