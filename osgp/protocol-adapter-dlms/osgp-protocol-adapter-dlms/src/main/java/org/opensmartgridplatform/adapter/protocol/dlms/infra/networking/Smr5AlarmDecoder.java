@@ -13,11 +13,13 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SCHEDULER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SETUP_ALARM;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SETUP_SCHEDULER;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SETUP_UDP;
 
 import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigSmr50;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigSmr55;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
@@ -30,6 +32,7 @@ public class Smr5AlarmDecoder extends AlarmDecoder {
   private static final int SMR5_NUMBER_OF_BYTES_FOR_INVOKE_ID = 4;
 
   private final DlmsObjectConfigSmr50 dlmsObjectConfigSmr50 = new DlmsObjectConfigSmr50();
+  private final DlmsObjectConfigSmr50 dlmsObjectConfigSmr55 = new DlmsObjectConfigSmr55();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Smr5AlarmDecoder.class);
 
@@ -74,6 +77,24 @@ public class Smr5AlarmDecoder extends AlarmDecoder {
     this.decodeEquipmentIdentifier(buffer);
     this.decodeLogicalName(buffer, alarmRegisterExpected);
 
+    if (PUSH_ALARM_TRIGGER.equals(this.builder.getTriggerType())) {
+      this.decodePushAlarm(dataLength, buffer);
+    } else if (PUSH_UDP_TRIGGER.equals(this.builder.getTriggerType())) {
+      this.decodePushUdp(dataLength, buffer);
+    }
+
+    return this.builder.build();
+  }
+
+  private void decodePushUdp(final byte dataLength, final ByteBuf buffer)
+      throws UnrecognizedMessageDataException {
+    if (dataLength >= 3) {
+      this.decodeAlarms(buffer, DlmsObjectType.ALARM_REGISTER_3);
+    }
+  }
+
+  private void decodePushAlarm(final byte dataLength, final ByteBuf buffer)
+      throws UnrecognizedMessageDataException {
     if (dataLength >= 3) {
       this.decodeAlarms(buffer, DlmsObjectType.ALARM_REGISTER_1);
     }
@@ -81,8 +102,6 @@ public class Smr5AlarmDecoder extends AlarmDecoder {
       // SMR 5.2
       this.decodeAlarms(buffer, DlmsObjectType.ALARM_REGISTER_2);
     }
-
-    return this.builder.build();
   }
 
   private void skipDateTime(final ByteBuf buffer) {
@@ -180,6 +199,8 @@ public class Smr5AlarmDecoder extends AlarmDecoder {
         this.builder.withTriggerType(PUSH_SCHEDULER_TRIGGER);
       } else if (alarmRegisterExpected && this.isLogicalNameAlarmTrigger(logicalNameBytes)) {
         this.builder.withTriggerType(PUSH_ALARM_TRIGGER);
+      } else if (alarmRegisterExpected && this.isLogicalNameUdpTrigger(logicalNameBytes)) {
+        this.builder.withTriggerType(PUSH_UDP_TRIGGER);
       } else {
         LOGGER.warn("Unknown Push notification not supported. Unable to decode");
         this.builder.withTriggerType("");
@@ -223,5 +244,11 @@ public class Smr5AlarmDecoder extends AlarmDecoder {
         || Arrays.equals(
             this.dlmsObjectConfigSmr50.getObisForObject(PUSH_SETUP_ALARM).bytes(),
             logicalNameBytes);
+  }
+
+  private boolean isLogicalNameUdpTrigger(final byte[] logicalNameBytes)
+      throws ProtocolAdapterException {
+    return Arrays.equals(
+        this.dlmsObjectConfigSmr55.getObisForObject(PUSH_SETUP_UDP).bytes(), logicalNameBytes);
   }
 }
