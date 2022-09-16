@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobje
 
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ALARM_FILTER_3;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ALARM_REGISTER_3;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.LAST_GASP;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.LAST_GASP_TEST;
 
 import java.util.Arrays;
@@ -18,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsData;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsRegisterMonitor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsSingleActionSchedule;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 
@@ -37,9 +39,11 @@ public class DlmsObjectConfigSmr55 extends DlmsObjectConfigSmr52 {
 
     objectList.addAll(Arrays.asList(alarmFilter3, alarmRegister3));
 
+    final DlmsObject lastGaspAlarm = new DlmsRegisterMonitor(LAST_GASP, "0.0.16.1.2.255");
     final DlmsObject lastGaspTestAlarm =
         new DlmsSingleActionSchedule(LAST_GASP_TEST, "0.0.15.2.4.255");
 
+    objectList.add(lastGaspAlarm);
     objectList.add(lastGaspTestAlarm);
 
     return objectList;

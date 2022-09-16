@@ -101,15 +101,31 @@ public class SetAlarmNotificationsCommandExecutor
         this.dlmsObjectConfigService.findAttributeAddress(
             device, DlmsObjectType.ALARM_FILTER_2, null);
 
-    if (!alarmFilter2AttributeAddress.isPresent()) {
-      return resultCodeAlarmFilter1;
-    } else {
+    if (alarmFilter2AttributeAddress.isPresent()) {
+      final AccessResultCode accessResultCode =
+          this.setAlarmNotifications(
+              conn,
+              alarmNotifications,
+              alarmFilter2AttributeAddress.get(),
+              DlmsObjectType.ALARM_REGISTER_2);
+      if (accessResultCode != AccessResultCode.SUCCESS) {
+        return accessResultCode;
+      }
+    }
+
+    final Optional<AttributeAddress> alarmFilter3AttributeAddress =
+        this.dlmsObjectConfigService.findAttributeAddress(
+            device, DlmsObjectType.ALARM_FILTER_3, null);
+
+    if (alarmFilter3AttributeAddress.isPresent()) {
       return this.setAlarmNotifications(
           conn,
           alarmNotifications,
-          alarmFilter2AttributeAddress.get(),
-          DlmsObjectType.ALARM_REGISTER_2);
+          alarmFilter3AttributeAddress.get(),
+          DlmsObjectType.ALARM_REGISTER_3);
     }
+
+    return resultCodeAlarmFilter1;
   }
 
   private AccessResultCode setAlarmNotifications(
