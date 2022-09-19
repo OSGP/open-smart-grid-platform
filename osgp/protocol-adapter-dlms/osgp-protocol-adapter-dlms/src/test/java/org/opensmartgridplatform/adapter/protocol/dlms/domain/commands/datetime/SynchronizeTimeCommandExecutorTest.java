@@ -16,7 +16,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.TimeZone;
 import org.junit.jupiter.api.BeforeEach;
@@ -100,15 +102,21 @@ class SynchronizeTimeCommandExecutorTest {
 
     assertThat(setParameter.getData().getType().name()).isEqualTo("DATE_TIME");
     final CosemDateTime cosemDateTime = setParameter.getData().getValue();
+
     assertThat(cosemDateTime.get(Field.HOUR)).isEqualTo(expectedTime.getHour());
-    assertThat(cosemDateTime.get(Field.MINUTE))
-        .isBetween(expectedTime.getMinute(), expectedTime.getMinute() + 1);
-    assertThat(cosemDateTime.get(Field.SECOND))
-        .isBetween(expectedTime.getSecond(), expectedTime.getSecond() + 1);
-    assertThat(cosemDateTime.get(Field.DAY_OF_MONTH)).isEqualTo(expectedTime.getDayOfMonth());
-    assertThat(cosemDateTime.get(Field.MONTH)).isEqualTo(expectedTime.getMonthValue());
-    assertThat(cosemDateTime.get(Field.YEAR)).isEqualTo(expectedTime.getYear());
     assertThat(cosemDateTime.get(Field.DEVIATION))
         .isEqualTo(expectedTime.getOffset().getTotalSeconds() / -60);
+
+    final ZonedDateTime dateTime =
+        ZonedDateTime.of(
+            cosemDateTime.get(Field.YEAR),
+            cosemDateTime.get(Field.MONTH),
+            cosemDateTime.get(Field.DAY_OF_MONTH),
+            cosemDateTime.get(Field.HOUR),
+            cosemDateTime.get(Field.MINUTE),
+            cosemDateTime.get(Field.SECOND),
+            cosemDateTime.get(Field.HUNDREDTHS) * 10 * 1000,
+            ZoneId.of(timeZone));
+    assertThat(ChronoUnit.SECONDS.between(expectedTime, dateTime)).isZero();
   }
 }
