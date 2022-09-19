@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2022 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -15,6 +15,7 @@ import com.jasperwireless.api.ws.service.SendSMSRequest;
 import com.jasperwireless.api.ws.service.SendSMSResponse;
 import java.util.List;
 import org.apache.ws.security.WSConstants;
+import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -22,7 +23,7 @@ import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import org.springframework.ws.soap.security.wss4j2.Wss4jSecurityInterceptor;
 
-public class JasperWirelessSmsClient {
+public class JasperWirelessSmsSoapClient implements JasperWirelessSmsClient {
 
   private static final String WAKEUPSMS_TYPE = "wakeupsms";
 
@@ -40,7 +41,9 @@ public class JasperWirelessSmsClient {
 
   @Autowired private short jasperGetValidityPeriod;
 
-  public SendSMSResponse sendWakeUpSMS(final String iccId) {
+  @Override
+  public org.opensmartgridplatform.adapter.protocol.jasper.response.SendSMSResponse sendWakeUpSMS(
+      final String iccId) {
 
     final SendSMSRequest sendSMSRequest = WS_CLIENT_FACTORY.createSendSMSRequest();
     sendSMSRequest.setLicenseKey(this.jasperWirelessAccess.getLicenseKey());
@@ -57,9 +60,18 @@ public class JasperWirelessSmsClient {
     // override default uri
     this.jasperWebServiceTemplate.setDefaultUri(this.jasperWirelessAccess.getUri());
 
-    return (SendSMSResponse)
-        this.jasperWebServiceTemplate.marshalSendAndReceive(
-            sendSMSRequest, new SoapActionCallback(SERVICE_SMS_SEND_SMS));
+    final SendSMSResponse sendSMSSoapResponse =
+        (SendSMSResponse)
+            this.jasperWebServiceTemplate.marshalSendAndReceive(
+                sendSMSRequest, new SoapActionCallback(SERVICE_SMS_SEND_SMS));
+
+    return this.convert(sendSMSSoapResponse);
+  }
+
+  private org.opensmartgridplatform.adapter.protocol.jasper.response.SendSMSResponse convert(
+      final SendSMSResponse sendSMSSoapResponse) {
+    return new org.opensmartgridplatform.adapter.protocol.jasper.response.SendSMSResponse(
+        sendSMSSoapResponse.getSmsMsgId());
   }
 
   private void setInterceptorUsernameTokens() {
