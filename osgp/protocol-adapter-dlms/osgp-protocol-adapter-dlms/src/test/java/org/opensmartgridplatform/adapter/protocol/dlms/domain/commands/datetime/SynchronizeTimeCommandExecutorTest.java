@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -103,6 +103,7 @@ class SynchronizeTimeCommandExecutorTest {
     assertThat(setParameter.getData().getType().name()).isEqualTo("DATE_TIME");
     final CosemDateTime cosemDateTime = setParameter.getData().getValue();
 
+    // Explicit check hours andd deviation because these are important in UTC transformation
     assertThat(cosemDateTime.get(Field.HOUR)).isEqualTo(expectedTime.getHour());
     assertThat(cosemDateTime.get(Field.DEVIATION))
         .isEqualTo(expectedTime.getOffset().getTotalSeconds() / -60);
@@ -116,7 +117,7 @@ class SynchronizeTimeCommandExecutorTest {
             cosemDateTime.get(Field.MINUTE),
             cosemDateTime.get(Field.SECOND),
             cosemDateTime.get(Field.HUNDREDTHS) * 10 * 1000,
-            ZoneId.of(timeZone));
+            ZoneOffset.ofTotalSeconds(cosemDateTime.get(Field.DEVIATION) * -60));
     assertThat(ChronoUnit.SECONDS.between(expectedTime, dateTime)).isZero();
   }
 }
