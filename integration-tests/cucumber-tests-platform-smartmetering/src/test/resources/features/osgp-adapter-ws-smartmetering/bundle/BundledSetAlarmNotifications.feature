@@ -7,12 +7,18 @@ Feature: SmartMetering Bundle - SetAlarmNotifications
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And a dlms device
-      | DeviceIdentification | TEST1030000000001 |
-      | DeviceType           | SMART_METER_E     |
+      | Protocol             | DSMR              |
+      | ProtocolVersion      | 4.2.2             |
     And a dlms device
       | DeviceIdentification | TEST1029000000001 |
       | DeviceType           | SMART_METER_E     |
+      | Protocol             | SMR               |
+      | ProtocolVersion      | 5.2               |
+    And a dlms device
+      | DeviceIdentification | TEST1030000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Protocol             | SMR               |
+      | ProtocolVersion      | 5.5               |
 
   Scenario: Set alarm notifications on a device in a bundle request (register 1)
     Given a bundle request
