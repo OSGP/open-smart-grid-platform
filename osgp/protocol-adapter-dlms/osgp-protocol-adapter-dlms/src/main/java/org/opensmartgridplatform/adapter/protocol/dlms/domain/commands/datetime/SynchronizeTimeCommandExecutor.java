@@ -31,10 +31,9 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component()
+@Component
 public class SynchronizeTimeCommandExecutor
     extends AbstractCommandExecutor<SynchronizeTimeRequestDto, AccessResultCode> {
 
@@ -44,10 +43,11 @@ public class SynchronizeTimeCommandExecutor
       new AttributeAddress(
           InterfaceClass.CLOCK.id(), LOGICAL_NAME, ClockAttribute.TIME.attributeId());
 
-  @Autowired private DlmsHelper dlmsHelper;
+  private final DlmsHelper dlmsHelper;
 
-  public SynchronizeTimeCommandExecutor() {
+  public SynchronizeTimeCommandExecutor(final DlmsHelper dlmsHelper) {
     super(SynchronizeTimeRequestDto.class);
+    this.dlmsHelper = dlmsHelper;
   }
 
   @Override
@@ -77,7 +77,7 @@ public class SynchronizeTimeCommandExecutor
       throws ProtocolAdapterException {
 
     final ZoneId zoneId = ZoneId.of(synchronizeTimeRequestDto.getTimeZone());
-    final ZonedDateTime zonedTime = ZonedDateTime.now(ZoneOffset.UTC).withZoneSameLocal(zoneId);
+    final ZonedDateTime zonedTime = ZonedDateTime.now(ZoneOffset.UTC).withZoneSameInstant(zoneId);
     final DataObject time = this.dlmsHelper.asDataObject(zonedTime);
 
     final SetParameter setParameter = new SetParameter(ATTRIBUTE_TIME, time);
