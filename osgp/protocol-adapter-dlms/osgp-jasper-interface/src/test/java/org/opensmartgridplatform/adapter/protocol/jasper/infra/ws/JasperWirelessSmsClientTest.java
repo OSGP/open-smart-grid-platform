@@ -14,7 +14,6 @@ import static org.springframework.ws.test.client.RequestMatchers.payload;
 import static org.springframework.ws.test.client.ResponseCreators.withPayload;
 
 import com.jasperwireless.api.ws.service.GetSMSDetailsResponse;
-import com.jasperwireless.api.ws.service.SendSMSResponse;
 import com.jasperwireless.api.ws.service.SmsMessageType;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -28,6 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.opensmartgridplatform.adapter.protocol.jasper.response.SendSMSResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -52,6 +52,7 @@ class JasperWirelessSmsClientTest {
   private static final String MODEM_STATUS = "DeliverAckReceivedStatusSuccessful";
   private static final String API_VERSION = "1234";
   private static final String VALIDITY_PERIOD = "6";
+  private static final String SOAP = "SOAP";
 
   static class PropertyMockingApplicationContextInitializer
       implements ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -61,10 +62,11 @@ class JasperWirelessSmsClientTest {
       final MockEnvironment mockEnvironment = new MockEnvironment();
       mockEnvironment.setProperty("jwcc.uri.sms", "https://acme.com/ws/service/Sms");
       mockEnvironment.setProperty("jwcc.licensekey", LICENSEKEY);
-      mockEnvironment.setProperty("jwcc.api_version", API_VERSION);
+      mockEnvironment.setProperty("jwcc.api.version", API_VERSION);
       mockEnvironment.setProperty("jwcc.username", "JohnDoe");
       mockEnvironment.setProperty("jwcc.password", "Whatever");
       mockEnvironment.setProperty("jwcc.validity_period", VALIDITY_PERIOD);
+      mockEnvironment.setProperty("jwcc.api.type", SOAP);
 
       applicationContext.setEnvironment(mockEnvironment);
     }
@@ -76,7 +78,7 @@ class JasperWirelessSmsClientTest {
 
   private MockWebServiceServer mockServer;
 
-  @InjectMocks @Autowired private JasperWirelessSmsClient wsClientService;
+  @InjectMocks @Autowired private JasperWirelessSmsSoapClient wsClientService;
 
   @BeforeEach
   void createServer() {

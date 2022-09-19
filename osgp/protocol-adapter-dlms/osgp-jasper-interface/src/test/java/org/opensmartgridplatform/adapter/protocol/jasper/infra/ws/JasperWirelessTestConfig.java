@@ -35,8 +35,9 @@ public class JasperWirelessTestConfig {
   private static final String PROPERTY_NAME_CONTROLCENTER_LICENSEKEY = "jwcc.licensekey";
   private static final String PROPERTY_NAME_CONTROLCENTER_USERNAME = "jwcc.username";
   private static final String PROPERTY_NAME_CONTROLCENTER_PASSWORD = "jwcc.password";
-  private static final String PROPERTY_NAME_CONTROLCENTER_API_VERSION = "jwcc.api_version";
+  private static final String PROPERTY_NAME_CONTROLCENTER_API_VERSION = "jwcc.api.version";
   private static final String PROPERTY_NAME_CONTROLCENTER_VALIDITY_PERIOD = "jwcc.validity_period";
+  private static final String PROPERTY_NAME_CONTROLCENTER_API_TYPE = "jwcc.api.type";
 
   @Resource private Environment environment;
 
@@ -79,12 +80,13 @@ public class JasperWirelessTestConfig {
         this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_LICENSEKEY),
         this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_USERNAME),
         this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_PASSWORD),
-        this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_API_VERSION));
+        this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_API_VERSION),
+        this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_API_TYPE));
   }
 
   @Bean
-  public JasperWirelessSmsClient jasperWirelessSMSClient() {
-    return new JasperWirelessSmsClient();
+  public JasperWirelessSmsSoapClient jasperWirelessSMSSoapClient() {
+    return new JasperWirelessSmsSoapClient();
   }
 
   @Bean

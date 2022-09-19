@@ -102,7 +102,7 @@
     <versions.maven.plugin.version>2.10.0</versions.maven.plugin.version>
     <fmt-maven-plugin.version>2.9.1</fmt-maven-plugin.version>
     <apache.activemq.version>5.16.0</apache.activemq.version>
-    <logback.version>1.2.8</logback.version>
+    <logback.version>1.2.11</logback.version>
     <apache.commons.schema>2.2.5</apache.commons.schema>
     <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
     <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
@@ -631,8 +631,18 @@
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
         <version>${jackson-databind.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
       </dependency>
 
       <!-- PostgreSQL -->

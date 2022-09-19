@@ -11,7 +11,8 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWirelessSmsClient;
+import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
+import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProvider;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProviderService;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
@@ -20,14 +21,10 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsDomainHelperService")
 public class DomainHelperService {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(DomainHelperService.class);
 
   private static final ComponentType COMPONENT_TYPE = ComponentType.PROTOCOL_DLMS;
 
@@ -115,8 +112,7 @@ public class DomainHelperService {
       this.jasperWirelessSmsClient.sendWakeUpSMS(dlmsDevice.getIccId());
       deviceIpAddress = this.pollForSession(sessionProvider, dlmsDevice);
 
-    } catch (final SessionProviderException e) {
-      LOGGER.error("IccId is probably not supported in this session provider", e);
+    } catch (final OsgpJasperException e) {
       throw new FunctionalException(
           FunctionalExceptionType.INVALID_ICCID, ComponentType.PROTOCOL_DLMS, e);
     }
