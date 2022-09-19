@@ -37,7 +37,7 @@ public class Smr55Profile {
   public AlarmObject alarmObject3(final DynamicValues dynamicValues) {
     dynamicValues.setDefaultAttributeValue(
         InterfaceClass.DATA.id(),
-        new ObisCode(0, 0, 97, 98, 1, 255),
+        new ObisCode(0, 0, 97, 98, 2, 255),
         DataAttribute.VALUE.attributeId(),
         DataObject.newUInteger32Data(this.alarmRegister3Value));
     return new AlarmObject(UDP_PUSH_OBJECT);
