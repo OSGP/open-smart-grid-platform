@@ -41,7 +41,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessa
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
@@ -69,8 +68,9 @@ class SynchronizeTimeCommandExecutorTest {
   }
 
   @Test
-  void testSynchronizeTime() throws ProtocolAdapterException, IOException, FunctionalException {
+  void testSynchronizeTime() throws ProtocolAdapterException, IOException {
     final String timeZone = "Europe/Amsterdam";
+    final ZonedDateTime expectedTime = ZonedDateTime.now(TimeZone.getTimeZone(timeZone).toZoneId());
 
     // SETUP
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
@@ -84,8 +84,6 @@ class SynchronizeTimeCommandExecutorTest {
     final AccessResultCode resultCode =
         this.executor.execute(
             this.conn, this.DLMS_DEVICE, synchronizeTimeRequest, this.messageMetadata);
-
-    final ZonedDateTime expectedTime = ZonedDateTime.now(TimeZone.getTimeZone(timeZone).toZoneId());
 
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
