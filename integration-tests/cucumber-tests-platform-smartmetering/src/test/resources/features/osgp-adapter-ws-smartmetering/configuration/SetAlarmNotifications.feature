@@ -4,24 +4,13 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
   I want to be able to set alarm notifications on a device
   So I can control which types of alarms result in pushed notifications
 
-  Background:
+  Scenario: Set alarm notifications on a DSMR 4.2.2 device
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
+      | Port                 | 1024              |
       | Protocol             | DSMR              |
       | ProtocolVersion      | 4.2.2             |
-    And a dlms device
-      | DeviceIdentification | TEST1029000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | Protocol             | SMR               |
-      | ProtocolVersion      | 5.2               |
-    And a dlms device
-      | DeviceIdentification | TEST1030000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | Protocol             | SMR               |
-      | ProtocolVersion      | 5.5               |
-
-  Scenario: Set alarm notifications on a DSMR 4.2.2 device
     When the set alarm notifications request is received
       | DeviceIdentification | TEST1024000000001 |
       | AlarmType            | CLOCK_INVALID     |
@@ -30,6 +19,12 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
       | DeviceIdentification | TEST1024000000001 |
 
   Scenario: Set alarm notifications on a DSMR 5.2 device
+    Given a dlms device
+      | DeviceIdentification | TEST1029000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Port                 | 1029              |
+      | Protocol             | SMR               |
+      | ProtocolVersion      | 5.2               |
     When the set alarm notifications request is received
       | DeviceIdentification | TEST1029000000001 |
       | AlarmType            | CLOCK_INVALID     |
@@ -38,6 +33,12 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
       | DeviceIdentification | TEST1029000000001 |
 
   Scenario: Set alarm notifications on a SMR 5.5 device
+    Given a dlms device
+      | DeviceIdentification | TEST1030000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Port                 | 1030              |
+      | Protocol             | SMR               |
+      | ProtocolVersion      | 5.5               |
     When the set alarm notifications request is received
       | DeviceIdentification | TEST1030000000001 |
       | AlarmType            | LAST_GASP         |
@@ -47,6 +48,12 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
 
   @NightlyBuildOnly
   Scenario: Set all alarm notifications disabled on a DSMR 4.2.2 device
+    Given a dlms device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Port                 | 1024              |
+      | Protocol             | DSMR              |
+      | ProtocolVersion      | 4.2.2             |
     When the set alarm notifications request is received
       | DeviceIdentification | TEST1024000000001                     |
       | AlarmType_1          | CLOCK_INVALID                         |
@@ -108,6 +115,12 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
 
   @NightlyBuildOnly
   Scenario: Set all alarm notifications disabled on a SMR 5.2 device
+    Given a dlms device
+      | DeviceIdentification | TEST1029000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Port                 | 1029              |
+      | Protocol             | SMR               |
+      | ProtocolVersion      | 5.2               |
     When the set alarm notifications request is received
       | DeviceIdentification | TEST1029000000001                     |
       | AlarmType_1          | VOLTAGE_SAG_IN_PHASE_DETECTED_L1      |
@@ -127,6 +140,12 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
 
   @NightlyBuildOnly
   Scenario: Set all alarm notifications disabled on a SMR 5.5 device
+    Given a dlms device
+      | DeviceIdentification | TEST1030000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Port                 | 1030              |
+      | Protocol             | SMR               |
+      | ProtocolVersion      | 5.5               |
     When the set alarm notifications request is received
       | DeviceIdentification | TEST1030000000001                     |
       | AlarmType_1          | LAST_GASP                             |

@@ -3,25 +3,14 @@ Feature: SmartMetering Bundle - SetAlarmNotifications
   As a grid operator 
   I want to be able to set alarm notifications on a meter via a bundle request
 
-  Background: 
+  Scenario: Set alarm notifications on a device in a bundle request (register 1)
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
+      | Port                 | 1024              |
       | Protocol             | DSMR              |
       | ProtocolVersion      | 4.2.2             |
-    And a dlms device
-      | DeviceIdentification | TEST1029000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | Protocol             | SMR               |
-      | ProtocolVersion      | 5.2               |
-    And a dlms device
-      | DeviceIdentification | TEST1030000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | Protocol             | SMR               |
-      | ProtocolVersion      | 5.5               |
-
-  Scenario: Set alarm notifications on a device in a bundle request (register 1)
-    Given a bundle request
+    And a bundle request
       | DeviceIdentification | TEST1024000000001 |
     And the bundle request contains a set alarm notifications action with parameters
       | AlarmNotificationCount |             2 |
@@ -34,7 +23,13 @@ Feature: SmartMetering Bundle - SetAlarmNotifications
       | Result | OK |
 
   Scenario: Set alarm notifications on a device in a bundle request (register 2)
-    Given a bundle request
+    Given a dlms device
+      | DeviceIdentification | TEST1029000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Port                 | 1029              |
+      | Protocol             | SMR               |
+      | ProtocolVersion      | 5.2               |
+    And a bundle request
       | DeviceIdentification | TEST1029000000001 |
     And the bundle request contains a set alarm notifications action with parameters
       | AlarmNotificationCount |                                  6 |
@@ -55,7 +50,13 @@ Feature: SmartMetering Bundle - SetAlarmNotifications
       | Result | OK |
 
   Scenario: Set alarm notifications on a device in a bundle request (register 3)
-    Given a bundle request
+    Given a dlms device
+      | DeviceIdentification | TEST1030000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Port                 | 1030              |
+      | Protocol             | SMR               |
+      | ProtocolVersion      | 5.5               |
+    And a bundle request
       | DeviceIdentification | TEST1030000000001 |
     And the bundle request contains a set alarm notifications action with parameters
       | AlarmNotificationCount |              2 |
