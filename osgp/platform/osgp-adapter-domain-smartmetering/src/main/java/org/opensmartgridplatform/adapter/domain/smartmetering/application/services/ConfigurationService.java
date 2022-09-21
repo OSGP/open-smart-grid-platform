@@ -539,7 +539,7 @@ public class ConfigurationService {
             requestData.getMbusDeviceIdentification(),
             gasDevice.getChannel(),
             SecretTypeDto.valueOf(requestData.getSecretType().name()),
-            requestData.getCloseOpticalPort());
+            requestData.getCloseOpticalPort() != null ? requestData.getCloseOpticalPort() : false);
 
     this.osgpCoreRequestMessageSender.send(
         requestDto,

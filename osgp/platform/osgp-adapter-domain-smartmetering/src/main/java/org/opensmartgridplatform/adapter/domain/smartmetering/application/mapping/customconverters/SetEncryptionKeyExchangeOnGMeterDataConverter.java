@@ -53,6 +53,6 @@ public class SetEncryptionKeyExchangeOnGMeterDataConverter
         gasDevice.getDeviceIdentification(),
         gasDevice.getChannel(),
         SecretTypeDto.values()[value.getSecretType().ordinal()],
-        value.getCloseOpticalPort());
+        value.getCloseOpticalPort() != null ? value.getCloseOpticalPort() : false);
   }
 }
