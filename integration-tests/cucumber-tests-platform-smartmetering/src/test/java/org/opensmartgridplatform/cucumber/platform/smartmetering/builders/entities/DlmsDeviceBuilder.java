@@ -268,6 +268,12 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
       } else {
         this.setPort(Long.parseLong(inputSettings.get(PlatformSmartmeteringKeys.PORT)));
       }
+    } else {
+      this.setPort(this.getPortBasedOnProtocolInfo(this.protocolName, this.protocolVersion));
+    }
+    // validate port
+    if (this.port != null) {
+      this.checkPortAndProtocolMatch(this.port, this.protocolName, this.protocolVersion);
     }
 
     return this;
@@ -292,7 +298,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     dlmsDevice.setWithListSupported(this.withListSupported);
     dlmsDevice.setSelectiveAccessSupported(this.selectiveAccessSupported);
     dlmsDevice.setIpAddressIsStatic(this.ipAddressIsStatic);
-    dlmsDevice.setPort(this.getPort(this.port, this.protocolName, this.protocolVersion));
+    dlmsDevice.setPort(this.port);
     dlmsDevice.setClientId(this.clientId);
     dlmsDevice.setLogicalId(this.logicalId);
     dlmsDevice.setInDebugMode(this.inDebugMode);
@@ -304,27 +310,19 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     return dlmsDevice;
   }
 
-  public Long getPort(final Long port, final String protocol, final String protocolVersion) {
-
-    if (port != null) {
-      this.checkPortAndProtocolMatch(port, protocol, protocolVersion);
-      return port;
-    }
-
-    final Long matchingPort =
-        PlatformSmartmeteringDefaults.PORT_MAPPING.entrySet().stream()
-            .filter(e -> this.protocolsAreEqual(protocol, protocolVersion, e.getValue()))
-            .findFirst()
-            .map(e2 -> e2.getKey())
-            .orElseThrow(
-                () ->
-                    new IllegalArgumentException(
-                        String.format(
-                            "No port mapped with protocol info [protocol %s and version %s]. "
-                                + "Extended the existing port mapping in "
-                                + "PlatformSmartmeteringDefaults.",
-                            protocol, protocolVersion)));
-    return matchingPort;
+  public Long getPortBasedOnProtocolInfo(final String protocol, final String protocolVersion) {
+    return PlatformSmartmeteringDefaults.PORT_MAPPING.entrySet().stream()
+        .filter(e -> this.protocolsAreEqual(protocol, protocolVersion, e.getValue()))
+        .findFirst()
+        .map(e2 -> e2.getKey())
+        .orElseThrow(
+            () ->
+                new IllegalArgumentException(
+                    String.format(
+                        "No port mapped with protocol info [protocol %s and version %s]. "
+                            + "Extended the existing port mapping in "
+                            + "PlatformSmartmeteringDefaults.",
+                        protocol, protocolVersion)));
   }
 
   private void checkPortAndProtocolMatch(
