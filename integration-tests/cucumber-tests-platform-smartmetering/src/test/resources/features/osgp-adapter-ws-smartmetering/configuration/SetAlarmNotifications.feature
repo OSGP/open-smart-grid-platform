@@ -1,10 +1,10 @@
-@SmartMetering @Platform @SmartMeteringConfiguration @SMHE-731
+@SmartMetering @Platform @SmartMeteringConfiguration
 Feature: SmartMetering Configuration - Set Alarm Notifications
   As a grid operator
   I want to be able to set alarm notifications on a device
   So I can control which types of alarms result in pushed notifications
 
-  Scenario: Set alarm notifications on a DSMR 4.2.2 device
+  Scenario: Set alarm notifications in register 1 on a DSMR 4.2.2 device (other alarms in request that are not in register 1 are ignored)
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -13,12 +13,16 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
       | ProtocolVersion      | 4.2.2             |
     When the set alarm notifications request is received
       | DeviceIdentification | TEST1024000000001 |
-      | AlarmType            | CLOCK_INVALID     |
-      | AlarmTypeEnabled     | TRUE              |
+      | AlarmType_1          | CLOCK_INVALID                    |
+      | AlarmTypeEnabled1    | TRUE                             |
+      | AlarmType_2          | VOLTAGE_SAG_IN_PHASE_DETECTED_L1 |
+      | AlarmTypeEnabled2    | TRUE                             |
+      | AlarmType_3          | LAST_GASP                        |
+      | AlarmTypeEnabled3    | TRUE                             |
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1024000000001 |
 
-  Scenario: Set alarm notifications on a DSMR 5.2 device
+  Scenario: Set alarm notifications in register 1 and 2 on a DSMR 5.2 device (other alarms in request that are not in register 1 or 2 are ignored)
     Given a dlms device
       | DeviceIdentification | TEST1029000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -26,13 +30,17 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
       | Protocol             | SMR               |
       | ProtocolVersion      | 5.2               |
     When the set alarm notifications request is received
-      | DeviceIdentification | TEST1029000000001 |
-      | AlarmType            | CLOCK_INVALID     |
-      | AlarmTypeEnabled     | TRUE              |
+      | DeviceIdentification | TEST1029000000001                |
+      | AlarmType_1          | CLOCK_INVALID                    |
+      | AlarmTypeEnabled1    | TRUE                             |
+      | AlarmType_2          | VOLTAGE_SAG_IN_PHASE_DETECTED_L1 |
+      | AlarmTypeEnabled2    | TRUE                             |
+      | AlarmType_3          | LAST_GASP                        |
+      | AlarmTypeEnabled3    | TRUE                             |
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1029000000001 |
 
-  Scenario: Set alarm notifications on a SMR 5.5 device
+  Scenario: Set alarm notifications in register 1, 2 and 3 on a SMR 5.5 device
     Given a dlms device
       | DeviceIdentification | TEST1030000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -41,8 +49,12 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
       | ProtocolVersion      | 5.5               |
     When the set alarm notifications request is received
       | DeviceIdentification | TEST1030000000001 |
-      | AlarmType            | LAST_GASP         |
-      | AlarmTypeEnabled     | TRUE              |
+      | AlarmType_1          | CLOCK_INVALID                    |
+      | AlarmTypeEnabled1    | TRUE                             |
+      | AlarmType_2          | VOLTAGE_SAG_IN_PHASE_DETECTED_L1 |
+      | AlarmTypeEnabled2    | TRUE                             |
+      | AlarmType_3          | LAST_GASP                        |
+      | AlarmTypeEnabled3    | TRUE                             |
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1030000000001 |
 

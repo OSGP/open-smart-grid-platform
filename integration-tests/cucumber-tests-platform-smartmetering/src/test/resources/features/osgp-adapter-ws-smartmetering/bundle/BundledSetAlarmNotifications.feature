@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SMHE-731
+@SmartMetering @Platform
 Feature: SmartMetering Bundle - SetAlarmNotifications
   As a grid operator 
   I want to be able to set alarm notifications on a meter via a bundle request
