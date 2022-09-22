@@ -43,7 +43,6 @@ Feature: SmartMetering Bundle - GetActualMeterReads
     Then the bundle response should contain a get actual meter reads response
     Then the bundle response should contain a get actual meter reads gas response
 
-  @Validation
   Scenario: Invalid g meter configuration
     Given a dlms device
       | DeviceIdentification        | TESTG102400000001 |
