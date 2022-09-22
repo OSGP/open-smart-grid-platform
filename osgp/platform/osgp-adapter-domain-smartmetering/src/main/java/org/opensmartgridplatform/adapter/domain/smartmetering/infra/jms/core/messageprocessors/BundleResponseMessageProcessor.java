@@ -11,17 +11,15 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.me
 import java.util.ArrayList;
 import java.util.List;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.BundleService;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.util.FaultResponseFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseParameterDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseParametersDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -37,6 +35,8 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
   @Qualifier("domainSmartMeteringBundleService")
   private BundleService bundleService;
 
+  private final FaultResponseFactory faultResponseFactory;
+
   @Autowired
   public BundleResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
@@ -47,6 +47,7 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
         messageProcessorMap,
         MessageType.HANDLE_BUNDLED_ACTIONS,
         ComponentType.DOMAIN_SMART_METERING);
+    this.faultResponseFactory = new FaultResponseFactory();
   }
 
   @Override
@@ -92,7 +93,8 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
                 "deviceIdentification", deviceMessageMetadata.getDeviceIdentification());
         parameterList.add(deviceIdentificationParameter);
         action.setResponse(
-            this.faultResponseForException(e, parameterList, "Unable to handle request"));
+            this.faultResponseFactory.faultResponseForException(
+                e, parameterList, "Unable to handle request"));
       }
     }
 
@@ -101,82 +103,5 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
         responseMessage.getResult(),
         osgpException,
         bundleMessagesResponseDto);
-  }
-
-  protected FaultResponseDto faultResponseForException(
-      final Exception exception,
-      final List<FaultResponseParameterDto> parameters,
-      final String defaultMessage) {
-
-    final FaultResponseParametersDto faultResponseParameters =
-        this.faultResponseParametersForList(parameters);
-
-    if (exception instanceof FunctionalException || exception instanceof TechnicalException) {
-      return this.faultResponseForFunctionalOrTechnicalException(
-          (OsgpException) exception, faultResponseParameters, defaultMessage);
-    }
-
-    return new FaultResponseDto.Builder()
-        .withMessage(defaultMessage)
-        .withComponent(ComponentType.DOMAIN_SMART_METERING.name())
-        .withInnerException(exception.getClass().getName())
-        .withInnerMessage(exception.getMessage())
-        .withFaultResponseParameters(faultResponseParameters)
-        .build();
-  }
-
-  private FaultResponseParametersDto faultResponseParametersForList(
-      final List<FaultResponseParameterDto> parameterList) {
-    if (parameterList == null || parameterList.isEmpty()) {
-      return null;
-    }
-    return new FaultResponseParametersDto(parameterList);
-  }
-
-  private FaultResponseDto faultResponseForFunctionalOrTechnicalException(
-      final OsgpException exception,
-      final FaultResponseParametersDto faultResponseParameters,
-      final String defaultMessage) {
-
-    final Integer code;
-    if (exception instanceof FunctionalException) {
-      code = ((FunctionalException) exception).getCode();
-    } else {
-      code = null;
-    }
-
-    final String component;
-    if (exception.getComponentType() == null) {
-      component = null;
-    } else {
-      component = exception.getComponentType().name();
-    }
-
-    final String innerException;
-    final String innerMessage;
-    final Throwable cause = exception.getCause();
-    if (cause == null) {
-      innerException = null;
-      innerMessage = null;
-    } else {
-      innerException = cause.getClass().getName();
-      innerMessage = cause.getMessage();
-    }
-
-    final String message;
-    if (exception.getMessage() == null) {
-      message = defaultMessage;
-    } else {
-      message = exception.getMessage();
-    }
-
-    return new FaultResponseDto.Builder()
-        .withCode(code)
-        .withMessage(message)
-        .withComponent(component)
-        .withInnerException(innerException)
-        .withInnerMessage(innerMessage)
-        .withFaultResponseParameters(faultResponseParameters)
-        .build();
   }
 }

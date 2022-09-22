@@ -23,6 +23,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.application.mappin
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.GetFirmwareVersionGasRequestDataConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.PeriodicReadsRequestGasDataConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.SetEncryptionKeyExchangeOnGMeterDataConverter;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.util.FaultResponseFactory;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActionRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActivityCalendarData;
@@ -86,6 +87,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusO
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseParameterDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GenerateAndReplaceKeysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
@@ -218,6 +221,8 @@ public class ActionMapperService {
 
   @Autowired private DomainHelperService domainHelperService;
 
+  private final FaultResponseFactory faultResponseFactory = new FaultResponseFactory();
+
   /** Specifies which mapper to use for the core class received. */
   @PostConstruct
   private void postConstruct() {
@@ -275,13 +280,28 @@ public class ActionMapperService {
   }
 
   public BundleMessagesRequestDto mapAllActions(
-      final BundleMessageRequest bundleMessageRequest, final SmartMeter smartMeter)
-      throws FunctionalException {
+      final BundleMessageRequest bundleMessageRequest, final SmartMeter smartMeter) {
 
     final List<ActionDto> actionValueObjectDtoList = new ArrayList<>();
 
     for (final ActionRequest action : bundleMessageRequest.getBundleList()) {
-      actionValueObjectDtoList.add(this.mapActionWithMapper(smartMeter, action));
+      try {
+        actionValueObjectDtoList.add(this.mapActionWithMapper(smartMeter, action));
+      } catch (final FunctionalException functionalException) {
+        final ActionDto actionDto = new ActionDto(null);
+
+        final List<FaultResponseParameterDto> parameterList = new ArrayList<>();
+        final FaultResponseParameterDto deviceIdentificationParameter =
+            new FaultResponseParameterDto(
+                "deviceIdentification", smartMeter.getDeviceIdentification());
+        parameterList.add(deviceIdentificationParameter);
+
+        final FaultResponseDto faultResponseDto =
+            this.faultResponseFactory.nonRetryablefaultResponseForException(
+                functionalException, parameterList, "Exception while handling request");
+        actionDto.setResponse(faultResponseDto);
+        actionValueObjectDtoList.add(actionDto);
+      }
     }
     return new BundleMessagesRequestDto(actionValueObjectDtoList);
   }
