@@ -7,7 +7,6 @@ Feature: SmartMetering Bundle - SetAlarmNotifications
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-      | Port                 | 1024              |
       | Protocol             | DSMR              |
       | ProtocolVersion      | 4.2.2             |
     And a bundle request
@@ -53,7 +52,6 @@ Feature: SmartMetering Bundle - SetAlarmNotifications
     Given a dlms device
       | DeviceIdentification | TEST1030000000001 |
       | DeviceType           | SMART_METER_E     |
-      | Port                 | 1030              |
       | Protocol             | SMR               |
       | ProtocolVersion      | 5.5               |
     And a bundle request

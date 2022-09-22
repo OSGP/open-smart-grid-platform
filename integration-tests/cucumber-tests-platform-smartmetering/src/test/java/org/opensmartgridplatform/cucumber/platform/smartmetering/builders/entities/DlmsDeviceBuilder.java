@@ -11,6 +11,7 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entit
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
 
 import java.util.Map;
+import java.util.Optional;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.cucumber.platform.core.builders.CucumberBuilder;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
@@ -36,7 +37,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
   private boolean selectiveAccessSupported =
       PlatformSmartmeteringDefaults.SELECTIVE_ACCESS_SUPPORTED;
   private boolean ipAddressIsStatic = PlatformSmartmeteringDefaults.IP_ADDRESS_IS_STATIC;
-  private Long port = PlatformSmartmeteringDefaults.PORT;
+  private Long port;
   private Long clientId = PlatformSmartmeteringDefaults.CLIENT_ID;
   private Long logicalId = PlatformSmartmeteringDefaults.LOGICAL_ID;
   private boolean inDebugMode = PlatformSmartmeteringDefaults.IN_DEBUG_MODE;
@@ -291,7 +292,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     dlmsDevice.setWithListSupported(this.withListSupported);
     dlmsDevice.setSelectiveAccessSupported(this.selectiveAccessSupported);
     dlmsDevice.setIpAddressIsStatic(this.ipAddressIsStatic);
-    dlmsDevice.setPort(this.port);
+    dlmsDevice.setPort(this.getPort(this.port, this.protocolName, this.protocolVersion));
     dlmsDevice.setClientId(this.clientId);
     dlmsDevice.setLogicalId(this.logicalId);
     dlmsDevice.setInDebugMode(this.inDebugMode);
@@ -301,5 +302,55 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     dlmsDevice.setInvocationCounter(this.invocationCounter);
 
     return dlmsDevice;
+  }
+
+  public Long getPort(final Long port, final String protocol, final String protocolVersion) {
+
+    if (port != null) {
+      this.checkPortAndProtocolMatch(port, protocol, protocolVersion);
+      return port;
+    }
+
+    final Long matchingPort =
+        PlatformSmartmeteringDefaults.PORT_MAPPING.entrySet().stream()
+            .filter(e -> this.protocolsAreEqual(protocol, protocolVersion, e.getValue()))
+            .findFirst()
+            .map(e2 -> e2.getKey())
+            .orElseThrow(
+                () ->
+                    new IllegalArgumentException(
+                        String.format(
+                            "No port mapped with protocol info [protocol %s and version %s]. "
+                                + "Extended the existing port mapping in "
+                                + "PlatformSmartmeteringDefaults.",
+                            protocol, protocolVersion)));
+    return matchingPort;
+  }
+
+  private void checkPortAndProtocolMatch(
+      final Long port, final String protocol, final String protocolVersion) {
+
+    final Optional<ProtocolInfo> matchingProtocolInfo =
+        Optional.ofNullable(PlatformSmartmeteringDefaults.PORT_MAPPING.get(port));
+
+    if (matchingProtocolInfo.isPresent()) {
+      if (!this.protocolsAreEqual(protocol, protocolVersion, matchingProtocolInfo.get())) {
+        throw new IllegalArgumentException(
+            String.format(
+                "Port %s does not match with protocol info [protocol %s and version %s].",
+                port, protocol, protocolVersion));
+      }
+    } else {
+      throw new IllegalArgumentException(
+          String.format(
+              "no protocol info found with port %s. Protocols mapped with port %s",
+              port, PlatformSmartmeteringDefaults.PORT_MAPPING.keySet()));
+    }
+  }
+
+  private boolean protocolsAreEqual(
+      final String protocol, final String protocolVersion, final ProtocolInfo protocolInfo) {
+    return protocolInfo.getProtocol().equals(protocol)
+        && protocolInfo.getProtocolVersion().equals(protocolVersion);
   }
 }

@@ -8,7 +8,6 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-      | Port                 | 1024              |
       | Protocol             | DSMR              |
       | ProtocolVersion      | 4.2.2             |
     When the set alarm notifications request is received
@@ -26,7 +25,6 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
     Given a dlms device
       | DeviceIdentification | TEST1029000000001 |
       | DeviceType           | SMART_METER_E     |
-      | Port                 | 1029              |
       | Protocol             | SMR               |
       | ProtocolVersion      | 5.2               |
     When the set alarm notifications request is received
@@ -44,7 +42,6 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
     Given a dlms device
       | DeviceIdentification | TEST1030000000001 |
       | DeviceType           | SMART_METER_E     |
-      | Port                 | 1030              |
       | Protocol             | SMR               |
       | ProtocolVersion      | 5.5               |
     When the set alarm notifications request is received
@@ -63,7 +60,6 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-      | Port                 | 1024              |
       | Protocol             | DSMR              |
       | ProtocolVersion      | 4.2.2             |
     When the set alarm notifications request is received
@@ -130,7 +126,6 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
     Given a dlms device
       | DeviceIdentification | TEST1029000000001 |
       | DeviceType           | SMART_METER_E     |
-      | Port                 | 1029              |
       | Protocol             | SMR               |
       | ProtocolVersion      | 5.2               |
     When the set alarm notifications request is received
@@ -155,7 +150,6 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
     Given a dlms device
       | DeviceIdentification | TEST1030000000001 |
       | DeviceType           | SMART_METER_E     |
-      | Port                 | 1030              |
       | Protocol             | SMR               |
       | ProtocolVersion      | 5.5               |
     When the set alarm notifications request is received

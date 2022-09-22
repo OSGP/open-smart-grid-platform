@@ -40,7 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -158,7 +157,6 @@ public class DlmsDeviceSteps {
 
   @Given("^a dlms device$")
   public void aDlmsDevice(final Map<String, String> inputSettings) {
-
     final Device device = this.createDeviceInCoreDatabase(inputSettings);
     this.setScenarioContextForDevice(inputSettings, device);
 
@@ -788,9 +786,6 @@ public class DlmsDeviceSteps {
             PlatformSmartmeteringKeys.PROTOCOL_VERSION,
             PlatformSmartmeteringDefaults.PROTOCOL_VERSION);
 
-    final String port =
-        inputSettings.getOrDefault(
-            PlatformSmartmeteringKeys.PORT, PlatformSmartmeteringDefaults.PORT.toString());
     final ProtocolInfo protocolInfo =
         this.protocolInfoRepository.findByProtocolAndProtocolVersion(protocol, protocolVersion);
     if (protocolInfo == null) {
@@ -799,30 +794,7 @@ public class DlmsDeviceSteps {
               "No protocol info found with combination of protocol %s and version %s",
               protocol, protocolVersion));
     }
-    this.checkPortAndProtocolMatch(port, protocolInfo);
     return protocolInfo;
-  }
-
-  private void checkPortAndProtocolMatch(final String port, final ProtocolInfo protocolInfo) {
-    final Optional<ProtocolInfo> matchingProtocolInfo =
-        Optional.ofNullable(PlatformSmartmeteringDefaults.PORT_MAPPING.get(port));
-    if (matchingProtocolInfo.isPresent()) {
-      if (!this.protocolsAreEqual(protocolInfo, matchingProtocolInfo.get())) {
-        throw new IllegalArgumentException(
-            String.format(
-                "Port %s does not match with protocol info [protocol %s and version %s]",
-                port, protocolInfo.getProtocol(), protocolInfo.getProtocolVersion()));
-      }
-    } else {
-      throw new IllegalArgumentException(
-          String.format("no protocol info found with port %s", port));
-    }
-  }
-
-  private boolean protocolsAreEqual(
-      final ProtocolInfo protocolInfo1, final ProtocolInfo protocolInfo2) {
-    return protocolInfo2.getProtocol().equals(protocolInfo1.getProtocol())
-        && protocolInfo2.getProtocolVersion().equals(protocolInfo1.getProtocolVersion());
   }
 
   private DeviceModel getDeviceModel(final Map<String, String> inputSettings) {
