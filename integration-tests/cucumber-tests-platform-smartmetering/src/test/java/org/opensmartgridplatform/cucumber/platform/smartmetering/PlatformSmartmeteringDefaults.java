@@ -11,8 +11,11 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
+import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 
 /**
  * Defaults specific for the dlms related data. Note: Keep in mind that generic defaults should be
@@ -60,6 +63,24 @@ public class PlatformSmartmeteringDefaults
   public static final Long PORT = 1024L;
   public static final String PROTOCOL = "DSMR";
   public static final String PROTOCOL_VERSION = "4.2.2";
+
+  public static final Map<String, ProtocolInfo> PORT_MAPPING = new HashMap<>();
+
+  static {
+    PORT_MAPPING.put(
+        "1024",
+        new ProtocolInfo.Builder().withProtocol("DSMR").withProtocolVersion("4.2.2").build());
+    PORT_MAPPING.put(
+        "1027",
+        new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.0.0").build());
+    PORT_MAPPING.put(
+        "1028", new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.1").build());
+    PORT_MAPPING.put(
+        "1029", new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.2").build());
+    PORT_MAPPING.put(
+        "1030", new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.5").build());
+  }
+
   public static final Long INVOCATION_COUNTER = 12345L;
 
   public static final String SECURITY_KEY_TYPE_A = "E_METER_AUTHENTICATION";
