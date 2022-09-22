@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
@@ -127,6 +128,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+@Slf4j
 @Service(value = "domainSmartMeteringActionMapperService")
 @Validated
 public class ActionMapperService {
@@ -288,6 +290,9 @@ public class ActionMapperService {
       try {
         actionValueObjectDtoList.add(this.mapActionWithMapper(smartMeter, action));
       } catch (final FunctionalException functionalException) {
+        log.warn(
+            "FunctionalException occurred: " + this.getMessage(functionalException),
+            functionalException);
         final ActionDto actionDto = new ActionDto(null);
 
         final List<FaultResponseParameterDto> parameterList = new ArrayList<>();
@@ -304,6 +309,13 @@ public class ActionMapperService {
       }
     }
     return new BundleMessagesRequestDto(actionValueObjectDtoList);
+  }
+
+  private String getMessage(final FunctionalException functionalException) {
+    if (functionalException.getCause() != null) {
+      return functionalException.getCause().getMessage();
+    }
+    return functionalException.getMessage();
   }
 
   private ActionDto mapActionWithMapper(final SmartMeter smartMeter, final ActionRequest action)
