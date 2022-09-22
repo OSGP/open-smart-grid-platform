@@ -11,7 +11,6 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entit
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
 
 import java.util.Map;
-import java.util.Optional;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.cucumber.platform.core.builders.CucumberBuilder;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
@@ -271,10 +270,6 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     } else {
       this.setPort(this.getPortBasedOnProtocolInfo(this.protocolName, this.protocolVersion));
     }
-    // validate port
-    if (this.port != null) {
-      this.checkPortAndProtocolMatch(this.port, this.protocolName, this.protocolVersion);
-    }
 
     return this;
   }
@@ -323,27 +318,6 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
                             + "Extended the existing port mapping in "
                             + "PlatformSmartmeteringDefaults.",
                         protocol, protocolVersion)));
-  }
-
-  private void checkPortAndProtocolMatch(
-      final Long port, final String protocol, final String protocolVersion) {
-
-    final Optional<ProtocolInfo> matchingProtocolInfo =
-        Optional.ofNullable(PlatformSmartmeteringDefaults.PORT_MAPPING.get(port));
-
-    if (matchingProtocolInfo.isPresent()) {
-      if (!this.protocolsAreEqual(protocol, protocolVersion, matchingProtocolInfo.get())) {
-        throw new IllegalArgumentException(
-            String.format(
-                "Port %s does not match with protocol info [protocol %s and version %s].",
-                port, protocol, protocolVersion));
-      }
-    } else {
-      throw new IllegalArgumentException(
-          String.format(
-              "no protocol info found with port %s. Protocols mapped with port %s",
-              port, PlatformSmartmeteringDefaults.PORT_MAPPING.keySet()));
-    }
   }
 
   private boolean protocolsAreEqual(
