@@ -129,6 +129,8 @@ public class PowerQualityEventLog extends ProfileGeneric {
     this.bufferData = new CircularFifoQueue<>(PROFILE_ENTRIES);
 
     this.bufferData.add(Arrays.asList(this.getNextDateTime(), (short) 255));
+    this.bufferData.add(Arrays.asList(this.getNextDateTime(), (short) 25));
+    this.bufferData.add(Arrays.asList(this.getNextDateTime(), (short) 99));
 
     // Add all events.
     for (short i = 77; i <= 92; i++) {
