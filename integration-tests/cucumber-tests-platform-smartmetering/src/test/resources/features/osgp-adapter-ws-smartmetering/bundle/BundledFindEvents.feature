@@ -28,3 +28,58 @@ Feature: SmartMetering Bundle - FindEvents
       | UntilDate            | 2015-09-05T00:00:00.000Z |
     When the bundle request is received
     Then the bundle response should contain a find events response with 21 events
+
+  Scenario: Retrieve a unknown event code
+    And a dlms device
+      | DeviceIdentification | TEST1029000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | ManufacturerCode     | KAI               |
+      | DeviceModelCode      | MA105             |
+      | Protocol             | SMR               |
+      | ProtocolVersion      | 5.5               |
+      | Port                 | 1030              |
+    Given a bundle request
+      | DeviceIdentification | TEST1029000000001 |
+    And the bundle request contains a find events action with parameters
+      | DeviceIdentification | TEST1029000000001        |
+      | EventLogCategory     | STANDARD_EVENT_LOG       |
+      | FromDate             | 2015-09-01T00:00:00.000Z |
+      | UntilDate            | 2015-09-05T00:00:00.000Z |
+    And the bundle request contains a find events action with parameters
+      | DeviceIdentification | TEST1029000000001        |
+      | EventLogCategory     | FRAUD_DETECTION_LOG      |
+      | FromDate             | 2015-09-01T00:00:00.000Z |
+      | UntilDate            | 2015-09-05T00:00:00.000Z |
+    And the bundle request contains a find events action with parameters
+      | DeviceIdentification | TEST1029000000001         |
+      | EventLogCategory     | COMMUNICATION_SESSION_LOG |
+      | FromDate             | 2015-09-01T00:00:00.000Z  |
+      | UntilDate            | 2016-09-05T00:00:00.000Z  |
+    And the bundle request contains a find events action with parameters
+      | DeviceIdentification | TEST1029000000001        |
+      | EventLogCategory     | M_BUS_EVENT_LOG          |
+      | FromDate             | 2015-09-01T00:00:00.000Z |
+      | UntilDate            | 2015-09-05T00:00:00.000Z |
+    And the bundle request contains a find events action with parameters
+      | DeviceIdentification | TEST1029000000001        |
+      | EventLogCategory     | POWER_QUALITY_EVENT_LOG  |
+      | FromDate             | 2015-09-01T00:00:00.000Z |
+      | UntilDate            | 2015-09-05T00:00:00.000Z |
+    And the bundle request contains a find events action with parameters
+      | DeviceIdentification | TEST1029000000001        |
+      | EventLogCategory     | AUXILIARY_EVENT_LOG      |
+      | FromDate             | 2015-09-01T00:00:00.000Z |
+      | UntilDate            | 2016-09-05T00:00:00.000Z |
+    And the bundle request contains a find events action with parameters
+      | DeviceIdentification | TEST1029000000001                |
+      | EventLogCategory     | POWER_QUALITY_EXTENDED_EVENT_LOG |
+      | FromDate             | 2015-09-01T00:00:00.000Z         |
+      | UntilDate            | 2015-09-05T00:00:00.000Z         |
+    When the bundle request is received
+    Then the bundle response should contain a find events response with 21 events
+    And the bundle response should contain a find events response with 9 events
+    And the bundle response should contain a find events response with 7 events
+    And the bundle response should contain a find events response with 29 events
+    And the bundle response should contain a find events response with 19 events
+    And the bundle response should contain a find events response with 169 events
+    And the bundle response should contain a find events response with 6 events

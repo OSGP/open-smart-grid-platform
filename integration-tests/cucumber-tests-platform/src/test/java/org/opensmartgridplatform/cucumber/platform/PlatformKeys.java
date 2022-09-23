@@ -337,6 +337,7 @@ public class PlatformKeys extends Keys {
   public static final String TOTALPAGES = "TotalPages";
 
   public static final String MESSAGE = "Message";
+  public static final String INNER_MESSAGE = "InnerMessage";
   public static final String NUMBER_OF_EVENTS = "NumberOfEvents";
   public static final String RANDOM_PLATFORM = "RandomPlatform";
 
