@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.me
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.BundleService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.util.FaultResponseFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
@@ -28,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
@@ -78,6 +80,12 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
       final MessageMetadata deviceMessageMetadata,
       final ResponseMessage responseMessage)
       throws FunctionalException {
+
+    log.info(
+        "handling error: {} for correlationUid: {}",
+        e.getMessage(),
+        deviceMessageMetadata.getCorrelationUid(),
+        e);
 
     final OsgpException osgpException = this.ensureOsgpException(e);
 
