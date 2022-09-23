@@ -17,10 +17,12 @@ public enum DlmsObjectType {
   AMR_STATUS_MBUS(null),
   ALARM_FILTER_1(null),
   ALARM_FILTER_2(null),
+  ALARM_FILTER_3(null),
   CLOCK(null),
   PUSH_SCHEDULER(null),
   PUSH_SETUP_SCHEDULER(null),
   PUSH_SETUP_ALARM(null),
+  PUSH_SETUP_UDP(null),
   EXTERNAL_TRIGGER(null),
   EXTERNAL_TRIGGER_SMS(null),
   EXTERNAL_TRIGGER_CSD(null),
@@ -44,6 +46,7 @@ public enum DlmsObjectType {
   CLIENT_SETUP_MBUS(null),
   ALARM_REGISTER_1(null),
   ALARM_REGISTER_2(null),
+  ALARM_REGISTER_3(null),
 
   STANDARD_EVENT_CODE(null),
   FRAUD_DETECTION_EVENT_CODE(null),
@@ -62,6 +65,7 @@ public enum DlmsObjectType {
   POWER_QUALITY_EVENT_LOG(null),
   AUXILIARY_EVENT_LOG(null),
   POWER_QUALITY_EXTENDED_EVENT_LOG(null),
+  LAST_GASP(null),
   LAST_GASP_TEST(null),
   PHASE_OUTAGE_TEST(null);
 

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class AlarmObject extends CosemInterfaceObject {
   public static final String ALARM_OBJECT_1 = "0.0.97.98.0.255";
   public static final String ALARM_OBJECT_2 = "0.0.97.98.1.255";
+  public static final String UDP_PUSH_OBJECT = "0.0.97.98.2.255";
 
   private static final int ATTRIBUTE_ID_VALUE = DataAttribute.VALUE.attributeId();
 
