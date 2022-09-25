@@ -11,8 +11,11 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -35,12 +38,10 @@ class AdhocMapperTest {
 
   @Test
   void testAlarmSchedulerRequestData() {
-
     final TestAlarmSchedulerRequestData testAlarmSchedulerRequestData =
         new TestAlarmSchedulerRequestData();
     testAlarmSchedulerRequestData.setAlarmType(TestAlarmType.PARTIAL_POWER_OUTAGE);
-    testAlarmSchedulerRequestData.setScheduleTime(
-        XMLGregorianCalendarImpl.createDateTime(2088, 9, 5, 13, 30, 0));
+    testAlarmSchedulerRequestData.setScheduleTime(this.createCalendar(2088, 9, 5, 13, 30, 0));
 
     final org.opensmartgridplatform.domain.core.valueobjects.smartmetering
             .TestAlarmSchedulerRequestData
@@ -52,5 +53,21 @@ class AdhocMapperTest {
 
     assertThat(mapped.getScheduleTime()).hasToString("Sun Sep 05 13:30:00 UTC 2088");
     assertThat(mapped.getAlarmType()).hasToString("PARTIAL_POWER_OUTAGE");
+  }
+
+  private XMLGregorianCalendar createCalendar(
+      final int year,
+      final int month,
+      final int date,
+      final int hourOfDay,
+      final int minute,
+      final int second) {
+    final GregorianCalendar cal = new GregorianCalendar();
+    cal.set(year, month - 1, date, hourOfDay, minute, second);
+    try {
+      return DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
+    } catch (final DatatypeConfigurationException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
