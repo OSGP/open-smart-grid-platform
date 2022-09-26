@@ -95,7 +95,7 @@
     <maven.enforcer.maven.version>3.8.5</maven.enforcer.maven.version>
     <jaxb2.maven.plugin.version>2.5.0</jaxb2.maven.plugin.version>
     <jaxb.api.version>2.3.1</jaxb.api.version>
-    <jaxb.core.version>4.0.1</jaxb.core.version>
+    <jaxb.core.version>2.3.0.1</jaxb.core.version>
     <spotbugs.maven.plugin.version>4.6.0.0</spotbugs.maven.plugin.version>
     <pmd.maven.plugin.version>3.16.0</pmd.maven.plugin.version>
     <checkstyle.maven.plugin.version>3.1.2</checkstyle.maven.plugin.version>
