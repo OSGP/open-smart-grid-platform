@@ -128,7 +128,7 @@
     <SunriseSunsetCalculator.version>1.2</SunriseSunsetCalculator.version>
     <ant.junit.version>1.10.8</ant.junit.version>
     <args4j.version>2.33</args4j.version>
-    <cucumber.version>5.6.0</cucumber.version>
+    <cucumber.version>5.7.0</cucumber.version>
     <testcontainers.version>1.16.2</testcontainers.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <postgresql.version>42.5.0</postgresql.version>

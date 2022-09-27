@@ -203,7 +203,10 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <version>${maven.surefire.plugin.version}</version>
           <configuration>
-            <argLine>${surefireArgLine}</argLine>
+            <argLine>
+              --add-opens java.base/java.lang=ALL-UNNAMED
+              ${surefireArgLine}
+            </argLine>
             <excludes>
               <!-- Cucumber integration tests, included with Failsafe. -->
               <exclude>**/cucumber/**/AcceptanceTests.java</exclude>
