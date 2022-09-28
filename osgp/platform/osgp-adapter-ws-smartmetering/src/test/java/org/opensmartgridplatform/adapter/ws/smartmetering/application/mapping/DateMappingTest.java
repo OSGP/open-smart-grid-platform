@@ -10,15 +10,17 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class DateMappingTest {
@@ -37,6 +39,11 @@ class DateMappingTest {
     return xmlCalendar;
   }
 
+  @BeforeAll
+  static void init() {
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+  }
+
   /** Tests the mapping of a Date object to a XMLGregorianCalendar object. */
   @Test
   void testDateToXMLGregorianCalendarMapping() {
@@ -47,17 +54,18 @@ class DateMappingTest {
 
     assertThat(xmlCalendar).isNotNull();
 
-    // convert Date to a DateTime to enable comparison (Date has deprecated
+    // convert Date to a ZonedDateTime to enable comparison (Date has deprecated
     // method and test fails if these are used).
-    final DateTime dateTime = new DateTime(date, DateTimeZone.UTC);
+    final ZonedDateTime dateTime =
+        ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 
     assertThat(xmlCalendar.getYear()).isEqualTo(dateTime.getYear());
-    assertThat(xmlCalendar.getMonth()).isEqualTo(dateTime.getMonthOfYear());
+    assertThat(xmlCalendar.getMonth()).isEqualTo(dateTime.getMonth().getValue());
     assertThat(xmlCalendar.getDay()).isEqualTo(dateTime.getDayOfMonth());
-    assertThat(xmlCalendar.getHour()).isEqualTo(dateTime.getHourOfDay());
-    assertThat(xmlCalendar.getMinute()).isEqualTo(dateTime.getMinuteOfHour());
-    assertThat(xmlCalendar.getSecond()).isEqualTo(dateTime.getSecondOfMinute());
-    assertThat(xmlCalendar.getMillisecond()).isEqualTo(dateTime.getMillisOfSecond());
+    assertThat(xmlCalendar.getHour()).isEqualTo(dateTime.getHour());
+    assertThat(xmlCalendar.getMinute()).isEqualTo(dateTime.getMinute());
+    assertThat(xmlCalendar.getSecond()).isEqualTo(dateTime.getSecond());
+    assertThat(xmlCalendar.getMillisecond()).isEqualTo(dateTime.getNano() / 1_000_000);
   }
 
   /** Test the mapping of an XMLGregorianCalendar to a Date object. */
@@ -69,15 +77,17 @@ class DateMappingTest {
 
     assertThat(date).isNotNull();
 
-    // convert Date to a DateTime to enable comparison (Date has deprecated
+    // convert Date to a ZonedDateTime to enable comparison (Date has deprecated
     // method and test fails if these are used).
-    final DateTime dateTime = new DateTime(date, DateTimeZone.UTC);
+    final ZonedDateTime dateTime =
+        ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+
     assertThat(dateTime.getYear()).isEqualTo(xmlCalendar.getYear());
-    assertThat(dateTime.getMonthOfYear()).isEqualTo(xmlCalendar.getMonth());
+    assertThat(dateTime.getMonth().getValue()).isEqualTo(xmlCalendar.getMonth());
     assertThat(dateTime.getDayOfMonth()).isEqualTo(xmlCalendar.getDay());
-    assertThat(dateTime.getHourOfDay()).isEqualTo(xmlCalendar.getHour());
-    assertThat(dateTime.getMinuteOfHour()).isEqualTo(xmlCalendar.getMinute());
-    assertThat(dateTime.getSecondOfMinute()).isEqualTo(xmlCalendar.getSecond());
-    assertThat(dateTime.getMillisOfSecond()).isEqualTo(xmlCalendar.getMillisecond());
+    assertThat(dateTime.getHour()).isEqualTo(xmlCalendar.getHour());
+    assertThat(dateTime.getMinute()).isEqualTo(xmlCalendar.getMinute());
+    assertThat(dateTime.getSecond()).isEqualTo(xmlCalendar.getSecond());
+    assertThat(dateTime.getNano() / 1_000_000).isEqualTo(xmlCalendar.getMillisecond());
   }
 }
