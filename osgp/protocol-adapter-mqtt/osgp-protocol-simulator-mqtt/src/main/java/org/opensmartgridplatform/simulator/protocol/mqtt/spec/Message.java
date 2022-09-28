@@ -11,7 +11,7 @@ package org.opensmartgridplatform.simulator.protocol.mqtt.spec;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.nio.charset.StandardCharsets;
 
-@JsonIgnoreProperties("remarks")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Message {
   private String topic;
   private byte[] payload;
