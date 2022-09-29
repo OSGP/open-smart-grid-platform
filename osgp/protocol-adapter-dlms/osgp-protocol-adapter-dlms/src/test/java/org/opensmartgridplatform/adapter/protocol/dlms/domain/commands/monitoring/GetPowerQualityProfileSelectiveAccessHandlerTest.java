@@ -38,7 +38,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityP
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 
 @ExtendWith(MockitoExtension.class)
-public class GetPowerQualityProfileSelectiveAccessHandlerTest {
+class GetPowerQualityProfileSelectiveAccessHandlerTest {
 
   @Mock private DlmsHelper dlmsHelper;
 
@@ -61,7 +61,7 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
   }
 
   @Test
-  public void testHandlePrivateProfileSelectiveAccess() throws ProtocolAdapterException {
+  void testHandlePrivateProfileSelectiveAccess() throws ProtocolAdapterException {
 
     final GetPowerQualityProfileRequestDataDto requestDto =
         new GetPowerQualityProfileRequestDataDto(
@@ -87,20 +87,20 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
     final GetPowerQualityProfileResponseDto responseDto =
         handler.handle(this.conn, this.dlmsDevice, requestDto);
 
-    assertThat(responseDto.getPowerQualityProfileResponseDatas().size()).isEqualTo(2);
-    assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getCaptureObjects().size())
-        .isEqualTo(3);
-    assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries().size())
-        .isEqualTo(4);
+    assertThat(responseDto.getPowerQualityProfileResponseDatas()).hasSize(2);
+    assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getCaptureObjects())
+        .hasSize(3);
+    assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries())
+        .hasSize(4);
 
     for (final ProfileEntryDto profileEntryDto :
         responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries()) {
-      assertThat(profileEntryDto.getProfileEntryValues().size()).isEqualTo(3);
+      assertThat(profileEntryDto.getProfileEntryValues()).hasSize(3);
     }
   }
 
   @Test
-  public void testHandlePublicProfileSelectiveAccess() throws ProtocolAdapterException {
+  void testHandlePublicProfileSelectiveAccess() throws ProtocolAdapterException {
 
     final GetPowerQualityProfileRequestDataDto requestDto =
         new GetPowerQualityProfileRequestDataDto(
@@ -126,13 +126,13 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
     final GetPowerQualityProfileResponseDto responseDto =
         handler.handle(this.conn, this.dlmsDevice, requestDto);
 
-    assertThat(responseDto.getPowerQualityProfileResponseDatas().size()).isEqualTo(2);
-    assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getCaptureObjects().size())
-        .isEqualTo(3);
+    assertThat(responseDto.getPowerQualityProfileResponseDatas()).hasSize(2);
+    assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getCaptureObjects())
+        .hasSize(3);
 
     for (final ProfileEntryDto profileEntryDto :
         responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries()) {
-      assertThat(profileEntryDto.getProfileEntryValues().size()).isEqualTo(3);
+      assertThat(profileEntryDto.getProfileEntryValues()).hasSize(3);
     }
   }
 
@@ -177,13 +177,13 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
             DataObject.newOctetStringData(new byte[] {0, 0, 1, 0, 0, (byte) 255}),
             DataObject.newInteger32Data(2),
             DataObject.newUInteger32Data(0));
-    final DataObject structureData2 = // AVERAGE_ACTIVE_POWER_IMPORT_L1("1.0.21.4.0.255")
+    final DataObject structureData2 =
         DataObject.newStructureData(
             DataObject.newUInteger32Data(1),
             DataObject.newOctetStringData(new byte[] {1, 0, 21, 4, 0, (byte) 255}),
             DataObject.newInteger32Data(2),
             DataObject.newUInteger32Data(0));
-    final DataObject structureData3 = // AVERAGE_REACTIVE_POWER_IMPORT_L1("1.0.23.4.0.255"),
+    final DataObject structureData3 =
         DataObject.newStructureData(
             DataObject.newUInteger32Data(1),
             DataObject.newOctetStringData(new byte[] {1, 0, 23, 4, 0, (byte) 255}),
@@ -226,8 +226,6 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
   }
 
   private List<GetResult> createPublicCaptureObjects() {
-    //    NR_VOLTAGE_SAGS_L1("1.0.32.32.0.255"),
-    //        NR_VOLTAGE_SAGS_L2("1.0.52.32.0.255"),
     DataObjectDefinitions.getClockDefinition();
     final DataObject structureData1 =
         DataObject.newStructureData(
@@ -256,8 +254,6 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
   }
 
   private List<GetResult> createPublicCaptureObjectsProfile2() {
-    //    AVERAGE_VOLTAGE_L1("1.0.32.24.0.255"),
-    //        AVERAGE_VOLTAGE_L2("1.0.52.24.0.255"),
 
     final DataObject structureData1 =
         DataObject.newStructureData(
@@ -297,21 +293,6 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
             DataObject.newUInteger32Data(2));
 
     structures.add(structureData1);
-    //    structures.add(
-    //        DataObject.newStructureData(
-    //            DataObject.newNullData(),
-    //            DataObject.newUInteger32Data(3),
-    //            DataObject.newUInteger32Data(2)));
-    //    structures.add(
-    //        DataObject.newStructureData(
-    //            DataObject.newNullData(),
-    //            DataObject.newUInteger32Data(3),
-    //            DataObject.newUInteger32Data(2)));
-    //    structures.add(
-    //        DataObject.newStructureData(
-    //            DataObject.newNullData(),
-    //            DataObject.newUInteger32Data(3),
-    //            DataObject.newUInteger32Data(2)));
 
     final GetResult getResult = new GetResultImpl(DataObject.newArrayData(structures));
 
