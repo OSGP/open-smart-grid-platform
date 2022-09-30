@@ -28,7 +28,6 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DataObjectDefinitions;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -171,12 +170,7 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
 
   private List<GetResult> createPrivateCaptureObjects() {
 
-    final DataObject structureData1 =
-        DataObject.newStructureData(
-            DataObject.newUInteger32Data(8),
-            DataObject.newOctetStringData(new byte[] {0, 0, 1, 0, 0, (byte) 255}),
-            DataObject.newInteger32Data(2),
-            DataObject.newUInteger32Data(0));
+    final DataObject clockDefinition = getClockDefinition();
     final DataObject structureData2 =
         DataObject.newStructureData(
             DataObject.newUInteger32Data(1),
@@ -192,19 +186,15 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
 
     final GetResult getResult =
         new GetResultImpl(
-            DataObject.newArrayData(Arrays.asList(structureData1, structureData2, structureData3)));
+            DataObject.newArrayData(
+                Arrays.asList(clockDefinition, structureData2, structureData3)));
 
     return Collections.singletonList(getResult);
   }
 
   private List<GetResult> createPrivateCaptureObjectsProfile2() {
 
-    final DataObject structureData1 =
-        DataObject.newStructureData(
-            DataObject.newUInteger32Data(8),
-            DataObject.newOctetStringData(new byte[] {0, 0, 1, 0, 0, (byte) 255}),
-            DataObject.newInteger32Data(2),
-            DataObject.newUInteger32Data(0));
+    final DataObject clockDefinition = getClockDefinition();
     final DataObject structureData2 =
         DataObject.newStructureData(
             DataObject.newUInteger32Data(1),
@@ -220,19 +210,14 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
 
     final GetResult getResult =
         new GetResultImpl(
-            DataObject.newArrayData(Arrays.asList(structureData1, structureData2, structureData3)));
+            DataObject.newArrayData(
+                Arrays.asList(clockDefinition, structureData2, structureData3)));
 
     return Collections.singletonList(getResult);
   }
 
   private List<GetResult> createPublicCaptureObjects() {
-    DataObjectDefinitions.getClockDefinition();
-    final DataObject structureData1 =
-        DataObject.newStructureData(
-            DataObject.newUInteger32Data(8),
-            DataObject.newOctetStringData(new byte[] {0, 0, 1, 0, 0, (byte) 255}),
-            DataObject.newInteger32Data(2),
-            DataObject.newUInteger32Data(0));
+    final DataObject clockDefinition = getClockDefinition();
     final DataObject structureData2 =
         DataObject.newStructureData(
             DataObject.newUInteger32Data(1),
@@ -248,19 +233,15 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
 
     final GetResult getResult =
         new GetResultImpl(
-            DataObject.newArrayData(Arrays.asList(structureData1, structureData2, structureData3)));
+            DataObject.newArrayData(
+                Arrays.asList(clockDefinition, structureData2, structureData3)));
 
     return Collections.singletonList(getResult);
   }
 
   private List<GetResult> createPublicCaptureObjectsProfile2() {
 
-    final DataObject structureData1 =
-        DataObject.newStructureData(
-            DataObject.newUInteger32Data(8),
-            DataObject.newOctetStringData(new byte[] {0, 0, 1, 0, 0, (byte) 255}),
-            DataObject.newInteger32Data(2),
-            DataObject.newUInteger32Data(0));
+    final DataObject clockDefinition = getClockDefinition();
     final DataObject structureData2 =
         DataObject.newStructureData(
             DataObject.newUInteger32Data(1),
@@ -276,7 +257,8 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
 
     final GetResult getResult =
         new GetResultImpl(
-            DataObject.newArrayData(Arrays.asList(structureData1, structureData2, structureData3)));
+            DataObject.newArrayData(
+                Arrays.asList(clockDefinition, structureData2, structureData3)));
 
     return Collections.singletonList(getResult);
   }
@@ -297,5 +279,13 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
     final GetResult getResult = new GetResultImpl(DataObject.newArrayData(structures));
 
     return Collections.singletonList(getResult);
+  }
+
+  private static DataObject getClockDefinition() {
+    return DataObject.newStructureData(
+        DataObject.newUInteger32Data(8),
+        DataObject.newOctetStringData(new byte[] {0, 0, 1, 0, 0, (byte) 255}),
+        DataObject.newInteger32Data(2),
+        DataObject.newUInteger32Data(0));
   }
 }
