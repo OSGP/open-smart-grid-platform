@@ -1130,7 +1130,7 @@
     <repository>
       <id>fuse-repo</id>
       <name>Fuse Source</name>
-      <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
+      <url>https://repo.fusesource.com/nexus/content/groups/public/</url>
       <releases>
         <enabled>false</enabled>
       </releases>
@@ -1387,6 +1387,25 @@
             <additionalSourceDirectories>
               <param>src/integration-test/java</param>
             </additionalSourceDirectories>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.cyclonedx</groupId>
+          <artifactId>cyclonedx-maven-plugin</artifactId>
+          <version>2.7.1</version>
+          <executions>
+            <execution>
+              <phase>prepare-package</phase>
+              <goals>
+                <goal>makeBom</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <projectType>application</projectType>
+            <!-- Put the boms in WEB-INF, that way they are packaged with the .war file -->
+            <outputName>${project.build.finalName}/WEB-INF/bom</outputName>
           </configuration>
         </plugin>
       </plugins>

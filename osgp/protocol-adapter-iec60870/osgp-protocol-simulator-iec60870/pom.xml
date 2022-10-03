@@ -170,6 +170,11 @@
         <version>${maven.site.plugin}</version>
       </plugin>
 
+      <plugin>
+        <groupId>org.cyclonedx</groupId>
+        <artifactId>cyclonedx-maven-plugin</artifactId>
+      </plugin>
+
     </plugins>
   </build>
 
