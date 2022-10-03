@@ -36,7 +36,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
   private boolean selectiveAccessSupported =
       PlatformSmartmeteringDefaults.SELECTIVE_ACCESS_SUPPORTED;
   private boolean ipAddressIsStatic = PlatformSmartmeteringDefaults.IP_ADDRESS_IS_STATIC;
-  private Long port = PlatformSmartmeteringDefaults.PORT;
+  private Long port;
   private Long clientId = PlatformSmartmeteringDefaults.CLIENT_ID;
   private Long logicalId = PlatformSmartmeteringDefaults.LOGICAL_ID;
   private boolean inDebugMode = PlatformSmartmeteringDefaults.IN_DEBUG_MODE;
@@ -267,6 +267,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
       } else {
         this.setPort(Long.parseLong(inputSettings.get(PlatformSmartmeteringKeys.PORT)));
       }
+    } else {
+      this.setPort(this.getPortBasedOnProtocolInfo(this.protocolName, this.protocolVersion));
     }
 
     return this;
@@ -301,5 +303,26 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     dlmsDevice.setInvocationCounter(this.invocationCounter);
 
     return dlmsDevice;
+  }
+
+  public Long getPortBasedOnProtocolInfo(final String protocol, final String protocolVersion) {
+    return PlatformSmartmeteringDefaults.PORT_MAPPING.entrySet().stream()
+        .filter(e -> this.protocolsAreEqual(protocol, protocolVersion, e.getValue()))
+        .findFirst()
+        .map(e2 -> e2.getKey())
+        .orElseThrow(
+            () ->
+                new IllegalArgumentException(
+                    String.format(
+                        "No port mapped with protocol info [protocol %s and version %s]. "
+                            + "Extended the existing port mapping in "
+                            + "PlatformSmartmeteringDefaults.",
+                        protocol, protocolVersion)));
+  }
+
+  private boolean protocolsAreEqual(
+      final String protocol, final String protocolVersion, final ProtocolInfo protocolInfo) {
+    return protocolInfo.getProtocol().equals(protocol)
+        && protocolInfo.getProtocolVersion().equals(protocolVersion);
   }
 }

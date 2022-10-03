@@ -206,7 +206,8 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     LOGGER.info(
         "handeling error: {} for message type: {}",
         e.getMessage(),
-        messageMetadata.getMessageType());
+        messageMetadata.getMessageType(),
+        e);
     final OsgpException osgpException = this.ensureOsgpException(e);
 
     final ResponseMessage responseMessage =
