@@ -62,6 +62,7 @@ public class KafkaProperties {
     map.put("connections.max.idle.ms", Long.class);
     map.put("receive.buffer.bytes", Integer.class);
     map.put("request.timeout.ms", Integer.class);
+    map.put("retry.backoff.ms", Integer.class);
     return map;
   }
 
