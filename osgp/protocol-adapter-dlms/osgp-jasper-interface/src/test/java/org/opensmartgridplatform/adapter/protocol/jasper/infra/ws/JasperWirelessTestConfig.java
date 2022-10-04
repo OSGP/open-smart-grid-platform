@@ -33,6 +33,7 @@ public class JasperWirelessTestConfig {
   // JMS Settings
   private static final String PROPERTY_NAME_CONTROLCENTER_SMS_URI = "jwcc.uri.sms";
   private static final String PROPERTY_NAME_CONTROLCENTER_LICENSEKEY = "jwcc.licensekey";
+  private static final String PROPERTY_NAME_CONTROLCENTER_APIKEY = "jwcc.apikey";
   private static final String PROPERTY_NAME_CONTROLCENTER_USERNAME = "jwcc.username";
   private static final String PROPERTY_NAME_CONTROLCENTER_PASSWORD = "jwcc.password";
   private static final String PROPERTY_NAME_CONTROLCENTER_API_VERSION = "jwcc.api.version";
@@ -77,9 +78,10 @@ public class JasperWirelessTestConfig {
   public JasperWirelessAccess jwccWSConfig() {
     return new JasperWirelessAccess(
         this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_SMS_URI),
-        this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_LICENSEKEY),
+        this.environment.getProperty(PROPERTY_NAME_CONTROLCENTER_LICENSEKEY),
+        this.environment.getProperty(PROPERTY_NAME_CONTROLCENTER_APIKEY),
         this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_USERNAME),
-        this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_PASSWORD),
+        this.environment.getProperty(PROPERTY_NAME_CONTROLCENTER_PASSWORD),
         this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_API_VERSION),
         this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_API_TYPE));
   }
