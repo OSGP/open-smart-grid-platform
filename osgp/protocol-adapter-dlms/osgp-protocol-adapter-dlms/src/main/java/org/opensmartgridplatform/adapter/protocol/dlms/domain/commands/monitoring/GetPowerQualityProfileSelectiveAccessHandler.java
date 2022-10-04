@@ -57,8 +57,6 @@ public class GetPowerQualityProfileSelectiveAccessHandler
     final List<DataObject> objectDefinitions = new ArrayList<>();
 
     if (!selectableCaptureObjects.isEmpty()) {
-      // The captured clock is always included.
-      objectDefinitions.add(this.dlmsHelper.getClockDefinition());
       for (final CaptureObjectDefinitionDto captureObjectDefinition : selectableCaptureObjects) {
         final int classId = captureObjectDefinition.getClassId();
         final byte[] obisBytes = captureObjectDefinition.getLogicalName().toByteArray();
