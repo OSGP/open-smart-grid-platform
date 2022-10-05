@@ -43,6 +43,7 @@ public class PlatformSmartmeteringKeys
 
   public static final String MBUS_DEVICE_IDENTIFICATION = "MbusDeviceIdentification";
 
+  public static final String FORCE = "Force";
   public static final String GPS_LATITUDE = "GpsLatitude";
   public static final String GPS_LONGITUDE = "GpsLongitude";
   public static final String HLS3ACTIVE = "Hls3active";

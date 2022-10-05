@@ -40,7 +40,7 @@ public class JasperWirelessTerminalRestClientTest {
   private static final String SERVICE_GET_SESSION_INFO = "/rws/api/%s/devices/%s/sessionInfo";
   private static final String ICCID = "12345";
   private static final String USERNAME = "user";
-  private static final String LICENCEKEY = "1234-abcd-5678-ef";
+  private static final String APIKEY = "1234-abcd-5678-ef";
   private static final String BASEURL = "http://localhost:8081";
   private static final String APIVERSION = "v1";
   private static final String URL =
@@ -57,7 +57,7 @@ public class JasperWirelessTerminalRestClientTest {
     when(this.jasperWirelessAccess.getUri()).thenReturn(BASEURL);
     when(this.jasperWirelessAccess.getApiVersion()).thenReturn(APIVERSION);
     when(this.jasperWirelessAccess.getUsername()).thenReturn(USERNAME);
-    when(this.jasperWirelessAccess.getLicenseKey()).thenReturn(LICENCEKEY);
+    when(this.jasperWirelessAccess.getApiKey()).thenReturn(APIKEY);
   }
 
   @Test
