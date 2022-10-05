@@ -89,7 +89,7 @@
       <snapshots/>
       <id>osgp-snapshots</id>
       <name>osgp-snapshots</name>
-      <url>http://artifactory.shs.osgp.cloud/artifactory/osgp-snapshots</url>
+      <url>https://artifactory.shs.osgp.cloud/artifactory/osgp-snapshots</url>
     </repository>
   </repositories>
 
