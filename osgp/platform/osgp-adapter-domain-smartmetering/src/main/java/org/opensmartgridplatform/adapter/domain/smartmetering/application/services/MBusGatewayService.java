@@ -84,7 +84,9 @@ public class MBusGatewayService {
     final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
     this.checkAndHandleIfMbusDeviceIsInUse(mbusDevice);
-    this.checkAndHandleIfGivenMBusAlreadyCoupled(mbusDevice);
+    if (!requestData.isForce()) {
+      this.checkAndHandleIfGivenMBusAlreadyCoupled(mbusDevice);
+    }
 
     this.checkAndHandleIfAllMBusChannelsAreAlreadyOccupied(gatewayDevice);
     final MbusChannelElementsDto requestDto = this.makeMbusChannelElementsDto(mbusDevice);
