@@ -472,6 +472,10 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-apt</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -1191,17 +1195,15 @@
       </snapshots>
     </repository>
     <repository>
-      <id>spring roo repository</id>
+      <id>spring-roo-repository</id>
       <url>https://repo1.maven.org/maven2/</url>
       <releases>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
       </releases>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
     </repository>
-
-
   </repositories>
 
   <build>
