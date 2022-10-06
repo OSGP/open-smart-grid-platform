@@ -1163,6 +1163,7 @@
     </repository>
 
     <!-- Public or https mirrors for some maven repos -->
+<!--
     <repository>
       <id>apache.snapshots</id>
       <url>https://repository.apache.org/snapshots</url>
@@ -1204,6 +1205,7 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+-->
   </repositories>
 
   <build>
@@ -1453,6 +1455,7 @@
             <projectType>application</projectType>
             <!-- Put the boms in WEB-INF, that way they are packaged with the .war file -->
             <outputName>${project.build.finalName}/WEB-INF/bom</outputName>
+            <includeProvidedScope>false</includeProvidedScope>
           </configuration>
         </plugin>
       </plugins>
