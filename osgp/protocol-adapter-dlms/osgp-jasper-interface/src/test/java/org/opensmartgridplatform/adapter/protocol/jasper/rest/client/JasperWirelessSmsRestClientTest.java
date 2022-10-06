@@ -40,7 +40,7 @@ public class JasperWirelessSmsRestClientTest {
   private static final String SERVICE_SMS_SEND_SMS = "/rws/api/%s/devices/%s/smsMessages";
   private static final String ICCID = "12345";
   private static final String USERNAME = "user";
-  private static final String LICENCEKEY = "1234-abcd-5678-ef";
+  private static final String APIKEY = "1234-abcd-5678-ef";
   private static final int SMSMSGID = 67890;
   private static final String BASEURL = "http://localhost";
   private static final String APIVERSION = "v1";
@@ -59,7 +59,7 @@ public class JasperWirelessSmsRestClientTest {
     when(this.jasperWirelessAccess.getUri()).thenReturn(BASEURL);
     when(this.jasperWirelessAccess.getApiVersion()).thenReturn(APIVERSION);
     when(this.jasperWirelessAccess.getUsername()).thenReturn(USERNAME);
-    when(this.jasperWirelessAccess.getLicenseKey()).thenReturn(LICENCEKEY);
+    when(this.jasperWirelessAccess.getApiKey()).thenReturn(APIKEY);
   }
 
   @Test

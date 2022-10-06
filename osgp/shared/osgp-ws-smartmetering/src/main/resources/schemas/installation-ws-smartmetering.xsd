@@ -49,6 +49,7 @@
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
         <xsd:element name="MbusDeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="Force" type="xsd:boolean" default="false" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
