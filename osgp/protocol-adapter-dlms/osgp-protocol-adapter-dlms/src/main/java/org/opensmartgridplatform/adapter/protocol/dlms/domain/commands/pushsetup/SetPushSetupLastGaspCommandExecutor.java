@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2022 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -19,8 +19,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupLastGaspDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupLastGaspRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.TransportServiceTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
@@ -28,29 +28,29 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component()
-public class SetPushSetupSmsCommandExecutor
-    extends SetPushSetupCommandExecutor<PushSetupSmsDto, AccessResultCode> {
+public class SetPushSetupLastGaspCommandExecutor
+    extends SetPushSetupCommandExecutor<PushSetupLastGaspDto, AccessResultCode> {
 
   private static final Logger LOGGER =
-      LoggerFactory.getLogger(SetPushSetupSmsCommandExecutor.class);
-  private static final ObisCode OBIS_CODE = new ObisCode("0.2.25.9.0.255");
+      LoggerFactory.getLogger(SetPushSetupLastGaspCommandExecutor.class);
+  private static final ObisCode OBIS_CODE = new ObisCode("0.3.25.9.0.255");
 
   private final PushSetupMapper pushSetupMapper;
 
-  public SetPushSetupSmsCommandExecutor(final PushSetupMapper pushSetupMapper) {
-    super(SetPushSetupSmsRequestDto.class);
+  public SetPushSetupLastGaspCommandExecutor(final PushSetupMapper pushSetupMapper) {
+    super(SetPushSetupLastGaspRequestDto.class);
     this.pushSetupMapper = pushSetupMapper;
   }
 
   @Override
-  public PushSetupSmsDto fromBundleRequestInput(final ActionRequestDto bundleInput)
+  public PushSetupLastGaspDto fromBundleRequestInput(final ActionRequestDto bundleInput)
       throws ProtocolAdapterException {
 
     this.checkActionRequestType(bundleInput);
-    final SetPushSetupSmsRequestDto setPushSetupSmsRequestDto =
-        (SetPushSetupSmsRequestDto) bundleInput;
+    final SetPushSetupLastGaspRequestDto setPushSetupLastGaspRequestDto =
+        (SetPushSetupLastGaspRequestDto) bundleInput;
 
-    return setPushSetupSmsRequestDto.getPushSetupSms();
+    return setPushSetupLastGaspRequestDto.getPushSetupLastGasp();
   }
 
   @Override
@@ -59,86 +59,87 @@ public class SetPushSetupSmsCommandExecutor
 
     this.checkAccessResultCode(executionResult);
 
-    return new ActionResponseDto("Setting push setup SMS was successful");
+    return new ActionResponseDto("Setting push setup LastGasp was successful");
   }
 
   @Override
   public AccessResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final PushSetupSmsDto pushSetupSms,
+      final PushSetupLastGaspDto pushSetupLastGasp,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     final SetParameter setParameterSendDestinationAndMethod =
-        this.getSetParameter(pushSetupSms, device);
+        this.getSetParameter(pushSetupLastGasp, device);
 
     final AccessResultCode resultCode =
         this.doSetRequest(
-            "PushSetupSms, Send destination and method",
+            "PushSetupLastGasp, Send destination and method",
             conn,
             setParameterSendDestinationAndMethod);
 
     if (resultCode != null) {
       return resultCode;
     } else {
-      throw new ProtocolAdapterException("Error setting Sms push setup data.");
+      throw new ProtocolAdapterException("Error setting LastGasp push setup data.");
     }
   }
 
-  private SetParameter getSetParameter(final PushSetupSmsDto pushSetupSms, final DlmsDevice device)
+  private SetParameter getSetParameter(
+      final PushSetupLastGaspDto pushSetupLastGasp, final DlmsDevice device)
       throws ProtocolAdapterException {
 
-    this.checkPushSetupSms(pushSetupSms);
+    this.checkPushSetupLastGasp(pushSetupLastGasp);
 
     final AttributeAddress sendDestinationAndMethodAddress =
         new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD);
     final DataObject value =
         this.pushSetupMapper.map(
             this.getUpdatedSendDestinationAndMethod(
-                pushSetupSms.getSendDestinationAndMethod(), device),
+                pushSetupLastGasp.getSendDestinationAndMethod(), device),
             DataObject.class);
     return new SetParameter(sendDestinationAndMethodAddress, value);
   }
 
-  private void checkPushSetupSms(final PushSetupSmsDto pushSetupSms)
+  private void checkPushSetupLastGasp(final PushSetupLastGaspDto pushSetupLastGasp)
       throws ProtocolAdapterException {
-    if (!pushSetupSms.hasSendDestinationAndMethod()) {
-      LOGGER.error("Send Destination and Method of the Push Setup Sms is expected to be set.");
+    if (!pushSetupLastGasp.hasSendDestinationAndMethod()) {
+      LOGGER.error("Send Destination and Method of the Push Setup LastGasp is expected to be set.");
       throw new ProtocolAdapterException(
-          "Error setting Sms push setup data. No destination and method data");
+          "Error setting LastGasp push setup data. No destination and method data");
     }
 
-    if (pushSetupSms.hasPushObjectList()) {
+    if (pushSetupLastGasp.hasPushObjectList()) {
       LOGGER.warn(
-          "Setting Push Object List of Push Setup Sms not implemented: {}",
-          pushSetupSms.getPushObjectList());
+          "Setting Push Object List of Push Setup LastGasp not implemented: {}",
+          pushSetupLastGasp.getPushObjectList());
     }
 
-    if (pushSetupSms.hasCommunicationWindow()) {
+    if (pushSetupLastGasp.hasCommunicationWindow()) {
       LOGGER.warn(
-          "Setting Communication Window of Push Setup Sms not implemented: {}",
-          pushSetupSms.getCommunicationWindow());
+          "Setting Communication Window of Push Setup LastGasp not implemented: {}",
+          pushSetupLastGasp.getCommunicationWindow());
     }
-    if (pushSetupSms.hasRandomisationStartInterval()) {
+    if (pushSetupLastGasp.hasRandomisationStartInterval()) {
       LOGGER.warn(
-          "Setting Randomisation Start Interval of Push Setup Sms not implemented: {}",
-          pushSetupSms.getRandomisationStartInterval());
+          "Setting Randomisation Start Interval of Push Setup LastGasp not implemented: {}",
+          pushSetupLastGasp.getRandomisationStartInterval());
     }
-    if (pushSetupSms.hasNumberOfRetries()) {
+    if (pushSetupLastGasp.hasNumberOfRetries()) {
       LOGGER.warn(
-          "Setting Number of Retries of Push Setup Sms not implemented: {}",
-          pushSetupSms.getNumberOfRetries());
+          "Setting Number of Retries of Push Setup LastGasp not implemented: {}",
+          pushSetupLastGasp.getNumberOfRetries());
     }
-    if (pushSetupSms.hasRepetitionDelay()) {
+    if (pushSetupLastGasp.hasRepetitionDelay()) {
       LOGGER.warn(
-          "Setting Repetition Delay of Push Setup Sms not implemented: {}",
-          pushSetupSms.getRepetitionDelay());
+          "Setting Repetition Delay of Push Setup LastGasp not implemented: {}",
+          pushSetupLastGasp.getRepetitionDelay());
     }
   }
 
   @Override
   protected TransportServiceTypeDto getTransportServiceType() {
-    return TransportServiceTypeDto.TCP;
+    return TransportServiceTypeDto.UDP;
   }
 }

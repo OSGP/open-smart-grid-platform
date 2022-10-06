@@ -74,6 +74,7 @@ public class ConfigurationMapper extends ConfigurableMapper {
     mapperFactory.getConverterFactory().registerConverter(new PushSetupAlarmConverter());
     mapperFactory.getConverterFactory().registerConverter(new ObisCodeConverter());
     mapperFactory.getConverterFactory().registerConverter(new PushObjectConverter());
+    mapperFactory.getConverterFactory().registerConverter(new PushSetupLastGaspConverter());
     mapperFactory.getConverterFactory().registerConverter(new PushSetupSmsConverter());
 
     mapperFactory.getConverterFactory().registerConverter(new SetKeysRequestConverter());

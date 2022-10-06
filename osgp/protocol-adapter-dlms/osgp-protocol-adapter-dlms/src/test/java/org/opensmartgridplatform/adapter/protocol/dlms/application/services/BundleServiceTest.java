@@ -302,6 +302,7 @@ public class BundleServiceTest {
     actions.add(new ActionDto(this.builder.makeSetAlarmNotificationsRequestDataDto()));
     actions.add(new ActionDto(this.builder.makeSetConfigurationObjectRequestDataDto()));
     actions.add(new ActionDto(this.builder.makeSetPushSetupAlarmRequestDataDto()));
+    actions.add(new ActionDto(this.builder.makeSetPushSetupLastGaspRequestDataDto()));
     actions.add(new ActionDto(this.builder.makeSetPushSetupSmsRequestDataDto()));
     actions.add(new ActionDto(this.builder.makeSynchronizeTimeRequestDataDto()));
     actions.add(new ActionDto(this.builder.makeGetAllAttributeValuesRequestDto()));

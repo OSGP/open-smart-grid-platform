@@ -102,6 +102,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsRequest;
@@ -911,6 +915,76 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
       if (responseData.getMessageData() instanceof String) {
         response.setDescription((String) responseData.getMessageData());
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
+    }
+    return response;
+  }
+
+  @PayloadRoot(
+      localPart = "SetPushSetupLastGaspRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetPushSetupLastGaspAsyncResponse setPushSetupLastGasp(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetPushSetupLastGaspRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
+
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupLastGasp
+        pushSetupLastGasp =
+            this.configurationMapper.map(
+                request.getSetPushSetupLastGaspRequestData().getPushSetupLastGasp(),
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupLastGasp
+                    .class);
+
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.SET_PUSH_SETUP_SMS)
+            .withMessageType(MessageType.SET_PUSH_SETUP_SMS)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
+
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, pushSetupLastGasp);
+
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+
+    return this.configurationMapper.map(asyncResponse, SetPushSetupLastGaspAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "SetPushSetupLastGaspAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetPushSetupLastGaspResponse getSetPushSetupLastGaspResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetPushSetupLastGaspAsyncRequest request)
+      throws OsgpException {
+
+    log.info(
+        "Incoming SetPushSetupAlarmAsyncRequest for organisation {} for meter: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification());
+
+    SetPushSetupLastGaspResponse response = null;
+    try {
+      response = new SetPushSetupLastGaspResponse();
+      final ResponseData meterResponseData =
+          this.responseDataService.get(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+      if (meterResponseData.getMessageData() instanceof String) {
+        response.setDescription((String) meterResponseData.getMessageData());
       }
     } catch (final Exception e) {
       this.handleException(e);
