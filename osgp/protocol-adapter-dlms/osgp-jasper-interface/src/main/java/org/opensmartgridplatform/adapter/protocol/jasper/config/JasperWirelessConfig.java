@@ -59,6 +59,9 @@ public class JasperWirelessConfig extends AbstractConfig {
   @Value("${jwcc.licensekey}")
   private String licenceKey;
 
+  @Value("${jwcc.apikey}")
+  private String apiKey;
+
   @Value("${jwcc.username}")
   private String username;
 
@@ -124,7 +127,13 @@ public class JasperWirelessConfig extends AbstractConfig {
   @Bean
   public JasperWirelessAccess jasperWirelessAccess() {
     return new JasperWirelessAccess(
-        this.uri, this.licenceKey, this.username, this.password, this.apiVersion, this.apiType);
+        this.uri,
+        this.licenceKey,
+        this.apiKey,
+        this.username,
+        this.password,
+        this.apiVersion,
+        this.apiType);
   }
 
   @Bean

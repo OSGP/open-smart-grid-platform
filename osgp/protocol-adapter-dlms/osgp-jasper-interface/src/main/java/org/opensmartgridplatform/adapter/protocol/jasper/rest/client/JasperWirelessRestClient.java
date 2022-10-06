@@ -32,9 +32,7 @@ public class JasperWirelessRestClient {
       final JasperWirelessAccess jasperWirelessRestAccess) {
     return Base64.getEncoder()
         .encodeToString(
-            (jasperWirelessRestAccess.getUsername()
-                    + ":"
-                    + jasperWirelessRestAccess.getLicenseKey())
+            (jasperWirelessRestAccess.getUsername() + ":" + jasperWirelessRestAccess.getApiKey())
                 .getBytes());
   }
 
