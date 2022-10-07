@@ -90,13 +90,11 @@ class TestAlarmSchedulerCommandExecutorTest {
   })
   void execute_fails(final String dateTime, final String alarmType, final String expectedMessage)
       throws ParseException {
-    final SimpleDateFormat sdf = new SimpleDateFormat();
-
     when(this.testAlarmSchedulerRequestDto.getAlarmType())
         .thenReturn(TestAlarmTypeDto.valueOf(alarmType));
 
     when(this.testAlarmSchedulerRequestDto.getScheduleTime())
-        .thenReturn("EMPTY".equals(dateTime) ? null : sdf.parse(dateTime));
+        .thenReturn("EMPTY".equals(dateTime) ? null : this.sdf.parse(dateTime));
 
     Assertions.assertThatThrownBy(
             () ->
