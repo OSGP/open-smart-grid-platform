@@ -83,15 +83,17 @@ class TestAlarmSchedulerCommandExecutorTest {
 
   @ParameterizedTest
   @CsvSource({
-    "EMPTY,LAST_GASP,No scheduled date-time set", //
+    "EMPTY,LAST_GASP,No scheduled date-time set",
     "EMPTY,PARTIAL_POWER_OUTAGE,No scheduled date-time set",
     "2020-10-07 15:33:00,PARTIAL_POWER_OUTAGE,Incorrect scheduled date time value set. It should not be a past date",
-    "2020-10-07 15:33:00,LAST_GASP,Incorrect scheduled date time value set. It should not be a past date"
+    "2020-10-07 15:33:00,LAST_GASP,Incorrect scheduled date time value set. It should not be a past date",
+    "2060-10-07 15:33:00,EMPTY,No alarmtype set",
+    "2060-10-07 15:33:00,EMPTY,No alarmtype set"
   })
   void execute_fails(final String dateTime, final String alarmType, final String expectedMessage)
       throws ParseException {
     when(this.testAlarmSchedulerRequestDto.getAlarmType())
-        .thenReturn(TestAlarmTypeDto.valueOf(alarmType));
+        .thenReturn("EMPTY".equals(alarmType) ? null : TestAlarmTypeDto.valueOf(alarmType));
 
     when(this.testAlarmSchedulerRequestDto.getScheduleTime())
         .thenReturn("EMPTY".equals(dateTime) ? null : this.sdf.parse(dateTime));
