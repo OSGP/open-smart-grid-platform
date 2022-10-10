@@ -43,6 +43,7 @@ public class PlatformSmartmeteringKeys
 
   public static final String MBUS_DEVICE_IDENTIFICATION = "MbusDeviceIdentification";
 
+  public static final String FORCE = "Force";
   public static final String GPS_LATITUDE = "GpsLatitude";
   public static final String GPS_LONGITUDE = "GpsLongitude";
   public static final String HLS3ACTIVE = "Hls3active";
@@ -161,6 +162,7 @@ public class PlatformSmartmeteringKeys
   public static final String CAPTURE_OBJECT_ATTRIBUTE_INDEX = "CaptureObject_AttributeIndex";
   public static final String CAPTURE_OBJECT_DATA_INDEX = "CaptureObject_DataIndex";
   public static final String CAPTURE_PERIOD = "CapturePeriod";
+  public static final String TEST_ALARM_TYPE = "TestAlarmType";
 
   public static final String SECRET_TYPE = "SecretType";
   public static final String CLOSE_OPTICAL_PORT = "CloseOpticalPort";

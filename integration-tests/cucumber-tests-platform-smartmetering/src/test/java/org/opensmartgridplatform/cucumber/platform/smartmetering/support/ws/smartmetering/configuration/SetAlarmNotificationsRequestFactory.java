@@ -22,7 +22,7 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 
 public class SetAlarmNotificationsRequestFactory {
 
-  public static final int NUMBER_ALARM_TYPES = 22;
+  public static final int NUMBER_ALARM_TYPES = 32;
 
   private SetAlarmNotificationsRequestFactory() {
     // Private constructor for utility class

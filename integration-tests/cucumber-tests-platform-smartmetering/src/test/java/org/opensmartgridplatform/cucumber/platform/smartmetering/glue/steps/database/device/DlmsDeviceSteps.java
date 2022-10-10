@@ -157,7 +157,6 @@ public class DlmsDeviceSteps {
 
   @Given("^a dlms device$")
   public void aDlmsDevice(final Map<String, String> inputSettings) {
-
     final Device device = this.createDeviceInCoreDatabase(inputSettings);
     this.setScenarioContextForDevice(inputSettings, device);
 
@@ -786,7 +785,16 @@ public class DlmsDeviceSteps {
         inputSettings.getOrDefault(
             PlatformSmartmeteringKeys.PROTOCOL_VERSION,
             PlatformSmartmeteringDefaults.PROTOCOL_VERSION);
-    return this.protocolInfoRepository.findByProtocolAndProtocolVersion(protocol, protocolVersion);
+
+    final ProtocolInfo protocolInfo =
+        this.protocolInfoRepository.findByProtocolAndProtocolVersion(protocol, protocolVersion);
+    if (protocolInfo == null) {
+      throw new IllegalArgumentException(
+          String.format(
+              "No protocol info found with combination of protocol %s and version %s",
+              protocol, protocolVersion));
+    }
+    return protocolInfo;
   }
 
   private DeviceModel getDeviceModel(final Map<String, String> inputSettings) {

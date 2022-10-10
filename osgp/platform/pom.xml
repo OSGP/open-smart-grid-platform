@@ -13,7 +13,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>platform</artifactId>
-  <version>5.30.0-SNAPSHOT</version>
+  <version>5.32.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -150,7 +150,6 @@
         <module>osgp-adapter-domain-distributionautomation</module>
         <module>osgp-adapter-kafka-distributionautomation</module>
         <module>osgp-adapter-ws-distributionautomation</module>
-        <module>osgp-secret-management</module>
         <module>osgp-adapter-kafka-logging</module>
       </modules>
     </profile>

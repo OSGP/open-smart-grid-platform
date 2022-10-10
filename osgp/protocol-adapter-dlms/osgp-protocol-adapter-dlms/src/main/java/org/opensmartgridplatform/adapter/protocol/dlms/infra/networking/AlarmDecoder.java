@@ -24,6 +24,7 @@ public class AlarmDecoder {
 
   static final String PUSH_SCHEDULER_TRIGGER = "Push scheduler";
   static final String PUSH_ALARM_TRIGGER = "Push alarm monitor";
+  static final String PUSH_UDP_TRIGGER = "Push udp monitor";
   static final String PUSH_CSD_TRIGGER = "Push csd wakeup";
   static final String PUSH_SMS_TRIGGER = "Push sms wakeup";
 

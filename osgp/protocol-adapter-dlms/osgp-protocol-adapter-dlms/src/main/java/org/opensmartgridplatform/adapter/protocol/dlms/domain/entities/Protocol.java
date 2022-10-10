@@ -13,6 +13,7 @@ public enum Protocol {
   SMR_5_0_0("SMR", "5.0.0", true),
   SMR_5_1("SMR", "5.1", true),
   SMR_5_2("SMR", "5.2", true),
+  SMR_5_5("SMR", "5.5", true),
   OTHER_PROTOCOL("?", "?", true);
 
   private final String name;

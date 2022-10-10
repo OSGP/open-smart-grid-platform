@@ -19,6 +19,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Associat
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ScanMbusChannelsResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.TestAlarmSchedulerRequestData;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AssociationLnListTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAllAttributeValuesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
@@ -27,6 +28,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannels
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannelsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.TestAlarmSchedulerRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -80,6 +82,33 @@ public class AdhocService {
         this.mapperFactory
             .getMapperFacade()
             .map(synchronizeTimeRequestData, SynchronizeTimeRequestDto.class);
+
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
+  }
+
+  public void scheduleTestAlarm(
+      final MessageMetadata messageMetadata,
+      final TestAlarmSchedulerRequestData testAlarmSchedulerRequestData)
+      throws FunctionalException {
+
+    log.debug(
+        "scheduleTestAlarm for organisationIdentification: {} for deviceIdentification: {}",
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
+
+    final SmartMeter smartMeter =
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
+
+    final TestAlarmSchedulerRequestDto requestDto =
+        this.mapperFactory
+            .getMapperFacade()
+            .map(testAlarmSchedulerRequestData, TestAlarmSchedulerRequestDto.class);
 
     this.osgpCoreRequestMessageSender.send(
         requestDto,
@@ -259,6 +288,19 @@ public class AdhocService {
     final ResponseMessage responseMessage =
         this.createResponseMessageWithDataObject(
             deviceResult, exception, messageMetadata, scanMbusChannelsResponseData);
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
+  }
+
+  public void handleTestAlarmSchedulerResponse(
+      final MessageMetadata messageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception) {
+
+    log.debug(
+        "handleTestAlarmSchedulerResponse for MessageType: {}", messageMetadata.getMessageType());
+
+    final ResponseMessage responseMessage =
+        this.createMetadataOnlyResponseMessage(messageMetadata, deviceResult, exception);
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 

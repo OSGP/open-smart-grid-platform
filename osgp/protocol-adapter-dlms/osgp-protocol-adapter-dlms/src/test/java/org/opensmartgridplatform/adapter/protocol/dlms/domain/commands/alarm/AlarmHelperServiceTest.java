@@ -84,6 +84,18 @@ class AlarmHelperServiceTest {
   }
 
   @Test
+  void testConvertToLongAlarmRegister3() {
+    final Set<AlarmTypeDto> alarmTypes = new HashSet<>();
+
+    alarmTypes.add(AlarmTypeDto.LAST_GASP);
+    alarmTypes.add(AlarmTypeDto.LAST_GASP_TEST);
+
+    assertThat(
+            (long) this.alarmHelperService.toLongValue(DlmsObjectType.ALARM_REGISTER_3, alarmTypes))
+        .isEqualTo(3L);
+  }
+
+  @Test
   void testConvertToAlarmTypesAlarmRegister2() {
     final long registerValue = Long.parseLong("00000000000000000000000000111111", 2);
 

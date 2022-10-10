@@ -33,10 +33,12 @@ public class JasperWirelessTestConfig {
   // JMS Settings
   private static final String PROPERTY_NAME_CONTROLCENTER_SMS_URI = "jwcc.uri.sms";
   private static final String PROPERTY_NAME_CONTROLCENTER_LICENSEKEY = "jwcc.licensekey";
+  private static final String PROPERTY_NAME_CONTROLCENTER_APIKEY = "jwcc.apikey";
   private static final String PROPERTY_NAME_CONTROLCENTER_USERNAME = "jwcc.username";
   private static final String PROPERTY_NAME_CONTROLCENTER_PASSWORD = "jwcc.password";
-  private static final String PROPERTY_NAME_CONTROLCENTER_API_VERSION = "jwcc.api_version";
+  private static final String PROPERTY_NAME_CONTROLCENTER_API_VERSION = "jwcc.api.version";
   private static final String PROPERTY_NAME_CONTROLCENTER_VALIDITY_PERIOD = "jwcc.validity_period";
+  private static final String PROPERTY_NAME_CONTROLCENTER_API_TYPE = "jwcc.api.type";
 
   @Resource private Environment environment;
 
@@ -76,15 +78,17 @@ public class JasperWirelessTestConfig {
   public JasperWirelessAccess jwccWSConfig() {
     return new JasperWirelessAccess(
         this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_SMS_URI),
-        this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_LICENSEKEY),
+        this.environment.getProperty(PROPERTY_NAME_CONTROLCENTER_LICENSEKEY),
+        this.environment.getProperty(PROPERTY_NAME_CONTROLCENTER_APIKEY),
         this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_USERNAME),
-        this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_PASSWORD),
-        this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_API_VERSION));
+        this.environment.getProperty(PROPERTY_NAME_CONTROLCENTER_PASSWORD),
+        this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_API_VERSION),
+        this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_API_TYPE));
   }
 
   @Bean
-  public JasperWirelessSmsClient jasperWirelessSMSClient() {
-    return new JasperWirelessSmsClient();
+  public JasperWirelessSmsSoapClient jasperWirelessSMSSoapClient() {
+    return new JasperWirelessSmsSoapClient();
   }
 
   @Bean

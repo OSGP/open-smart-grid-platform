@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Alliander N.V.
+ * Copyright 2022 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -7,7 +7,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
+package org.opensmartgridplatform.adapter.domain.smartmetering.application.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,15 +22,15 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 
-public class BundleResponseMessageProcessorTest {
+class FaultResponseFactoryTest {
 
-  final BundleResponseMessageProcessor processor = new BundleResponseMessageProcessor(null, null);
+  final FaultResponseFactory faultResponseFactory = new FaultResponseFactory();
   final List<FaultResponseParameterDto> parameters = new ArrayList<>();
   final String defaultMessage = "some error occurred";
   final ComponentType defaultComponent = ComponentType.DOMAIN_SMART_METERING;
 
   @Test
-  public void functionalExceptionDetailsAreIncludedInFaultResponse() throws Exception {
+  void functionalExceptionDetailsAreIncludedInFaultResponse() throws Exception {
 
     final FunctionalExceptionType functionalException =
         FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION;
@@ -41,7 +41,7 @@ public class BundleResponseMessageProcessorTest {
     final Exception exception = new FunctionalException(functionalException, component, cause);
 
     final FaultResponseDto faultResponse =
-        this.processor.faultResponseForException(exception, null, this.defaultMessage);
+        this.faultResponseFactory.faultResponseForException(exception, null, this.defaultMessage);
 
     this.assertResponse(
         faultResponse,
@@ -50,11 +50,38 @@ public class BundleResponseMessageProcessorTest {
         component.name(),
         cause.getClass().getName(),
         message,
-        this.parameters);
+        this.parameters,
+        true);
   }
 
   @Test
-  public void technicalExceptionDetailsAreIncludedInFaultResponse() throws Exception {
+  void nonRetryableException() throws Exception {
+
+    final FunctionalExceptionType functionalException =
+        FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION;
+    final ComponentType component = ComponentType.DOMAIN_SMART_METERING;
+    final String message =
+        "No Action Value Response Object for Action Value Response DTO Object of class: org.opensmartgridplatform.dto.valueobjects.smartmetering.NonExistentResponseDto";
+    final Throwable cause = new RuntimeException(message);
+    final Exception exception = new FunctionalException(functionalException, component, cause);
+
+    final FaultResponseDto faultResponse =
+        this.faultResponseFactory.nonRetryablefaultResponseForException(
+            exception, null, this.defaultMessage);
+
+    this.assertResponse(
+        faultResponse,
+        functionalException.getCode(),
+        functionalException.name(),
+        component.name(),
+        cause.getClass().getName(),
+        message,
+        this.parameters,
+        false);
+  }
+
+  @Test
+  void technicalExceptionDetailsAreIncludedInFaultResponse() throws Exception {
 
     final FunctionalExceptionType functionalException =
         FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION;
@@ -66,7 +93,8 @@ public class BundleResponseMessageProcessorTest {
     this.parameters.add(new FaultResponseParameterDto("deviceIdentification", "ESIM9999999999999"));
 
     final FaultResponseDto faultResponse =
-        this.processor.faultResponseForException(exception, this.parameters, this.defaultMessage);
+        this.faultResponseFactory.faultResponseForException(
+            exception, this.parameters, this.defaultMessage);
 
     this.assertResponse(
         faultResponse,
@@ -75,30 +103,40 @@ public class BundleResponseMessageProcessorTest {
         component.name(),
         cause.getClass().getName(),
         message,
-        this.parameters);
+        this.parameters,
+        true);
   }
 
   @Test
-  public void technicalExceptionDetailsWithoutCauseOrMessageInFaultResponse() throws Exception {
+  void technicalExceptionDetailsWithoutCauseOrMessageInFaultResponse() throws Exception {
 
     final ComponentType component = ComponentType.PROTOCOL_DLMS;
     final Exception exception = new TechnicalException(component, null, null);
 
     final FaultResponseDto faultResponse =
-        this.processor.faultResponseForException(exception, this.parameters, this.defaultMessage);
+        this.faultResponseFactory.faultResponseForException(
+            exception, this.parameters, this.defaultMessage);
 
     this.assertResponse(
-        faultResponse, null, this.defaultMessage, component.name(), null, null, this.parameters);
+        faultResponse,
+        null,
+        this.defaultMessage,
+        component.name(),
+        null,
+        null,
+        this.parameters,
+        true);
   }
 
   @Test
-  public void exceptionDetailsAreIncludedInFaultResponse() throws Exception {
+  void exceptionDetailsAreIncludedInFaultResponse() throws Exception {
 
     final String message = "general exception";
     final Exception exception = new RuntimeException(message);
 
     final FaultResponseDto faultResponse =
-        this.processor.faultResponseForException(exception, this.parameters, this.defaultMessage);
+        this.faultResponseFactory.faultResponseForException(
+            exception, this.parameters, this.defaultMessage);
 
     this.assertResponse(
         faultResponse,
@@ -107,7 +145,8 @@ public class BundleResponseMessageProcessorTest {
         this.defaultComponent.name(),
         exception.getClass().getName(),
         message,
-        this.parameters);
+        this.parameters,
+        true);
   }
 
   public void assertResponse(
@@ -117,7 +156,8 @@ public class BundleResponseMessageProcessorTest {
       final String expectedComponent,
       final String expectedInnerException,
       final String expectedInnerMessage,
-      final List<FaultResponseParameterDto> expectedParameterList) {
+      final List<FaultResponseParameterDto> expectedParameterList,
+      final boolean expectedRetryable) {
 
     assertThat(actualResponse).withFailMessage("faultResponse").isNotNull();
 
@@ -142,6 +182,10 @@ public class BundleResponseMessageProcessorTest {
     assertThat(actualResponse.getInnerMessage())
         .withFailMessage("innerMessage")
         .isEqualTo(expectedInnerMessage);
+
+    assertThat(actualResponse.isRetryable())
+        .withFailMessage("retryable")
+        .isEqualTo(expectedRetryable);
 
     if (expectedParameterList == null || expectedParameterList.isEmpty()) {
       assertThat(actualResponse.getFaultResponseParameters())
