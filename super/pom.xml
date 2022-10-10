@@ -1455,7 +1455,6 @@
             <projectType>application</projectType>
             <!-- Put the boms in WEB-INF, that way they are packaged with the .war file -->
             <outputName>${project.build.finalName}/WEB-INF/bom</outputName>
-            <includeCompileScope>false</includeCompileScope>
             <includeProvidedScope>false</includeProvidedScope>
           </configuration>
         </plugin>
