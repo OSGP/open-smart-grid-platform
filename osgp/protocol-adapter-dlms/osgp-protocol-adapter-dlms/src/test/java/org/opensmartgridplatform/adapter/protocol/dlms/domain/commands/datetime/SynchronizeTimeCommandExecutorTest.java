@@ -38,6 +38,7 @@ import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
@@ -54,6 +55,8 @@ class SynchronizeTimeCommandExecutorTest {
 
   @Captor ArgumentCaptor<SetParameter> setParameterArgumentCaptor;
 
+  @Captor ArgumentCaptor<DlmsDevice> dlmsDeviceArgumentCaptor;
+
   @Mock private DlmsConnectionManager conn;
 
   @Mock private DlmsMessageListener dlmsMessageListener;
@@ -62,11 +65,13 @@ class SynchronizeTimeCommandExecutorTest {
 
   @Mock private MessageMetadata messageMetadata;
 
+  @Mock DlmsDeviceRepository dlmsDeviceRepository;
+
   private SynchronizeTimeCommandExecutor executor;
 
   @BeforeEach
   void setUp() {
-    this.executor = new SynchronizeTimeCommandExecutor(new DlmsHelper());
+    this.executor = new SynchronizeTimeCommandExecutor(new DlmsHelper(), this.dlmsDeviceRepository);
   }
 
   @Test
@@ -90,6 +95,10 @@ class SynchronizeTimeCommandExecutorTest {
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
     verify(this.dlmsConnection, times(1)).set(this.setParameterArgumentCaptor.capture());
+
+    // save timezone
+    verify(this.dlmsDeviceRepository, times(1)).save(this.dlmsDeviceArgumentCaptor.capture());
+    assertThat(this.dlmsDeviceArgumentCaptor.getValue().getTimezone()).isEqualTo(timeZone);
 
     final List<SetParameter> setParameters = this.setParameterArgumentCaptor.getAllValues();
     assertThat(setParameters).hasSize(1);
