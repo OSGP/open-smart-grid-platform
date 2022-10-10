@@ -19,6 +19,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.integration.config.EnableIntegration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
       "org.opensmartgridplatform.shared.security"
     })
 @EnableTransactionManagement()
+@EnableIntegration
 @Import({
   MessagingConfig.class,
   DlmsPersistenceConfig.class,
