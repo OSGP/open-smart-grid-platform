@@ -27,6 +27,7 @@ public class PlatformKeys extends Keys {
       "DelegateOrganizationIdentification";
   public static final String DEVICE_FUNCTION = "DeviceFunction";
   public static final String DEVICE_OUTPUT_SETTINGS = "DeviceOutputSettings";
+  public static final String DLMS_DEVICE_TIMEZONE = "DlmsDeviceTimezone";
   public static final String DEVICEFIRMWARE_INSTALLATIONDATE = "DevicefirmwareInstallationDate";
   public static final String DEVICEFIRMWARE_INSTALLED_BY = "DevicefirmwareInstalledBy";
 
