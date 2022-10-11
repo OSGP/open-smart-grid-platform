@@ -42,6 +42,7 @@ public class SetKeyOnGMeterKeyEncryptionAndMacGeneration {
   private static final int KCC_LENGTH = 4;
   private static final int MBUS_VERSION = 0x50; // SMR5.0
   private static final int MEDIUM = 3; // Gas
+  private static final int IDENTIFICATION_NUMBER_LENGTH = 4; // Gas
 
   /**
    * Encrypts a new M-Bus User key with the M-Bus Default key for use as M-Bus Client Setup
@@ -171,9 +172,12 @@ public class SetKeyOnGMeterKeyEncryptionAndMacGeneration {
     final byte[] bytes =
         BigInteger.valueOf(identificationNumber.getIdentificationNumberInBcdRepresentationAsLong())
             .toByteArray();
-    if (bytes.length == 4) {
+    if (bytes.length == IDENTIFICATION_NUMBER_LENGTH) {
       return bytes;
-    } else if (bytes.length == 5 && bytes[0] == 0) {
+    } else if (bytes.length < IDENTIFICATION_NUMBER_LENGTH) {
+      // If the identificationNumber is a small number, then additional zero bytes should be added.
+      return this.addPadding(bytes, IDENTIFICATION_NUMBER_LENGTH);
+    } else if (bytes.length == IDENTIFICATION_NUMBER_LENGTH + 1 && bytes[0] == 0) {
       // In some cases BigInteger.toByteArray produces an additional byte with a leading zero. This
       // should be removed.
       return Arrays.copyOfRange(bytes, 1, bytes.length);

@@ -175,6 +175,28 @@ class SetKeyOnGMeterKeyEncryptionAndMacGenerationTest {
             0x14, 0x00, 0x31, 0x99, 0x8f, 0x19, mBusVersion, medium, 0x00, 0x00, 0x01, 0x02);
   }
 
+  @Test
+  void testCreateIvWithIdentificationNumberWithSmallNumber() throws ProtocolAdapterException {
+    final byte[] kcc = new byte[] {0x00, 0x00, 0x01, 0x02};
+    final int mBusVersion = 0x50;
+    final int medium = 3;
+    final DlmsDevice device = this.DEVICE_G;
+    device.setMbusIdentificationNumber("00000561");
+
+    final byte[] initialisationVector =
+        this.macGeneration.createIV(device, kcc, mBusVersion, medium);
+
+    // Initialisation vector contains:
+    // Identification number, 4 bytes, LSB first: "00000561" --> hex 05 61 00 00
+    // Manufacturer id, 2 bytes, LSB first: "FLO" --> hex 8f 19
+    // Version, 1 byte: hex 06
+    // Medium, 1 byte: hex 03
+    // KCC, 4 bytes, MSB first: 258 --> hex 00 00 01 02
+    assertThat(initialisationVector)
+        .containsExactly(
+            0x61, 0x05, 0x00, 0x00, 0x8f, 0x19, mBusVersion, medium, 0x00, 0x00, 0x01, 0x02);
+  }
+
   private DlmsDevice createDlmsDevice(final Protocol protocol, final String deviceIdentification) {
     final DlmsDevice device = new DlmsDevice();
     device.setProtocol(protocol);
