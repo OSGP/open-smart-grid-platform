@@ -423,3 +423,107 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | Code    |                                     222 |
       | Message | MBUS_DEVICE_NOT_MOVED_TO_ANOTHER_EMETER |
     And the mbus device "TESTG101205673117" is not coupled to the device "TEST1024000000001"
+
+  Scenario: Couple G-meter to an E-meter, without anything connected
+    Given a dlms device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
+      | MbusPrimaryAddress             | 0 |
+      | MbusIdentificationNumber       | 0 |
+      | MbusManufacturerIdentification | 0 |
+      | MbusVersion                    | 0 |
+      | MbusDeviceTypeIdentification   | 0 |
+    And a dlms device
+      | DeviceIdentification           | TESTG101205673117 |
+      | DeviceType                     | SMART_METER_G     |
+      | DeviceLifecycleStatus          | READY_FOR_USE     |
+      | MbusPrimaryAddress             |                 3 |
+      | MbusIdentificationNumber       |          12056731 |
+      | MbusManufacturerIdentification | LGB               |
+      | MbusVersion                    |                66 |
+      | MbusDeviceTypeIdentification   |                 3 |
+    When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
+    Then the Couple response is "OK"
+    And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
+    And the values for the M-Bus client for channel 1 on device simulator "TEST1024000000001" are
+      | MbusPrimaryAddress             |        3 |
+      | MbusIdentificationNumber       | 12056731 |
+      | MbusManufacturerIdentification | LGB      |
+      | MbusVersion                    |       66 |
+      | MbusDeviceTypeIdentification   |        3 |
+
+  Scenario Outline: Couple G-meter to an E-meter, with meter already connected
+    Given a dlms device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
+    And a dlms device
+      | DeviceIdentification | TEST1024000000002 |
+      | DeviceType           | SMART_METER_E     |
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
+      | MbusPrimaryAddress             | <MbusPrimaryAddress>             |
+      | MbusIdentificationNumber       | <MbusIdentificationNumber>       |
+      | MbusManufacturerIdentification | <MbusManufacturerIdentification> |
+      | MbusVersion                    | <MbusVersion>                    |
+      | MbusDeviceTypeIdentification   | <MbusDeviceTypeIdentification>   |
+    And a dlms device
+      | DeviceIdentification           | TESTG101205673117             |
+      | DeviceType                     | SMART_METER_G                 |
+      | DeviceLifecycleStatus          | READY_FOR_USE                 |
+      | MbusPrimaryAddress             |                             3 |
+      | MbusIdentificationNumber       |                      12056731 |
+      | MbusManufacturerIdentification | LGB                           |
+      | MbusVersion                    |                            66 |
+      | MbusDeviceTypeIdentification   |                             3 |
+      | GatewayDeviceIdentification    | <GatewayDeviceIdentification> |
+      | Channel                        |                             1 |
+    When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
+    Then retrieving the Couple response results in an exception
+    And a SOAP fault should have been returned
+      | Code    |                               216 |
+      | Message | GIVEN_MBUS_DEVICE_ALREADY_COUPLED |
+    And the M-Bus device "TESTG101205673117" is coupled to device "<GatewayDeviceIdentification>" on M-Bus channel "1" with PrimaryAddress "3"
+
+    Examples:
+      | GatewayDeviceIdentification | MbusPrimaryAddress | MbusIdentificationNumber | MbusManufacturerIdentification | MbusVersion | MbusDeviceTypeIdentification |
+      | TEST1024000000001           |                  3 |                 12056731 |                            LGB |          66 |                            3 |
+      | TEST1024000000002           |                  0 |                        0 |                              0 |           0 |                            0 |
+
+  Scenario Outline: Couple G-meter to an E-meter with force, with meter already connected
+    Given a dlms device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
+    And a dlms device
+      | DeviceIdentification | TEST1024000000002 |
+      | DeviceType           | SMART_METER_E     |
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
+      | MbusPrimaryAddress             | <MbusPrimaryAddress>             |
+      | MbusIdentificationNumber       | <MbusIdentificationNumber>       |
+      | MbusManufacturerIdentification | <MbusManufacturerIdentification> |
+      | MbusVersion                    | <MbusVersion>                    |
+      | MbusDeviceTypeIdentification   | <MbusDeviceTypeIdentification>   |
+    And a dlms device
+      | DeviceIdentification           | TESTG101205673117             |
+      | DeviceType                     | SMART_METER_G                 |
+      | DeviceLifecycleStatus          | READY_FOR_USE                 |
+      | MbusPrimaryAddress             |                             3 |
+      | MbusIdentificationNumber       |                      12056731 |
+      | MbusManufacturerIdentification | LGB                           |
+      | MbusVersion                    |                            66 |
+      | MbusDeviceTypeIdentification   |                             3 |
+      | GatewayDeviceIdentification    | <GatewayDeviceIdentification> |
+      | Channel                        |                             1 |
+    When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001" with force
+    Then the Couple response is "OK"
+    And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
+    And the values for the M-Bus client for channel 1 on device simulator "TEST1024000000001" are
+      | MbusPrimaryAddress             |        3 |
+      | MbusIdentificationNumber       | 12056731 |
+      | MbusManufacturerIdentification | LGB      |
+      | MbusVersion                    |       66 |
+      | MbusDeviceTypeIdentification   |        3 |
+
+    Examples:
+      | GatewayDeviceIdentification | MbusPrimaryAddress | MbusIdentificationNumber | MbusManufacturerIdentification | MbusVersion | MbusDeviceTypeIdentification |
+      | TEST1024000000001           |                  3 |                 12056731 |                            LGB |          66 |                            3 |
+      | TEST1024000000002           |                  0 |                        0 |                              0 |           0 |                            0 |

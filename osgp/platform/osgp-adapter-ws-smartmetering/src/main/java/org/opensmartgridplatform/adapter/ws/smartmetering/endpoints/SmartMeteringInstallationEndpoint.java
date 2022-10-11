@@ -190,7 +190,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
       throws OsgpException {
 
     final CoupleMbusDeviceRequestData requestData =
-        new CoupleMbusDeviceRequestData(request.getMbusDeviceIdentification());
+        new CoupleMbusDeviceRequestData(request.getMbusDeviceIdentification(), request.isForce());
 
     final RequestMessageMetadata requestMessageMetadata =
         RequestMessageMetadata.newBuilder()

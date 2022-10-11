@@ -32,6 +32,15 @@ public class CoupleMbusDeviceRequestFactory {
     return coupleMbusDeviceRequest;
   }
 
+  public static CoupleMbusDeviceRequest forGatewayMbusDeviceWithForce(
+      final String gatewayDeviceIdentification, final String mbusDeviceIdentification) {
+
+    final CoupleMbusDeviceRequest coupleMbusDeviceRequest =
+        forGatewayMbusDevice(gatewayDeviceIdentification, mbusDeviceIdentification);
+    coupleMbusDeviceRequest.setForce(true);
+    return coupleMbusDeviceRequest;
+  }
+
   public static CoupleMbusDeviceAsyncRequest fromScenarioContext() {
     final String correlationUid = RequestFactoryHelper.getCorrelationUidFromScenarioContext();
     final String deviceIdentification =

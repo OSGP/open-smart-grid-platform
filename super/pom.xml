@@ -14,7 +14,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>super-osgp</artifactId>
-  <version>5.31.0-SNAPSHOT</version>
+  <version>5.32.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
   <!-- Description, Organization, Licences, URL and Distribution Management
@@ -46,10 +46,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>5.31.0-SNAPSHOT</osgp.version>
-    <osgp.dlms.version>5.31.0-SNAPSHOT</osgp.dlms.version>
-    <osgp.shared.version>5.31.0-SNAPSHOT</osgp.shared.version>
-    <osgp.jasper-interface.version>5.31.0-SNAPSHOT</osgp.jasper-interface.version>
+    <osgp.version>5.32.0-SNAPSHOT</osgp.version>
+    <osgp.dlms.version>5.32.0-SNAPSHOT</osgp.dlms.version>
+    <osgp.shared.version>5.32.0-SNAPSHOT</osgp.shared.version>
+    <osgp.jasper-interface.version>5.32.0-SNAPSHOT</osgp.jasper-interface.version>
     <spring.version>5.3.22</spring.version>
     <spring.data.version>2.2.9.RELEASE</spring.data.version>
     <spring.data.commons.version>2.2.9.RELEASE</spring.data.commons.version>
@@ -115,7 +115,7 @@
     <license.maven.plugin>3.0</license.maven.plugin>
     <jackson.version>2.13.3</jackson.version>
     <jackson-databind.version>2.13.3</jackson-databind.version>
-    <cxf.version>3.4.1</cxf.version>
+    <cxf.version>3.4.8</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
     <micrometer.version>1.6.3</micrometer.version>
