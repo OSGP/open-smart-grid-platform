@@ -472,10 +472,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
           </exclusion>
-          <exclusion>
-            <groupId>com.querydsl</groupId>
-            <artifactId>querydsl-apt</artifactId>
-          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -1161,51 +1157,6 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
-
-    <!-- Public or https mirrors for some maven repos -->
-<!--
-    <repository>
-      <id>apache.snapshots</id>
-      <url>https://repository.apache.org/snapshots</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-
-    <repository>
-      <id>spring-libs-release</id>
-      <url>https://repo1.maven.org/maven2/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>spring-libs-snapshot</id>
-      <url>https://repo1.maven.org/maven2/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>spring-roo-repository</id>
-      <url>https://repo1.maven.org/maven2/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
--->
   </repositories>
 
   <build>
