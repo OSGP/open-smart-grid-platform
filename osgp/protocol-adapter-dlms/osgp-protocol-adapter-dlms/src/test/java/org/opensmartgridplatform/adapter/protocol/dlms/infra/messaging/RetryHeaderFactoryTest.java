@@ -15,24 +15,25 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ContextConfiguration(classes = RetryHeaderFactory.class)
 @TestPropertySource(
     properties = {
-        "schedule.retry.dlms.backoff.multiplier=0.5",
-        "schedule.retry.dlms.delay=7200000",
-        "schedule.retry.dlms.backoff.exponential=true",
-        "schedule.retry.dlms.retries=10"
+      "schedule.retry.dlms.backoff.multiplier=0.5",
+      "schedule.retry.dlms.delay=7200000",
+      "schedule.retry.dlms.backoff.exponential=true",
+      "schedule.retry.dlms.retries=10"
     })
 class RetryHeaderFactoryTest {
-    @Autowired
-    RetryHeaderFactory retryHeaderFactory;
+  @Autowired RetryHeaderFactory retryHeaderFactory;
 
-    @Test
-    void testMultiplierSmallerThanOneShouldResultInFasterScheduledRetryTimeWithMultipleRetries(){
-        RetryHeader retryHeaderWithOneRetry = this.retryHeaderFactory.createRetryHeader(1);
-        RetryHeader retryHeaderWithThreeRetries = this.retryHeaderFactory.createRetryHeader(3);
+  @Test
+  void testMultiplierSmallerThanOneShouldResultInFasterScheduledRetryTimeWithMultipleRetries() {
+    RetryHeader retryHeaderWithOneRetry = this.retryHeaderFactory.createRetryHeader(1);
+    RetryHeader retryHeaderWithThreeRetries = this.retryHeaderFactory.createRetryHeader(3);
 
-        assertNotNull(retryHeaderWithOneRetry);
-        assertNotNull(retryHeaderWithThreeRetries);
+    assertNotNull(retryHeaderWithOneRetry);
+    assertNotNull(retryHeaderWithThreeRetries);
 
-        assertTrue(retryHeaderWithThreeRetries.getScheduledRetryTime().before(retryHeaderWithOneRetry.getScheduledRetryTime()));
-    }
-
+    assertTrue(
+        retryHeaderWithThreeRetries
+            .getScheduledRetryTime()
+            .before(retryHeaderWithOneRetry.getScheduledRetryTime()));
+  }
 }
