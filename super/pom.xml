@@ -134,7 +134,7 @@
     <javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
     <!-- to avoid conflicts with spring-kafka-test the older kafka version 2.4.1 is used-->
     <kafka.version>2.4.1</kafka.version>
-    <avro.version>1.9.2</avro.version>
+    <avro.version>1.11.1</avro.version>
     <spring.kafka.version>2.4.7.RELEASE</spring.kafka.version>
     <!-- spring-kafka-test needs a 2.12 version of the scala libraries -->
     <scala.lang.version>2.12.11</scala.lang.version>
@@ -1130,7 +1130,7 @@
     <repository>
       <id>fuse-repo</id>
       <name>Fuse Source</name>
-      <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
+      <url>https://repo.fusesource.com/nexus/content/groups/public/</url>
       <releases>
         <enabled>false</enabled>
       </releases>
@@ -1387,6 +1387,26 @@
             <additionalSourceDirectories>
               <param>src/integration-test/java</param>
             </additionalSourceDirectories>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.cyclonedx</groupId>
+          <artifactId>cyclonedx-maven-plugin</artifactId>
+          <version>2.7.2</version>
+          <executions>
+            <execution>
+              <phase>prepare-package</phase>
+              <goals>
+                <goal>makeBom</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <projectType>application</projectType>
+            <!-- Put the boms in WEB-INF, that way they are packaged with the .war file -->
+            <outputName>${project.build.finalName}/WEB-INF/bom</outputName>
+            <includeProvidedScope>false</includeProvidedScope>
           </configuration>
         </plugin>
       </plugins>
