@@ -77,7 +77,7 @@
     <apache.commons.text.version>1.8</apache.commons.text.version>
     <apache.httpcomponents.version>4.5.13</apache.httpcomponents.version>
     <apache.httpcomponents.httpcore.version>4.4.13</apache.httpcomponents.httpcore.version>
-    <commons.codec.version>1.14</commons.codec.version>
+    <commons.codec.version>1.15</commons.codec.version>
     <orika.version>1.5.4</orika.version>
     <jxr.version>3.1.1</jxr.version>
     <maven.project.info.reports.plugin.version>3.2.2</maven.project.info.reports.plugin.version>
