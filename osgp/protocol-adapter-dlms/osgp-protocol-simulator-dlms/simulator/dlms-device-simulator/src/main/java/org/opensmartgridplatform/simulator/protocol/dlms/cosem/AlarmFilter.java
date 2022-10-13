@@ -20,8 +20,8 @@ public class AlarmFilter extends CosemInterfaceObject {
   @CosemAttribute(id = 2, type = Type.DOUBLE_LONG_UNSIGNED)
   private final DataObject value;
 
-  public AlarmFilter(final int value) {
-    super("0.0.97.98.10.255");
+  public AlarmFilter(final String obisCode, final int value) {
+    super(obisCode);
     this.value = DataObject.newUInteger32Data(value);
   }
 }

@@ -10,7 +10,7 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.end
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.SendNotificationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.SendNotificationResponse;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.notification.NotificationService;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.notification.SmartMeteringNotificationService;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class SmartMeteringNotificationEndpoint {
   private static final String SMARTMETERING_NOTIFICATION_NAMESPACE =
       "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-notification/2014/10";
 
-  @Autowired private NotificationService notificationService;
+  @Autowired private SmartMeteringNotificationService notificationService;
 
   public SmartMeteringNotificationEndpoint() {
     // Default constructor

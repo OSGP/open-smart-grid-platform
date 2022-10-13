@@ -176,6 +176,7 @@ public class PlatformKeys extends Keys {
   public static final String KEY_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganizationIdentification";
   public static final String KEY_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP =
       "NewPlatformFunctionGroup";
+  public static final String KEY_NOTIFICATION_TYPE = "NotificationType";
   public static final String KEY_NUMBER = "containerNumber";
   public static final String KEY_NUMBER_ADDITION = "ContainerNumberAddition";
   public static final String KEY_NUMBER_OF_MEASUREMENTS = "NumberOfMeasurements";
@@ -213,6 +214,7 @@ public class PlatformKeys extends Keys {
 
   public static final String KEY_PROTOCOL_INFO_ID = "ProtocolInfoId";
   public static final String KEY_PROTOCOL_VERSION = "ProtocolVersion";
+  public static final String KEY_PROTOCOL_VARIANT = "ProtocolVariant";
   public static final String KEY_PUBLIC_KEY = "PublicKey";
 
   public static final String KEY_PUBLICKEYPRESENT = "PublicKeyPresent";
@@ -283,6 +285,7 @@ public class PlatformKeys extends Keys {
   public static final String SEPARATOR_SPACE_COLON_SPACE = " : ";
   public static final String START_TIME = "StartTime";
   public static final String SUPPLIER = "Supplier";
+  public static final String TEST_ALARM_TYPE = "TestAlarmType";
   public static final String UNTIL_DATE = "UntilDate";
   public static final String USE_PREFIX = "UsePrefix";
   public static final String USERNAME = "Username";
@@ -334,6 +337,7 @@ public class PlatformKeys extends Keys {
   public static final String TOTALPAGES = "TotalPages";
 
   public static final String MESSAGE = "Message";
+  public static final String INNER_MESSAGE = "InnerMessage";
   public static final String NUMBER_OF_EVENTS = "NumberOfEvents";
   public static final String RANDOM_PLATFORM = "RandomPlatform";
 

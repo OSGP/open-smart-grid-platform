@@ -93,7 +93,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
 
   @Override
   public void processMessage(final ObjectMessage message) throws JMSException {
-    LOGGER.debug("Processing smart metering response message");
+    LOGGER.debug("Processing response message");
 
     final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
 
@@ -206,7 +206,8 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     LOGGER.info(
         "handeling error: {} for message type: {}",
         e.getMessage(),
-        messageMetadata.getMessageType());
+        messageMetadata.getMessageType(),
+        e);
     final OsgpException osgpException = this.ensureOsgpException(e);
 
     final ResponseMessage responseMessage =

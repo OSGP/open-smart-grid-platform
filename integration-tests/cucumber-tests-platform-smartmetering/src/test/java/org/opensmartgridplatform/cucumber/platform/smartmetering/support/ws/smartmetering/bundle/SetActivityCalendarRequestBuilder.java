@@ -30,9 +30,8 @@ public class SetActivityCalendarRequestBuilder {
       new ActivityCalendar("ACTCAL01", "FFFFFFFEFFFFFFFFFF000000");
 
   static {
-    final SeasonProfile seasonProfile =
-        new SeasonProfile("SEASON01", "FFFF0101FFFFFFFFFF000000", "WEEK0001");
-    final WeekProfile weekProfile = new WeekProfile("WEEK0001", 0, 0, 0, 0, 0, 0, 0);
+    final SeasonProfile seasonProfile = new SeasonProfile("1", "FFFF0101FFFFFFFFFF000000", "1");
+    final WeekProfile weekProfile = new WeekProfile("1", 0, 0, 0, 0, 0, 0, 0);
     final DayProfileAction dayProfileAction = new DayProfileAction("00000000", 1);
     final DayProfile dayProfile = new DayProfile(0);
     dayProfile.getDayProfileActions().add(dayProfileAction);

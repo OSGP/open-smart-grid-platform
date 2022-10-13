@@ -40,7 +40,7 @@ public class InstallationMapperTest {
     source.setHls4Active(true);
     source.setHls3Active(true);
     source.setDeliveryDate(new Date());
-    source.setMbusIdentificationNumber(12345678L);
+    source.setMbusIdentificationNumber("12345678");
     source.setMbusManufacturerIdentification("XYZ");
     source.setMbusVersion((short) 66);
     source.setMbusDeviceTypeIdentification((short) 3);
@@ -84,7 +84,7 @@ public class InstallationMapperTest {
     smartMeteringDevice.setHls4Active(true);
     smartMeteringDevice.setHls5Active(true);
     smartMeteringDevice.setDeliveryDate(new Date());
-    smartMeteringDevice.setMbusIdentificationNumber(12345678L);
+    smartMeteringDevice.setMbusIdentificationNumber("12345678");
     smartMeteringDevice.setMbusManufacturerIdentification("XYZ");
     smartMeteringDevice.setMbusVersion((short) 112);
     smartMeteringDevice.setMbusDeviceTypeIdentification((short) 3);

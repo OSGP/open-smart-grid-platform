@@ -24,7 +24,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-protocol-simulator-iec60870</artifactId>
-  <version>5.20.0-SNAPSHOT</version>
+  <version>5.32.0-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>osgp-protocol-simulator-iec60870</name>
   <description>Simulator for IEC60870-5-104 protocol</description>
@@ -168,6 +168,11 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
         <version>${maven.site.plugin}</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.cyclonedx</groupId>
+        <artifactId>cyclonedx-maven-plugin</artifactId>
       </plugin>
 
     </plugins>

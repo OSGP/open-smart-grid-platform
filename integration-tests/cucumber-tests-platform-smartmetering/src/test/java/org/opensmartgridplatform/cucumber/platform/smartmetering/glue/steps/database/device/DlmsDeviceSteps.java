@@ -15,13 +15,13 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_ENCRYPTION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_MASTER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.PASSWORD;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_E;
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_G;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_FIRMWARE_UPDATE_KEY;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_USER_KEY;
 import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_AUTHENTICATION_KEY;
@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
@@ -51,6 +52,7 @@ import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.Devi
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.DeviceSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.SecurityKey;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities.DeviceBuilder;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities.SecretBuilder;
@@ -77,7 +79,9 @@ import org.opensmartgridplatform.secretmanagement.application.domain.SecretStatu
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptedSecretRepository;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptionKeyRepository;
+import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
+import org.opensmartgridplatform.shared.security.providers.JreEncryptionProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.transaction.annotation.Transactional;
@@ -110,28 +114,32 @@ public class DlmsDeviceSteps {
 
   @Autowired private DbEncryptionKeyRepository encryptionKeyRepository;
 
+  @Autowired private JreEncryptionProvider jreEncryptionProvider;
+
+  @Autowired private SimulatorDeviceRegister simulatorDeviceRegister;
+
   private final Map<String, SecurityKeyType> securityKeyTypesByInputName = new HashMap<>();
 
   private final List<SecretBuilder> defaultSecretBuilders =
       Arrays.asList(
           new SecretBuilder()
               .withSecurityKeyType(E_METER_AUTHENTICATION)
-              .withKey(PlatformSmartmeteringDefaults.SECURITY_KEY_A_DB),
+              .withKey(SecurityKey.SECURITY_KEY_A.getDatabaseKey()),
           new SecretBuilder()
               .withSecurityKeyType(E_METER_ENCRYPTION)
-              .withKey(PlatformSmartmeteringDefaults.SECURITY_KEY_E_DB),
+              .withKey(SecurityKey.SECURITY_KEY_E.getDatabaseKey()),
           new SecretBuilder()
               .withSecurityKeyType(E_METER_MASTER)
-              .withKey(PlatformSmartmeteringDefaults.SECURITY_KEY_M_DB),
+              .withKey(SecurityKey.SECURITY_KEY_M.getDatabaseKey()),
           new SecretBuilder()
               .withSecurityKeyType(PASSWORD)
-              .withKey(PlatformSmartmeteringDefaults.PASSWORD),
+              .withKey(SecurityKey.PASSWORD.getDatabaseKey()),
           new SecretBuilder()
               .withSecurityKeyType(G_METER_ENCRYPTION)
-              .withKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_ENCRYPTION),
+              .withKey(SecurityKey.SECURITY_KEY_G_ENCRYPTION.getDatabaseKey()),
           new SecretBuilder()
               .withSecurityKeyType(G_METER_MASTER)
-              .withKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_MASTER));
+              .withKey(SecurityKey.SECURITY_KEY_G_MASTER.getDatabaseKey()));
 
   public DlmsDeviceSteps() {
     this.securityKeyTypesByInputName.put(KEY_DEVICE_AUTHENTICATIONKEY, E_METER_AUTHENTICATION);
@@ -149,13 +157,26 @@ public class DlmsDeviceSteps {
 
   @Given("^a dlms device$")
   public void aDlmsDevice(final Map<String, String> inputSettings) {
-
     final Device device = this.createDeviceInCoreDatabase(inputSettings);
     this.setScenarioContextForDevice(inputSettings, device);
 
     this.createDeviceAuthorisationInCoreDatabase(device);
 
     this.createDlmsDeviceInProtocolAdapterDatabase(inputSettings);
+  }
+
+  /*
+   * This methodd makes sure that every used device, gets a unique logicalId for the simulator
+   * the logical id is used to make sure the simulator is unique
+   */
+  private void setLogicalDeviceId(final DlmsDevice dlmsDevice) {
+    if (dlmsDevice.getPort() == null || dlmsDevice.getDeviceIdentification() == null) {
+      return;
+    }
+    final Long logicalId =
+        this.simulatorDeviceRegister.getLogicalId(
+            dlmsDevice.getPort(), dlmsDevice.getDeviceIdentification());
+    dlmsDevice.setLogicalId(logicalId);
   }
 
   @Given("^all mbus channels are occupied for E-meter \"([^\"]*)\"$")
@@ -214,7 +235,7 @@ public class DlmsDeviceSteps {
     assertThat(smartMeter.getChannel())
         .isEqualTo(getShort(settings, PlatformSmartmeteringKeys.CHANNEL));
     assertThat(smartMeter.getMbusIdentificationNumber())
-        .isEqualTo(getLong(settings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER, null));
+        .isEqualTo(settings.get(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
     assertThat(smartMeter.getMbusManufacturerIdentification())
         .isEqualTo(settings.get(PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION));
     assertThat(smartMeter.getMbusVersion())
@@ -267,7 +288,36 @@ public class DlmsDeviceSteps {
         .isNull();
   }
 
-  @Then("^the new keys are stored in the secret management database encrypted_secret table$")
+  @Then(
+      "^the keyprocessing lock should be removed from off dlms device with identification \"([^\"]*)\"$")
+  public void theKeyprocessingLockShouldBeRemovedFromDlmsDeviceWithIdentification(
+      final String deviceIdentification) {
+
+    final DlmsDevice dlmsDevice =
+        this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+    assertThat(dlmsDevice)
+        .as("DLMS device with identification " + deviceIdentification + " in protocol database")
+        .isNotNull();
+    assertThat(dlmsDevice.getKeyProcessingStartTime())
+        .as(
+            "DLMS device with identification "
+                + deviceIdentification
+                + " should not have lock on keyprocessing in protocol database")
+        .isNull();
+  }
+
+  @Then(
+      "^the newly generated keys are stored in the secret management database encrypted_secret table$")
+  public void theNewlyGeneratedKeysAreStoredInTheSecretManagementDatabaseEncryptedSecretTable() {
+    this.theNewKeysAreStoredInTheSecretManagementDatabaseEncryptedSecretTable();
+  }
+
+  @Then(
+      "^the newly received keys are stored in the secret management database encrypted_secret table$")
+  public void theNewlyReceivedKeysAreStoredInTheSecretManagementDatabaseEncryptedSecretTable() {
+    this.theNewKeysAreStoredInTheSecretManagementDatabaseEncryptedSecretTable();
+  }
+
   public void theNewKeysAreStoredInTheSecretManagementDatabaseEncryptedSecretTable() {
     final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
     final String deviceIdentification =
@@ -361,8 +411,10 @@ public class DlmsDeviceSteps {
     return this.encryptedSecretRepository.findAll(Example.of(searchByIdExample));
   }
 
-  @Then("^the stored keys are not equal to the received keys$")
-  public void theStoredKeysAreNotEqualToTheReceivedKeys() {
+  @Then(
+      "^the new keys are stored in the database in another encryption then the encryption of the keys received in the SOAP request$")
+  public void
+      theNewKeysAreStoredInTheDatabaseInAnotherEncryptionThenTheEncryptionOfTheKeysReceivedInTheSOAPRequest() {
     final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
     final String deviceIdentification =
         (String) ScenarioContext.current().get(keyDeviceIdentification);
@@ -432,8 +484,9 @@ public class DlmsDeviceSteps {
         .isNotEqualTo(receivedMbusDefaultKey);
   }
 
-  @Then("^a valid m-bus user key is stored$")
-  public void aValidMbusUserKeyIsStored(final Map<String, String> settings) {
+  @Then("^(\\d+) valid m-bus keys are stored$")
+  public void aValidMbusUserKeyIsStored(
+      final int storedKeyCount, final Map<String, String> settings) {
     final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
     final String deviceIdentification = settings.get(keyDeviceIdentification);
     assertThat(deviceIdentification)
@@ -441,6 +494,14 @@ public class DlmsDeviceSteps {
             "The M-Bus device identification must be in the step data for key "
                 + keyDeviceIdentification)
         .isNotNull();
+
+    final String keyType = settings.get(PlatformSmartmeteringKeys.SECRET_TYPE);
+    assertThat(keyType)
+        .as(
+            "The keyType must be in the step data with key "
+                + PlatformSmartmeteringKeys.SECRET_TYPE)
+        .isNotNull();
+    final SecretType secretType = SecretType.valueOf(keyType);
 
     final String deviceDescription = "M-Bus device with identification " + deviceIdentification;
     final DlmsDevice dlmsDevice =
@@ -450,28 +511,31 @@ public class DlmsDeviceSteps {
     final List<DbEncryptedSecret> securityKeys = this.findAllSecretsForDevice(deviceIdentification);
 
     int numberOfMbusDefaultKeys = 0;
-    int numberOfMbusUserKeys = 0;
-    int numberOfValidMbusUserKeys = 0;
+    int numberOfMbusKeys = 0;
+    int numberOfActiveMbusKeys = 0;
 
     for (final DbEncryptedSecret securityKey : securityKeys) {
-      switch (securityKey.getSecretType()) {
-        case G_METER_MASTER_KEY:
-          numberOfMbusDefaultKeys += 1;
-          break;
-        case G_METER_ENCRYPTION_KEY:
-          numberOfMbusUserKeys += 1;
-          if (securityKey.getSecretStatus().equals(SecretStatus.ACTIVE)) {
-            numberOfValidMbusUserKeys += 1;
-          }
-          break;
-        default:
-          // other keys are not counted
+      if (securityKey.getSecretType().equals(G_METER_MASTER_KEY)) {
+        numberOfMbusDefaultKeys += 1;
+      } else if (securityKey.getSecretType().equals(secretType)) {
+        numberOfMbusKeys += 1;
+        if (securityKey.getSecretStatus().equals(SecretStatus.ACTIVE)) {
+          numberOfActiveMbusKeys += 1;
+        }
       }
     }
 
     assertThat(numberOfMbusDefaultKeys).as("Number of M-Bus Default keys stored").isEqualTo(1);
-    assertThat(numberOfMbusUserKeys > 0).as("At least one M-Bus User key must be stored").isTrue();
-    assertThat(numberOfValidMbusUserKeys).as("Number of valid M-Bus User keys stored").isEqualTo(1);
+    assertThat(numberOfMbusKeys)
+        .as(
+            "At least " + storedKeyCount + " M-Bus key of the specified type must be stored",
+            storedKeyCount)
+        .isGreaterThanOrEqualTo(storedKeyCount);
+    if (storedKeyCount > 0) {
+      assertThat(numberOfActiveMbusKeys)
+          .as("Number of active M-Bus keys of the specified type stored")
+          .isEqualTo(1);
+    }
   }
 
   @Then(
@@ -514,11 +578,11 @@ public class DlmsDeviceSteps {
     final List<DbEncryptedSecret> validSecrets =
         this.encryptedSecretRepository.findSecrets(
             dlmsDevice.getDeviceIdentification(), secretType, SecretStatus.ACTIVE);
-    assertThat(validSecrets.size())
-        .isEqualTo(1)
+    assertThat(validSecrets)
         .as(
             "Device %s should have 1 active secret of type %s, but found %s",
-            dlmsDevice.getDeviceIdentification(), secretType, validSecrets.size());
+            dlmsDevice.getDeviceIdentification(), secretType, validSecrets.size())
+        .hasSize(1);
     final DbEncryptedSecret secret = validSecrets.get(0);
     assertThat(secret)
         .as(
@@ -547,9 +611,12 @@ public class DlmsDeviceSteps {
   private Device createDeviceInCoreDatabase(final Map<String, String> inputSettings) {
 
     Device device;
+
     final ProtocolInfo protocolInfo = this.getProtocolInfo(inputSettings);
     final DeviceModel deviceModel = this.getDeviceModel(inputSettings);
+
     final boolean isSmartMeter = this.isSmartMeter(inputSettings);
+
     if (isSmartMeter) {
       final SmartMeter smartMeter =
           new SmartMeterBuilder()
@@ -604,9 +671,10 @@ public class DlmsDeviceSteps {
     final DlmsDeviceBuilder dlmsDeviceBuilder =
         new DlmsDeviceBuilder().setProtocolName(protocolInfo);
     final DlmsDevice dlmsDevice = dlmsDeviceBuilder.withSettings(inputSettings).build();
-    this.dlmsDeviceRepository.save(dlmsDevice);
+    this.setLogicalDeviceId(dlmsDevice);
+    final DlmsDevice createdDlmsDevice = this.dlmsDeviceRepository.save(dlmsDevice);
 
-    this.createDlmsDeviceInSecretManagementDatabase(dlmsDevice, inputSettings);
+    this.createDlmsDeviceInSecretManagementDatabase(createdDlmsDevice, inputSettings);
   }
 
   private void createDlmsDeviceInSecretManagementDatabase(
@@ -676,9 +744,11 @@ public class DlmsDeviceSteps {
               keyTypeInputName, this.securityKeyTypesByInputName.keySet()));
     }
     if (inputSettings.containsKey(keyTypeInputName)) {
-      final String inputKey = inputSettings.get(keyTypeInputName);
-      if (inputKey != null && !inputKey.trim().isEmpty()) {
-        return new SecretBuilder().withSecurityKeyType(keyType).withKey(inputKey);
+      final String inputKeyName = inputSettings.get(keyTypeInputName);
+      final String dbEncryptedKey = SecurityKey.valueOf(inputKeyName).getDatabaseKey();
+
+      if (dbEncryptedKey != null && !dbEncryptedKey.trim().isEmpty()) {
+        return new SecretBuilder().withSecurityKeyType(keyType).withKey(dbEncryptedKey);
       } else { // secret explicitly set to empty; return null to prevent
         // secret storing
         return null;
@@ -715,7 +785,16 @@ public class DlmsDeviceSteps {
         inputSettings.getOrDefault(
             PlatformSmartmeteringKeys.PROTOCOL_VERSION,
             PlatformSmartmeteringDefaults.PROTOCOL_VERSION);
-    return this.protocolInfoRepository.findByProtocolAndProtocolVersion(protocol, protocolVersion);
+
+    final ProtocolInfo protocolInfo =
+        this.protocolInfoRepository.findByProtocolAndProtocolVersion(protocol, protocolVersion);
+    if (protocolInfo == null) {
+      throw new IllegalArgumentException(
+          String.format(
+              "No protocol info found with combination of protocol %s and version %s",
+              protocol, protocolVersion));
+    }
+    return protocolInfo;
   }
 
   private DeviceModel getDeviceModel(final Map<String, String> inputSettings) {
@@ -729,8 +808,53 @@ public class DlmsDeviceSteps {
     return null;
   }
 
-  @When("^new keys are registered in the secret management database")
-  public void registerNewKeys(final Map<String, String> inputSettings) {
+  @Given("simulate failure of change from previous key of device \"{}\"")
+  public void simulateFailureOfChangeFromPreviousKeyOfDevice(
+      final String id, final Map<String, String> inputSettings) {
+
+    for (final String keyTypeInputName : inputSettings.keySet()) {
+      final String securityTypeInputName = inputSettings.get(keyTypeInputName);
+      final SecretType secretType = this.getSecretTypeByKeyTypeInputName(keyTypeInputName);
+      final String key = SecurityKey.valueOf(securityTypeInputName).getDatabaseKey();
+
+      final List<DbEncryptedSecret> currentlyActiveKeys =
+          this.encryptedSecretRepository.findSecrets(id, secretType, SecretStatus.ACTIVE);
+      for (final DbEncryptedSecret currentlyActiveKey : currentlyActiveKeys) {
+        currentlyActiveKey.setSecretStatus(SecretStatus.NEW);
+        this.encryptedSecretRepository.save(currentlyActiveKey);
+      }
+
+      final DbEncryptionKeyReference encryptionKeyRef =
+          this.encryptionKeyRepository
+              .findByTypeAndValid(EncryptionProviderType.JRE, new Date())
+              .iterator()
+              .next();
+      final DbEncryptedSecret secret =
+          new SecretBuilder()
+              .withDeviceIdentification(id)
+              .withSecretType(secretType)
+              .withKey(key)
+              .withSecretStatus(SecretStatus.ACTIVE)
+              .withEncryptionKeyReference(encryptionKeyRef)
+              .withCreationTime(new Date())
+              .build();
+      this.encryptedSecretRepository.save(secret);
+    }
+  }
+
+  @Given("new keys are registered in the secret management database {int} minutes ago")
+  public void newKeysAreRegisteredInTheSecretManagementDatabaseMinutesAgo(
+      final int minutesAgo, final Map<String, String> inputSettings) {
+    this.registerNewKeys(minutesAgo, inputSettings);
+  }
+
+  @Given("^new keys are registered in the secret management database")
+  public void newKeysAreRegisteredInTheSecretManagementDatabase(
+      final Map<String, String> inputSettings) {
+    this.registerNewKeys(0, inputSettings);
+  }
+
+  private void registerNewKeys(final long minutesAgo, final Map<String, String> inputSettings) {
     if (!inputSettings.containsKey(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION)) {
       throw new IllegalArgumentException("No device identification provided");
     }
@@ -751,20 +875,202 @@ public class DlmsDeviceSteps {
             .next();
     for (int i = 0; i < secretTypesToCreate.size(); i++) {
       if (inputSettings.containsKey(keyTypeInputNames.get(i))) {
+        final String inputKeyName = inputSettings.get(keyTypeInputNames.get(i));
+        final String key = SecurityKey.valueOf(inputKeyName).getDatabaseKey();
         final DbEncryptedSecret secret =
             new SecretBuilder()
                 .withDeviceIdentification(deviceIdentification)
                 .withSecretType(secretTypesToCreate.get(i))
-                .withKey(inputSettings.get(keyTypeInputNames.get(i)))
+                .withKey(key)
                 .withSecretStatus(SecretStatus.NEW)
                 .withEncryptionKeyReference(encryptionKeyRef)
+                .withCreationTime(new Date(System.currentTimeMillis() - (minutesAgo * 60000L)))
                 .build();
         this.encryptedSecretRepository.save(secret);
       }
     }
   }
 
-  @Then("after {int} seconds, the new {} key is recovered")
+  @When(
+      "after {int} seconds, the encrypted_secret table in the secret management database should contain {string} keys for device {string}")
+  public void
+      afterXsecondsTheEncryptedSecretTableInTheSecretManagementDatabaseShouldContainKeysForDevice(
+          final int maxSecondsToWait,
+          final String secretTypeString,
+          final String deviceIdentification,
+          final Map<String, String> inputSettings) {
+    final Runnable task =
+        () -> {
+          this.theEncryptedSecretTableInTheSecretManagementDatabaseShouldContainKeysForDevice(
+              secretTypeString, deviceIdentification, inputSettings);
+        };
+
+    Wait.until(task, maxSecondsToWait, 1000);
+  }
+
+  @Then(
+      "the encrypted_secret table in the secret management database should contain {string} keys for device {string}")
+  public void theEncryptedSecretTableInTheSecretManagementDatabaseShouldContainKeysForDevice(
+      final String secretTypeString,
+      final String deviceIdentification,
+      final Map<String, String> inputSettings) {
+
+    final SecretType secretType = this.getSecretTypeByKeyTypeInputName(secretTypeString);
+
+    for (final String keyName : inputSettings.keySet()) {
+      final String secretStatus = inputSettings.get(keyName);
+      final String dbEncryptedSecretValue = SecurityKey.valueOf(keyName).getDatabaseKey();
+      final List<DbEncryptedSecret> dbEncryptedSecret =
+          this.encryptedSecretRepository.findSecrets(
+              deviceIdentification, secretType, SecretStatus.valueOf(secretStatus));
+
+      assertThat(dbEncryptedSecret)
+          .withFailMessage(
+              "No dbEncryptedSecret for %s with status %s found", secretTypeString, secretStatus)
+          .isNotEmpty();
+      final List<String> actualEncodedSecrets =
+          dbEncryptedSecret.stream()
+              .map(DbEncryptedSecret::getEncodedSecret)
+              .collect(Collectors.toList());
+      assertThat(this.decodeSecrets(actualEncodedSecrets))
+          .withFailMessage(
+              "Wrong dbEncryptedSecret for %s with status %s expected %s to be contained in: %s",
+              secretTypeString, secretStatus, dbEncryptedSecretValue, actualEncodedSecrets)
+          .contains(this.decodeSecret(dbEncryptedSecretValue));
+    }
+  }
+
+  private List<String> decodeSecrets(final List<String> encodedSecrets) {
+    return encodedSecrets.stream()
+        .map(encodedSecret -> this.decodeSecret(encodedSecret))
+        .collect(Collectors.toList());
+  }
+
+  private String decodeSecret(final String encodedSecret) {
+    final byte[] encryptedSecret = HexUtils.fromHexString(encodedSecret);
+
+    final byte[] decryptedSecret =
+        this.jreEncryptionProvider.decrypt(
+            new EncryptedSecret(EncryptionProviderType.JRE, encryptedSecret), "1");
+
+    return HexUtils.toHexString(decryptedSecret);
+  }
+
+  @Then(
+      "the encrypted_secret table in the secret management database should contain a specified number of EXPIRED and just one ACTIVE key for device {string}")
+  public void
+      theEncrypted_secretTableInTheSecretManagementDatabaseShouldContainASpecifiedNumberOfEXPIREDAndJustOneACTIVEKeyForDevice(
+          final String deviceIdentification, final Map<String, String> settings) {
+    final int expectedNumberOfExpiredEncryptionKeys =
+        Integer.valueOf(settings.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
+    final int expectedNumberOfExpiredAuthenticationKey =
+        Integer.valueOf(settings.get(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY));
+
+    this.assertCorrectNumbers(
+        deviceIdentification,
+        SecretType.E_METER_AUTHENTICATION_KEY,
+        SecretStatus.EXPIRED,
+        expectedNumberOfExpiredAuthenticationKey);
+    this.assertCorrectNumbers(
+        deviceIdentification,
+        SecretType.E_METER_ENCRYPTION_KEY_UNICAST,
+        SecretStatus.EXPIRED,
+        expectedNumberOfExpiredEncryptionKeys);
+    this.assertCorrectNumbers(
+        deviceIdentification, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.ACTIVE, 1);
+    this.assertCorrectNumbers(
+        deviceIdentification, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.ACTIVE, 1);
+  }
+
+  private void assertCorrectNumbers(
+      final String deviceIdentification,
+      final SecretType secretType,
+      final SecretStatus secretStatus,
+      final int expectedNumberOfKeys) {
+
+    final List<DbEncryptedSecret> keys =
+        this.encryptedSecretRepository.findSecrets(deviceIdentification, secretType, secretStatus);
+    assertThat(keys).hasSize(expectedNumberOfKeys);
+  }
+
+  @Then(
+      "the encrypted_secret table in the secret management database should contain one or more EXPIRED and just one ACTIVE key for device {string} in correct combination")
+  public void
+      theEncryptedSecretTableInTheSecretManagementDatabaseShouldContainKeysForDeviceOrExactlyTheOpposite(
+          final String deviceIdentification, final Map<String, String> inputSettings) {
+    // Depending on the order in which the two request are processed the results (status of the
+    // secret) are either as specified as the first or second value
+
+    final List<String> activeAuthenticationKeys =
+        this.encryptedSecretRepository
+            .findSecrets(
+                deviceIdentification, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.ACTIVE)
+            .stream()
+            .map(DbEncryptedSecret::getEncodedSecret)
+            .map(this::decodeSecret)
+            .collect(Collectors.toList());
+    final List<String> expiredAuthenticationKeys =
+        this.encryptedSecretRepository
+            .findSecrets(
+                deviceIdentification, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.EXPIRED)
+            .stream()
+            .map(DbEncryptedSecret::getEncodedSecret)
+            .map(this::decodeSecret)
+            .collect(Collectors.toList());
+    final List<String> activeEncryptionKeys =
+        this.encryptedSecretRepository
+            .findSecrets(
+                deviceIdentification,
+                SecretType.E_METER_ENCRYPTION_KEY_UNICAST,
+                SecretStatus.ACTIVE)
+            .stream()
+            .map(DbEncryptedSecret::getEncodedSecret)
+            .map(this::decodeSecret)
+            .collect(Collectors.toList());
+    final List<String> expiredEncryptionKeys =
+        this.encryptedSecretRepository
+            .findSecrets(
+                deviceIdentification,
+                SecretType.E_METER_ENCRYPTION_KEY_UNICAST,
+                SecretStatus.EXPIRED)
+            .stream()
+            .map(DbEncryptedSecret::getEncodedSecret)
+            .map(this::decodeSecret)
+            .collect(Collectors.toList());
+
+    final String[] authenticationKeyNames =
+        inputSettings.get(PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY).split(",");
+    final String[] encryptionKeyNames =
+        inputSettings.get(PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY).split(",");
+
+    final int numberOfRequestsFromWhichKeysAreIncluded = authenticationKeyNames.length;
+    int countKeysFromRequestBothActive = 0;
+    int countKeysFromRequestBothExpired = 0;
+
+    for (int i = 0; i < numberOfRequestsFromWhichKeysAreIncluded; i++) {
+      final String authenticationKeyFromRequest =
+          this.decodeSecret(SecurityKey.valueOf(authenticationKeyNames[i]).getDatabaseKey());
+      final String encryptionKeyFromRequest =
+          this.decodeSecret(SecurityKey.valueOf(encryptionKeyNames[i]).getDatabaseKey());
+
+      if (activeAuthenticationKeys.contains(authenticationKeyFromRequest)
+          && activeEncryptionKeys.contains(encryptionKeyFromRequest)) {
+        countKeysFromRequestBothActive += 1;
+      } else if (expiredAuthenticationKeys.contains(authenticationKeyFromRequest)
+          && expiredEncryptionKeys.contains(encryptionKeyFromRequest)) {
+        countKeysFromRequestBothExpired += 1;
+      } else {
+        throw new AssertionError(
+            "Keys from the same request ended up not both active or both expired.");
+      }
+    }
+
+    assertThat(countKeysFromRequestBothActive).isOne();
+    assertThat(countKeysFromRequestBothExpired)
+        .isEqualTo(numberOfRequestsFromWhichKeysAreIncluded - 1);
+  }
+
+  @When("after {int} seconds, the new {} key is recovered")
   public void newKeysAreRecovered(
       final int maxSecondsToWait,
       final SecretType keyType,
@@ -798,8 +1104,11 @@ public class DlmsDeviceSteps {
               final List<DbEncryptedSecret> activeSecretList =
                   this.encryptedSecretRepository.findSecrets(
                       deviceIdentification, secretType, SecretStatus.ACTIVE);
+              final String expectedKeyName = inputSettings.get(keyInputName);
+              final String expectedDbEncryptedSecret =
+                  SecurityKey.valueOf(expectedKeyName).getDatabaseKey();
               assertThat(activeSecretList.get(0).getEncodedSecret())
-                  .isEqualTo(inputSettings.get(keyInputName));
+                  .isEqualTo(expectedDbEncryptedSecret);
             }
           }
         };
@@ -815,6 +1124,19 @@ public class DlmsDeviceSteps {
         return KEY_DEVICE_ENCRYPTIONKEY;
       default:
         throw new IllegalArgumentException("Unsupported secret type: " + secretType.toString());
+    }
+  }
+
+  public SecretType getSecretTypeByKeyTypeInputName(final String keyTypeInputName) {
+    switch (keyTypeInputName) {
+      case KEY_DEVICE_MASTERKEY:
+        return E_METER_MASTER_KEY;
+      case KEY_DEVICE_AUTHENTICATIONKEY:
+        return E_METER_AUTHENTICATION_KEY;
+      case KEY_DEVICE_ENCRYPTIONKEY:
+        return E_METER_ENCRYPTION_KEY_UNICAST;
+      default:
+        throw new IllegalArgumentException("Unsupported keyTypeInputName: " + keyTypeInputName);
     }
   }
 }

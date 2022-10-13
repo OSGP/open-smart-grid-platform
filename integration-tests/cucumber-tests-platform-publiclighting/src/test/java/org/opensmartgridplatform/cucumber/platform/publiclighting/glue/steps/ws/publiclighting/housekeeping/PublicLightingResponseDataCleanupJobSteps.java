@@ -14,21 +14,17 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.core.RetryableAssert;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws.PublicLightingResponseDataRepository;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws.PublicLightingResponseDataSteps;
+import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws.WsPublicLightingResponseDataRepository;
+import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws.WsPublicLightingResponseDataSteps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 public class PublicLightingResponseDataCleanupJobSteps {
 
-  @Autowired private PublicLightingResponseDataSteps responseDataSteps;
+  @Autowired private WsPublicLightingResponseDataSteps responseDataSteps;
 
-  @Autowired private PublicLightingResponseDataRepository publicLightingResponseDataRepository;
-
-  // @Autowired
-  // private TariffSwitchingResponseDataRepository
-  // tariffSwitchingResponseDataRepository;
+  @Autowired private WsPublicLightingResponseDataRepository publicLightingResponseDataRepository;
 
   @Value("${publiclighting.response.cleanup.wait.delay:1000}")
   private long delay;
@@ -51,18 +47,6 @@ public class PublicLightingResponseDataCleanupJobSteps {
         correlationUid, this.delay, this.retries, this.publicLightingResponseDataRepository);
   }
 
-  // @Then("^the tariff switching cleanup job should have removed the response
-  // data with correlation uid \"(.*)\"$")
-  // @Transactional("txMgrWsTariffSwitching")
-  // public void
-  // theTariffSwitchingCleanupJobShouldHaveRemovedTheResponseData(final String
-  // correlationUid) {
-  //
-  // this.waitForResponseDataToBeRemoved(correlationUid, this.delay,
-  // this.retries,
-  // this.tariffSwitchingResponseDataRepository);
-  // }
-
   @Then(
       "^the public lighting cleanup job should not have removed the response data with correlation uid \"(.*)\"$")
   @Transactional("txMgrWsPublicLighting")
@@ -72,18 +56,6 @@ public class PublicLightingResponseDataCleanupJobSteps {
     this.waitToMakeSureResponseDataIsNotRemoved(
         correlationUid, this.delay, this.retries, this.publicLightingResponseDataRepository);
   }
-
-  // @Then("^the tariff switching cleanup job should not have removed the
-  // response data with correlation uid \"(.*)\"$")
-  // @Transactional("txMgrWsTariffSwitching")
-  // public void
-  // theTariffSwitchingCleanupJobShouldNotHaveRemovedTheResponseData(final
-  // String correlationUid) {
-  //
-  // this.waitToMakeSureResponseDataIsNotRemoved(correlationUid, this.delay,
-  // this.retries,
-  // this.tariffSwitchingResponseDataRepository);
-  // }
 
   private void waitForResponseDataToBeRemoved(
       final String correlationUid,

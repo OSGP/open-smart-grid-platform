@@ -11,10 +11,13 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.sma
 import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequestData;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 
-public class SynchronizeTimeRequestFactory {
+public final class SynchronizeTimeRequestFactory {
+
+  private static final String EUROPE_AMSTERDAM = "Europe/Amsterdam";
 
   private SynchronizeTimeRequestFactory() {
     // Private constructor for utility class
@@ -24,8 +27,9 @@ public class SynchronizeTimeRequestFactory {
     final SynchronizeTimeRequest request = new SynchronizeTimeRequest();
     request.setDeviceIdentification(
         parameters.get(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION));
-    request.setSynchronizeTimeRequestData(
-        SynchronizeTimeRequestDataFactory.fromParameterMap(parameters));
+    final SynchronizeTimeRequestData requestData = new SynchronizeTimeRequestData();
+    requestData.setTimeZone(EUROPE_AMSTERDAM);
+    request.setSynchronizeTimeRequestData(requestData);
     return request;
   }
 

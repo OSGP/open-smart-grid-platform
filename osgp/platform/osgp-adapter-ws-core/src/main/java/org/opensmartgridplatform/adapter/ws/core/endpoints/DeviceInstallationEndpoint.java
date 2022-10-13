@@ -62,7 +62,7 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
-public class DeviceInstallationEndpoint {
+public class DeviceInstallationEndpoint extends CoreEndpoint {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DeviceInstallationEndpoint.class);
   private static final String DEVICE_INSTALLATION_NAMESPACE =
@@ -136,12 +136,11 @@ public class DeviceInstallationEndpoint {
     final GetStatusResponse response = new GetStatusResponse();
 
     try {
-      final ResponseMessage message =
-          this.deviceInstallationService.dequeueGetStatusResponse(
-              request.getAsyncRequest().getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-        final DeviceStatus deviceStatus = (DeviceStatus) message.getDataObject();
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "getting status");
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
+        final DeviceStatus deviceStatus = (DeviceStatus) responseMessage.getDataObject();
         if (deviceStatus != null) {
           response.setDeviceStatus(
               this.deviceInstallationMapper.map(
@@ -427,11 +426,10 @@ public class DeviceInstallationEndpoint {
     final StartDeviceTestResponse response = new StartDeviceTestResponse();
 
     try {
-      final ResponseMessage message =
-          this.deviceInstallationService.dequeueStartDeviceTestResponse(
-              request.getAsyncRequest().getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "starting device test");
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);
@@ -496,29 +494,15 @@ public class DeviceInstallationEndpoint {
     final StopDeviceTestResponse response = new StopDeviceTestResponse();
 
     try {
-      final ResponseMessage message =
-          this.deviceInstallationService.dequeueStopDeviceTestResponse(
-              request.getAsyncRequest().getCorrelationUid());
-      if (message != null) {
-        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      final ResponseMessage responseMessage = this.getResponseMessage(request.getAsyncRequest());
+      if (responseMessage != null) {
+        throwExceptionIfResultNotOk(responseMessage, "stopping device test");
+        response.setResult(OsgpResultType.fromValue(responseMessage.getResult().getValue()));
       }
     } catch (final Exception e) {
       this.handleException(e);
     }
 
     return response;
-  }
-
-  private void handleException(final Exception e) throws OsgpException {
-    // Rethrow exception if it already is a functional or technical
-    // exception,
-    // otherwise throw new technical exception.
-    if (e instanceof OsgpException) {
-      LOGGER.error("Exception occurred: ", e);
-      throw (OsgpException) e;
-    } else {
-      LOGGER.error("Exception occurred: ", e);
-      throw new TechnicalException(COMPONENT_WS_CORE, e);
-    }
   }
 }

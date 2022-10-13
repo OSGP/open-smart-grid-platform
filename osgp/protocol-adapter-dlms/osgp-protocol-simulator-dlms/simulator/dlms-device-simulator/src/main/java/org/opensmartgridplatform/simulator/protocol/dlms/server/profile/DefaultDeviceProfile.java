@@ -72,7 +72,6 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.CommunicationModu
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.CommunicationSessionLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ConfigurationObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.CurrentlyActiveTariff;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DataOfBillingPeriod1;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DoubleLongUnsignedExtendedRegister;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DoubleLongUnsignedRegister;
@@ -83,14 +82,12 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.LoadProfileWithPe
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.LoadProfileWithPeriod2;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.LongUnsignedData;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.LongUnsignedRegister;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBus1MasterLoadProfilePeriod1;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBus2MasterLoadProfilePeriod1;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBus3MasterLoadProfilePeriod1;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBus4MasterLoadProfilePeriod1;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusClientSetup;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusEventLog;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusMasterLoadProfilePeriod1DSMR4;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ModuleActiveFirmwareIdentifier;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ModuleFirmwareSignature;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MonthlyBillingValuesPeriod1DSMR4;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.OctetStringData;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.P1PortDsmrVersion;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerOutages;
@@ -719,7 +716,7 @@ public class DefaultDeviceProfile {
   @Scope("prototype")
   @Bean
   public AlarmFilter alarmFilter() {
-    return new AlarmFilter(this.alarmFilterValue);
+    return new AlarmFilter("0.0.97.98.10.255", this.alarmFilterValue);
   }
 
   @Bean
@@ -749,8 +746,8 @@ public class DefaultDeviceProfile {
   }
 
   @Bean
-  public DataOfBillingPeriod1 dataOfBillingPeriod1(final Calendar cal) {
-    return new DataOfBillingPeriod1(cal);
+  public MonthlyBillingValuesPeriod1DSMR4 dataOfBillingPeriod1(final Calendar cal) {
+    return new MonthlyBillingValuesPeriod1DSMR4(cal);
   }
 
   @Bean
@@ -856,6 +853,7 @@ public class DefaultDeviceProfile {
     return new CurrentlyActiveTariff();
   }
 
+  @Profile("default & !smr5")
   @Bean
   public ConfigurationObject configurationObject() {
     final Byte[] bytes = new Byte[this.configurationObjectFlags.size()];
@@ -874,23 +872,23 @@ public class DefaultDeviceProfile {
   }
 
   @Bean
-  public MBus1MasterLoadProfilePeriod1 mBus1MasterLoadProfilePeriod1(final Calendar cal) {
-    return new MBus1MasterLoadProfilePeriod1(cal);
+  public MBusMasterLoadProfilePeriod1DSMR4 mBus1MasterLoadProfilePeriod1(final Calendar cal) {
+    return new MBusMasterLoadProfilePeriod1DSMR4(cal, 1);
   }
 
   @Bean
-  public MBus2MasterLoadProfilePeriod1 mBus2MasterLoadProfilePeriod1(final Calendar cal) {
-    return new MBus2MasterLoadProfilePeriod1(cal);
+  public MBusMasterLoadProfilePeriod1DSMR4 mBus2MasterLoadProfilePeriod1(final Calendar cal) {
+    return new MBusMasterLoadProfilePeriod1DSMR4(cal, 2);
   }
 
   @Bean
-  public MBus3MasterLoadProfilePeriod1 mBus3MasterLoadProfilePeriod1(final Calendar cal) {
-    return new MBus3MasterLoadProfilePeriod1(cal);
+  public MBusMasterLoadProfilePeriod1DSMR4 mBus3MasterLoadProfilePeriod1(final Calendar cal) {
+    return new MBusMasterLoadProfilePeriod1DSMR4(cal, 3);
   }
 
   @Bean
-  public MBus4MasterLoadProfilePeriod1 mBus4MasterLoadProfilePeriod1(final Calendar cal) {
-    return new MBus4MasterLoadProfilePeriod1(cal);
+  public MBusMasterLoadProfilePeriod1DSMR4 mBus4MasterLoadProfilePeriod1(final Calendar cal) {
+    return new MBusMasterLoadProfilePeriod1DSMR4(cal, 4);
   }
 
   @Bean
@@ -906,16 +904,21 @@ public class DefaultDeviceProfile {
         this.imageTransferFailureChance);
   }
 
+  @Bean
+  public Long mbusIdentificationNumberHolder() {
+    return this.mbusIdentificationNumber;
+  }
+
   /*
    * The mbus clients are setup (in the default profile) in such a way, that
    * on channel 1 a match can be found.
    */
   @Bean
-  public MBusClientSetup mbusClientSetup1() {
+  public MBusClientSetup mbusClientSetup1(final Long mbusIdentificationNumberHolder) {
     this.setMbusClientSetupDefaults(
         1,
         this.mbusPrimaryAdress,
-        this.mbusIdentificationNumber,
+        mbusIdentificationNumberHolder,
         this.mbusManufacturerId,
         this.mbusVersion,
         this.mbusDeviceType,

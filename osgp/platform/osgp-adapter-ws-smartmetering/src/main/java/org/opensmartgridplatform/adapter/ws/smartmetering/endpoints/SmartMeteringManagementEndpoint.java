@@ -58,6 +58,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.SetD
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelResponseData;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.UpdateProtocolAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.UpdateProtocolAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.UpdateProtocolRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.UpdateProtocolResponse;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.ManagementService;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.RequestService;
@@ -783,6 +787,81 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     } catch (final Exception e) {
       this.handleException(e);
     }
+    return response;
+  }
+
+  @PayloadRoot(localPart = "UpdateProtocolRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public UpdateProtocolAsyncResponse updateProtocolRequest(
+      @OrganisationIdentification final String organisationIdentification,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @RequestPayload final UpdateProtocolRequest request,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
+
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateProtocolData
+        requestData =
+            this.managementMapper.map(
+                request.getUpdateProtocolData(),
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateProtocolData
+                    .class);
+
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.UPDATE_PROTOCOL)
+            .withMessageType(MessageType.UPDATE_PROTOCOL)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
+
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
+
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+
+    return this.managementMapper.map(asyncResponse, UpdateProtocolAsyncResponse.class);
+  }
+
+  @PayloadRoot(localPart = "UpdateProtocolAsyncRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public UpdateProtocolResponse getUpdateProtocolResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final UpdateProtocolAsyncRequest request)
+      throws OsgpException {
+
+    log.info(
+        "UpdateProtocol response for organisation: {} and device: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification());
+
+    UpdateProtocolResponse response = null;
+    try {
+      response = new UpdateProtocolResponse();
+
+      final ResponseData responseData =
+          this.responseDataService.get(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      this.throwExceptionIfResultNotOk(responseData, "Update Protocol");
+
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData.getMessageData() instanceof String) {
+        response.setDescription((String) responseData.getMessageData());
+      }
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_SMART_METERING,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      this.handleException(e);
+    }
+
     return response;
   }
 }

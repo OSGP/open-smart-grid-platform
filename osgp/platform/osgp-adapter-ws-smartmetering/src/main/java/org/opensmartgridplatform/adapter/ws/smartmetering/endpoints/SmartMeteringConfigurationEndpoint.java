@@ -118,7 +118,6 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.U
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse;
-import org.opensmartgridplatform.adapter.ws.smartmetering.application.ApplicationConstants;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.RequestService;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
@@ -131,6 +130,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmw
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
@@ -163,6 +163,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
   @Autowired
   @Qualifier("decrypterForGxfSmartMetering")
   private RsaEncrypter decrypterForGxfSmartMetering;
+
+  @Autowired private String webserviceNotificationApplicationName;
 
   public SmartMeteringConfigurationEndpoint() {
     // Default constructor
@@ -669,6 +671,11 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
       @BypassRetry final String bypassRetry)
       throws OsgpException {
 
+    final SetEncryptionKeyExchangeOnGMeterRequestData dataRequest =
+        this.configurationMapper.map(
+            request.getSetEncryptionKeyExchangeOnGMeterRequestData(),
+            SetEncryptionKeyExchangeOnGMeterRequestData.class);
+
     final RequestMessageMetadata requestMessageMetadata =
         RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
@@ -681,7 +688,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .build();
 
     final AsyncResponse asyncResponse =
-        this.requestService.enqueueAndSendRequest(requestMessageMetadata, null);
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, dataRequest);
 
     this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
@@ -1696,13 +1703,13 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         this.applicationKeyConfigurationRepository
             .findById(
                 new ApplicationDataLookupKey(
-                    organisationIdentification, ApplicationConstants.APPLICATION_NAME))
+                    organisationIdentification, this.webserviceNotificationApplicationName))
             .orElseThrow(
                 () ->
                     new OsgpException(
                         ComponentType.WS_SMART_METERING,
                         "No public key found for application "
-                            + ApplicationConstants.APPLICATION_NAME
+                            + this.webserviceNotificationApplicationName
                             + " and organisation "
                             + organisationIdentification));
 
@@ -1717,7 +1724,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
       throw new OsgpException(
           ComponentType.WS_SMART_METERING,
           "Could not get public key file for application "
-              + ApplicationConstants.APPLICATION_NAME
+              + this.webserviceNotificationApplicationName
               + " and organisation "
               + organisationIdentification);
     }

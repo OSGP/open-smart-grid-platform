@@ -49,6 +49,18 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
     this.checkAndSaveCorrelationId(asyncResponse.getCorrelationUid());
   }
 
+  @When("^the Couple G-meter \"([^\"]*)\" request is received for E-meter \"([^\"]*)\" with force$")
+  public void theCoupleGMeterRequestIsReceivedForEMeterWithForce(
+      final String gasMeter, final String eMeter) throws WebServiceSecurityException {
+
+    final CoupleMbusDeviceRequest request =
+        CoupleMbusDeviceRequestFactory.forGatewayMbusDeviceWithForce(eMeter, gasMeter);
+    final CoupleMbusDeviceAsyncResponse asyncResponse =
+        this.smartMeteringInstallationClient.coupleMbusDevice(request);
+
+    this.checkAndSaveCorrelationId(asyncResponse.getCorrelationUid());
+  }
+
   @When(
       "^the Couple G-meter \"([^\"]*)\" to E-meter \"([^\"]*)\" request is received for an unknown gateway$")
   public void theCoupleGMeterToEMeterRequestOnChannelIsReceivedForAnUnknownGateway(

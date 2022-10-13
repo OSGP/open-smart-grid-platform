@@ -3,7 +3,7 @@ Feature: SmartMetering functional exceptions regarding firmware
 
   Scenario: firmware upgrade with unknown firmware
     Given a manufacturer
-      | ManufacturerCode | KAIF  |
+      | ManufacturerCode | KAI   |
       | ManufacturerName | Kaifa |
     And a device model
       | ManufacturerName | Kaifa |
@@ -11,7 +11,7 @@ Feature: SmartMetering functional exceptions regarding firmware
     And a dlms device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
-      | ManufacturerCode     | KAIF              |
+      | ManufacturerCode     | KAI               |
       | DeviceModelCode      | MA105             |
     And a firmware
       | FirmwareFileIdentification  | TEST_FW_FILE_000X                        |
@@ -35,12 +35,12 @@ Feature: SmartMetering functional exceptions regarding firmware
 
   Scenario: upgrade firmware fails for a device without a device model
     Given a manufacturer
-      | ManufacturerCode | KAIF  |
+      | ManufacturerCode | KAI   |
       | ManufacturerName | Kaifa |
     And a dlms device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
-      | ManufacturerCode     | KAIF              |
+      | ManufacturerCode     | KAI               |
     And a firmware
       | FirmwareFileIdentification  | TEST_FW_FILE_0001                        |
       | FirmwareFile                | 57696520646974206c656573742069732067656b |

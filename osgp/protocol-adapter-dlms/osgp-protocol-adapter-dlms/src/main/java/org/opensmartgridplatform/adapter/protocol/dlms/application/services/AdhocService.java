@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.io.Serializable;
 import org.openmuc.jdlms.AccessResultCode;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.TestAlarmSchedulerCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SynchronizeTimeCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.ScanMbusChannelsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetAllAttributeValuesCommandExecutor;
@@ -22,6 +23,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AssociationLnLis
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannelsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.TestAlarmSchedulerRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -31,6 +33,7 @@ import org.springframework.stereotype.Service;
 @Service(value = "dlmsAdhocService")
 public class AdhocService {
 
+  @Autowired private TestAlarmSchedulerCommandExecutor testAlarmSchedulerCommandExecutor;
   @Autowired private SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
 
   @Autowired private GetAllAttributeValuesCommandExecutor getAllAttributeValuesCommandExecutor;
@@ -93,5 +96,21 @@ public class AdhocService {
       final MessageMetadata messageMetadata)
       throws OsgpException {
     return this.scanMbusChannelsCommandExecutor.execute(conn, device, null, messageMetadata);
+  }
+
+  public void scheduleTestAlarm(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final TestAlarmSchedulerRequestDto testAlarmSchedulerRequestDto,
+      final MessageMetadata messageMetadata)
+      throws ProtocolAdapterException {
+    final AccessResultCode accessResultCode =
+        this.testAlarmSchedulerCommandExecutor.execute(
+            conn, device, testAlarmSchedulerRequestDto, messageMetadata);
+
+    if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
+      throw new ProtocolAdapterException(
+          "AccessResultCode for scheduleTestAlarm: " + accessResultCode);
+    }
   }
 }

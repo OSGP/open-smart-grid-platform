@@ -11,6 +11,7 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.sma
 import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeysRequestData;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.SecurityKey;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 
 public class SetKeysRequestDataFactory {
@@ -23,12 +24,20 @@ public class SetKeysRequestDataFactory {
     final SetKeysRequestData setKeysRequestData = new SetKeysRequestData();
     setKeysRequestData.setAuthenticationKey(
         RequestFactoryHelper.hexDecodeDeviceKey(
-            requestParameters.get(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY),
+            getSoapKey(requestParameters, PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY),
             PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY));
     setKeysRequestData.setEncryptionKey(
         RequestFactoryHelper.hexDecodeDeviceKey(
-            requestParameters.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY),
+            getSoapKey(requestParameters, PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY),
             PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
     return setKeysRequestData;
+  }
+
+  private static String getSoapKey(final Map<String, String> requestParameters, final String key) {
+    final String keyName = requestParameters.get(key);
+    if (keyName == null) {
+      return null;
+    }
+    return SecurityKey.valueOf(keyName).getSoapRequestKey();
   }
 }

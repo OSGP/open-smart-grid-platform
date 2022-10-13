@@ -32,6 +32,7 @@ public class MBusClientSetup extends CosemInterfaceObject {
 
   public static final int METHOD_ID_SLAVE_DEINSTALL = 2;
   public static final int METHOD_ID_RESET_ALARM = 4;
+  public static final int METHOD_ID_DATA_SEND = 6;
   public static final int METHOD_ID_SET_ENCRYPTION_KEY = 7;
   public static final int METHOD_ID_TRANSFER_KEY = 8;
 
@@ -77,6 +78,16 @@ public class MBusClientSetup extends CosemInterfaceObject {
 
   @CosemMethod(id = METHOD_ID_RESET_ALARM, consumes = Type.INTEGER)
   public void resetAlarm(final DataObject param) {
+    /*
+     * This method does not provide any simulated functionality except for
+     * accepting the method call. While there is no simulation of encrypted
+     * communication with an M-Bus device, simulating any action in this
+     * method would be pointless.
+     */
+  }
+
+  @CosemMethod(id = METHOD_ID_DATA_SEND, consumes = Type.ARRAY)
+  public void dataSend(final DataObject param) {
     /*
      * This method does not provide any simulated functionality except for
      * accepting the method call. While there is no simulation of encrypted

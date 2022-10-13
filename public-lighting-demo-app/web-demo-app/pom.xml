@@ -15,7 +15,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-os-webapps</artifactId>
-    <version>5.20.0-SNAPSHOT</version>
+    <version>5.32.0-SNAPSHOT</version>
     <relativePath>../parent-os-webapps/pom.xml</relativePath>
   </parent>
 
@@ -183,6 +183,11 @@
             <version>${junit.version}</version>
           </dependency>
         </dependencies>
+      </plugin>
+
+      <plugin>
+        <groupId>org.cyclonedx</groupId>
+        <artifactId>cyclonedx-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

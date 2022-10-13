@@ -16,15 +16,32 @@ public class SetEncryptionKeyExchangeOnGMeterRequestData implements Serializable
 
   private static final long serialVersionUID = 3965412208032103531L;
 
-  private final String deviceIdentification;
+  private final String mbusDeviceIdentification;
 
-  public SetEncryptionKeyExchangeOnGMeterRequestData(final String deviceIdentification) {
+  private final SecretType secretType;
+
+  private final Boolean closeOpticalPort;
+
+  public SetEncryptionKeyExchangeOnGMeterRequestData(
+      final String mbusDeviceIdentification,
+      final SecretType secretType,
+      final Boolean closeOpticalPort) {
     super();
-    this.deviceIdentification = deviceIdentification;
+    this.mbusDeviceIdentification = mbusDeviceIdentification;
+    this.secretType = secretType;
+    this.closeOpticalPort = closeOpticalPort;
   }
 
-  public String getDeviceIdentification() {
-    return this.deviceIdentification;
+  public String getMbusDeviceIdentification() {
+    return this.mbusDeviceIdentification;
+  }
+
+  public SecretType getSecretType() {
+    return this.secretType;
+  }
+
+  public Boolean getCloseOpticalPort() {
+    return this.closeOpticalPort;
   }
 
   @Override

@@ -45,6 +45,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.NoDeviceResponseExcept
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -56,7 +57,7 @@ public class DeviceInstallationServiceTest {
   private static final String TEST_DEVICE = "testDevice";
   private static final String TEST_UID = "testUid";
   private static final String TEST_ORGANISATION = "testOrganisation";
-  private static final String TEST_MESSAGE_TYPE = "testMessageType";
+  private static final String TEST_MESSAGE_TYPE = MessageType.GET_STATUS.name();
 
   private static final int MESSAGE_PRIORITY = 1;
 
@@ -341,6 +342,7 @@ public class DeviceInstallationServiceTest {
         .withOsgpException(exception)
         .withDataObject(dataObject)
         .withMessagePriority(MESSAGE_PRIORITY)
+        .withMessageType(TEST_MESSAGE_TYPE)
         .build();
   }
 }

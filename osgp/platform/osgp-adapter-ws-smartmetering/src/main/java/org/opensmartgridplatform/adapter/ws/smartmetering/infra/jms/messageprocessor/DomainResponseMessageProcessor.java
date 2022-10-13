@@ -18,28 +18,32 @@ import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNo
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
-import org.opensmartgridplatform.adapter.ws.smartmetering.application.ApplicationConstants;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
-import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 public class DomainResponseMessageProcessor implements MessageProcessor {
 
-  /** The message type that a message processor implementation can handle. */
-  protected MessageType messageType;
+  private final NotificationService notificationService;
+  private final ResponseDataService responseDataService;
+  private final String webserviceNotificationApplicationName;
 
-  @Autowired private NotificationService notificationService;
-  @Autowired private ResponseDataService responseDataService;
+  public DomainResponseMessageProcessor(
+      final NotificationService notificationService,
+      final ResponseDataService responseDataService,
+      final String webserviceNotificationApplicationName) {
+    this.notificationService = notificationService;
+    this.responseDataService = responseDataService;
+    this.webserviceNotificationApplicationName = webserviceNotificationApplicationName;
+  }
 
   @Override
   public void processMessage(final ObjectMessage message) {
-    log.debug("Processing smart metering response message");
+    log.debug("Processing response message");
 
     String correlationUid = null;
     String actualMessageType = null;
@@ -88,7 +92,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
       // Send notification indicating data is available.
       this.notificationService.sendNotification(
           new ApplicationDataLookupKey(
-              organisationIdentification, ApplicationConstants.APPLICATION_NAME),
+              organisationIdentification, this.webserviceNotificationApplicationName),
           new GenericNotification(
               notificationMessage,
               resultType.name(),
@@ -117,16 +121,15 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
       final Serializable dataObject) {
 
     final short numberOfNotificationsSent = 0;
-    final Serializable meterResponseObject;
+    final Serializable responseObject;
     if (dataObject == null) {
-      meterResponseObject = resultDescription;
+      responseObject = resultDescription;
     } else {
-      meterResponseObject = dataObject;
+      responseObject = dataObject;
     }
 
     final ResponseData responseData =
-        new ResponseData(
-            ids, messageType, resultType, meterResponseObject, numberOfNotificationsSent);
+        new ResponseData(ids, messageType, resultType, responseObject, numberOfNotificationsSent);
     this.responseDataService.enqueue(responseData);
   }
 }

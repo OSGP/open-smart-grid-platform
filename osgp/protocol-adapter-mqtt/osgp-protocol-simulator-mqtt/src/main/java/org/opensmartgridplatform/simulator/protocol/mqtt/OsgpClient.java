@@ -26,8 +26,6 @@ public class OsgpClient extends Thread {
   private final String host;
   private final int port;
 
-  private Mqtt3AsyncClient client;
-
   public OsgpClient(final String host, final int port, final String topic) {
     this.host = host;
     this.port = port;
@@ -37,29 +35,39 @@ public class OsgpClient extends Thread {
 
   @Override
   public void run() {
-    this.client =
+    final Mqtt3AsyncClient client =
         Mqtt3Client.builder()
             .identifier(this.uuid.toString())
             .serverHost(this.host)
             .serverPort(this.port)
             .buildAsync();
-    this.client
+    client
         .connectWith()
         .send()
         .whenComplete(
             (ack, throwable) -> {
               if (throwable != null) {
-                LOG.info(
-                    String.format(
-                        "Client %s startup failed: %s",
-                        this.getClass().getSimpleName(), throwable.getMessage()));
+                LOG.error(
+                    "{} identified by {} failed to connect to host on {}:{}",
+                    this.getClass().getSimpleName(),
+                    this.uuid,
+                    this.host,
+                    this.port,
+                    throwable);
               } else {
                 LOG.info(
-                    String.format(
-                        "Client %s received Ack %s",
-                        this.getClass().getSimpleName(), ack.getType()));
-                LOG.info(String.format("Client %s started", this.getClass().getSimpleName()));
-                this.onConnect(this.client);
+                    "{} identified by {} upon connecting to host on {}:{} received {}",
+                    this.getClass().getSimpleName(),
+                    this.uuid,
+                    this.host,
+                    this.port,
+                    ack);
+                LOG.info(
+                    "{} identified by {} started and about to subscribe on topic {}",
+                    this.getClass().getSimpleName(),
+                    this.uuid,
+                    this.topic);
+                this.onConnect(client);
               }
             });
   }
@@ -74,12 +82,19 @@ public class OsgpClient extends Thread {
         .whenComplete(
             (subAck, throwable) -> {
               if (throwable != null) {
-                LOG.info(
-                    String.format(
-                        "Client %s subscription failed: %s",
-                        this.getClass().getSimpleName(), throwable.getMessage()));
+                LOG.error(
+                    "{} identified by {} failed to subscribe to topic {}",
+                    this.getClass().getSimpleName(),
+                    this.uuid,
+                    this.topic,
+                    throwable);
               } else {
-                LOG.info(String.format("Client %s subscribed", this.getClass().getSimpleName()));
+                LOG.info(
+                    "{} identified by {} subscribed to topic {} and received {}",
+                    this.getClass().getSimpleName(),
+                    this.uuid,
+                    this.topic,
+                    subAck);
               }
             });
   }
@@ -90,7 +105,11 @@ public class OsgpClient extends Thread {
         .ifPresent(
             p ->
                 LOG.info(
-                    String.format("%s payload:%s%n", p, new String(publish.getPayloadAsBytes()))));
+                    "{} identified by {} received published message with payload:{}{}",
+                    this.getClass().getSimpleName(),
+                    this.uuid,
+                    System.lineSeparator(),
+                    new String(publish.getPayloadAsBytes())));
   }
 
   public static void main(final String[] args) {

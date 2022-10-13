@@ -127,7 +127,7 @@ public class RtuDeviceService {
             rtuDevice.getProtocolName(), rtuDevice.getProtocolVersion());
     if (protocolInfo == null) {
       throw new FunctionalException(
-          FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION,
+          FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION_OR_VARIANT,
           ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION);
     }
     rtuDeviceEntity.updateProtocol(protocolInfo);

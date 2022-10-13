@@ -24,7 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWirelessSmsClient;
+import org.opensmartgridplatform.adapter.protocol.jasper.rest.client.JasperWirelessSmsRestClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProvider;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -38,7 +38,7 @@ class DomainHelperServiceTest {
   @Mock private DlmsDeviceRepository dlmsDeviceRepository;
   @Mock private SessionProviderService sessionProviderService;
   @Mock private SessionProvider sessionProvider;
-  @Mock private JasperWirelessSmsClient jasperWirelessSmsClient;
+  @Mock private JasperWirelessSmsRestClient jasperWirelessSmsRestClient;
   private final int jasperGetSessionRetries = 1;
   private final int jasperGetSessionSleepBetweenRetries = 2;
 
@@ -53,7 +53,7 @@ class DomainHelperServiceTest {
         new DomainHelperService(
             this.dlmsDeviceRepository,
             this.sessionProviderService,
-            this.jasperWirelessSmsClient,
+            this.jasperWirelessSmsRestClient,
             this.jasperGetSessionRetries,
             this.jasperGetSessionSleepBetweenRetries);
   }
@@ -123,7 +123,7 @@ class DomainHelperServiceTest {
 
     assertThat(actualIpAddress).isEqualTo(ipAddress);
 
-    verify(this.jasperWirelessSmsClient).sendWakeUpSMS(iccId);
+    verify(this.jasperWirelessSmsRestClient).sendWakeUpSMS(iccId);
   }
 
   private void whenSessionProviderReturnsIpAddressAfterWakeUp(

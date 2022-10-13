@@ -22,17 +22,24 @@ public class CoupleMbusDeviceRequestData implements Serializable, ActionRequest 
 
   private final String mbusDeviceIdentification;
 
+  private final boolean force;
+
   /**
    * @param mbusDeviceIdentification the mbus device that needs to be coupled to the device in the
    *     metadata information of the request
    * @param channel the channel on which the mbus device needs to be coupled
    */
-  public CoupleMbusDeviceRequestData(final String mbusDeviceIdentification) {
+  public CoupleMbusDeviceRequestData(final String mbusDeviceIdentification, final boolean force) {
     this.mbusDeviceIdentification = mbusDeviceIdentification;
+    this.force = force;
   }
 
   public String getMbusDeviceIdentification() {
     return this.mbusDeviceIdentification;
+  }
+
+  public boolean isForce() {
+    return this.force;
   }
 
   @Override

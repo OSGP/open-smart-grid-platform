@@ -11,6 +11,7 @@ package org.opensmartgridplatform.signing.server.application.config;
 import java.io.IOException;
 import java.security.PrivateKey;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.CertificateHelper;
 import org.opensmartgridplatform.signing.server.domain.exceptions.SigningServerException;
@@ -20,11 +21,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 
 /** An application context Java configuration class. */
 @Configuration
 @ComponentScan(basePackages = {"org.opensmartgridplatform.signing.server"})
+@Import({MetricsConfig.class})
 @PropertySource("classpath:signing-server.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/SigningServer/config}", ignoreResourceNotFound = true)
@@ -49,7 +52,7 @@ public class ApplicationContext extends AbstractConfig {
           this.environment.getRequiredProperty(PROPERTY_NAME_SIGNING_SERVER_SECURITY_SIGNKEY_PATH),
           this.environment.getRequiredProperty(PROPERTY_NAME_SIGNING_SERVER_SECURITY_KEYTYPE),
           this.environment.getRequiredProperty(PROPERTY_NAME_SIGNING_SERVER_SECURITY_PROVIDER));
-    } catch (EncrypterException | IOException e) {
+    } catch (final EncrypterException | IOException e) {
       final String msg = "Error creating private key bean";
       LOGGER.error(msg, e);
       throw new SigningServerException(msg, e);

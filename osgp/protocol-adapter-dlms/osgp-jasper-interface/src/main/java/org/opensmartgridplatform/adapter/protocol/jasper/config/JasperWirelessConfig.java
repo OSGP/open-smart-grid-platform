@@ -8,12 +8,18 @@
  */
 package org.opensmartgridplatform.adapter.protocol.jasper.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.text.SimpleDateFormat;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPException;
+import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
+import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessTerminalClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
 import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.CorrelationIdProviderService;
-import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWirelessSmsClient;
-import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWirelessTerminalClient;
+import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWirelessSmsSoapClient;
+import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWirelessTerminalSoapClient;
+import org.opensmartgridplatform.adapter.protocol.jasper.rest.client.JasperWirelessSmsRestClient;
+import org.opensmartgridplatform.adapter.protocol.jasper.rest.client.JasperWirelessTerminalRestClient;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +28,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.SoapVersion;
@@ -39,9 +47,6 @@ public class JasperWirelessConfig extends AbstractConfig {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JasperWirelessConfig.class);
 
-  @Value("${jwcc.uri.terminal}")
-  private String terminal;
-
   @Value("${jwcc.getsession.retries}")
   private String retries;
 
@@ -54,17 +59,28 @@ public class JasperWirelessConfig extends AbstractConfig {
   @Value("${jwcc.licensekey}")
   private String licenceKey;
 
+  @Value("${jwcc.apikey}")
+  private String apiKey;
+
   @Value("${jwcc.username}")
   private String username;
 
   @Value("${jwcc.password}")
   private String password;
 
-  @Value("${jwcc.api_version}")
+  @Value("${jwcc.api.version}")
   private String apiVersion;
 
   @Value("${jwcc.validity_period:0}")
   private String validityPeriod;
+
+  @Value("${jwcc.api.type:SOAP}")
+  private String apiType;
+
+  public enum ApiType {
+    SOAP,
+    REST
+  }
 
   @Bean
   public Jaxb2Marshaller marshaller() {
@@ -109,25 +125,15 @@ public class JasperWirelessConfig extends AbstractConfig {
   }
 
   @Bean
-  public JasperWirelessSmsClient jasperWirelessSmsClient() {
-    return new JasperWirelessSmsClient();
-  }
-
-  @Bean
-  public JasperWirelessTerminalClient jasperWirelessTerminalClient() {
-    return new JasperWirelessTerminalClient();
-  }
-
-  @Bean
   public JasperWirelessAccess jasperWirelessAccess() {
     return new JasperWirelessAccess(
-        this.uri, this.licenceKey, this.username, this.password, this.apiVersion);
-  }
-
-  @Bean
-  public JasperWirelessAccess jasperWirelessTerminalAccess() {
-    return new JasperWirelessAccess(
-        this.uri, this.licenceKey, this.username, this.password, this.apiVersion);
+        this.uri,
+        this.licenceKey,
+        this.apiKey,
+        this.username,
+        this.password,
+        this.apiVersion,
+        this.apiType);
   }
 
   @Bean
@@ -148,5 +154,45 @@ public class JasperWirelessConfig extends AbstractConfig {
   @Bean
   public int jasperGetSessionSleepBetweenRetries() {
     return Integer.parseInt(this.sleepBetweenRetries);
+  }
+
+  @Bean
+  public RestTemplate jasperWirelessRestTemplate() {
+
+    final RestTemplate restTemplate = new RestTemplate();
+    restTemplate.getMessageConverters().add(0, this.createMappingJacksonHttpMessageConverter());
+    return restTemplate;
+  }
+
+  private MappingJackson2HttpMessageConverter createMappingJacksonHttpMessageConverter() {
+
+    final MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+    converter.setObjectMapper(this.createObjectMapper());
+    return converter;
+  }
+
+  private ObjectMapper createObjectMapper() {
+
+    final ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ"));
+    return objectMapper;
+  }
+
+  @Bean
+  public JasperWirelessSmsClient jasperWirelessSmsClient() {
+    if (this.apiType.equalsIgnoreCase(ApiType.REST.name())) {
+      return new JasperWirelessSmsRestClient();
+    } else {
+      return new JasperWirelessSmsSoapClient();
+    }
+  }
+
+  @Bean
+  public JasperWirelessTerminalClient jasperWirelessTerminalClient() {
+    if (this.apiType.equalsIgnoreCase(ApiType.REST.name())) {
+      return new JasperWirelessTerminalRestClient();
+    } else {
+      return new JasperWirelessTerminalSoapClient();
+    }
   }
 }

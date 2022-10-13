@@ -19,7 +19,10 @@ To communicate with Smart Meters that understand DLMS/COSEM you will need to inc
 
 The jDLMS library is developed by the department "Intelligent Energy Systems" at the Fraunhofer Institute for Solar Energy Systems in Freiburg, Germany.
 
-jDLMS is licensed under the GPLv3, more information can be found on the OpenMUC web site: https://www.openmuc.org/index.php?id=42
+jDLMS is licensed under the GPLv3, more information can be found on the OpenMUC website: https://www.openmuc.org/dlms-cosem/
+
+**Note: OpenMuc offers dual licensing agreements for OpenMUC jDLMS Library.** 
+For those who find the GPLv3 too restrictive, OpenMuc provides individual proprietary licenses for OpenMUC jDLMS Library which give you a higher degree of freedom regarding usage. For more information, see https://www.openmuc.org/services/.
 
 ## Grid eXchange Fabric information and news
 

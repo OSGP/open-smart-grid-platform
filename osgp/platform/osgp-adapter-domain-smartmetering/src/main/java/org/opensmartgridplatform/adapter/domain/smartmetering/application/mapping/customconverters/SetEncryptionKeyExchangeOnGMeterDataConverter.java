@@ -12,7 +12,8 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.application.servic
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -22,17 +23,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class SetEncryptionKeyExchangeOnGMeterDataConverter
     implements CustomValueToDtoConverter<
-        SetEncryptionKeyExchangeOnGMeterRequestData, GMeterInfoDto> {
+        SetEncryptionKeyExchangeOnGMeterRequestData, SetKeyOnGMeterRequestDto> {
 
   @Autowired private DomainHelperService domainHelperService;
 
   @Override
-  public GMeterInfoDto convert(
+  public SetKeyOnGMeterRequestDto convert(
       final SetEncryptionKeyExchangeOnGMeterRequestData value, final SmartMeter smartMeter)
       throws FunctionalException {
 
     final SmartMeter gasDevice =
-        this.domainHelperService.findSmartMeter(value.getDeviceIdentification());
+        this.domainHelperService.findSmartMeter(value.getMbusDeviceIdentification());
 
     final Device gatewayDevice = gasDevice.getGatewayDevice();
     if (gatewayDevice == null) {
@@ -48,6 +49,10 @@ public class SetEncryptionKeyExchangeOnGMeterDataConverter
           new AssertionError("Meter for gas reads should have an energy meter as gateway device."));
     }
 
-    return new GMeterInfoDto(gasDevice.getChannel(), gasDevice.getDeviceIdentification());
+    return new SetKeyOnGMeterRequestDto(
+        gasDevice.getDeviceIdentification(),
+        gasDevice.getChannel(),
+        SecretTypeDto.values()[value.getSecretType().ordinal()],
+        value.getCloseOpticalPort() != null ? value.getCloseOpticalPort() : false);
   }
 }

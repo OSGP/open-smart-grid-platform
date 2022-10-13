@@ -20,9 +20,11 @@ import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.FirmwareLocation;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -33,6 +35,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
       "org.opensmartgridplatform.adapter.protocol.oslp.elster",
       "org.opensmartgridplatform.core.db.api"
     })
+@Import({MetricsConfig.class})
 @EnableTransactionManagement()
 @PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)

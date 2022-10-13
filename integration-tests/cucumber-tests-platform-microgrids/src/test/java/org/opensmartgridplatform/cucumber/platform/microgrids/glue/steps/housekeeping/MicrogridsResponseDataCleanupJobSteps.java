@@ -13,13 +13,13 @@ import io.cucumber.java.en.When;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.cucumber.core.RetryableAssert;
-import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws.MicrogridsResponseDataSteps;
+import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws.WsMicrogridsResponseDataSteps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 public class MicrogridsResponseDataCleanupJobSteps {
 
-  @Autowired private MicrogridsResponseDataSteps responseDataSteps;
+  @Autowired private WsMicrogridsResponseDataSteps responseDataSteps;
 
   @Value("${iec61850.rtu.response.cleanup.wait.delay:1000}")
   private long delay;

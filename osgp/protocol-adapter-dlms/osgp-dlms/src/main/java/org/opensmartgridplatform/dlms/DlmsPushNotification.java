@@ -69,6 +69,10 @@ public class DlmsPushNotification implements Serializable {
       return new DlmsPushNotification(
           this.baos.toByteArray(), this.equipmentIdentifier, this.triggerType, this.alarms);
     }
+
+    public String getTriggerType() {
+      return this.triggerType;
+    }
   }
 
   private final String equipmentIdentifier;

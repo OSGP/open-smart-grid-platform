@@ -144,7 +144,7 @@ class StatusMappingTest {
                 .LightValue();
     eLv1.setIndex(2);
     eLv1.setOn(false);
-    eLv1.setDimValue(0);
+    eLv1.setDimValue(null);
     final org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightValue
         eLv2 =
             new org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement

@@ -13,12 +13,13 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaDeviceSpecifications;
 import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaEventSpecifications;
-import org.opensmartgridplatform.adapter.ws.shared.db.application.config.WritablePersistenceConfig;
+import org.opensmartgridplatform.adapter.ws.shared.db.application.config.WritablePersistenceConfigCore;
 import org.opensmartgridplatform.domain.core.specifications.DeviceSpecifications;
 import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareLocation;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.opensmartgridplatform.ws.core.config.CoreWebServiceConfig;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -38,14 +39,18 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
       "org.opensmartgridplatform.shared.domain.services",
       "org.opensmartgridplatform.domain.core",
       "org.opensmartgridplatform.adapter.ws.core",
-      "org.opensmartgridplatform.domain.logging"
+      "org.opensmartgridplatform.adapter.ws.shared.services",
+      "org.opensmartgridplatform.adapter.ws.mapping",
+      "org.opensmartgridplatform.domain.logging",
     })
 @ImportResource("classpath:applicationContext.xml")
 @Import({
-  PersistenceConfig.class,
-  WritablePersistenceConfig.class,
+  PersistenceConfigCore.class,
+  PersistenceConfigWs.class,
+  WritablePersistenceConfigCore.class,
   WebServiceConfig.class,
-  CoreWebServiceConfig.class
+  CoreWebServiceConfig.class,
+  MetricsConfig.class
 })
 @PropertySource("classpath:osgp-adapter-ws-core.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)

@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.application.config;
 
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -18,13 +19,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 
 @Configuration
 @ComponentScan("org.opensmartgridplatform.adapter.kafka.da")
-@ComponentScan("org.opensmartgridplatform.domain.da")
-@ComponentScan("org.opensmartgridplatform.domain.core.services")
-@ComponentScan("org.opensmartgridplatform.domain.logging")
-@ComponentScan("org.opensmartgridplatform.shared.application.config")
-@ComponentScan("org.opensmartgridplatform.shared.domain.entities")
-@ComponentScan("org.opensmartgridplatform.shared.domain.services")
-@Import({PersistenceConfig.class, PersistenceConfigCore.class, MessagingConfig.class})
+@Import({MessagingConfig.class, MetricsConfig.class})
 @PropertySource("classpath:osgp-adapter-kafka-distributionautomation.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(

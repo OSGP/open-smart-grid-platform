@@ -19,7 +19,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-protocol-simulator-mqtt</artifactId>
-  <version>5.20.0-SNAPSHOT</version>
+  <version>5.32.0-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>osgp-protocol-simulator-mqtt</name>
   <description>Simulator for MQTT Protocol.</description>
@@ -225,6 +225,11 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
         <version>${maven.site.plugin}</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.cyclonedx</groupId>
+        <artifactId>cyclonedx-maven-plugin</artifactId>
       </plugin>
     </plugins>
 

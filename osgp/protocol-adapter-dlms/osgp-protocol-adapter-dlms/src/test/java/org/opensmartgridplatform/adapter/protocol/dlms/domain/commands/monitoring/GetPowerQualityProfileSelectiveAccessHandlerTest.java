@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -36,7 +37,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityP
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 
 @ExtendWith(MockitoExtension.class)
-public class GetPowerQualityProfileSelectiveAccessHandlerTest {
+class GetPowerQualityProfileSelectiveAccessHandlerTest {
 
   @Mock private DlmsHelper dlmsHelper;
 
@@ -44,10 +45,22 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
 
   @Mock private DlmsDevice dlmsDevice;
 
-  @Test
-  public void testHandlePrivateProfileSelectiveAccess() throws ProtocolAdapterException {
+  @BeforeEach
+  public void setup() throws ProtocolAdapterException {
+    when(this.dlmsHelper.readLogicalName(any(DataObject.class), any(String.class)))
+        .thenCallRealMethod();
+    when(this.dlmsHelper.readObjectDefinition(any(DataObject.class), any(String.class)))
+        .thenCallRealMethod();
+    when(this.dlmsHelper.readLongNotNull(any(DataObject.class), any(String.class)))
+        .thenCallRealMethod();
+    when(this.dlmsHelper.readLong(any(DataObject.class), any(String.class))).thenCallRealMethod();
+    when(this.dlmsHelper.convertDataObjectToDateTime(any(DataObject.class))).thenCallRealMethod();
+    when(this.dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
+    when(this.dlmsHelper.getClockDefinition()).thenCallRealMethod();
+  }
 
-    // SETUP
+  @Test
+  void testHandlePrivateProfileSelectiveAccess() throws ProtocolAdapterException {
 
     final GetPowerQualityProfileRequestDataDto requestDto =
         new GetPowerQualityProfileRequestDataDto(
@@ -62,41 +75,63 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
             any(String.class),
             any(AttributeAddress.class)))
         .thenReturn(
-            this.createCaptureObjects(),
+            this.createPrivateCaptureObjects(),
             this.createProfileEntries(),
-            this.createCaptureObjectsProfile2(),
+            this.createPrivateCaptureObjectsProfile2(),
             this.createProfileEntries());
-
-    when(this.dlmsHelper.readLogicalName(any(DataObject.class), any(String.class)))
-        .thenCallRealMethod();
-    when(this.dlmsHelper.readObjectDefinition(any(DataObject.class), any(String.class)))
-        .thenCallRealMethod();
-    when(this.dlmsHelper.readLongNotNull(any(DataObject.class), any(String.class)))
-        .thenCallRealMethod();
-    when(this.dlmsHelper.readLong(any(DataObject.class), any(String.class))).thenCallRealMethod();
-    when(this.dlmsHelper.convertDataObjectToDateTime(any(DataObject.class))).thenCallRealMethod();
-    when(this.dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
-    when(this.dlmsHelper.getClockDefinition()).thenCallRealMethod();
 
     final GetPowerQualityProfileSelectiveAccessHandler handler =
         new GetPowerQualityProfileSelectiveAccessHandler(this.dlmsHelper);
 
-    // EXECUTE
+    final GetPowerQualityProfileResponseDto responseDto =
+        handler.handle(this.conn, this.dlmsDevice, requestDto);
+
+    assertThat(responseDto.getPowerQualityProfileResponseDatas()).hasSize(2);
+    assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getCaptureObjects())
+        .hasSize(3);
+    assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries())
+        .hasSize(4);
+
+    for (final ProfileEntryDto profileEntryDto :
+        responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries()) {
+      assertThat(profileEntryDto.getProfileEntryValues()).hasSize(3);
+    }
+  }
+
+  @Test
+  void testHandlePublicProfileSelectiveAccess() throws ProtocolAdapterException {
+
+    final GetPowerQualityProfileRequestDataDto requestDto =
+        new GetPowerQualityProfileRequestDataDto(
+            "PUBLIC",
+            Date.from(Instant.now().minus(2, ChronoUnit.DAYS)),
+            new Date(),
+            new ArrayList<>());
+
+    when(this.dlmsHelper.getAndCheck(
+            any(DlmsConnectionManager.class),
+            any(DlmsDevice.class),
+            any(String.class),
+            any(AttributeAddress.class)))
+        .thenReturn(
+            this.createPublicCaptureObjects(),
+            this.createPublicProfileEntries(),
+            this.createPublicCaptureObjectsProfile2(),
+            this.createPublicProfileEntries());
+
+    final GetPowerQualityProfileSelectiveAccessHandler handler =
+        new GetPowerQualityProfileSelectiveAccessHandler(this.dlmsHelper);
 
     final GetPowerQualityProfileResponseDto responseDto =
         handler.handle(this.conn, this.dlmsDevice, requestDto);
 
-    // ASSERT
-
-    assertThat(responseDto.getPowerQualityProfileResponseDatas().size()).isEqualTo(2);
-    assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getCaptureObjects().size())
-        .isEqualTo(3);
-    assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries().size())
-        .isEqualTo(4);
+    assertThat(responseDto.getPowerQualityProfileResponseDatas()).hasSize(2);
+    assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getCaptureObjects())
+        .hasSize(3);
 
     for (final ProfileEntryDto profileEntryDto :
         responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries()) {
-      assertThat(profileEntryDto.getProfileEntryValues().size()).isEqualTo(3);
+      assertThat(profileEntryDto.getProfileEntryValues()).hasSize(3);
     }
   }
 
@@ -133,14 +168,9 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
     return Collections.singletonList(getResult);
   }
 
-  private List<GetResult> createCaptureObjects() {
+  private List<GetResult> createPrivateCaptureObjects() {
 
-    final DataObject structureData1 =
-        DataObject.newStructureData(
-            DataObject.newUInteger32Data(8),
-            DataObject.newOctetStringData(new byte[] {0, 0, 1, 0, 0, (byte) 255}),
-            DataObject.newInteger32Data(2),
-            DataObject.newUInteger32Data(0));
+    final DataObject clockDefinition = getClockDefinition();
     final DataObject structureData2 =
         DataObject.newStructureData(
             DataObject.newUInteger32Data(1),
@@ -156,19 +186,15 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
 
     final GetResult getResult =
         new GetResultImpl(
-            DataObject.newArrayData(Arrays.asList(structureData1, structureData2, structureData3)));
+            DataObject.newArrayData(
+                Arrays.asList(clockDefinition, structureData2, structureData3)));
 
     return Collections.singletonList(getResult);
   }
 
-  private List<GetResult> createCaptureObjectsProfile2() {
+  private List<GetResult> createPrivateCaptureObjectsProfile2() {
 
-    final DataObject structureData1 =
-        DataObject.newStructureData(
-            DataObject.newUInteger32Data(8),
-            DataObject.newOctetStringData(new byte[] {0, 0, 1, 0, 0, (byte) 255}),
-            DataObject.newInteger32Data(2),
-            DataObject.newUInteger32Data(0));
+    final DataObject clockDefinition = getClockDefinition();
     final DataObject structureData2 =
         DataObject.newStructureData(
             DataObject.newUInteger32Data(1),
@@ -184,8 +210,82 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
 
     final GetResult getResult =
         new GetResultImpl(
-            DataObject.newArrayData(Arrays.asList(structureData1, structureData2, structureData3)));
+            DataObject.newArrayData(
+                Arrays.asList(clockDefinition, structureData2, structureData3)));
 
     return Collections.singletonList(getResult);
+  }
+
+  private List<GetResult> createPublicCaptureObjects() {
+    final DataObject clockDefinition = getClockDefinition();
+    final DataObject structureData2 =
+        DataObject.newStructureData(
+            DataObject.newUInteger32Data(1),
+            DataObject.newOctetStringData(new byte[] {1, 0, 32, 32, 0, (byte) 255}),
+            DataObject.newInteger32Data(2),
+            DataObject.newUInteger32Data(0));
+    final DataObject structureData3 =
+        DataObject.newStructureData(
+            DataObject.newUInteger32Data(1),
+            DataObject.newOctetStringData(new byte[] {1, 0, 52, 32, 0, (byte) 255}),
+            DataObject.newInteger32Data(2),
+            DataObject.newUInteger32Data(0));
+
+    final GetResult getResult =
+        new GetResultImpl(
+            DataObject.newArrayData(
+                Arrays.asList(clockDefinition, structureData2, structureData3)));
+
+    return Collections.singletonList(getResult);
+  }
+
+  private List<GetResult> createPublicCaptureObjectsProfile2() {
+
+    final DataObject clockDefinition = getClockDefinition();
+    final DataObject structureData2 =
+        DataObject.newStructureData(
+            DataObject.newUInteger32Data(1),
+            DataObject.newOctetStringData(new byte[] {1, 0, 32, 24, 0, (byte) 255}),
+            DataObject.newInteger32Data(2),
+            DataObject.newUInteger32Data(0));
+    final DataObject structureData3 =
+        DataObject.newStructureData(
+            DataObject.newUInteger32Data(1),
+            DataObject.newOctetStringData(new byte[] {1, 0, 52, 24, 0, (byte) 255}),
+            DataObject.newInteger32Data(2),
+            DataObject.newUInteger32Data(0));
+
+    final GetResult getResult =
+        new GetResultImpl(
+            DataObject.newArrayData(
+                Arrays.asList(clockDefinition, structureData2, structureData3)));
+
+    return Collections.singletonList(getResult);
+  }
+
+  private List<GetResult> createPublicProfileEntries() {
+
+    final List<DataObject> structures = new ArrayList<>();
+
+    final DataObject structureData1 =
+        DataObject.newStructureData(
+            DataObject.newOctetStringData(
+                new byte[] {7, (byte) 228, 3, 15, 7, 0, 0, 0, 0, (byte) 255, (byte) 196, 0}),
+            DataObject.newUInteger32Data(3),
+            DataObject.newUInteger32Data(2));
+
+    structures.add(structureData1);
+
+    final GetResult getResult = new GetResultImpl(DataObject.newArrayData(structures));
+
+    return Collections.singletonList(getResult);
+  }
+
+  private static DataObject getClockDefinition() {
+    return DataObject.newStructureData(
+        DataObject.newUInteger32Data(8),
+        DataObject.newOctetStringData(new byte[] {0, 0, 1, 0, 0, (byte) 255}),
+        DataObject.newInteger32Data(2),
+        DataObject.newUInteger32Data(0));
   }
 }

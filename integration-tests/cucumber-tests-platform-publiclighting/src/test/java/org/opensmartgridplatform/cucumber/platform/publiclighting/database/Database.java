@@ -12,24 +12,36 @@ import java.util.Arrays;
 import java.util.List;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws.PublicLightingResponseDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class Database {
 
-  @Autowired private PublicLightingResponseDataRepository publicLightingResponseDataRepository;
-
-  // @Autowired
-  // private TariffSwitchingResponseDataRepository
-  // tariffSwitchingResponseDataRepository;
+  @Autowired
+  @Qualifier("wsPublicLightingResponseDataRepository")
+  private ResponseDataRepository responseDataRepository;
 
   @Autowired
+  @Qualifier("wsPublicLightingNotificationWebServiceConfigurationRepository")
   private NotificationWebServiceConfigurationRepository
       notificationWebServiceConfigurationRepository;
+
+  @Autowired
+  @Qualifier("wsPublicLightingNotificationApplicationName")
+  private String notificationApplicationName;
+
+  @Autowired
+  @Qualifier("wsPublicLightingNotificationMarshallerContextPath")
+  private String notificationMarshallerContextPath;
+
+  @Autowired
+  @Qualifier("wsPublicLightingNotificationTargetUri")
+  private String notificationTargetUri;
 
   private void insertDefaultData() {
     this.notificationWebServiceConfigurationRepository.saveAll(
@@ -39,9 +51,9 @@ public class Database {
   private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
     final NotificationWebServiceConfigurationBuilder builder =
         new NotificationWebServiceConfigurationBuilder()
-            .withApplicationName("OSGP")
-            .withMarshallerContextPath(
-                "org.opensmartgridplatform.adapter.ws.schema.publiclighting.notification")
+            .withApplicationName(this.notificationApplicationName)
+            .withMarshallerContextPath(this.notificationMarshallerContextPath)
+            .withTargetUri(this.notificationTargetUri)
             .withoutCircuitBreakerConfig()
             .withoutKeyStoreConfig()
             .withoutTrustStoreConfig();
@@ -56,17 +68,9 @@ public class Database {
 
   @Transactional("txMgrWsPublicLighting")
   public void preparePublicLightingDatabaseForScenario() {
-    this.publicLightingResponseDataRepository.deleteAll();
+    this.responseDataRepository.deleteAll();
     this.notificationWebServiceConfigurationRepository.deleteAll();
 
     this.insertDefaultData();
   }
-
-  // @Transactional("txMgrWsTariffSwitching")
-  // public void prepareTariffSwitchingDatabaseForScenario() {
-  // this.tariffSwitchingResponseDataRepository.deleteAll();
-  // this.notificationWebServiceConfigurationRepository.deleteAll();
-  //
-  // this.insertDefaultData();
-  // }
 }

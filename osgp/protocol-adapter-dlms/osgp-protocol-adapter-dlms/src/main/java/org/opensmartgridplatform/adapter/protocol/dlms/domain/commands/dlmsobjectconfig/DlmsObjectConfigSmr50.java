@@ -32,6 +32,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.MBUS_EVENT_LOG;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.MBUS_MASTER_VALUE;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.MONTHLY_BILLING_VALUES;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PHASE_OUTAGE_TEST;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.POWER_QUALITY_EVENT_CODE;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.POWER_QUALITY_EVENT_LOG;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SCHEDULER;
@@ -91,6 +92,7 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
     final DlmsObject amrStatusMonthlyG = new DlmsData(AMR_STATUS, "0.<c>.96.10.7.255");
     final DlmsObject alarmFilter1 = new DlmsData(ALARM_FILTER_1, "0.0.97.98.10.255");
     final DlmsObject alarmRegister1 = new DlmsData(ALARM_REGISTER_1, "0.0.97.98.0.255");
+
     final DlmsObject randomisationSettings =
         new DlmsData(RANDOMISATION_SETTINGS, "0.1.94.31.12.255");
 
@@ -114,6 +116,8 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
     final DlmsObject internalTriggerAlarm =
         new DlmsRegisterMonitor(INTERNAL_TRIGGER_ALARM, "0.0.16.1.0.255");
     final DlmsObject pushSetupAlarm = new DlmsPushSetup(PUSH_SETUP_ALARM, "0.1.25.9.0.255");
+    final DlmsObject schedulePhaseOutageTestAlarm =
+        new DlmsSingleActionSchedule(PHASE_OUTAGE_TEST, "0.0.15.1.4.255");
 
     objectList.addAll(
         Arrays.asList(
@@ -121,7 +125,8 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
             pushSetupScheduler,
             externalTriggerSmsOrCsd,
             internalTriggerAlarm,
-            pushSetupAlarm));
+            pushSetupAlarm,
+            schedulePhaseOutageTestAlarm));
 
     final DlmsObject standardEventLogCode = new DlmsData(STANDARD_EVENT_CODE, "0.0.96.11.0.255");
     final DlmsObject fraudDetectionEventLogCode =

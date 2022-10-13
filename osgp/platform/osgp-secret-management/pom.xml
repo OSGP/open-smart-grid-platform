@@ -19,22 +19,22 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>5.20.0-SNAPSHOT</version>
+    <version>5.32.0-SNAPSHOT</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
   <properties>
     <java.version>1.8</java.version>
-    <spring.boot.version>2.4.0</spring.boot.version>
+    <spring.boot.version>2.7.2</spring.boot.version>
     <jaxb.plugin.version>2.5.0</jaxb.plugin.version>
     <build.helper.maven.plugin.version>3.0.0</build.helper.maven.plugin.version>
     <apache.ws.xlmschema.version>2.0.1</apache.ws.xlmschema.version>
     <apache.jms.api.version>2.0.1</apache.jms.api.version>
     <wsdl4j.version>1.6.3</wsdl4j.version>
     <maven.failsafe.plugin.version>3.0.0-M5</maven.failsafe.plugin.version>
-    <spring.boot.maven.plugin.version>2.4.0</spring.boot.maven.plugin.version>
+    <spring.boot.maven.plugin.version>2.7.2</spring.boot.maven.plugin.version>
     <osgp-ws-secret-management-version>${project.parent.version}</osgp-ws-secret-management-version>
-    <com.h2database>1.4.200</com.h2database>
+    <h2database.version>2.1.214</h2database.version>
     <failOnMissingWebXml>false</failOnMissingWebXml>
   </properties>
 
@@ -102,6 +102,11 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.surefire.plugin.version}</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.cyclonedx</groupId>
+        <artifactId>cyclonedx-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
@@ -178,7 +183,7 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <version>${com.h2database}</version>
+      <version>${h2database.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -45,11 +45,18 @@ public class ProtocolRequestMessageJmsTemplateFactory implements InitializingBea
   }
 
   public JmsTemplate getJmsTemplate(final ProtocolInfo protocolInfo) {
-    return this.jmsTemplateRegistry.getValue(protocolInfo.getKey());
+    if (this.jmsTemplateRegistry.getValue(protocolInfo.getKey()) != null) {
+      return this.jmsTemplateRegistry.getValue(protocolInfo.getKey());
+    }
+    return this.jmsTemplateRegistry.getValue(this.keyWithoutVariant(protocolInfo));
   }
 
-  public JmsTemplate getJmsTemplate(final String protocol, final String protocolVersion) {
-    return this.jmsTemplateRegistry.getValue(ProtocolInfo.getKey(protocol, protocolVersion));
+  private String keyWithoutVariant(final ProtocolInfo protocolInfo) {
+    return new ProtocolInfo.Builder()
+        .withProtocol(protocolInfo.getProtocol())
+        .withProtocolVersion(protocolInfo.getProtocolVersion())
+        .build()
+        .getKey();
   }
 
   @Override

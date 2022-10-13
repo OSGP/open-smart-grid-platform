@@ -86,6 +86,8 @@
       <xsd:enumeration value="GET_KEYS" />
       <xsd:enumeration value="SYSTEM_EVENT" />
       <xsd:enumeration value="CLEAR_MBUS_STATUS_ON_ALL_CHANNELS" />
+      <xsd:enumeration value="UPDATE_PROTOCOL" />
+      <xsd:enumeration value="SCHEDULE_TEST_ALARM" />
     </xsd:restriction>
   </xsd:simpleType>
 

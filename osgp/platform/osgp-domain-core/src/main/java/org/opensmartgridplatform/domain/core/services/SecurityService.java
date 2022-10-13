@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service;
 public class SecurityService {
   private static final Logger LOGGER = LoggerFactory.getLogger(SecurityService.class);
 
-  private static Map<PlatformFunctionGroup, List<PlatformFunction>> platformMapping;
+  private static final Map<PlatformFunctionGroup, List<PlatformFunction>> platformMapping;
 
   static {
     platformMapping = new HashMap<>();
@@ -66,7 +66,8 @@ public class SecurityService {
             PlatformFunction.SET_OWNER,
             PlatformFunction.SET_RANDOMISATION_SETTINGS,
             PlatformFunction.UPDATE_DEVICE_PROTOCOL,
-            PlatformFunction.UPDATE_KEY));
+            PlatformFunction.UPDATE_KEY,
+            PlatformFunction.SCHEDULE_TEST_ALARM));
 
     platformMapping.put(
         PlatformFunctionGroup.USER,

@@ -877,6 +877,7 @@ class FirmwareManagementServiceTest {
             .withOsgpException(
                 new TechnicalException("Exception occurred while getting device firmware version"))
             .withMessagePriority(1)
+            .withMessageType(MessageType.GET_FIRMWARE_VERSION.name())
             .build();
 
     assertThat(responseMessage)
@@ -928,6 +929,7 @@ class FirmwareManagementServiceTest {
             .withIds(CORRELATION_IDS)
             .withResult(ResponseMessageResultType.OK)
             .withMessagePriority(1)
+            .withMessageType(MessageType.GET_FIRMWARE_VERSION.name())
             .build();
 
     assertThat(responseMessage)

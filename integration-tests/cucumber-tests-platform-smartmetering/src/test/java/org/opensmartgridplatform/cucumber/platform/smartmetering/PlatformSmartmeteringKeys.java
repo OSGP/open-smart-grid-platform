@@ -28,9 +28,11 @@ public class PlatformSmartmeteringKeys
   public static final String CONTAINER_STREET = "ContainerStreet";
   public static final String CORRELATION_UID = "CorrelationUid";
   public static final String SMART_METER_E = "SmartMeterE";
+
   // Default keys for dlms_device
   public static final String DEVICE_IDENTIFICATION = "DeviceIdentification";
   public static final String DEVICE_MODEL_CODE = "DeviceModelCode";
+  public static final String DEVICE_LIFECYCLE_STATUS = "DeviceLifecycleStatus";
 
   // other
   public static final String DEVICE_TYPE = "DeviceType";
@@ -41,6 +43,7 @@ public class PlatformSmartmeteringKeys
 
   public static final String MBUS_DEVICE_IDENTIFICATION = "MbusDeviceIdentification";
 
+  public static final String FORCE = "Force";
   public static final String GPS_LATITUDE = "GpsLatitude";
   public static final String GPS_LONGITUDE = "GpsLongitude";
   public static final String HLS3ACTIVE = "Hls3active";
@@ -78,7 +81,6 @@ public class PlatformSmartmeteringKeys
   public static final String OBIS_CODE_F = "ObisCodeF";
 
   // Default keys for security_key
-  public static final String DLMS_DEVICE_ID = "DlmsDeviceId";
   public static final String INVOCATION_COUNTER = "InvocationCounter";
   public static final String KEY_BASE_TRANSCEIVER_STATION_ID = "BtsId";
   public static final String KEY_CELL_ID = "CellId";
@@ -90,20 +92,17 @@ public class PlatformSmartmeteringKeys
   public static final String SUPPLIER = "Supplier";
   public static final String TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";
   public static final String VALID_FROM = "ValidFrom";
-  public static final String VALID_TO = "ValidTo";
   public static final String VERSION = "Version";
   public static final String WITH_LIST_SUPPORTED = "WithListSupported";
   public static final String MODULE_ACTIVE_FIRMWARE_VERSION = "ModuleActiveFirmwareVersion";
 
   public static final String DAYLIGHT_SAVINGS_BEGIN = "DaylightSavingsBegin";
   public static final String DAYLIGHT_SAVINGS_END = "DaylightSavingsEnd";
-  public static final String DAYLIGHT_SAVINGS_DEVIATION = "DaylightSavingsDeviation";
   public static final String DAYLIGHT_SAVINGS_ENABLED = "DaylightSavingsEnabled";
   public static final String TIME_ZONE_OFFSET = "TimeZoneOffset";
 
   public static final String RESULT = "Result";
-  public static final String DAYLIGHT_SAVINGS_ACTIVE = "DST";
-  public static final String DEVIATION = "Deviation";
+  public static final String RESULT_STRING = "ResultString";
 
   public static final String CLASS_ID = "ClassId";
 
@@ -163,4 +162,8 @@ public class PlatformSmartmeteringKeys
   public static final String CAPTURE_OBJECT_ATTRIBUTE_INDEX = "CaptureObject_AttributeIndex";
   public static final String CAPTURE_OBJECT_DATA_INDEX = "CaptureObject_DataIndex";
   public static final String CAPTURE_PERIOD = "CapturePeriod";
+  public static final String TEST_ALARM_TYPE = "TestAlarmType";
+
+  public static final String SECRET_TYPE = "SecretType";
+  public static final String CLOSE_OPTICAL_PORT = "CloseOpticalPort";
 }

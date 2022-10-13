@@ -9,12 +9,14 @@
 package org.opensmartgridplatform.adapter.domain.microgrids.application.config;
 
 import java.time.Duration;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan("org.opensmartgridplatform.shared.domain.services")
 @ComponentScan("org.opensmartgridplatform.domain.core")
 @ComponentScan("org.opensmartgridplatform.adapter.domain.microgrids")
+@Import({MetricsConfig.class})
 @PropertySource("classpath:osgp-adapter-domain-microgrids.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(

@@ -13,11 +13,13 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.integration.config.EnableIntegration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
@@ -28,7 +30,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
       "org.opensmartgridplatform.shared.security"
     })
 @EnableTransactionManagement()
-@Import({MessagingConfig.class, DlmsPersistenceConfig.class, JasperWirelessConfig.class})
+@EnableIntegration
+@Import({
+  MessagingConfig.class,
+  DlmsPersistenceConfig.class,
+  JasperWirelessConfig.class,
+  MetricsConfig.class
+})
 @PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true)

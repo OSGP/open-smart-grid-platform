@@ -10,9 +10,11 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTime;
@@ -22,10 +24,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.EventService.EventTypeDtoLookup;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
@@ -101,6 +106,24 @@ class EventServiceTest {
 
     this.assertEventType(85, "DSMR_CDMA", EventTypeDto.PV_VOLTAGE_SWELL_L3);
     this.assertEventType(85, "SMR_CDMA", EventTypeDto.VOLTAGE_L3_NORMAL);
+  }
+
+  @ParameterizedTest
+  @EnumSource(EventTypeDto.class)
+  void checkAllEventTypesMapped(final EventTypeDto eventTypeDto) {
+    reset(this.domainHelperService);
+    assertThat(
+            this.eventService.eventTypsByCode.values().stream()
+                .flatMap(Collection::stream)
+                .map(EventTypeDtoLookup::getEventTypeDto))
+        .contains(eventTypeDto);
+  }
+
+  @ParameterizedTest
+  @EnumSource(EventType.class)
+  void checkAllEventTypesMapped(final EventType eventType) {
+    reset(this.domainHelperService);
+    assertThat(this.eventService.eventTypsByCode.get(eventType.getEventCode())).isNotEmpty();
   }
 
   @ParameterizedTest

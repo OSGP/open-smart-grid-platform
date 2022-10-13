@@ -2,27 +2,83 @@
   License, Version 2.0 (the "License"); you may not use this file except in 
   compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10"
-            xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-            elementFormDefault="qualified"
-            targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10">
+  xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+  elementFormDefault="qualified"
+  targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10">
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-              schemaLocation="base-ws-smartmetering.xsd"/>
+    schemaLocation="base-ws-smartmetering.xsd" />
 
-  <xsd:element name="SynchronizeTimeRequest">
+  <xsd:element name="TestAlarmSchedulerAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="TestAlarmSchedulerAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="TestAlarmSchedulerRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
-        <xsd:element name="SynchronizeTimeRequestData" type="tns:SynchronizeTimeRequestData"/>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="TestAlarmSchedulerRequestData" type="tns:TestAlarmSchedulerRequestData" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="TestAlarmSchedulerResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType" />
+        <xsd:element name="Description" type="xsd:string"
+          minOccurs="0" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="TestAlarmSchedulerRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Command">
+        <xsd:sequence>
+          <xsd:element type="xsd:dateTime" name="ScheduleTime" />
+          <xsd:element type="tns:TestAlarmType" name="AlarmType" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="SynchronizeTimeRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="SynchronizeTimeRequestData" type="tns:SynchronizeTimeRequestData" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="SynchronizeTimeRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Command">
+        <xsd:sequence>
+          <xsd:element type="common:TimeZoneType" name="TimeZone" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
   <xsd:element name="SynchronizeTimeAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"/>
+        <xsd:extension base="common:AsyncResponse" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -30,7 +86,7 @@
   <xsd:element name="SynchronizeTimeAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"/>
+        <xsd:extension base="common:AsyncRequest" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -38,9 +94,9 @@
   <xsd:element name="SynchronizeTimeResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="Result" type="common:OsgpResultType" />
         <xsd:element name="Description" type="xsd:string"
-                     minOccurs="0"/>
+          minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -48,7 +104,7 @@
   <xsd:element name="GetAllAttributeValuesRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -56,7 +112,7 @@
   <xsd:element name="GetAllAttributeValuesAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"/>
+        <xsd:extension base="common:AsyncResponse" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -64,7 +120,7 @@
   <xsd:element name="GetAllAttributeValuesAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"/>
+        <xsd:extension base="common:AsyncRequest" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -72,8 +128,8 @@
   <xsd:element name="GetAllAttributeValuesResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"/>
-        <xsd:element name="Output" type="xsd:string"/>
+        <xsd:element name="Result" type="common:OsgpResultType" />
+        <xsd:element name="Output" type="xsd:string" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -90,7 +146,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="AttributeValuesData" type="xsd:string"/>
+          <xsd:element name="AttributeValuesData" type="xsd:string" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -100,7 +156,7 @@
       <xsd:complexContent>
         <xsd:extension base="tns:GetSpecificAttributeValueRequestData">
           <xsd:sequence>
-            <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+            <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
           </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>
@@ -109,14 +165,14 @@
   <xsd:element name="GetSpecificAttributeValueAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"/>
+        <xsd:extension base="common:AsyncResponse" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
   <xsd:element name="GetSpecificAttributeValueAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"/>
+        <xsd:extension base="common:AsyncRequest" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -125,7 +181,7 @@
       <xsd:complexContent>
         <xsd:extension base="common:Response">
           <xsd:sequence>
-            <xsd:element name="AttributeValueData" type="xsd:string"/>
+            <xsd:element name="AttributeValueData" type="xsd:string" />
           </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>
@@ -135,9 +191,9 @@
     <xsd:complexContent>
       <xsd:extension base="common:Query">
         <xsd:sequence>
-          <xsd:element name="ClassId" type="xsd:integer"/>
-          <xsd:element name="Attribute" type="xsd:integer"/>
-          <xsd:element name="ObisCode" type="common:ObisCodeValues"/>
+          <xsd:element name="ClassId" type="xsd:integer" />
+          <xsd:element name="Attribute" type="xsd:integer" />
+          <xsd:element name="ObisCode" type="common:ObisCodeValues" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -146,7 +202,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="AttributeValueData" type="xsd:string"/>
+          <xsd:element name="AttributeValueData" type="xsd:string" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -164,7 +220,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="AssociationLnList" type="tns:AssociationLnListType"/>
+          <xsd:element name="AssociationLnList" type="tns:AssociationLnListType" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -173,7 +229,7 @@
   <xsd:element name="GetAssociationLnObjectsRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -181,7 +237,7 @@
   <xsd:element name="GetAssociationLnObjectsAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"/>
+        <xsd:extension base="common:AsyncResponse" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -189,7 +245,7 @@
   <xsd:element name="GetAssociationLnObjectsAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"/>
+        <xsd:extension base="common:AsyncRequest" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -197,8 +253,8 @@
   <xsd:element name="GetAssociationLnObjectsResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"/>
-        <xsd:element name="AssociationLnList" type="tns:AssociationLnListType"/>
+        <xsd:element name="Result" type="common:OsgpResultType" />
+        <xsd:element name="AssociationLnList" type="tns:AssociationLnListType" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -206,35 +262,35 @@
   <xsd:element name="ScanMbusChannelsRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
   <xsd:element name="ScanMbusChannelsAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"/>
+        <xsd:extension base="common:AsyncResponse" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
   <xsd:element name="ScanMbusChannelsAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"/>
+        <xsd:extension base="common:AsyncRequest" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
   <xsd:element name="ScanMbusChannelsResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="Result" type="common:OsgpResultType" />
         <xsd:element name="ChannelShortId" type="tns:MbusChannelShortEquipmentIdentifier"
-                     minOccurs="0" maxOccurs="4"/>
+          minOccurs="0" maxOccurs="4" />
       </xsd:sequence>
     </xsd:complexType>
     <xsd:unique name="UniqueScanMbusChannelValues">
-      <xsd:selector xpath="tns:ChannelShortId"/>
-      <xsd:field xpath="tns:Channel"/>
+      <xsd:selector xpath="tns:ChannelShortId" />
+      <xsd:field xpath="tns:Channel" />
     </xsd:unique>
   </xsd:element>
   <xsd:complexType name="ScanMbusChannelsRequestData">
@@ -250,108 +306,103 @@
       <xsd:extension base="common:Response">
         <xsd:sequence>
           <xsd:element name="ChannelShortId" type="tns:MbusChannelShortEquipmentIdentifier"
-                       minOccurs="0" maxOccurs="4"/>
+            minOccurs="0" maxOccurs="4" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
   <xsd:complexType name="MbusChannelShortEquipmentIdentifier">
     <xsd:sequence>
-      <xsd:element name="Channel" type="common:Channel"/>
-      <xsd:element name="ShortId" type="common:MbusShortEquipmentIdentifier" nillable="true"/>
+      <xsd:element name="Channel" type="common:Channel" />
+      <xsd:element name="ShortId" type="common:MbusShortEquipmentIdentifier" nillable="true" />
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="AssociationLnListType">
     <xsd:sequence>
       <xsd:element name="AssociationLnListElement" type="tns:AssociationLnListElement"
-                   minOccurs="0" maxOccurs="unbounded"/>
+        minOccurs="0" maxOccurs="unbounded" />
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="AssociationLnListElement">
     <xsd:sequence>
-      <xsd:element type="xsd:long" name="ClassId"/>
-      <xsd:element type="xsd:integer" name="Version"/>
-      <xsd:element type="common:CosemObisCode" name="LogicalName"/>
-      <xsd:element type="tns:AccessRight" name="AccessRights"/>
+      <xsd:element type="xsd:long" name="ClassId" />
+      <xsd:element type="xsd:integer" name="Version" />
+      <xsd:element type="common:CosemObisCode" name="LogicalName" />
+      <xsd:element type="tns:AccessRight" name="AccessRights" />
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="AccessRight">
     <xsd:sequence>
       <xsd:element type="tns:AttributeAccessDescriptor"
-                   name="AttributeAccess"/>
-      <xsd:element type="tns:MethodAccessDescriptor" name="MethodAccess"/>
+        name="AttributeAccess" />
+      <xsd:element type="tns:MethodAccessDescriptor" name="MethodAccess" />
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="AttributeAccessDescriptor">
     <xsd:sequence>
       <xsd:element name="AttributeAccessItem" type="tns:AttributeAccessItem"
-                   minOccurs="0" maxOccurs="unbounded"/>
+        minOccurs="0" maxOccurs="unbounded" />
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="AttributeAccessItem">
     <xsd:sequence>
-      <xsd:element type="xsd:integer" name="AttributeId"/>
-      <xsd:element type="tns:AttributeAccessModeType" name="AccessMode"/>
-      <xsd:element name="AccessSelectors" type="tns:AccessSelectorList"/>
+      <xsd:element type="xsd:integer" name="AttributeId" />
+      <xsd:element type="tns:AttributeAccessModeType" name="AccessMode" />
+      <xsd:element name="AccessSelectors" type="tns:AccessSelectorList" />
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="AccessSelectorList">
     <xsd:sequence>
       <xsd:element name="AccessSelector" type="xsd:int"
-                   minOccurs="0" maxOccurs="unbounded"/>
+        minOccurs="0" maxOccurs="unbounded" />
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:simpleType name="AttributeAccessModeType">
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="NO_ACCESS"/>
-      <xsd:enumeration value="READ_ONLY"/>
-      <xsd:enumeration value="WRITE_ONLY"/>
-      <xsd:enumeration value="READ_AND_WRITE"/>
-      <xsd:enumeration value="AUTHENTICATED_READ_ONLY"/>
-      <xsd:enumeration value="AUTHENTICATED_WRITE_ONLY"/>
-      <xsd:enumeration value="AUTHENTICATED_READ_AND_WRITE"/>
+      <xsd:enumeration value="NO_ACCESS" />
+      <xsd:enumeration value="READ_ONLY" />
+      <xsd:enumeration value="WRITE_ONLY" />
+      <xsd:enumeration value="READ_AND_WRITE" />
+      <xsd:enumeration value="AUTHENTICATED_READ_ONLY" />
+      <xsd:enumeration value="AUTHENTICATED_WRITE_ONLY" />
+      <xsd:enumeration value="AUTHENTICATED_READ_AND_WRITE" />
     </xsd:restriction>
   </xsd:simpleType>
 
   <xsd:complexType name="MethodAccessDescriptor">
     <xsd:sequence>
       <xsd:element name="MethodAccessItem" type="tns:MethodAccessItem"
-                   minOccurs="0" maxOccurs="unbounded"/>
+        minOccurs="0" maxOccurs="unbounded" />
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="MethodAccessItem">
     <xsd:sequence>
-      <xsd:element type="xsd:integer" name="MethodId"/>
-      <xsd:element type="tns:MethodAccessModeType" name="AccessMode"/>
+      <xsd:element type="xsd:integer" name="MethodId" />
+      <xsd:element type="tns:MethodAccessModeType" name="AccessMode" />
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:simpleType name="MethodAccessModeType">
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="NO_ACCESS"/>
-      <xsd:enumeration value="ACCESS"/>
-      <xsd:enumeration value="AUTHENTICATED_ACCESS"/>
+      <xsd:enumeration value="NO_ACCESS" />
+      <xsd:enumeration value="ACCESS" />
+      <xsd:enumeration value="AUTHENTICATED_ACCESS" />
     </xsd:restriction>
   </xsd:simpleType>
 
-  <xsd:complexType name="SynchronizeTimeRequestData">
-    <xsd:complexContent>
-      <xsd:extension base="common:Command">
-        <xsd:sequence>
-          <xsd:element type="common:DateTimeDeviation" name="Deviation"/>
-          <xsd:element type="xsd:boolean" name="Dst"
-                       default="false"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
+  <xsd:simpleType name="TestAlarmType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="PARTIAL_POWER_OUTAGE" />
+      <xsd:enumeration value="LAST_GASP" />
+    </xsd:restriction>
+  </xsd:simpleType>
 
 </xsd:schema>

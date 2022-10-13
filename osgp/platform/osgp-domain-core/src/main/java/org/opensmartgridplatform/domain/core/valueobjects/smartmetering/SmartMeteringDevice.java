@@ -17,8 +17,6 @@ public class SmartMeteringDevice implements Serializable {
 
   private static final long serialVersionUID = -6133164707489276802L;
 
-  private static final String CDMA = "CDMA";
-
   private String deviceIdentification;
 
   private String deviceType;
@@ -31,6 +29,7 @@ public class SmartMeteringDevice implements Serializable {
 
   private String protocolName;
   private String protocolVersion;
+  private String protocolVariant;
 
   private byte[] masterKey;
 
@@ -48,7 +47,7 @@ public class SmartMeteringDevice implements Serializable {
 
   private Date deliveryDate;
 
-  private Long mbusIdentificationNumber;
+  private String mbusIdentificationNumber;
 
   private String mbusManufacturerIdentification;
 
@@ -57,11 +56,4 @@ public class SmartMeteringDevice implements Serializable {
   private Short mbusDeviceTypeIdentification;
 
   private byte[] mbusDefaultKey;
-
-  public String getProtocolInfoLookupName() {
-    if (CDMA.equals(this.communicationMethod)) {
-      return String.format("%s_%s", this.protocolName, CDMA);
-    }
-    return this.protocolName;
-  }
 }

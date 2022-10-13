@@ -421,7 +421,9 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+          <xsd:element name="MbusDeviceIdentification" type="common:DeviceIdentification" />
+          <xsd:element name="SecretType" type="tns:SecretType" />
+          <xsd:element name="CloseOpticalPort" type="xsd:boolean" minOccurs="0" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -431,6 +433,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="SetEncryptionKeyExchangeOnGMeterRequestData" type="tns:SetEncryptionKeyExchangeOnGMeterRequestData" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -450,6 +453,7 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+
   <xsd:element name="SetEncryptionKeyExchangeOnGMeterResponse">
     <xsd:complexType>
       <xsd:sequence>
@@ -1122,8 +1126,9 @@
   </xsd:complexType>
 
   <xsd:simpleType name="NameType">
-    <xsd:restriction base="common:AlphaNumericType">
-      <xsd:length value="8" />
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="8" />
     </xsd:restriction>
   </xsd:simpleType>
 

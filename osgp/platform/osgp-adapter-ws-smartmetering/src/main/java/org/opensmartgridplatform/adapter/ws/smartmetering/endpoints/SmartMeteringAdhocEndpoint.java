@@ -36,6 +36,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.Synchroni
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.TestAlarmSchedulerAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.TestAlarmSchedulerAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.TestAlarmSchedulerRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.TestAlarmSchedulerResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.AdhocMapper;
@@ -43,6 +47,7 @@ import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.R
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AssociationLnListType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ScanMbusChannelsResponseData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.TestAlarmSchedulerRequestData;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
@@ -123,6 +128,61 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     } catch (final Exception e) {
       this.handleException(e);
     }
+    return response;
+  }
+
+  @PayloadRoot(localPart = "TestAlarmSchedulerRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+  @ResponsePayload
+  public TestAlarmSchedulerAsyncResponse scheduleTestAlarm(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final TestAlarmSchedulerRequest request,
+      @MessagePriority final String messagePriority,
+      @ResponseUrl final String responseUrl,
+      @ScheduleTime final String scheduleTime,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
+
+    final TestAlarmSchedulerRequestData data =
+        this.adhocMapper.map(
+            request.getTestAlarmSchedulerRequestData(), TestAlarmSchedulerRequestData.class);
+
+    data.validate();
+
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.SCHEDULE_TEST_ALARM)
+            .withMessageType(MessageType.SCHEDULE_TEST_ALARM)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
+
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, data);
+
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+
+    return this.adhocMapper.map(asyncResponse, TestAlarmSchedulerAsyncResponse.class);
+  }
+
+  @PayloadRoot(localPart = "TestAlarmSchedulerAsyncRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+  @ResponsePayload
+  public TestAlarmSchedulerResponse getTestAlarmSchedulerResponse(
+      @RequestPayload final TestAlarmSchedulerAsyncRequest request) throws OsgpException {
+
+    TestAlarmSchedulerResponse response = null;
+    try {
+
+      final ResponseData responseData =
+          this.responseDataService.get(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+      response = this.adhocMapper.map(responseData, TestAlarmSchedulerResponse.class);
+    } catch (final Exception e) {
+      this.handleException(e);
+    }
+
     return response;
   }
 

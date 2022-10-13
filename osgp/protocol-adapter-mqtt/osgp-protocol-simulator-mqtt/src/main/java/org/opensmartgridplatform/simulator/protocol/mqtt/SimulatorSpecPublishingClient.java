@@ -13,6 +13,7 @@ import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.Message;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
+import org.opensmartgridplatform.simulator.protocol.mqtt.zip.PayloadZipper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +25,16 @@ public class SimulatorSpecPublishingClient extends Client {
   private int i = 0;
 
   public SimulatorSpecPublishingClient(
-      final SimulatorSpec simulatorSpec, final MqttClientSslConfig mqttClientSslConfig) {
-    super(simulatorSpec.getBrokerHost(), simulatorSpec.getBrokerPort(), mqttClientSslConfig);
+      final SimulatorSpec simulatorSpec,
+      final boolean cleanSession,
+      final int keepAlive,
+      final MqttClientSslConfig mqttClientSslConfig) {
+    super(
+        simulatorSpec.getBrokerHost(),
+        simulatorSpec.getBrokerPort(),
+        cleanSession,
+        keepAlive,
+        mqttClientSslConfig);
     this.simulatorSpec = simulatorSpec;
   }
 
@@ -34,6 +43,10 @@ public class SimulatorSpecPublishingClient extends Client {
     if (this.hasMessages()) {
       while (this.isRunning()) {
         final Message message = this.getNextMessage();
+        if (message == null) {
+          this.stopClient();
+          return;
+        }
         this.publish(client, message);
         this.pause(message.getPauseMillis());
       }
@@ -43,7 +56,11 @@ public class SimulatorSpecPublishingClient extends Client {
   private Message getNextMessage() {
     final Message[] messages = this.simulatorSpec.getMessages();
     if (this.i >= messages.length) {
-      this.i = 0;
+      if (this.simulatorSpec.keepReplayingMessages()) {
+        this.i = 0;
+      } else {
+        return null;
+      }
     }
     return messages[this.i++];
   }
@@ -62,11 +79,25 @@ public class SimulatorSpecPublishingClient extends Client {
   }
 
   public void publish(final Mqtt3BlockingClient client, final Message message) {
+
+    LOG.info(
+        "{} identified by {} is about to publish a {} message on topic {}",
+        SimulatorSpecPublishingClient.class.getSimpleName(),
+        this.uuid,
+        message.getZip() ? "zipped" : "text",
+        message.getTopic());
+
+    final byte[] payload;
+    if (message.getZip()) {
+      payload = PayloadZipper.gzip(message.getPayload());
+    } else {
+      payload = message.getPayload();
+    }
     client
         .publishWith()
         .topic(message.getTopic())
         .qos(MqttQos.AT_LEAST_ONCE)
-        .payload(message.getPayload().getBytes())
+        .payload(payload)
         .send();
   }
 }
