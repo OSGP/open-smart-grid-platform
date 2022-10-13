@@ -29,6 +29,7 @@ public class DefaultConnectionPoolFactory {
   private boolean isAutoCommit;
   private int idleTimeout;
   private int maxLifetime;
+  private String connectionTestQuery;
 
   private DefaultConnectionPoolFactory() {
     // Private constructor to prevent instantiation of this class.
@@ -116,6 +117,7 @@ public class DefaultConnectionPoolFactory {
     hikariConfig.setAutoCommit(this.isAutoCommit);
     hikariConfig.setIdleTimeout(this.idleTimeout);
     hikariConfig.setMaxLifetime(this.maxLifetime);
+    hikariConfig.setConnectionTestQuery(this.connectionTestQuery);
     return new HikariDataSource(hikariConfig);
   }
 
@@ -136,6 +138,7 @@ public class DefaultConnectionPoolFactory {
     private boolean isAutoCommit = false;
     private int idleTimeout = 120000;
     private int maxLifetime = 1800000;
+    private String connectionTestQuery = "SELECT 1";
 
     public Builder withDriverClassName(final String driverClassName) {
       this.driverClassName = driverClassName;
@@ -212,6 +215,11 @@ public class DefaultConnectionPoolFactory {
       return this;
     }
 
+    public Builder withMaxLifetime(final String connectionTestQuery) {
+      this.connectionTestQuery = connectionTestQuery;
+      return this;
+    }
+
     public DefaultConnectionPoolFactory build() {
       final DefaultConnectionPoolFactory factory = new DefaultConnectionPoolFactory();
       factory.driverClassName = this.driverClassName;
@@ -229,6 +237,7 @@ public class DefaultConnectionPoolFactory {
       factory.isAutoCommit = this.isAutoCommit;
       factory.idleTimeout = this.idleTimeout;
       factory.maxLifetime = this.maxLifetime;
+      factory.connectionTestQuery = this.connectionTestQuery;
       return factory;
     }
   }
