@@ -8,7 +8,8 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.networking;
 
-import io.netty.buffer.ByteBuf;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Set;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.AlarmHelperService;
@@ -35,12 +36,12 @@ public class AlarmDecoder {
   }
 
   void decodeAlarmRegisterData(
-      final ByteBuf buffer,
+      final InputStream inputStream,
       final DlmsPushNotification.Builder builder,
       final DlmsObjectType dlmsObjectType)
       throws UnrecognizedMessageDataException {
 
-    final byte[] alarmBytes = this.read(buffer, NUMBER_OF_BYTES_FOR_ALARM);
+    final byte[] alarmBytes = this.readBytes(inputStream, NUMBER_OF_BYTES_FOR_ALARM);
 
     final Long alarmsAsLongValue = this.convertToLongValue(alarmBytes);
 
@@ -57,10 +58,28 @@ public class AlarmDecoder {
     builder.appendBytes(alarmBytes);
   }
 
-  byte[] read(final ByteBuf buffer, final int size) {
-    final byte[] result = new byte[size];
-    buffer.readBytes(result, 0, size);
-    return result;
+  byte readByte(final InputStream inputStream) throws UnrecognizedMessageDataException {
+    return this.readBytes(inputStream, 1)[0];
+  }
+
+  byte[] readBytes(final InputStream inputStream, final int length)
+      throws UnrecognizedMessageDataException {
+    try {
+      final byte[] byteArray = new byte[length];
+      inputStream.read(byteArray, 0, length);
+      return byteArray;
+    } catch (final IOException io) {
+      throw new UnrecognizedMessageDataException(io.getMessage(), io);
+    }
+  }
+
+  void skip(final InputStream inputStream, final int length)
+      throws UnrecognizedMessageDataException {
+    try {
+      inputStream.skip(length);
+    } catch (final IOException io) {
+      throw new UnrecognizedMessageDataException(io.getMessage(), io);
+    }
   }
 
   private Long convertToLongValue(final byte[] bytes) {
