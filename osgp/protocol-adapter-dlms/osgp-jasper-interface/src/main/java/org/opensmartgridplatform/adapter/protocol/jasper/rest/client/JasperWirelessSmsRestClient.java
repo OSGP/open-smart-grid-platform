@@ -11,8 +11,8 @@ package org.opensmartgridplatform.adapter.protocol.jasper.rest.client;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
 import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
-import org.opensmartgridplatform.adapter.protocol.jasper.response.SendSMSResponse;
 import org.opensmartgridplatform.adapter.protocol.jasper.rest.json.SendSMSRequest;
+import org.opensmartgridplatform.adapter.protocol.jasper.rest.json.SendSMSResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -36,7 +36,8 @@ public class JasperWirelessSmsRestClient extends JasperWirelessRestClient
   @Autowired private short jasperGetValidityPeriod;
 
   @Override
-  public SendSMSResponse sendWakeUpSMS(final String iccId) throws OsgpJasperException {
+  public org.opensmartgridplatform.adapter.protocol.jasper.response.SendSMSResponse sendWakeUpSMS(
+      final String iccId) throws OsgpJasperException {
 
     final SendSMSRequest sendSMSRequest = new SendSMSRequest();
     sendSMSRequest.setMessageText("");
@@ -71,6 +72,7 @@ public class JasperWirelessSmsRestClient extends JasperWirelessRestClient
       throw new OsgpJasperException(e.getMessage(), e);
     }
 
-    return sendSmsResponse;
+    return new org.opensmartgridplatform.adapter.protocol.jasper.response.SendSMSResponse(
+        sendSmsResponse.getSmsMessageId());
   }
 }
