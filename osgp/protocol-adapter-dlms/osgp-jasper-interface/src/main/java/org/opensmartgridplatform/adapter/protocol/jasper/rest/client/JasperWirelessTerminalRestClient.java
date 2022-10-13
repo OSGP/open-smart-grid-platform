@@ -58,9 +58,7 @@ public class JasperWirelessTerminalRestClient extends JasperWirelessRestClient
           this.jasperwirelessRestTemplate.exchange(
               url, HttpMethod.GET, entity, GetSessionInfoResponse.class);
 
-      getSessionInfoResponse = getSessionInfoResponseEntity.getBody();
-
-      getSessionInfoResponse = this.checkOnSessionValidity(getSessionInfoResponse);
+      getSessionInfoResponse = this.checkOnSessionValidity(getSessionInfoResponseEntity);
 
     } catch (final HttpClientErrorException | HttpServerErrorException e) {
       this.handleException(e);
@@ -71,7 +69,7 @@ public class JasperWirelessTerminalRestClient extends JasperWirelessRestClient
   }
 
   private GetSessionInfoResponse checkOnSessionValidity(
-      final GetSessionInfoResponse getSessionInfoResponse) {
+      final ResponseEntity<GetSessionInfoResponse> getSessionInfoResponseEntity) {
     // To simulated to same behaviour as the SOAP interface. Session info of an expired session is
     // removed form the response.
     // REST-interface returns information about the current or most recent data session for a given
@@ -79,6 +77,7 @@ public class JasperWirelessTerminalRestClient extends JasperWirelessRestClient
     // SOAP-interface returns the current session information (IP address and session start time)
     // for one or more devices. If the specified device is not in session, no information is
     // returned.
+    final GetSessionInfoResponse getSessionInfoResponse = getSessionInfoResponseEntity.getBody();
     if (this.hasCurrentSession(getSessionInfoResponse)) {
       return getSessionInfoResponse;
     } else {
