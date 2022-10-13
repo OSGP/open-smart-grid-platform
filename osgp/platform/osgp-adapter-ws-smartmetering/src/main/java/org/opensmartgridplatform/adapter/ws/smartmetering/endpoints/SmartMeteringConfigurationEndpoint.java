@@ -971,7 +971,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
       throws OsgpException {
 
     log.info(
-        "Incoming SetPushSetupAlarmAsyncRequest for organisation {} for meter: {}.",
+        "Incoming SetPushSetupLastGaspAsyncRequest for organisation {} for meter: {}.",
         organisationIdentification,
         request.getDeviceIdentification());
 
@@ -1039,7 +1039,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
       throws OsgpException {
 
     log.info(
-        "Incoming SetPushSetupAlarmAsyncRequest for organisation {} for meter: {}.",
+        "Incoming SetPushSetupSmsAsyncRequest for organisation {} for meter: {}.",
         organisationIdentification,
         request.getDeviceIdentification());
 
