@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Smart Society Services B.V.
+ * Copyright 2022 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -15,7 +15,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 
 @CosemClass(id = 40)
-public class PushSetupSms extends CosemInterfaceObject {
+public class PushSetupObject extends CosemInterfaceObject {
 
   @CosemAttribute(id = 2, type = Type.ARRAY)
   public final DataObject value;
@@ -35,8 +35,8 @@ public class PushSetupSms extends CosemInterfaceObject {
   @CosemAttribute(id = 7, type = Type.LONG_UNSIGNED)
   public final DataObject repetitionDelay;
 
-  public PushSetupSms() {
-    super("0.2.25.9.0.255");
+  public PushSetupObject(final String obisCode) {
+    super(obisCode);
     this.value = this.createPushObjectList();
     this.sendDestAndMethod = this.createSendDestAndMethod();
     this.communicationWindow = this.createCommunicationWindow();
@@ -45,7 +45,6 @@ public class PushSetupSms extends CosemInterfaceObject {
     this.repetitionDelay = this.createRepetitionDelay();
   }
 
-  // just fill with empty data.
   public DataObject createPushObjectList() {
     return DataObject.newStructureData();
   }
