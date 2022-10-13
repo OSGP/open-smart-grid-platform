@@ -17,6 +17,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.nio.charset.Charset;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,6 +49,15 @@ public class JasperWirelessTerminalRestClientTest {
   private static final String URL =
       String.format(BASEURL + SERVICE_GET_SESSION_INFO, APIVERSION, ICCID);
 
+  private static final String IP_ADDRESS = "1.2.3.4";
+  private static final String IPV6_ADDRESS = "1.2.3.4.5.6";
+
+  private enum SessionType {
+    NEVER_HAD_SESSION,
+    CURRENT_SESSION,
+    EXPIRED_SESSION
+  };
+
   @Mock private RestTemplate jasperwirelessRestTemplate;
 
   @Mock private JasperWirelessAccess jasperWirelessAccess;
@@ -65,12 +77,41 @@ public class JasperWirelessTerminalRestClientTest {
 
     when(this.jasperwirelessRestTemplate.exchange(
             eq(URL), eq(HttpMethod.GET), any(HttpEntity.class), eq(GetSessionInfoResponse.class)))
-        .thenReturn(this.createResponseEntity(HttpStatus.OK));
+        .thenReturn(this.createResponseEntity(HttpStatus.OK, SessionType.CURRENT_SESSION));
 
     final GetSessionInfoResponse getSessionInfoResponse =
         this.jasperWirelessTerminalRestClient.getSession(ICCID);
 
     assertEquals(ICCID, getSessionInfoResponse.getIccid());
+    assertEquals(IP_ADDRESS, getSessionInfoResponse.getIpAddress());
+  }
+
+  @Test
+  public void testExpiredSession() throws OsgpJasperException {
+
+    when(this.jasperwirelessRestTemplate.exchange(
+            eq(URL), eq(HttpMethod.GET), any(HttpEntity.class), eq(GetSessionInfoResponse.class)))
+        .thenReturn(this.createResponseEntity(HttpStatus.OK, SessionType.EXPIRED_SESSION));
+
+    final GetSessionInfoResponse getSessionInfoResponse =
+        this.jasperWirelessTerminalRestClient.getSession(ICCID);
+
+    assertEquals(ICCID, getSessionInfoResponse.getIccid());
+    assertNull(getSessionInfoResponse.getIpAddress());
+  }
+
+  @Test
+  public void testNeverHadSession() throws OsgpJasperException {
+
+    when(this.jasperwirelessRestTemplate.exchange(
+            eq(URL), eq(HttpMethod.GET), any(HttpEntity.class), eq(GetSessionInfoResponse.class)))
+        .thenReturn(this.createResponseEntity(HttpStatus.OK, SessionType.NEVER_HAD_SESSION));
+
+    final GetSessionInfoResponse getSessionInfoResponse =
+        this.jasperWirelessTerminalRestClient.getSession(ICCID);
+
+    assertEquals(ICCID, getSessionInfoResponse.getIccid());
+    assertNull(getSessionInfoResponse.getIpAddress());
   }
 
   @Test
@@ -117,9 +158,33 @@ public class JasperWirelessTerminalRestClientTest {
         Charset.defaultCharset());
   }
 
-  private ResponseEntity<GetSessionInfoResponse> createResponseEntity(final HttpStatus httpStatus) {
+  private ResponseEntity<GetSessionInfoResponse> createResponseEntity(
+      final HttpStatus httpStatus, final SessionType sessionType) {
+    Date endSession;
+    Date startSession;
+    String ipAddress;
+    switch (sessionType) {
+      case EXPIRED_SESSION:
+        startSession = new Date(Instant.now().minus(6, ChronoUnit.MINUTES).toEpochMilli());
+        endSession = new Date(Instant.now().minus(1, ChronoUnit.MINUTES).toEpochMilli());
+        ipAddress = IP_ADDRESS;
+        break;
+      case CURRENT_SESSION:
+        startSession = new Date(Instant.now().minus(1, ChronoUnit.MINUTES).toEpochMilli());
+        endSession = null;
+        ipAddress = IP_ADDRESS;
+        break;
+      case NEVER_HAD_SESSION:
+        startSession = null;
+        endSession = null;
+        ipAddress = null;
+      default:
+        startSession = null;
+        endSession = null;
+        ipAddress = null;
+    }
     final GetSessionInfoResponse getSessionInfoResponse =
-        new GetSessionInfoResponse(ICCID, null, null, null, null);
+        new GetSessionInfoResponse(ICCID, ipAddress, IPV6_ADDRESS, startSession, endSession);
     return new ResponseEntity<GetSessionInfoResponse>(getSessionInfoResponse, httpStatus);
   }
 
