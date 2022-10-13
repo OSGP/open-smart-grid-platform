@@ -16,7 +16,7 @@ import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.AlarmFilter;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.AlarmObject;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PushSetupLastGasp;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PushSetupObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.SingleActionScheduler;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,7 +55,7 @@ public class Smr55Profile {
   }
 
   @Bean
-  public PushSetupLastGasp pushSetupLastGasp() {
-    return new PushSetupLastGasp();
+  public PushSetupObject pushSetupLastGasp() {
+    return new PushSetupObject("0.3.25.9.0.255");
   }
 }
