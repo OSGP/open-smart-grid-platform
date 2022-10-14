@@ -59,13 +59,14 @@ public class JasperWirelessSmsRestClient extends JasperWirelessRestClient
     headers.add(HttpHeaders.AUTHORIZATION, "Basic " + authorizationCredentials);
     final HttpEntity<SendSMSRequest> entity = new HttpEntity<>(sendSMSRequest, headers);
 
-    SendSMSResponse sendSmsResponse = null;
+    long smsMessageId = 0;
     try {
       final ResponseEntity<SendSMSResponse> sendSMSResponseEntity =
           this.jasperwirelessRestTemplate.exchange(
               url, HttpMethod.POST, entity, SendSMSResponse.class);
 
-      sendSmsResponse = sendSMSResponseEntity.getBody();
+      final SendSMSResponse sendSmsResponse = sendSMSResponseEntity.getBody();
+      smsMessageId = sendSmsResponse.getSmsMessageId();
     } catch (final HttpClientErrorException | HttpServerErrorException e) {
       this.handleException(e);
     } catch (final RestClientException e) {
@@ -73,6 +74,6 @@ public class JasperWirelessSmsRestClient extends JasperWirelessRestClient
     }
 
     return new org.opensmartgridplatform.adapter.protocol.jasper.response.SendSMSResponse(
-        sendSmsResponse.getSmsMessageId());
+        smsMessageId);
   }
 }
