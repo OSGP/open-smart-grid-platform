@@ -26,14 +26,28 @@ class RetryHeaderFactoryTest {
   @Test
   void testMultiplierSmallerThanOneShouldResultInFasterScheduledRetryTimeWithMultipleRetries() {
     RetryHeader retryHeaderWithOneRetry = this.retryHeaderFactory.createRetryHeader(1);
+    RetryHeader retryHeaderWithTwoRetries = this.retryHeaderFactory.createRetryHeader(2);
     RetryHeader retryHeaderWithThreeRetries = this.retryHeaderFactory.createRetryHeader(3);
 
     assertNotNull(retryHeaderWithOneRetry);
+    assertNotNull(retryHeaderWithTwoRetries);
     assertNotNull(retryHeaderWithThreeRetries);
+
+    long timeDifferenceBetweenOneAndTwo =
+        retryHeaderWithOneRetry.getScheduledRetryTime().getTime()
+            - retryHeaderWithTwoRetries.getScheduledRetryTime().getTime();
+    long timeDifferenceBetweenTwoAndThree =
+        retryHeaderWithTwoRetries.getScheduledRetryTime().getTime()
+            - retryHeaderWithThreeRetries.getScheduledRetryTime().getTime();
 
     assertTrue(
         retryHeaderWithThreeRetries
             .getScheduledRetryTime()
+            .before(retryHeaderWithTwoRetries.getScheduledRetryTime()));
+    assertTrue(
+        retryHeaderWithTwoRetries
+            .getScheduledRetryTime()
             .before(retryHeaderWithOneRetry.getScheduledRetryTime()));
+    assertTrue(timeDifferenceBetweenOneAndTwo > timeDifferenceBetweenTwoAndThree);
   }
 }
