@@ -24,8 +24,6 @@ import java.util.TreeMap;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -38,7 +36,6 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
@@ -986,22 +983,5 @@ public class DlmsHelper {
             + resultData.getType()
             + ", value type: "
             + resultDataType);
-  }
-
-  public void validateBufferedDateTime(
-      final DateTime bufferedDateTime, final DateTime beginDateTime, final DateTime endDateTime)
-      throws BufferedDateTimeValidationException {
-
-    if (bufferedDateTime.isBefore(beginDateTime) || bufferedDateTime.isAfter(endDateTime)) {
-      final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
-      throw new BufferedDateTimeValidationException(
-          "Not using an object from capture buffer (clock="
-              + dtf.print(bufferedDateTime)
-              + "), because the date does not match the given period: ["
-              + dtf.print(beginDateTime)
-              + " .. "
-              + dtf.print(endDateTime)
-              + "].");
-    }
   }
 }
