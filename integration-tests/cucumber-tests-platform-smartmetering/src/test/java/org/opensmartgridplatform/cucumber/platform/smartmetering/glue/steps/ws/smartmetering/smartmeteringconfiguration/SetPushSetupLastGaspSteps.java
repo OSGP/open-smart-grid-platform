@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueRequest;
@@ -35,13 +36,10 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetPushSetupLastGaspRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class SetPushSetupLastGasp {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupLastGasp.class);
+@Slf4j
+public class SetPushSetupLastGaspSteps {
 
   @Autowired private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
 
@@ -64,8 +62,7 @@ public class SetPushSetupLastGasp {
     final SetPushSetupLastGaspAsyncResponse setPushSetupLastGaspAsyncResponse =
         this.smartMeteringConfigurationClient.setPushSetupLastGasp(setPushSetupLastGaspRequest);
 
-    LOGGER.info(
-        "Set push setup LastGasp response is received {}", setPushSetupLastGaspAsyncResponse);
+    log.info("Set push setup LastGasp response is received {}", setPushSetupLastGaspAsyncResponse);
     assertThat(setPushSetupLastGaspAsyncResponse)
         .as("Set push setup LastGasp response should not be null")
         .isNotNull();
