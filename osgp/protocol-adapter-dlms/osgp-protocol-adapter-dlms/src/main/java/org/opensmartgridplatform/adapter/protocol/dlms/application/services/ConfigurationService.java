@@ -27,6 +27,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetAdministrativeStatusCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetAdministrativeStatusCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupAlarmCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupLastGaspCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupSmsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.GenerateAndReplaceKeyCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.ReplaceKeyCommandExecutor;
@@ -52,6 +53,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptio
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupAlarmDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupLastGaspDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
@@ -91,6 +93,8 @@ public class ConfigurationService {
   @Autowired private SetConfigurationObjectCommandExecutor setConfigurationObjectCommandExecutor;
 
   @Autowired private SetPushSetupAlarmCommandExecutor setPushSetupAlarmCommandExecutor;
+
+  @Autowired private SetPushSetupLastGaspCommandExecutor setPushSetupLastGaspCommandExecutor;
 
   @Autowired private SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor;
 
@@ -338,6 +342,25 @@ public class ConfigurationService {
     if (AccessResultCode.SUCCESS != accessResultCode) {
       throw new ProtocolAdapterException(
           "AccessResultCode for set push setup alarm was not SUCCESS: " + accessResultCode);
+    }
+  }
+
+  public void setPushSetupLastGasp(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final PushSetupLastGaspDto pushSetupLastGasp,
+      final MessageMetadata messageMetadata)
+      throws ProtocolAdapterException {
+
+    LOGGER.info("Push Setup LastGasp to set on the device: {}", pushSetupLastGasp);
+
+    final AccessResultCode accessResultCode =
+        this.setPushSetupLastGaspCommandExecutor.execute(
+            conn, device, pushSetupLastGasp, messageMetadata);
+
+    if (AccessResultCode.SUCCESS != accessResultCode) {
+      throw new ProtocolAdapterException(
+          "AccessResultCode for set push setup last gasp was not SUCCESS: " + accessResultCode);
     }
   }
 

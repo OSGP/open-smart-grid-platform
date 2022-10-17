@@ -59,10 +59,12 @@ public abstract class SetPushSetupCommandExecutor<T, R> extends AbstractCommandE
   protected SendDestinationAndMethodDto getUpdatedSendDestinationAndMethod(
       final SendDestinationAndMethodDto sendDestinationAndMethodDto, final DlmsDevice device) {
     return new SendDestinationAndMethodDto(
-        TransportServiceTypeDto.TCP,
+        this.getTransportServiceType(),
         sendDestinationAndMethodDto.getDestination(),
         this.getMessageType(device));
   }
+
+  protected abstract TransportServiceTypeDto getTransportServiceType();
 
   private MessageTypeDto getMessageType(final DlmsDevice device) {
     if (Protocol.forDevice(device).isSmr5()) {

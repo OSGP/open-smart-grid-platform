@@ -105,6 +105,29 @@ public class ActionDtoBuilder {
     return new SetPushSetupAlarmRequestDto(pushAlarm);
   }
 
+  public SetPushSetupLastGaspRequestDto makeSetPushSetupLastGaspRequestDataDto() {
+    final CosemObisCodeDto cosemCode = new CosemObisCodeDto(new int[] {1, 1, 1, 1, 1, 1});
+    final List<CosemObjectDefinitionDto> objectDefinitions = new ArrayList<>();
+    final SendDestinationAndMethodDto destinationAndMethod =
+        new SendDestinationAndMethodDto(
+            TransportServiceTypeDto.UDP, "destination", MessageTypeDto.XML_ENCODED_X_DLMS_APDU);
+    final List<WindowElementDto> windowElemenents = new ArrayList<>();
+
+    final PushSetupLastGaspDto.Builder pushSetupLastGaspBuilder =
+        new PushSetupLastGaspDto.Builder();
+    pushSetupLastGaspBuilder
+        .withLogicalName(cosemCode)
+        .withPushObjectList(objectDefinitions)
+        .withSendDestinationAndMethod(destinationAndMethod)
+        .withCommunicationWindow(windowElemenents)
+        .withRandomisationStartInterval(1)
+        .withNumberOfRetries(1)
+        .withRepetitionDelay(1);
+    final PushSetupLastGaspDto setupLastGasp = pushSetupLastGaspBuilder.build();
+
+    return new SetPushSetupLastGaspRequestDto(setupLastGasp);
+  }
+
   public SetPushSetupSmsRequestDto makeSetPushSetupSmsRequestDataDto() {
     final CosemObisCodeDto cosemCode = new CosemObisCodeDto(new int[] {1, 1, 1, 1, 1, 1});
     final List<CosemObjectDefinitionDto> objectDefinitions = new ArrayList<>();

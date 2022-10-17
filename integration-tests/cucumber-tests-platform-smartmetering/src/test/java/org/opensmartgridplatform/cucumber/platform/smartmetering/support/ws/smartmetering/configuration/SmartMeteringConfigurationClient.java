@@ -74,6 +74,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsRequest;
@@ -388,6 +392,20 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
     return (ConfigureDefinableLoadProfileResponse)
         this.getTemplate().marshalSendAndReceive(configureDefinableLoadProfileAsyncRequest);
+  }
+
+  public SetPushSetupLastGaspAsyncResponse setPushSetupLastGasp(
+      final SetPushSetupLastGaspRequest request) throws WebServiceSecurityException {
+    return (SetPushSetupLastGaspAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+  }
+
+  public SetPushSetupLastGaspResponse getSetPushSetupLastGaspResponse(
+      final SetPushSetupLastGaspAsyncRequest asyncRequest) throws WebServiceSecurityException {
+
+    final String correlationUid = asyncRequest.getCorrelationUid();
+    this.waitForNotification(correlationUid);
+
+    return (SetPushSetupLastGaspResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
   }
 
   public SetPushSetupSmsAsyncResponse setPushSetupSms(final SetPushSetupSmsRequest request)
