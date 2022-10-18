@@ -12,10 +12,8 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -80,7 +78,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
   @Mock private DlmsConnectionManager connectionManager;
 
   private final DlmsDevice device = this.createDevice(Protocol.DSMR_4_2_2);
-  private final long from = 1111111L;
+  private final long from = 1111110L;
   private final long to = 2222222L;
   private final DateTime fromDateTime = new DateTime(this.from);
   private final DateTime toDateTime = new DateTime(this.to);
@@ -193,6 +191,12 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
     final DataObject bufferedObject2 = mock(DataObject.class);
     when(bufferedObject2.getValue()).thenReturn(asList(data3, data4, data5));
 
+    final DataObject data6 = mock(DataObject.class);
+    final DataObject data7 = mock(DataObject.class);
+    final DataObject data8 = mock(DataObject.class);
+    final DataObject bufferedObject3 = mock(DataObject.class);
+    when(bufferedObject3.getValue()).thenReturn(asList(data6, data7, data8));
+
     final DataObject resultData = mock(DataObject.class);
     when(resultData.getValue()).thenReturn(asList(bufferedObject1, bufferedObject2));
 
@@ -211,20 +215,17 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
 
     when(this.dlmsHelper.readDataObject(eq(getResult), any(String.class))).thenReturn(resultData);
 
-    // SETUP - mock dlms helper to handle converting the data objects
-    final String expectedDateTimeDescriptionLogTime =
-        String.format("Clock from %s buffer", periodType);
-    final String expectedDateTimeDescriptionCaptureTime =
-        "Clock from mbus interval extended register";
-    final CosemDateTimeDto cosemDateTime = new CosemDateTimeDto(this.fromDateTime);
-    when(this.dlmsHelper.readDateTime(data0, expectedDateTimeDescriptionLogTime))
-        .thenReturn(cosemDateTime);
-    when(this.dlmsHelper.readDateTime(data3, expectedDateTimeDescriptionLogTime))
-        .thenReturn(cosemDateTime);
-    when(this.dlmsHelper.readDateTime(data2, expectedDateTimeDescriptionCaptureTime))
-        .thenReturn(cosemDateTime);
-    when(this.dlmsHelper.readDateTime(data5, expectedDateTimeDescriptionCaptureTime))
-        .thenReturn(cosemDateTime);
+    // Make mocks return different times for each meterread. The last meterread has a time
+    // outside of the requested period, causing the meterread to be not included in the result.
+    final CosemDateTimeDto timeMeterRead1 = new CosemDateTimeDto(this.fromDateTime);
+    final CosemDateTimeDto timeMeterRead2 = new CosemDateTimeDto(this.fromDateTime.plusMinutes(1));
+    final CosemDateTimeDto timeMeterRead3 = new CosemDateTimeDto(this.fromDateTime.plusYears(1));
+    when(this.dlmsHelper.readDateTime(eq(data0), any())).thenReturn(timeMeterRead1);
+    when(this.dlmsHelper.readDateTime(eq(data2), any())).thenReturn(timeMeterRead1);
+    when(this.dlmsHelper.readDateTime(eq(data3), any())).thenReturn(timeMeterRead2);
+    when(this.dlmsHelper.readDateTime(eq(data5), any())).thenReturn(timeMeterRead2);
+    when(this.dlmsHelper.readDateTime(eq(data6), any())).thenReturn(timeMeterRead3);
+    when(this.dlmsHelper.readDateTime(eq(data8), any())).thenReturn(timeMeterRead3);
 
     final DlmsMeterValueDto meterValue1 = mock(DlmsMeterValueDto.class);
     final DlmsMeterValueDto meterValue2 = mock(DlmsMeterValueDto.class);
@@ -246,12 +247,6 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
                 dlmsProfile.getObisCodeAsString(),
                 dlmsProfile.getDefaultAttributeId()));
 
-    verify(this.dlmsHelper, times(2))
-        .validateBufferedDateTime(
-            any(DateTime.class),
-            argThat(new DateTimeMatcher(this.from)),
-            argThat(new DateTimeMatcher(this.to)));
-
     verify(this.dlmsObjectConfigService)
         .findDlmsObject(any(Protocol.class), any(DlmsObjectType.class), any(Medium.class));
 
@@ -259,18 +254,28 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
     final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads =
         result.getPeriodicMeterReadsGas();
 
+    // Only 2 meterreads are expected. The 3rd meterread has a logtime outside the requested period.
     assertThat(periodicMeterReads.size()).isEqualTo(2);
+
     assertThat(periodicMeterReads.stream().anyMatch(r -> r.getConsumption() == meterValue1))
         .isEqualTo(true);
     assertThat(periodicMeterReads.stream().anyMatch(r -> r.getConsumption() == meterValue2))
         .isEqualTo(true);
     assertThat(
             periodicMeterReads.stream()
-                .allMatch(r -> this.areDatesEqual(r.getLogTime(), cosemDateTime)))
+                .filter(r -> r.getConsumption() == meterValue1)
+                .allMatch(
+                    r ->
+                        this.areDatesEqual(r.getLogTime(), timeMeterRead1)
+                            && this.areDatesEqual(r.getCaptureTime(), timeMeterRead1)))
         .isEqualTo(true);
     assertThat(
             periodicMeterReads.stream()
-                .allMatch(r -> this.areDatesEqual(r.getCaptureTime(), cosemDateTime)))
+                .filter(r -> r.getConsumption() == meterValue2)
+                .allMatch(
+                    r ->
+                        this.areDatesEqual(r.getLogTime(), timeMeterRead2)
+                            && this.areDatesEqual(r.getCaptureTime(), timeMeterRead2)))
         .isEqualTo(true);
   }
 

@@ -173,7 +173,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   private void initDates() {
 
     this.TIME_FROM = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
-    this.TIME_TO = new GregorianCalendar(2019, Calendar.JANUARY, 5).getTime();
+    this.TIME_TO = new GregorianCalendar(2019, Calendar.FEBRUARY, 5).getTime();
     this.PERIOD_1_CLOCK = this.getDateAsOctetString(2019, 1, 1);
     this.PERIOD_2_CLOCK = this.getDateAsOctetString(2019, 1, 2);
     this.PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 0).getTime();
