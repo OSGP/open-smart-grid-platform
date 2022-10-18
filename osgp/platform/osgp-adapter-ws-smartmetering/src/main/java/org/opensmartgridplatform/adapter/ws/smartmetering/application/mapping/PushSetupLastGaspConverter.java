@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2022 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -12,21 +12,21 @@ import java.math.BigInteger;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupLastGasp;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SendDestinationAndMethod;
 
-public class PushSetupSmsConverter
+public class PushSetupLastGaspConverter
     extends BidirectionalConverter<
-        PushSetupSms,
-        org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.PushSetupSms> {
+        PushSetupLastGasp,
+        org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.PushSetupLastGasp> {
 
   @Override
-  public org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.PushSetupSms
+  public org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.PushSetupLastGasp
       convertTo(
-          final PushSetupSms source,
+          final PushSetupLastGasp source,
           final Type<
                   org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
-                      .PushSetupSms>
+                      .PushSetupLastGasp>
               destinationType,
           final MappingContext context) {
     if (source == null) {
@@ -34,7 +34,7 @@ public class PushSetupSmsConverter
     }
     if (!source.hasSendDestinationAndMethod()) {
       throw new IllegalArgumentException(
-          "Unable to map PushSetup Sms without SendDestinationAndMethod.");
+          "Unable to map PushSetup LastGasp without SendDestinationAndMethod.");
     }
     final SendDestinationAndMethod sendDestinationAndMethod = source.getSendDestinationAndMethod();
     final String destination = sendDestinationAndMethod.getDestination();
@@ -43,25 +43,26 @@ public class PushSetupSmsConverter
           "Unable to parse destination as \"<host>:<port>\": " + destination);
     }
     final String[] hostAndPort = destination.split(":");
-    final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.PushSetupSms
+    final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.PushSetupLastGasp
         pushSetup =
             new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
-                .PushSetupSms();
+                .PushSetupLastGasp();
     pushSetup.setHost(hostAndPort[0]);
     pushSetup.setPort(new BigInteger(hostAndPort[1]));
     return pushSetup;
   }
 
   @Override
-  public PushSetupSms convertFrom(
-      final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.PushSetupSms
+  public PushSetupLastGasp convertFrom(
+      final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
+              .PushSetupLastGasp
           source,
-      final Type<PushSetupSms> destinationType,
+      final Type<PushSetupLastGasp> destinationType,
       final MappingContext context) {
     if (source == null) {
       return null;
     }
-    final PushSetupSms.Builder builder = new PushSetupSms.Builder();
+    final PushSetupLastGasp.Builder builder = new PushSetupLastGasp.Builder();
 
     // Create send destination object. Note: TransportService and MessageType are set in protocol
     // adapter, based on the protocol version

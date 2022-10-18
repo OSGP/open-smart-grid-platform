@@ -163,6 +163,14 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="SetPushSetupLastGaspRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:SetPushSetupLastGaspRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:element name="SetPushSetupSmsRequest">
     <xsd:complexType>
       <xsd:complexContent>
@@ -380,6 +388,7 @@
         <xsd:element ref="tns:SetAlarmNotificationsRequest" />
         <xsd:element ref="tns:SetConfigurationObjectRequest" />
         <xsd:element ref="tns:SetPushSetupAlarmRequest" />
+        <xsd:element ref="tns:SetPushSetupLastGaspRequest" />
         <xsd:element ref="tns:SetPushSetupSmsRequest" />
         <xsd:element ref="tns:SynchronizeTimeRequest" />
         <xsd:element ref="tns:GetFirmwareVersionRequest" />

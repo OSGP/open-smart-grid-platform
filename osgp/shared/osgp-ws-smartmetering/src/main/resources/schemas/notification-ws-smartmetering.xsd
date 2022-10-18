@@ -53,6 +53,7 @@
       <xsd:enumeration value="GET_SMS_DETAILS" />
       <xsd:enumeration value="REPLACE_KEYS" />
       <xsd:enumeration value="SET_PUSH_SETUP_ALARM" />
+      <xsd:enumeration value="SET_PUSH_SETUP_LAST_GASP" />
       <xsd:enumeration value="SET_PUSH_SETUP_SMS" />
       <xsd:enumeration value="GET_ALL_ATTRIBUTE_VALUES" />
       <xsd:enumeration value="GET_SPECIFIC_ATTRIBUTE_VALUE" />
