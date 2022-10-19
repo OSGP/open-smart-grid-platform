@@ -11,6 +11,8 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.networking;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.slf4j.Logger;
@@ -35,12 +37,13 @@ public class DlmsPushNotificationDecoder
    * there are more bytes received.
    *
    * @param ctx the context from the ReplayingDecoder. Not used in decoding the alarm.
-   * @param in the bytes of the alarm.
+   * @param byteBuf the bytes of the alarm.
    * @param out decoded list of objects
    * @throws UnrecognizedMessageDataException
    */
   @Override
-  protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out)
+  protected void decode(
+      final ChannelHandlerContext ctx, final ByteBuf byteBuf, final List<Object> out)
       throws UnrecognizedMessageDataException {
     /**
      * DSMR4 alarm examples (in HEX bytes):
@@ -71,17 +74,21 @@ public class DlmsPushNotificationDecoder
      */
     final DlmsPushNotification pushNotification;
 
-    // Determine whether the alarm is in DSMR4 or SMR5 format.
-    final boolean smr5alarm = in.getByte(8) == 0x0F;
+    final byte[] byteArray = new byte[byteBuf.readableBytes()];
+    byteBuf.readBytes(byteArray);
 
+    // Determine whether the alarm is in DSMR4 or SMR5 format.
+    final boolean smr5alarm = byteArray[8] == 0x0F;
+
+    final InputStream inputStream = new ByteArrayInputStream(byteArray);
     LOGGER.info("Decoding state: {}, SMR5 alarm: {}", this.state(), smr5alarm);
 
     if (smr5alarm) {
       final Smr5AlarmDecoder alarmDecoder = new Smr5AlarmDecoder();
-      pushNotification = alarmDecoder.decodeSmr5alarm(in);
+      pushNotification = alarmDecoder.decodeSmr5alarm(inputStream);
     } else {
       final Dsmr4AlarmDecoder alarmDecoder = new Dsmr4AlarmDecoder();
-      pushNotification = alarmDecoder.decodeDsmr4alarm(in);
+      pushNotification = alarmDecoder.decodeDsmr4alarm(inputStream);
     }
 
     LOGGER.info("Decoded push notification: {}", pushNotification);

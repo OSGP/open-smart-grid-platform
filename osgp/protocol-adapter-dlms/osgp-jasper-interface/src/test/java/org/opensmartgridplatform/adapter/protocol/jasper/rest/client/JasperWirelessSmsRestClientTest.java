@@ -25,7 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
 import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
-import org.opensmartgridplatform.adapter.protocol.jasper.response.SendSMSResponse;
+import org.opensmartgridplatform.adapter.protocol.jasper.rest.json.SendSMSResponse;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -69,7 +69,8 @@ public class JasperWirelessSmsRestClientTest {
             eq(URL), eq(HttpMethod.POST), any(HttpEntity.class), eq(SendSMSResponse.class)))
         .thenReturn(this.createResponseEntity(HttpStatus.OK));
 
-    final SendSMSResponse sendSMSResponse = this.jasperWirelessSmsRestClient.sendWakeUpSMS(ICCID);
+    final org.opensmartgridplatform.adapter.protocol.jasper.response.SendSMSResponse
+        sendSMSResponse = this.jasperWirelessSmsRestClient.sendWakeUpSMS(ICCID);
 
     assertEquals(SMSMSGID, sendSMSResponse.getSmsMsgId());
   }

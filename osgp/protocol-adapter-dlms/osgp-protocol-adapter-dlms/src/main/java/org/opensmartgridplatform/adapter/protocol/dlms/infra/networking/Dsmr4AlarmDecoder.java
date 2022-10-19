@@ -13,7 +13,8 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SCHEDULER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SETUP_SCHEDULER;
 
-import io.netty.buffer.ByteBuf;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigDsmr422;
@@ -37,19 +38,19 @@ public class Dsmr4AlarmDecoder extends AlarmDecoder {
 
   private final DlmsPushNotification.Builder builder = new DlmsPushNotification.Builder();
 
-  public DlmsPushNotification decodeDsmr4alarm(final ByteBuf buffer)
+  public DlmsPushNotification decodeDsmr4alarm(final InputStream inputStream)
       throws UnrecognizedMessageDataException {
 
-    this.decodeEquipmentIdentifier(buffer);
-    this.decodeReceivedData(buffer);
+    this.decodeEquipmentIdentifier(inputStream);
+    this.decodeReceivedData(inputStream);
     return this.builder.build();
   }
 
-  private void decodeEquipmentIdentifier(final ByteBuf buffer)
+  private void decodeEquipmentIdentifier(final InputStream inputStream)
       throws UnrecognizedMessageDataException {
 
     final byte[] equipmentIdentifierPlusSeparatorBytes =
-        this.read(buffer, EQUIPMENT_IDENTIFIER_LENGTH + 1);
+        this.readBytes(inputStream, EQUIPMENT_IDENTIFIER_LENGTH + 1);
 
     if (equipmentIdentifierPlusSeparatorBytes[EQUIPMENT_IDENTIFIER_LENGTH] != COMMA) {
       throw new UnrecognizedMessageDataException(
@@ -66,25 +67,31 @@ public class Dsmr4AlarmDecoder extends AlarmDecoder {
     this.builder.appendBytes(equipmentIdentifierPlusSeparatorBytes);
   }
 
-  private void decodeReceivedData(final ByteBuf buffer) throws UnrecognizedMessageDataException {
+  private void decodeReceivedData(final InputStream inputStream)
+      throws UnrecognizedMessageDataException {
     // SLIM-1711 Is a very weird bug, where readableBytes turns out to be
     // almost MAXINT
     // Seems like BigEndianHeapChannelBuffer has some kind of
     // overflow/underflow.
-    final int readableBytes = buffer.writerIndex() - buffer.readerIndex();
-    if (readableBytes > Math.max(NUMBER_OF_BYTES_FOR_ALARM, NUMBER_OF_BYTES_FOR_LOGICAL_NAME)) {
-      throw new UnrecognizedMessageDataException(
-          "length of data bytes is not "
-              + NUMBER_OF_BYTES_FOR_ALARM
-              + " (alarm) or "
-              + NUMBER_OF_BYTES_FOR_LOGICAL_NAME
-              + " (obiscode)");
+    final int readableBytes;
+    try {
+      readableBytes = inputStream.available();
+      if (readableBytes > Math.max(NUMBER_OF_BYTES_FOR_ALARM, NUMBER_OF_BYTES_FOR_LOGICAL_NAME)) {
+        throw new UnrecognizedMessageDataException(
+            "length of data bytes is not "
+                + NUMBER_OF_BYTES_FOR_ALARM
+                + " (alarm) or "
+                + NUMBER_OF_BYTES_FOR_LOGICAL_NAME
+                + " (obiscode)");
+      }
+    } catch (final IOException e) {
+      throw new UnrecognizedMessageDataException(e.getMessage(), e);
     }
 
     if (readableBytes == NUMBER_OF_BYTES_FOR_ALARM) {
-      this.decodeAlarmRegisterData(buffer, this.builder, DlmsObjectType.ALARM_REGISTER_1);
+      this.decodeAlarmRegisterData(inputStream, this.builder, DlmsObjectType.ALARM_REGISTER_1);
     } else if (readableBytes == NUMBER_OF_BYTES_FOR_LOGICAL_NAME) {
-      this.decodeObisCodeData(buffer);
+      this.decodeObisCodeData(inputStream);
     } else {
       throw new UnrecognizedMessageDataException(
           "Incorrect amount of bytes: "
@@ -96,9 +103,10 @@ public class Dsmr4AlarmDecoder extends AlarmDecoder {
     }
   }
 
-  private void decodeObisCodeData(final ByteBuf buffer) throws UnrecognizedMessageDataException {
+  private void decodeObisCodeData(final InputStream inputStream)
+      throws UnrecognizedMessageDataException {
 
-    final byte[] logicalNameBytes = this.read(buffer, NUMBER_OF_BYTES_FOR_LOGICAL_NAME);
+    final byte[] logicalNameBytes = this.readBytes(inputStream, NUMBER_OF_BYTES_FOR_LOGICAL_NAME);
 
     try {
       if (this.isLogicalNameSmsTrigger(logicalNameBytes)) {

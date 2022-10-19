@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -164,7 +165,15 @@ public class GetPeriodicMeterReadsCommandExecutor
       }
     }
 
-    return new PeriodicMeterReadsResponseDto(queryPeriodType, periodicMeterReads);
+    final List<PeriodicMeterReadsResponseItemDto> periodicMeterReadsWithinRequestedPeriod =
+        periodicMeterReads.stream()
+            .filter(
+                meterRead ->
+                    this.validateDateTime(meterRead.getLogTime(), from.toDate(), to.toDate()))
+            .collect(Collectors.toList());
+
+    return new PeriodicMeterReadsResponseDto(
+        queryPeriodType, periodicMeterReadsWithinRequestedPeriod);
   }
 
   private PeriodicMeterReadsResponseItemDto convertToResponseItem(

@@ -24,6 +24,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.TransportServiceTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
@@ -230,5 +231,10 @@ public class SetPushSetupAlarmCommandExecutor
           "Setting Repetition Delay of Push Setup Alarm not implemented: {}",
           pushSetupAlarm.getRepetitionDelay());
     }
+  }
+
+  @Override
+  protected TransportServiceTypeDto getTransportServiceType() {
+    return TransportServiceTypeDto.TCP;
   }
 }

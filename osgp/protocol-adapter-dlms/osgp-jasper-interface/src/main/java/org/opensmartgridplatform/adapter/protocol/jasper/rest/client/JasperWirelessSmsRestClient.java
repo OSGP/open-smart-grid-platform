@@ -11,8 +11,8 @@ package org.opensmartgridplatform.adapter.protocol.jasper.rest.client;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
 import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
-import org.opensmartgridplatform.adapter.protocol.jasper.response.SendSMSResponse;
 import org.opensmartgridplatform.adapter.protocol.jasper.rest.json.SendSMSRequest;
+import org.opensmartgridplatform.adapter.protocol.jasper.rest.json.SendSMSResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -36,7 +36,8 @@ public class JasperWirelessSmsRestClient extends JasperWirelessRestClient
   @Autowired private short jasperGetValidityPeriod;
 
   @Override
-  public SendSMSResponse sendWakeUpSMS(final String iccId) throws OsgpJasperException {
+  public org.opensmartgridplatform.adapter.protocol.jasper.response.SendSMSResponse sendWakeUpSMS(
+      final String iccId) throws OsgpJasperException {
 
     final SendSMSRequest sendSMSRequest = new SendSMSRequest();
     sendSMSRequest.setMessageText("");
@@ -58,19 +59,21 @@ public class JasperWirelessSmsRestClient extends JasperWirelessRestClient
     headers.add(HttpHeaders.AUTHORIZATION, "Basic " + authorizationCredentials);
     final HttpEntity<SendSMSRequest> entity = new HttpEntity<>(sendSMSRequest, headers);
 
-    SendSMSResponse sendSmsResponse = null;
+    long smsMessageId = 0;
     try {
       final ResponseEntity<SendSMSResponse> sendSMSResponseEntity =
           this.jasperwirelessRestTemplate.exchange(
               url, HttpMethod.POST, entity, SendSMSResponse.class);
 
-      sendSmsResponse = sendSMSResponseEntity.getBody();
+      final SendSMSResponse sendSmsResponse = sendSMSResponseEntity.getBody();
+      smsMessageId = sendSmsResponse.getSmsMessageId();
     } catch (final HttpClientErrorException | HttpServerErrorException e) {
       this.handleException(e);
     } catch (final RestClientException e) {
       throw new OsgpJasperException(e.getMessage(), e);
     }
 
-    return sendSmsResponse;
+    return new org.opensmartgridplatform.adapter.protocol.jasper.response.SendSMSResponse(
+        smsMessageId);
   }
 }

@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -164,6 +165,17 @@ public abstract class AbstractPushSetup implements Serializable {
 
   public boolean hasSendDestinationAndMethod() {
     return this.sendDestinationAndMethod != null;
+  }
+
+  public boolean hasValidDestination() {
+    final String destination = this.getSendDestinationAndMethod().getDestination();
+    boolean valid = destination.split(":").length == 2 && !destination.split(":")[0].contains(" ");
+    try {
+      new BigInteger(destination.split(":")[1]);
+    } catch (final NumberFormatException e) {
+      valid = false;
+    }
+    return valid;
   }
 
   public SendDestinationAndMethod getSendDestinationAndMethod() {

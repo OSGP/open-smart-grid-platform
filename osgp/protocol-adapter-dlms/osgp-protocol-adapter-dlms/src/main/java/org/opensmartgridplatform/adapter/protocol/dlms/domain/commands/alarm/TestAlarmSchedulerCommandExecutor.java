@@ -10,19 +10,21 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.time.Instant;
+import java.util.Collections;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.SetParameter;
+import org.openmuc.jdlms.datatypes.CosemDate;
+import org.openmuc.jdlms.datatypes.CosemTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -40,8 +42,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class TestAlarmSchedulerCommandExecutor
     extends AbstractCommandExecutor<TestAlarmSchedulerRequestDto, AccessResultCode> {
-
-  @Autowired private DlmsHelper dlmsHelper;
 
   @Autowired private DlmsObjectConfigService dlmsObjectConfigService;
 
@@ -79,14 +79,9 @@ public class TestAlarmSchedulerCommandExecutor
     final Date scheduleDate = testAlarmSchedulerRequestDto.getScheduleTime();
     final TestAlarmTypeDto alarmTypeDto = testAlarmSchedulerRequestDto.getAlarmType();
 
-    if (scheduleDate == null || alarmTypeDto == null) {
-      throw new ProtocolAdapterException("Incorrect scheduleDate of alarmtype set");
-    }
+    validate(scheduleDate, alarmTypeDto);
 
-    final DlmsObjectType alarmObjectType =
-        TestAlarmTypeDto.PARTIAL_POWER_OUTAGE.equals(alarmTypeDto)
-            ? DlmsObjectType.PHASE_OUTAGE_TEST
-            : DlmsObjectType.LAST_GASP_TEST;
+    final DlmsObjectType alarmObjectType = toAlarmObjectType(alarmTypeDto);
 
     final DlmsObject dlmsObject =
         this.dlmsObjectConfigService.getDlmsObject(device, alarmObjectType);
@@ -98,9 +93,12 @@ public class TestAlarmSchedulerCommandExecutor
             dlmsObject.getObisCode(),
             SingleActionScheduleAttribute.EXECUTION_TIME.attributeId());
 
-    final DataObject scheduleDateTime = this.dlmsHelper.asDataObject(scheduledDateTime);
+    final DataObject timeDataObject = getDataObjectTime(scheduledDateTime);
+    final DataObject dateDataObject = getDataObjectDate(scheduledDateTime);
 
-    final DataObject commandArray = DataObject.newArrayData(Arrays.asList(scheduleDateTime));
+    final DataObject structure = DataObject.newStructureData(timeDataObject, dateDataObject);
+
+    final DataObject commandArray = DataObject.newArrayData(Collections.singletonList(structure));
 
     final SetParameter setParameter = new SetParameter(attributeAddress, commandArray);
 
@@ -108,6 +106,42 @@ public class TestAlarmSchedulerCommandExecutor
       return conn.getConnection().set(setParameter);
     } catch (final IOException e) {
       throw new ConnectionException(e);
+    }
+  }
+
+  protected static DlmsObjectType toAlarmObjectType(final TestAlarmTypeDto alarmTypeDto) {
+    return TestAlarmTypeDto.PARTIAL_POWER_OUTAGE.equals(alarmTypeDto)
+        ? DlmsObjectType.PHASE_OUTAGE_TEST
+        : DlmsObjectType.LAST_GASP_TEST;
+  }
+
+  private static DataObject getDataObjectDate(final DateTime scheduledDateTime) {
+    return DataObject.newDateData(
+        new CosemDate(
+            scheduledDateTime.getYear(),
+            scheduledDateTime.getMonthOfYear(),
+            scheduledDateTime.getDayOfMonth()));
+  }
+
+  private static DataObject getDataObjectTime(final DateTime scheduledDateTime) {
+    return DataObject.newTimeData(
+        new CosemTime(
+            scheduledDateTime.getHourOfDay(),
+            scheduledDateTime.getMinuteOfHour(),
+            scheduledDateTime.getSecondOfMinute(),
+            0));
+  }
+
+  private static void validate(final Date scheduleDate, final TestAlarmTypeDto alarmTypeDto)
+      throws ProtocolAdapterException {
+    if (scheduleDate == null) {
+      throw new ProtocolAdapterException("No scheduled date-time set");
+    } else if (alarmTypeDto == null) {
+      throw new ProtocolAdapterException("No alarmtype set");
+
+    } else if (scheduleDate.before(Date.from(Instant.now()))) {
+      throw new ProtocolAdapterException(
+          "Incorrect scheduled date time value set. It should not be a past date");
     }
   }
 }
