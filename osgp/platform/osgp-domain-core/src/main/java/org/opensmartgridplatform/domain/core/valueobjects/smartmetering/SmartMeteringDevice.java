@@ -56,4 +56,6 @@ public class SmartMeteringDevice implements Serializable {
   private Short mbusDeviceTypeIdentification;
 
   private byte[] mbusDefaultKey;
+
+  private String timezone;
 }
