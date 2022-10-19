@@ -11,6 +11,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import org.joda.time.DateTime;
@@ -68,5 +69,12 @@ public class DlmsDateTimeConverter {
 
   private static String determineTimeZone(final DlmsDevice device) {
     return device.getTimezone() != null ? device.getTimezone() : UTC;
+  }
+
+  public static ZonedDateTime now(final DlmsDevice device) {
+
+    final ZoneId zoneId = ZoneId.of(determineTimeZone(device));
+
+    return ZonedDateTime.now(ZoneOffset.UTC).withZoneSameInstant(zoneId);
   }
 }

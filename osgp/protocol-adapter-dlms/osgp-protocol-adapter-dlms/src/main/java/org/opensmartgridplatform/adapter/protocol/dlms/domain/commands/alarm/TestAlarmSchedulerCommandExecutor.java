@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.SetParameter;
@@ -26,6 +25,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractC
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -86,7 +86,7 @@ public class TestAlarmSchedulerCommandExecutor
 
     final DlmsObject dlmsObject =
         this.dlmsObjectConfigService.getDlmsObject(device, alarmObjectType);
-    final DateTime scheduledDateTime = new DateTime(scheduleDate, DateTimeZone.UTC);
+    final DateTime convertedDateTime = DlmsDateTimeConverter.toDateTime(scheduleDate, device);
 
     final AttributeAddress attributeAddress =
         new AttributeAddress(
@@ -94,8 +94,8 @@ public class TestAlarmSchedulerCommandExecutor
             dlmsObject.getObisCode(),
             SingleActionScheduleAttribute.EXECUTION_TIME.attributeId());
 
-    final DataObject timeDataObject = getDataObjectTime(scheduledDateTime);
-    final DataObject dateDataObject = getDataObjectDate(scheduledDateTime);
+    final DataObject timeDataObject = getDataObjectTime(convertedDateTime);
+    final DataObject dateDataObject = getDataObjectDate(convertedDateTime);
 
     final DataObject structure = DataObject.newStructureData(timeDataObject, dateDataObject);
 

@@ -30,6 +30,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -120,6 +121,8 @@ class TestAlarmSchedulerCommandExecutorTest {
       final String alarmTypeParameter,
       final String expectedObisCode)
       throws ParseException, ProtocolAdapterException {
+
+    Mockito.when(this.device.getTimezone()).thenReturn("Europe/Amsterdam");
 
     final Date date = this.sdf.parse(dateTimeParameter);
     final LocalDateTime localDateTime =

@@ -10,8 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -19,6 +17,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -82,8 +81,8 @@ public class SynchronizeTimeCommandExecutor
       throws ProtocolAdapterException {
 
     final String timezone = synchronizeTimeRequestDto.getTimeZone();
-    final ZoneId zoneId = ZoneId.of(timezone);
-    final ZonedDateTime zonedTime = ZonedDateTime.now(ZoneOffset.UTC).withZoneSameInstant(zoneId);
+    final ZonedDateTime zonedTime = DlmsDateTimeConverter.now(device);
+
     final DataObject time = this.dlmsHelper.asDataObject(zonedTime);
 
     device.setTimezone(timezone);
