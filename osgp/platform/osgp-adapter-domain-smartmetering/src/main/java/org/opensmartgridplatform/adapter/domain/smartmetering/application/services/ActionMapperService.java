@@ -66,6 +66,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeyOn
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupAlarmRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupLastGaspRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupSmsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
@@ -113,6 +114,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecyc
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupLastGaspRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
@@ -156,6 +158,7 @@ public class ActionMapperService {
     CLASS_MAP.put(
         SetConfigurationObjectRequestData.class, SetConfigurationObjectRequestDataDto.class);
     CLASS_MAP.put(SetPushSetupAlarmRequestData.class, SetPushSetupAlarmRequestDto.class);
+    CLASS_MAP.put(SetPushSetupLastGaspRequestData.class, SetPushSetupLastGaspRequestDto.class);
     CLASS_MAP.put(SetPushSetupSmsRequestData.class, SetPushSetupSmsRequestDto.class);
     CLASS_MAP.put(SynchronizeTimeRequestData.class, SynchronizeTimeRequestDto.class);
     CLASS_MAP.put(GetAllAttributeValuesRequestData.class, GetAllAttributeValuesRequestDto.class);
@@ -247,6 +250,7 @@ public class ActionMapperService {
     CLASS_TO_MAPPER_MAP.put(SetConfigurationObjectRequestData.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(SetAlarmNotificationsRequestData.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(SetPushSetupAlarmRequestData.class, this.configurationMapper);
+    CLASS_TO_MAPPER_MAP.put(SetPushSetupLastGaspRequestData.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(SetPushSetupSmsRequestData.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(SynchronizeTimeRequestData.class, this.commonMapper);
     CLASS_TO_MAPPER_MAP.put(GetAllAttributeValuesRequestData.class, this.commonMapper);

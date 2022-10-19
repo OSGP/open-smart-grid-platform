@@ -26,6 +26,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegiste
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupLastGaspRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
@@ -69,6 +70,8 @@ public class CommandExecutorMapStub extends CommandExecutorMap {
         new SetConfigurationObjectBundleCommandExecutorStub());
     this.addCommandExecutor(
         SetPushSetupAlarmRequestDto.class, new SetPushSetupAlarmBundleCommandExecutorStub());
+    this.addCommandExecutor(
+        SetPushSetupLastGaspRequestDto.class, new SetPushSetupLastGaspBundleCommandExecutorStub());
     this.addCommandExecutor(
         SetPushSetupSmsRequestDto.class, new SetPushSetupSmsBundleCommandExecutorStub());
     this.addCommandExecutor(

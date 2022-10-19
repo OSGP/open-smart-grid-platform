@@ -33,6 +33,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysR
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupLastGasp;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SecretType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
@@ -63,6 +64,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptio
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.KeyDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupAlarmDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupLastGaspDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
@@ -176,6 +178,30 @@ public class ConfigurationService {
 
     final PushSetupAlarmDto requestDto =
         this.configurationMapper.map(pushSetupAlarm, PushSetupAlarmDto.class);
+
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
+  }
+
+  public void setPushSetupLastGasp(
+      final MessageMetadata messageMetadata, final PushSetupLastGasp pushSetupLastGasp)
+      throws FunctionalException {
+
+    log.info(
+        "setPushSetupLastGasp for organisationIdentification: {} for deviceIdentification: {}",
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
+
+    final SmartMeter smartMeter =
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
+
+    final PushSetupLastGaspDto requestDto =
+        this.configurationMapper.map(pushSetupLastGasp, PushSetupLastGaspDto.class);
 
     this.osgpCoreRequestMessageSender.send(
         requestDto,
@@ -448,6 +474,29 @@ public class ConfigurationService {
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
       log.error("Set Push Setup Alarm Response not ok. Unexpected Exception", exception);
+      result = ResponseMessageResultType.NOT_OK;
+    }
+
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withMessageMetadata(messageMetadata)
+            .withResult(result)
+            .withOsgpException(exception)
+            .build();
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
+  }
+
+  public void handleSetPushSetupLastGaspResponse(
+      final MessageMetadata messageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception) {
+
+    log.info(
+        "handleSetPushSetupLastGaspResponse for MessageType: {}", messageMetadata.getMessageType());
+
+    ResponseMessageResultType result = deviceResult;
+    if (exception != null) {
+      log.error("Set Push Setup LastGasp Response not ok. Unexpected Exception", exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 

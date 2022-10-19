@@ -17,6 +17,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.application.mappin
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.FirmwareVersionGasConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.GetAllAttributeValuesResponseConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.PushSetupAlarmDtoConverter;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.PushSetupLastGaspDtoConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.PushSetupSmsDtoConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.WeekProfileConverter;
 import org.springframework.stereotype.Component;
@@ -39,8 +40,9 @@ public class ConfigurationMapper extends ConfigurableMapper {
         .getConverterFactory()
         .registerConverter(new GetAllAttributeValuesResponseConverter());
     mapperFactory.getConverterFactory().registerConverter(new WeekProfileConverter(this));
-    mapperFactory.getConverterFactory().registerConverter(new PushSetupSmsDtoConverter(this));
     mapperFactory.getConverterFactory().registerConverter(new PushSetupAlarmDtoConverter(this));
+    mapperFactory.getConverterFactory().registerConverter(new PushSetupLastGaspDtoConverter(this));
+    mapperFactory.getConverterFactory().registerConverter(new PushSetupSmsDtoConverter(this));
     mapperFactory.getConverterFactory().registerConverter(new CosemObisCodeConverter());
   }
 }
