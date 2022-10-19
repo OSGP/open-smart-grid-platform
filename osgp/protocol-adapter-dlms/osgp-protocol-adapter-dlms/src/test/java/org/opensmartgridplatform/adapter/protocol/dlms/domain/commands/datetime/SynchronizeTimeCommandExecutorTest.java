@@ -51,7 +51,7 @@ class SynchronizeTimeCommandExecutorTest {
 
   private static final ObisCode LOGICAL_NAME = new ObisCode("0.0.1.0.0.255");
 
-  private final DlmsDevice DLMS_DEVICE = new DlmsDevice();
+  @Mock private DlmsDevice device;
 
   @Captor ArgumentCaptor<SetParameter> setParameterArgumentCaptor;
 
@@ -79,6 +79,8 @@ class SynchronizeTimeCommandExecutorTest {
     final String timeZone = "Europe/Amsterdam";
     final ZonedDateTime expectedTime = ZonedDateTime.now(TimeZone.getTimeZone(timeZone).toZoneId());
 
+    when(this.device.getTimezone()).thenReturn(timeZone);
+
     // SETUP
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
@@ -89,8 +91,7 @@ class SynchronizeTimeCommandExecutorTest {
 
     // CALL
     final AccessResultCode resultCode =
-        this.executor.execute(
-            this.conn, this.DLMS_DEVICE, synchronizeTimeRequest, this.messageMetadata);
+        this.executor.execute(this.conn, this.device, synchronizeTimeRequest, this.messageMetadata);
 
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
@@ -112,7 +113,7 @@ class SynchronizeTimeCommandExecutorTest {
     assertThat(setParameter.getData().getType().name()).isEqualTo("DATE_TIME");
     final CosemDateTime cosemDateTime = setParameter.getData().getValue();
 
-    // Explicit check hours andd deviation because these are important in UTC transformation
+    // Explicit check hours and deviation because these are important in UTC transformation
     assertThat(cosemDateTime.get(Field.HOUR)).isEqualTo(expectedTime.getHour());
     assertThat(cosemDateTime.get(Field.DEVIATION))
         .isEqualTo(expectedTime.getOffset().getTotalSeconds() / -60);

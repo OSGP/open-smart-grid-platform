@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.TimeZone;
 import org.assertj.core.api.Assertions;
@@ -36,7 +35,6 @@ class DlmsDateTimeConverterTest {
   @Mock private DlmsDevice dlmsDevice;
 
   private final SimpleDateFormat utcSimpleDateFormat = new SimpleDateFormat(DATE_FORMAT);
-  private final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ISO_DATE_TIME;
 
   @BeforeEach
   void setup() {
@@ -59,7 +57,7 @@ class DlmsDateTimeConverterTest {
       throws ParseException {
     final String deviceTimeZone = "null".equals(deviceTimeZoneString) ? null : deviceTimeZoneString;
     final Date date = this.utcSimpleDateFormat.parse(utcDateTime);
-    final ZonedDateTime toDateTime = ZonedDateTime.parse(toDateTimeString, this.dateTimeFormat);
+    final ZonedDateTime toDateTime = DateTimeParserUtil.parseToZonedDateTime(toDateTimeString);
 
     when(this.dlmsDevice.getTimezone()).thenReturn(deviceTimeZone);
 
