@@ -20,7 +20,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 /**
  * Convert DateTime fields to the timezone defined within an e-meter DlmsDevice. So local times can
  * be used to define time ranges. This is a Utility tool that will be used within the
- * CommandExecuters. Meter reads with a timeframe on Kaifa meters use local time to determine the
+ * CommandExecutors. Meter reads with a timeframe on Kaifa meters use local time to determine the
  * timeframe meter data returned.
  */
 public class DlmsDateTimeConverter {

@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -74,7 +75,8 @@ class TestAlarmSchedulerCommandExecutorTest {
 
   @BeforeEach
   void setup() {
-
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    this.sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     this.connectionStub = new DlmsConnectionStub();
     this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 

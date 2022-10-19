@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.SetParameter;
@@ -85,7 +86,7 @@ public class TestAlarmSchedulerCommandExecutor
 
     final DlmsObject dlmsObject =
         this.dlmsObjectConfigService.getDlmsObject(device, alarmObjectType);
-    final DateTime scheduledDateTime = new DateTime(scheduleDate);
+    final DateTime scheduledDateTime = new DateTime(scheduleDate, DateTimeZone.UTC);
 
     final AttributeAddress attributeAddress =
         new AttributeAddress(
