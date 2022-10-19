@@ -74,7 +74,7 @@
     <flyway.version>7.3.0</flyway.version>
     <slf4j.version>1.7.30</slf4j.version>
     <apache.commons.lang.version>3.10</apache.commons.lang.version>
-    <apache.commons.text.version>1.8</apache.commons.text.version>
+    <apache.commons.text.version>1.10.0</apache.commons.text.version>
     <apache.httpcomponents.version>4.5.13</apache.httpcomponents.version>
     <apache.httpcomponents.httpcore.version>4.4.13</apache.httpcomponents.httpcore.version>
     <commons.codec.version>1.14</commons.codec.version>
@@ -1130,7 +1130,7 @@
     <repository>
       <id>fuse-repo</id>
       <name>Fuse Source</name>
-      <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
+      <url>https://repo.fusesource.com/nexus/content/groups/public/</url>
       <releases>
         <enabled>false</enabled>
       </releases>
@@ -1387,6 +1387,26 @@
             <additionalSourceDirectories>
               <param>src/integration-test/java</param>
             </additionalSourceDirectories>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.cyclonedx</groupId>
+          <artifactId>cyclonedx-maven-plugin</artifactId>
+          <version>2.7.2</version>
+          <executions>
+            <execution>
+              <phase>prepare-package</phase>
+              <goals>
+                <goal>makeBom</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <projectType>application</projectType>
+            <!-- Put the boms in WEB-INF, that way they are packaged with the .war file -->
+            <outputName>${project.build.finalName}/WEB-INF/bom</outputName>
+            <includeProvidedScope>false</includeProvidedScope>
           </configuration>
         </plugin>
       </plugins>

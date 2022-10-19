@@ -75,8 +75,6 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
     final Date logTime;
 
     final PeriodTypeDto queryPeriodType = ctx.periodicMeterReadsQuery.getPeriodType();
-    final DateTime from = new DateTime(ctx.periodicMeterReadsQuery.getBeginDate());
-    final DateTime to = new DateTime(ctx.periodicMeterReadsQuery.getEndDate());
     final Integer clockIndex = ctx.attributeAddressForProfile.getIndex(DlmsObjectType.CLOCK, null);
 
     CosemDateTimeDto cosemDateTime = null;
@@ -90,8 +88,6 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
     final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
 
     if (bufferedDateTime != null) {
-      dlmsHelper.validateBufferedDateTime(bufferedDateTime, from, to);
-
       logTime = bufferedDateTime.toDate();
     } else {
       logTime =
@@ -230,6 +226,21 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
         this.amrProfileStatusCodeHelper.toAmrProfileStatusCodeFlags(
             amrProfileStatusData.getValue());
     return new AmrProfileStatusCodeDto(flags);
+  }
+
+  protected boolean validateDateTime(
+      final Date meterReadTime, final Date beginDateTime, final Date endDateTime) {
+
+    if (meterReadTime.before(beginDateTime) || meterReadTime.after(endDateTime)) {
+      LOGGER.info(
+          "Not using an object from capture buffer (clock= {}), because the date does not match the given period: [ {} .. {} ].",
+          meterReadTime,
+          beginDateTime,
+          endDateTime);
+      return false;
+    } else {
+      return true;
+    }
   }
 
   protected abstract Logger getLogger();

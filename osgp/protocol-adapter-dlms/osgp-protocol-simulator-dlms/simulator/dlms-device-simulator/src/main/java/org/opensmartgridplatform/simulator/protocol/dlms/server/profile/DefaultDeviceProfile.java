@@ -91,8 +91,7 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MonthlyBillingVal
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.OctetStringData;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.P1PortDsmrVersion;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerOutages;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PushSetupAlarm;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PushSetupSms;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PushSetupObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.SetRandomisationSettings;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.SpecialDaysTable;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.StandardEventLog;
@@ -703,14 +702,14 @@ public class DefaultDeviceProfile {
 
   @Scope("prototype")
   @Bean
-  public PushSetupAlarm pushSetupAlarm() {
-    return new PushSetupAlarm();
+  public PushSetupObject pushSetupAlarm() {
+    return new PushSetupObject("0.1.25.9.0.255");
   }
 
   @Scope("prototype")
   @Bean
-  public PushSetupSms pushSetupSms() {
-    return new PushSetupSms();
+  public PushSetupObject pushSetupSms() {
+    return new PushSetupObject("0.2.25.9.0.255");
   }
 
   @Scope("prototype")

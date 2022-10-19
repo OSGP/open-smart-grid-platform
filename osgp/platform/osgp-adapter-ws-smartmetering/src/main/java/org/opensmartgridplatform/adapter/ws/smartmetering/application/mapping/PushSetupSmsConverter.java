@@ -38,7 +38,7 @@ public class PushSetupSmsConverter
     }
     final SendDestinationAndMethod sendDestinationAndMethod = source.getSendDestinationAndMethod();
     final String destination = sendDestinationAndMethod.getDestination();
-    if (!destination.matches("\\S++:\\d++")) {
+    if (!source.hasValidDestination()) {
       throw new IllegalArgumentException(
           "Unable to parse destination as \"<host>:<port>\": " + destination);
     }

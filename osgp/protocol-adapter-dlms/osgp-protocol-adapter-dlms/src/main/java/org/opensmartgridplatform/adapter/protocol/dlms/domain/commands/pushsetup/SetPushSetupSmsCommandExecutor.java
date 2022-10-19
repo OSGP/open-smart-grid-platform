@@ -21,6 +21,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.TransportServiceTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,5 +135,10 @@ public class SetPushSetupSmsCommandExecutor
           "Setting Repetition Delay of Push Setup Sms not implemented: {}",
           pushSetupSms.getRepetitionDelay());
     }
+  }
+
+  @Override
+  protected TransportServiceTypeDto getTransportServiceType() {
+    return TransportServiceTypeDto.TCP;
   }
 }
