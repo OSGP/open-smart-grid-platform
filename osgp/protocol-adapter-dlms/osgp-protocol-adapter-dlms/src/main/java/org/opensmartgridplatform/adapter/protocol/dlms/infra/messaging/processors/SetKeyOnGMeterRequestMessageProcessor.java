@@ -20,15 +20,13 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/** Class for processing set Activity Calendar request messages */
 @Component
-public class SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor
-    extends DeviceRequestMessageProcessor {
+public class SetKeyOnGMeterRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
   @Autowired private ConfigurationService configurationService;
 
-  public SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor() {
-    super(MessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER);
+  public SetKeyOnGMeterRequestMessageProcessor() {
+    super(MessageType.SET_KEY_ON_G_METER);
   }
 
   @Override
@@ -43,7 +41,7 @@ public class SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor
 
     final SetKeyOnGMeterRequestDto setEncryptionKeyRequest =
         (SetKeyOnGMeterRequestDto) requestObject;
-    return this.configurationService.setEncryptionKeyExchangeOnGMeter(
+    return this.configurationService.setKeyOnGMeter(
         conn, device, setEncryptionKeyRequest, messageMetadata);
   }
 }

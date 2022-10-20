@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.mess
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.BaseRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeyOnGMeterRequestData;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -20,25 +20,24 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor
-    extends BaseRequestMessageProcessor {
+public class SetKeyOnGMeterRequestMessageProcessor extends BaseRequestMessageProcessor {
 
   @Autowired
   @Qualifier("domainSmartMeteringConfigurationService")
   private ConfigurationService configurationService;
 
   @Autowired
-  protected SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor(
+  protected SetKeyOnGMeterRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
           final MessageProcessorMap messageProcessorMap) {
-    super(messageProcessorMap, MessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER);
+    super(messageProcessorMap, MessageType.SET_KEY_ON_G_METER);
   }
 
   @Override
   protected void handleMessage(final MessageMetadata deviceMessageMetadata, final Object dataObject)
       throws FunctionalException {
 
-    this.configurationService.setEncryptionKeyExchangeOnGMeter(
-        deviceMessageMetadata, (SetEncryptionKeyExchangeOnGMeterRequestData) dataObject);
+    this.configurationService.setKeyOnGMeter(
+        deviceMessageMetadata, (SetKeyOnGMeterRequestData) dataObject);
   }
 }
