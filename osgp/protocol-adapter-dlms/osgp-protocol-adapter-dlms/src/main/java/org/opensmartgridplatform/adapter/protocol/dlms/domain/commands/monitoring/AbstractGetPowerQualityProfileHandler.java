@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitoring;
 
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter.toDateTime;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -175,7 +177,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
   protected final DlmsHelper dlmsHelper;
 
-  public AbstractGetPowerQualityProfileHandler(final DlmsHelper dlmsHelper) {
+  protected AbstractGetPowerQualityProfileHandler(final DlmsHelper dlmsHelper) {
     this.dlmsHelper = dlmsHelper;
   }
 
@@ -204,8 +206,9 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
       final ObisCode obisCode = this.makeObisCode(profile.getObisCodeValuesDto());
       final DateTime beginDateTime =
-          new DateTime(getPowerQualityProfileRequestDataDto.getBeginDate());
-      final DateTime endDateTime = new DateTime(getPowerQualityProfileRequestDataDto.getEndDate());
+          toDateTime(getPowerQualityProfileRequestDataDto.getBeginDate(), device);
+      final DateTime endDateTime =
+          toDateTime(getPowerQualityProfileRequestDataDto.getEndDate(), device);
 
       // all value types that can be selected within this profile.
       final List<GetResult> captureObjects = this.retrieveCaptureObjects(conn, device, obisCode);
