@@ -69,34 +69,51 @@ public class ClearAlarmRegisterCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    final AttributeAddress alarmRegister1AttributeAddress =
-        this.dlmsObjectConfigService.getAttributeAddress(
-            device, DlmsObjectType.ALARM_REGISTER_1, null);
-
-    final AccessResultCode resultCodeAlarmRegister1 =
-        this.executeForAlarmRegister(conn, alarmRegister1AttributeAddress);
-
-    if (resultCodeAlarmRegister1 == null) {
-      throw new ProtocolAdapterException("Error occurred for clear alarm register 1.");
+    // Clear alarm 1
+    final Optional<AccessResultCode> optionalResultCodeAlarm1 =
+        this.clearAlarmRegister(conn, device, DlmsObjectType.ALARM_REGISTER_1);
+    if (!optionalResultCodeAlarm1.isPresent()) {
+      throw new ProtocolAdapterException("Unable to find alarm register 1.");
     }
+    final AccessResultCode resultCodeAlarmRegister1 = optionalResultCodeAlarm1.get();
     if (resultCodeAlarmRegister1 != AccessResultCode.SUCCESS) {
       return resultCodeAlarmRegister1;
     }
 
-    final Optional<AttributeAddress> optAlarmRegister2AttributeAddress =
-        this.dlmsObjectConfigService.findAttributeAddress(
-            device, DlmsObjectType.ALARM_REGISTER_2, null);
-
-    if (!optAlarmRegister2AttributeAddress.isPresent()) {
+    // Clear alarm 2
+    final Optional<AccessResultCode> optionalResultCodeAlarm2 =
+        this.clearAlarmRegister(conn, device, DlmsObjectType.ALARM_REGISTER_2);
+    if (!optionalResultCodeAlarm2.isPresent()) {
       return resultCodeAlarmRegister1;
-    } else {
-      final AccessResultCode resultCodeAlarmRegister2 =
-          this.executeForAlarmRegister(conn, optAlarmRegister2AttributeAddress.get());
+    }
+    final AccessResultCode resultCodeAlarmRegister2 = optionalResultCodeAlarm2.get();
+    if (resultCodeAlarmRegister2 != AccessResultCode.SUCCESS) {
+      return resultCodeAlarmRegister2;
+    }
 
-      if (resultCodeAlarmRegister2 != null) {
-        return resultCodeAlarmRegister2;
+    // Clear alarm 3
+    final Optional<AccessResultCode> optionalResultCodeAlarm3 =
+        this.clearAlarmRegister(conn, device, DlmsObjectType.ALARM_REGISTER_3);
+    return optionalResultCodeAlarm3.orElse(resultCodeAlarmRegister2);
+  }
+
+  private Optional<AccessResultCode> clearAlarmRegister(
+      final DlmsConnectionManager conn, final DlmsDevice device, final DlmsObjectType objectType)
+      throws ProtocolAdapterException {
+    final Optional<AttributeAddress> optAlarmRegisterAttributeAddress =
+        this.dlmsObjectConfigService.findAttributeAddress(device, objectType, null);
+
+    if (!optAlarmRegisterAttributeAddress.isPresent()) {
+      return Optional.empty();
+    } else {
+      final AccessResultCode resultCodeAlarmRegister =
+          this.executeForAlarmRegister(conn, optAlarmRegisterAttributeAddress.get());
+
+      if (resultCodeAlarmRegister != null) {
+        return Optional.of(resultCodeAlarmRegister);
       } else {
-        throw new ProtocolAdapterException("Error occurred for clear alarm register 2.");
+        throw new ProtocolAdapterException(
+            "Error occurred for clear alarm register: ." + objectType.name());
       }
     }
   }
