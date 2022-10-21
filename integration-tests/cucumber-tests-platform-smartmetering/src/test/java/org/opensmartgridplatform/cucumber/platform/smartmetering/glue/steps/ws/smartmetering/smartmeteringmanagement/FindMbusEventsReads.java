@@ -53,10 +53,10 @@ public class FindMbusEventsReads extends AbstractFindEventsReads {
               EventType.PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_2,
               EventType.PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_3,
               EventType.PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4,
-              EventType.DEAD_BATTERY_M_BUS_DEVICE_CHANNEL_1,
-              EventType.DEAD_BATTERY_M_BUS_DEVICE_CHANNEL_2,
-              EventType.DEAD_BATTERY_M_BUS_DEVICE_CHANNEL_3,
-              EventType.DEAD_BATTERY_M_BUS_DEVICE_CHANNEL_4));
+              EventType.DEAD_BATTERY_ERROR_M_BUS_DEVICE_CHANNEL_1,
+              EventType.DEAD_BATTERY_ERROR_M_BUS_DEVICE_CHANNEL_2,
+              EventType.DEAD_BATTERY_ERROR_M_BUS_DEVICE_CHANNEL_3,
+              EventType.DEAD_BATTERY_ERROR_M_BUS_DEVICE_CHANNEL_4));
 
   @Override
   protected String getEventLogCategory() {

@@ -361,7 +361,7 @@ class ListEventMappingTest {
               EventLogCategory.M_BUS_EVENT_LOG),
           newEvent(
               DateTime.now(),
-              EventType.DEAD_BATTERY_M_BUS_DEVICE_CHANNEL_1,
+              EventType.DEAD_BATTERY_ERROR_M_BUS_DEVICE_CHANNEL_1,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
           newEvent(
@@ -401,7 +401,7 @@ class ListEventMappingTest {
               EventLogCategory.M_BUS_EVENT_LOG),
           newEvent(
               DateTime.now(),
-              EventType.DEAD_BATTERY_M_BUS_DEVICE_CHANNEL_2,
+              EventType.DEAD_BATTERY_ERROR_M_BUS_DEVICE_CHANNEL_2,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
           newEvent(
@@ -441,7 +441,7 @@ class ListEventMappingTest {
               EventLogCategory.M_BUS_EVENT_LOG),
           newEvent(
               DateTime.now(),
-              EventType.DEAD_BATTERY_M_BUS_DEVICE_CHANNEL_3,
+              EventType.DEAD_BATTERY_ERROR_M_BUS_DEVICE_CHANNEL_3,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
           newEvent(
@@ -481,7 +481,7 @@ class ListEventMappingTest {
               EventLogCategory.M_BUS_EVENT_LOG),
           newEvent(
               DateTime.now(),
-              EventType.DEAD_BATTERY_M_BUS_DEVICE_CHANNEL_4,
+              EventType.DEAD_BATTERY_ERROR_M_BUS_DEVICE_CHANNEL_4,
               null,
               EventLogCategory.M_BUS_EVENT_LOG));
 
