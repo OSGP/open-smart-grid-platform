@@ -82,8 +82,7 @@ class GetPeriodicMeterReadsCommandExecutorTest {
   private final long to = 2222222L;
   private final DateTime fromDateTime =
       DlmsDateTimeConverter.toDateTime(new Date(this.from), device);
-  private final DateTime toDateTime =
-      DlmsDateTimeConverter.toDateTime(new Date(this.to), device);
+  private final DateTime toDateTime = DlmsDateTimeConverter.toDateTime(new Date(this.to), device);
 
   private final String DEFAULT_TIMEZONE = "UTC";
   private MessageMetadata messageMetadata;
@@ -147,7 +146,8 @@ class GetPeriodicMeterReadsCommandExecutorTest {
         new PeriodicMeterReadsRequestDto(periodType, new Date(this.from), new Date(this.to));
 
     this.device.setTimezone(timeZone);
-    final DateTime convertedFromTime = DlmsDateTimeConverter.toDateTime(new Date(this.from), device);
+    final DateTime convertedFromTime =
+        DlmsDateTimeConverter.toDateTime(new Date(this.from), device);
     final DateTime convertedToTime = DlmsDateTimeConverter.toDateTime(new Date(this.to), device);
 
     // SETUP - dlms objects
