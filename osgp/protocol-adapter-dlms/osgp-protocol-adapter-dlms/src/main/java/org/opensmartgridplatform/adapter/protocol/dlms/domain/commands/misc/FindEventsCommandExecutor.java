@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter.toDateTime;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -168,6 +170,10 @@ public class FindEventsCommandExecutor
      * value to determine which elements from the buffered array should be
      * retrieved.
      */
+
+    final DateTime convertedBeginDateTime = toDateTime(beginDateTime.toDate(), device);
+    final DateTime convertedEndDateTime = toDateTime(endDateTime.toDate(), device);
+
     final DlmsObject clockObject =
         this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.CLOCK);
 
@@ -179,8 +185,8 @@ public class FindEventsCommandExecutor
                 DataObject.newInteger8Data((byte) clockObject.getDefaultAttributeId()),
                 DataObject.newUInteger16Data(0)));
 
-    final DataObject fromValue = this.dlmsHelper.asDataObject(beginDateTime);
-    final DataObject toValue = this.dlmsHelper.asDataObject(endDateTime);
+    final DataObject fromValue = this.dlmsHelper.asDataObject(convertedBeginDateTime);
+    final DataObject toValue = this.dlmsHelper.asDataObject(convertedEndDateTime);
 
     /*
      * Retrieve all captured objects by setting selectedValues to an empty
