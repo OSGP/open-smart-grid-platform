@@ -66,10 +66,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeyOnGMeterAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeyOnGMeterAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeyOnGMeterRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeyOnGMeterResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelRequest;
@@ -269,23 +269,21 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
         this.getTemplate().marshalSendAndReceive(setSpecialDaysAsyncRequest);
   }
 
-  public SetEncryptionKeyExchangeOnGMeterAsyncResponse setEncryptionKeyExchangeOnGMeter(
-      final SetEncryptionKeyExchangeOnGMeterRequest setEncryptionKeyExchangeOnGMeterRequest)
-      throws WebServiceSecurityException {
-    return (SetEncryptionKeyExchangeOnGMeterAsyncResponse)
-        this.getTemplate().marshalSendAndReceive(setEncryptionKeyExchangeOnGMeterRequest);
+  public SetKeyOnGMeterAsyncResponse SetKeyOnGMeter(
+      final SetKeyOnGMeterRequest SetKeyOnGMeterRequest) throws WebServiceSecurityException {
+    return (SetKeyOnGMeterAsyncResponse)
+        this.getTemplate().marshalSendAndReceive(SetKeyOnGMeterRequest);
   }
 
-  public SetEncryptionKeyExchangeOnGMeterResponse retrieveSetEncryptionKeyExchangeOnGMeterResponse(
-      final SetEncryptionKeyExchangeOnGMeterAsyncRequest
-          setEncryptionKeyExchangeOnGMeterAsyncRequest)
+  public SetKeyOnGMeterResponse retrieveSetKeyOnGMeterResponse(
+      final SetKeyOnGMeterAsyncRequest SetKeyOnGMeterAsyncRequest)
       throws WebServiceSecurityException {
 
-    final String correlationUid = setEncryptionKeyExchangeOnGMeterAsyncRequest.getCorrelationUid();
+    final String correlationUid = SetKeyOnGMeterAsyncRequest.getCorrelationUid();
     this.waitForNotification(correlationUid);
 
-    return (SetEncryptionKeyExchangeOnGMeterResponse)
-        this.getTemplate().marshalSendAndReceive(setEncryptionKeyExchangeOnGMeterAsyncRequest);
+    return (SetKeyOnGMeterResponse)
+        this.getTemplate().marshalSendAndReceive(SetKeyOnGMeterAsyncRequest);
   }
 
   public GetMbusEncryptionKeyStatusAsyncResponse getMbusEncryptionKeyStatus(

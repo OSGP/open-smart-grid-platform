@@ -249,18 +249,17 @@ public class ConfigurationService {
     return this.getAdministrativeStatusCommandExecutor.execute(conn, device, null, messageMetadata);
   }
 
-  public String setEncryptionKeyExchangeOnGMeter(
+  public String setKeyOnGMeter(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
       final SetKeyOnGMeterRequestDto setEncryptionKeyRequest,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
+    LOGGER.info("Device for Set Key On G-Meter is: {}", device);
     this.setKeyOnGMeterCommandExecutor.execute(
         conn, device, setEncryptionKeyRequest, messageMetadata);
-    return "Set Encryption Key Exchange On G-Meter Result is OK for device id: "
-        + device.getDeviceIdentification();
+    return "Set Key On G-Meter Result is OK for device id: " + device.getDeviceIdentification();
   }
 
   public String setMbusUserKeyByChannel(

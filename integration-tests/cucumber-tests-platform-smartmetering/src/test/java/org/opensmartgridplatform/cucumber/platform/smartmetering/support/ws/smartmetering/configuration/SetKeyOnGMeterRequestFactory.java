@@ -10,27 +10,25 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.sma
 
 import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SecretType;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequestData;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeyOnGMeterAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeyOnGMeterRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeyOnGMeterRequestData;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 
-public class SetEncryptionKeyExchangeOnGMeterRequestFactory {
-  private SetEncryptionKeyExchangeOnGMeterRequestFactory() {
+public class SetKeyOnGMeterRequestFactory {
+  private SetKeyOnGMeterRequestFactory() {
     // Private constructor for utility class
   }
 
-  public static SetEncryptionKeyExchangeOnGMeterRequest fromParameterMap(
+  public static SetKeyOnGMeterRequest fromParameterMap(
       final Map<String, String> requestParameters) {
-    final SetEncryptionKeyExchangeOnGMeterRequest setEncryptionKeyExchangeOnGMeterRequest =
-        new SetEncryptionKeyExchangeOnGMeterRequest();
-    setEncryptionKeyExchangeOnGMeterRequest.setDeviceIdentification(
+    final SetKeyOnGMeterRequest SetKeyOnGMeterRequest = new SetKeyOnGMeterRequest();
+    SetKeyOnGMeterRequest.setDeviceIdentification(
         requestParameters.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
 
-    final SetEncryptionKeyExchangeOnGMeterRequestData data =
-        new SetEncryptionKeyExchangeOnGMeterRequestData();
+    final SetKeyOnGMeterRequestData data = new SetKeyOnGMeterRequestData();
 
     data.setMbusDeviceIdentification(
         requestParameters.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
@@ -42,19 +40,17 @@ public class SetEncryptionKeyExchangeOnGMeterRequestFactory {
                 PlatformSmartmeteringKeys.CLOSE_OPTICAL_PORT,
                 String.valueOf(PlatformSmartmeteringDefaults.CLOSE_OPTICAL_PORT))));
 
-    setEncryptionKeyExchangeOnGMeterRequest.setSetEncryptionKeyExchangeOnGMeterRequestData(data);
+    SetKeyOnGMeterRequest.setSetKeyOnGMeterRequestData(data);
 
-    return setEncryptionKeyExchangeOnGMeterRequest;
+    return SetKeyOnGMeterRequest;
   }
 
-  public static SetEncryptionKeyExchangeOnGMeterAsyncRequest fromScenarioContext() {
-    final SetEncryptionKeyExchangeOnGMeterAsyncRequest
-        setEncryptionKeyExchangeOnGMeterAsyncRequest =
-            new SetEncryptionKeyExchangeOnGMeterAsyncRequest();
-    setEncryptionKeyExchangeOnGMeterAsyncRequest.setCorrelationUid(
+  public static SetKeyOnGMeterAsyncRequest fromScenarioContext() {
+    final SetKeyOnGMeterAsyncRequest SetKeyOnGMeterAsyncRequest = new SetKeyOnGMeterAsyncRequest();
+    SetKeyOnGMeterAsyncRequest.setCorrelationUid(
         RequestFactoryHelper.getCorrelationUidFromScenarioContext());
-    setEncryptionKeyExchangeOnGMeterAsyncRequest.setDeviceIdentification(
+    SetKeyOnGMeterAsyncRequest.setDeviceIdentification(
         RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
-    return setEncryptionKeyExchangeOnGMeterAsyncRequest;
+    return SetKeyOnGMeterAsyncRequest;
   }
 }
