@@ -53,7 +53,7 @@ public class SetMbusUserKeyByChannelResponseMessageProcessor
       final ResponseMessage responseMessage,
       final OsgpException osgpException) {
 
-    this.configurationService.handleSetEncryptionKeyExchangeOnGMeterResponse(
+    this.configurationService.handleSetKeyOnGMeterResponse(
         deviceMessageMetadata, responseMessage.getResult(), osgpException);
   }
 }

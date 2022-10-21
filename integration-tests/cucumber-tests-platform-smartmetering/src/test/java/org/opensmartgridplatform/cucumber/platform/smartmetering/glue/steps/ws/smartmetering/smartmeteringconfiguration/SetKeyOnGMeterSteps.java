@@ -13,10 +13,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.Map;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeyOnGMeterAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeyOnGMeterAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeyOnGMeterRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeyOnGMeterResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelRequest;
@@ -24,55 +24,51 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequestFactory;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetKeyOnGMeterRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetMbusUserKeyByChannelRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class SetEncryptionKeyExchangeOnGMeterSteps {
-  protected static final Logger LOGGER =
-      LoggerFactory.getLogger(SetEncryptionKeyExchangeOnGMeterSteps.class);
+public class SetKeyOnGMeterSteps {
+  protected static final Logger LOGGER = LoggerFactory.getLogger(SetKeyOnGMeterSteps.class);
 
   @Autowired private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
 
-  @When("^the exchange user key request is received$")
-  public void theExchangeUserKeyRequestIsReceived(final Map<String, String> requestData)
+  @When("^the set key on GMeter request is received$")
+  public void theSetKeyOnGMeterRequestIsReceived(final Map<String, String> requestData)
       throws Throwable {
-    final SetEncryptionKeyExchangeOnGMeterRequest setEncryptionKeyExchangeOnGMeterRequest =
-        SetEncryptionKeyExchangeOnGMeterRequestFactory.fromParameterMap(requestData);
+    final SetKeyOnGMeterRequest SetKeyOnGMeterRequest =
+        SetKeyOnGMeterRequestFactory.fromParameterMap(requestData);
 
-    final SetEncryptionKeyExchangeOnGMeterAsyncResponse
-        setEncryptionKeyExchangeOnGMeterAsyncResponse =
-            this.smartMeteringConfigurationClient.setEncryptionKeyExchangeOnGMeter(
-                setEncryptionKeyExchangeOnGMeterRequest);
+    final SetKeyOnGMeterAsyncResponse SetKeyOnGMeterAsyncResponse =
+        this.smartMeteringConfigurationClient.SetKeyOnGMeter(SetKeyOnGMeterRequest);
 
-    assertThat(setEncryptionKeyExchangeOnGMeterAsyncResponse)
-        .as("Set encryptionKey exchange on GMeter async response should not be null")
+    assertThat(SetKeyOnGMeterAsyncResponse)
+        .as("Set Key on GMeter async response should not be null")
         .isNotNull();
     ScenarioContext.current()
         .put(
             PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
-            setEncryptionKeyExchangeOnGMeterAsyncResponse.getCorrelationUid());
+            SetKeyOnGMeterAsyncResponse.getCorrelationUid());
   }
 
-  @Then("^the exchange user key response should be returned$")
-  public void theExchangeUserKeyResponseShouldBeReturned(final Map<String, String> settings)
+  @Then("^the set key on GMeter response should be returned$")
+  public void theSetKeyOnGMeterResponseShouldBeReturned(final Map<String, String> settings)
       throws Throwable {
-    final SetEncryptionKeyExchangeOnGMeterAsyncRequest
-        setEncryptionKeyExchangeOnGMeterAsyncRequest =
-            SetEncryptionKeyExchangeOnGMeterRequestFactory.fromScenarioContext();
-    final SetEncryptionKeyExchangeOnGMeterResponse setEncryptionKeyExchangeOnGMeterResponse =
-        this.smartMeteringConfigurationClient.retrieveSetEncryptionKeyExchangeOnGMeterResponse(
-            setEncryptionKeyExchangeOnGMeterAsyncRequest);
+    final SetKeyOnGMeterAsyncRequest SetKeyOnGMeterAsyncRequest =
+        SetKeyOnGMeterRequestFactory.fromScenarioContext();
+    final SetKeyOnGMeterResponse SetKeyOnGMeterResponse =
+        this.smartMeteringConfigurationClient.retrieveSetKeyOnGMeterResponse(
+            SetKeyOnGMeterAsyncRequest);
 
     final String expectedResult = settings.get(PlatformKeys.KEY_RESULT);
-    assertThat(setEncryptionKeyExchangeOnGMeterResponse.getResult())
-        .as("Set Encryption Key Exchange On G-Meter result must not be null")
+    assertThat(SetKeyOnGMeterResponse.getResult())
+        .as("Set Key On G-Meter result must not be null")
         .isNotNull();
-    assertThat(setEncryptionKeyExchangeOnGMeterResponse.getResult().name())
-        .as("Set Encryption Key Exchange On G-Meter result")
+    assertThat(SetKeyOnGMeterResponse.getResult().name())
+        .as("Set Key On G-Meter result")
         .isEqualTo(expectedResult);
   }
 

@@ -23,19 +23,17 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.application.servic
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SecretType;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeyOnGMeterRequestData;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
 @ExtendWith(MockitoExtension.class)
-class SetEncryptionKeyExchangeOnGMeterDataConverterTest {
+class SetKeyOnGMeterDataConverterTest {
   @Mock private DomainHelperService domainHelperService;
   @Mock private SmartMeter smartMeter;
 
-  @InjectMocks
-  private SetEncryptionKeyExchangeOnGMeterDataConverter
-      setEncryptionKeyExchangeOnGMeterDataConverter;
+  @InjectMocks private SetKeyOnGMeterDataConverter setKeyOnGMeterDataConverter;
 
   @Test
   void convertTest() throws FunctionalException {
@@ -47,12 +45,11 @@ class SetEncryptionKeyExchangeOnGMeterDataConverterTest {
     when(this.domainHelperService.findSmartMeter(any())).thenReturn(this.smartMeter);
     when(this.smartMeter.getGatewayDevice()).thenReturn(gatewayDevice);
 
-    final SetEncryptionKeyExchangeOnGMeterRequestData data =
-        new SetEncryptionKeyExchangeOnGMeterRequestData(
-            mbusDeviceIdentification, secretType, closeOpticalPort);
+    final SetKeyOnGMeterRequestData data =
+        new SetKeyOnGMeterRequestData(mbusDeviceIdentification, secretType, closeOpticalPort);
 
     final SetKeyOnGMeterRequestDto convertedData =
-        this.setEncryptionKeyExchangeOnGMeterDataConverter.convert(data, new SmartMeter());
+        this.setKeyOnGMeterDataConverter.convert(data, new SmartMeter());
 
     assertThat(convertedData).isNotNull();
     assertThat(convertedData.getSecretType())

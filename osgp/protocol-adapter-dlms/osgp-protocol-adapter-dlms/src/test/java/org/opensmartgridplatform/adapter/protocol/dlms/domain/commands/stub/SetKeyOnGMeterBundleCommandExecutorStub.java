@@ -15,8 +15,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
-public class SetEncryptionKeyExchangeOnGMeterBundleCommandExecutorStub
-    extends AbstractCommandExecutorStub {
+public class SetKeyOnGMeterBundleCommandExecutorStub extends AbstractCommandExecutorStub {
 
   @Override
   public ActionResponseDto executeBundleAction(
