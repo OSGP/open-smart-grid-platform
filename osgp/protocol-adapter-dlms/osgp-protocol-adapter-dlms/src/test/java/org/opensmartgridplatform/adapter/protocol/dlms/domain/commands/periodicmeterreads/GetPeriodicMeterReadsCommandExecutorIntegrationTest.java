@@ -19,7 +19,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +35,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.Dlms
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.AttributeAddressAssert;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
@@ -258,7 +258,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
     // Get expected values
     final AttributeAddress expectedAddressProfile =
-        this.createAttributeAddress(protocol, type, this.timeFrom, this.timeTo);
+        this.createAttributeAddress(protocol, type, this.timeFrom, this.timeTo, device);
     final List<AttributeAddress> expectedScalerUnitAddresses =
         this.getScalerUnitAttributeAddresses(type);
     final int expectedTotalNumberOfAttributeAddresses = expectedScalerUnitAddresses.size() + 1;
@@ -318,10 +318,17 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
   }
 
   private AttributeAddress createAttributeAddress(
-      final Protocol protocol, final PeriodTypeDto type, final Date timeFrom, final Date timeTo)
+      final Protocol protocol,
+      final PeriodTypeDto type,
+      final Date timeFrom,
+      final Date timeTo,
+      final DlmsDevice device)
       throws Exception {
-    final DataObject from = this.dlmsHelper.asDataObject(new DateTime(timeFrom));
-    final DataObject to = this.dlmsHelper.asDataObject(new DateTime(timeTo));
+
+    final DataObject from =
+        this.dlmsHelper.asDataObject(DlmsDateTimeConverter.toDateTime(timeFrom, device));
+    final DataObject to =
+        this.dlmsHelper.asDataObject(DlmsDateTimeConverter.toDateTime(timeTo, device));
 
     if (protocol == Protocol.DSMR_4_2_2) {
       if (type == PeriodTypeDto.DAILY) {

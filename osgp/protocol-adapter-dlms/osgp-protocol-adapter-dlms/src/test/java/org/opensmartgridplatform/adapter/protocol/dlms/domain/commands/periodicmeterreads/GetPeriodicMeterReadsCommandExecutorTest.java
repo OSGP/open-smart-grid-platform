@@ -28,6 +28,8 @@ import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -45,6 +47,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsProfile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
@@ -77,8 +80,12 @@ class GetPeriodicMeterReadsCommandExecutorTest {
   private final DlmsDevice device = this.createDevice(Protocol.DSMR_4_2_2);
   private final long from = 1111110L;
   private final long to = 2222222L;
-  private final DateTime fromDateTime = new DateTime(this.from);
-  private final DateTime toDateTime = new DateTime(this.to);
+  private final DateTime fromDateTime =
+      DlmsDateTimeConverter.toDateTime(new Date(this.from), device);
+  private final DateTime toDateTime =
+      DlmsDateTimeConverter.toDateTime(new Date(this.to), device);
+
+  private final String DEFAULT_TIMEZONE = "UTC";
   private MessageMetadata messageMetadata;
 
   @BeforeEach
@@ -130,13 +137,18 @@ class GetPeriodicMeterReadsCommandExecutorTest {
     assertThat(dto).isNotNull();
   }
 
-  @Test
-  void testHappy() throws Exception {
+  @ParameterizedTest
+  @ValueSource(strings = {"UTC", "Pacific/Honolulu"})
+  void testHappyWithDifferentTimeZones(final String timeZone) throws Exception {
 
     // SETUP
     final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
     final PeriodicMeterReadsRequestDto request =
         new PeriodicMeterReadsRequestDto(periodType, new Date(this.from), new Date(this.to));
+
+    this.device.setTimezone(timeZone);
+    final DateTime convertedFromTime = DlmsDateTimeConverter.toDateTime(new Date(this.from), device);
+    final DateTime convertedToTime = DlmsDateTimeConverter.toDateTime(new Date(this.to), device);
 
     // SETUP - dlms objects
     final DlmsObject dlmsClock = new DlmsClock("0.0.1.0.0.255");
@@ -176,8 +188,8 @@ class GetPeriodicMeterReadsCommandExecutorTest {
             this.device,
             DlmsObjectType.DAILY_LOAD_PROFILE,
             0,
-            this.fromDateTime,
-            this.toDateTime,
+            convertedFromTime,
+            convertedToTime,
             Medium.ELECTRICITY))
         .thenReturn(Optional.of(attributeAddressForProfile));
 
@@ -241,13 +253,13 @@ class GetPeriodicMeterReadsCommandExecutorTest {
     // outside of the requested period, causing the meterread to be not included in the result.
     final CosemDateTimeDto cosemDateTime_1 = mock(CosemDateTimeDto.class);
     when(this.dlmsHelper.readDateTime(eq(data0_object1), any())).thenReturn(cosemDateTime_1);
-    when(cosemDateTime_1.asDateTime()).thenReturn(this.fromDateTime);
+    when(cosemDateTime_1.asDateTime()).thenReturn(convertedFromTime);
     final CosemDateTimeDto cosemDateTime_2 = mock(CosemDateTimeDto.class);
     when(this.dlmsHelper.readDateTime(eq(data0_object2), any())).thenReturn(cosemDateTime_2);
-    when(cosemDateTime_2.asDateTime()).thenReturn(this.fromDateTime.plusMinutes(1));
+    when(cosemDateTime_2.asDateTime()).thenReturn(convertedFromTime.plusMinutes(1));
     final CosemDateTimeDto cosemDateTime_3 = mock(CosemDateTimeDto.class);
     when(this.dlmsHelper.readDateTime(eq(data0_object3), any())).thenReturn(cosemDateTime_3);
-    when(cosemDateTime_3.asDateTime()).thenReturn(this.fromDateTime.plusYears(1));
+    when(cosemDateTime_3.asDateTime()).thenReturn(convertedFromTime.plusYears(1));
 
     // CALL
     final PeriodicMeterReadsResponseDto result =
@@ -258,8 +270,8 @@ class GetPeriodicMeterReadsCommandExecutorTest {
         .setDescription(
             String.format(
                 "GetPeriodicMeterReads DAILY from %s until %s, retrieve attribute: {%s,%s,%s}",
-                new DateTime(this.from),
-                new DateTime(this.to),
+                convertedFromTime,
+                convertedToTime,
                 dlmsProfile.getClassId(),
                 dlmsProfile.getObisCode(),
                 dlmsProfile.getDefaultAttributeId()));
