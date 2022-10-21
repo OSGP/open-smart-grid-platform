@@ -47,6 +47,7 @@ class ClearAlarmRegisterCommandExecutorTest {
 
   private static final String OBIS_CODE_ALARM_REGISTER_1 = "0.0.97.98.0.255";
   private static final String OBIS_CODE_ALARM_REGISTER_2 = "0.0.97.98.1.255";
+  private static final String OBIS_CODE_ALARM_REGISTER_3 = "0.0.97.98.2.255";
 
   private static final int CLASS_ID_CLEAR_ALARM_REGISTER = 1;
 
@@ -105,6 +106,11 @@ class ClearAlarmRegisterCommandExecutorTest {
   @Test
   void shouldExecuteForProtocolSmr52() throws ProtocolAdapterException, IOException {
     this.assertForTwoRegisters("SMR", "5.2");
+  }
+
+  @Test
+  void shouldExecuteForProtocolSmr55() throws ProtocolAdapterException, IOException {
+    this.assertForThreeRegisters("SMR", "5.5");
   }
 
   @Test
@@ -194,18 +200,108 @@ class ClearAlarmRegisterCommandExecutorTest {
     assertThat(accessResultCode).isEqualTo(AccessResultCode.TEMPORARY_FAILURE);
   }
 
+  @Test
+  void resultAlarmRegister2() throws ProtocolAdapterException, IOException {
+    when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
+        .thenReturn(AccessResultCode.SUCCESS)
+        .thenReturn(AccessResultCode.SUCCESS);
+
+    final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.2 device");
+    this.setupAlarmRegister2(dlmsDevice);
+    final AccessResultCode accessResultCode =
+        this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
+    assertThat(accessResultCode).isEqualTo(AccessResultCode.SUCCESS);
+  }
+
+  @Test
+  void connectionProblemAlarmRegister3() throws ProtocolAdapterException, IOException {
+    when(this.dlmsConnection.set(any(SetParameter.class)))
+        .thenReturn(AccessResultCode.SUCCESS)
+        .thenReturn(AccessResultCode.SUCCESS)
+        .thenThrow(new IOException());
+
+    final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.5 device");
+    this.setupAlarmRegister3(dlmsDevice);
+    final Throwable actual =
+        catchThrowable(
+            () ->
+                this.executor.execute(
+                    this.connectionManager, dlmsDevice, this.dto, this.messageMetadata));
+    assertThat(actual).isInstanceOf(ConnectionException.class);
+  }
+
+  @Test
+  void nullResultAlarmRegister3() throws ProtocolAdapterException, IOException {
+    when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
+        .thenReturn(AccessResultCode.SUCCESS)
+        .thenReturn(AccessResultCode.SUCCESS)
+        .thenReturn(null);
+
+    final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.5 device");
+    this.setupAlarmRegister3(dlmsDevice);
+    final Throwable actual =
+        catchThrowable(
+            () ->
+                this.executor.execute(
+                    this.connectionManager, dlmsDevice, this.dto, this.messageMetadata));
+    assertThat(actual).isInstanceOf(ProtocolAdapterException.class);
+  }
+
+  @Test
+  void failureRegister2AndResultAlarmRegister3() throws ProtocolAdapterException, IOException {
+    when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
+        .thenReturn(AccessResultCode.SUCCESS)
+        .thenReturn(AccessResultCode.OTHER_REASON)
+        .thenReturn(AccessResultCode.SUCCESS);
+
+    final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.5 device");
+    this.setupAlarmRegister2(dlmsDevice);
+    final AccessResultCode accessResultCode =
+        this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
+    assertThat(accessResultCode).isEqualTo(AccessResultCode.OTHER_REASON);
+  }
+
+  @Test
+  void successRegister1AndResultAlarmRegister3() throws ProtocolAdapterException, IOException {
+    when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
+        .thenReturn(AccessResultCode.SUCCESS)
+        .thenReturn(AccessResultCode.SUCCESS)
+        .thenReturn(AccessResultCode.TEMPORARY_FAILURE);
+
+    final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.5 device");
+    this.setupAlarmRegister3(dlmsDevice);
+    final AccessResultCode accessResultCode =
+        this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
+    assertThat(accessResultCode).isEqualTo(AccessResultCode.TEMPORARY_FAILURE);
+  }
+
+  @Test
+  void resultAlarmRegister3() throws ProtocolAdapterException, IOException {
+    when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
+        .thenReturn(AccessResultCode.SUCCESS)
+        .thenReturn(AccessResultCode.SUCCESS)
+        .thenReturn(AccessResultCode.SUCCESS);
+
+    final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.5 device");
+    this.setupAlarmRegister2(dlmsDevice);
+    final AccessResultCode accessResultCode =
+        this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
+    assertThat(accessResultCode).isEqualTo(AccessResultCode.SUCCESS);
+  }
+
   void setupAlarmRegister1(final DlmsDevice dlmsDevice)
       throws ProtocolAdapterException, IOException {
 
     dlmsDevice.setProtocol("SMR", "5.2");
 
-    when(this.dlmsObjectConfigService.getAttributeAddress(
+    when(this.dlmsObjectConfigService.findAttributeAddress(
             dlmsDevice, DlmsObjectType.ALARM_REGISTER_1, null))
         .thenReturn(
-            new AttributeAddress(
-                InterfaceClass.DATA.id(),
-                OBIS_CODE_ALARM_REGISTER_1,
-                DataAttribute.VALUE.attributeId()));
+            Optional.of(
+                new AttributeAddress(
+                    InterfaceClass.DATA.id(),
+                    OBIS_CODE_ALARM_REGISTER_1,
+                    DataAttribute.VALUE.attributeId())));
 
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
@@ -215,13 +311,14 @@ class ClearAlarmRegisterCommandExecutorTest {
       throws ProtocolAdapterException, IOException {
     dlmsDevice.setProtocol("SMR", "5.2");
 
-    when(this.dlmsObjectConfigService.getAttributeAddress(
+    when(this.dlmsObjectConfigService.findAttributeAddress(
             dlmsDevice, DlmsObjectType.ALARM_REGISTER_1, null))
         .thenReturn(
-            new AttributeAddress(
-                InterfaceClass.DATA.id(),
-                OBIS_CODE_ALARM_REGISTER_1,
-                DataAttribute.VALUE.attributeId()));
+            Optional.of(
+                new AttributeAddress(
+                    InterfaceClass.DATA.id(),
+                    OBIS_CODE_ALARM_REGISTER_1,
+                    DataAttribute.VALUE.attributeId())));
 
     when(this.dlmsObjectConfigService.findAttributeAddress(
             dlmsDevice, DlmsObjectType.ALARM_REGISTER_2, null))
@@ -236,18 +333,54 @@ class ClearAlarmRegisterCommandExecutorTest {
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
   }
 
+  void setupAlarmRegister3(final DlmsDevice dlmsDevice)
+      throws ProtocolAdapterException, IOException {
+    dlmsDevice.setProtocol("SMR", "5.5");
+
+    when(this.dlmsObjectConfigService.findAttributeAddress(
+            dlmsDevice, DlmsObjectType.ALARM_REGISTER_1, null))
+        .thenReturn(
+            Optional.of(
+                new AttributeAddress(
+                    InterfaceClass.DATA.id(),
+                    OBIS_CODE_ALARM_REGISTER_1,
+                    DataAttribute.VALUE.attributeId())));
+
+    when(this.dlmsObjectConfigService.findAttributeAddress(
+            dlmsDevice, DlmsObjectType.ALARM_REGISTER_2, null))
+        .thenReturn(
+            Optional.of(
+                new AttributeAddress(
+                    InterfaceClass.DATA.id(),
+                    OBIS_CODE_ALARM_REGISTER_2,
+                    DataAttribute.VALUE.attributeId())));
+
+    when(this.dlmsObjectConfigService.findAttributeAddress(
+            dlmsDevice, DlmsObjectType.ALARM_REGISTER_3, null))
+        .thenReturn(
+            Optional.of(
+                new AttributeAddress(
+                    InterfaceClass.DATA.id(),
+                    OBIS_CODE_ALARM_REGISTER_3,
+                    DataAttribute.VALUE.attributeId())));
+
+    when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
+  }
+
   void assertForOneRegister(final String protocol, final String protocolVersion)
       throws ProtocolAdapterException, IOException {
     final DlmsDevice dlmsDevice = new DlmsDevice(protocol + " " + protocolVersion + " device");
     dlmsDevice.setProtocol(protocol, protocolVersion);
 
-    when(this.dlmsObjectConfigService.getAttributeAddress(
+    when(this.dlmsObjectConfigService.findAttributeAddress(
             dlmsDevice, DlmsObjectType.ALARM_REGISTER_1, null))
         .thenReturn(
-            new AttributeAddress(
-                InterfaceClass.DATA.id(),
-                OBIS_CODE_ALARM_REGISTER_1,
-                DataAttribute.VALUE.attributeId()));
+            Optional.of(
+                new AttributeAddress(
+                    InterfaceClass.DATA.id(),
+                    OBIS_CODE_ALARM_REGISTER_1,
+                    DataAttribute.VALUE.attributeId())));
 
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
@@ -270,13 +403,14 @@ class ClearAlarmRegisterCommandExecutorTest {
     final DlmsDevice dlmsDevice = new DlmsDevice(protocol + " " + protocolVersion + " device");
     dlmsDevice.setProtocol(protocol, protocolVersion);
 
-    when(this.dlmsObjectConfigService.getAttributeAddress(
+    when(this.dlmsObjectConfigService.findAttributeAddress(
             dlmsDevice, DlmsObjectType.ALARM_REGISTER_1, null))
         .thenReturn(
-            new AttributeAddress(
-                InterfaceClass.DATA.id(),
-                OBIS_CODE_ALARM_REGISTER_1,
-                DataAttribute.VALUE.attributeId()));
+            Optional.of(
+                new AttributeAddress(
+                    InterfaceClass.DATA.id(),
+                    OBIS_CODE_ALARM_REGISTER_1,
+                    DataAttribute.VALUE.attributeId())));
 
     when(this.dlmsObjectConfigService.findAttributeAddress(
             dlmsDevice, DlmsObjectType.ALARM_REGISTER_2, null))
@@ -308,5 +442,67 @@ class ClearAlarmRegisterCommandExecutorTest {
     assertThat(attributeAddress2.getInstanceId().asDecimalString())
         .isEqualTo(OBIS_CODE_ALARM_REGISTER_2);
     assertThat(attributeAddress2.getClassId()).isEqualTo(CLASS_ID_CLEAR_ALARM_REGISTER);
+  }
+
+  void assertForThreeRegisters(final String protocol, final String protocolVersion)
+      throws ProtocolAdapterException, IOException {
+    final DlmsDevice dlmsDevice = new DlmsDevice(protocol + " " + protocolVersion + " device");
+    dlmsDevice.setProtocol(protocol, protocolVersion);
+
+    when(this.dlmsObjectConfigService.findAttributeAddress(
+            dlmsDevice, DlmsObjectType.ALARM_REGISTER_1, null))
+        .thenReturn(
+            Optional.of(
+                new AttributeAddress(
+                    InterfaceClass.DATA.id(),
+                    OBIS_CODE_ALARM_REGISTER_1,
+                    DataAttribute.VALUE.attributeId())));
+
+    when(this.dlmsObjectConfigService.findAttributeAddress(
+            dlmsDevice, DlmsObjectType.ALARM_REGISTER_2, null))
+        .thenReturn(
+            Optional.of(
+                new AttributeAddress(
+                    InterfaceClass.DATA.id(),
+                    OBIS_CODE_ALARM_REGISTER_2,
+                    DataAttribute.VALUE.attributeId())));
+
+    when(this.dlmsObjectConfigService.findAttributeAddress(
+            dlmsDevice, DlmsObjectType.ALARM_REGISTER_3, null))
+        .thenReturn(
+            Optional.of(
+                new AttributeAddress(
+                    InterfaceClass.DATA.id(),
+                    OBIS_CODE_ALARM_REGISTER_3,
+                    DataAttribute.VALUE.attributeId())));
+
+    when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
+    when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
+        .thenReturn(AccessResultCode.SUCCESS);
+
+    this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
+
+    assertThat(this.setParameterArgumentCaptor.getAllValues()).hasSize(3);
+    SetParameter setParameter = this.setParameterArgumentCaptor.getAllValues().get(0);
+    assertThat(((Number) setParameter.getData().getValue()).longValue()).isEqualTo(ALARM_CODE);
+    final AttributeAddress attributeAddress = setParameter.getAttributeAddress();
+    assertThat(attributeAddress.getInstanceId().asDecimalString())
+        .isEqualTo(OBIS_CODE_ALARM_REGISTER_1);
+    assertThat(attributeAddress.getClassId()).isEqualTo(CLASS_ID_CLEAR_ALARM_REGISTER);
+
+    setParameter = this.setParameterArgumentCaptor.getAllValues().get(1);
+    assertThat(((Number) setParameter.getData().getValue()).longValue()).isEqualTo(ALARM_CODE);
+    final AttributeAddress attributeAddress2 = setParameter.getAttributeAddress();
+    assertThat(attributeAddress2.getInstanceId().asDecimalString())
+        .isEqualTo(OBIS_CODE_ALARM_REGISTER_2);
+    assertThat(attributeAddress2.getClassId()).isEqualTo(CLASS_ID_CLEAR_ALARM_REGISTER);
+
+    setParameter = this.setParameterArgumentCaptor.getAllValues().get(2);
+    assertThat(((Number) setParameter.getData().getValue()).longValue()).isEqualTo(ALARM_CODE);
+    final AttributeAddress attributeAddress3 = setParameter.getAttributeAddress();
+    assertThat(attributeAddress3.getInstanceId().asDecimalString())
+        .isEqualTo(OBIS_CODE_ALARM_REGISTER_3);
+    assertThat(attributeAddress3.getClassId()).isEqualTo(CLASS_ID_CLEAR_ALARM_REGISTER);
   }
 }
