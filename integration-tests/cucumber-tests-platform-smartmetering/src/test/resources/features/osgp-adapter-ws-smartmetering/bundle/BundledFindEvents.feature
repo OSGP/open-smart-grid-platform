@@ -79,7 +79,7 @@ Feature: SmartMetering Bundle - FindEvents
     Then the bundle response should contain a find events response with 21 events
     And the bundle response should contain a find events response with 9 events
     And the bundle response should contain a find events response with 7 events
-    And the bundle response should contain a find events response with 29 events
+    And the bundle response should contain a find events response with 30 events
     And the bundle response should contain a find events response with 19 events
     And the bundle response should contain a find events response with 169 events
     And the bundle response should contain a find events response with 6 events
