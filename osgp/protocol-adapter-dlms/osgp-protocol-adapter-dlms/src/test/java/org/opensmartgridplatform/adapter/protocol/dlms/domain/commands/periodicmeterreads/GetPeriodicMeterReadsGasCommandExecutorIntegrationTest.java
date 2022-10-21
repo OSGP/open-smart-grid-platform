@@ -54,7 +54,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterRea
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
+class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
   private GetPeriodicMeterReadsGasCommandExecutor executor;
 
@@ -187,35 +187,35 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   }
 
   @Test
-  public void testExecuteDsmr4() throws Exception {
+  void testExecuteDsmr4() throws Exception {
     for (final PeriodTypeDto type : PeriodTypeDto.values()) {
       this.testExecute(Protocol.DSMR_4_2_2, type, false);
     }
   }
 
   @Test
-  public void testExecuteSmr5_0() throws Exception {
+  void testExecuteSmr5_0() throws Exception {
     for (final PeriodTypeDto type : PeriodTypeDto.values()) {
       this.testExecute(Protocol.SMR_5_0_0, type, false);
     }
   }
 
   @Test
-  public void testExecuteSmr5_0_WithNullData() throws Exception {
+  void testExecuteSmr5_0_WithNullData() throws Exception {
     for (final PeriodTypeDto type : PeriodTypeDto.values()) {
       this.testExecute(Protocol.SMR_5_0_0, type, true);
     }
   }
 
   @Test
-  public void testExecuteSmr5_1() throws Exception {
+  void testExecuteSmr5_1() throws Exception {
     for (final PeriodTypeDto type : PeriodTypeDto.values()) {
       this.testExecute(Protocol.SMR_5_1, type, false);
     }
   }
 
   @Test
-  public void testExecuteSmr5_1_WithNullData() throws Exception {
+  void testExecuteSmr5_1_WithNullData() throws Exception {
     for (final PeriodTypeDto type : PeriodTypeDto.values()) {
       this.testExecute(Protocol.SMR_5_1, type, true);
     }
@@ -259,7 +259,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     // Get resulting requests from connection stub
     final List<AttributeAddress> requestedAttributeAddresses =
         this.connectionStub.getRequestedAttributeAddresses();
-    assertThat(requestedAttributeAddresses.size()).isEqualTo(2);
+    assertThat(requestedAttributeAddresses).hasSize(2);
 
     // There should be 1 request to the buffer (id = 2) of a profile
     // (class-id = 7)
@@ -280,14 +280,14 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
                     a.getClassId() == this.CLASS_ID_EXTENDED_REGISTER
                         && a.getId() == this.ATTR_ID_SCALER_UNIT)
             .collect(Collectors.toList());
-    assertThat(attributeAddressesScalerUnit.size()).isEqualTo(1);
+    assertThat(attributeAddressesScalerUnit).hasSize(1);
 
     // Check response
     assertThat(response.getPeriodType()).isEqualTo(type);
     final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads =
         response.getPeriodicMeterReadsGas();
     final int AMOUNT_OF_PERIODS = 2;
-    assertThat(periodicMeterReads.size()).isEqualTo(AMOUNT_OF_PERIODS);
+    assertThat(periodicMeterReads).hasSize(AMOUNT_OF_PERIODS);
 
     this.checkClockValues(periodicMeterReads, type, useNullData);
     this.checkValues(periodicMeterReads);
