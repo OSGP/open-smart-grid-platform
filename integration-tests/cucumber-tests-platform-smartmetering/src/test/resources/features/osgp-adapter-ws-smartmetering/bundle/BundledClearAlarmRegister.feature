@@ -37,7 +37,7 @@ Feature: SmartMetering Bundle - ClearAlarmRegister
     And alarm register "1" of device "TEST1029000000001" has been cleared
     And alarm register "2" of device "TEST1029000000001" has been cleared
 
-  Scenario: Clear both alarm registers with SMR 5.5
+  Scenario: Clear all three alarm registers with SMR 5.5
     Given a dlms device
       | DeviceIdentification     | TEST1030000000001 |
       | DeviceType               | SMART_METER_E     |
