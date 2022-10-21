@@ -12,6 +12,9 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -185,6 +188,8 @@ class ClearAlarmRegisterCommandExecutorTest {
     final AccessResultCode accessResultCode =
         this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
     assertThat(accessResultCode).isEqualTo(AccessResultCode.OTHER_REASON);
+    verify(this.dlmsObjectConfigService, times(1))
+        .findAttributeAddress(eq(dlmsDevice), any(), any());
   }
 
   @Test
@@ -259,6 +264,8 @@ class ClearAlarmRegisterCommandExecutorTest {
     final AccessResultCode accessResultCode =
         this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
     assertThat(accessResultCode).isEqualTo(AccessResultCode.OTHER_REASON);
+    verify(this.dlmsObjectConfigService, times(2))
+        .findAttributeAddress(eq(dlmsDevice), any(), any());
   }
 
   @Test
