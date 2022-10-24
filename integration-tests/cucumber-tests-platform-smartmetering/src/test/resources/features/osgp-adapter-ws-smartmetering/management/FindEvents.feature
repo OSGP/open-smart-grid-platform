@@ -46,7 +46,7 @@ Feature: SmartMetering Management - Find Events
       | DeviceIdentification | TEST1024000000001        |
       | BeginDate            | 2015-09-01T00:00:00.000Z |
       | EndDate              | 2015-09-05T00:00:00.000Z |
-    Then 29 mbus events should be returned
+    Then 30 mbus events should be returned
       | DeviceIdentification | TEST1024000000001 |
 
   Scenario: find auxiliary events from a device
