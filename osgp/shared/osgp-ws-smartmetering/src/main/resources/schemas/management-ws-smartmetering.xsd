@@ -514,6 +514,8 @@
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1"/>
       <!-- 106 - permanent error from mbus device channel1 -  -  -  -->
       <xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_1"/>
+      <!-- 107 - dead battery error mbus device channel1 -  -  -  -->
+      <xsd:enumeration value="DEAD_BATTERY_ERROR_M_BUS_DEVICE_CHANNEL_1"/>
       <!-- 110 - communication error mbus channel2 -  -  -  -->
       <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_2"/>
       <!-- 111 - communication ok mbus channel2 -  -  -  -->
@@ -528,6 +530,8 @@
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2"/>
       <!-- 116 - permanent error from mbus device channel2 -  -  -  -->
       <xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_2"/>
+      <!-- 117 - dead battery error mbus device channel2 -  -  -  -->
+      <xsd:enumeration value="DEAD_BATTERY_ERROR_M_BUS_DEVICE_CHANNEL_2"/>
       <!-- 120 - communication error mbus channel3 -  -  -  -->
       <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_3"/>
       <!-- 121 - communication ok mbus channel3 -  -  -  -->
@@ -542,6 +546,8 @@
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3"/>
       <!-- 126 - permanent error from mbus device channel3 -  -  -  -->
       <xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_3"/>
+      <!-- 127 - dead battery error mbus device channel3 -  -  -  -->
+      <xsd:enumeration value="DEAD_BATTERY_ERROR_M_BUS_DEVICE_CHANNEL_3"/>
       <!-- 130 - communication error mbus channel4 -  -  -  -->
       <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_4"/>
       <!-- 131 - communication ok mbus channel4 -  -  -  -->
@@ -556,6 +562,8 @@
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4"/>
       <!-- 136 - permanent error from mbus device channel4 -  -  -  -->
       <xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4"/>
+      <!-- 137 - dead battery error mbus device channel4 -  -  -  -->
+      <xsd:enumeration value="DEAD_BATTERY_ERROR_M_BUS_DEVICE_CHANNEL_4"/>
       <!-- 230 - manufacturer specific 230 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_230"/>
       <!-- 231 - manufacturer specific 231 -  -  -  -->
