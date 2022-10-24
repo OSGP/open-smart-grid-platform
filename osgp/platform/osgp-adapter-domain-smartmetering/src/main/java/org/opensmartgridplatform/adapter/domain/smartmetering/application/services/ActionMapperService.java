@@ -23,7 +23,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.application.mappin
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.CustomValueToDtoConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.GetFirmwareVersionGasRequestDataConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.PeriodicReadsRequestGasDataConverter;
-import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.SetEncryptionKeyExchangeOnGMeterDataConverter;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.SetKeyOnGMeterDataConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.util.FaultResponseFactory;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActionRequest;
@@ -62,7 +62,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetAlarm
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeyOnGMeterRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupAlarmRequestData;
@@ -217,9 +217,7 @@ public class ActionMapperService {
   @Autowired
   private ActualMeterReadsRequestGasRequestDataConverter actualReadsRequestGasDataConverter;
 
-  @Autowired
-  private SetEncryptionKeyExchangeOnGMeterDataConverter
-      setEncryptionKeyExchangeOnGMeterDataConverter;
+  @Autowired private SetKeyOnGMeterDataConverter setKeyOnGMeterDataConverter;
 
   @Autowired
   private GetFirmwareVersionGasRequestDataConverter getFirmwareVersionGasRequestDataConverter;
@@ -237,8 +235,7 @@ public class ActionMapperService {
     CUSTOM_CONVERTER_FOR_CLASS.put(
         ActualMeterReadsGasRequestData.class, this.actualReadsRequestGasDataConverter);
     CUSTOM_CONVERTER_FOR_CLASS.put(
-        SetEncryptionKeyExchangeOnGMeterRequestData.class,
-        this.setEncryptionKeyExchangeOnGMeterDataConverter);
+        SetKeyOnGMeterRequestData.class, this.setKeyOnGMeterDataConverter);
     CUSTOM_CONVERTER_FOR_CLASS.put(
         GetFirmwareVersionGasRequestData.class, this.getFirmwareVersionGasRequestDataConverter);
 

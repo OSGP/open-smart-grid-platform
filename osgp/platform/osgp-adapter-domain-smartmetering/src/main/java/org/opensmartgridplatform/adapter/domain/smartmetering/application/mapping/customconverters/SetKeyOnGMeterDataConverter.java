@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.mappi
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.DomainHelperService;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeyOnGMeterRequestData;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -21,15 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SetEncryptionKeyExchangeOnGMeterDataConverter
-    implements CustomValueToDtoConverter<
-        SetEncryptionKeyExchangeOnGMeterRequestData, SetKeyOnGMeterRequestDto> {
+public class SetKeyOnGMeterDataConverter
+    implements CustomValueToDtoConverter<SetKeyOnGMeterRequestData, SetKeyOnGMeterRequestDto> {
 
   @Autowired private DomainHelperService domainHelperService;
 
   @Override
   public SetKeyOnGMeterRequestDto convert(
-      final SetEncryptionKeyExchangeOnGMeterRequestData value, final SmartMeter smartMeter)
+      final SetKeyOnGMeterRequestData value, final SmartMeter smartMeter)
       throws FunctionalException {
 
     final SmartMeter gasDevice =

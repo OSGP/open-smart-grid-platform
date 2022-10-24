@@ -449,7 +449,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:complexType name="SetEncryptionKeyExchangeOnGMeterRequestData">
+  <xsd:complexType name="SetKeyOnGMeterRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
@@ -461,16 +461,16 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:element name="SetEncryptionKeyExchangeOnGMeterRequest">
+  <xsd:element name="SetKeyOnGMeterRequest">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-        <xsd:element name="SetEncryptionKeyExchangeOnGMeterRequestData" type="tns:SetEncryptionKeyExchangeOnGMeterRequestData" />
+        <xsd:element name="SetKeyOnGMeterRequestData" type="tns:SetKeyOnGMeterRequestData" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="SetEncryptionKeyExchangeOnGMeterAsyncResponse">
+  <xsd:element name="SetKeyOnGMeterAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncResponse" />
@@ -478,7 +478,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="SetEncryptionKeyExchangeOnGMeterAsyncRequest">
+  <xsd:element name="SetKeyOnGMeterAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncRequest" />
@@ -486,7 +486,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="SetEncryptionKeyExchangeOnGMeterResponse">
+  <xsd:element name="SetKeyOnGMeterResponse">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType" />
