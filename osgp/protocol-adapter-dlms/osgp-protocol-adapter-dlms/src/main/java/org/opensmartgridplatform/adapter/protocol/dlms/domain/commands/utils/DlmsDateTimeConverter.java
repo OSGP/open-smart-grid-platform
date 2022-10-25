@@ -49,6 +49,10 @@ public class DlmsDateTimeConverter {
     return utcZonedDateTime.withZoneSameInstant(ZoneId.of(determineTimeZone(device)));
   }
 
+  public static DateTime toDateTime(final DateTime utcDateTime, final DlmsDevice device) {
+    return toDateTime(utcDateTime.toDate(), device);
+  }
+
   /**
    * Convert a java.util.Date to a org.joda.time.DateTime with respect of the timezone defined
    * within a DlmsDevice. This is a temporary convenience method to convert to joda times, because

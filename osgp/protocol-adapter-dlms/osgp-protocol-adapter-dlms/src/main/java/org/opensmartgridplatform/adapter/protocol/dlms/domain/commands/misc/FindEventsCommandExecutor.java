@@ -171,8 +171,8 @@ public class FindEventsCommandExecutor
      * retrieved.
      */
 
-    final DateTime convertedBeginDateTime = toDateTime(beginDateTime.toDate(), device);
-    final DateTime convertedEndDateTime = toDateTime(endDateTime.toDate(), device);
+    final DateTime convertedBeginDateTime = toDateTime(beginDateTime, device);
+    final DateTime convertedEndDateTime = toDateTime(endDateTime, device);
 
     final DlmsObject clockObject =
         this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.CLOCK);
