@@ -81,8 +81,9 @@ class GetPeriodicMeterReadsCommandExecutorTest {
   private final long from = 1111110L;
   private final long to = 2222222L;
   private final DateTime fromDateTime =
-      DlmsDateTimeConverter.toDateTime(new Date(this.from), device);
-  private final DateTime toDateTime = DlmsDateTimeConverter.toDateTime(new Date(this.to), device);
+      DlmsDateTimeConverter.toDateTime(new Date(this.from), this.device.getTimezone());
+  private final DateTime toDateTime =
+      DlmsDateTimeConverter.toDateTime(new Date(this.to), this.device.getTimezone());
 
   private final String DEFAULT_TIMEZONE = "UTC";
   private MessageMetadata messageMetadata;
@@ -147,8 +148,9 @@ class GetPeriodicMeterReadsCommandExecutorTest {
 
     this.device.setTimezone(timeZone);
     final DateTime convertedFromTime =
-        DlmsDateTimeConverter.toDateTime(new Date(this.from), device);
-    final DateTime convertedToTime = DlmsDateTimeConverter.toDateTime(new Date(this.to), device);
+        DlmsDateTimeConverter.toDateTime(new Date(this.from), this.device.getTimezone());
+    final DateTime convertedToTime =
+        DlmsDateTimeConverter.toDateTime(new Date(this.to), this.device.getTimezone());
 
     // SETUP - dlms objects
     final DlmsObject dlmsClock = new DlmsClock("0.0.1.0.0.255");
@@ -284,7 +286,7 @@ class GetPeriodicMeterReadsCommandExecutorTest {
         result.getPeriodicMeterReads();
 
     // Only 2 meterreads are expected. The 3rd meterread has a logtime outside the requested period.
-    assertThat(periodicMeterReads.size()).isEqualTo(2);
+    assertThat(periodicMeterReads).hasSize(2);
 
     periodicMeterReads.forEach(p -> assertThat(p.getLogTime()).isNotNull());
   }

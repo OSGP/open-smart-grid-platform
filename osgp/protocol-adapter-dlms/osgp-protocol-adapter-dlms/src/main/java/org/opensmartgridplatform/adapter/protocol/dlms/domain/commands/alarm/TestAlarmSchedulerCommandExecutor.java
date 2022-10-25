@@ -86,7 +86,8 @@ public class TestAlarmSchedulerCommandExecutor
 
     final DlmsObject dlmsObject =
         this.dlmsObjectConfigService.getDlmsObject(device, alarmObjectType);
-    final DateTime convertedDateTime = DlmsDateTimeConverter.toDateTime(scheduleDate, device);
+    final DateTime convertedDateTime =
+        DlmsDateTimeConverter.toDateTime(scheduleDate, device.getTimezone());
 
     final AttributeAddress attributeAddress =
         new AttributeAddress(

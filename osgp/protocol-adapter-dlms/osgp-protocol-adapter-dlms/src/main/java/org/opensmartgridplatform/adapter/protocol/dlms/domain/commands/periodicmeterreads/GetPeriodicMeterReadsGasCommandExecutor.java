@@ -105,9 +105,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
     final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
     final DateTime from =
-        DlmsDateTimeConverter.toDateTime(periodicMeterReadsQuery.getBeginDate(), device);
+        DlmsDateTimeConverter.toDateTime(
+            periodicMeterReadsQuery.getBeginDate(), device.getTimezone());
     final DateTime to =
-        DlmsDateTimeConverter.toDateTime(periodicMeterReadsQuery.getEndDate(), device);
+        DlmsDateTimeConverter.toDateTime(
+            periodicMeterReadsQuery.getEndDate(), device.getTimezone());
 
     final AttributeAddressForProfile profileBufferAddress =
         this.getProfileBufferAddress(

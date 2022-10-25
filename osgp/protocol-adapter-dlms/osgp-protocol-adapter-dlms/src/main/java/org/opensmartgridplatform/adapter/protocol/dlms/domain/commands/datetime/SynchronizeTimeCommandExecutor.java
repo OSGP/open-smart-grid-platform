@@ -81,7 +81,7 @@ public class SynchronizeTimeCommandExecutor
       throws ProtocolAdapterException {
 
     final String timezone = synchronizeTimeRequestDto.getTimeZone();
-    final ZonedDateTime zonedTime = DlmsDateTimeConverter.now(device);
+    final ZonedDateTime zonedTime = DlmsDateTimeConverter.now(device.getTimezone());
 
     final DataObject time = this.dlmsHelper.asDataObject(zonedTime);
 

@@ -206,9 +206,9 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
       final ObisCode obisCode = this.makeObisCode(profile.getObisCodeValuesDto());
       final DateTime beginDateTime =
-          toDateTime(getPowerQualityProfileRequestDataDto.getBeginDate(), device);
+          toDateTime(getPowerQualityProfileRequestDataDto.getBeginDate(), device.getTimezone());
       final DateTime endDateTime =
-          toDateTime(getPowerQualityProfileRequestDataDto.getEndDate(), device);
+          toDateTime(getPowerQualityProfileRequestDataDto.getEndDate(), device.getTimezone());
 
       // all value types that can be selected within this profile.
       final List<GetResult> captureObjects = this.retrieveCaptureObjects(conn, device, obisCode);

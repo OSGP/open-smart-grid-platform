@@ -325,9 +325,11 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
       throws Exception {
 
     final DataObject from =
-        this.dlmsHelper.asDataObject(DlmsDateTimeConverter.toDateTime(timeFrom, device));
+        this.dlmsHelper.asDataObject(
+            DlmsDateTimeConverter.toDateTime(timeFrom, device.getTimezone()));
     final DataObject to =
-        this.dlmsHelper.asDataObject(DlmsDateTimeConverter.toDateTime(timeTo, device));
+        this.dlmsHelper.asDataObject(
+            DlmsDateTimeConverter.toDateTime(timeTo, device.getTimezone()));
 
     if (protocol == Protocol.DSMR_4_2_2) {
       if (type == PeriodTypeDto.DAILY) {

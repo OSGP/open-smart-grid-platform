@@ -16,7 +16,6 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 
 /**
  * Convert DateTime fields to the timezone defined within an e-meter DlmsDevice. So local times can
@@ -37,47 +36,47 @@ public class DlmsDateTimeConverter {
    * fallback.
    *
    * @param utcDateTime a date time in UTC
-   * @param device a device which does or does not contain a timezone
+   * @param timezone null or contains a timezone
    * @return ZonedDateTime within a timezone from a device or when device timezone is not defined
    *     then in UTC timezone
    */
-  public static ZonedDateTime toZonedDateTime(final Date utcDateTime, final DlmsDevice device) {
+  public static ZonedDateTime toZonedDateTime(final Date utcDateTime, final String timezone) {
 
     final ZonedDateTime utcZonedDateTime =
         ZonedDateTime.ofInstant(utcDateTime.toInstant(), ZoneId.of(UTC));
 
-    return utcZonedDateTime.withZoneSameInstant(ZoneId.of(determineTimeZone(device)));
+    return utcZonedDateTime.withZoneSameInstant(ZoneId.of(determineTimeZone(timezone)));
   }
 
-  public static DateTime toDateTime(final DateTime utcDateTime, final DlmsDevice device) {
-    return toDateTime(utcDateTime.toDate(), device);
+  public static DateTime toDateTime(final DateTime utcDateTime, final String timezone) {
+    return toDateTime(utcDateTime.toDate(), timezone);
   }
 
   /**
-   * Convert a java.util.Date to a org.joda.time.DateTime with respect of the timezone defined
-   * within a DlmsDevice. This is a temporary convenience method to convert to joda times, because
-   * joda times should be refactored to java time.
+   * Convert a java.util.Date to a org.joda.time.DateTime with respect of the timezone. This is a
+   * temporary convenience method to convert to joda times, because joda times should be refactored
+   * to java time.
    *
    * @param utcDateTime a date time in UTC
-   * @param device a device which does or does not contain a timezone
+   * @param timezone null or contains a timezone
    * @return DateTime within a timezone from a device or when device timezone is not defined then in
    *     UTC timezone
    */
-  public static DateTime toDateTime(final Date utcDateTime, final DlmsDevice device) {
+  public static DateTime toDateTime(final Date utcDateTime, final String timezone) {
 
-    final ZonedDateTime convertedZoneDateTime = toZonedDateTime(utcDateTime, device);
+    final ZonedDateTime convertedZoneDateTime = toZonedDateTime(utcDateTime, timezone);
     return new DateTime(
         convertedZoneDateTime.toInstant().toEpochMilli(),
-        DateTimeZone.forID(determineTimeZone(device)));
+        DateTimeZone.forID(determineTimeZone(timezone)));
   }
 
-  private static String determineTimeZone(final DlmsDevice device) {
-    return device.getTimezone() != null ? device.getTimezone() : UTC;
+  private static String determineTimeZone(final String timezone) {
+    return timezone != null ? timezone : UTC;
   }
 
-  public static ZonedDateTime now(final DlmsDevice device) {
+  public static ZonedDateTime now(final String timezone) {
 
-    final ZoneId zoneId = ZoneId.of(determineTimeZone(device));
+    final ZoneId zoneId = ZoneId.of(determineTimeZone(timezone));
 
     return ZonedDateTime.now(ZoneOffset.UTC).withZoneSameInstant(zoneId);
   }

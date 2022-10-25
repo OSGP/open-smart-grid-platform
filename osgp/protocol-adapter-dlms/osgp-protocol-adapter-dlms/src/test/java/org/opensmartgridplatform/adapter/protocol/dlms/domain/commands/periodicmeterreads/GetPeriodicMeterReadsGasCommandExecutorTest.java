@@ -139,8 +139,9 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
 
     this.device.setTimezone(timeZone);
     final DateTime convertedFromTime =
-        DlmsDateTimeConverter.toDateTime(new Date(this.from), device);
-    final DateTime convertedToTime = DlmsDateTimeConverter.toDateTime(new Date(this.to), device);
+        DlmsDateTimeConverter.toDateTime(new Date(this.from), this.device.getTimezone());
+    final DateTime convertedToTime =
+        DlmsDateTimeConverter.toDateTime(new Date(this.to), this.device.getTimezone());
 
     // SETUP - dlms objects
     final DlmsObject dlmsClock = new DlmsClock("0.0.1.0.0.255");

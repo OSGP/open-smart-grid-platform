@@ -306,12 +306,14 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
       final PeriodTypeDto type,
       final Date timeFrom,
       final Date timeTo,
-      DlmsDevice device)
+      final DlmsDevice device)
       throws Exception {
     final DataObject from =
-        this.dlmsHelper.asDataObject(DlmsDateTimeConverter.toDateTime(timeFrom, device));
+        this.dlmsHelper.asDataObject(
+            DlmsDateTimeConverter.toDateTime(timeFrom, device.getTimezone()));
     final DataObject to =
-        this.dlmsHelper.asDataObject(DlmsDateTimeConverter.toDateTime(timeTo, device));
+        this.dlmsHelper.asDataObject(
+            DlmsDateTimeConverter.toDateTime(timeTo, device.getTimezone()));
 
     if (protocol == Protocol.DSMR_4_2_2) {
       if (type == PeriodTypeDto.DAILY) {

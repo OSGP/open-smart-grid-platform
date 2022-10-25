@@ -110,10 +110,10 @@ class FindEventsCommandExecutorTest {
   @AfterEach
   public void after() throws ProtocolAdapterException {
     final DateTime toDate =
-        toDateTime(this.findEventsRequestDto.getFrom().toDate(), this.currentDevice);
+        toDateTime(this.findEventsRequestDto.getFrom().toDate(), this.currentDevice.getTimezone());
 
     final DateTime endDate =
-        toDateTime(this.findEventsRequestDto.getUntil().toDate(), this.currentDevice);
+        toDateTime(this.findEventsRequestDto.getUntil().toDate(), this.currentDevice.getTimezone());
 
     verify(this.dlmsHelper).asDataObject(toDate);
     verify(this.dlmsHelper).asDataObject(endDate);
