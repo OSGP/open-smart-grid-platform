@@ -12,6 +12,6 @@ Feature: SmartMetering AdHoc
       | DeviceIdentification | TEST1024000000001 |
     Then the date and time is synchronized on the device
       | DeviceIdentification | TEST1024000000001 |
-    Then the dlms device with identification "TEST1024000000001" exists with properties
+    And the dlms device with identification "TEST1024000000001" exists with properties
       | DlmsDeviceTimezone | Europe/Amsterdam |
 
