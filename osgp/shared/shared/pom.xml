@@ -30,6 +30,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>shared-domain</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
     </dependency>

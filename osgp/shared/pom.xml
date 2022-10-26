@@ -93,6 +93,7 @@
     <!-- Shared Libs -->
     <module>parent-shared</module>
     <module>shared</module>
+    <module>shared-domain</module>
     <module>osgp-dto</module>
     <module>osgp-ws-core</module>
     <module>osgp-ws-admin</module>

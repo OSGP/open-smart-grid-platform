@@ -178,6 +178,11 @@
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>shared-domain</artifactId>
+        <version>${osgp.shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-throttling-api</artifactId>
         <version>${osgp.version}</version>
       </dependency>
