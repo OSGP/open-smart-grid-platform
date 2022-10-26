@@ -25,6 +25,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -98,8 +99,12 @@ public class GetPeriodicMeterReadsCommandExecutor
     }
 
     final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
-    final DateTime from = new DateTime(periodicMeterReadsQuery.getBeginDate());
-    final DateTime to = new DateTime(periodicMeterReadsQuery.getEndDate());
+    final DateTime from =
+        DlmsDateTimeConverter.toDateTime(
+            periodicMeterReadsQuery.getBeginDate(), device.getTimezone());
+    final DateTime to =
+        DlmsDateTimeConverter.toDateTime(
+            periodicMeterReadsQuery.getEndDate(), device.getTimezone());
 
     final AttributeAddressForProfile profileBufferAddress =
         this.getProfileBufferAddress(queryPeriodType, from, to, device);

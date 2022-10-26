@@ -16,12 +16,12 @@ import static org.openmuc.jdlms.AccessResultCode.SUCCESS;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +29,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -41,6 +42,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DateTimeParserUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.SingleActionScheduleAttribute;
@@ -74,7 +76,8 @@ class TestAlarmSchedulerCommandExecutorTest {
 
   @BeforeEach
   void setup() {
-
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    this.sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     this.connectionStub = new DlmsConnectionStub();
     this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
@@ -110,18 +113,24 @@ class TestAlarmSchedulerCommandExecutorTest {
 
   @ParameterizedTest
   @CsvSource({
-    "2060-10-07 15:33:00,PARTIAL_POWER_OUTAGE,0.0.15.1.4.255",
-    "2060-10-07 15:33:00,LAST_GASP,0.0.15.2.4.255"
+    "2060-10-07 22:00:00,Europe/Amsterdam,PARTIAL_POWER_OUTAGE,0.0.15.1.4.255,2060-10-08T00:00:00+00:00[Europe/Amsterdam]",
+    "2060-10-07 22:00:00,Europe/Amsterdam,LAST_GASP,0.0.15.2.4.255, 2060-10-08T00:00:00+00:00[Europe/Amsterdam]",
+    "2060-10-08 00:00:00,UTC,PARTIAL_POWER_OUTAGE,0.0.15.1.4.255,2060-10-08T00:00:00+00:00[UTC]",
+    "2060-10-08 00:00:00,UTC,LAST_GASP,0.0.15.2.4.255, 2060-10-08T00:00:00+00:00[UTC]"
   })
   void executeSuccess(
       final String dateTimeParameter,
+      final String timezone,
       final String alarmTypeParameter,
-      final String expectedObisCode)
+      final String expectedObisCode,
+      final String expectedTimeString)
       throws ParseException, ProtocolAdapterException {
 
+    Mockito.when(this.device.getTimezone()).thenReturn(timezone);
+
     final Date date = this.sdf.parse(dateTimeParameter);
-    final LocalDateTime localDateTime =
-        date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    final ZonedDateTime expectedDateTime =
+        DateTimeParserUtil.parseToZonedDateTime(expectedTimeString);
 
     this.setupConfigService(alarmTypeParameter, expectedObisCode);
     this.setupAlarmSchedulerRequest(alarmTypeParameter, date);
@@ -163,15 +172,15 @@ class TestAlarmSchedulerCommandExecutorTest {
     final String expectedTime =
         String.format(
             "[%s, %s, %s, 0]",
-            localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond());
+            expectedDateTime.getHour(), expectedDateTime.getMinute(), expectedDateTime.getSecond());
 
     final String expectedDate =
         String.format(
             "[%s, %s, %s, %s, -1]",
-            localDateTime.getYear() / 256,
-            localDateTime.getYear() % 256,
-            localDateTime.getMonthValue(),
-            localDateTime.getDayOfMonth());
+            expectedDateTime.getYear() / 256,
+            expectedDateTime.getYear() % 256,
+            expectedDateTime.getMonthValue(),
+            expectedDateTime.getDayOfMonth());
 
     assertThat(Arrays.toString(cosemTime.encode())).isEqualTo(expectedTime);
     assertThat(Arrays.toString(cosemDate.encode())).isEqualTo(expectedDate);

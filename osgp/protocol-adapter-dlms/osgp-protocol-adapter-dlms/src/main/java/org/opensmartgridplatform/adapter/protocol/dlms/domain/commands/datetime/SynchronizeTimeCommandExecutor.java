@@ -10,8 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -19,10 +17,12 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
@@ -45,9 +45,13 @@ public class SynchronizeTimeCommandExecutor
 
   private final DlmsHelper dlmsHelper;
 
-  public SynchronizeTimeCommandExecutor(final DlmsHelper dlmsHelper) {
+  private final DlmsDeviceRepository dlmsDeviceRepository;
+
+  public SynchronizeTimeCommandExecutor(
+      final DlmsHelper dlmsHelper, final DlmsDeviceRepository dlmsDeviceRepository) {
     super(SynchronizeTimeRequestDto.class);
     this.dlmsHelper = dlmsHelper;
+    this.dlmsDeviceRepository = dlmsDeviceRepository;
   }
 
   @Override
@@ -76,9 +80,13 @@ public class SynchronizeTimeCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    final ZoneId zoneId = ZoneId.of(synchronizeTimeRequestDto.getTimeZone());
-    final ZonedDateTime zonedTime = ZonedDateTime.now(ZoneOffset.UTC).withZoneSameInstant(zoneId);
+    final String timezone = synchronizeTimeRequestDto.getTimeZone();
+    final ZonedDateTime zonedTime = DlmsDateTimeConverter.now(device.getTimezone());
+
     final DataObject time = this.dlmsHelper.asDataObject(zonedTime);
+
+    device.setTimezone(timezone);
+    this.dlmsDeviceRepository.save(device);
 
     final SetParameter setParameter = new SetParameter(ATTRIBUTE_TIME, time);
 
