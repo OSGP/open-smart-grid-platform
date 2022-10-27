@@ -32,6 +32,7 @@ public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceD
     dlmsDevice.setMbusIdentificationNumber(source.getMbusIdentificationNumber());
     dlmsDevice.setMbusManufacturerIdentification(source.getMbusManufacturerIdentification());
     dlmsDevice.setProtocol(source.getProtocolName(), source.getProtocolVersion());
+    dlmsDevice.setTimezone(source.getTimezone());
 
     return dlmsDevice;
   }

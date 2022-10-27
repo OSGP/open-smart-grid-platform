@@ -220,6 +220,14 @@
         </xsd:simpleType>
       </xsd:element>
 
+      <xsd:element name="Timezone" minOccurs="0">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="40" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+
       <xsd:element name="Communication_method" minOccurs="0">
         <xsd:simpleType>
           <xsd:restriction base="tns:AlphaNumericType">
