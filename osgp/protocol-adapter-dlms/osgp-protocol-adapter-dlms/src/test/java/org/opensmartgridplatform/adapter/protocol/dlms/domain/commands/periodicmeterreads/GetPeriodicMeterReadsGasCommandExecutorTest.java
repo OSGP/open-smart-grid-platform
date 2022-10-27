@@ -26,6 +26,8 @@ import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -46,6 +48,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.RegisterUnit;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
@@ -65,7 +68,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class GetPeriodicMeterReadsGasCommandExecutorTest {
+class GetPeriodicMeterReadsGasCommandExecutorTest {
 
   @InjectMocks private GetPeriodicMeterReadsGasCommandExecutor executor;
 
@@ -91,7 +94,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
   }
 
   @Test
-  public void testExecuteNullRequest() throws ProtocolAdapterException {
+  void testExecuteNullRequest() throws ProtocolAdapterException {
     try {
       this.executor.execute(this.connectionManager, this.device, null, this.messageMetadata);
       fail("Calling execute with null query should fail");
@@ -101,7 +104,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
   }
 
   @Test
-  public void testExecuteObjectNotFound() {
+  void testExecuteObjectNotFound() {
     // SETUP
     final PeriodicMeterReadsRequestDto request =
         new PeriodicMeterReadsRequestDto(
@@ -123,8 +126,9 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
     }
   }
 
-  @Test
-  public void testHappy() throws Exception {
+  @ParameterizedTest
+  @ValueSource(strings = {"UTC", "Australia/Tasmania"})
+  void testHappyWithDifferentTimeZones(final String timeZone) throws Exception {
 
     // SETUP - request
     final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
@@ -132,6 +136,12 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
     final PeriodicMeterReadsRequestDto request =
         new PeriodicMeterReadsRequestDto(
             periodType, this.fromDateTime.toDate(), this.toDateTime.toDate(), channel);
+
+    this.device.setTimezone(timeZone);
+    final DateTime convertedFromTime =
+        DlmsDateTimeConverter.toDateTime(new Date(this.from), this.device.getTimezone());
+    final DateTime convertedToTime =
+        DlmsDateTimeConverter.toDateTime(new Date(this.to), this.device.getTimezone());
 
     // SETUP - dlms objects
     final DlmsObject dlmsClock = new DlmsClock("0.0.1.0.0.255");
@@ -164,8 +174,8 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
             eq(this.device),
             eq(DlmsObjectType.DAILY_LOAD_PROFILE),
             eq(channel.getChannelNumber()),
-            eq(this.fromDateTime),
-            eq(this.toDateTime),
+            eq(convertedFromTime),
+            eq(convertedToTime),
             eq(Medium.GAS)))
         .thenReturn(Optional.of(attributeAddressForProfile));
 
@@ -241,8 +251,8 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         .setDescription(
             String.format(
                 "GetPeriodicMeterReadsGas for channel ONE, DAILY from %s until %s, retrieve attribute: {%s,%s,%s}",
-                new DateTime(this.from),
-                new DateTime(this.to),
+                convertedFromTime,
+                convertedToTime,
                 dlmsProfile.getClassId(),
                 dlmsProfile.getObisCodeAsString(),
                 dlmsProfile.getDefaultAttributeId()));
@@ -255,12 +265,12 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
         result.getPeriodicMeterReadsGas();
 
     // Only 2 meterreads are expected. The 3rd meterread has a logtime outside the requested period.
-    assertThat(periodicMeterReads.size()).isEqualTo(2);
+    assertThat(periodicMeterReads).hasSize(2);
 
     assertThat(periodicMeterReads.stream().anyMatch(r -> r.getConsumption() == meterValue1))
-        .isEqualTo(true);
+        .isTrue();
     assertThat(periodicMeterReads.stream().anyMatch(r -> r.getConsumption() == meterValue2))
-        .isEqualTo(true);
+        .isTrue();
     assertThat(
             periodicMeterReads.stream()
                 .filter(r -> r.getConsumption() == meterValue1)
@@ -268,7 +278,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
                     r ->
                         this.areDatesEqual(r.getLogTime(), timeMeterRead1)
                             && this.areDatesEqual(r.getCaptureTime(), timeMeterRead1)))
-        .isEqualTo(true);
+        .isTrue();
     assertThat(
             periodicMeterReads.stream()
                 .filter(r -> r.getConsumption() == meterValue2)
@@ -276,7 +286,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
                     r ->
                         this.areDatesEqual(r.getLogTime(), timeMeterRead2)
                             && this.areDatesEqual(r.getCaptureTime(), timeMeterRead2)))
-        .isEqualTo(true);
+        .isTrue();
   }
 
   private AttributeAddress createAttributeAddress(final DlmsObject dlmsObject) {
