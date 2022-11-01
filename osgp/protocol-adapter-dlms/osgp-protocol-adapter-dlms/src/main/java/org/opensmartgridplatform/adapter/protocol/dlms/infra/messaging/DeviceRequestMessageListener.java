@@ -29,8 +29,17 @@ public class DeviceRequestMessageListener implements MessageListener {
   @Qualifier("protocolDlmsInboundOsgpCoreRequestsMessageProcessorMap")
   private MessageProcessorMap dlmsRequestMessageProcessorMap;
 
+  @Autowired private MessagePrioritySender messagePrioritySender;
+
   @Override
   public void onMessage(final Message message) {
+    try {
+      if (this.messagePrioritySender != null) {
+        this.messagePrioritySender.testPriority();
+      }
+    } catch (final Exception e) {
+      throw new RuntimeException(e);
+    }
     try {
       LOGGER.info("Received message of type: {}", message.getJMSType());
 

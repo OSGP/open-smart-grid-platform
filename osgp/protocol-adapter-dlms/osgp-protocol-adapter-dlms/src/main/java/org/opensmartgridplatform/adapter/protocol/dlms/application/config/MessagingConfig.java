@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messag
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundLogItemRequestsMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundOsgpCoreRequestsMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundOsgpCoreResponsesMessagingConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.PriorityMessageConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +32,8 @@ import org.springframework.context.annotation.PropertySource;
       InboundOsgpCoreResponsesMessagingConfig.class,
       OutboundLogItemRequestsMessagingConfig.class,
       OutboundOsgpCoreRequestsMessagingConfig.class,
-      OutboundOsgpCoreResponsesMessagingConfig.class
+      OutboundOsgpCoreResponsesMessagingConfig.class,
+      PriorityMessageConfig.class
     })
 public class MessagingConfig extends AbstractConfig {
 
