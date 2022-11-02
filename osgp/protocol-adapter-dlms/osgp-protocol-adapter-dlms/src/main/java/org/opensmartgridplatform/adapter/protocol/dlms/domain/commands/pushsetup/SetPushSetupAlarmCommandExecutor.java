@@ -101,7 +101,7 @@ public class SetPushSetupAlarmCommandExecutor
       final PushSetupAlarmDto pushSetupAlarm,
       final DlmsDevice device)
       throws ProtocolAdapterException {
-    LOGGER.info(
+    LOGGER.debug(
         "Setting Send destination and method of Push Setup Alarm: {}",
         pushSetupAlarm.getSendDestinationAndMethod());
 
@@ -138,7 +138,7 @@ public class SetPushSetupAlarmCommandExecutor
   private AccessResultCode setPushObjectList(
       final DlmsConnectionManager conn, final PushSetupAlarmDto pushSetupAlarm)
       throws ProtocolAdapterException {
-    LOGGER.info(
+    LOGGER.debug(
         "Setting Push Object List of Push Setup Alarm: {}", pushSetupAlarm.getPushObjectList());
 
     // Before setting the push object list, verify if the objects in the list are really present in

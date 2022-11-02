@@ -62,7 +62,7 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
 
   private ConfigurationObjectDto getConfigurationObject(final DataObject resultData)
       throws ProtocolAdapterException {
-    LOGGER.info("ConfigurationObject ResultData: {}", this.dlmsHelper.getDebugInfo(resultData));
+    LOGGER.debug("ConfigurationObject ResultData: {}", this.dlmsHelper.getDebugInfo(resultData));
     final List<DataObject> elements = resultData.getValue();
     if (elements == null || elements.size() != NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS) {
       final String message =
