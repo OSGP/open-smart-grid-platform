@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -45,6 +46,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
   private String protocolName = PlatformSmartmeteringDefaults.PROTOCOL;
   private String protocolVersion = PlatformSmartmeteringDefaults.PROTOCOL_VERSION;
   private Long invocationCounter = PlatformSmartmeteringDefaults.INVOCATION_COUNTER;
+
+  private String timezone;
 
   public DlmsDeviceBuilder setDeviceIdentification(final String deviceIdentification) {
     this.deviceIdentification = deviceIdentification;
@@ -249,6 +252,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
       this.setInvocationCounter(
           getLong(inputSettings, PlatformSmartmeteringKeys.INVOCATION_COUNTER));
     }
+    if (inputSettings.containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_TIMEZONE)) {
+      this.setTimezone(getString(inputSettings, PlatformSmartmeteringKeys.KEY_DEVICE_TIMEZONE));
+    }
 
     /**
      * For port/logical_id we want to be able to override the default value to be null to enable
@@ -272,6 +278,10 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     }
 
     return this;
+  }
+
+  private void setTimezone(final String timezone) {
+    this.timezone = timezone;
   }
 
   @Override
@@ -301,6 +311,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     dlmsDevice.setMbusManufacturerIdentification(this.mbusManufacturerIdentification);
     dlmsDevice.setProtocol(this.protocolName, this.protocolVersion);
     dlmsDevice.setInvocationCounter(this.invocationCounter);
+    dlmsDevice.setTimezone(this.timezone);
 
     return dlmsDevice;
   }
