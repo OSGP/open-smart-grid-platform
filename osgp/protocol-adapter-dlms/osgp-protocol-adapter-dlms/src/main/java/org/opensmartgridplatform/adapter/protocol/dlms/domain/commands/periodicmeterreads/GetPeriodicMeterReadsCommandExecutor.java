@@ -144,7 +144,7 @@ public class GetPeriodicMeterReadsCommandExecutor
               conn, device, "retrieve periodic meter reads for " + queryPeriodType, address));
     }
 
-    LOGGER.info("Received getResult: {} ", getResultList);
+    LOGGER.debug("Received getResult: {} ", getResultList);
 
     final DataObject resultData =
         this.dlmsHelper.readDataObject(getResultList.get(0), PERIODIC_E_METER_READS);
@@ -185,7 +185,7 @@ public class GetPeriodicMeterReadsCommandExecutor
       final ConversionContext ctx, final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads)
       throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
-    LOGGER.info("Converting bufferObject with value: {} ", ctx.bufferedObjects);
+    LOGGER.debug("Converting bufferObject with value: {} ", ctx.bufferedObjects);
 
     final Optional<Date> previousLogTime = this.getPreviousLogTime(periodicMeterReads);
     final Date logTime = this.readClock(ctx, previousLogTime, this.dlmsHelper);
@@ -211,7 +211,7 @@ public class GetPeriodicMeterReadsCommandExecutor
               DlmsObjectType.ACTIVE_ENERGY_EXPORT,
               "negativeActiveEnergy");
 
-      LOGGER.info(
+      LOGGER.debug(
           "Resulting values: LogTime: {}, status: {}, importValue {}, exportValue {} ",
           logTime,
           status,
@@ -253,7 +253,7 @@ public class GetPeriodicMeterReadsCommandExecutor
               DlmsObjectType.ACTIVE_ENERGY_EXPORT_RATE_2,
               "negativeActiveEnergyTariff2");
 
-      LOGGER.info(
+      LOGGER.debug(
           "Resulting values: LogTime: {}, status: {}, importRate1Value {}, importRate2Value {}, "
               + "exportRate1Value {}, exportRate2Value {} ",
           logTime,
@@ -356,7 +356,7 @@ public class GetPeriodicMeterReadsCommandExecutor
                 device, type, 0, beginDateTime, endDateTime, Medium.ELECTRICITY)
             .orElseThrow(() -> new ProtocolAdapterException("No address found for " + type));
 
-    LOGGER.info(
+    LOGGER.debug(
         "Dlms object config service returned profile buffer address {} ", attributeAddressProfile);
 
     return attributeAddressProfile;
@@ -369,7 +369,7 @@ public class GetPeriodicMeterReadsCommandExecutor
         this.dlmsObjectConfigService.getAttributeAddressesForScalerUnit(
             attributeAddressForProfile, 0);
 
-    LOGGER.info(
+    LOGGER.debug(
         "Dlms object config service returned scaler unit addresses {} ", attributeAddresses);
 
     return attributeAddresses;

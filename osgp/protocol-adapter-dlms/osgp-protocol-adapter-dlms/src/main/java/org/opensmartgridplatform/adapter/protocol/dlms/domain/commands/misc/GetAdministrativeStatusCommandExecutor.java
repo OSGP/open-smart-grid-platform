@@ -76,7 +76,7 @@ public class GetAdministrativeStatusCommandExecutor
             "GetAdministrativeStatus, retrieve attribute: "
                 + JdlmsObjectToStringUtil.describeAttributes(getParameter));
 
-    LOGGER.info(
+    LOGGER.debug(
         "Retrieving current administrative status by issuing get request for class id: {}, obis code: {}, "
             + "attribute id: {}",
         CLASS_ID,

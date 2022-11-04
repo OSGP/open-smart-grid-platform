@@ -119,12 +119,12 @@ public class GetGsmDiagnosticCommandExecutor
     conn.getDlmsMessageListener()
         .setDescription("Get GsmDiagnostic, retrieve attributes: " + addressesDescriptions);
 
-    LOGGER.info("Get GsmDiagnostic, retrieve attributes: {}", addressesDescriptions);
+    LOGGER.debug("Get GsmDiagnostic, retrieve attributes: {}", addressesDescriptions);
 
     final List<GetResult> getResultList =
         this.dlmsHelper.getAndCheck(conn, device, "Get GsmDiagnostic", addresses);
 
-    LOGGER.info("GetResultList: {}", describeGetResults(getResultList));
+    LOGGER.debug("GetResultList: {}", describeGetResults(getResultList));
 
     if (!getResultList.stream()
         .allMatch(result -> result.getResultCode() == AccessResultCode.SUCCESS)) {

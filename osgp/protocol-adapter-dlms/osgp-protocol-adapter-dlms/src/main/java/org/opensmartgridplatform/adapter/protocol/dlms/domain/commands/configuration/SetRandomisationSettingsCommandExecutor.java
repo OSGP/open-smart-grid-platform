@@ -80,7 +80,7 @@ public class SetRandomisationSettingsCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    LOGGER.info(
+    LOGGER.debug(
         "Executing SetRandomisationSettingsCommandExecutor. Data = {}",
         setRandomisationSettingsRequestDataDto);
 
@@ -92,10 +92,10 @@ public class SetRandomisationSettingsCommandExecutor
     final int numberOfRetries = setRandomisationSettingsRequestDataDto.getNumberOfRetries();
 
     if (directAttach) {
-      LOGGER.info("Enabling directAttach on device {}.", device.getDeviceIdentification());
+      LOGGER.debug("Enabling directAttach on device {}.", device.getDeviceIdentification());
       this.writeDirectAttach(conn, device, true);
     } else {
-      LOGGER.info(
+      LOGGER.debug(
           "Disabling directAttach and setting Randomisation Settings for device {}.",
           device.getDeviceIdentification());
       this.writeDirectAttach(conn, device, false);

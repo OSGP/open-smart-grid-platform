@@ -71,7 +71,7 @@ public class DataObjectAttrExecutor {
    * @throws IOException is thrown when an error occurs with the connection to the dlms device
    */
   public AccessResultCode executeSet(final DlmsConnectionManager conn) throws IOException {
-    LOGGER.info("WRITING {}", this.name);
+    LOGGER.debug("WRITING {}", this.name);
     this.resultCode =
         conn.getConnection().set(new SetParameter(this.getAttrAddress(), this.getValue()));
     return this.resultCode;

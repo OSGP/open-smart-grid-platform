@@ -144,7 +144,7 @@ public class FindEventsCommandExecutor
     }
 
     if (!AccessResultCode.SUCCESS.equals(getResult.getResultCode())) {
-      LOGGER.info(
+      LOGGER.debug(
           "Result of getting events for {} is {}",
           findEventsQuery.getEventLogCategory(),
           getResult.getResultCode());
