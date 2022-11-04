@@ -91,7 +91,8 @@ class CosemDateTimeFilter extends RangeDescriptorFilter {
     final int deviation = dateTimeValue.get(Field.DEVIATION);
 
     if (((deviation & 0xFFFF) ^ 0x8000) != 0x0) {
-      final int timeZoneOffset = (int) TimeUnit.MILLISECONDS.convert(deviation, TimeUnit.MINUTES);
+      final int timeZoneOffset =
+          (int) TimeUnit.MILLISECONDS.convert(deviation, TimeUnit.MINUTES) * -1;
       calendar.set(Calendar.ZONE_OFFSET, timeZoneOffset);
     }
 
