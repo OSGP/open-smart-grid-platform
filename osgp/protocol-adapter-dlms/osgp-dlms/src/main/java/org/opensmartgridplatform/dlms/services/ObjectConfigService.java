@@ -20,8 +20,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsProfileValidator;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
@@ -30,17 +33,25 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ObjectConfigService {
 
-  private List<DlmsProfile> meterConfigList;
+  private List<DlmsProfile> dlmsProfiles;
 
   public ObjectConfigService() {}
 
-  public ObjectConfigService(final List<DlmsProfile> meterConfigList) {
-    this.meterConfigList = meterConfigList;
+  public ObjectConfigService(final List<DlmsProfile> dlmsProfiles)
+      throws ObjectConfigException, IOException {
+    if (dlmsProfiles == null) {
+      this.dlmsProfiles = this.getDlmsProfileListFromResources();
+    } else {
+      this.dlmsProfiles = dlmsProfiles;
+    }
+
+    DlmsProfileValidator.validate(this.dlmsProfiles);
+    this.dlmsProfiles.forEach(DlmsProfile::createMap);
   }
 
   public CosemObject getCosemObject(
       final String protocolName, final String protocolVersion, final DlmsObjectType dlmsObjectType)
-      throws IllegalArgumentException {
+      throws IllegalArgumentException, ObjectConfigException {
     final Map<DlmsObjectType, CosemObject> cosemObjects =
         this.getCosemObjects(protocolName, protocolVersion);
     if (cosemObjects.containsKey(dlmsObjectType)) {
@@ -54,55 +65,31 @@ public class ObjectConfigService {
   }
 
   public Map<DlmsObjectType, CosemObject> getCosemObjects(
-      final String protocolName, final String protocolVersion) {
+      final String protocolName, final String protocolVersion) throws ObjectConfigException {
 
-    try {
-      if (this.meterConfigList == null || this.meterConfigList.isEmpty()) {
-        this.meterConfigList = this.getMeterConfigListFromResources();
-      }
-
-      final Optional<DlmsProfile> meterConfig =
-          this.meterConfigList.stream()
-              .filter(config -> protocolVersion.equalsIgnoreCase(config.version))
-              .filter(config -> protocolName.equalsIgnoreCase(config.profile))
-              .findAny();
-      if (!meterConfig.isPresent()) {
-        return new EnumMap<>(DlmsObjectType.class);
-      }
-      return this.getCosemObjectFromMeterConfig(meterConfig.get())
-          .orElseThrow(
-              () ->
-                  new IllegalArgumentException(
-                      String.format(
-                          "no config found for protocol '%s' version '%s' ",
-                          protocolName, protocolVersion)));
-
-    } catch (final IOException exception) {
-      throw new IllegalArgumentException(
-          String.format(
-              "no config found for protocol '%s' version '%s' ", protocolName, protocolVersion));
+    if (this.dlmsProfiles == null || this.dlmsProfiles.isEmpty()) {
+      throw new ObjectConfigException("No DLMS Profile available");
     }
+
+    final Optional<DlmsProfile> dlmsProfile =
+        this.dlmsProfiles.stream()
+            .filter(profile -> protocolVersion.equalsIgnoreCase(profile.version))
+            .filter(profile -> protocolName.equalsIgnoreCase(profile.profile))
+            .findAny();
+    if (!dlmsProfile.isPresent()) {
+      return new EnumMap<>(DlmsObjectType.class);
+    }
+    return dlmsProfile.get().getObjectMap();
   }
 
-  private Optional<Map<DlmsObjectType, CosemObject>> getCosemObjectFromMeterConfig(
-      final DlmsProfile meterConfig) {
-    final Map<DlmsObjectType, CosemObject> cosemObjectMap = new EnumMap<>(DlmsObjectType.class);
-    meterConfig
-        .getObjects()
-        .forEach(
-            cosemObject ->
-                cosemObjectMap.put(DlmsObjectType.fromValue(cosemObject.getTag()), cosemObject));
-    return Optional.of(cosemObjectMap);
-  }
-
-  private List<DlmsProfile> getMeterConfigListFromResources() throws IOException {
-    final String scannedPackage = "meterconfig/*";
+  private List<DlmsProfile> getDlmsProfileListFromResources() throws IOException {
+    final String scannedPackage = "dlmsprofiles/*";
     final PathMatchingResourcePatternResolver scanner = new PathMatchingResourcePatternResolver();
     final Resource[] resources = scanner.getResources(scannedPackage);
 
     final ObjectMapper objectMapper = new ObjectMapper();
 
-    final List<DlmsProfile> meterConfigs = new ArrayList<>();
+    final List<DlmsProfile> dlmsProfilesFromResources = new ArrayList<>();
 
     Stream.of(resources)
         .filter(
@@ -112,12 +99,12 @@ public class ObjectConfigService {
               try {
                 final DlmsProfile dlmsProfile =
                     objectMapper.readValue(resource.getInputStream(), DlmsProfile.class);
-                meterConfigs.add(dlmsProfile);
+                dlmsProfilesFromResources.add(dlmsProfile);
               } catch (final IOException e) {
                 log.error(String.format("Cannot read config file %s", resource.getFilename()), e);
               }
             });
 
-    return meterConfigs;
+    return dlmsProfilesFromResources;
   }
 }

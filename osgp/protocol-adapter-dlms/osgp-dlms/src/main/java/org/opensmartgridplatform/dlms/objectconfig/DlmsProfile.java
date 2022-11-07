@@ -12,7 +12,9 @@
 package org.opensmartgridplatform.dlms.objectconfig;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import lombok.Data;
 import lombok.ToString;
 
@@ -28,4 +30,17 @@ public class DlmsProfile {
 
   public List<ProfileProperty> properties;
   public List<CosemObject> objects;
+
+  public Map<DlmsObjectType, CosemObject> objectMap;
+
+  public void createMap() {
+    this.objectMap = new EnumMap<>(DlmsObjectType.class);
+    this.objects.forEach(
+        cosemObject ->
+            this.objectMap.put(DlmsObjectType.fromValue(cosemObject.getTag()), cosemObject));
+  }
+
+  public String getProfileWithVersion() {
+    return this.profile + " " + this.version;
+  }
 }

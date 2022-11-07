@@ -25,25 +25,25 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
 import org.springframework.core.io.ClassPathResource;
 
 @Slf4j
 class ObjectConfigServiceTest {
 
-  List<DlmsProfile> DlmsProfileList;
-  @InjectMocks private ObjectConfigService objectConfigService;
+  private ObjectConfigService objectConfigService;
 
   @BeforeEach
-  void setUp() throws IOException {
-    this.DlmsProfileList = this.getDlmsProfileList();
-    this.objectConfigService = new ObjectConfigService(this.DlmsProfileList);
+  void setUp() throws IOException, ObjectConfigException {
+    final List<DlmsProfile> dlmsProfileList = this.getDlmsProfileList();
+    this.objectConfigService = new ObjectConfigService(dlmsProfileList);
   }
 
   @Test
-  void testGetCosemObjects() {
+  void testGetCosemObjects() throws ObjectConfigException {
     final String protocolName = "SMR";
     final String protocolVersion50 = "5.0";
     final String protocolVersion51 = "5.1";
@@ -64,7 +64,7 @@ class ObjectConfigServiceTest {
   }
 
   @Test
-  void testNoCosemObjectsFound() {
+  void testNoCosemObjectsFound() throws ObjectConfigException {
     final Map<DlmsObjectType, CosemObject> cosemObjects =
         this.objectConfigService.getCosemObjects("ABC", "12");
 
@@ -72,7 +72,7 @@ class ObjectConfigServiceTest {
   }
 
   @Test
-  void testGetCosemObject() {
+  void testGetCosemObject() throws ObjectConfigException {
     final String protocolVersion50 = "5.0";
     final String protocolName = "SMR";
 

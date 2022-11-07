@@ -9,7 +9,7 @@
  *
  */
 
-package org.opensmartgridplatform.dlms.services;
+package org.opensmartgridplatform.dlms.objectconfig;
 
 public enum DlmsObjectType {
   CLOCK,
