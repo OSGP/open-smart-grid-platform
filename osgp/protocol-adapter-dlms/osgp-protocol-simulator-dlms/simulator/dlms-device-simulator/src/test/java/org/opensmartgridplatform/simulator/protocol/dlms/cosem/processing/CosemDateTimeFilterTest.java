@@ -13,9 +13,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
+import org.assertj.core.api.Assertions;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.openmuc.jdlms.datatypes.CosemDate;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
@@ -23,10 +27,44 @@ import org.openmuc.jdlms.datatypes.CosemTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.CaptureObject;
 
-public class CosemDateTimeFilterTest {
+class CosemDateTimeFilterTest {
+
+  @ParameterizedTest
+  @CsvSource({
+    "2018,12,31,23,0,0,0,2018-12-31T23:00:00Z", // winter
+    "2018,06,31,23,0,0,0,2018-07-01T23:00:00Z,", // summer
+    "2018,06,31,23,0,0,-60,2018-07-01T22:00:00Z" // deviation
+  })
+  void checkCorrectDeviation(
+      final int year,
+      final int month,
+      final int dayOfMonth,
+      final int hour,
+      final int minute,
+      final int second,
+      final int deviation,
+      final String expectedDateTime) {
+    final CosemDateTimeFilter filter = new CosemDateTimeFilter(this.createRangeDescriptor());
+
+    final CosemDateTime cosemDateTime =
+        new CosemDateTime(
+            year,
+            month,
+            dayOfMonth,
+            0xff,
+            hour,
+            minute,
+            second,
+            0,
+            deviation,
+            new CosemDateTime.ClockStatus[0]);
+
+    Assertions.assertThat(filter.toCalendar(cosemDateTime).toInstant())
+        .hasToString(expectedDateTime);
+  }
 
   @Test
-  public void testMatchBefore() {
+  void testMatchBefore() {
     final CosemDateTimeFilter filter = new CosemDateTimeFilter(this.createRangeDescriptor());
 
     final Calendar cal = Calendar.getInstance();
@@ -36,7 +74,7 @@ public class CosemDateTimeFilterTest {
   }
 
   @Test
-  public void testMatchInBetween() {
+  void testMatchInBetween() {
     final CosemDateTimeFilter filter = new CosemDateTimeFilter(this.createRangeDescriptor());
 
     final Calendar cal = Calendar.getInstance();
@@ -48,7 +86,20 @@ public class CosemDateTimeFilterTest {
   }
 
   @Test
-  public void testMatchAfter() {
+  void testMatchInBetweenAmsterdamTime() {
+    final CosemDateTimeFilter filter = new CosemDateTimeFilter(this.createRangeDescriptor());
+
+    final Calendar cal = Calendar.getInstance();
+    cal.setTimeZone(TimeZone.getTimeZone("Europe/Amsterdam"));
+
+    // month in calendar is 0-based, month in joda DateTime is 1-based
+    cal.set(2017, Calendar.JANUARY, 2, 0, 55);
+
+    assertThat(filter.match(cal)).isTrue();
+  }
+
+  @Test
+  void testMatchAfter() {
     final CosemDateTimeFilter filter = new CosemDateTimeFilter(this.createRangeDescriptor());
 
     final Calendar cal = Calendar.getInstance();
@@ -62,8 +113,10 @@ public class CosemDateTimeFilterTest {
   private List<DataObject> createRangeDescriptor() {
     final DataObject captureObject =
         new CaptureObject(8, "0.0.1.0.0.255", (byte) 2, 0).asDataObject();
-    final DataObject dateTimeFrom = this.asDataObject(new DateTime(2017, 1, 1, 0, 0), 0, false);
-    final DataObject dateTimeTo = this.asDataObject(new DateTime(2017, 1, 2, 0, 0), 0, false);
+    final DataObject dateTimeFrom =
+        this.asDataObject(new DateTime(2017, 1, 1, 0, 0, DateTimeZone.UTC), 0, false);
+    final DataObject dateTimeTo =
+        this.asDataObject(new DateTime(2017, 1, 2, 0, 0, DateTimeZone.UTC), 0, false);
     return Arrays.asList(captureObject, dateTimeFrom, dateTimeTo);
   }
 
