@@ -47,6 +47,7 @@ class ObjectConfigServiceTest {
     final String protocolName = "SMR";
     final String protocolVersion50 = "5.0";
     final String protocolVersion51 = "5.1";
+    final String protocolVersion52 = "5.2";
 
     final Map<DlmsObjectType, CosemObject> cosemObjects50 =
         this.objectConfigService.getCosemObjects(protocolName, protocolVersion50);
@@ -61,6 +62,13 @@ class ObjectConfigServiceTest {
     assertNotNull(cosemObjects51);
     assertThat(cosemObjects51).hasSize(14);
     assertNotNull(cosemObjects51.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
+
+    final Map<DlmsObjectType, CosemObject> cosemObjects52 =
+        this.objectConfigService.getCosemObjects(protocolName, protocolVersion52);
+
+    assertNotNull(cosemObjects52);
+    assertThat(cosemObjects52).hasSize(15);
+    assertNotNull(cosemObjects52.get(DlmsObjectType.NUMBER_OF_LONG_POWER_FAILURES));
   }
 
   @Test
@@ -100,8 +108,12 @@ class ObjectConfigServiceTest {
     final DlmsProfile dlmsProfile51 =
         objectMapper.readValue(
             new ClassPathResource("/dlmsprofile-smr51.json").getFile(), DlmsProfile.class);
+    final DlmsProfile dlmsProfile52 =
+        objectMapper.readValue(
+            new ClassPathResource("/dlmsprofile-smr52.json").getFile(), DlmsProfile.class);
     DlmsProfileList.add(dlmsProfile50);
     DlmsProfileList.add(dlmsProfile51);
+    DlmsProfileList.add(dlmsProfile52);
     return DlmsProfileList;
   }
 }
