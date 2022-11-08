@@ -47,6 +47,7 @@ import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import org.apache.commons.lang3.ArrayUtils;
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.CosemInterfaceObject;
@@ -351,6 +352,9 @@ public class DefaultDeviceProfile {
 
   @Value("${alarmfilter.value}")
   private int alarmFilterValue;
+
+  @Value("default.clock.timezone")
+  private String defaultClockTimezone;
 
   @Value("${default.clock.year}")
   private int defaultClockYear;
@@ -734,13 +738,13 @@ public class DefaultDeviceProfile {
   @Scope("prototype")
   public Calendar defaultCalendar() {
     final Calendar cal = Calendar.getInstance();
+    cal.setTimeZone(TimeZone.getTimeZone(this.defaultClockTimezone));
     cal.set(Calendar.YEAR, this.defaultClockYear);
     cal.set(Calendar.MONTH, this.defaultClockMonth);
     cal.set(Calendar.DAY_OF_MONTH, this.defaultClockDayOfMonth);
     cal.set(Calendar.HOUR_OF_DAY, this.defaultClockHour);
     cal.set(Calendar.MINUTE, this.defaultClockMinute);
     cal.set(Calendar.SECOND, this.defaultClockSecond);
-
     return cal;
   }
 
