@@ -10,9 +10,10 @@
 
 package org.opensmartgridplatform.simulator.protocol.dlms.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Calendar;
 import java.util.TimeZone;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.openmuc.jdlms.datatypes.CosemDateFormat.Field;
@@ -35,7 +36,7 @@ class CosemDateTimeUtilTest {
     final Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Amsterdam"));
     calendar.set(year, month - 1, dayOfMonth, hour, minute, seconds);
 
-    Assertions.assertThat(CosemDateTimeUtil.calculateDeviation(calendar))
+    assertThat(CosemDateTimeUtil.calculateDeviation(calendar))
         .as(testDescription)
         .isEqualTo(expectedDeviation);
   }
@@ -62,13 +63,13 @@ class CosemDateTimeUtilTest {
 
     final CosemDateTime cosemDateTime = CosemDateTimeUtil.toCosemDateTime(calendar);
 
-    Assertions.assertThat(cosemDateTime.get(Field.YEAR)).isEqualTo(year);
-    Assertions.assertThat(cosemDateTime.get(Field.MONTH)).isEqualTo(monthIndex);
-    Assertions.assertThat(cosemDateTime.get(Field.DAY_OF_MONTH)).isEqualTo(dayOfMonth);
-    Assertions.assertThat(cosemDateTime.get(Field.HOUR)).isEqualTo(hour);
-    Assertions.assertThat(cosemDateTime.get(Field.MINUTE)).isEqualTo(minute);
-    Assertions.assertThat(cosemDateTime.get(Field.SECOND)).isEqualTo(seconds);
-    Assertions.assertThat(cosemDateTime.get(Field.HUNDREDTHS)).isZero();
-    Assertions.assertThat(cosemDateTime.get(Field.DEVIATION)).isEqualTo(expectedDeviation);
+    assertThat(cosemDateTime.get(Field.YEAR)).isEqualTo(year);
+    assertThat(cosemDateTime.get(Field.MONTH)).isEqualTo(monthIndex);
+    assertThat(cosemDateTime.get(Field.DAY_OF_MONTH)).isEqualTo(dayOfMonth);
+    assertThat(cosemDateTime.get(Field.HOUR)).isEqualTo(hour);
+    assertThat(cosemDateTime.get(Field.MINUTE)).isEqualTo(minute);
+    assertThat(cosemDateTime.get(Field.SECOND)).isEqualTo(seconds);
+    assertThat(cosemDateTime.get(Field.HUNDREDTHS)).isZero();
+    assertThat(cosemDateTime.get(Field.DEVIATION)).isEqualTo(expectedDeviation);
   }
 }
