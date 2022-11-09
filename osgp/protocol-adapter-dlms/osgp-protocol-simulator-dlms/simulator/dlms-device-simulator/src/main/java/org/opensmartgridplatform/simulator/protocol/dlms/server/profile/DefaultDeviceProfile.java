@@ -353,7 +353,7 @@ public class DefaultDeviceProfile {
   @Value("${alarmfilter.value}")
   private int alarmFilterValue;
 
-  @Value("default.clock.timezone")
+  @Value("${default.clock.timezone}")
   private String defaultClockTimezone;
 
   @Value("${default.clock.year}")
