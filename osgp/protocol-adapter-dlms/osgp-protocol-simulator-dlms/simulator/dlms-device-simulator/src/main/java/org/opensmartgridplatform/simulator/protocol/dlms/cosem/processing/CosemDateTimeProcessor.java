@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing;
 
+import static org.opensmartgridplatform.simulator.protocol.dlms.util.CosemDateTimeUtil.toCosemDateTime;
+
 import java.util.Calendar;
 import java.util.List;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
@@ -25,17 +27,8 @@ public class CosemDateTimeProcessor implements DataProcessor {
     }
 
     final Calendar cal = (Calendar) data;
-    final CosemDateTime dateTime =
-        new CosemDateTime(
-            cal.get(Calendar.YEAR),
-            cal.get(Calendar.MONTH) + 1,
-            cal.get(Calendar.DAY_OF_MONTH),
-            0xff,
-            cal.get(Calendar.HOUR_OF_DAY),
-            cal.get(Calendar.MINUTE),
-            cal.get(Calendar.SECOND),
-            0,
-            0);
+
+    final CosemDateTime dateTime = toCosemDateTime(cal);
 
     return DataObject.newDateTimeData(dateTime);
   }
