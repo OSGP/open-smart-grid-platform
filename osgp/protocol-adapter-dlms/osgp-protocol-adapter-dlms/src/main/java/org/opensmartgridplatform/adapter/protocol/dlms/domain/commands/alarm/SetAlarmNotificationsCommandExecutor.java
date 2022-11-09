@@ -163,7 +163,7 @@ public class SetAlarmNotificationsCommandExecutor
           this.retrieveCurrentAlarmNotifications(
               conn, alarmFilterAttributeAddress, alarmRegisterDlmsObjectType);
 
-      LOGGER.info(
+      LOGGER.debug(
           "Alarm Filter on device before setting notifications: {}", alarmNotificationsOnDevice);
 
       final Set<AlarmTypeDto> alarmTypesForRegister =
@@ -184,7 +184,7 @@ public class SetAlarmNotificationsCommandExecutor
         return AccessResultCode.SUCCESS;
       }
 
-      LOGGER.info("Modified Alarm Filter long value for device: {}", updatedAlarmFilterLongValue);
+      LOGGER.debug("Modified Alarm Filter long value for device: {}", updatedAlarmFilterLongValue);
 
       return this.writeUpdatedAlarmNotifications(
           conn, updatedAlarmFilterLongValue, alarmFilterAttributeAddress);
@@ -203,7 +203,7 @@ public class SetAlarmNotificationsCommandExecutor
             "SetAlarmNotifications retrieve current value, retrieve attribute: "
                 + JdlmsObjectToStringUtil.describeAttributes(alarmFilterValue));
 
-    LOGGER.info(
+    LOGGER.debug(
         "Retrieving current alarm filter by issuing get request for for address: {}",
         alarmFilterValue);
     final GetResult getResult = conn.getConnection().get(alarmFilterValue);

@@ -136,7 +136,7 @@ public class GetActualMeterReadsCommandExecutor
             "GetActualMeterReads retrieve attributes: "
                 + JdlmsObjectToStringUtil.describeAttributes(ATTRIBUTE_ADDRESSES));
 
-    LOGGER.info("Retrieving actual energy reads");
+    LOGGER.debug("Retrieving actual energy reads");
     final List<GetResult> getResultList =
         this.dlmsHelper.getAndCheck(
             conn, device, "retrieve actual meter reads", ATTRIBUTE_ADDRESSES);

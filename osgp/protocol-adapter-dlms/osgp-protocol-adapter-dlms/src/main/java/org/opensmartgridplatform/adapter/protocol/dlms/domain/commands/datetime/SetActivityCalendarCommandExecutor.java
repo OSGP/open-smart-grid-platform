@@ -122,7 +122,7 @@ public class SetActivityCalendarCommandExecutor
 
     dataObjectExecutors.execute(conn);
 
-    LOGGER.info("Finished setting the passive activity calendar");
+    LOGGER.debug("Finished setting the passive activity calendar");
 
     // Now activate the newly set activity calendar
     // In case of an exception include the activity calendar set here above
@@ -130,7 +130,7 @@ public class SetActivityCalendarCommandExecutor
     try {
       this.setActivityCalendarCommandActivationExecutor.execute(
           conn, device, null, messageMetadata);
-      LOGGER.info("Finished activating the passive to the active activity calendar");
+      LOGGER.debug("Finished activating the passive to the active activity calendar");
 
     } catch (final ProtocolAdapterException e) {
 
@@ -168,7 +168,7 @@ public class SetActivityCalendarCommandExecutor
         DataObject.newArrayData(
             this.configurationMapper.mapAsList(dayProfileSet, DataObject.class));
 
-    LOGGER.info("DayProfileTablePassive to set is: {}", this.dlmsHelper.getDebugInfo(dayArray));
+    LOGGER.debug("DayProfileTablePassive to set is: {}", this.dlmsHelper.getDebugInfo(dayArray));
 
     return new DataObjectAttrExecutor(
         "DAYS",
@@ -199,7 +199,7 @@ public class SetActivityCalendarCommandExecutor
         DataObject.newArrayData(
             this.configurationMapper.mapAsList(weekProfileSet, DataObject.class));
 
-    LOGGER.info("WeekProfileTablePassive to set is: {}", this.dlmsHelper.getDebugInfo(weekArray));
+    LOGGER.debug("WeekProfileTablePassive to set is: {}", this.dlmsHelper.getDebugInfo(weekArray));
 
     return new DataObjectAttrExecutor(
         "WEEKS",
@@ -230,7 +230,7 @@ public class SetActivityCalendarCommandExecutor
         DataObject.newArrayData(
             this.configurationMapper.mapAsList(seasonProfileList, DataObject.class));
 
-    LOGGER.info("SeasonProfilePassive to set is: {}", this.dlmsHelper.getDebugInfo(seasonsArray));
+    LOGGER.debug("SeasonProfilePassive to set is: {}", this.dlmsHelper.getDebugInfo(seasonsArray));
 
     return new DataObjectAttrExecutor(
         "SEASONS",

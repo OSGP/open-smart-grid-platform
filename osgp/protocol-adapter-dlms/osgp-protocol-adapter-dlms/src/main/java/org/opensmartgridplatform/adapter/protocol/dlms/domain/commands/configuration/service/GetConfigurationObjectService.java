@@ -45,7 +45,7 @@ public abstract class GetConfigurationObjectService implements ProtocolService {
   private GetResult getGetResult(
       final DlmsConnectionManager conn, final AttributeAddress attributeAddress)
       throws ProtocolAdapterException {
-    LOGGER.info("Get current ConfigurationObject using AttributeAddress {}", attributeAddress);
+    LOGGER.debug("Get current ConfigurationObject using AttributeAddress {}", attributeAddress);
     try {
       return this.handleBadResults(conn.getConnection().get(attributeAddress));
     } catch (final IOException e) {

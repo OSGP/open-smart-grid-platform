@@ -217,7 +217,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
           "Could not read AMR profile register data. Invalid data type.");
     }
 
-    LOGGER.info(
+    LOGGER.debug(
         "Received amrProfileStatusData {} - {}",
         amrProfileStatusData.toString(),
         amrProfileStatusData.getValue());

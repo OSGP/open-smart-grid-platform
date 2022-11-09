@@ -44,7 +44,7 @@ public class SetActivityCalendarCommandActivationExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    LOGGER.info("ACTIVATING PASSIVE CALENDAR");
+    LOGGER.debug("ACTIVATING PASSIVE CALENDAR");
     final MethodParameter method =
         new MethodParameter(
             CLASS_ID,

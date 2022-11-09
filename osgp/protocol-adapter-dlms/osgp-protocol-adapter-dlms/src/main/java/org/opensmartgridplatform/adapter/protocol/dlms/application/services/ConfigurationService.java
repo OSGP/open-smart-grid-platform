@@ -146,14 +146,14 @@ public class ConfigurationService {
     final SpecialDaysRequestDataDto specialDaysRequestData =
         specialDaysRequest.getSpecialDaysRequestData();
 
-    LOGGER.info(VISUAL_SEPARATOR);
-    LOGGER.info("********** Set Special Days: 0-0:11.0.0.255 **********");
-    LOGGER.info(VISUAL_SEPARATOR);
+    LOGGER.debug(VISUAL_SEPARATOR);
+    LOGGER.debug("********** Set Special Days: 0-0:11.0.0.255 **********");
+    LOGGER.debug(VISUAL_SEPARATOR);
     final List<SpecialDayDto> specialDays = specialDaysRequestData.getSpecialDays();
     for (final SpecialDayDto specialDay : specialDays) {
-      LOGGER.info("Date :{}, dayId : {} ", specialDay.getSpecialDayDate(), specialDay.getDayId());
+      LOGGER.debug("Date :{}, dayId : {} ", specialDay.getSpecialDayDate(), specialDay.getDayId());
     }
-    LOGGER.info(VISUAL_SEPARATOR);
+    LOGGER.debug(VISUAL_SEPARATOR);
 
     final AccessResultCode accessResultCode =
         this.setSpecialDaysCommandExecutor.execute(conn, device, specialDays, messageMetadata);
@@ -182,18 +182,18 @@ public class ConfigurationService {
         configurationObject.getGprsOperationMode();
     final ConfigurationFlagsDto configurationFlags = configurationObject.getConfigurationFlags();
 
-    LOGGER.info(VISUAL_SEPARATOR);
-    LOGGER.info("******** Configuration Object: 0-1:94.31.3.255 *******");
-    LOGGER.info(VISUAL_SEPARATOR);
-    LOGGER.info(
+    LOGGER.debug(VISUAL_SEPARATOR);
+    LOGGER.debug("******** Configuration Object: 0-1:94.31.3.255 *******");
+    LOGGER.debug(VISUAL_SEPARATOR);
+    LOGGER.debug(
         "Operation mode: {}",
         gprsOperationModeType == null ? "not altered by this request" : gprsOperationModeType);
     if (configurationFlags == null) {
-      LOGGER.info("Flags: none enabled or disabled by this request");
+      LOGGER.debug("Flags: none enabled or disabled by this request");
     } else {
-      LOGGER.info("{}", configurationFlags);
+      LOGGER.debug("{}", configurationFlags);
     }
-    LOGGER.info(VISUAL_SEPARATOR);
+    LOGGER.debug(VISUAL_SEPARATOR);
 
     final AccessResultCode accessResultCode =
         this.setConfigurationObjectCommandExecutor.execute(
