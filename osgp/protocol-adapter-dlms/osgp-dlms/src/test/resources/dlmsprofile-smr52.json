@@ -17,7 +17,7 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "pq-profile": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC"
       },
       "attributes": [
         {

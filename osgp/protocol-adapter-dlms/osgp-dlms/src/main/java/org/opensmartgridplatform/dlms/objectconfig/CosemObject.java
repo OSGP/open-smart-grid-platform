@@ -13,6 +13,7 @@ package org.opensmartgridplatform.dlms.objectconfig;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+import java.util.Map;
 import lombok.Data;
 
 @Data
@@ -27,7 +28,7 @@ public class CosemObject {
   public String obis;
   public String group;
   public List<String> meterTypes;
-  public ObjectProperties properties;
+  public Map<ObjectProperty, Object> properties;
   public List<Attribute> attributes;
 
   public Attribute getAttribute(final int id) {
@@ -35,5 +36,12 @@ public class CosemObject {
         .filter(attribute -> attribute.id == id)
         .findFirst()
         .orElseThrow(() -> new IllegalArgumentException("Attribute " + id + " not found"));
+  }
+
+  public Object getProperty(final ObjectProperty objectProperty) {
+    if (this.properties == null) {
+      return null;
+    }
+    return this.properties.getOrDefault(objectProperty, null);
   }
 }

@@ -26,7 +26,7 @@ import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfileValidator;
-import org.opensmartgridplatform.dlms.objectconfig.ObjectProperties;
+import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
 import org.opensmartgridplatform.dlms.objectconfig.ParentProfile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -71,26 +71,30 @@ public class ObjectConfigService {
   public List<CosemObject> getCosemObjectsWithProperties(
       final String protocolName,
       final String protocolVersion,
-      final ObjectProperties wantedProperty)
+      final ObjectProperty wantedProperty,
+      final Object wantedPropertyValue)
       throws ObjectConfigException {
     final Map<DlmsObjectType, CosemObject> cosemObjects =
         this.getCosemObjects(protocolName, protocolVersion);
 
     return cosemObjects.values().stream()
-        .filter(object -> this.hasProperties(object, wantedProperty))
+        .filter(object -> this.hasProperties(object, wantedProperty, wantedPropertyValue))
         .collect(Collectors.toList());
   }
 
-  private boolean hasProperties(final CosemObject object, final ObjectProperties wantedProperty) {
-    if (wantedProperty.getPqProfile() != null) {
-      return object.getProperties().getPqProfile() == null;
+  private boolean hasProperties(
+      final CosemObject object,
+      final ObjectProperty wantedProperty,
+      final Object wantedPropertyValue) {
+    final Object property = object.getProperty(wantedProperty);
+
+    if (property == null) {
+      return false;
+    } else if (wantedPropertyValue != null) {
+      return property.equals(wantedPropertyValue);
     }
 
-    if (wantedProperty.getSelectableObjects() != null) {
-      return object.getProperties().getSelectableObjects() == null;
-    }
-
-    return false;
+    return true;
   }
 
   public Map<DlmsObjectType, CosemObject> getCosemObjects(

@@ -19,6 +19,7 @@ import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.POWER_Q
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -48,10 +49,18 @@ public class DlmsProfileValidator {
   private static List<String> validateProfile(final DlmsProfile dlmsProfile) {
     final List<String> validationErrors = new ArrayList<>();
 
-    allRegistersShouldHaveAUnit(dlmsProfile, validationErrors);
-    allPQProfilesShouldHaveSelectableObjects(dlmsProfile, validationErrors);
+    try {
+      allRegistersShouldHaveAUnit(dlmsProfile, validationErrors);
+      allPQProfilesShouldHaveSelectableObjects(dlmsProfile, validationErrors);
 
-    return validationErrors;
+      return validationErrors;
+    } catch (final Exception e) {
+      return Collections.singletonList(
+          "Exception while validating DlmsProfile "
+              + dlmsProfile.getProfileWithVersion()
+              + ": "
+              + e.getMessage());
+    }
   }
 
   private static void allRegistersShouldHaveAUnit(
@@ -104,15 +113,15 @@ public class DlmsProfileValidator {
 
   private static String pqProfileShouldHaveSelectableObjects(
       final CosemObject object, final DlmsProfile dlmsProfile) {
-    final ObjectProperties properties = object.getProperties();
+    final Object property = object.getProperty(ObjectProperty.SELECTABLE_OBJECTS);
 
-    if (properties == null
-        || properties.getSelectableObjects() == null
-        || properties.getSelectableObjects().isEmpty()) {
+    final List<String> selectableObjects = (List<String>) property;
+
+    if (selectableObjects == null || selectableObjects.isEmpty()) {
       return "PQ Profile " + object.getTag() + " has no selectable objects";
     }
 
-    return properties.getSelectableObjects().stream()
+    return selectableObjects.stream()
         .map(tag -> selectableObjectShouldHavePQProfileDefined(tag, dlmsProfile))
         .collect(Collectors.joining(""));
   }
@@ -134,8 +143,8 @@ public class DlmsProfileValidator {
 
     final CosemObject selectableObject = optionalCosemObject.get();
 
-    if (selectableObject.getProperties() == null
-        || selectableObject.getProperties().getPqProfile() == null) {
+    final String pqProfile = (String) selectableObject.getProperty(ObjectProperty.PQ_PROFILE);
+    if (pqProfile == null) {
       return tagForSelectableObject + " doesn't contain PQ Profile";
     }
 
