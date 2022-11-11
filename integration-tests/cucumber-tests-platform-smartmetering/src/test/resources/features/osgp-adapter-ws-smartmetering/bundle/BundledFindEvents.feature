@@ -1,4 +1,4 @@
-@SmartMetering @Platform @Do
+@SmartMetering @Platform
 Feature: SmartMetering Bundle - FindEvents
   As a grid operator 
   I want to retrieve the events from a meter via a bundle request
