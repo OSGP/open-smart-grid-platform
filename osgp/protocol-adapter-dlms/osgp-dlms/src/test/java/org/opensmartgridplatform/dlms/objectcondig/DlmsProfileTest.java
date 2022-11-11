@@ -40,6 +40,6 @@ class DlmsProfileTest {
             new ClassPathResource("/dlmsprofile-smr50.json").getFile(), DlmsProfile.class);
 
     assertNotNull(dlmsProfile);
-    assertThat(dlmsProfile.objects).hasSize(13);
+    assertThat(dlmsProfile.getObjects()).hasSize(13);
   }
 }

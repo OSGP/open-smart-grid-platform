@@ -17,6 +17,6 @@ import lombok.ToString;
 @Data
 @ToString
 public class ParentProfile {
-  public String profile;
-  public String version;
+  private String profile;
+  private String version;
 }

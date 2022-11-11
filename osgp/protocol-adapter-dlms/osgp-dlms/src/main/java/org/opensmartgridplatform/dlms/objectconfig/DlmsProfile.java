@@ -21,15 +21,15 @@ import lombok.ToString;
 @Data
 @ToString
 public class DlmsProfile {
-  public String profile;
-  public String version;
-  public String description;
+  private String profile;
+  private String version;
+  private String description;
 
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  public ParentProfile inherit;
+  private ParentProfile inherit;
 
-  public List<ProfileProperty> properties;
-  public List<CosemObject> objects;
+  private List<ProfileProperty> properties;
+  private List<CosemObject> objects;
 
   public Map<DlmsObjectType, CosemObject> objectMap;
 

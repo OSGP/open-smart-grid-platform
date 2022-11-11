@@ -15,10 +15,10 @@ import lombok.Data;
 
 @Data
 public class Attribute {
-  public int id;
-  public String description;
-  public String datatype;
-  public ValueType valuetype;
-  public String value;
-  public String access;
+  private int id;
+  private String description;
+  private String datatype;
+  private ValueType valuetype;
+  private String value;
+  private String access;
 }

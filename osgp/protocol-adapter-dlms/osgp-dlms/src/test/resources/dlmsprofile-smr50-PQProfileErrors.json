@@ -48,7 +48,12 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "SELECTABLE_OBJECTS": "test"
+        "SELECTABLE_OBJECTS": [
+          "CLOCK",
+          "NUMBER_OF_VOLTAGE_SAGS_L1",
+          "NUMBER_OF_VOLTAGE_SAGS_L2",
+          "NUMBER_OF_VOLTAGE_SAGS_L3"
+        ]
       },
       "attributes": [
         {

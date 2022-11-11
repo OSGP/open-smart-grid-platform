@@ -14,7 +14,6 @@ package org.opensmartgridplatform.dlms.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -68,7 +67,7 @@ public class ObjectConfigService {
     }
   }
 
-  public List<CosemObject> getCosemObjectsWithProperties(
+  public List<CosemObject> getCosemObjectsWithProperty(
       final String protocolName,
       final String protocolVersion,
       final ObjectProperty wantedProperty,
@@ -78,11 +77,30 @@ public class ObjectConfigService {
         this.getCosemObjects(protocolName, protocolVersion);
 
     return cosemObjects.values().stream()
-        .filter(object -> this.hasProperties(object, wantedProperty, wantedPropertyValue))
+        .filter(object -> this.hasProperty(object, wantedProperty, wantedPropertyValue))
         .collect(Collectors.toList());
   }
 
-  private boolean hasProperties(
+  public Map<DlmsObjectType, CosemObject> getCosemObjects(
+      final String protocolName, final String protocolVersion) throws ObjectConfigException {
+
+    if (this.dlmsProfiles == null || this.dlmsProfiles.isEmpty()) {
+      throw new ObjectConfigException("No DLMS Profile available");
+    }
+
+    final Optional<DlmsProfile> dlmsProfile =
+        this.dlmsProfiles.stream()
+            .filter(profile -> protocolVersion.equalsIgnoreCase(profile.getVersion()))
+            .filter(profile -> protocolName.equalsIgnoreCase(profile.getProfile()))
+            .findAny();
+    if (!dlmsProfile.isPresent()) {
+      throw new ObjectConfigException(
+          "DLMS Profile for " + protocolName + " " + protocolVersion + " is not available");
+    }
+    return dlmsProfile.get().getObjectMap();
+  }
+
+  private boolean hasProperty(
       final CosemObject object,
       final ObjectProperty wantedProperty,
       final Object wantedPropertyValue) {
@@ -95,24 +113,6 @@ public class ObjectConfigService {
     }
 
     return true;
-  }
-
-  public Map<DlmsObjectType, CosemObject> getCosemObjects(
-      final String protocolName, final String protocolVersion) throws ObjectConfigException {
-
-    if (this.dlmsProfiles == null || this.dlmsProfiles.isEmpty()) {
-      throw new ObjectConfigException("No DLMS Profile available");
-    }
-
-    final Optional<DlmsProfile> dlmsProfile =
-        this.dlmsProfiles.stream()
-            .filter(profile -> protocolVersion.equalsIgnoreCase(profile.version))
-            .filter(profile -> protocolName.equalsIgnoreCase(profile.profile))
-            .findAny();
-    if (!dlmsProfile.isPresent()) {
-      return new EnumMap<>(DlmsObjectType.class);
-    }
-    return dlmsProfile.get().getObjectMap();
   }
 
   private List<DlmsProfile> getDlmsProfileListFromResources() throws IOException {
@@ -153,8 +153,8 @@ public class ObjectConfigService {
     if (parentProfile != null) {
       final Optional<DlmsProfile> parentDlmsProfile =
           this.dlmsProfiles.stream()
-              .filter(profile -> parentProfile.getVersion().equalsIgnoreCase(profile.version))
-              .filter(profile -> parentProfile.getProfile().equalsIgnoreCase(profile.profile))
+              .filter(profile -> parentProfile.getVersion().equalsIgnoreCase(profile.getVersion()))
+              .filter(profile -> parentProfile.getProfile().equalsIgnoreCase(profile.getProfile()))
               .findAny();
 
       if (parentDlmsProfile.isPresent()) {

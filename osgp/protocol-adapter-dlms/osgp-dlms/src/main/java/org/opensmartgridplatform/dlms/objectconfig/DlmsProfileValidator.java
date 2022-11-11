@@ -67,7 +67,7 @@ public class DlmsProfileValidator {
       final DlmsProfile dlmsProfile, final List<String> validationErrors) {
     final List<CosemObject> registersWithoutUnit =
         dlmsProfile.getObjects().stream()
-            .filter(object -> object.classId == InterfaceClass.REGISTER.id())
+            .filter(object -> object.getClassId() == InterfaceClass.REGISTER.id())
             .filter(object -> !registerHasScalerUnit(object))
             .collect(Collectors.toList());
 
@@ -83,8 +83,8 @@ public class DlmsProfileValidator {
   }
 
   private static boolean registerHasScalerUnit(final CosemObject object) {
-    return object.attributes.stream()
-        .anyMatch(attribute -> attribute.id == RegisterAttribute.SCALER_UNIT.attributeId());
+    return object.getAttributes().stream()
+        .anyMatch(attribute -> attribute.getId() == RegisterAttribute.SCALER_UNIT.attributeId());
   }
 
   private static void allPQProfilesShouldHaveSelectableObjects(

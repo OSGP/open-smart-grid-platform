@@ -15,7 +15,6 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -29,6 +28,7 @@ import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
+import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
 import org.springframework.core.io.ClassPathResource;
 
 @Slf4j
@@ -72,11 +72,12 @@ class ObjectConfigServiceTest {
   }
 
   @Test
-  void testNoCosemObjectsFound() throws ObjectConfigException {
-    final Map<DlmsObjectType, CosemObject> cosemObjects =
-        this.objectConfigService.getCosemObjects("ABC", "12");
-
-    assertTrue(cosemObjects.isEmpty());
+  void testDlmsProfileNotFound() {
+    assertThrows(
+        ObjectConfigException.class,
+        () -> {
+          this.objectConfigService.getCosemObjects("ABC", "12");
+        });
   }
 
   @Test
@@ -97,6 +98,33 @@ class ObjectConfigServiceTest {
 
     assertNotNull(cosemObject);
     assertThat(cosemObject.getTag()).isEqualTo(DlmsObjectType.AVERAGE_VOLTAGE_L1.value());
+  }
+
+  @Test
+  void testGetCosemObjectsWithProperty() throws ObjectConfigException {
+    final String protocolName = "SMR";
+    final String protocolVersion50 = "5.0";
+
+    final List<CosemObject> cosemObjectsWithSelectableObjects =
+        this.objectConfigService.getCosemObjectsWithProperty(
+            protocolName, protocolVersion50, ObjectProperty.SELECTABLE_OBJECTS, null);
+
+    assertNotNull(cosemObjectsWithSelectableObjects);
+    assertThat(cosemObjectsWithSelectableObjects).hasSize(3);
+
+    final List<CosemObject> cosemObjectsWithPqProfile =
+        this.objectConfigService.getCosemObjectsWithProperty(
+            protocolName, protocolVersion50, ObjectProperty.PQ_PROFILE, null);
+
+    assertNotNull(cosemObjectsWithPqProfile);
+    assertThat(cosemObjectsWithPqProfile).hasSize(9);
+
+    final List<CosemObject> cosemObjectsWithPqProfileWithWrongValue =
+        this.objectConfigService.getCosemObjectsWithProperty(
+            protocolName, protocolVersion50, ObjectProperty.PQ_PROFILE, "INVALID");
+
+    assertNotNull(cosemObjectsWithPqProfileWithWrongValue);
+    assertThat(cosemObjectsWithPqProfileWithWrongValue).isEmpty();
   }
 
   private List<DlmsProfile> getDlmsProfileList() throws IOException {

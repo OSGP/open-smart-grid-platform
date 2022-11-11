@@ -18,22 +18,22 @@ import lombok.Data;
 
 @Data
 public class CosemObject {
-  public String tag;
-  public String description;
+  private String tag;
+  private String description;
 
   @JsonProperty("class-id")
-  public int classId;
+  private int classId;
 
-  public int version;
-  public String obis;
-  public String group;
-  public List<String> meterTypes;
-  public Map<ObjectProperty, Object> properties;
-  public List<Attribute> attributes;
+  private int version;
+  private String obis;
+  private String group;
+  private List<String> meterTypes;
+  private Map<ObjectProperty, Object> properties;
+  private List<Attribute> attributes;
 
   public Attribute getAttribute(final int id) {
     return this.attributes.stream()
-        .filter(attribute -> attribute.id == id)
+        .filter(attribute -> attribute.getId() == id)
         .findFirst()
         .orElseThrow(() -> new IllegalArgumentException("Attribute " + id + " not found"));
   }

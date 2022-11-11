@@ -11,11 +11,7 @@
 
 package org.opensmartgridplatform.dlms.objectconfig;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ProfileProperty {
-  @JsonProperty("firmware update type")
-  public String firmwareUpdateType;
-}
+public class ProfileProperty {}
