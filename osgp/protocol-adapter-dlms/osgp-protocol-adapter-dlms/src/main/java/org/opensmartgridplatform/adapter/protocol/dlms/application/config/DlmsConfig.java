@@ -17,6 +17,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,6 +35,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Lls1Conn
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsChannelHandlerServer;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsPushNotificationDecoder;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.infra.networking.DisposableNioEventLoopGroup;
 import org.slf4j.Logger;
@@ -193,5 +196,14 @@ public class DlmsConfig extends AbstractConfig {
   public ScheduledExecutorService scheduledExecutorService(
       @Value("${executor.scheduled.poolsize}") final int poolsize) {
     return Executors.newScheduledThreadPool(poolsize);
+  }
+
+  @Bean
+  public ObjectConfigService objectConfigService() {
+    try {
+      return new ObjectConfigService(null);
+    } catch (final ObjectConfigException | IOException e) {
+      throw new IllegalStateException("Could not load object config", e);
+    }
   }
 }
