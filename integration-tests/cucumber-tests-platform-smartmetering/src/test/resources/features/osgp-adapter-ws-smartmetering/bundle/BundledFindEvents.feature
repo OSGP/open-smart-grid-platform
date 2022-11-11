@@ -24,8 +24,8 @@ Feature: SmartMetering Bundle - FindEvents
     And the bundle request contains a find events action with parameters
       | DeviceIdentification | TEST1024000000001        |
       | EventLogCategory     | STANDARD_EVENT_LOG       |
-      | FromDate             | 2015-09-01T00:00:00.000Z |
-      | UntilDate            | 2015-09-05T00:00:00.000Z |
+      | FromDate             | 2015-09-01T00:00:00 |
+      | UntilDate            | 2015-09-05T00:00:00 |
     When the bundle request is received
     Then the bundle response should contain a find events response with 21 events
 
@@ -43,38 +43,38 @@ Feature: SmartMetering Bundle - FindEvents
     And the bundle request contains a find events action with parameters
       | DeviceIdentification | TEST1029000000001        |
       | EventLogCategory     | STANDARD_EVENT_LOG       |
-      | FromDate             | 2015-09-01T00:00:00.000Z |
-      | UntilDate            | 2015-09-05T00:00:00.000Z |
+      | FromDate             | 2015-09-01T00:00:00 |
+      | UntilDate            | 2015-09-05T00:00:00 |
     And the bundle request contains a find events action with parameters
       | DeviceIdentification | TEST1029000000001        |
       | EventLogCategory     | FRAUD_DETECTION_LOG      |
-      | FromDate             | 2015-09-01T00:00:00.000Z |
-      | UntilDate            | 2015-09-05T00:00:00.000Z |
+      | FromDate             | 2015-09-01T00:00:00 |
+      | UntilDate            | 2015-09-05T00:00:00 |
     And the bundle request contains a find events action with parameters
       | DeviceIdentification | TEST1029000000001         |
       | EventLogCategory     | COMMUNICATION_SESSION_LOG |
-      | FromDate             | 2015-09-01T00:00:00.000Z  |
-      | UntilDate            | 2016-09-05T00:00:00.000Z  |
+      | FromDate             | 2015-09-01T00:00:00  |
+      | UntilDate            | 2016-09-05T00:00:00  |
     And the bundle request contains a find events action with parameters
       | DeviceIdentification | TEST1029000000001        |
       | EventLogCategory     | M_BUS_EVENT_LOG          |
-      | FromDate             | 2015-09-01T00:00:00.000Z |
-      | UntilDate            | 2015-09-05T00:00:00.000Z |
+      | FromDate             | 2015-09-01T00:00:00 |
+      | UntilDate            | 2015-09-05T00:00:00 |
     And the bundle request contains a find events action with parameters
       | DeviceIdentification | TEST1029000000001        |
       | EventLogCategory     | POWER_QUALITY_EVENT_LOG  |
-      | FromDate             | 2015-09-01T00:00:00.000Z |
-      | UntilDate            | 2015-09-05T00:00:00.000Z |
+      | FromDate             | 2015-09-01T00:00:00 |
+      | UntilDate            | 2015-09-05T00:00:00 |
     And the bundle request contains a find events action with parameters
       | DeviceIdentification | TEST1029000000001        |
       | EventLogCategory     | AUXILIARY_EVENT_LOG      |
-      | FromDate             | 2015-09-01T00:00:00.000Z |
-      | UntilDate            | 2016-09-05T00:00:00.000Z |
+      | FromDate             | 2015-09-01T00:00:00 |
+      | UntilDate            | 2016-09-05T00:00:00 |
     And the bundle request contains a find events action with parameters
       | DeviceIdentification | TEST1029000000001                |
       | EventLogCategory     | POWER_QUALITY_EXTENDED_EVENT_LOG |
-      | FromDate             | 2015-09-01T00:00:00.000Z         |
-      | UntilDate            | 2015-09-05T00:00:00.000Z         |
+      | FromDate             | 2015-09-01T00:00:00         |
+      | UntilDate            | 2015-09-05T00:00:00         |
     When the bundle request is received
     Then the bundle response should contain a find events response with 21 events
     And the bundle response should contain a find events response with 9 events
