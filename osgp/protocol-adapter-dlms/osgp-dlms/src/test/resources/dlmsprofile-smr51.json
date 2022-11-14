@@ -16,7 +16,7 @@
         {
           "id": 2,
           "description": "time",
-          "datatype": "OCTET_STRING",
+          "datatype": "octet-string",
           "valuetype": "DYNAMIC",
           "value": "CURRENT_LOCAL_DATE_AND_TIME",
           "access": "RW"
@@ -24,7 +24,7 @@
         {
           "id": 3,
           "description": "time_zone",
-          "datatype": "LONG",
+          "datatype": "long",
           "valuetype": "FIXED_IN_PROFILE",
           "value": "-60",
           "access": "RW"
@@ -32,7 +32,7 @@
         {
           "id": 4,
           "description": "status",
-          "datatype": "CLOCK_STATUS",
+          "datatype": "clock_status",
           "valuetype": "DYNAMIC",
           "value": "OK",
           "access": "R"
@@ -59,7 +59,7 @@
         {
           "id": 2,
           "description": "buffer",
-          "datatype": "ARRAY",
+          "datatype": "array",
           "valuetype": "DYNAMIC",
           "value": "EMPTY",
           "access": "R"
@@ -67,7 +67,7 @@
         {
           "id": 3,
           "description": "capture objects",
-          "datatype": "ARRAY",
+          "datatype": "array",
           "valuetype": "SET_BY_CLIENT",
           "value": "EMPTY",
           "access": "RW"
@@ -75,7 +75,7 @@
         {
           "id": 4,
           "description": "capture period in sec",
-          "datatype": "DOUBLE_LONG_UNSIGNED",
+          "datatype": "double-long-unsigned",
           "valuetype": "SET_BY_CLIENT",
           "value": "86400",
           "access": "RW"
@@ -83,7 +83,7 @@
         {
           "id": 5,
           "description": "sort method",
-          "datatype": "ENUM",
+          "datatype": "enum",
           "valuetype": "FIXED_IN_METER",
           "value": "1",
           "access": "R"
@@ -91,7 +91,7 @@
         {
           "id": 6,
           "description": "sort object",
-          "datatype": "OBJECT_DEFINITION",
+          "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
           "value": "NONE",
           "access": "R"
@@ -99,7 +99,7 @@
         {
           "id": 7,
           "description": "entries in use",
-          "datatype": "DOUBLE_LONG_UNSIGNED",
+          "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
           "value": "0",
           "access": "R"
@@ -107,7 +107,7 @@
         {
           "id": 8,
           "description": "profile entries",
-          "datatype": "DOUBLE_LONG_UNSIGNED",
+          "datatype": "double-long-unsigned",
           "valuetype": "SET_BY_CLIENT",
           "value": "960",
           "access": "RW"
@@ -134,7 +134,7 @@
         {
           "id": 2,
           "description": "buffer",
-          "datatype": "ARRAY",
+          "datatype": "array",
           "valuetype": "DYNAMIC",
           "value": "EMPTY",
           "access": "R"
@@ -142,7 +142,7 @@
         {
           "id": 3,
           "description": "capture objects",
-          "datatype": "ARRAY",
+          "datatype": "array",
           "valuetype": "SET_BY_CLIENT",
           "value": "EMPTY",
           "access": "RW"
@@ -150,7 +150,7 @@
         {
           "id": 4,
           "description": "capture period in sec",
-          "datatype": "DOUBLE_LONG_UNSIGNED",
+          "datatype": "double-long-unsigned",
           "valuetype": "FIXED_IN_PROFILE",
           "value": "900",
           "access": "R"
@@ -158,7 +158,7 @@
         {
           "id": 5,
           "description": "sort method",
-          "datatype": "ENUM",
+          "datatype": "enum",
           "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
@@ -166,7 +166,7 @@
         {
           "id": 6,
           "description": "sort object",
-          "datatype": "OBJECT_DEFINITION",
+          "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
           "value": "NONE",
           "access": "R"
@@ -174,7 +174,7 @@
         {
           "id": 7,
           "description": "entries in use",
-          "datatype": "DOUBLE_LONG_UNSIGNED",
+          "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
           "value": "0",
           "access": "R"
@@ -182,7 +182,7 @@
         {
           "id": 8,
           "description": "profile entries",
-          "datatype": "DOUBLE_LONG_UNSIGNED",
+          "datatype": "double-long-unsigned",
           "valuetype": "FIXED_IN_PROFILE",
           "value": "960",
           "access": "R"
@@ -209,7 +209,7 @@
         {
           "id": 2,
           "description": "buffer",
-          "datatype": "ARRAY",
+          "datatype": "array",
           "valuetype": "DYNAMIC",
           "value": "EMPTY",
           "access": "R"
@@ -217,7 +217,7 @@
         {
           "id": 3,
           "description": "capture objects",
-          "datatype": "ARRAY",
+          "datatype": "array",
           "valuetype": "SET_BY_CLIENT",
           "value": "EMPTY",
           "access": "RW"
@@ -225,7 +225,7 @@
         {
           "id": 4,
           "description": "capture period in sec",
-          "datatype": "DOUBLE_LONG_UNSIGNED",
+          "datatype": "double-long-unsigned",
           "valuetype": "FIXED_IN_PROFILE",
           "value": "600",
           "access": "R"
@@ -233,7 +233,7 @@
         {
           "id": 5,
           "description": "sort method",
-          "datatype": "ENUM",
+          "datatype": "enum",
           "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
@@ -241,7 +241,7 @@
         {
           "id": 6,
           "description": "sort object",
-          "datatype": "OBJECT_DEFINITION",
+          "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
           "value": "NONE",
           "access": "R"
@@ -249,7 +249,7 @@
         {
           "id": 7,
           "description": "entries in use",
-          "datatype": "DOUBLE_LONG_UNSIGNED",
+          "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
           "value": "0",
           "access": "R"
@@ -257,7 +257,7 @@
         {
           "id": 8,
           "description": "profile entries",
-          "datatype": "DOUBLE_LONG_UNSIGNED",
+          "datatype": "double-long-unsigned",
           "valuetype": "FIXED_IN_PROFILE",
           "value": "1440",
           "access": "R"
@@ -279,7 +279,7 @@
         {
           "id": 2,
           "description": "value",
-          "datatype": "LONG_UNSIGNED",
+          "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
           "value": "0",
           "access": "R"
@@ -287,7 +287,7 @@
         {
           "id": 3,
           "description": "scaler_unit",
-          "datatype": "SCAL_UNIT_TYPE",
+          "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
           "value": "0, W",
           "access": "R"
@@ -309,7 +309,7 @@
         {
           "id": 2,
           "description": "value",
-          "datatype": "LONG_UNSIGNED",
+          "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
           "value": "0",
           "access": "R"
@@ -317,7 +317,7 @@
         {
           "id": 3,
           "description": "scaler_unit",
-          "datatype": "SCAL_UNIT_TYPE",
+          "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
           "value": "0, W",
           "access": "R"
@@ -339,7 +339,7 @@
         {
           "id": 2,
           "description": "value",
-          "datatype": "LONG_UNSIGNED",
+          "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
           "value": "0",
           "access": "R"
@@ -347,7 +347,7 @@
         {
           "id": 3,
           "description": "scaler_unit",
-          "datatype": "SCAL_UNIT_TYPE",
+          "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
           "value": "0, W",
           "access": "R"
@@ -369,7 +369,7 @@
         {
           "id": 2,
           "description": "value",
-          "datatype": "LONG_UNSIGNED",
+          "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
           "value": "0",
           "access": "R"
@@ -377,7 +377,7 @@
         {
           "id": 3,
           "description": "scaler_unit",
-          "datatype": "SCAL_UNIT_TYPE",
+          "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
           "value": "-1, V",
           "access": "R"
@@ -399,7 +399,7 @@
         {
           "id": 2,
           "description": "value",
-          "datatype": "LONG_UNSIGNED",
+          "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
           "value": "0",
           "access": "R"
@@ -407,7 +407,7 @@
         {
           "id": 3,
           "description": "scaler_unit",
-          "datatype": "SCAL_UNIT_TYPE",
+          "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
           "value": "-1, V",
           "access": "R"
@@ -429,7 +429,7 @@
         {
           "id": 2,
           "description": "value",
-          "datatype": "LONG_UNSIGNED",
+          "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
           "value": "0",
           "access": "R"
@@ -437,7 +437,7 @@
         {
           "id": 3,
           "description": "scaler_unit",
-          "datatype": "SCAL_UNIT_TYPE",
+          "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
           "value": "-1, V",
           "access": "R"
@@ -459,7 +459,7 @@
         {
           "id": 2,
           "description": "value",
-          "datatype": "LONG_UNSIGNED",
+          "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
           "value": "0",
           "access": "R"
@@ -481,7 +481,7 @@
         {
           "id": 2,
           "description": "value",
-          "datatype": "LONG_UNSIGNED",
+          "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
           "value": "0",
           "access": "R"
@@ -503,7 +503,7 @@
         {
           "id": 2,
           "description": "value",
-          "datatype": "LONG_UNSIGNED",
+          "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
           "value": "0",
           "access": "R"
@@ -525,7 +525,7 @@
         {
           "id": 2,
           "description": "value",
-          "datatype": "LONG_UNSIGNED",
+          "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
           "value": "0",
           "access": "R"
