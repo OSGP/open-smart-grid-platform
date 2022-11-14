@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum DlmsDataType {
   // Common DLMS data types, defined in Green Book
-  @JsonProperty("null_data")
+  @JsonProperty("null-data")
   NULL_DATA,
   @JsonProperty("array")
   ARRAY,
