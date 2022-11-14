@@ -23,7 +23,7 @@
         {
           "id": 2,
           "description": "value",
-          "datatype": "long-unsigned",
+          "datatype": "LONG_UNSIGNED",
           "valuetype": "DYNAMIC",
           "value": "0",
           "access": "R"

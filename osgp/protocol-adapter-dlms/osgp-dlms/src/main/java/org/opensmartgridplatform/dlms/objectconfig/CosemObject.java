@@ -27,7 +27,7 @@ public class CosemObject {
   private int version;
   private String obis;
   private String group;
-  private List<String> meterTypes;
+  private List<MeterType> meterTypes;
   private Map<ObjectProperty, Object> properties;
   private List<Attribute> attributes;
 
