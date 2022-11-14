@@ -11,17 +11,14 @@
 
 package org.opensmartgridplatform.dlms.exceptions;
 
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-
-public class ObjectConfigException extends OsgpException {
+public class ObjectConfigException extends Exception {
   private static final long serialVersionUID = -4298521754920856706L;
 
   public ObjectConfigException(final String message) {
-    super(ComponentType.PROTOCOL_DLMS, message);
+    super(message);
   }
 
   public ObjectConfigException(final String message, final Throwable throwable) {
-    super(ComponentType.PROTOCOL_DLMS, message, throwable);
+    super(message, throwable);
   }
 }
