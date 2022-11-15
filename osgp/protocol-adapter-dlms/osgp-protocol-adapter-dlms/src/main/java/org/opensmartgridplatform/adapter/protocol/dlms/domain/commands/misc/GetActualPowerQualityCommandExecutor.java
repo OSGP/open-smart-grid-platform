@@ -10,6 +10,9 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -30,8 +33,10 @@ import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.MeterType;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
 import org.opensmartgridplatform.dlms.objectconfig.PowerQualityProfile;
+import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityRequestDto;
@@ -191,11 +196,23 @@ public class GetActualPowerQualityCommandExecutor
       throws ProtocolAdapterException {
 
     try {
-      return this.objectConfigService.getCosemObjectsWithProperty(
-          device.getProtocolName(),
-          device.getProtocolVersion(),
-          ObjectProperty.PQ_PROFILE,
-          profile.name());
+      // Create map with the required properties and values
+      final EnumMap<ObjectProperty, List<Object>> pqProperties =
+          new EnumMap<>(ObjectProperty.class);
+      pqProperties.put(ObjectProperty.PQ_PROFILE, Collections.singletonList(profile.name()));
+      pqProperties.put(
+          ObjectProperty.PQ_REQUEST,
+          Arrays.asList(PowerQualityRequest.ONDEMAND.name(), PowerQualityRequest.BOTH.name()));
+
+      // Get matching objects from config
+      final List<CosemObject> cosemObjectsForProfile =
+          this.objectConfigService.getCosemObjectsWithProperties(
+              device.getProtocolName(), device.getProtocolVersion(), pqProperties);
+
+      // Filter for single phase / poly phase
+      return cosemObjectsForProfile.stream()
+          .filter(object -> device.isPolyphase() || object.getMeterTypes().contains(MeterType.SP))
+          .collect(Collectors.toList());
     } catch (final ObjectConfigException e) {
       throw new ProtocolAdapterException("Error in object config", e);
     }
