@@ -126,12 +126,13 @@ public class GetActualPowerQualityCommandExecutor
       } else if (pqObject.getClassId() == CLASS_ID_REGISTER) {
 
         final GetResult resultValue = resultList.get(idx++);
-        final GetResult resultScalerUnit =
-            resultList.get(idx++); // TODO: get scaler_unit from pqObject
+
+        final String scalerUnit =
+            pqObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId()).getValue();
 
         final DlmsMeterValueDto meterValue =
             this.dlmsHelper.getScaledMeterValue(
-                resultValue, resultScalerUnit, "Actual Power Quality - " + pqObject.getObis());
+                resultValue, scalerUnit, "Actual Power Quality - " + pqObject.getObis());
 
         final BigDecimal value = meterValue != null ? meterValue.getValue() : null;
         final String unit = meterValue != null ? meterValue.getDlmsUnit().getUnit() : null;

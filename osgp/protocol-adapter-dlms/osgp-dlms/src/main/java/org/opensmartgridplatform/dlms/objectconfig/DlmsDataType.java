@@ -41,6 +41,8 @@ public enum DlmsDataType {
   INTEGER,
   @JsonProperty("long")
   LONG,
+  @JsonProperty("unsigned")
+  UNSIGNED,
   @JsonProperty("long-unsigned")
   LONG_UNSIGNED,
   @JsonProperty("compact-array")

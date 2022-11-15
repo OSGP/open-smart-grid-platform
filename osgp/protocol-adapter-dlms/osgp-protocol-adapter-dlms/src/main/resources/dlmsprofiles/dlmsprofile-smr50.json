@@ -1,7 +1,7 @@
 {
   "profile": "SMR",
-  "version": "5.0.0",
-  "description": "Profile for Smart Meter Requirements 5.0 - adapter",
+  "version": "5.0",
+  "description": "Profile for Smart Meter Requirements 5.0",
   "properties": [],
   "objects": [
     {
@@ -1484,7 +1484,7 @@
         {
           "id": 8,
           "description": "capture time",
-          "datatype": "date_time",
+          "datatype": "date-time",
           "valuetype": "DYNAMIC",
           "value": "EMPTY",
           "access": "R"
@@ -1554,7 +1554,7 @@
         {
           "id": 8,
           "description": "capture time",
-          "datatype": "date_time",
+          "datatype": "date-time",
           "valuetype": "DYNAMIC",
           "value": "EMPTY",
           "access": "R"

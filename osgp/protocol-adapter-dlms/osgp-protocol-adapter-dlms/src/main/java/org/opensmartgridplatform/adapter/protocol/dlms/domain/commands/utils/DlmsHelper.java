@@ -272,15 +272,33 @@ public class DlmsHelper {
     return this.getScaledMeterValue(value.getResultData(), scalerUnit.getResultData(), description);
   }
 
+  /**
+   * create a dlms meter value, apply the specified scaler and unit.
+   *
+   * @param scalerUnit specifies the scaler and the unit in a String, formatted as "0, W"
+   * @return the meter value with dlms unit or null when {@link #readLong(GetResult, String)} is
+   *     null
+   */
+  public DlmsMeterValueDto getScaledMeterValue(
+      final GetResult value, final String scalerUnit, final String description)
+      throws ProtocolAdapterException {
+    final String[] scalerUnitParts = scalerUnit.split(",");
+    if (scalerUnitParts.length != 2) {
+      throw new ProtocolAdapterException("Invalid scaler unit: " + scalerUnit);
+    }
+
+    final int scaler = Integer.parseInt(scalerUnitParts[0]);
+    final DlmsUnitTypeDto unit = DlmsUnitTypeDto.getUnitType(scalerUnitParts[1].trim());
+
+    return this.createDlmsMeterValueBasedOnValueAndScalerAndUnit(
+        value.getResultData(), scaler, unit, description);
+  }
+
   public DlmsMeterValueDto getScaledMeterValue(
       final DataObject value, final DataObject scalerUnitObject, final String description)
       throws ProtocolAdapterException {
-    LOGGER.debug(this.getDebugInfo(value));
+
     LOGGER.debug(this.getDebugInfo(scalerUnitObject));
-    final Long rawValue = this.readLong(value, description);
-    if (rawValue == null) {
-      return null;
-    }
 
     if (!scalerUnitObject.isComplex()) {
       throw new ProtocolAdapterException(
@@ -297,6 +315,23 @@ public class DlmsHelper {
     final DlmsUnitTypeDto unit =
         DlmsUnitTypeDto.getUnitType(
             this.readLongNotNull(dataObjects.get(1), description).intValue());
+
+    return this.createDlmsMeterValueBasedOnValueAndScalerAndUnit(value, scaler, unit, description);
+  }
+
+  private DlmsMeterValueDto createDlmsMeterValueBasedOnValueAndScalerAndUnit(
+      final DataObject value,
+      final int scaler,
+      final DlmsUnitTypeDto unit,
+      final String description)
+      throws ProtocolAdapterException {
+
+    LOGGER.debug(this.getDebugInfo(value));
+
+    final Long rawValue = this.readLong(value, description);
+    if (rawValue == null) {
+      return null;
+    }
 
     // determine value
     BigDecimal scaledValue = BigDecimal.valueOf(rawValue);
