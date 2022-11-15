@@ -1,0 +1,34 @@
+{
+  "profile": "SMR",
+  "version": "5.2",
+  "description": "Profile for Smart Meter Requirements 5.2",
+  "inherit": {
+    "profile": "SMR",
+    "version": "5.1"
+  },
+  "properties": [],
+  "objects": [
+    {
+      "tag": "NUMBER_OF_LONG_POWER_FAILURES",
+      "description": "Number of long power failures in any phases",
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.96.7.9.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {
+        "PQ_PROFILE": "PUBLIC"
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        }
+      ]
+    }
+  ]
+}
