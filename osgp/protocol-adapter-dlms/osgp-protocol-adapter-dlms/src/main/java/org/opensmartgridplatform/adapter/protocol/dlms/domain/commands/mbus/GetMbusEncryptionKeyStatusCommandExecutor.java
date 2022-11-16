@@ -78,7 +78,7 @@ public class GetMbusEncryptionKeyStatusCommandExecutor
             "GetMbusEncryptionKeyStatusByChannel, retrieve attribute: "
                 + JdlmsObjectToStringUtil.describeAttributes(getParameter));
 
-    LOGGER.info(
+    LOGGER.debug(
         "Retrieving current M-Bus encryption key status by issuing get request for class id: {}, obis code: "
             + "{}, attribute id: {}",
         CLASS_ID,

@@ -40,7 +40,7 @@
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
-  <version>5.31.0-SNAPSHOT</version>
+  <version>5.34.0-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -150,6 +150,26 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
         <version>${maven.site.plugin}</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.cyclonedx</groupId>
+        <artifactId>cyclonedx-maven-plugin</artifactId>
+        <version>2.7.2</version>
+        <executions>
+          <execution>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>makeBom</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <projectType>application</projectType>
+          <!-- Put the boms in WEB-INF, that way they are packaged with the .war file -->
+          <outputName>${project.build.finalName}/WEB-INF/bom</outputName>
+          <includeProvidedScope>false</includeProvidedScope>
+        </configuration>
       </plugin>
     </plugins>
 

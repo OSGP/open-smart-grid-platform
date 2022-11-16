@@ -14,7 +14,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>super-osgp</artifactId>
-  <version>5.31.0-SNAPSHOT</version>
+  <version>5.34.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
   <!-- Description, Organization, Licences, URL and Distribution Management
@@ -46,10 +46,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>5.31.0-SNAPSHOT</osgp.version>
-    <osgp.dlms.version>5.31.0-SNAPSHOT</osgp.dlms.version>
-    <osgp.shared.version>5.31.0-SNAPSHOT</osgp.shared.version>
-    <osgp.jasper-interface.version>5.31.0-SNAPSHOT</osgp.jasper-interface.version>
+    <osgp.version>5.34.0-SNAPSHOT</osgp.version>
+    <osgp.dlms.version>5.34.0-SNAPSHOT</osgp.dlms.version>
+    <osgp.shared.version>5.34.0-SNAPSHOT</osgp.shared.version>
+    <osgp.jasper-interface.version>5.34.0-SNAPSHOT</osgp.jasper-interface.version>
     <spring.version>5.3.22</spring.version>
     <spring.data.version>2.2.9.RELEASE</spring.data.version>
     <spring.data.commons.version>2.2.9.RELEASE</spring.data.commons.version>
@@ -74,7 +74,7 @@
     <flyway.version>7.3.0</flyway.version>
     <slf4j.version>1.7.30</slf4j.version>
     <apache.commons.lang.version>3.10</apache.commons.lang.version>
-    <apache.commons.text.version>1.8</apache.commons.text.version>
+    <apache.commons.text.version>1.10.0</apache.commons.text.version>
     <apache.httpcomponents.version>4.5.13</apache.httpcomponents.version>
     <apache.httpcomponents.httpcore.version>4.4.13</apache.httpcomponents.httpcore.version>
     <commons.codec.version>1.14</commons.codec.version>
@@ -114,8 +114,8 @@
     <javax.inject.version>1</javax.inject.version>
     <javax.annotation.version>1.3.2</javax.annotation.version>
     <license.maven.plugin>3.0</license.maven.plugin>
-    <jackson.version>2.13.3</jackson.version>
-    <jackson-databind.version>2.13.3</jackson-databind.version>
+    <jackson.version>2.13.4</jackson.version>
+    <jackson-databind.version>2.13.4.2</jackson-databind.version>
     <cxf.version>3.4.8</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
@@ -1144,7 +1144,7 @@
     <repository>
       <id>fuse-repo</id>
       <name>Fuse Source</name>
-      <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
+      <url>https://repo.fusesource.com/nexus/content/groups/public/</url>
       <releases>
         <enabled>false</enabled>
       </releases>
@@ -1404,6 +1404,26 @@
             <additionalSourceDirectories>
               <param>src/integration-test/java</param>
             </additionalSourceDirectories>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.cyclonedx</groupId>
+          <artifactId>cyclonedx-maven-plugin</artifactId>
+          <version>2.7.2</version>
+          <executions>
+            <execution>
+              <phase>prepare-package</phase>
+              <goals>
+                <goal>makeBom</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <projectType>application</projectType>
+            <!-- Put the boms in WEB-INF, that way they are packaged with the .war file -->
+            <outputName>${project.build.finalName}/WEB-INF/bom</outputName>
+            <includeProvidedScope>false</includeProvidedScope>
           </configuration>
         </plugin>
       </plugins>

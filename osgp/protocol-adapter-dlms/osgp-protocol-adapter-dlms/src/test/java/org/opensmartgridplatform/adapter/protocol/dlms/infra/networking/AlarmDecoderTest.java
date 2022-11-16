@@ -25,8 +25,8 @@ import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmType
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L2;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -43,10 +43,9 @@ class AlarmDecoderTest {
   @Test
   void testDecodeEmptyAlarm() throws UnrecognizedMessageDataException {
     final DlmsPushNotification.Builder builder = new DlmsPushNotification.Builder();
-    final ByteBuf buffer = Unpooled.buffer(NUMBER_OF_BYTES_FOR_ALARM);
-    buffer.writeBytes(new byte[] {0x00, 0x00, 0x00, 0x00});
+    final InputStream inputStream = new ByteArrayInputStream(new byte[] {0x00, 0x00, 0x00, 0x00});
 
-    this.decoder.decodeAlarmRegisterData(buffer, builder, DlmsObjectType.ALARM_REGISTER_1);
+    this.decoder.decodeAlarmRegisterData(inputStream, builder, DlmsObjectType.ALARM_REGISTER_1);
 
     assertThat(builder.build().getAlarms()).isEmpty();
   }
@@ -54,10 +53,9 @@ class AlarmDecoderTest {
   @Test
   void testDecodeSingleAlarmLowestBit() throws UnrecognizedMessageDataException {
     final DlmsPushNotification.Builder builder = new DlmsPushNotification.Builder();
-    final ByteBuf buffer = Unpooled.buffer(NUMBER_OF_BYTES_FOR_ALARM);
-    buffer.writeBytes(new byte[] {0x00, 0x00, 0x00, 0x01});
+    final InputStream inputStream = new ByteArrayInputStream(new byte[] {0x00, 0x00, 0x00, 0x01});
 
-    this.decoder.decodeAlarmRegisterData(buffer, builder, DlmsObjectType.ALARM_REGISTER_1);
+    this.decoder.decodeAlarmRegisterData(inputStream, builder, DlmsObjectType.ALARM_REGISTER_1);
 
     assertThat(builder.build().getAlarms()).containsExactlyInAnyOrder(CLOCK_INVALID);
   }
@@ -65,10 +63,10 @@ class AlarmDecoderTest {
   @Test
   void testDecodeSingleAlarmHighestBit() throws UnrecognizedMessageDataException {
     final DlmsPushNotification.Builder builder = new DlmsPushNotification.Builder();
-    final ByteBuf buffer = Unpooled.buffer(NUMBER_OF_BYTES_FOR_ALARM);
-    buffer.writeBytes(new byte[] {(byte) 0x80, 0x00, 0x00, 0x00});
+    final InputStream inputStream =
+        new ByteArrayInputStream(new byte[] {(byte) 0x80, 0x00, 0x00, 0x00});
 
-    this.decoder.decodeAlarmRegisterData(buffer, builder, DlmsObjectType.ALARM_REGISTER_1);
+    this.decoder.decodeAlarmRegisterData(inputStream, builder, DlmsObjectType.ALARM_REGISTER_1);
 
     assertThat(builder.build().getAlarms()).containsExactlyInAnyOrder(PHASE_OUTAGE_TEST_INDICATION);
   }
@@ -76,10 +74,10 @@ class AlarmDecoderTest {
   @Test
   void testDecodeMultipleAlarms() throws UnrecognizedMessageDataException {
     final DlmsPushNotification.Builder builder = new DlmsPushNotification.Builder();
-    final ByteBuf buffer = Unpooled.buffer(NUMBER_OF_BYTES_FOR_ALARM);
-    buffer.writeBytes(new byte[] {(byte) 0x91, 0x04, 0x02, 0x03});
+    final InputStream inputStream =
+        new ByteArrayInputStream(new byte[] {(byte) 0x91, 0x04, 0x02, 0x03});
 
-    this.decoder.decodeAlarmRegisterData(buffer, builder, DlmsObjectType.ALARM_REGISTER_1);
+    this.decoder.decodeAlarmRegisterData(inputStream, builder, DlmsObjectType.ALARM_REGISTER_1);
 
     assertThat(builder.build().getAlarms())
         .containsExactlyInAnyOrder(
@@ -95,10 +93,9 @@ class AlarmDecoderTest {
   @Test
   void testDecodeAlarmRegister2() throws UnrecognizedMessageDataException {
     final DlmsPushNotification.Builder builder = new DlmsPushNotification.Builder();
-    final ByteBuf buffer = Unpooled.buffer(NUMBER_OF_BYTES_FOR_ALARM);
-    buffer.writeBytes(new byte[] {0x00, 0x00, 0x00, 0x3F});
+    final InputStream inputStream = new ByteArrayInputStream(new byte[] {0x00, 0x00, 0x00, 0x3F});
 
-    this.decoder.decodeAlarmRegisterData(buffer, builder, DlmsObjectType.ALARM_REGISTER_2);
+    this.decoder.decodeAlarmRegisterData(inputStream, builder, DlmsObjectType.ALARM_REGISTER_2);
 
     assertThat(builder.build().getAlarms())
         .containsExactlyInAnyOrder(
@@ -113,12 +110,13 @@ class AlarmDecoderTest {
   @Test
   void testDecodeAlarmRegisterWithUnknownAlarmSet() {
     final DlmsPushNotification.Builder builder = new DlmsPushNotification.Builder();
-    final ByteBuf buffer = Unpooled.buffer(NUMBER_OF_BYTES_FOR_ALARM);
-    buffer.writeBytes(new byte[] {0x00, 0x00, 0x00, (byte) 0x80});
+    final InputStream inputStream =
+        new ByteArrayInputStream(new byte[] {0x00, 0x00, 0x00, (byte) 0x80});
 
     assertThrows(
         UnrecognizedMessageDataException.class,
         () ->
-            this.decoder.decodeAlarmRegisterData(buffer, builder, DlmsObjectType.ALARM_REGISTER_1));
+            this.decoder.decodeAlarmRegisterData(
+                inputStream, builder, DlmsObjectType.ALARM_REGISTER_1));
   }
 }

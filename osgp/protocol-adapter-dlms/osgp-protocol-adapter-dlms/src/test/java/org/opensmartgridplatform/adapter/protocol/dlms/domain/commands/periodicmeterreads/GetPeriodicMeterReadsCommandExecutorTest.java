@@ -13,16 +13,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsCommandExecutor.PERIODIC_E_METER_READS;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -32,6 +28,8 @@ import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -49,6 +47,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsProfile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
@@ -79,10 +78,14 @@ class GetPeriodicMeterReadsCommandExecutorTest {
   @Mock private DlmsConnectionManager connectionManager;
 
   private final DlmsDevice device = this.createDevice(Protocol.DSMR_4_2_2);
-  private final long from = 1111111L;
+  private final long from = 1111110L;
   private final long to = 2222222L;
-  private final DateTime fromDateTime = new DateTime(this.from);
-  private final DateTime toDateTime = new DateTime(this.to);
+  private final DateTime fromDateTime =
+      DlmsDateTimeConverter.toDateTime(new Date(this.from), this.device.getTimezone());
+  private final DateTime toDateTime =
+      DlmsDateTimeConverter.toDateTime(new Date(this.to), this.device.getTimezone());
+
+  private final String DEFAULT_TIMEZONE = "UTC";
   private MessageMetadata messageMetadata;
 
   @BeforeEach
@@ -134,13 +137,20 @@ class GetPeriodicMeterReadsCommandExecutorTest {
     assertThat(dto).isNotNull();
   }
 
-  @Test
-  void testHappy() throws Exception {
+  @ParameterizedTest
+  @ValueSource(strings = {"UTC", "Pacific/Honolulu"})
+  void testHappyWithDifferentTimeZones(final String timeZone) throws Exception {
 
     // SETUP
     final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
     final PeriodicMeterReadsRequestDto request =
         new PeriodicMeterReadsRequestDto(periodType, new Date(this.from), new Date(this.to));
+
+    this.device.setTimezone(timeZone);
+    final DateTime convertedFromTime =
+        DlmsDateTimeConverter.toDateTime(new Date(this.from), this.device.getTimezone());
+    final DateTime convertedToTime =
+        DlmsDateTimeConverter.toDateTime(new Date(this.to), this.device.getTimezone());
 
     // SETUP - dlms objects
     final DlmsObject dlmsClock = new DlmsClock("0.0.1.0.0.255");
@@ -180,8 +190,8 @@ class GetPeriodicMeterReadsCommandExecutorTest {
             this.device,
             DlmsObjectType.DAILY_LOAD_PROFILE,
             0,
-            this.fromDateTime,
-            this.toDateTime,
+            convertedFromTime,
+            convertedToTime,
             Medium.ELECTRICITY))
         .thenReturn(Optional.of(attributeAddressForProfile));
 
@@ -191,12 +201,9 @@ class GetPeriodicMeterReadsCommandExecutorTest {
         .thenReturn(Optional.of(intervalTime));
 
     // SETUP - mock dlms helper to return data objects on request
-    final DataObject data0 = mock(DataObject.class);
-
-    // make sure to set logTime on first dataObject
-    final List<DataObject> bufferedObjectValue = new ArrayList<>();
-    when(data0.getValue()).thenReturn(bufferedObjectValue);
-
+    final DataObject data0_object1 = mock(DataObject.class);
+    final DataObject data0_object2 = mock(DataObject.class);
+    final DataObject data0_object3 = mock(DataObject.class);
     final DataObject data1 = mock(DataObject.class);
     when(data1.isNumber()).thenReturn(true);
     final DataObject data2 = mock(DataObject.class);
@@ -204,11 +211,17 @@ class GetPeriodicMeterReadsCommandExecutorTest {
     final DataObject data4 = mock(DataObject.class);
     final DataObject data5 = mock(DataObject.class);
     final DataObject bufferedObject1 = mock(DataObject.class);
-    when(bufferedObject1.getValue()).thenReturn(asList(data0, data1, data2, data3, data4, data5));
+    when(bufferedObject1.getValue())
+        .thenReturn(asList(data0_object1, data1, data2, data3, data4, data5));
     final DataObject bufferedObject2 = mock(DataObject.class);
-    when(bufferedObject2.getValue()).thenReturn(asList(data0, data1, data2, data3, data4, data5));
+    when(bufferedObject2.getValue())
+        .thenReturn(asList(data0_object2, data1, data2, data3, data4, data5));
+    final DataObject bufferedObject3 = mock(DataObject.class);
+    when(bufferedObject3.getValue())
+        .thenReturn(asList(data0_object3, data1, data2, data3, data4, data5));
     final DataObject resultData = mock(DataObject.class);
-    when(resultData.getValue()).thenReturn(Arrays.asList(bufferedObject1, bufferedObject2));
+    when(resultData.getValue())
+        .thenReturn(Arrays.asList(bufferedObject1, bufferedObject2, bufferedObject3));
 
     final String expectedDescription = "retrieve periodic meter reads for " + periodType;
     final GetResult result0 = mock(GetResult.class);
@@ -238,13 +251,17 @@ class GetPeriodicMeterReadsCommandExecutorTest {
 
     when(this.dlmsHelper.readDataObject(eq(getResult), any(String.class))).thenReturn(resultData);
 
-    final CosemDateTimeDto cosemDateTime = mock(CosemDateTimeDto.class);
-    final String expectedDateTimeDescription = String.format("Clock from %s buffer", periodType);
-    when(this.dlmsHelper.readDateTime(data0, expectedDateTimeDescription))
-        .thenReturn(cosemDateTime);
-
-    final DateTime bufferedDateTime = DateTime.now();
-    when(cosemDateTime.asDateTime()).thenReturn(bufferedDateTime);
+    // Make mocks return different logtimes for each meterread. The last meterread has a time
+    // outside of the requested period, causing the meterread to be not included in the result.
+    final CosemDateTimeDto cosemDateTime_1 = mock(CosemDateTimeDto.class);
+    when(this.dlmsHelper.readDateTime(eq(data0_object1), any())).thenReturn(cosemDateTime_1);
+    when(cosemDateTime_1.asDateTime()).thenReturn(convertedFromTime);
+    final CosemDateTimeDto cosemDateTime_2 = mock(CosemDateTimeDto.class);
+    when(this.dlmsHelper.readDateTime(eq(data0_object2), any())).thenReturn(cosemDateTime_2);
+    when(cosemDateTime_2.asDateTime()).thenReturn(convertedFromTime.plusMinutes(1));
+    final CosemDateTimeDto cosemDateTime_3 = mock(CosemDateTimeDto.class);
+    when(this.dlmsHelper.readDateTime(eq(data0_object3), any())).thenReturn(cosemDateTime_3);
+    when(cosemDateTime_3.asDateTime()).thenReturn(convertedFromTime.plusYears(1));
 
     // CALL
     final PeriodicMeterReadsResponseDto result =
@@ -255,17 +272,11 @@ class GetPeriodicMeterReadsCommandExecutorTest {
         .setDescription(
             String.format(
                 "GetPeriodicMeterReads DAILY from %s until %s, retrieve attribute: {%s,%s,%s}",
-                new DateTime(this.from),
-                new DateTime(this.to),
+                convertedFromTime,
+                convertedToTime,
                 dlmsProfile.getClassId(),
                 dlmsProfile.getObisCode(),
                 dlmsProfile.getDefaultAttributeId()));
-
-    verify(this.dlmsHelper, times(2))
-        .validateBufferedDateTime(
-            same(bufferedDateTime),
-            argThat(new DateTimeMatcher(this.from)),
-            argThat(new DateTimeMatcher(this.to)));
 
     verify(this.dlmsObjectConfigService)
         .findDlmsObject(any(Protocol.class), any(DlmsObjectType.class), any(Medium.class));
@@ -274,7 +285,8 @@ class GetPeriodicMeterReadsCommandExecutorTest {
     final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads =
         result.getPeriodicMeterReads();
 
-    assertThat(periodicMeterReads.size()).isEqualTo(2);
+    // Only 2 meterreads are expected. The 3rd meterread has a logtime outside the requested period.
+    assertThat(periodicMeterReads).hasSize(2);
 
     periodicMeterReads.forEach(p -> assertThat(p.getLogTime()).isNotNull());
   }

@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SmartMeteringManagement
+@SmartMetering @Platform @SmartMeteringManagement @Do
 Feature: SmartMetering Management - Find Events
   As a grid operator
   I want to be able to retrieve events from a device
@@ -11,42 +11,42 @@ Feature: SmartMetering Management - Find Events
   @NightlyBuildOnly
   Scenario: find standard events from a device for a period without events
     When receiving a find standard events request
-      | DeviceIdentification | TEST1024000000001        |
-      | BeginDate            | 2015-08-15T00:00:00.000Z |
-      | EndDate              | 2015-08-25T00:00:00.000Z |
+      | DeviceIdentification | TEST1024000000001   |
+      | BeginDate            | 2015-08-15T00:00:00.000+02:00 |
+      | EndDate              | 2015-08-25T00:00:00.000+02:00 |
     Then 0 standard events should be returned
       | DeviceIdentification | TEST1024000000001 |
 
   Scenario: find standard events from a device within a period
     When receiving a find standard events request
       | DeviceIdentification | TEST1024000000001        |
-      | BeginDate            | 2015-09-01T00:00:00.000Z |
-      | EndDate              | 2015-09-05T00:00:00.000Z |
+      | BeginDate            | 2015-09-01T00:00:00.000+02:00 |
+      | EndDate              | 2015-09-05T00:00:00.000+02:00 |
     Then 21 standard events should be returned
       | DeviceIdentification | TEST1024000000001 |
 
   Scenario: find fraud events from a device
     When receiving a find fraud events request
       | DeviceIdentification | TEST1024000000001        |
-      | BeginDate            | 2014-09-02T00:00:00.000Z |
-      | EndDate              | 2015-09-03T00:00:00.000Z |
+      | BeginDate            | 2014-09-02T00:00:00.000+02:00 |
+      | EndDate              | 2015-09-03T00:00:00.000+02:00 |
     Then 9 fraud events should be returned
       | DeviceIdentification | TEST1024000000001 |
 
   Scenario: find communication events from a device
     When receiving a find communication events request
       | DeviceIdentification | TEST1024000000001        |
-      | BeginDate            | 2014-09-02T00:00:00.000Z |
-      | EndDate              | 2015-09-03T00:00:00.000Z |
+      | BeginDate            | 2014-09-02T00:00:00.000+02:00 |
+      | EndDate              | 2015-09-03T00:00:00.000+02:00 |
     Then 9 communication events should be returned
       | DeviceIdentification | TEST1024000000001 |
 
   Scenario: find mbus events from a device
     When receiving a find mbus events request
       | DeviceIdentification | TEST1024000000001        |
-      | BeginDate            | 2015-09-01T00:00:00.000Z |
-      | EndDate              | 2015-09-05T00:00:00.000Z |
-    Then 29 mbus events should be returned
+      | BeginDate            | 2015-09-01T00:00:00.000+02:00 |
+      | EndDate              | 2015-09-05T00:00:00.000+02:00 |
+    Then 30 mbus events should be returned
       | DeviceIdentification | TEST1024000000001 |
 
   Scenario: find auxiliary events from a device
@@ -58,8 +58,8 @@ Feature: SmartMetering Management - Find Events
       | Port                 |              1028 |
     When receiving a find auxiliary events request
       | DeviceIdentification | TEST1028000000001        |
-      | BeginDate            | 2015-09-01T00:00:00.000Z |
-      | EndDate              | 2015-10-01T00:00:00.000Z |
+      | BeginDate            | 2015-09-01T00:00:00.000+02:00 |
+      | EndDate              | 2015-10-01T00:00:00.000+02:00 |
     Then 169 auxiliary events should be returned
       | DeviceIdentification | TEST1028000000001 |
 
@@ -72,8 +72,8 @@ Feature: SmartMetering Management - Find Events
       | Port                 |              1029 |
     When receiving a find power quality extended events request
       | DeviceIdentification | TEST1029000000001        |
-      | BeginDate            | 2015-09-01T00:00:00.000Z |
-      | EndDate              | 2015-10-01T00:00:00.000Z |
+      | BeginDate            | 2015-09-01T00:00:00.000+02:00 |
+      | EndDate              | 2015-10-01T00:00:00.000+02:00 |
     Then 6 power quality extended events should be returned
       | DeviceIdentification | TEST1029000000001   |
       | ExpectedEventDetails | magnitude,duration |

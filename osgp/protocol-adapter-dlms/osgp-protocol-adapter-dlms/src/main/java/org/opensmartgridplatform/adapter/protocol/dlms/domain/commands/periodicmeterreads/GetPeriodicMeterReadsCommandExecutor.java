@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -24,6 +25,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -97,8 +99,12 @@ public class GetPeriodicMeterReadsCommandExecutor
     }
 
     final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
-    final DateTime from = new DateTime(periodicMeterReadsQuery.getBeginDate());
-    final DateTime to = new DateTime(periodicMeterReadsQuery.getEndDate());
+    final DateTime from =
+        DlmsDateTimeConverter.toDateTime(
+            periodicMeterReadsQuery.getBeginDate(), device.getTimezone());
+    final DateTime to =
+        DlmsDateTimeConverter.toDateTime(
+            periodicMeterReadsQuery.getEndDate(), device.getTimezone());
 
     final AttributeAddressForProfile profileBufferAddress =
         this.getProfileBufferAddress(queryPeriodType, from, to, device);
@@ -138,7 +144,7 @@ public class GetPeriodicMeterReadsCommandExecutor
               conn, device, "retrieve periodic meter reads for " + queryPeriodType, address));
     }
 
-    LOGGER.info("Received getResult: {} ", getResultList);
+    LOGGER.debug("Received getResult: {} ", getResultList);
 
     final DataObject resultData =
         this.dlmsHelper.readDataObject(getResultList.get(0), PERIODIC_E_METER_READS);
@@ -164,14 +170,22 @@ public class GetPeriodicMeterReadsCommandExecutor
       }
     }
 
-    return new PeriodicMeterReadsResponseDto(queryPeriodType, periodicMeterReads);
+    final List<PeriodicMeterReadsResponseItemDto> periodicMeterReadsWithinRequestedPeriod =
+        periodicMeterReads.stream()
+            .filter(
+                meterRead ->
+                    this.validateDateTime(meterRead.getLogTime(), from.toDate(), to.toDate()))
+            .collect(Collectors.toList());
+
+    return new PeriodicMeterReadsResponseDto(
+        queryPeriodType, periodicMeterReadsWithinRequestedPeriod);
   }
 
   private PeriodicMeterReadsResponseItemDto convertToResponseItem(
       final ConversionContext ctx, final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads)
       throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
-    LOGGER.info("Converting bufferObject with value: {} ", ctx.bufferedObjects);
+    LOGGER.debug("Converting bufferObject with value: {} ", ctx.bufferedObjects);
 
     final Optional<Date> previousLogTime = this.getPreviousLogTime(periodicMeterReads);
     final Date logTime = this.readClock(ctx, previousLogTime, this.dlmsHelper);
@@ -197,7 +211,7 @@ public class GetPeriodicMeterReadsCommandExecutor
               DlmsObjectType.ACTIVE_ENERGY_EXPORT,
               "negativeActiveEnergy");
 
-      LOGGER.info(
+      LOGGER.debug(
           "Resulting values: LogTime: {}, status: {}, importValue {}, exportValue {} ",
           logTime,
           status,
@@ -239,7 +253,7 @@ public class GetPeriodicMeterReadsCommandExecutor
               DlmsObjectType.ACTIVE_ENERGY_EXPORT_RATE_2,
               "negativeActiveEnergyTariff2");
 
-      LOGGER.info(
+      LOGGER.debug(
           "Resulting values: LogTime: {}, status: {}, importRate1Value {}, importRate2Value {}, "
               + "exportRate1Value {}, exportRate2Value {} ",
           logTime,
@@ -342,7 +356,7 @@ public class GetPeriodicMeterReadsCommandExecutor
                 device, type, 0, beginDateTime, endDateTime, Medium.ELECTRICITY)
             .orElseThrow(() -> new ProtocolAdapterException("No address found for " + type));
 
-    LOGGER.info(
+    LOGGER.debug(
         "Dlms object config service returned profile buffer address {} ", attributeAddressProfile);
 
     return attributeAddressProfile;
@@ -355,7 +369,7 @@ public class GetPeriodicMeterReadsCommandExecutor
         this.dlmsObjectConfigService.getAttributeAddressesForScalerUnit(
             attributeAddressForProfile, 0);
 
-    LOGGER.info(
+    LOGGER.debug(
         "Dlms object config service returned scaler unit addresses {} ", attributeAddresses);
 
     return attributeAddresses;

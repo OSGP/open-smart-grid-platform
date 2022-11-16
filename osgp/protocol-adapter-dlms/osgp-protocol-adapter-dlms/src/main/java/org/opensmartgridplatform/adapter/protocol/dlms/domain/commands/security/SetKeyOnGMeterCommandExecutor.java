@@ -235,7 +235,7 @@ public class SetKeyOnGMeterCommandExecutor
       }
       throw new ProtocolAdapterException(message);
     } else {
-      LOGGER.info(
+      LOGGER.debug(
           "Successfully invoked '{}' method: class_id {} obis_code {}",
           methodParameterName,
           CLASS_ID,

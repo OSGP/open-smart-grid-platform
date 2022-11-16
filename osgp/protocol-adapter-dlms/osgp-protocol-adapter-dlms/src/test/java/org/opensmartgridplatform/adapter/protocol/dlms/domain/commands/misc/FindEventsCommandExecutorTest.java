@@ -15,6 +15,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter.toDateTime;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,8 +24,9 @@ import java.util.stream.IntStream;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -53,13 +55,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class FindEventsCommandExecutorTest {
-
-  private final DlmsDevice DLMS_DEVICE_5_2 = this.createDlmsDevice(Protocol.SMR_5_2);
-
-  private final DlmsDevice DLMS_DEVICE_5_1 = this.createDlmsDevice(Protocol.SMR_5_1);
-
-  private final DlmsDevice DLMS_DEVICE_5_0 = this.createDlmsDevice(Protocol.SMR_5_0_0);
-
   @Mock private DlmsHelper dlmsHelper;
 
   @Mock private DlmsConnectionManager conn;
@@ -77,6 +72,8 @@ class FindEventsCommandExecutorTest {
   private MessageMetadata messageMetadata;
 
   private FindEventsCommandExecutor executor;
+
+  private DlmsDevice currentDevice;
 
   @BeforeEach
   public void before() throws ProtocolAdapterException, IOException {
@@ -112,12 +109,22 @@ class FindEventsCommandExecutorTest {
 
   @AfterEach
   public void after() throws ProtocolAdapterException {
-    verify(this.dlmsHelper).asDataObject(this.findEventsRequestDto.getFrom());
-    verify(this.dlmsHelper).asDataObject(this.findEventsRequestDto.getUntil());
+    final DateTime toDate =
+        toDateTime(this.findEventsRequestDto.getFrom().toDate(), this.currentDevice.getTimezone());
+
+    final DateTime endDate =
+        toDateTime(this.findEventsRequestDto.getUntil().toDate(), this.currentDevice.getTimezone());
+
+    verify(this.dlmsHelper).asDataObject(toDate);
+    verify(this.dlmsHelper).asDataObject(endDate);
   }
 
-  @Test
-  void testRetrievalOfPowerQualityEvents() throws ProtocolAdapterException, IOException {
+  @ParameterizedTest
+  @CsvSource({"SMR_5_1, Europe/Amsterdam", "SMR_5_1, UTC"})
+  void testRetrievalOfPowerQualityEvents(final String protocol, final String timezoneString)
+      throws ProtocolAdapterException, IOException {
+    this.currentDevice = this.createDlmsDevice(protocol, timezoneString);
+
     // SETUP
     when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
     when(this.getResult.getResultData()).thenReturn(this.resultData);
@@ -126,10 +133,10 @@ class FindEventsCommandExecutorTest {
     // CALL
     final List<EventDto> events =
         this.executor.execute(
-            this.conn, this.DLMS_DEVICE_5_1, this.findEventsRequestDto, this.messageMetadata);
+            this.conn, this.currentDevice, this.findEventsRequestDto, this.messageMetadata);
 
     // VERIFY
-    assertThat(events.size()).isEqualTo(13);
+    assertThat(events).hasSize(13);
 
     int firstEventCode = 77;
     for (final EventDto event : events) {
@@ -143,9 +150,12 @@ class FindEventsCommandExecutorTest {
     verify(this.dlmsConnection).get(any(AttributeAddress.class));
   }
 
-  @Test
-  void testRetrievalOfAuxiliaryLogEvents() throws ProtocolAdapterException, IOException {
+  @ParameterizedTest
+  @CsvSource({"SMR_5_1, Europe/Amsterdam", "SMR_5_1, UTC"})
+  void testRetrievalOfAuxiliaryLogEvents(final String protocol, final String timezoneString)
+      throws ProtocolAdapterException, IOException {
     // SETUP
+    this.currentDevice = this.createDlmsDevice(protocol, timezoneString);
     this.findEventsRequestDto =
         new FindEventsRequestDto(
             EventLogCategoryDto.AUXILIARY_EVENT_LOG, DateTime.now().minusDays(70), DateTime.now());
@@ -157,10 +167,10 @@ class FindEventsCommandExecutorTest {
     // CALL
     final List<EventDto> events =
         this.executor.execute(
-            this.conn, this.DLMS_DEVICE_5_1, this.findEventsRequestDto, this.messageMetadata);
+            this.conn, this.currentDevice, this.findEventsRequestDto, this.messageMetadata);
 
     // VERIFY
-    assertThat(events.size()).isEqualTo(34);
+    assertThat(events).hasSize(34);
 
     int firstEventCode = 33664;
     for (final EventDto event : events) {
@@ -174,8 +184,11 @@ class FindEventsCommandExecutorTest {
     verify(this.dlmsConnection).get(any(AttributeAddress.class));
   }
 
-  @Test
-  void testRetrievalOfEventsForWrongCombinationOfProtocolAndLogType() {
+  @ParameterizedTest
+  @CsvSource({"SMR_5_0_0, Europe/Amsterdam", "SMR_5_0_0, UTC"})
+  void testRetrievalOfEventsForWrongCombinationOfProtocolAndLogType(
+      final String protocol, final String timezoneString) {
+    this.currentDevice = this.createDlmsDevice(protocol, timezoneString);
     // SETUP
     this.findEventsRequestDto =
         new FindEventsRequestDto(
@@ -188,16 +201,21 @@ class FindEventsCommandExecutorTest {
     // CALL
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
-            () -> {
-              this.executor.execute(
-                  this.conn, this.DLMS_DEVICE_5_0, this.findEventsRequestDto, this.messageMetadata);
-            });
+            () ->
+                this.executor.execute(
+                    this.conn,
+                    this.currentDevice,
+                    this.findEventsRequestDto,
+                    this.messageMetadata));
   }
 
-  @Test
-  void testRetrievalOfEventsFromPowerQualityExtendedEventLog()
+  @ParameterizedTest
+  @CsvSource({"SMR_5_2, Europe/Amsterdam", "SMR_5_2, UTC"})
+  void testRetrievalOfEventsFromPowerQualityExtendedEventLog(
+      final String protocol, final String timezoneString)
       throws ProtocolAdapterException, IOException {
     // SETUP
+    this.currentDevice = this.createDlmsDevice(protocol, timezoneString);
     this.findEventsRequestDto =
         new FindEventsRequestDto(
             EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG,
@@ -211,10 +229,10 @@ class FindEventsCommandExecutorTest {
     // CALL
     final List<EventDto> events =
         this.executor.execute(
-            this.conn, this.DLMS_DEVICE_5_2, this.findEventsRequestDto, this.messageMetadata);
+            this.conn, this.currentDevice, this.findEventsRequestDto, this.messageMetadata);
 
     // VERIFY
-    assertThat(events.size()).isEqualTo(6);
+    assertThat(events).hasSize(6);
 
     int firstEventCode = 93;
     for (final EventDto event : events) {
@@ -228,10 +246,11 @@ class FindEventsCommandExecutorTest {
     verify(this.dlmsConnection).get(any(AttributeAddress.class));
   }
 
-  @Test
-  void
-      testRetrievalOfEventsFromPowerQualityExtendedEventLogThrowsExceptionWhenNotSupportedByDevice()
-          throws ProtocolAdapterException, IOException {
+  @ParameterizedTest
+  @CsvSource({"SMR_5_0_0, Europe/Amsterdam", "SMR_5_0_0, UTC"})
+  void testRetrievalOfEventsFromPowerQualityExtendedEventLogThrowsExceptionWhenNotSupportedByDevice(
+      final String protocol, final String timezoneString) {
+    this.currentDevice = this.createDlmsDevice(protocol, timezoneString);
     this.findEventsRequestDto =
         new FindEventsRequestDto(
             EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG,
@@ -240,24 +259,31 @@ class FindEventsCommandExecutorTest {
 
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
-            () -> {
-              this.executor.execute(
-                  this.conn, this.DLMS_DEVICE_5_0, this.findEventsRequestDto, this.messageMetadata);
-            });
+            () ->
+                this.executor.execute(
+                    this.conn,
+                    this.currentDevice,
+                    this.findEventsRequestDto,
+                    this.messageMetadata));
   }
 
-  @Test
-  void testOtherReasonResult() throws IOException {
+  @ParameterizedTest
+  @CsvSource({"SMR_5_1, Europe/Amsterdam", "SMR_5_1, UTC"})
+  void testOtherReasonResult(final String protocol, final String timezoneString)
+      throws IOException {
     // SETUP
+    this.currentDevice = this.createDlmsDevice(protocol, timezoneString);
     when(this.getResult.getResultCode()).thenReturn(AccessResultCode.OTHER_REASON);
 
     // CALL
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
-            () -> {
-              this.executor.execute(
-                  this.conn, this.DLMS_DEVICE_5_1, this.findEventsRequestDto, this.messageMetadata);
-            });
+            () ->
+                this.executor.execute(
+                    this.conn,
+                    this.currentDevice,
+                    this.findEventsRequestDto,
+                    this.messageMetadata));
 
     // VERIFY
     verify(this.conn).getDlmsMessageListener();
@@ -265,18 +291,22 @@ class FindEventsCommandExecutorTest {
     verify(this.dlmsConnection).get(any(AttributeAddress.class));
   }
 
-  @Test
-  void testEmptyGetResult() throws IOException {
+  @ParameterizedTest
+  @CsvSource({"SMR_5_1, Europe/Amsterdam", "SMR_5_1, UTC"})
+  void testEmptyGetResult(final String protocol, final String timezoneString) throws IOException {
     // SETUP
+    this.currentDevice = this.createDlmsDevice(protocol, timezoneString);
     when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
 
     // CALL
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
-            () -> {
-              this.executor.execute(
-                  this.conn, this.DLMS_DEVICE_5_1, this.findEventsRequestDto, this.messageMetadata);
-            });
+            () ->
+                this.executor.execute(
+                    this.conn,
+                    this.currentDevice,
+                    this.findEventsRequestDto,
+                    this.messageMetadata));
 
     // VERIFY
     verify(this.conn).getDlmsMessageListener();
@@ -344,10 +374,11 @@ class FindEventsCommandExecutorTest {
     return dataObjects;
   }
 
-  private DlmsDevice createDlmsDevice(final Protocol protocol) {
+  private DlmsDevice createDlmsDevice(final String protocol, final String timezone) {
     final DlmsDevice device = new DlmsDevice();
     device.setDeviceIdentification("123456789012");
-    device.setProtocol(protocol);
+    device.setTimezone(timezone);
+    device.setProtocol(Protocol.valueOf(protocol));
     return device;
   }
 }

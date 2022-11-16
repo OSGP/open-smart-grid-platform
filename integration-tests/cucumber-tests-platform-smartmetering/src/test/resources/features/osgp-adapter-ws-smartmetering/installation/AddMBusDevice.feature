@@ -23,6 +23,8 @@ Feature: SmartMetering Installation - Add M-Bus device
     And the dlms device with identification "TESTG101205673117" exists with device model
       | ManufacturerCode | Test |
       | ModelCode        | Test |
+    And the dlms device with identification "TESTG101205673117" exists with properties
+      | DlmsDeviceTimezone |   |
     And the smart meter is registered in the core database
       | DeviceIdentification           | TESTG101205673117 |
       | MbusIdentificationNumber       | 12056731          |

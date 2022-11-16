@@ -129,10 +129,10 @@ public class MBusEventLog extends ProfileGeneric {
     this.bufferData.add(Arrays.asList(this.getNextDateTime(), (short) 255));
 
     // Add all events.
-    this.addEvents((short) 100, (short) 106);
-    this.addEvents((short) 110, (short) 116);
-    this.addEvents((short) 120, (short) 126);
-    this.addEvents((short) 130, (short) 136);
+    this.addEvents((short) 100, (short) 107);
+    this.addEvents((short) 110, (short) 117);
+    this.addEvents((short) 120, (short) 127);
+    this.addEvents((short) 130, (short) 137);
   }
 
   private void addEvents(final short begin, final short end) {

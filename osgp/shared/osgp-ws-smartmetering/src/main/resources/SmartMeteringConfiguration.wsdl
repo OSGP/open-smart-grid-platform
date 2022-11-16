@@ -119,25 +119,25 @@
     </wsdl:part>
   </wsdl:message>
 
-  <wsdl:message name="SetEncryptionKeyExchangeOnGMeterRequest">
-    <wsdl:part element="smconf:SetEncryptionKeyExchangeOnGMeterRequest"
-               name="setEncryptionKeyExchangeOnGMeterRequest">
+  <wsdl:message name="SetKeyOnGMeterRequest">
+    <wsdl:part element="smconf:SetKeyOnGMeterRequest"
+               name="SetKeyOnGMeterRequest">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="SetEncryptionKeyExchangeOnGMeterAsyncResponse">
-    <wsdl:part element="smconf:SetEncryptionKeyExchangeOnGMeterAsyncResponse"
-               name="setEncryptionKeyExchangeOnGMeterAsyncResponse">
+  <wsdl:message name="SetKeyOnGMeterAsyncResponse">
+    <wsdl:part element="smconf:SetKeyOnGMeterAsyncResponse"
+               name="SetKeyOnGMeterAsyncResponse">
     </wsdl:part>
   </wsdl:message>
 
-  <wsdl:message name="SetEncryptionKeyExchangeOnGMeterAsyncRequest">
-    <wsdl:part element="smconf:SetEncryptionKeyExchangeOnGMeterAsyncRequest"
-               name="SetEncryptionKeyExchangeOnGMeterAsyncRequest">
+  <wsdl:message name="SetKeyOnGMeterAsyncRequest">
+    <wsdl:part element="smconf:SetKeyOnGMeterAsyncRequest"
+               name="SetKeyOnGMeterAsyncRequest">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="SetEncryptionKeyExchangeOnGMeterResponse">
-    <wsdl:part element="smconf:SetEncryptionKeyExchangeOnGMeterResponse"
-               name="SetEncryptionKeyExchangeOnGMeterResponse">
+  <wsdl:message name="SetKeyOnGMeterResponse">
+    <wsdl:part element="smconf:SetKeyOnGMeterResponse"
+               name="SetKeyOnGMeterResponse">
     </wsdl:part>
   </wsdl:message>
 
@@ -285,6 +285,25 @@
   <wsdl:message name="SetPushSetupAlarmResponse">
     <wsdl:part element="smconf:SetPushSetupAlarmResponse"
                name="SetPushSetupAlarmResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="SetPushSetupLastGaspRequest">
+    <wsdl:part element="smconf:SetPushSetupLastGaspRequest" name="SetPushSetupLastGaspRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetPushSetupLastGaspAsyncResponse">
+    <wsdl:part element="smconf:SetPushSetupLastGaspAsyncResponse"
+               name="SetPushSetupLastGaspAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetPushSetupLastGaspAsyncRequest">
+    <wsdl:part element="smconf:SetPushSetupLastGaspAsyncRequest"
+               name="SetPushSetupLastGaspAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetPushSetupLastGaspResponse">
+    <wsdl:part element="smconf:SetPushSetupLastGaspResponse" name="SetPushSetupLastGaspResponse">
     </wsdl:part>
   </wsdl:message>
 
@@ -575,6 +594,22 @@
       </wsdl:output>
     </wsdl:operation>
 
+    <wsdl:operation name="SetPushSetupLastGasp">
+      <wsdl:input message="tns:SetPushSetupLastGaspRequest" name="SetPushSetupLastGaspRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetPushSetupLastGaspAsyncResponse"
+                   name="SetPushSetupLastGaspAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetPushSetupLastGaspResponse">
+      <wsdl:input message="tns:SetPushSetupLastGaspAsyncRequest"
+                  name="SetPushSetupLastGaspAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetPushSetupLastGaspResponse"
+                   name="SetPushSetupLastGaspResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
     <wsdl:operation name="SetPushSetupSms">
       <wsdl:input message="tns:SetPushSetupSmsRequest" name="SetPushSetupSmsRequest">
       </wsdl:input>
@@ -608,21 +643,21 @@
       </wsdl:output>
     </wsdl:operation>
 
-    <wsdl:operation name="SetEncryptionKeyExchangeOnGMeter">
-      <wsdl:input message="tns:SetEncryptionKeyExchangeOnGMeterRequest"
-                  name="SetEncryptionKeyExchangeOnGMeterRequest">
+    <wsdl:operation name="SetKeyOnGMeter">
+      <wsdl:input message="tns:SetKeyOnGMeterRequest"
+                  name="SetKeyOnGMeterRequest">
       </wsdl:input>
-      <wsdl:output message="tns:SetEncryptionKeyExchangeOnGMeterAsyncResponse"
-                   name="SetEncryptionKeyExchangeOnGMeterAsyncResponse">
+      <wsdl:output message="tns:SetKeyOnGMeterAsyncResponse"
+                   name="SetKeyOnGMeterAsyncResponse">
       </wsdl:output>
     </wsdl:operation>
 
-    <wsdl:operation name="GetSetEncryptionKeyExchangeOnGMeterResponse">
-      <wsdl:input message="tns:SetEncryptionKeyExchangeOnGMeterAsyncRequest"
-                  name="SetEncryptionKeyExchangeOnGMeterAsyncRequest">
+    <wsdl:operation name="GetSetKeyOnGMeterResponse">
+      <wsdl:input message="tns:SetKeyOnGMeterAsyncRequest"
+                  name="SetKeyOnGMeterAsyncRequest">
       </wsdl:input>
-      <wsdl:output message="tns:SetEncryptionKeyExchangeOnGMeterResponse"
-                   name="SetEncryptionKeyExchangeOnGMeterResponse">
+      <wsdl:output message="tns:SetKeyOnGMeterResponse"
+                   name="SetKeyOnGMeterResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -1033,6 +1068,38 @@
       </wsdl:output>
     </wsdl:operation>
 
+    <wsdl:operation name="SetPushSetupLastGasp">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="SetPushSetupLastGaspRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+                     use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName"
+                     use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+                     use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SetPushSetupLastGaspAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetSetPushSetupLastGaspResponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="SetPushSetupLastGaspAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+                     use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName"
+                     use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+                     use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SetPushSetupLastGaspResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
     <wsdl:operation name="SetPushSetupSms">
       <soap:operation soapAction=""/>
       <wsdl:input name="SetPushSetupSmsRequest">
@@ -1096,9 +1163,9 @@
       </wsdl:output>
     </wsdl:operation>
 
-    <wsdl:operation name="SetEncryptionKeyExchangeOnGMeter">
+    <wsdl:operation name="SetKeyOnGMeter">
       <soap:operation soapAction=""/>
-      <wsdl:input name="SetEncryptionKeyExchangeOnGMeterRequest">
+      <wsdl:input name="SetKeyOnGMeterRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
                      use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
@@ -1107,14 +1174,14 @@
                      use="literal"/>
         <soap:body use="literal"/>
       </wsdl:input>
-      <wsdl:output name="SetEncryptionKeyExchangeOnGMeterAsyncResponse">
+      <wsdl:output name="SetKeyOnGMeterAsyncResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
-    <wsdl:operation name="GetSetEncryptionKeyExchangeOnGMeterResponse">
+    <wsdl:operation name="GetSetKeyOnGMeterResponse">
       <soap:operation soapAction=""/>
-      <wsdl:input name="SetEncryptionKeyExchangeOnGMeterAsyncRequest">
+      <wsdl:input name="SetKeyOnGMeterAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
                      use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
@@ -1122,7 +1189,7 @@
         <soap:header message="tns:ActionHeader" part="ApplicationName"
                      use="literal"/>
       </wsdl:input>
-      <wsdl:output name="SetEncryptionKeyExchangeOnGMeterResponse">
+      <wsdl:output name="SetKeyOnGMeterResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>

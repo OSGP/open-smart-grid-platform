@@ -56,6 +56,7 @@ public class DeviceFactory {
     device.setProtocolName(settings.get(PlatformKeys.KEY_DEVICE_PROTOCOL_NAME));
     device.setProtocolVersion(settings.get(PlatformKeys.KEY_DEVICE_PROTOCOL_VERSION));
     device.setSupplier(settings.get(PlatformKeys.KEY_DEVICE_SUPPLIER));
+    device.setTimezone(settings.get(PlatformSmartmeteringKeys.KEY_DEVICE_TIMEZONE));
 
     device.setHls3Active(
         getBoolean(

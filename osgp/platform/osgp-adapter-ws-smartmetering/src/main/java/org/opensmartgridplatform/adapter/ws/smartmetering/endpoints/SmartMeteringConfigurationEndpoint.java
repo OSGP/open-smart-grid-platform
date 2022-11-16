@@ -90,10 +90,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeyOnGMeterAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeyOnGMeterAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeyOnGMeterRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeyOnGMeterResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelRequest;
@@ -102,6 +102,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsRequest;
@@ -130,7 +134,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmw
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeyOnGMeterRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
@@ -658,30 +662,27 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     return response;
   }
 
-  @PayloadRoot(
-      localPart = "SetEncryptionKeyExchangeOnGMeterRequest",
-      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @PayloadRoot(localPart = "SetKeyOnGMeterRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
   @ResponsePayload
-  public SetEncryptionKeyExchangeOnGMeterAsyncResponse setEncryptionKeyExchangeOnGMeter(
+  public SetKeyOnGMeterAsyncResponse setKeyOnGMeter(
       @OrganisationIdentification final String organisationIdentification,
-      @RequestPayload final SetEncryptionKeyExchangeOnGMeterRequest request,
+      @RequestPayload final SetKeyOnGMeterRequest request,
       @MessagePriority final String messagePriority,
       @ScheduleTime final String scheduleTime,
       @ResponseUrl final String responseUrl,
       @BypassRetry final String bypassRetry)
       throws OsgpException {
 
-    final SetEncryptionKeyExchangeOnGMeterRequestData dataRequest =
+    final SetKeyOnGMeterRequestData dataRequest =
         this.configurationMapper.map(
-            request.getSetEncryptionKeyExchangeOnGMeterRequestData(),
-            SetEncryptionKeyExchangeOnGMeterRequestData.class);
+            request.getSetKeyOnGMeterRequestData(), SetKeyOnGMeterRequestData.class);
 
     final RequestMessageMetadata requestMessageMetadata =
         RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
-            .withDeviceFunction(DeviceFunction.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER)
-            .withMessageType(MessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER)
+            .withDeviceFunction(DeviceFunction.SET_KEY_ON_G_METER)
+            .withMessageType(MessageType.SET_KEY_ON_G_METER)
             .withMessagePriority(messagePriority)
             .withScheduleTime(scheduleTime)
             .withBypassRetry(bypassRetry)
@@ -692,21 +693,19 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
     this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-    return this.configurationMapper.map(
-        asyncResponse, SetEncryptionKeyExchangeOnGMeterAsyncResponse.class);
+    return this.configurationMapper.map(asyncResponse, SetKeyOnGMeterAsyncResponse.class);
   }
 
   @PayloadRoot(
-      localPart = "SetEncryptionKeyExchangeOnGMeterAsyncRequest",
+      localPart = "SetKeyOnGMeterAsyncRequest",
       namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
   @ResponsePayload
-  public SetEncryptionKeyExchangeOnGMeterResponse retrieveSetEncryptionKeyExchangeOnGMeterResponse(
-      @RequestPayload final SetEncryptionKeyExchangeOnGMeterAsyncRequest request)
-      throws OsgpException {
+  public SetKeyOnGMeterResponse retrieveSetKeyOnGMeterResponse(
+      @RequestPayload final SetKeyOnGMeterAsyncRequest request) throws OsgpException {
 
-    SetEncryptionKeyExchangeOnGMeterResponse response = null;
+    SetKeyOnGMeterResponse response = null;
     try {
-      response = new SetEncryptionKeyExchangeOnGMeterResponse();
+      response = new SetKeyOnGMeterResponse();
       final ResponseData responseData =
           this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
@@ -918,6 +917,76 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     return response;
   }
 
+  @PayloadRoot(
+      localPart = "SetPushSetupLastGaspRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetPushSetupLastGaspAsyncResponse setPushSetupLastGasp(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetPushSetupLastGaspRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
+
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupLastGasp
+        pushSetupLastGasp =
+            this.configurationMapper.map(
+                request.getSetPushSetupLastGaspRequestData().getPushSetupLastGasp(),
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupLastGasp
+                    .class);
+
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.SET_PUSH_SETUP_LAST_GASP)
+            .withMessageType(MessageType.SET_PUSH_SETUP_LAST_GASP)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
+
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, pushSetupLastGasp);
+
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+
+    return this.configurationMapper.map(asyncResponse, SetPushSetupLastGaspAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "SetPushSetupLastGaspAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetPushSetupLastGaspResponse getSetPushSetupLastGaspResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetPushSetupLastGaspAsyncRequest request)
+      throws OsgpException {
+
+    log.info(
+        "Incoming SetPushSetupLastGaspAsyncRequest for organisation {} for meter: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification());
+
+    SetPushSetupLastGaspResponse response = null;
+    try {
+      response = new SetPushSetupLastGaspResponse();
+      final ResponseData meterResponseData =
+          this.responseDataService.get(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+      if (meterResponseData.getMessageData() instanceof String) {
+        response.setDescription((String) meterResponseData.getMessageData());
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
+    }
+    return response;
+  }
+
   @PayloadRoot(localPart = "SetPushSetupSmsRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
   @ResponsePayload
   public SetPushSetupSmsAsyncResponse setPushSetupSms(
@@ -965,7 +1034,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
       throws OsgpException {
 
     log.info(
-        "Incoming SetPushSetupAlarmAsyncRequest for organisation {} for meter: {}.",
+        "Incoming SetPushSetupSmsAsyncRequest for organisation {} for meter: {}.",
         organisationIdentification,
         request.getDeviceIdentification());
 

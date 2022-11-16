@@ -71,6 +71,9 @@ public class DlmsDevice extends AbstractEntity {
   @Column(length = 3)
   private String mbusManufacturerIdentification;
 
+  @Column(length = 40)
+  private String timezone;
+
   @Column(name = "protocol", nullable = false)
   private String protocolName;
 
@@ -395,5 +398,13 @@ public class DlmsDevice extends AbstractEntity {
 
   public boolean communicateUnencrypted() {
     return !(this.hls3Active || this.hls4Active || this.hls5Active);
+  }
+
+  public String getTimezone() {
+    return this.timezone;
+  }
+
+  public void setTimezone(final String timezone) {
+    this.timezone = timezone;
   }
 }

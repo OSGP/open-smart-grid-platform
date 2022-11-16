@@ -41,7 +41,7 @@ public class GetMBusDeviceOnChannelCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    LOGGER.info(
+    LOGGER.debug(
         "Retrieving values for mbus channel {} on meter {}",
         requestDto.getChannel(),
         requestDto.getGatewayDeviceIdentification());

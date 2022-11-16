@@ -27,6 +27,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetAdministrativeStatusCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetAdministrativeStatusCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupAlarmCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupLastGaspCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupSmsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.GenerateAndReplaceKeyCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.ReplaceKeyCommandExecutor;
@@ -52,6 +53,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptio
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupAlarmDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupLastGaspDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
@@ -91,6 +93,8 @@ public class ConfigurationService {
   @Autowired private SetConfigurationObjectCommandExecutor setConfigurationObjectCommandExecutor;
 
   @Autowired private SetPushSetupAlarmCommandExecutor setPushSetupAlarmCommandExecutor;
+
+  @Autowired private SetPushSetupLastGaspCommandExecutor setPushSetupLastGaspCommandExecutor;
 
   @Autowired private SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor;
 
@@ -142,14 +146,14 @@ public class ConfigurationService {
     final SpecialDaysRequestDataDto specialDaysRequestData =
         specialDaysRequest.getSpecialDaysRequestData();
 
-    LOGGER.info(VISUAL_SEPARATOR);
-    LOGGER.info("********** Set Special Days: 0-0:11.0.0.255 **********");
-    LOGGER.info(VISUAL_SEPARATOR);
+    LOGGER.debug(VISUAL_SEPARATOR);
+    LOGGER.debug("********** Set Special Days: 0-0:11.0.0.255 **********");
+    LOGGER.debug(VISUAL_SEPARATOR);
     final List<SpecialDayDto> specialDays = specialDaysRequestData.getSpecialDays();
     for (final SpecialDayDto specialDay : specialDays) {
-      LOGGER.info("Date :{}, dayId : {} ", specialDay.getSpecialDayDate(), specialDay.getDayId());
+      LOGGER.debug("Date :{}, dayId : {} ", specialDay.getSpecialDayDate(), specialDay.getDayId());
     }
-    LOGGER.info(VISUAL_SEPARATOR);
+    LOGGER.debug(VISUAL_SEPARATOR);
 
     final AccessResultCode accessResultCode =
         this.setSpecialDaysCommandExecutor.execute(conn, device, specialDays, messageMetadata);
@@ -178,18 +182,18 @@ public class ConfigurationService {
         configurationObject.getGprsOperationMode();
     final ConfigurationFlagsDto configurationFlags = configurationObject.getConfigurationFlags();
 
-    LOGGER.info(VISUAL_SEPARATOR);
-    LOGGER.info("******** Configuration Object: 0-1:94.31.3.255 *******");
-    LOGGER.info(VISUAL_SEPARATOR);
-    LOGGER.info(
+    LOGGER.debug(VISUAL_SEPARATOR);
+    LOGGER.debug("******** Configuration Object: 0-1:94.31.3.255 *******");
+    LOGGER.debug(VISUAL_SEPARATOR);
+    LOGGER.debug(
         "Operation mode: {}",
         gprsOperationModeType == null ? "not altered by this request" : gprsOperationModeType);
     if (configurationFlags == null) {
-      LOGGER.info("Flags: none enabled or disabled by this request");
+      LOGGER.debug("Flags: none enabled or disabled by this request");
     } else {
-      LOGGER.info("{}", configurationFlags);
+      LOGGER.debug("{}", configurationFlags);
     }
-    LOGGER.info(VISUAL_SEPARATOR);
+    LOGGER.debug(VISUAL_SEPARATOR);
 
     final AccessResultCode accessResultCode =
         this.setConfigurationObjectCommandExecutor.execute(
@@ -245,18 +249,17 @@ public class ConfigurationService {
     return this.getAdministrativeStatusCommandExecutor.execute(conn, device, null, messageMetadata);
   }
 
-  public String setEncryptionKeyExchangeOnGMeter(
+  public String setKeyOnGMeter(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
       final SetKeyOnGMeterRequestDto setEncryptionKeyRequest,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
+    LOGGER.info("Device for Set Key On G-Meter is: {}", device);
     this.setKeyOnGMeterCommandExecutor.execute(
         conn, device, setEncryptionKeyRequest, messageMetadata);
-    return "Set Encryption Key Exchange On G-Meter Result is OK for device id: "
-        + device.getDeviceIdentification();
+    return "Set Key On G-Meter Result is OK for device id: " + device.getDeviceIdentification();
   }
 
   public String setMbusUserKeyByChannel(
@@ -338,6 +341,25 @@ public class ConfigurationService {
     if (AccessResultCode.SUCCESS != accessResultCode) {
       throw new ProtocolAdapterException(
           "AccessResultCode for set push setup alarm was not SUCCESS: " + accessResultCode);
+    }
+  }
+
+  public void setPushSetupLastGasp(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final PushSetupLastGaspDto pushSetupLastGasp,
+      final MessageMetadata messageMetadata)
+      throws ProtocolAdapterException {
+
+    LOGGER.info("Push Setup LastGasp to set on the device: {}", pushSetupLastGasp);
+
+    final AccessResultCode accessResultCode =
+        this.setPushSetupLastGaspCommandExecutor.execute(
+            conn, device, pushSetupLastGasp, messageMetadata);
+
+    if (AccessResultCode.SUCCESS != accessResultCode) {
+      throw new ProtocolAdapterException(
+          "AccessResultCode for set push setup last gasp was not SUCCESS: " + accessResultCode);
     }
   }
 

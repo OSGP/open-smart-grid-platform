@@ -38,6 +38,7 @@ import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
@@ -50,9 +51,11 @@ class SynchronizeTimeCommandExecutorTest {
 
   private static final ObisCode LOGICAL_NAME = new ObisCode("0.0.1.0.0.255");
 
-  private final DlmsDevice DLMS_DEVICE = new DlmsDevice();
+  @Mock private DlmsDevice device;
 
   @Captor ArgumentCaptor<SetParameter> setParameterArgumentCaptor;
+
+  @Captor ArgumentCaptor<DlmsDevice> dlmsDeviceArgumentCaptor;
 
   @Mock private DlmsConnectionManager conn;
 
@@ -62,17 +65,21 @@ class SynchronizeTimeCommandExecutorTest {
 
   @Mock private MessageMetadata messageMetadata;
 
+  @Mock DlmsDeviceRepository dlmsDeviceRepository;
+
   private SynchronizeTimeCommandExecutor executor;
 
   @BeforeEach
   void setUp() {
-    this.executor = new SynchronizeTimeCommandExecutor(new DlmsHelper());
+    this.executor = new SynchronizeTimeCommandExecutor(new DlmsHelper(), this.dlmsDeviceRepository);
   }
 
   @Test
   void testSynchronizeTime() throws ProtocolAdapterException, IOException {
     final String timeZone = "Europe/Amsterdam";
     final ZonedDateTime expectedTime = ZonedDateTime.now(TimeZone.getTimeZone(timeZone).toZoneId());
+
+    when(this.device.getTimezone()).thenReturn(timeZone);
 
     // SETUP
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
@@ -84,12 +91,15 @@ class SynchronizeTimeCommandExecutorTest {
 
     // CALL
     final AccessResultCode resultCode =
-        this.executor.execute(
-            this.conn, this.DLMS_DEVICE, synchronizeTimeRequest, this.messageMetadata);
+        this.executor.execute(this.conn, this.device, synchronizeTimeRequest, this.messageMetadata);
 
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
     verify(this.dlmsConnection, times(1)).set(this.setParameterArgumentCaptor.capture());
+
+    // save timezone
+    verify(this.dlmsDeviceRepository, times(1)).save(this.dlmsDeviceArgumentCaptor.capture());
+    assertThat(this.dlmsDeviceArgumentCaptor.getValue().getTimezone()).isEqualTo(timeZone);
 
     final List<SetParameter> setParameters = this.setParameterArgumentCaptor.getAllValues();
     assertThat(setParameters).hasSize(1);
@@ -103,7 +113,7 @@ class SynchronizeTimeCommandExecutorTest {
     assertThat(setParameter.getData().getType().name()).isEqualTo("DATE_TIME");
     final CosemDateTime cosemDateTime = setParameter.getData().getValue();
 
-    // Explicit check hours andd deviation because these are important in UTC transformation
+    // Explicit check hours and deviation because these are important in UTC transformation
     assertThat(cosemDateTime.get(Field.HOUR)).isEqualTo(expectedTime.getHour());
     assertThat(cosemDateTime.get(Field.DEVIATION))
         .isEqualTo(expectedTime.getOffset().getTotalSeconds() / -60);

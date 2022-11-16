@@ -52,7 +52,7 @@ public abstract class SetConfigurationObjectService implements ProtocolService {
 
     final DataObject dataObject =
         this.buildSetParameterData(configurationToSet, configurationOnDevice);
-    LOGGER.info(
+    LOGGER.debug(
         "ConfigurationObject SetParameter Data : {}", this.dlmsHelper.getDebugInfo(dataObject));
 
     final AttributeAddress attributeAddress =
@@ -67,7 +67,7 @@ public abstract class SetConfigurationObjectService implements ProtocolService {
 
   private AccessResultCode getAccessResultCode(
       final DlmsConnectionManager conn, final SetParameter setParameter) {
-    LOGGER.info("Set ConfigurationObject using SetParameter {}", setParameter);
+    LOGGER.debug("Set ConfigurationObject using SetParameter {}", setParameter);
     try {
       return conn.getConnection().set(setParameter);
     } catch (final IOException e) {

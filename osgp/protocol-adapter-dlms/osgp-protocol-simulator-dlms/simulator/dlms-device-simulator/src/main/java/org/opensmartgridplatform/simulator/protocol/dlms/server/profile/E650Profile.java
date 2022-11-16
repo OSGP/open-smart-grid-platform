@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 import org.openmuc.jdlms.CosemInterfaceObject;
 import org.openmuc.jdlms.CosemSnInterfaceObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.Clock;
@@ -50,6 +51,9 @@ public class E650Profile {
 
   @Value("${connection.open.delay.max:0}")
   private int connectionSetupDelayMax;
+
+  @Value("${default.clock.timezone}")
+  private String defaultClockTimezone;
 
   @Value("${default.clock.year}")
   private int defaultClockYear;
@@ -117,6 +121,7 @@ public class E650Profile {
   @Scope("prototype")
   public Calendar defaultCalendar() {
     final Calendar cal = Calendar.getInstance();
+    cal.setTimeZone(TimeZone.getTimeZone(this.defaultClockTimezone));
     cal.set(Calendar.YEAR, this.defaultClockYear);
     cal.set(Calendar.MONTH, this.defaultClockMonth);
     cal.set(Calendar.DAY_OF_MONTH, this.defaultClockDayOfMonth);

@@ -352,6 +352,38 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="SetPushSetupLastGaspRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="SetPushSetupLastGaspRequestData" type="tns:SetPushSetupLastGaspRequestData" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetPushSetupLastGaspAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetPushSetupLastGaspAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetPushSetupLastGaspResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType" />
+        <xsd:element name="Description" type="xsd:string"
+          minOccurs="0" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="SetPushSetupSmsRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -417,7 +449,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:complexType name="SetEncryptionKeyExchangeOnGMeterRequestData">
+  <xsd:complexType name="SetKeyOnGMeterRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
@@ -429,16 +461,16 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:element name="SetEncryptionKeyExchangeOnGMeterRequest">
+  <xsd:element name="SetKeyOnGMeterRequest">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-        <xsd:element name="SetEncryptionKeyExchangeOnGMeterRequestData" type="tns:SetEncryptionKeyExchangeOnGMeterRequestData" />
+        <xsd:element name="SetKeyOnGMeterRequestData" type="tns:SetKeyOnGMeterRequestData" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="SetEncryptionKeyExchangeOnGMeterAsyncResponse">
+  <xsd:element name="SetKeyOnGMeterAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncResponse" />
@@ -446,7 +478,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="SetEncryptionKeyExchangeOnGMeterAsyncRequest">
+  <xsd:element name="SetKeyOnGMeterAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncRequest" />
@@ -454,7 +486,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="SetEncryptionKeyExchangeOnGMeterResponse">
+  <xsd:element name="SetKeyOnGMeterResponse">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType" />
@@ -932,6 +964,16 @@
     </xsd:complexContent>
   </xsd:complexType>
 
+  <xsd:complexType name="SetPushSetupLastGaspRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Command">
+        <xsd:sequence>
+          <xsd:element name="PushSetupLastGasp" type="tns:PushSetupLastGasp" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
   <xsd:complexType name="SetPushSetupSmsRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">
@@ -1071,6 +1113,25 @@
         <xsd:annotation>
           <xsd:documentation>Port number of the service listening for
             alarm notifications over TCP.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="PushSetupLastGasp">
+    <xsd:sequence>
+      <xsd:element name="Host" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>IP address or DNS name of the service
+            listening for alarm notifications over UDP.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Port" type="xsd:integer">
+        <xsd:annotation>
+          <xsd:documentation>Port number of the service listening for
+            alarm notifications over UDP.
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>

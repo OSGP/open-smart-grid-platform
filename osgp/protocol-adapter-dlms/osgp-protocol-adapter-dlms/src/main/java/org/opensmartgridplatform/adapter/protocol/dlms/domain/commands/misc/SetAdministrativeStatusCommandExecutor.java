@@ -76,7 +76,7 @@ public class SetAdministrativeStatusCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    LOGGER.info(
+    LOGGER.debug(
         "Set administrative status by issuing get request for class id: {}, obis code: {}, attribute id: {}",
         CLASS_ID,
         OBIS_CODE,

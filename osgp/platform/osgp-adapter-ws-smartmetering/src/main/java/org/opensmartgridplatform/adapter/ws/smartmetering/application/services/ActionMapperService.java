@@ -46,10 +46,11 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetAlarm
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetClockConfigurationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetConfigurationObjectRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetDeviceLifecycleStatusByChannelRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetEncryptionKeyExchangeOnGMeterRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetKeyOnGMeterRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetKeysRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetMbusUserKeyByChannelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetPushSetupAlarmRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetPushSetupLastGaspRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetPushSetupSmsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetRandomisationSettingsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetSpecialDaysRequest;
@@ -94,10 +95,11 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetAlarm
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeyOnGMeterRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupAlarmRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupLastGaspRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupSmsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
@@ -163,8 +165,8 @@ public class ActionMapperService {
         ActivityCalendarData.class);
     CLASS_MAP.put(
         org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
-            .SetEncryptionKeyExchangeOnGMeterRequestData.class,
-        SetEncryptionKeyExchangeOnGMeterRequestData.class);
+            .SetKeyOnGMeterRequestData.class,
+        SetKeyOnGMeterRequestData.class);
     CLASS_MAP.put(
         org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
             .SetMbusUserKeyByChannelRequestData.class,
@@ -181,6 +183,10 @@ public class ActionMapperService {
         org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
             .SetPushSetupAlarmRequestData.class,
         SetPushSetupAlarmRequestData.class);
+    CLASS_MAP.put(
+        org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
+            .SetPushSetupLastGaspRequestData.class,
+        SetPushSetupLastGaspRequestData.class);
     CLASS_MAP.put(
         org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
             .SetPushSetupSmsRequestData.class,
@@ -252,13 +258,12 @@ public class ActionMapperService {
     CLASS_MAP.put(GetActualMeterReadsGasRequest.class, ActualMeterReadsGasRequestData.class);
     CLASS_MAP.put(SetAdministrativeStatusRequest.class, AdministrativeStatusTypeData.class);
     CLASS_MAP.put(SetActivityCalendarRequest.class, ActivityCalendarData.class);
-    CLASS_MAP.put(
-        SetEncryptionKeyExchangeOnGMeterRequest.class,
-        SetEncryptionKeyExchangeOnGMeterRequestData.class);
+    CLASS_MAP.put(SetKeyOnGMeterRequest.class, SetKeyOnGMeterRequestData.class);
     CLASS_MAP.put(SetMbusUserKeyByChannelRequest.class, SetMbusUserKeyByChannelRequestData.class);
     CLASS_MAP.put(SetAlarmNotificationsRequest.class, SetAlarmNotificationsRequestData.class);
     CLASS_MAP.put(SetConfigurationObjectRequest.class, SetConfigurationObjectRequestData.class);
     CLASS_MAP.put(SetPushSetupAlarmRequest.class, SetPushSetupAlarmRequestData.class);
+    CLASS_MAP.put(SetPushSetupLastGaspRequest.class, SetPushSetupLastGaspRequestData.class);
     CLASS_MAP.put(SetPushSetupSmsRequest.class, SetPushSetupSmsRequestData.class);
     CLASS_MAP.put(SynchronizeTimeRequest.class, SynchronizeTimeRequestData.class);
     CLASS_MAP.put(GetAllAttributeValuesRequest.class, GetAllAttributeValuesRequestData.class);
@@ -450,10 +455,9 @@ public class ActionMapperService {
     CLASS_TO_MAPPER_MAP.put(SetActivityCalendarRequest.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(
         org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
-            .SetEncryptionKeyExchangeOnGMeterRequestData.class,
+            .SetKeyOnGMeterRequestData.class,
         this.configurationMapper);
-    CLASS_TO_MAPPER_MAP.put(
-        SetEncryptionKeyExchangeOnGMeterRequest.class, this.configurationMapper);
+    CLASS_TO_MAPPER_MAP.put(SetKeyOnGMeterRequest.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(
         org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
             .SetMbusUserKeyByChannelRequestData.class,
@@ -474,6 +478,11 @@ public class ActionMapperService {
             .SetPushSetupAlarmRequestData.class,
         this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(SetPushSetupAlarmRequest.class, this.configurationMapper);
+    CLASS_TO_MAPPER_MAP.put(
+        org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
+            .SetPushSetupLastGaspRequestData.class,
+        this.configurationMapper);
+    CLASS_TO_MAPPER_MAP.put(SetPushSetupLastGaspRequest.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(
         org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
             .SetPushSetupSmsRequestData.class,

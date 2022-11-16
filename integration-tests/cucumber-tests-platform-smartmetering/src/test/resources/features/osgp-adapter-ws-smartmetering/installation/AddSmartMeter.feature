@@ -3,7 +3,7 @@ Feature: SmartMetering Installation - Add smart meter
   As a grid operator
   I want to be able to add a smart meter
 
-  Scenario: Add a new device
+  Scenario Outline: Add a new device <Testtitle>
     When receiving a smartmetering add device request
       | DeviceIdentification  | TEST1024000000001 |
       | DeviceType            | SMART_METER_E     |
@@ -21,14 +21,22 @@ Feature: SmartMetering Installation - Add smart meter
       | Encryption_key        | SECURITY_KEY_E    |
       | ManufacturerCode      | Test              |
       | ModelCode             | Test              |
+      | Timezone              | <Timezone>        |
     Then the add device response should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
     And the dlms device with identification "TEST1024000000001" exists with device model
       | ManufacturerCode | Test |
       | ModelCode        | Test |
+    And the dlms device with identification "TEST1024000000001" exists with properties
+      | DlmsDeviceTimezone | <Timezone> |
     And a request to the device can be performed after activation
     And the new keys are stored in the database in another encryption then the encryption of the keys received in the SOAP request
+
+    Examples:
+      | Testtitle        | Timezone         |
+      | with timezone    | Europe/Amsterdam |
+      | without timezone |                  |
 
   @NightlyBuildOnly @Skip
   Scenario: Add a new device with incorrectly encrypted keys

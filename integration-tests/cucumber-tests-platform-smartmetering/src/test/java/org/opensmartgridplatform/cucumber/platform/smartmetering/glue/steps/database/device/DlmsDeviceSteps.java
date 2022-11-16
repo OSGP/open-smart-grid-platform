@@ -18,6 +18,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_E;
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_G;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.DLMS_DEVICE_TIMEZONE;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_FIRMWARE_UPDATE_KEY;
@@ -221,6 +222,24 @@ public class DlmsDeviceSteps {
     assertThat(manufacturer.getCode())
         .as(PlatformKeys.MANUFACTURER_CODE)
         .isEqualTo(deviceModelAttributes.get(PlatformKeys.MANUFACTURER_CODE));
+  }
+
+  @Then("^the dlms device with identification \"([^\"]*)\" exists with properties$")
+  public void theDlmsDeviceWithIdentificationExistsWithProperties(
+      final String deviceIdentification, final Map<String, String> dlmsDeviceAttributes) {
+
+    try {
+      this.theDlmsDeviceWithIdentificationExists(deviceIdentification);
+    } catch (final Throwable e) {
+      throw new RuntimeException(e);
+    }
+
+    final DlmsDevice device =
+        this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+
+    assertThat(device.getTimezone())
+        .as(PlatformKeys.DLMS_DEVICE_TIMEZONE)
+        .isEqualTo(dlmsDeviceAttributes.get(DLMS_DEVICE_TIMEZONE));
   }
 
   @Then("^the smart meter is registered in the core database$")

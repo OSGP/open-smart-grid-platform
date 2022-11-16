@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -24,6 +25,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -102,8 +104,12 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     }
 
     final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
-    final DateTime from = new DateTime(periodicMeterReadsQuery.getBeginDate());
-    final DateTime to = new DateTime(periodicMeterReadsQuery.getEndDate());
+    final DateTime from =
+        DlmsDateTimeConverter.toDateTime(
+            periodicMeterReadsQuery.getBeginDate(), device.getTimezone());
+    final DateTime to =
+        DlmsDateTimeConverter.toDateTime(
+            periodicMeterReadsQuery.getEndDate(), device.getTimezone());
 
     final AttributeAddressForProfile profileBufferAddress =
         this.getProfileBufferAddress(
@@ -155,7 +161,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
               address));
     }
 
-    LOGGER.info("Received getResult: {} ", getResultList);
+    LOGGER.debug("Received getResult: {} ", getResultList);
 
     final DataObject resultData =
         this.dlmsHelper.readDataObject(getResultList.get(0), PERIODIC_G_METER_READS);
@@ -181,9 +187,17 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       }
     }
 
-    LOGGER.info("Resulting periodicMeterReads: {} ", periodicMeterReads);
+    final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReadsWithinRequestedPeriod =
+        periodicMeterReads.stream()
+            .filter(
+                meterRead ->
+                    this.validateDateTime(meterRead.getLogTime(), from.toDate(), to.toDate()))
+            .collect(Collectors.toList());
 
-    return new PeriodicMeterReadGasResponseDto(queryPeriodType, periodicMeterReads);
+    LOGGER.debug("Resulting periodicMeterReads: {} ", periodicMeterReads);
+
+    return new PeriodicMeterReadGasResponseDto(
+        queryPeriodType, periodicMeterReadsWithinRequestedPeriod);
   }
 
   private PeriodicMeterReadsGasResponseItemDto convertToResponseItem(
@@ -207,8 +221,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     final Optional<Date> previousCaptureTime = this.getPreviousCaptureTime(periodicMeterReads);
     final Date captureTime = this.readCaptureTime(ctx, previousCaptureTime);
 
-    LOGGER.info("Converting bufferObject with value: {} ", ctx.bufferedObjects);
-    LOGGER.info(
+    LOGGER.debug("Converting bufferObject with value: {} ", ctx.bufferedObjects);
+    LOGGER.debug(
         "Resulting values: LogTime: {}, status: {}, gasValue {}, scalerUnit: {}, captureTime {} ",
         logTime,
         status,
@@ -336,7 +350,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
                 device, type, channel.getChannelNumber(), beginDateTime, endDateTime, Medium.GAS)
             .orElseThrow(() -> new ProtocolAdapterException("No address found for " + type));
 
-    LOGGER.info(
+    LOGGER.debug(
         "Dlms object config service returned profile buffer address {} ", attributeAddressProfile);
 
     return attributeAddressProfile;
@@ -349,7 +363,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
         this.dlmsObjectConfigService.getAttributeAddressesForScalerUnit(
             attributeAddressForProfile, channel.getChannelNumber());
 
-    LOGGER.info(
+    LOGGER.debug(
         "Dlms object config service returned scaler unit addresses {} ", attributeAddresses);
 
     return attributeAddresses;

@@ -52,7 +52,7 @@ public class GetConfigurationObjectServiceSmr5 extends GetConfigurationObjectSer
           "Expected bit-string data as Configuration object result data, but got: "
               + (resultData == null ? "null" : resultData.getType()));
     }
-    LOGGER.info(
+    LOGGER.debug(
         "SMR5 Configuration object current BitString: {}",
         this.dlmsHelper.getDebugInfo(resultData));
 

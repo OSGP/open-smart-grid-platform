@@ -27,7 +27,7 @@ public class RetryHeaderFactory {
   private int maximumRetries;
 
   @Value("${schedule.retry.dlms.backoff.multiplier}")
-  private int backoffMultiplier;
+  private double backoffMultiplier;
 
   @Value("${schedule.retry.dlms.backoff.exponential}")
   private boolean exponentialBackoff;

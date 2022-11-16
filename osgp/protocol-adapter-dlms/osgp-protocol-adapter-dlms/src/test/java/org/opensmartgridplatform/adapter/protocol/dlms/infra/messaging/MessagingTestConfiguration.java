@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.activemq.command.ActiveMQDestination;
 import org.mockito.Mockito;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
@@ -110,6 +111,11 @@ public class MessagingTestConfiguration extends AbstractConfig {
   @Bean
   public DeviceRequestMessageSender deviceRequestMessageSender() {
     return new DeviceRequestMessageSender();
+  }
+
+  @Bean("protocolDlmsReplyToQueue")
+  public ActiveMQDestination replyToQueue() {
+    return Mockito.mock(ActiveMQDestination.class);
   }
 
   @Bean
