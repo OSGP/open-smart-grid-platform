@@ -32,6 +32,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
@@ -44,6 +45,7 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
   @Mock private DlmsConnectionManager conn;
 
   @Mock private DlmsDevice dlmsDevice;
+  @Mock private ObjectConfigService objectConfigService;
 
   @BeforeEach
   public void setup() throws ProtocolAdapterException {
@@ -81,7 +83,7 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
             this.createProfileEntries());
 
     final GetPowerQualityProfileSelectiveAccessHandler handler =
-        new GetPowerQualityProfileSelectiveAccessHandler(this.dlmsHelper);
+        new GetPowerQualityProfileSelectiveAccessHandler(this.dlmsHelper, this.objectConfigService);
 
     final GetPowerQualityProfileResponseDto responseDto =
         handler.handle(this.conn, this.dlmsDevice, requestDto);
@@ -120,7 +122,7 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
             this.createPublicProfileEntries());
 
     final GetPowerQualityProfileSelectiveAccessHandler handler =
-        new GetPowerQualityProfileSelectiveAccessHandler(this.dlmsHelper);
+        new GetPowerQualityProfileSelectiveAccessHandler(this.dlmsHelper, this.objectConfigService);
 
     final GetPowerQualityProfileResponseDto responseDto =
         handler.handle(this.conn, this.dlmsDevice, requestDto);

@@ -14,6 +14,7 @@ import java.util.Map;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ScalerUnitInfo;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
@@ -23,8 +24,9 @@ import org.springframework.stereotype.Component;
 public class GetPowerQualityProfileNoSelectiveAccessHandler
     extends AbstractGetPowerQualityProfileHandler {
 
-  public GetPowerQualityProfileNoSelectiveAccessHandler(final DlmsHelper dlmsHelper) {
-    super(dlmsHelper);
+  public GetPowerQualityProfileNoSelectiveAccessHandler(
+      final DlmsHelper dlmsHelper, final ObjectConfigService objectConfigService) {
+    super(dlmsHelper, objectConfigService);
   }
 
   @Override

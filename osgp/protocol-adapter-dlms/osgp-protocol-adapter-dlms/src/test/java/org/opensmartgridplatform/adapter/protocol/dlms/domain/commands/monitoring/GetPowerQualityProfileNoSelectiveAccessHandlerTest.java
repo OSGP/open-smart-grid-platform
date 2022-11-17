@@ -12,6 +12,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -31,9 +34,13 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
+import org.springframework.core.io.ClassPathResource;
 
 @ExtendWith(MockitoExtension.class)
 public class GetPowerQualityProfileNoSelectiveAccessHandlerTest {
@@ -44,17 +51,25 @@ public class GetPowerQualityProfileNoSelectiveAccessHandlerTest {
 
   @Mock private DlmsDevice dlmsDevice;
 
+  private ObjectConfigService objectConfigService;
+
+  @BeforeEach
+  void setUp() throws IOException, ObjectConfigException {
+    final List<DlmsProfile> dlmsProfileList = this.getDlmsProfileList();
+    this.objectConfigService = new ObjectConfigService(dlmsProfileList);
+  }
+
   @Test
   public void testHandlePublicProfileWithoutSelectiveAccess() throws ProtocolAdapterException {
 
     // SETUP
-
     final GetPowerQualityProfileRequestDataDto requestDto =
         new GetPowerQualityProfileRequestDataDto(
             "PUBLIC",
             Date.from(Instant.now().minus(2, ChronoUnit.DAYS)),
             new Date(),
             new ArrayList<>());
+    this.dlmsDevice = createDevice("SMR", "5.0");
 
     when(this.dlmsHelper.getAndCheck(
             any(DlmsConnectionManager.class),
@@ -79,7 +94,8 @@ public class GetPowerQualityProfileNoSelectiveAccessHandlerTest {
     when(this.dlmsHelper.getClockDefinition()).thenCallRealMethod();
 
     final GetPowerQualityProfileNoSelectiveAccessHandler handler =
-        new GetPowerQualityProfileNoSelectiveAccessHandler(this.dlmsHelper);
+        new GetPowerQualityProfileNoSelectiveAccessHandler(
+            this.dlmsHelper, this.objectConfigService);
 
     // EXECUTE
 
@@ -170,5 +186,30 @@ public class GetPowerQualityProfileNoSelectiveAccessHandlerTest {
                     allowedCaptureObject1, nonAllowedCaptureObject2, allowedCaptureObject3)));
 
     return Collections.singletonList(getResult);
+  }
+
+  private List<DlmsProfile> getDlmsProfileList() throws IOException {
+    final ObjectMapper objectMapper = new ObjectMapper();
+    final List<DlmsProfile> DlmsProfileList = new ArrayList<>();
+    final DlmsProfile dlmsProfile50 =
+        objectMapper.readValue(
+            new ClassPathResource("/dlmsprofile-smr50.json").getFile(), DlmsProfile.class);
+    final DlmsProfile dlmsProfile51 =
+        objectMapper.readValue(
+            new ClassPathResource("/dlmsprofile-smr51.json").getFile(), DlmsProfile.class);
+    final DlmsProfile dlmsProfile52 =
+        objectMapper.readValue(
+            new ClassPathResource("/dlmsprofile-smr52.json").getFile(), DlmsProfile.class);
+    DlmsProfileList.add(dlmsProfile50);
+    DlmsProfileList.add(dlmsProfile51);
+    DlmsProfileList.add(dlmsProfile52);
+    return DlmsProfileList;
+  }
+
+  private DlmsDevice createDevice(String protocol, String version) {
+    final DlmsDevice device = new DlmsDevice();
+    device.setProtocol(protocol, version);
+
+    return device;
   }
 }

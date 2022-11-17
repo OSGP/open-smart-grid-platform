@@ -100,6 +100,15 @@ public class ObjectConfigService {
     return dlmsProfile.get().getObjectMap();
   }
 
+  public Optional<CosemObject> getProfile(final String profileName) {
+    for (final DlmsProfile dlmsProfile : this.dlmsProfiles) {
+      return dlmsProfile.getObjects().stream()
+          .filter(object -> profileName.equals(object.getTag()))
+          .findFirst();
+    }
+    return Optional.empty();
+  }
+
   private boolean hasProperty(
       final CosemObject object,
       final ObjectProperty wantedProperty,
