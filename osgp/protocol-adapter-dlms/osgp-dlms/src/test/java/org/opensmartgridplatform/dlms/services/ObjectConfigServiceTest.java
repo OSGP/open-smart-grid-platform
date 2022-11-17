@@ -47,7 +47,7 @@ class ObjectConfigServiceTest {
   @Test
   void testGetCosemObjects() throws ObjectConfigException {
     final String protocolName = "SMR";
-    final String protocolVersion50 = "5.0";
+    final String protocolVersion50 = "5.0.0";
     final String protocolVersion51 = "5.1";
     final String protocolVersion52 = "5.2";
 
@@ -84,7 +84,7 @@ class ObjectConfigServiceTest {
 
   @Test
   void testGetCosemObject() throws ObjectConfigException {
-    final String protocolVersion50 = "5.0";
+    final String protocolVersion50 = "5.0.0";
     final String protocolName = "SMR";
 
     assertThrows(
@@ -105,7 +105,7 @@ class ObjectConfigServiceTest {
   @Test
   void testGetCosemObjectsWithProperty() throws ObjectConfigException {
     final String protocolName = "SMR";
-    final String protocolVersion50 = "5.0";
+    final String protocolVersion50 = "5.0.0";
 
     final List<CosemObject> cosemObjectsWithSelectableObjects =
         this.objectConfigService.getCosemObjectsWithProperty(
@@ -135,7 +135,7 @@ class ObjectConfigServiceTest {
   @Test
   void testGetCosemObjectsWithPropertiesWithMultipleAllowedValues() throws ObjectConfigException {
     final String protocolName = "SMR";
-    final String protocolVersion50 = "5.0";
+    final String protocolVersion50 = "5.0.0";
 
     final Map<ObjectProperty, List<Object>> requestMap = new HashMap<>();
     final List<Object> wantedValues = new ArrayList<>();
@@ -153,7 +153,7 @@ class ObjectConfigServiceTest {
   @Test
   void testGetCosemObjectsWithPropertiesWithMultipleProperties() throws ObjectConfigException {
     final String protocolName = "SMR";
-    final String protocolVersion50 = "5.0";
+    final String protocolVersion50 = "5.0.0";
 
     final Map<ObjectProperty, List<Object>> requestMap = new HashMap<>();
     final List<Object> wantedValuesPqProfile = new ArrayList<>();

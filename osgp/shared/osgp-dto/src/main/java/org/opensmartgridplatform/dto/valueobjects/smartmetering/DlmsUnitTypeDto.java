@@ -50,7 +50,7 @@ public enum DlmsUnitTypeDto {
   KWH(30, "KWH"),
   VOLT_AMP_HOUR(31, "VOLT_AMP_HOUR"),
   VAR_HOUR(32, "VAR_HOUR"),
-  AMPERE(33, "AMP"),
+  AMPERE(33, "AMP", "A"),
   COULOMB(34, "COULOMB"),
   VOLT(35, "V"),
   VOLT_PER_METER(36, "VOLT_PER_METER"),
@@ -97,16 +97,24 @@ public enum DlmsUnitTypeDto {
 
   static {
     for (final DlmsUnitTypeDto unitType : DlmsUnitTypeDto.values()) {
-      UNIT_TO_TYPE_MAP.put(unitType.getUnit(), unitType);
+      UNIT_TO_TYPE_MAP.put(unitType.getUnitShort(), unitType);
     }
   }
 
   private final int index;
   private final String unit;
+  private final String unitShort;
 
   private DlmsUnitTypeDto(final int index, final String unit) {
     this.index = index;
     this.unit = unit;
+    this.unitShort = unit;
+  }
+
+  private DlmsUnitTypeDto(final int index, final String unit, final String unitShort) {
+    this.index = index;
+    this.unit = unit;
+    this.unitShort = unitShort;
   }
 
   public static Map<Integer, DlmsUnitTypeDto> getIndexToTypeMap() {
@@ -132,5 +140,9 @@ public enum DlmsUnitTypeDto {
 
   public String getUnit() {
     return this.unit;
+  }
+
+  public String getUnitShort() {
+    return this.unitShort;
   }
 }

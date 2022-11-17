@@ -52,8 +52,8 @@
           "CLOCK",
           "CDMA_DIAGNOSTIC",
           "GPRS_DIAGNOSTIC",
-          "NUMBER_OF_VOLTAGE_SWELLS_L1",
-          "NUMBER_OF_VOLTAGE_SAGS_L1",
+          "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
+          "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
           "NUMBER_OF_POWER_FAILURES",
           "INSTANTANEOUS_VOLTAGE_L1",
           "INSTANTANEOUS_VOLTAGE_L2",
@@ -280,7 +280,7 @@
       ]
     },
     {
-      "tag": "NUMBER_OF_VOLTAGE_SWELLS_L1",
+      "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
       "description": "Number of voltage swells in phase L1",
       "class-id": 1,
       "version": 0,
@@ -303,7 +303,7 @@
       ]
     },
     {
-      "tag": "NUMBER_OF_VOLTAGE_SAGS_L1",
+      "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
       "description": "Number of voltage sags in phase L1",
       "class-id": 1,
       "version": 0,
@@ -374,7 +374,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "value": "0, V",
           "access": "RW"
         }
       ]
@@ -405,7 +405,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "value": "0, V",
           "access": "RW"
         }
       ]
@@ -436,7 +436,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "value": "0, V",
           "access": "RW"
         }
       ]
@@ -467,7 +467,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "value": "0, V",
           "access": "R"
         }
       ]
@@ -498,7 +498,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "value": "0, V",
           "access": "R"
         }
       ]
@@ -529,7 +529,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "value": "0, V",
           "access": "R"
         }
       ]
@@ -560,7 +560,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-2, A",
+          "value": "0, A",
           "access": "RW"
         }
       ]
@@ -591,13 +591,13 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-2, A",
+          "value": "0, A",
           "access": "R"
         }
       ]
     },
     {
-      "tag": "INSTANTANEOUS_CURRENT_TOTAL",
+      "tag": "INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES",
       "description": "Instantaneous current total",
       "class-id": 3,
       "version": 0,
@@ -622,7 +622,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-2, A",
+          "value": "0, A",
           "access": "R"
         }
       ]
@@ -839,7 +839,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]
@@ -870,7 +870,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]
@@ -901,7 +901,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]
@@ -932,7 +932,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]
@@ -963,7 +963,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]
@@ -994,7 +994,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]

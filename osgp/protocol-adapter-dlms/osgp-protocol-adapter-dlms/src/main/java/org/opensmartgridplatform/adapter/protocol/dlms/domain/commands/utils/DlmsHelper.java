@@ -289,6 +289,9 @@ public class DlmsHelper {
 
     final int scaler = Integer.parseInt(scalerUnitParts[0]);
     final DlmsUnitTypeDto unit = DlmsUnitTypeDto.getUnitType(scalerUnitParts[1].trim());
+    if (unit == null) {
+      throw new ProtocolAdapterException("Invalid unit: " + scalerUnitParts[1].trim());
+    }
 
     return this.createDlmsMeterValueBasedOnValueAndScalerAndUnit(
         value.getResultData(), scaler, unit, description);
