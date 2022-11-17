@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -28,6 +29,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -36,6 +38,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemTimeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 
 public class DlmsHelperTest {
 
@@ -58,6 +62,9 @@ public class DlmsHelperTest {
   public static final byte DAY_OF_WEEK_UNDEFINED = (byte) 0xFF;
   public static final short DEVIATION_AMSTERDAM_SUMMER_TIME = -120;
   public static final short DEVIATION_AMSTERDAM_WINTER_TIME = -60;
+
+  public static final int DLMS_UNIT_VAR = 29;
+  public static final int DLMS_UNIT_WH = 30;
 
   private final DlmsHelper dlmsHelper = new DlmsHelper();
 
@@ -215,6 +222,49 @@ public class DlmsHelperTest {
         this.dlmsHelper.readHexString(dataObject, "reading a Hexadecimal String");
 
     assertThat(hexString).isEqualTo("19180776");
+  }
+
+  @Test
+  void testGetScaledMeterValue() throws ProtocolAdapterException {
+    final GetResultImpl getResultValue = new GetResultImpl(DataObject.newUInteger16Data(21));
+    final GetResultImpl getResultScalerUnit =
+        new GetResultImpl(
+            DataObject.newStructureData(
+                DataObject.newInteger8Data((byte) -1), DataObject.newEnumerateData(DLMS_UNIT_WH)));
+
+    final DlmsMeterValueDto meterValueDto =
+        this.dlmsHelper.getScaledMeterValue(
+            getResultValue, getResultScalerUnit, "getScaledMeterValueTest");
+
+    assertThat(meterValueDto.getValue()).isEqualTo(BigDecimal.valueOf(2.1));
+    assertThat(meterValueDto.getDlmsUnit()).isEqualTo(DlmsUnitTypeDto.KWH);
+  }
+
+  @Test
+  void testGetScaledMeterValueWithSpecifiedScalerAndUnit() throws ProtocolAdapterException {
+    final GetResultImpl getResultValue = new GetResultImpl(DataObject.newUInteger16Data(5));
+
+    final DlmsMeterValueDto meterValueDto =
+        this.dlmsHelper.getScaledMeterValue(
+            getResultValue, "0, V", "getScaledMeterValueTest with specified scaler and unit");
+
+    assertThat(meterValueDto.getValue()).isEqualTo(BigDecimal.valueOf(5));
+    assertThat(meterValueDto.getDlmsUnit()).isEqualTo(DlmsUnitTypeDto.VOLT);
+  }
+
+  @Test
+  void testGetScaledMeterValueWithDataObject() throws ProtocolAdapterException {
+    final DataObject value = DataObject.newUInteger16Data(10);
+    final DataObject scalerUnit =
+        DataObject.newStructureData(
+            DataObject.newInteger8Data((byte) 2), DataObject.newEnumerateData(DLMS_UNIT_VAR));
+
+    final DlmsMeterValueDto meterValueDto =
+        this.dlmsHelper.getScaledMeterValue(
+            value, scalerUnit, "getScaledMeterValueTest with DataObject");
+
+    assertThat(meterValueDto.getValue()).isEqualTo(BigDecimal.valueOf(1000.0));
+    assertThat(meterValueDto.getDlmsUnit()).isEqualTo(DlmsUnitTypeDto.VAR);
   }
 
   private void assertGetWithListException(

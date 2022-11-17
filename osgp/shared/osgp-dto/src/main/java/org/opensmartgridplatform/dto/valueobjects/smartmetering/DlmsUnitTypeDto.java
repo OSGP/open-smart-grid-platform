@@ -86,11 +86,18 @@ public enum DlmsUnitTypeDto {
   DB(72, "DB"),
   COUNT(255, "COUNT");
 
-  private static final Map<Integer, DlmsUnitTypeDto> UNIT_TYPES_MAP = new HashMap<>();
+  private static final Map<Integer, DlmsUnitTypeDto> INDEX_TO_TYPE_MAP = new HashMap<>();
+  private static final Map<String, DlmsUnitTypeDto> UNIT_TO_TYPE_MAP = new HashMap<>();
 
   static {
     for (final DlmsUnitTypeDto unitType : DlmsUnitTypeDto.values()) {
-      UNIT_TYPES_MAP.put(unitType.getIndex(), unitType);
+      INDEX_TO_TYPE_MAP.put(unitType.getIndex(), unitType);
+    }
+  }
+
+  static {
+    for (final DlmsUnitTypeDto unitType : DlmsUnitTypeDto.values()) {
+      UNIT_TO_TYPE_MAP.put(unitType.getUnit(), unitType);
     }
   }
 
@@ -102,12 +109,16 @@ public enum DlmsUnitTypeDto {
     this.unit = unit;
   }
 
-  public static Map<Integer, DlmsUnitTypeDto> getUnitTypesMap() {
-    return UNIT_TYPES_MAP;
+  public static Map<Integer, DlmsUnitTypeDto> getIndexToTypeMap() {
+    return INDEX_TO_TYPE_MAP;
   }
 
   public static DlmsUnitTypeDto getUnitType(final int index) {
-    return UNIT_TYPES_MAP.get(index & 0xFF);
+    return INDEX_TO_TYPE_MAP.get(index & 0xFF);
+  }
+
+  public static DlmsUnitTypeDto getUnitType(final String unit) {
+    return UNIT_TO_TYPE_MAP.get(unit);
   }
 
   public static String getUnit(final int index) {
