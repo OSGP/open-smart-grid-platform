@@ -14,6 +14,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -28,9 +30,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.*;
-import org.opensmartgridplatform.dlms.objectconfig.Attribute;
-import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
-import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
+import org.opensmartgridplatform.dlms.objectconfig.*;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.*;
 import org.slf4j.Logger;
@@ -124,20 +124,8 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     final GetPowerQualityProfileResponseDto response = new GetPowerQualityProfileResponseDto();
     final List<PowerQualityProfileDataDto> responseDatas = new ArrayList<>();
 
-    List<CosemObject> cosemConfigObjects = new ArrayList<>();
+    List<CosemObject> cosemConfigObjects = this.getCosemObjects(device, profileType);
 
-
-    try {
-      cosemConfigObjects =
-          this.objectConfigService.getCosemObjectsWithProperty(
-              device.getProtocolName(),
-              device.getProtocolVersion(),
-              ObjectProperty.valueOf("PQ_PROFILE"),
-              profileType);
-    } catch (ObjectConfigException e) {
-      //TODO handle this correctly
-      System.out.println("ERROR " + e);
-    }
     for (final Profile profile : profiles) {
 
       final ObisCode obisCode = this.getObisCodeFromProfile(profile.name());
@@ -181,6 +169,34 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     response.setPowerQualityProfileDatas(responseDatas);
 
     return response;
+  }
+
+  private List<CosemObject> getCosemObjects(final DlmsDevice device, final String profileType) throws ProtocolAdapterException {
+    List<CosemObject> cosemConfigObjects = new ArrayList<>();
+
+    try {
+      final CosemObject clockObject =
+              this.objectConfigService.getCosemObject(
+                      device.getProtocolName(), device.getProtocolVersion(), DlmsObjectType.CLOCK);
+      cosemConfigObjects.add(clockObject);
+
+      final EnumMap<ObjectProperty, List<Object>> pqProperties =
+              new EnumMap<>(ObjectProperty.class);
+      pqProperties.put(ObjectProperty.PQ_PROFILE, Collections.singletonList(profileType));
+      pqProperties.put(
+              ObjectProperty.PQ_REQUEST,
+              Arrays.asList(PowerQualityRequest.ONDEMAND.name(), PowerQualityRequest.BOTH.name()));
+
+      cosemConfigObjects.addAll(
+              this.objectConfigService.getCosemObjectsWithProperties(
+                      device.getProtocolName(), device.getProtocolVersion(), pqProperties));
+
+      // TODO add filter for single phase / poly phase ???
+
+      return cosemConfigObjects;
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException("Error in object config", e);
+    }
   }
 
   private List<Profile> determineProfileForDevice(final String profileType) {
@@ -537,7 +553,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       final DlmsDevice device,
       final Collection<CaptureObjectDefinitionDto> values,
       final List<CosemObject> cosemConfigObjects)
-      throws ProtocolAdapterException {
+       {
 
     final List<ScalerUnitInfo> scalerUnitInfos = new ArrayList<>();
 
@@ -578,6 +594,11 @@ public abstract class AbstractGetPowerQualityProfileHandler {
         attributeList.get().stream()
             .filter(attribute -> attribute.getDatatype().toString().equals("scal_unit_type"))
             .findFirst();
+
+//
+//    DlmsMeterValueDto getScaledMeterValue(
+//    final GetResult value, final String scalerUnit, final String description)
+
 
     if (scalUnitType.isPresent()) {
       // final DataObject scalerUnitDataObject = scalUnitType.get();
