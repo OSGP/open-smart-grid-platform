@@ -97,6 +97,7 @@ public class ActualPowerQualitySteps {
 
     final String expectedName =
         SettingsHelper.getStringValue(settings, "PowerQualityObject_Name", 1);
+    // Only check the received objects if there are expected objects defined in the settings
     if (expectedName != null) {
       for (int i = 0; i < expectedNumberOfPowerQualityObjects; i++) {
         final PowerQualityObject actualPowerQualityObject = actualPowerQualityObjects.get(i);

@@ -16,8 +16,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -57,9 +55,6 @@ public class GetActualPowerQualityCommandExecutor
   private static final int CLASS_ID_REGISTER = InterfaceClass.REGISTER.id();
   private static final int CLASS_ID_DATA = InterfaceClass.DATA.id();
   private static final int CLASS_ID_CLOCK = InterfaceClass.CLOCK.id();
-
-  private static final String PRIVATE = "PRIVATE";
-  private static final String PUBLIC = "PUBLIC";
 
   private final DlmsHelper dlmsHelper;
 
@@ -181,18 +176,6 @@ public class GetActualPowerQualityCommandExecutor
     }
   }
 
-  protected static List<PowerQualityObjectMetadata> getMetadatasPublic() {
-    return Stream.of(PowerQualityObjectMetadata.values())
-        .filter(e -> PUBLIC.equals(e.getProfileName()) || e.getClassId() == CLASS_ID_CLOCK)
-        .collect(Collectors.toList());
-  }
-
-  protected static List<PowerQualityObjectMetadata> getMetadatasPrivate() {
-    return Stream.of(PowerQualityObjectMetadata.values())
-        .filter(e -> PRIVATE.equals(e.getProfileName()) || e.getClassId() == CLASS_ID_CLOCK)
-        .collect(Collectors.toList());
-  }
-
   public List<CosemObject> getPQObjects(final DlmsDevice device, final PowerQualityProfile profile)
       throws ProtocolAdapterException {
     final List<CosemObject> allPQObjects = new ArrayList<>();
@@ -256,122 +239,5 @@ public class GetActualPowerQualityCommandExecutor
   private boolean objectsHasCorrectMeterType(final CosemObject object, final DlmsDevice device) {
     return (!device.isPolyphase() && object.getMeterTypes().contains(MeterType.SP))
         || (device.isPolyphase() && object.getMeterTypes().contains(MeterType.PP));
-  }
-
-  @Getter
-  protected enum PowerQualityObjectMetadata {
-    CLOCK("0.0.1.0.0.255", CLASS_ID_CLOCK, null, false),
-    // PRIVATE
-    INSTANTANEOUS_CURRENT_L1("1.0.31.7.0.255", CLASS_ID_REGISTER, PRIVATE, false),
-    INSTANTANEOUS_CURRENT_L2("1.0.51.7.0.255", CLASS_ID_REGISTER, PRIVATE, true),
-    INSTANTANEOUS_CURRENT_L3("1.0.71.7.0.255", CLASS_ID_REGISTER, PRIVATE, true),
-    INSTANTANEOUS_ACTIVE_POWER_IMPORT("1.0.1.7.0.255", CLASS_ID_REGISTER, PRIVATE, false),
-    INSTANTANEOUS_ACTIVE_POWER_EXPORT("1.0.2.7.0.255", CLASS_ID_REGISTER, PRIVATE, false),
-    INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1("1.0.21.7.0.255", CLASS_ID_REGISTER, PRIVATE, false),
-    INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2("1.0.41.7.0.255", CLASS_ID_REGISTER, PRIVATE, true),
-    INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3("1.0.61.7.0.255", CLASS_ID_REGISTER, PRIVATE, true),
-    INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1("1.0.22.7.0.255", CLASS_ID_REGISTER, PRIVATE, false),
-    INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2("1.0.42.7.0.255", CLASS_ID_REGISTER, PRIVATE, true),
-    INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3("1.0.62.7.0.255", CLASS_ID_REGISTER, PRIVATE, true),
-    AVERAGE_CURRENT_L1("1.0.31.24.0.255", CLASS_ID_REGISTER, PRIVATE, false),
-    AVERAGE_CURRENT_L2("1.0.51.24.0.255", CLASS_ID_REGISTER, PRIVATE, true),
-    AVERAGE_CURRENT_L3("1.0.71.24.0.255", CLASS_ID_REGISTER, PRIVATE, true),
-    AVERAGE_ACTIVE_POWER_IMPORT_L1("1.0.21.4.0.255", CLASS_ID_REGISTER, PRIVATE, false),
-    AVERAGE_ACTIVE_POWER_IMPORT_L2("1.0.41.4.0.255", CLASS_ID_REGISTER, PRIVATE, true),
-    AVERAGE_ACTIVE_POWER_IMPORT_L3("1.0.61.4.0.255", CLASS_ID_REGISTER, PRIVATE, true),
-    AVERAGE_ACTIVE_POWER_EXPORT_L1("1.0.22.4.0.255", CLASS_ID_REGISTER, PRIVATE, false),
-    AVERAGE_ACTIVE_POWER_EXPORT_L2("1.0.42.4.0.255", CLASS_ID_REGISTER, PRIVATE, true),
-    AVERAGE_ACTIVE_POWER_EXPORT_L3("1.0.62.4.0.255", CLASS_ID_REGISTER, PRIVATE, true),
-    AVERAGE_REACTIVE_POWER_IMPORT_L1("1.0.23.4.0.255", CLASS_ID_REGISTER, PRIVATE, false),
-    AVERAGE_REACTIVE_POWER_IMPORT_L2("1.0.43.4.0.255", CLASS_ID_REGISTER, PRIVATE, true),
-    AVERAGE_REACTIVE_POWER_IMPORT_L3("1.0.63.4.0.255", CLASS_ID_REGISTER, PRIVATE, true),
-    AVERAGE_REACTIVE_POWER_EXPORT_L1("1.0.24.4.0.255", CLASS_ID_REGISTER, PRIVATE, false),
-    AVERAGE_REACTIVE_POWER_EXPORT_L2("1.0.44.4.0.255", CLASS_ID_REGISTER, PRIVATE, true),
-    AVERAGE_REACTIVE_POWER_EXPORT_L3("1.0.64.4.0.255", CLASS_ID_REGISTER, PRIVATE, true),
-    INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES(
-        "1.0.90.7.0.255", CLASS_ID_REGISTER, PRIVATE, false),
-    // PUBLIC
-    INSTANTANEOUS_VOLTAGE_L1("1.0.32.7.0.255", CLASS_ID_REGISTER, PUBLIC, false),
-    INSTANTANEOUS_VOLTAGE_L2("1.0.52.7.0.255", CLASS_ID_REGISTER, PUBLIC, true),
-    INSTANTANEOUS_VOLTAGE_L3("1.0.72.7.0.255", CLASS_ID_REGISTER, PUBLIC, true),
-    AVERAGE_VOLTAGE_L1("1.0.32.24.0.255", CLASS_ID_REGISTER, PUBLIC, false),
-    AVERAGE_VOLTAGE_L2("1.0.52.24.0.255", CLASS_ID_REGISTER, PUBLIC, true),
-    AVERAGE_VOLTAGE_L3("1.0.72.24.0.255", CLASS_ID_REGISTER, PUBLIC, true),
-    NUMBER_OF_LONG_POWER_FAILURES("0.0.96.7.9.255", CLASS_ID_DATA, PUBLIC, false),
-    NUMBER_OF_POWER_FAILURES("0.0.96.7.21.255", CLASS_ID_DATA, PUBLIC, false),
-    NUMBER_OF_VOLTAGE_SAGS_FOR_L1("1.0.32.32.0.255", CLASS_ID_DATA, PUBLIC, false),
-    NUMBER_OF_VOLTAGE_SAGS_FOR_L2("1.0.52.32.0.255", CLASS_ID_DATA, PUBLIC, true),
-    NUMBER_OF_VOLTAGE_SAGS_FOR_L3("1.0.72.32.0.255", CLASS_ID_DATA, PUBLIC, true),
-    NUMBER_OF_VOLTAGE_SWELLS_FOR_L1("1.0.32.36.0.255", CLASS_ID_DATA, PUBLIC, false),
-    NUMBER_OF_VOLTAGE_SWELLS_FOR_L2("1.0.52.36.0.255", CLASS_ID_DATA, PUBLIC, true),
-    NUMBER_OF_VOLTAGE_SWELLS_FOR_L3("1.0.72.36.0.255", CLASS_ID_DATA, PUBLIC, true);
-
-    private final String obisCode;
-    private final int classId;
-    private final String profileName;
-    private final boolean polyphaseOnly;
-
-    PowerQualityObjectMetadata(
-        final String obisCode,
-        final int classId,
-        final String profileName,
-        final boolean polyphaseOnly) {
-      this.obisCode = obisCode;
-      this.classId = classId;
-      this.profileName = profileName;
-      this.polyphaseOnly = polyphaseOnly;
-    }
-
-    public List<AttributeAddress> getAttributeAddresses() {
-      final List<AttributeAddress> attributeAddresses = new ArrayList<>();
-      if (this.classId == InterfaceClass.CLOCK.id()) {
-        attributeAddresses.add(this.getAttributeAddress(ClockAttribute.TIME.attributeId()));
-      } else if (this.classId == InterfaceClass.DATA.id()) {
-        attributeAddresses.add(this.getAttributeAddress(DataAttribute.VALUE.attributeId()));
-      } else if (this.classId == InterfaceClass.REGISTER.id()) {
-        attributeAddresses.add(this.getAttributeAddress(RegisterAttribute.VALUE.attributeId()));
-        attributeAddresses.add(
-            this.getAttributeAddress(RegisterAttribute.SCALER_UNIT.attributeId()));
-      } else {
-        log.warn("No attribute addresses returned for interface class of {}", this.name());
-      }
-      return attributeAddresses;
-    }
-
-    public AttributeAddress getAttributeAddress(final int attributeId) {
-      return new AttributeAddress(this.classId, this.obisCode, attributeId);
-    }
-  }
-
-  private enum Profile {
-    PUBLIC(getMetadatasPublic()),
-    PRIVATE(getMetadatasPrivate());
-
-    private final List<PowerQualityObjectMetadata> metadatas;
-
-    Profile(final List<PowerQualityObjectMetadata> metadatas) {
-      this.metadatas = metadatas;
-    }
-
-    public List<PowerQualityObjectMetadata> getMetadatas(final DlmsDevice device) {
-      return this.metadatas.stream()
-          .filter(metadata -> this.useForDevice(metadata, device))
-          .collect(Collectors.toList());
-    }
-
-    public List<AttributeAddress> getAttributeAddresses(final DlmsDevice device) {
-
-      return this.getMetadatas(device).stream()
-          .flatMap(metadata -> metadata.getAttributeAddresses().stream())
-          .collect(Collectors.toList());
-    }
-
-    private boolean useForDevice(
-        final PowerQualityObjectMetadata metadata, final DlmsDevice device) {
-      if (device.isPolyphase()) {
-        return true;
-      }
-      return !metadata.polyphaseOnly;
-    }
   }
 }
