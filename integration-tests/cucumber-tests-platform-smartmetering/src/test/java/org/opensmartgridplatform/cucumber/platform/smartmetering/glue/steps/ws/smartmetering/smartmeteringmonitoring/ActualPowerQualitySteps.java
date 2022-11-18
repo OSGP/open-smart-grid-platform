@@ -95,10 +95,11 @@ public class ActualPowerQualitySteps {
         .as("Number of power quality objects")
         .isEqualTo(expectedNumberOfPowerQualityObjects);
 
-    for (int i = 0; i < expectedNumberOfPowerQualityObjects; i++) {
-      final PowerQualityObject actualPowerQualityObject = actualPowerQualityObjects.get(i);
-      final Long expectedNameId = SettingsHelper.getLongValue(settings, "PowerQuality_Name", i + 1);
-      if (expectedNameId != null) {
+    final String expectedName =
+        SettingsHelper.getStringValue(settings, "PowerQualityObject_Name", 1);
+    if (expectedName != null) {
+      for (int i = 0; i < expectedNumberOfPowerQualityObjects; i++) {
+        final PowerQualityObject actualPowerQualityObject = actualPowerQualityObjects.get(i);
         this.validatePowerQualityObject(actualPowerQualityObject, settings, i + 1);
       }
     }
