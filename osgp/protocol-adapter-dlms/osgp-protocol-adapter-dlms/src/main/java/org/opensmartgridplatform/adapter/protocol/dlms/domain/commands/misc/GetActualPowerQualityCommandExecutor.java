@@ -220,8 +220,7 @@ public class GetActualPowerQualityCommandExecutor
       // Filter for single phase / poly phase
       final List<CosemObject> pqObjects =
           objectsForProfile.stream()
-              .filter(
-                  object -> device.isPolyphase() || object.getMeterTypes().contains(MeterType.SP))
+              .filter(object -> this.objectsHasCorrectMeterType(object, device))
               .collect(Collectors.toList());
 
       allPQObjects.addAll(pqObjects);
@@ -252,6 +251,11 @@ public class GetActualPowerQualityCommandExecutor
       log.warn("No attribute addresses returned for interface class of {}", object.getTag());
       return null;
     }
+  }
+
+  private boolean objectsHasCorrectMeterType(final CosemObject object, final DlmsDevice device) {
+    return (!device.isPolyphase() && object.getMeterTypes().contains(MeterType.SP))
+        || (device.isPolyphase() && object.getMeterTypes().contains(MeterType.PP));
   }
 
   @Getter

@@ -8,192 +8,370 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.joda.time.DateTime;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openmuc.jdlms.AccessResultCode;
+import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.datatypes.CosemDateTime;
+import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.objectconfig.Attribute;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
+import org.opensmartgridplatform.dlms.objectconfig.MeterType;
+import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
+import org.opensmartgridplatform.dlms.objectconfig.PowerQualityProfile;
+import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityObjectDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityValueDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-public class GetActualPowerQualityCommandExecutorTest {
-  //  private static final int CLASS_ID_DATA = 1;
-  //  private static final int CLASS_ID_REGISTER = 3;
-  //  private static final int CLASS_ID_CLOCK = 8;
-  //
-  //  @Spy private DlmsHelper dlmsHelper;
-  //
-  //  @Mock private DlmsDevice dlmsDevice;
-  //
-  //  @Mock private DlmsConnectionManager conn;
-  //
-  //  @Mock private DlmsMessageListener dlmsMessageListener;
-  //
-  //  private ActualPowerQualityRequestDto actualPowerQualityRequestDto;
-  //  private MessageMetadata messageMetadata;
-  //
-  //  @BeforeEach
-  //  public void before() throws ProtocolAdapterException, IOException {
-  //    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
-  //
-  //    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
-  //  }
-  //
-  //  @Test
-  //  void testRetrievalPublic() throws ProtocolAdapterException {
-  //    when(this.dlmsDevice.isPolyphase()).thenReturn(true);
-  //    this.executeAndAssert("PUBLIC", GetActualPowerQualityCommandExecutor.getMetadatasPublic());
-  //  }
-  //
-  //  @Test
-  //  void testRetrievalPrivate() throws ProtocolAdapterException {
-  //    when(this.dlmsDevice.isPolyphase()).thenReturn(true);
-  //    this.executeAndAssert("PRIVATE",
-  // GetActualPowerQualityCommandExecutor.getMetadatasPrivate());
-  //  }
-  //
-  //  @Test
-  //  void testRetrievalPublicSinglePhase() throws ProtocolAdapterException {
-  //    when(this.dlmsDevice.isPolyphase()).thenReturn(false);
-  //    this.executeAndAssert(
-  //        "PUBLIC",
-  //        GetActualPowerQualityCommandExecutor.getMetadatasPublic().stream()
-  //            .filter(metadata -> !metadata.isPolyphaseOnly())
-  //            .collect(Collectors.toList()));
-  //  }
-  //
-  //  @Test
-  //  void testRetrievalPrivateSinglePhase() throws ProtocolAdapterException {
-  //    when(this.dlmsDevice.isPolyphase()).thenReturn(false);
-  //    this.executeAndAssert(
-  //        "PRIVATE",
-  //        GetActualPowerQualityCommandExecutor.getMetadatasPrivate().stream()
-  //            .filter(metadata -> !metadata.isPolyphaseOnly())
-  //            .collect(Collectors.toList()));
-  //  }
-  //
-  //  @Test
-  //  void testOtherReasonResult() throws ProtocolAdapterException {
-  //    this.actualPowerQualityRequestDto = new ActualPowerQualityRequestDto("PRIVATE");
-  //
-  //    final List<GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata> metadatas =
-  //        GetActualPowerQualityCommandExecutor.getMetadatasPrivate();
-  //
-  //    doReturn(this.generateMockedResult(metadatas, AccessResultCode.OTHER_REASON))
-  //        .when(this.dlmsHelper)
-  //        .getAndCheck(
-  //            eq(this.conn),
-  //            eq(this.dlmsDevice),
-  //            eq("retrieve actual power quality"),
-  //            any(AttributeAddress.class));
-  //
-  //    assertThatExceptionOfType(ProtocolAdapterException.class)
-  //        .isThrownBy(
-  //            () -> {
-  //              new GetActualPowerQualityCommandExecutor(this.dlmsHelper)
-  //                  .execute(
-  //                      this.conn,
-  //                      this.dlmsDevice,
-  //                      this.actualPowerQualityRequestDto,
-  //                      this.messageMetadata);
-  //            });
-  //  }
-  //
-  //  void executeAndAssert(
-  //      final String profileType,
-  //      final List<GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata> metadatas)
-  //      throws ProtocolAdapterException {
-  //    this.actualPowerQualityRequestDto = new ActualPowerQualityRequestDto(profileType);
-  //
-  //    doReturn(this.generateMockedResult(metadatas, AccessResultCode.SUCCESS))
-  //        .when(this.dlmsHelper)
-  //        .getAndCheck(
-  //            eq(this.conn),
-  //            eq(this.dlmsDevice),
-  //            eq("retrieve actual power quality"),
-  //            any(AttributeAddress.class));
-  //
-  //    final GetActualPowerQualityCommandExecutor executor =
-  //        new GetActualPowerQualityCommandExecutor(this.dlmsHelper);
-  //
-  //    final ActualPowerQualityResponseDto responseDto =
-  //        executor.execute(
-  //            this.conn, this.dlmsDevice, this.actualPowerQualityRequestDto,
-  // this.messageMetadata);
-  //
-  //    assertThat(responseDto.getActualPowerQualityData().getPowerQualityValues())
-  //        .hasSize(metadatas.size());
-  //    assertThat(responseDto.getActualPowerQualityData().getPowerQualityObjects())
-  //        .hasSize(metadatas.size());
-  //
-  //    for (int i = 0; i < metadatas.size(); i++) {
-  //      final GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata metadata =
-  //          metadatas.get(i);
-  //
-  //      final Serializable expectedValue = this.getExpectedValue(i, metadata);
-  //      final String expectedUnit = this.getExpectedUnit(metadata);
-  //
-  //      final PowerQualityObjectDto powerQualityObjectDto =
-  //          responseDto.getActualPowerQualityData().getPowerQualityObjects().get(i);
-  //      assertThat(powerQualityObjectDto.getName()).isEqualTo(metadata.name());
-  //      assertThat(powerQualityObjectDto.getUnit()).isEqualTo(expectedUnit);
-  //
-  //      final PowerQualityValueDto powerQualityValue =
-  //          responseDto.getActualPowerQualityData().getPowerQualityValues().get(i);
-  //      assertThat(powerQualityValue.getValue()).isEqualTo(expectedValue);
-  //    }
-  //  }
-  //
-  //  private Serializable getExpectedValue(
-  //      final int i, final GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata
-  // metadata) {
-  //    switch (metadata.getClassId()) {
-  //      case CLASS_ID_CLOCK:
-  //        return DateTime.parse("2018-12-31T23:00:00Z").toDate();
-  //      case CLASS_ID_REGISTER:
-  //        return BigDecimal.valueOf(i * 10.0);
-  //      case CLASS_ID_DATA:
-  //        return BigDecimal.valueOf(i);
-  //      default:
-  //        return null;
-  //    }
-  //  }
-  //
-  //  private String getExpectedUnit(
-  //      final GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata metadata) {
-  //    switch (metadata.getClassId()) {
-  //      case CLASS_ID_REGISTER:
-  //        return DlmsUnitTypeDto.VOLT.getUnit();
-  //      default:
-  //        return null;
-  //    }
-  //  }
-  //
-  //  private List<GetResult> generateMockedResult(
-  //      final List<GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata> metadatas,
-  //      final AccessResultCode resultCode) {
-  //    return this.generateMockedResult(
-  //        metadatas,
-  //        resultCode,
-  //        DataObject.newDateTimeData(new CosemDateTime(2018, 12, 31, 23, 0, 0, 0)));
-  //  }
-  //
-  //  private List<GetResult> generateMockedResult(
-  //      final List<GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata> metadatas,
-  //      final AccessResultCode resultCode,
-  //      final DataObject dateTimeDataObject) {
-  //    final List<GetResult> results = new ArrayList<>();
-  //
-  //    int idx = 1;
-  //    for (final PowerQualityObjectMetadata metadata : metadatas) {
-  //      if (metadata.getClassId() == CLASS_ID_CLOCK) {
-  //        results.add(new GetResultImpl(dateTimeDataObject, resultCode));
-  //      } else {
-  //        results.add(new GetResultImpl(DataObject.newInteger64Data(idx++), resultCode));
-  //        if (metadata.getClassId() == CLASS_ID_REGISTER) {
-  //          final List<DataObject> scalerUnit = new ArrayList<>();
-  //          scalerUnit.add(DataObject.newInteger64Data(1));
-  //          scalerUnit.add(DataObject.newInteger64Data(DlmsUnitTypeDto.VOLT.getIndex()));
-  //          results.add(new GetResultImpl(DataObject.newArrayData(scalerUnit), resultCode));
-  //        }
-  //      }
-  //    }
-  //    return results;
-  //  }
+class GetActualPowerQualityCommandExecutorTest {
+  private static final int CLASS_ID_DATA = 1;
+  private static final int CLASS_ID_REGISTER = 3;
+  private static final int CLASS_ID_CLOCK = 8;
+  private static final int ATTRIBUTE_ID_VALUE = 2;
+  private static final int ATTRIBUTE_ID_SCALER_UNIT = 3;
+  private static final String PROTOCOL_NAME = "SMR";
+  private static final String PROTOCOL_VERSION = "5.0.0";
+  private static final MessageMetadata MESSAGE_METADATA =
+      MessageMetadata.newBuilder().withCorrelationUid("123456").build();
+
+  @Spy private DlmsHelper dlmsHelper;
+
+  @Mock private ObjectConfigService objectConfigService;
+
+  @Mock private DlmsDevice dlmsDevice;
+
+  @Mock private DlmsConnectionManager conn;
+
+  @Mock private DlmsMessageListener dlmsMessageListener;
+
+  @Captor ArgumentCaptor<AttributeAddress> attributeAddressArgumentCaptor;
+
+  private ActualPowerQualityRequestDto actualPowerQualityRequestDto;
+
+  @ParameterizedTest
+  @EnumSource(PowerQualityProfile.class)
+  void testRetrievalPolyphase(final PowerQualityProfile profile)
+      throws ProtocolAdapterException, ObjectConfigException {
+    this.executeAndAssert(profile.name(), true);
+  }
+
+  @ParameterizedTest
+  @EnumSource(PowerQualityProfile.class)
+  void testRetrievalSinglePhase(final PowerQualityProfile profile)
+      throws ProtocolAdapterException, ObjectConfigException {
+    this.executeAndAssert(profile.name(), false);
+  }
+
+  @Test
+  void testOtherReasonResult() throws ProtocolAdapterException, ObjectConfigException {
+    this.actualPowerQualityRequestDto = new ActualPowerQualityRequestDto("PRIVATE");
+
+    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.objectConfigService.getCosemObject(any(), any(), eq(DlmsObjectType.CLOCK)))
+        .thenReturn(this.getClockObject());
+    doReturn(this.generateMockedResult(this.getObjects(false), AccessResultCode.OTHER_REASON))
+        .when(this.dlmsHelper)
+        .getAndCheck(
+            eq(this.conn),
+            eq(this.dlmsDevice),
+            eq("retrieve actual power quality"),
+            any(AttributeAddress.class));
+
+    assertThatExceptionOfType(ProtocolAdapterException.class)
+        .isThrownBy(
+            () -> {
+              new GetActualPowerQualityCommandExecutor(this.dlmsHelper, this.objectConfigService)
+                  .execute(
+                      this.conn,
+                      this.dlmsDevice,
+                      this.actualPowerQualityRequestDto,
+                      MESSAGE_METADATA);
+            });
+  }
+
+  @Test
+  void testUnknownProfile() {
+    this.actualPowerQualityRequestDto = new ActualPowerQualityRequestDto("UNKNOWN_PROFILE");
+
+    final GetActualPowerQualityCommandExecutor executor =
+        new GetActualPowerQualityCommandExecutor(this.dlmsHelper, this.objectConfigService);
+
+    assertThatExceptionOfType(IllegalArgumentException.class)
+        .isThrownBy(
+            () -> {
+              executor.execute(
+                  this.conn, this.dlmsDevice, this.actualPowerQualityRequestDto, MESSAGE_METADATA);
+            });
+  }
+
+  void executeAndAssert(final String profileType, final boolean polyphase)
+      throws ProtocolAdapterException, ObjectConfigException {
+    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.objectConfigService.getCosemObject(any(), any(), eq(DlmsObjectType.CLOCK)))
+        .thenReturn(this.getClockObject());
+    when(this.dlmsDevice.isPolyphase()).thenReturn(polyphase);
+    when(this.dlmsDevice.getProtocolName()).thenReturn(PROTOCOL_NAME);
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(PROTOCOL_VERSION);
+
+    final List<CosemObject> allPqObjectsForThisMeter = this.getObjects(polyphase);
+    final List<CosemObject> allObjectsThatShouldBeRequested = new ArrayList<>();
+    allObjectsThatShouldBeRequested.add(this.getClockObject());
+    allObjectsThatShouldBeRequested.addAll(allPqObjectsForThisMeter);
+    final List<CosemObject> allPqObjects = new ArrayList<>(allPqObjectsForThisMeter);
+    allPqObjects.add(this.getObjectWithWrongMeterType(polyphase));
+
+    when(this.objectConfigService.getCosemObjectsWithProperties(
+            PROTOCOL_NAME, PROTOCOL_VERSION, this.getObjectProperties(profileType)))
+        .thenReturn(allPqObjects);
+
+    this.actualPowerQualityRequestDto = new ActualPowerQualityRequestDto(profileType);
+    final List<AttributeAddress> expectedAttributeAddresses =
+        this.getAttributeAddresses(allObjectsThatShouldBeRequested);
+
+    doReturn(this.generateMockedResult(allObjectsThatShouldBeRequested, AccessResultCode.SUCCESS))
+        .when(this.dlmsHelper)
+        .getAndCheck(any(), any(), any(), any());
+
+    final GetActualPowerQualityCommandExecutor executor =
+        new GetActualPowerQualityCommandExecutor(this.dlmsHelper, this.objectConfigService);
+
+    final ActualPowerQualityResponseDto responseDto =
+        executor.execute(
+            this.conn, this.dlmsDevice, this.actualPowerQualityRequestDto, MESSAGE_METADATA);
+
+    verify(this.dlmsHelper, times(1))
+        .getAndCheck(
+            eq(this.conn),
+            eq(this.dlmsDevice),
+            eq("retrieve actual power quality"),
+            this.attributeAddressArgumentCaptor.capture());
+    assertThat(this.attributeAddressArgumentCaptor.getAllValues())
+        .usingRecursiveFieldByFieldElementComparator()
+        .isEqualTo(expectedAttributeAddresses);
+
+    assertThat(responseDto.getActualPowerQualityData().getPowerQualityValues())
+        .hasSize(allObjectsThatShouldBeRequested.size());
+    assertThat(responseDto.getActualPowerQualityData().getPowerQualityObjects())
+        .hasSize(allObjectsThatShouldBeRequested.size());
+
+    for (int i = 0; i < allObjectsThatShouldBeRequested.size(); i++) {
+      final CosemObject object = allObjectsThatShouldBeRequested.get(i);
+
+      final String expectedUnit = this.getExpectedUnit(object);
+
+      final PowerQualityObjectDto powerQualityObjectDto =
+          responseDto.getActualPowerQualityData().getPowerQualityObjects().get(i);
+      assertThat(powerQualityObjectDto.getName()).isEqualTo(object.getTag());
+      assertThat(powerQualityObjectDto.getUnit()).isEqualTo(expectedUnit);
+
+      final PowerQualityValueDto powerQualityValue =
+          responseDto.getActualPowerQualityData().getPowerQualityValues().get(i);
+      this.assertValue(powerQualityValue.getValue(), i, object);
+    }
+  }
+
+  private void assertValue(final Serializable value, final int i, final CosemObject object) {
+    switch (object.getClassId()) {
+      case CLASS_ID_CLOCK:
+        assertThat(value).isEqualTo(DateTime.parse("2018-12-31T23:00:00Z").toDate());
+        break;
+      case CLASS_ID_DATA:
+        assertThat(value).isEqualTo(BigDecimal.valueOf(i));
+        break;
+      case CLASS_ID_REGISTER:
+        final int scaler = this.getScaler(object);
+        final BigDecimal expectedValue = BigDecimal.valueOf(i, -scaler);
+        assertThat((BigDecimal) value).isEqualByComparingTo(expectedValue);
+        break;
+      default:
+        fail("Unexpected class id: " + object.getClassId());
+    }
+  }
+
+  private byte getScaler(final CosemObject object) {
+    final String scalerUnit = object.getAttribute(ATTRIBUTE_ID_SCALER_UNIT).getValue();
+
+    return Byte.parseByte(scalerUnit.split(",")[0]);
+  }
+
+  private String getExpectedUnit(final CosemObject object) {
+    if (object.getClassId() == CLASS_ID_REGISTER) {
+      final String scalerUnit = object.getAttribute(ATTRIBUTE_ID_SCALER_UNIT).getValue();
+      final String unit = scalerUnit.split(",")[1].trim();
+
+      switch (unit) {
+        case "V":
+          return "V";
+        case "VAR":
+          return "VAR";
+        case "A":
+          return "AMP";
+        default:
+          fail("Unexpected unit: " + unit);
+      }
+    }
+
+    return null;
+  }
+
+  private CosemObject getClockObject() {
+
+    final CosemObject clock = new CosemObject();
+    clock.setClassId(8);
+    clock.setObis("0.0.1.0.0.255");
+    clock.setTag(DlmsObjectType.CLOCK.name());
+
+    return clock;
+  }
+
+  private List<CosemObject> getObjects(final boolean polyphase) {
+    final List<MeterType> meterTypes = this.getMeterTypes(polyphase);
+
+    final CosemObject dataObject = new CosemObject();
+    dataObject.setClassId(1);
+    dataObject.setObis("1.0.0.0.0.1");
+    dataObject.setTag(DlmsObjectType.NUMBER_OF_POWER_FAILURES.name());
+    dataObject.setMeterTypes(meterTypes);
+
+    final CosemObject registerVoltObject = new CosemObject();
+    registerVoltObject.setClassId(3);
+    registerVoltObject.setObis("3.0.0.0.0.1");
+    registerVoltObject.setTag(DlmsObjectType.INSTANTANEOUS_VOLTAGE_L1.name());
+    final List<Attribute> registerVoltAttributes = new ArrayList<>();
+    final Attribute scalerZeroUnitVolt = new Attribute();
+    scalerZeroUnitVolt.setId(3);
+    scalerZeroUnitVolt.setValue("0, V");
+    registerVoltAttributes.add(scalerZeroUnitVolt);
+    registerVoltObject.setAttributes(registerVoltAttributes);
+    registerVoltObject.setMeterTypes(meterTypes);
+
+    final CosemObject registerAmpereObject = new CosemObject();
+    registerAmpereObject.setClassId(3);
+    registerAmpereObject.setObis("3.0.0.0.0.2");
+    registerAmpereObject.setTag(DlmsObjectType.AVERAGE_CURRENT_L1.name());
+    final List<Attribute> registerAmpereAttributes = new ArrayList<>();
+    final Attribute scalerMinusUnitAmpere = new Attribute();
+    scalerMinusUnitAmpere.setId(3);
+    scalerMinusUnitAmpere.setValue("-1, A");
+    registerAmpereAttributes.add(scalerMinusUnitAmpere);
+    registerAmpereObject.setAttributes(registerAmpereAttributes);
+    registerAmpereObject.setMeterTypes(meterTypes);
+
+    final CosemObject registerVarObject = new CosemObject();
+    registerVarObject.setClassId(3);
+    registerVarObject.setObis("3.0.0.0.0.3");
+    registerVarObject.setTag(DlmsObjectType.AVERAGE_REACTIVE_POWER_IMPORT_L1.name());
+    final List<Attribute> registerVarAttributes = new ArrayList<>();
+    final Attribute scalerPositiveUnitVar = new Attribute();
+    scalerPositiveUnitVar.setId(3);
+    scalerPositiveUnitVar.setValue("2, VAR");
+    registerVarAttributes.add(scalerPositiveUnitVar);
+    registerVarObject.setAttributes(registerVarAttributes);
+    registerVarObject.setMeterTypes(meterTypes);
+
+    return new ArrayList<>(
+        Arrays.asList(dataObject, registerVoltObject, registerAmpereObject, registerVarObject));
+  }
+
+  private CosemObject getObjectWithWrongMeterType(final boolean polyphase) {
+
+    // This object has the wrong meter type. The value shouldn't be requested by the commandexecutor
+    final CosemObject objectWithWrongMeterType = new CosemObject();
+    objectWithWrongMeterType.setClassId(1);
+    objectWithWrongMeterType.setObis("1.0.0.0.0.2");
+    objectWithWrongMeterType.setTag(DlmsObjectType.AVERAGE_REACTIVE_POWER_IMPORT_L2.name());
+    if (polyphase) {
+      objectWithWrongMeterType.setMeterTypes(Collections.singletonList(MeterType.SP));
+    } else {
+      objectWithWrongMeterType.setMeterTypes(Collections.singletonList(MeterType.PP));
+    }
+
+    return objectWithWrongMeterType;
+  }
+
+  private List<MeterType> getMeterTypes(final boolean polyphase) {
+    if (polyphase) {
+      return Collections.singletonList(MeterType.PP);
+    } else {
+      return Arrays.asList(MeterType.SP, MeterType.SP);
+    }
+  }
+
+  private List<GetResult> generateMockedResult(
+      final List<CosemObject> objects, final AccessResultCode resultCode) {
+    final List<GetResult> results = new ArrayList<>();
+
+    int idx = 1;
+    for (final CosemObject object : objects) {
+      if (object.getClassId() == CLASS_ID_CLOCK) {
+        results.add(
+            new GetResultImpl(
+                DataObject.newDateTimeData(new CosemDateTime(2018, 12, 31, 23, 0, 0, 0)),
+                resultCode));
+      } else {
+        results.add(new GetResultImpl(DataObject.newInteger64Data(idx++), resultCode));
+      }
+    }
+    return results;
+  }
+
+  private EnumMap<ObjectProperty, List<Object>> getObjectProperties(final String profile) {
+    // Create map with the required properties and values for the power quality objects
+    final EnumMap<ObjectProperty, List<Object>> pqProperties = new EnumMap<>(ObjectProperty.class);
+    pqProperties.put(ObjectProperty.PQ_PROFILE, Collections.singletonList(profile));
+    pqProperties.put(
+        ObjectProperty.PQ_REQUEST,
+        Arrays.asList(PowerQualityRequest.ONDEMAND.name(), PowerQualityRequest.BOTH.name()));
+
+    return pqProperties;
+  }
+
+  private List<AttributeAddress> getAttributeAddresses(final List<CosemObject> objects) {
+
+    return objects.stream()
+        .map(
+            object ->
+                new AttributeAddress(object.getClassId(), object.getObis(), ATTRIBUTE_ID_VALUE))
+        .collect(Collectors.toList());
+  }
 }
