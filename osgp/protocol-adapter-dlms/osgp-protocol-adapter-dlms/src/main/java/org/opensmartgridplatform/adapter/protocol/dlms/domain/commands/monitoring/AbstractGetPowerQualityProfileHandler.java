@@ -574,7 +574,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
             .findFirst();
     Optional<Attribute> scalUnitType =
         attributeList.get().stream()
-            .filter(attribute -> attribute.getDatatype().toString().equals("scal_unit_type"))
+            .filter(attribute -> attribute.getDatatype().toString().equals("SCAL_UNIT_TYPE"))
             .findFirst();
 
     if (scalUnitType.isPresent()) {
