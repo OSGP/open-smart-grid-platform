@@ -14,8 +14,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Collectors;
-
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -146,8 +144,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
       // the units of measure for all Selectable Capture objects
       final List<ScalerUnitInfo> scalerUnitInfos =
-          this.createScalerUnitInfos(
-              conn, device, selectableCaptureObjects.values(), cosemConfigObjects);
+          this.createScalerUnitInfos(selectableCaptureObjects.values(), cosemConfigObjects);
 
       final List<GetResult> bufferList =
           this.retrieveBuffer(
@@ -156,7 +153,6 @@ public abstract class AbstractGetPowerQualityProfileHandler {
               obisCode,
               beginDateTime,
               endDateTime,
-
               new ArrayList<>(selectableCaptureObjects.values()));
 
       final PowerQualityProfileDataDto responseDataDto =
@@ -171,27 +167,28 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     return response;
   }
 
-  private List<CosemObject> getCosemObjects(final DlmsDevice device, final String profileType) throws ProtocolAdapterException {
+  private List<CosemObject> getCosemObjects(final DlmsDevice device, final String profileType)
+      throws ProtocolAdapterException {
     List<CosemObject> cosemConfigObjects = new ArrayList<>();
 
     try {
       final CosemObject clockObject =
-              this.objectConfigService.getCosemObject(
-                      device.getProtocolName(), device.getProtocolVersion(), DlmsObjectType.CLOCK);
+          this.objectConfigService.getCosemObject(
+              device.getProtocolName(), device.getProtocolVersion(), DlmsObjectType.CLOCK);
       cosemConfigObjects.add(clockObject);
 
       final EnumMap<ObjectProperty, List<Object>> pqProperties =
-              new EnumMap<>(ObjectProperty.class);
+          new EnumMap<>(ObjectProperty.class);
       pqProperties.put(ObjectProperty.PQ_PROFILE, Collections.singletonList(profileType));
       pqProperties.put(
-              ObjectProperty.PQ_REQUEST,
-              Arrays.asList(PowerQualityRequest.ONDEMAND.name(), PowerQualityRequest.BOTH.name()));
+          ObjectProperty.PQ_REQUEST,
+          Arrays.asList(PowerQualityRequest.ONDEMAND.name(), PowerQualityRequest.BOTH.name()));
 
-      cosemConfigObjects.addAll(
-              this.objectConfigService.getCosemObjectsWithProperties(
-                      device.getProtocolName(), device.getProtocolVersion(), pqProperties));
+      List<CosemObject> cosemObjectsWithProperties =
+          this.objectConfigService.getCosemObjectsWithProperties(
+              device.getProtocolName(), device.getProtocolVersion(), pqProperties);
 
-      // TODO add filter for single phase / poly phase ???
+      cosemConfigObjects.addAll(cosemObjectsWithProperties);
 
       return cosemConfigObjects;
     } catch (final ObjectConfigException e) {
@@ -549,18 +546,14 @@ public abstract class AbstractGetPowerQualityProfileHandler {
   }
 
   private List<ScalerUnitInfo> createScalerUnitInfos(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
       final Collection<CaptureObjectDefinitionDto> values,
-      final List<CosemObject> cosemConfigObjects)
-       {
+      final List<CosemObject> cosemConfigObjects) {
 
     final List<ScalerUnitInfo> scalerUnitInfos = new ArrayList<>();
 
     for (final CaptureObjectDefinitionDto dto : values) {
 
-      final ScalerUnitInfo newScalerUnitInfo =
-          this.createScalerUnitInfo(conn, device, dto, cosemConfigObjects);
+      final ScalerUnitInfo newScalerUnitInfo = this.createScalerUnitInfo(dto, cosemConfigObjects);
       scalerUnitInfos.add(newScalerUnitInfo);
     }
 
@@ -568,26 +561,15 @@ public abstract class AbstractGetPowerQualityProfileHandler {
   }
 
   private ScalerUnitInfo createScalerUnitInfo(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
       final CaptureObjectDefinitionDto captureObjectDefinitionDto,
       final List<CosemObject> cosemConfigObjects) {
 
     final int classId = captureObjectDefinitionDto.getClassId();
     final String logicalName = captureObjectDefinitionDto.getLogicalName().toString();
 
-    //       if (this.hasScalerUnit(classId)) {
-    //      final AttributeAddress addr =
-    //          new AttributeAddress(classId, logicalName, SCALER_UNITS_MAP.get(classId));
-    //      final List<GetResult> scalerUnitResult =
-    //          this.dlmsHelper.getAndCheck(
-    //              conn, device, "retrieve scaler unit for capture object", addr);
-
-    // ********************************************************************************************************
-    // TODO should be something like this, how te create correct DataObject??
     Optional<List<Attribute>> attributeList =
         cosemConfigObjects.stream()
-            .filter(cosemObject -> cosemObject.getObis().equals(logicalName))
+            .filter(object -> object.getObis().equals(logicalName))
             .map(CosemObject::getAttributes)
             .findFirst();
     Optional<Attribute> scalUnitType =
@@ -595,25 +577,12 @@ public abstract class AbstractGetPowerQualityProfileHandler {
             .filter(attribute -> attribute.getDatatype().toString().equals("scal_unit_type"))
             .findFirst();
 
-//
-//    DlmsMeterValueDto getScaledMeterValue(
-//    final GetResult value, final String scalerUnit, final String description)
-
-
     if (scalUnitType.isPresent()) {
-      // final DataObject scalerUnitDataObject = scalUnitType.get();
       final DataObject scalerUnitDataObject =
           DataObject.newStructureData((List<DataObject>) scalUnitType.get());
       return new ScalerUnitInfo(logicalName, classId, scalerUnitDataObject);
     } else {
       return new ScalerUnitInfo(logicalName, classId, null);
     }
-    // *************************************************************************************************************
-
-    //      final DataObject scalerUnitDataObject = scalerUnitResult.get(0).getResultData();
-    //      return new ScalerUnitInfo(logicalName, classId, scalerUnitDataObject);
-    //    } else {
-    //      return new ScalerUnitInfo(logicalName, classId, null);
-    //    }
   }
 }
