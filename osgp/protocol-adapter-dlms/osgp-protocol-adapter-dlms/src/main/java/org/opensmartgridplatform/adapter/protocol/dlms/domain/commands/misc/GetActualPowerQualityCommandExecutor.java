@@ -75,8 +75,7 @@ public class GetActualPowerQualityCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    final PowerQualityProfile profile =
-        this.determineProfile(actualPowerQualityRequestDto.getProfileType());
+    final PowerQualityProfile profile = this.determineProfile(actualPowerQualityRequestDto);
 
     final List<CosemObject> pqObjects = this.getPQObjects(device, profile);
 
@@ -116,18 +115,16 @@ public class GetActualPowerQualityCommandExecutor
     for (final CosemObject pqObject : pqObjects) {
       final PowerQualityObjectDto powerQualityObject;
       final PowerQualityValueDto powerQualityValue;
-      if (pqObject.getClassId() == CLASS_ID_CLOCK) {
 
-        final GetResult resultTime = resultList.get(idx++);
+      final GetResult resultValue = resultList.get(idx++);
+
+      if (pqObject.getClassId() == CLASS_ID_CLOCK) {
         final CosemDateTimeDto cosemDateTime =
-            this.dlmsHelper.readDateTime(resultTime, "Actual Power Quality - Time");
-        powerQualityObject = new PowerQualityObjectDto(pqObject.getTag(), null);
+            this.dlmsHelper.readDateTime(resultValue, "Actual Power Quality - Time");
         powerQualityValue = new PowerQualityValueDto(cosemDateTime.asDateTime().toDate());
+        powerQualityObject = new PowerQualityObjectDto(pqObject.getTag(), null);
 
       } else if (pqObject.getClassId() == CLASS_ID_REGISTER) {
-
-        final GetResult resultValue = resultList.get(idx++);
-
         final String scalerUnit =
             pqObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId()).getValue();
 
@@ -142,9 +139,6 @@ public class GetActualPowerQualityCommandExecutor
         powerQualityObject = new PowerQualityObjectDto(pqObject.getTag(), unit);
 
       } else if (pqObject.getClassId() == CLASS_ID_DATA) {
-
-        final GetResult resultValue = resultList.get(idx++);
-
         final Integer meterValue =
             this.dlmsHelper.readInteger(
                 resultValue, "Actual Power Quality - " + pqObject.getObis());
@@ -166,13 +160,13 @@ public class GetActualPowerQualityCommandExecutor
     return new ActualPowerQualityDataDto(powerQualityObjects, powerQualityValues);
   }
 
-  private PowerQualityProfile determineProfile(final String profileType) {
+  private PowerQualityProfile determineProfile(final ActualPowerQualityRequestDto request) {
 
     try {
-      return PowerQualityProfile.valueOf(profileType);
+      return PowerQualityProfile.valueOf(request.getProfileType());
     } catch (final IllegalArgumentException | NullPointerException e) {
       throw new IllegalArgumentException(
-          "ActualPowerQuality: an unknown profileType was requested: " + profileType);
+          "ActualPowerQuality: an unknown profileType was requested: " + request.getProfileType());
     }
   }
 
@@ -181,7 +175,7 @@ public class GetActualPowerQualityCommandExecutor
     final List<CosemObject> allPQObjects = new ArrayList<>();
 
     try {
-      // Add clock object (should be the first in the list)
+      // Get clock object (should be the first in the list)
       final CosemObject clockObject =
           this.objectConfigService.getCosemObject(
               device.getProtocolName(), device.getProtocolVersion(), DlmsObjectType.CLOCK);
@@ -203,7 +197,7 @@ public class GetActualPowerQualityCommandExecutor
       // Filter for single phase / poly phase
       final List<CosemObject> pqObjects =
           objectsForProfile.stream()
-              .filter(object -> this.objectsHasCorrectMeterType(object, device))
+              .filter(object -> this.objectHasCorrectMeterType(object, device))
               .collect(Collectors.toList());
 
       allPQObjects.addAll(pqObjects);
@@ -213,30 +207,29 @@ public class GetActualPowerQualityCommandExecutor
     }
   }
 
-  public List<AttributeAddress> getAttributeAddresses(final List<CosemObject> pqObjects) {
+  private List<AttributeAddress> getAttributeAddresses(final List<CosemObject> pqObjects) {
     return pqObjects.stream()
         .map(this::getAttributeAddress)
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 
-  public AttributeAddress getAttributeAddress(final CosemObject object) {
+  private AttributeAddress getAttributeAddress(final CosemObject object) {
+    final String obis = object.getObis();
+
     if (object.getClassId() == CLASS_ID_CLOCK) {
-      return new AttributeAddress(
-          object.getClassId(), object.getObis(), ClockAttribute.TIME.attributeId());
+      return new AttributeAddress(CLASS_ID_CLOCK, obis, ClockAttribute.TIME.attributeId());
     } else if (object.getClassId() == CLASS_ID_DATA) {
-      return new AttributeAddress(
-          object.getClassId(), object.getObis(), DataAttribute.VALUE.attributeId());
+      return new AttributeAddress(CLASS_ID_DATA, obis, DataAttribute.VALUE.attributeId());
     } else if (object.getClassId() == CLASS_ID_REGISTER) {
-      return new AttributeAddress(
-          object.getClassId(), object.getObis(), RegisterAttribute.VALUE.attributeId());
+      return new AttributeAddress(CLASS_ID_REGISTER, obis, RegisterAttribute.VALUE.attributeId());
     } else {
       log.warn("No attribute addresses returned for interface class of {}", object.getTag());
       return null;
     }
   }
 
-  private boolean objectsHasCorrectMeterType(final CosemObject object, final DlmsDevice device) {
+  private boolean objectHasCorrectMeterType(final CosemObject object, final DlmsDevice device) {
     return (!device.isPolyphase() && object.getMeterTypes().contains(MeterType.SP))
         || (device.isPolyphase() && object.getMeterTypes().contains(MeterType.PP));
   }
