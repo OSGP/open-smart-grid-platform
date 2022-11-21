@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitori
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,6 +34,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
@@ -86,6 +88,7 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
             this.createProfileEntries(),
             this.createPrivateCaptureObjectsProfile2(),
             this.createProfileEntries());
+    when(this.dlmsHelper.getScaledMeterValue(any(DataObject.class), any(DataObject.class), any())).thenReturn(mock(DlmsMeterValueDto.class));
 
     final GetPowerQualityProfileSelectiveAccessHandler handler =
         new GetPowerQualityProfileSelectiveAccessHandler(this.dlmsHelper, this.objectConfigService);
@@ -126,6 +129,8 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
             this.createPublicProfileEntries(),
             this.createPublicCaptureObjectsProfile2(),
             this.createPublicProfileEntries());
+    when(this.dlmsHelper.getScaledMeterValue(any(DataObject.class), any(DataObject.class), any())).thenReturn(mock(DlmsMeterValueDto.class));
+
 
     final GetPowerQualityProfileSelectiveAccessHandler handler =
         new GetPowerQualityProfileSelectiveAccessHandler(this.dlmsHelper, this.objectConfigService);

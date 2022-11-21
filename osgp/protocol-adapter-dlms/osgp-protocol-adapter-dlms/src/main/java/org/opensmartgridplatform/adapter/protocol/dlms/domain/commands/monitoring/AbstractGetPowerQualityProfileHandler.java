@@ -489,6 +489,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
             this.dlmsHelper.getScaledMeterValue(
                 dataObject, scalerUnitInfo.getScalerUnit(), "getScaledMeterValue");
         if (DlmsUnitTypeDto.COUNT.equals(this.getUnitType(scalerUnitInfo))) {
+
           return new ProfileEntryValueDto(meterValue.getValue().longValue());
         } else {
           return new ProfileEntryValueDto(meterValue.getValue());
@@ -547,7 +548,8 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
   private List<ScalerUnitInfo> createScalerUnitInfos(
       final Collection<CaptureObjectDefinitionDto> values,
-      final List<CosemObject> cosemConfigObjects) {
+      final List<CosemObject> cosemConfigObjects)
+       {
 
     final List<ScalerUnitInfo> scalerUnitInfos = new ArrayList<>();
 
@@ -572,17 +574,29 @@ public abstract class AbstractGetPowerQualityProfileHandler {
             .filter(object -> object.getObis().equals(logicalName))
             .map(CosemObject::getAttributes)
             .findFirst();
-    Optional<Attribute> scalUnitType =
-        attributeList.get().stream()
-            .filter(attribute -> attribute.getDatatype().toString().equals("SCAL_UNIT_TYPE"))
-            .findFirst();
 
-    if (scalUnitType.isPresent()) {
-      final DataObject scalerUnitDataObject =
-          DataObject.newStructureData((List<DataObject>) scalUnitType.get());
-      return new ScalerUnitInfo(logicalName, classId, scalerUnitDataObject);
-    } else {
-      return new ScalerUnitInfo(logicalName, classId, null);
+    if (attributeList.isPresent()) {
+      Optional<Attribute> scalAttribute =
+          attributeList.get().stream()
+              .filter(attribute -> attribute.getDatatype().toString().equals("SCAL_UNIT_TYPE"))
+              .findFirst();
+
+      if (scalAttribute.isPresent()) {
+        final String scalerUnit = scalAttribute.get().getValue();
+
+        final String[] scalerUnitParts = scalerUnit.split(",");
+        if (scalerUnitParts.length == 2) {
+          final int scaler = Integer.parseInt(scalerUnitParts[0]);
+          final DlmsUnitTypeDto unitType = DlmsUnitTypeDto.getUnitType(scalerUnitParts[1].trim().toUpperCase());
+
+          DataObject scalerUnitDataObject =
+              DataObject.newStructureData(
+                  DataObject.newInteger8Data((byte) scaler),
+                  DataObject.newEnumerateData(unitType.getIndex()));
+          return new ScalerUnitInfo(logicalName, classId, scalerUnitDataObject);
+        }
+      }
     }
+    return new ScalerUnitInfo(logicalName, classId, null);
   }
 }
