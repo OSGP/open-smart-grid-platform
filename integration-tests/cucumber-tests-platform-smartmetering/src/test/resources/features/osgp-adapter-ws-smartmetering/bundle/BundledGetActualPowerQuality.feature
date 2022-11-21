@@ -133,7 +133,7 @@ Feature: SmartMetering Bundle - GetActualPowerQuality
       | Protocol                  | <Protocol>        |
       | ProtocolVersion           | <ProtocolVersion> |
       | Port                      | <Port>            |
-      | Polyphase                 | false             |
+      | Polyphase                 | true              |
     And a bundle request
       | DeviceIdentification | <DeviceId> |
     And the bundle request contains an actual power quality request with parameters
