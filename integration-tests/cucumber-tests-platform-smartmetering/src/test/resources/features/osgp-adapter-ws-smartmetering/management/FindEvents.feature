@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SmartMeteringManagement @Do
+@SmartMetering @Platform @SmartMeteringManagement
 Feature: SmartMetering Management - Find Events
   As a grid operator
   I want to be able to retrieve events from a device

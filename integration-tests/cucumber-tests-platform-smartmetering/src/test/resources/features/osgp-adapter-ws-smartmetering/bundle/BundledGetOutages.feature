@@ -1,4 +1,4 @@
-@SmartMetering @Platform @Do
+@SmartMetering @Platform
 Feature: SmartMetering Bundle - GetOutages
   As a grid operator 
   I want to retrieve the power outages from a meter via a bundle request
