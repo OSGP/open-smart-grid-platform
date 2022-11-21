@@ -194,15 +194,7 @@ public class GetPowerQualityProfileNoSelectiveAccessHandlerTest {
     final DlmsProfile dlmsProfile50 =
         objectMapper.readValue(
             new ClassPathResource("/dlmsprofile-smr50.json").getFile(), DlmsProfile.class);
-    final DlmsProfile dlmsProfile51 =
-        objectMapper.readValue(
-            new ClassPathResource("/dlmsprofile-smr51.json").getFile(), DlmsProfile.class);
-    final DlmsProfile dlmsProfile52 =
-        objectMapper.readValue(
-            new ClassPathResource("/dlmsprofile-smr52.json").getFile(), DlmsProfile.class);
     DlmsProfileList.add(dlmsProfile50);
-    DlmsProfileList.add(dlmsProfile51);
-    DlmsProfileList.add(dlmsProfile52);
     return DlmsProfileList;
   }
 

@@ -548,8 +548,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
   private List<ScalerUnitInfo> createScalerUnitInfos(
       final Collection<CaptureObjectDefinitionDto> values,
-      final List<CosemObject> cosemConfigObjects)
-       {
+      final List<CosemObject> cosemConfigObjects) {
 
     final List<ScalerUnitInfo> scalerUnitInfos = new ArrayList<>();
 
@@ -587,7 +586,8 @@ public abstract class AbstractGetPowerQualityProfileHandler {
         final String[] scalerUnitParts = scalerUnit.split(",");
         if (scalerUnitParts.length == 2) {
           final int scaler = Integer.parseInt(scalerUnitParts[0]);
-          final DlmsUnitTypeDto unitType = DlmsUnitTypeDto.getUnitType(scalerUnitParts[1].trim().toUpperCase());
+          final DlmsUnitTypeDto unitType =
+              DlmsUnitTypeDto.getUnitType(scalerUnitParts[1].trim().toUpperCase());
 
           DataObject scalerUnitDataObject =
               DataObject.newStructureData(

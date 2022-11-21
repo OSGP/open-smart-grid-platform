@@ -88,7 +88,8 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
             this.createProfileEntries(),
             this.createPrivateCaptureObjectsProfile2(),
             this.createProfileEntries());
-    when(this.dlmsHelper.getScaledMeterValue(any(DataObject.class), any(DataObject.class), any())).thenReturn(mock(DlmsMeterValueDto.class));
+    when(this.dlmsHelper.getScaledMeterValue(any(DataObject.class), any(DataObject.class), any()))
+        .thenReturn(mock(DlmsMeterValueDto.class));
 
     final GetPowerQualityProfileSelectiveAccessHandler handler =
         new GetPowerQualityProfileSelectiveAccessHandler(this.dlmsHelper, this.objectConfigService);
@@ -129,8 +130,8 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
             this.createPublicProfileEntries(),
             this.createPublicCaptureObjectsProfile2(),
             this.createPublicProfileEntries());
-    when(this.dlmsHelper.getScaledMeterValue(any(DataObject.class), any(DataObject.class), any())).thenReturn(mock(DlmsMeterValueDto.class));
-
+    when(this.dlmsHelper.getScaledMeterValue(any(DataObject.class), any(DataObject.class), any()))
+        .thenReturn(mock(DlmsMeterValueDto.class));
 
     final GetPowerQualityProfileSelectiveAccessHandler handler =
         new GetPowerQualityProfileSelectiveAccessHandler(this.dlmsHelper, this.objectConfigService);
@@ -308,15 +309,7 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
     final DlmsProfile dlmsProfile50 =
         objectMapper.readValue(
             new ClassPathResource("/dlmsprofile-smr50.json").getFile(), DlmsProfile.class);
-    final DlmsProfile dlmsProfile51 =
-        objectMapper.readValue(
-            new ClassPathResource("/dlmsprofile-smr51.json").getFile(), DlmsProfile.class);
-    final DlmsProfile dlmsProfile52 =
-        objectMapper.readValue(
-            new ClassPathResource("/dlmsprofile-smr52.json").getFile(), DlmsProfile.class);
     DlmsProfileList.add(dlmsProfile50);
-    DlmsProfileList.add(dlmsProfile51);
-    DlmsProfileList.add(dlmsProfile52);
     return DlmsProfileList;
   }
 
