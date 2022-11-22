@@ -10,7 +10,6 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | DeviceType                | SMART_METER_E     |
       | Protocol                  | <Protocol>        |
       | ProtocolVersion           | <ProtocolVersion> |
-      | Port                      | <Port>            |
       | Polyphase                 | true              |
     When the get actual power quality request is received
       | DeviceIdentification | <DeviceId> |
@@ -42,9 +41,9 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | PowerQualityObject_Name_15  | NUMBER_OF_VOLTAGE_SWELLS_FOR_L3 |
 
     Examples:
-      | DeviceId             | Protocol | ProtocolVersion | Port |
-      | TEST1024000000001    | DSMR     | 4.2.2           | 1024 |
-      | TEST1027000000001    | SMR      | 5.0.0           | 1027 |
+      | DeviceId             | Protocol | ProtocolVersion |
+      | TEST1024000000001    | DSMR     | 4.2.2           |
+      | TEST1027000000001    | SMR      | 5.0.0           |
 
   Scenario Outline: Get the actual power quality public from a device for a single phase <Protocol> <ProtocolVersion> meter
     Given a dlms device
@@ -52,7 +51,6 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | DeviceType                | SMART_METER_E     |
       | Protocol                  | <Protocol>        |
       | ProtocolVersion           | <ProtocolVersion> |
-      | Port                      | <Port>            |
       | Polyphase                 | false             |
     When the get actual power quality request is received
       | DeviceIdentification | <DeviceId> |
@@ -72,9 +70,9 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | PowerQualityObject_Name_7   | NUMBER_OF_VOLTAGE_SWELLS_FOR_L1 |
 
     Examples:
-      | DeviceId             | Protocol | ProtocolVersion | Port |
-      | TEST1024000000001    | DSMR     | 4.2.2           | 1024 |
-      | TEST1027000000001    | SMR      | 5.0.0           | 1027 |
+      | DeviceId             | Protocol | ProtocolVersion |
+      | TEST1024000000001    | DSMR     | 4.2.2           |
+      | TEST1027000000001    | SMR      | 5.0.0           |
 
   Scenario Outline: Get the actual power quality private from a device for a polyphase <Protocol> <ProtocolVersion> meter
     Given a dlms device
@@ -82,7 +80,6 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | DeviceType                | SMART_METER_E     |
       | Protocol                  | <Protocol>        |
       | ProtocolVersion           | <ProtocolVersion> |
-      | Port                      | <Port>            |
       | Polyphase                 | true              |
     When the get actual power quality request is received
       | DeviceIdentification | <DeviceId> |
@@ -148,9 +145,9 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | PowerQualityObject_Unit_28  | AMP                                                |
 
     Examples:
-      | DeviceId             | Protocol | ProtocolVersion | Port |
-      | TEST1024000000001    | DSMR     | 4.2.2           | 1024 |
-      | TEST1027000000001    | SMR      | 5.0.0           | 1027 |
+      | DeviceId             | Protocol | ProtocolVersion |
+      | TEST1024000000001    | DSMR     | 4.2.2           |
+      | TEST1027000000001    | SMR      | 5.0.0           |
 
   Scenario Outline: Get the actual power quality private from a device for a single phase <Protocol> <ProtocolVersion> meter
     Given a dlms device
@@ -158,7 +155,6 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | DeviceType                | SMART_METER_E     |
       | Protocol                  | <Protocol>        |
       | ProtocolVersion           | <ProtocolVersion> |
-      | Port                      | <Port>            |
       | Polyphase                 | false             |
     When the get actual power quality request is received
       | DeviceIdentification | <DeviceId> |
@@ -192,9 +188,9 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | PowerQualityObject_Unit_12  | AMP                                                |
 
     Examples:
-      | DeviceId             | Protocol | ProtocolVersion | Port |
-      | TEST1024000000001    | DSMR     | 4.2.2           | 1024 |
-      | TEST1027000000001    | SMR      | 5.0.0           | 1027 |
+      | DeviceId             | Protocol | ProtocolVersion |
+      | TEST1024000000001    | DSMR     | 4.2.2           |
+      | TEST1027000000001    | SMR      | 5.0.0           |
 
   Scenario: Do not refuse an operation with an inactive device
     Given a dlms device
