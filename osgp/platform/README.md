@@ -29,6 +29,7 @@ Domain Layer
 - osgp-domain-logging, Logging domain classes
 - osgp-domain-distributionautomation, Distribution Automation domain classes
 - osgp-domain-microgrids, Microgrids domain classes
+- osgp-domain-smartmetering, smartmetering domain classes e.g.: device config objects 
 - osgp-domain-tariff-switching, Tariff Switching domain classes
 - osgp-logging, Logging incoming requests and outgoing responses of the
   Web Service Layer and logging calls to and from devices

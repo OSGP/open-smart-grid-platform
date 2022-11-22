@@ -22,41 +22,6 @@
     <relativePath>../../parent-pa-dlms/pom.xml</relativePath>
   </parent>
 
-  <!-- Description, Organization, Licenses, URL and Distribution Management
-    elements are needed for the maven-jxr-plugin to generate a maven site -->
-  <!--<description>A library to simulate behaviour of dlms devices.</description>
-  <organization>
-    <name>OSGP</name>
-    <url>http://opensmartgridplatform.org</url>
-  </organization>
-  <licenses>
-    <license>
-      <name>APACHE 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-    </license>
-  </licenses>
-  <url>${maven.site.url}</url>
-  <distributionManagement>
-    <site>
-      <id>osgp-simulator</id>
-      <name>osgp-simulator</name>
-       <url>${maven.site.distributionManagement.site.url}</url>
-    </site>
-  </distributionManagement> -->
-
-<!--   <dependencyManagement> -->
-<!--     <dependencies> -->
-<!--       <dependency> -->
-<!--         Import dependency management from Spring Boot -->
-<!--         <groupId>org.springframework.boot</groupId> -->
-<!--         <artifactId>spring-boot-dependencies</artifactId> -->
-<!--         <version>${spring.boot.version}</version> -->
-<!--         <type>pom</type> -->
-<!--         <scope>import</scope> -->
-<!--       </dependency> -->
-<!--     </dependencies> -->
-<!--   </dependencyManagement> -->
-
   <properties>
     <spring.boot.version>2.2.2.RELEASE</spring.boot.version>
   </properties>
@@ -89,7 +54,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <additionalparam>-Xdoclint:none</additionalparam>
+          <doclint>none</doclint>
         </configuration>
       </plugin>
       <plugin>

@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.CosemInterfaceObject;
@@ -132,8 +131,8 @@ public class LogicalDeviceBuilder {
     return this;
   }
 
-  public LogicalDeviceBuilder addCosemClasses(final CosemInterfaceObject... cosemClasses) {
-    this.cosemClasses.addAll(Arrays.asList(cosemClasses));
+  public LogicalDeviceBuilder setCosemClasses(final List<CosemInterfaceObject> cosemClasses) {
+    this.cosemClasses = cosemClasses;
     return this;
   }
 

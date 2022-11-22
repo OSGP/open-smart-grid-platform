@@ -143,6 +143,11 @@
       <artifactId>osgp-throttling-client</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-domain-smartmetering</artifactId>
+    </dependency>
+
     <!-- Spring Framework -->
     <dependency>
       <groupId>org.springframework</groupId>

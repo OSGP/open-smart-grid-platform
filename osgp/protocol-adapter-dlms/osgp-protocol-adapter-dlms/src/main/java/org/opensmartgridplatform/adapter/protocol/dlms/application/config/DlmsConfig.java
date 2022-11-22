@@ -34,6 +34,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Lls1Conn
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsChannelHandlerServer;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsPushNotificationDecoder;
+import org.opensmartgridplatform.domain.smartmetering.service.DlmsObjectService;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.infra.networking.DisposableNioEventLoopGroup;
 import org.slf4j.Logger;
@@ -193,5 +194,10 @@ public class DlmsConfig extends AbstractConfig {
   public ScheduledExecutorService scheduledExecutorService(
       @Value("${executor.scheduled.poolsize}") final int poolsize) {
     return Executors.newScheduledThreadPool(poolsize);
+  }
+
+  @Bean
+  public DlmsObjectService dlmsObjectService() {
+    return new DlmsObjectService();
   }
 }
