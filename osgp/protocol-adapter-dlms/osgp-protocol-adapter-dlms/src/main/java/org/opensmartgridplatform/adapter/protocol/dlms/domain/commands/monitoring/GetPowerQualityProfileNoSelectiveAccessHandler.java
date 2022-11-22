@@ -13,9 +13,7 @@ import java.util.List;
 import java.util.Map;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ScalerUnitInfo;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
 import org.springframework.stereotype.Component;
@@ -32,9 +30,8 @@ public class GetPowerQualityProfileNoSelectiveAccessHandler
   @Override
   protected List<ProfileEntryValueDto> createProfileEntryValueDto(
       final DataObject profileEntryDataObject,
-      final List<ScalerUnitInfo> scalerUnitInfos,
       final ProfileEntryDto previousProfileEntryDto,
-      final Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects,
+      final Map<Integer, SelectableObject> selectableCaptureObjects,
       final int timeInterval) {
 
     final List<ProfileEntryValueDto> result = new ArrayList<>();
@@ -46,7 +43,7 @@ public class GetPowerQualityProfileNoSelectiveAccessHandler
         final ProfileEntryValueDto currentProfileEntryValueDto =
             this.makeProfileEntryValueDto(
                 dataObjects.get(i),
-                scalerUnitInfos.get(result.size()),
+                selectableCaptureObjects.get(result.size()),
                 previousProfileEntryDto,
                 timeInterval);
         result.add(currentProfileEntryValueDto);
@@ -58,7 +55,7 @@ public class GetPowerQualityProfileNoSelectiveAccessHandler
 
   @Override
   protected DataObject convertSelectableCaptureObjects(
-      final List<CaptureObjectDefinitionDto> selectableCaptureObjects) {
+      final List<SelectableObject> selectableCaptureObjects) {
     return DataObject.newArrayData(new ArrayList<>());
   }
 }

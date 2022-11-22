@@ -127,7 +127,7 @@
       "description": "Power Quality profile 1, 15 min power quality values",
       "class-id": 7,
       "version": 1,
-      "obis": "0.1.99.1.1.255",
+      "obis": "1.0.99.1.1.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
@@ -211,7 +211,7 @@
       "description": "Power Quality profile 2, 10 min power quality values",
       "class-id": 7,
       "version": 1,
-      "obis": "0.1.99.1.2.255",
+      "obis": "1.0.99.1.2.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {

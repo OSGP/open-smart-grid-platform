@@ -14,9 +14,7 @@ import java.util.List;
 import java.util.Map;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ScalerUnitInfo;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
 import org.springframework.stereotype.Component;
@@ -33,9 +31,8 @@ public class GetPowerQualityProfileSelectiveAccessHandler
   @Override
   protected List<ProfileEntryValueDto> createProfileEntryValueDto(
       final DataObject profileEntryDataObject,
-      final List<ScalerUnitInfo> scalerUnitInfos,
       final ProfileEntryDto previousProfileEntryDto,
-      final Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects,
+      final Map<Integer, SelectableObject> selectableCaptureObjects,
       final int timeInterval) {
 
     final List<ProfileEntryValueDto> result = new ArrayList<>();
@@ -45,7 +42,10 @@ public class GetPowerQualityProfileSelectiveAccessHandler
 
       final ProfileEntryValueDto currentProfileEntryValueDto =
           super.makeProfileEntryValueDto(
-              dataObjects.get(i), scalerUnitInfos.get(i), previousProfileEntryDto, timeInterval);
+              dataObjects.get(i),
+              selectableCaptureObjects.get(i),
+              previousProfileEntryDto,
+              timeInterval);
       result.add(currentProfileEntryValueDto);
     }
 
@@ -54,19 +54,19 @@ public class GetPowerQualityProfileSelectiveAccessHandler
 
   @Override
   protected DataObject convertSelectableCaptureObjects(
-      final List<CaptureObjectDefinitionDto> selectableCaptureObjects) {
+      final List<SelectableObject> selectableCaptureObjects) {
 
     final List<DataObject> objectDefinitions = new ArrayList<>();
 
     if (!selectableCaptureObjects.isEmpty()) {
-      for (final CaptureObjectDefinitionDto captureObjectDefinition : selectableCaptureObjects) {
-        final int classId = captureObjectDefinition.getClassId();
-        final byte[] obisBytes = captureObjectDefinition.getLogicalName().toByteArray();
-        final byte attributeIndex = captureObjectDefinition.getAttributeIndex();
+      for (final SelectableObject selectableCaptureObject : selectableCaptureObjects) {
+        final int classId = selectableCaptureObject.getClassId();
+        final byte[] obisBytes = selectableCaptureObject.getObisAsBytes();
+        final byte attributeIndex = selectableCaptureObject.getAttributeIndex();
         final int dataIndex =
-            captureObjectDefinition.getDataIndex() == null
+            selectableCaptureObject.getDataIndex() == null
                 ? 0
-                : captureObjectDefinition.getDataIndex();
+                : selectableCaptureObject.getDataIndex();
 
         objectDefinitions.add(
             DataObject.newStructureData(
