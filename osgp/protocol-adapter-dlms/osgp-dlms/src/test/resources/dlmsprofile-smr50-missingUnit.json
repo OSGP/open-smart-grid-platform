@@ -1,7 +1,7 @@
 {
   "profile": "SMR",
-  "version": "5.0",
-  "description": "Profile for Smart Meter Requirements 5.0",
+  "version": "5.0.0",
+  "description": "Profile for Smart Meter Requirements 5.0.0",
   "properties": [],
   "objects": [
     {
@@ -50,9 +50,9 @@
       "properties": {
         "SELECTABLE_OBJECTS": [
           "CLOCK",
-          "NUMBER_OF_VOLTAGE_SAGS_L1",
-          "NUMBER_OF_VOLTAGE_SAGS_L2",
-          "NUMBER_OF_VOLTAGE_SAGS_L3"
+          "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
+          "NUMBER_OF_VOLTAGE_SAGS_FOR_L2",
+          "NUMBER_OF_VOLTAGE_SAGS_FOR_L3"
         ]
       },
       "attributes": [
@@ -437,7 +437,7 @@
       ]
     },
     {
-      "tag": "NUMBER_OF_VOLTAGE_SAGS_L1",
+      "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
       "description": "Number of voltage sags in phase L1",
       "class-id": 1,
       "version": 0,
@@ -459,7 +459,7 @@
       ]
     },
     {
-      "tag": "NUMBER_OF_VOLTAGE_SAGS_L2",
+      "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L2",
       "description": "Number of voltage sags in phase L2",
       "class-id": 1,
       "version": 0,
@@ -481,7 +481,7 @@
       ]
     },
     {
-      "tag": "NUMBER_OF_VOLTAGE_SAGS_L3",
+      "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L3",
       "description": "Number of voltage sags in phase L3",
       "class-id": 1,
       "version": 0,

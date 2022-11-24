@@ -50,7 +50,7 @@ public enum DlmsUnitTypeDto {
   KWH(30, "KWH"),
   VOLT_AMP_HOUR(31, "VOLT_AMP_HOUR"),
   VAR_HOUR(32, "VAR_HOUR"),
-  AMPERE(33, "AMP"),
+  AMPERE(33, "AMP", "A"),
   COULOMB(34, "COULOMB"),
   VOLT(35, "V"),
   VOLT_PER_METER(36, "VOLT_PER_METER"),
@@ -86,28 +86,47 @@ public enum DlmsUnitTypeDto {
   DB(72, "DB"),
   COUNT(255, "COUNT");
 
-  private static final Map<Integer, DlmsUnitTypeDto> UNIT_TYPES_MAP = new HashMap<>();
+  private static final Map<Integer, DlmsUnitTypeDto> INDEX_TO_TYPE_MAP = new HashMap<>();
+  private static final Map<String, DlmsUnitTypeDto> UNIT_TO_TYPE_MAP = new HashMap<>();
 
   static {
     for (final DlmsUnitTypeDto unitType : DlmsUnitTypeDto.values()) {
-      UNIT_TYPES_MAP.put(unitType.getIndex(), unitType);
+      INDEX_TO_TYPE_MAP.put(unitType.getIndex(), unitType);
+    }
+  }
+
+  static {
+    for (final DlmsUnitTypeDto unitType : DlmsUnitTypeDto.values()) {
+      UNIT_TO_TYPE_MAP.put(unitType.getUnitShort(), unitType);
     }
   }
 
   private final int index;
   private final String unit;
+  private final String unitShort;
 
   private DlmsUnitTypeDto(final int index, final String unit) {
     this.index = index;
     this.unit = unit;
+    this.unitShort = unit;
   }
 
-  public static Map<Integer, DlmsUnitTypeDto> getUnitTypesMap() {
-    return UNIT_TYPES_MAP;
+  private DlmsUnitTypeDto(final int index, final String unit, final String unitShort) {
+    this.index = index;
+    this.unit = unit;
+    this.unitShort = unitShort;
+  }
+
+  public static Map<Integer, DlmsUnitTypeDto> getIndexToTypeMap() {
+    return INDEX_TO_TYPE_MAP;
   }
 
   public static DlmsUnitTypeDto getUnitType(final int index) {
-    return UNIT_TYPES_MAP.get(index & 0xFF);
+    return INDEX_TO_TYPE_MAP.get(index & 0xFF);
+  }
+
+  public static DlmsUnitTypeDto getUnitType(final String unit) {
+    return UNIT_TO_TYPE_MAP.get(unit);
   }
 
   public static String getUnit(final int index) {
@@ -121,5 +140,9 @@ public enum DlmsUnitTypeDto {
 
   public String getUnit() {
     return this.unit;
+  }
+
+  public String getUnitShort() {
+    return this.unitShort;
   }
 }

@@ -1,7 +1,7 @@
 {
   "profile": "SMR",
-  "version": "5.0",
-  "description": "Profile for Smart Meter Requirements 5.0",
+  "version": "5.0.0",
+  "description": "Profile for Smart Meter Requirements 5.0.0",
   "properties": [],
   "objects": [
     {
@@ -50,12 +50,12 @@
       "properties": {
         "SELECTABLE_OBJECTS": [
           "CLOCK",
-          "NUMBER_OF_VOLTAGE_SAGS_L1",
-          "NUMBER_OF_VOLTAGE_SAGS_L2",
-          "NUMBER_OF_VOLTAGE_SAGS_L3",
-          "NUMBER_OF_VOLTAGE_SWELLS_L1",
-          "NUMBER_OF_VOLTAGE_SWELLS_L2",
-          "NUMBER_OF_VOLTAGE_SWELLS_L3",
+          "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
+          "NUMBER_OF_VOLTAGE_SAGS_FOR_L2",
+          "NUMBER_OF_VOLTAGE_SAGS_FOR_L3",
+          "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
+          "NUMBER_OF_VOLTAGE_SWELLS_FOR_L2",
+          "NUMBER_OF_VOLTAGE_SWELLS_FOR_L3",
           "NUMBER_OF_POWER_FAILURES",
           "CDMA_DIAGNOSTIC",
           "GPRS_DIAGNOSTIC",
@@ -223,7 +223,8 @@
           "AVERAGE_CURRENT_L1",
           "AVERAGE_CURRENT_L2",
           "AVERAGE_CURRENT_L3",
-          "INSTANTANEOUS_CURRENT_L1"
+          "INSTANTANEOUS_CURRENT_L1",
+          "INSTANTANEOUS_VOLTAGE_L1"
         ]
       },
       "attributes": [
@@ -385,7 +386,7 @@
       "version": 0,
       "obis": "1.0.41.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
         "PQ_REQUEST": "BOTH"
@@ -416,7 +417,7 @@
       "version": 0,
       "obis": "1.0.61.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
         "PQ_REQUEST": "BOTH"
@@ -534,6 +535,37 @@
       ]
     },
     {
+      "tag": "INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES",
+      "description": "Instantaneous current total",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.90.7.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": "BOTH"
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, A",
+          "access": "R"
+        }
+      ]
+    },
+    {
       "tag": "INSTANTANEOUS_CURRENT_L1",
       "description": "Instantaneous current L1",
       "class-id": 3,
@@ -571,7 +603,7 @@
       "version": 0,
       "obis": "1.0.51.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
         "PQ_REQUEST": "BOTH"
@@ -602,7 +634,7 @@
       "version": 0,
       "obis": "1.0.71.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
         "PQ_REQUEST": "BOTH"
@@ -931,7 +963,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]
@@ -962,7 +994,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]
@@ -993,7 +1025,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]
@@ -1024,7 +1056,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]
@@ -1055,7 +1087,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]
@@ -1086,7 +1118,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]
@@ -1324,7 +1356,7 @@
       ]
     },
     {
-      "tag": "NUMBER_OF_VOLTAGE_SAGS_L1",
+      "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
       "description": "Number of voltage sags in phase L1",
       "class-id": 1,
       "version": 0,
@@ -1347,7 +1379,7 @@
       ]
     },
     {
-      "tag": "NUMBER_OF_VOLTAGE_SAGS_L2",
+      "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L2",
       "description": "Number of voltage sags in phase L2",
       "class-id": 1,
       "version": 0,
@@ -1370,7 +1402,7 @@
       ]
     },
     {
-      "tag": "NUMBER_OF_VOLTAGE_SAGS_L3",
+      "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L3",
       "description": "Number of voltage sags in phase L3",
       "class-id": 1,
       "version": 0,
@@ -1393,7 +1425,7 @@
       ]
     },
     {
-      "tag": "NUMBER_OF_VOLTAGE_SWELLS_L1",
+      "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
       "description": "Number of voltage swells in phase L1",
       "class-id": 1,
       "version": 0,
@@ -1416,7 +1448,7 @@
       ]
     },
     {
-      "tag": "NUMBER_OF_VOLTAGE_SWELLS_L2",
+      "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L2",
       "description": "Number of voltage swells in phase L2",
       "class-id": 1,
       "version": 0,
@@ -1439,7 +1471,7 @@
       ]
     },
     {
-      "tag": "NUMBER_OF_VOLTAGE_SWELLS_L3",
+      "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L3",
       "description": "Number of voltage swells in phase L3",
       "class-id": 1,
       "version": 0,

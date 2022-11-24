@@ -1,11 +1,8 @@
 {
-  "profile": "SMR",
-  "version": "4.0",
-  "description": "Profile for Smart Meter Requirements 4.0",
-  "settings": [
-    {
-    }
-  ],
+  "profile": "DSMR",
+  "version": "4.2.2",
+  "description": "Profile for Smart Meter Requirements 4.2.2",
+  "properties": [],
   "objects": [
     {
       "tag": "CLOCK",
@@ -51,7 +48,7 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "selectable-objects": [
+        "SELECTABLE_OBJECTS": [
           "CLOCK",
           "CDMA_DIAGNOSTIC",
           "GPRS_DIAGNOSTIC",
@@ -149,7 +146,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "pq-profile": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": "PERIODIC"
       },
       "attributes": [
         {
@@ -203,7 +201,7 @@
         {
           "id": 8,
           "description": "capture time",
-          "datatype": "date_time",
+          "datatype": "date-time",
           "valuetype": "DYNAMIC",
           "value": "EMPTY",
           "access": "R"
@@ -219,7 +217,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "pq-profile": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": "PERIODIC"
       },
       "attributes": [
         {
@@ -273,7 +272,7 @@
         {
           "id": 8,
           "description": "capture time",
-          "datatype": "date_time",
+          "datatype": "date-time",
           "valuetype": "DYNAMIC",
           "value": "EMPTY",
           "access": "R"
@@ -289,7 +288,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "pq-profile": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -311,7 +311,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "pq-profile": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -333,7 +334,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "pq-profile": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -355,7 +357,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "pq-profile": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -385,7 +388,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "pq-profile": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -415,7 +419,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "pq-profile": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -445,7 +450,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "pq-profile": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -475,7 +481,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "pq-profile": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -505,7 +512,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "pq-profile": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -535,7 +543,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "pq-profile": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -565,7 +574,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "pq-profile": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -595,7 +605,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "pq-profile": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -625,7 +636,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "pq-profile": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -655,7 +667,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "pq-profile": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -685,7 +698,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "pq-profile": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -715,7 +729,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "pq-profile": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -745,7 +760,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "pq-profile": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -775,7 +791,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "pq-profile": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -805,7 +822,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "pq-profile": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -835,7 +853,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "pq-profile": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -865,7 +884,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "pq-profile": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -895,7 +915,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "pq-profile": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -925,7 +946,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "pq-profile": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
@@ -955,7 +977,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "pq-profile": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": "BOTH"
       },
       "attributes": [
         {
