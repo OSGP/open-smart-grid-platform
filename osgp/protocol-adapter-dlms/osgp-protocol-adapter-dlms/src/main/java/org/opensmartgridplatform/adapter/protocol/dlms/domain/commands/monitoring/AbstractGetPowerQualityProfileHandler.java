@@ -159,7 +159,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       pqProperties.put(ObjectProperty.PQ_PROFILE, Collections.singletonList(profileType));
       pqProperties.put(
           ObjectProperty.PQ_REQUEST,
-          Arrays.asList(PowerQualityRequest.ONDEMAND.name(), PowerQualityRequest.BOTH.name()));
+          Arrays.asList(PowerQualityRequest.PERIODIC.name(), PowerQualityRequest.BOTH.name()));
 
       final List<CosemObject> cosemObjectsWithProperties =
           this.objectConfigService.getCosemObjectsWithProperties(
