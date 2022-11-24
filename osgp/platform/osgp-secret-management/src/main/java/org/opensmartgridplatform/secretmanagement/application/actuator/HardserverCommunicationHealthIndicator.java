@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 public class HardserverCommunicationHealthIndicator implements HealthIndicator {
   private final SecretManagementMetrics secretManagementMetrics;
 
-  private final String message_key = "HardserverCommunicationExceptions";
+  private static final String MESSAGE_KEY = "HardserverCommunicationExceptions";
 
   private final int hardserverExceptionThreshold;
 
@@ -35,8 +35,8 @@ public class HardserverCommunicationHealthIndicator implements HealthIndicator {
     final int nrOfExceptions =
         this.secretManagementMetrics.countHardserverCommunicationExceptions();
     if (nrOfExceptions >= this.hardserverExceptionThreshold) {
-      return Health.down().withDetail(this.message_key, nrOfExceptions).build();
+      return Health.down().withDetail(MESSAGE_KEY, nrOfExceptions).build();
     }
-    return Health.up().withDetail(this.message_key, nrOfExceptions).build();
+    return Health.up().withDetail(MESSAGE_KEY, nrOfExceptions).build();
   }
 }
