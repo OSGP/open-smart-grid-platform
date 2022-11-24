@@ -122,6 +122,7 @@ public class SecretManagementService {
   private final DbEncryptionKeyRepository keyRepository;
   private final RsaEncrypter encrypterForSecretManagementClient;
   private final RsaEncrypter decrypterForSecretManagement;
+  private final SecretManagementMetrics secretManagementMetrics;
 
   public SecretManagementService(
       @Qualifier("DefaultEncryptionDelegateForKeyStorage")
@@ -132,13 +133,15 @@ public class SecretManagementService {
       @Qualifier(value = "encrypterForSecretManagementClient")
           final RsaEncrypter encrypterForSecretManagementClient,
       @Qualifier(value = "decrypterForSecretManagement")
-          final RsaEncrypter decrypterForSecretManagement) {
+          final RsaEncrypter decrypterForSecretManagement,
+      final SecretManagementMetrics secretManagementMetrics) {
     this.encryptionDelegateForKeyStorage = defaultEncryptionDelegateForKeyStorage;
     this.encryptionProviderType = encryptionProviderType;
     this.secretRepository = secretRepository;
     this.keyRepository = keyRepository;
     this.encrypterForSecretManagementClient = encrypterForSecretManagementClient;
     this.decrypterForSecretManagement = decrypterForSecretManagement;
+    this.secretManagementMetrics = secretManagementMetrics;
   }
 
   private DbEncryptionKeyReference getCurrentKey() {
@@ -362,7 +365,7 @@ public class SecretManagementService {
           currentKey.getReference(),
           currentKey.getEncryptionProviderType());
     } catch (final EncrypterException ee) {
-      throw new IllegalStateException("Eror generating secret", ee);
+      throw this.handleEncrypterException("Eror generating secret", ee);
     }
   }
 
@@ -400,7 +403,7 @@ public class SecretManagementService {
                   keyReference)
               .getSecret();
     } catch (final EncrypterException ee) {
-      throw new IllegalStateException(
+      throw this.handleEncrypterException(
           "Could not reencrypt secret from RSA to AES: " + ee.toString(), ee);
     }
     return aes;
@@ -415,8 +418,20 @@ public class SecretManagementService {
           this.encryptionDelegateForKeyStorage.decrypt(
               new EncryptedSecret(encryptionProviderType, aes), keyReference));
     } catch (final EncrypterException ee) {
-      throw new IllegalStateException(
+      throw this.handleEncrypterException(
           "Could not reencrypt secret from AES to RSA: " + ee.toString(), ee);
     }
+  }
+
+  /*
+   * com.ncipher.provider.nCCommunicationException is loaded into JVM by HSM.
+   * JAR is not standard available in maven repo
+   * Exception checking on class name is possible without importing jar
+   */
+  private IllegalStateException handleEncrypterException(
+      final String message, final EncrypterException encrypterException) {
+    this.secretManagementMetrics.incrementEncrypterException(encrypterException);
+
+    return new IllegalStateException(message, encrypterException);
   }
 }
