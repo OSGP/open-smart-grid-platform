@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitoring;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -18,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -61,17 +63,17 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
 
   @ParameterizedTest
   @EnumSource(PowerQualityProfile.class)
-  void testHandlePublicOrPrivateProfileWithoutSelectiveAccess(final PowerQualityProfile profile)
-      throws ProtocolAdapterException, ObjectConfigException {
+  void testHandlePublicOrPrivateProfileWithoutSelectiveAccessWithPartialNonAllowedObjects(
+      final PowerQualityProfile profile) throws ProtocolAdapterException, ObjectConfigException {
 
     final boolean polyPhase = true;
-    final List<CosemObject> allPqObjectsForThisMeter = this.getObjects(polyPhase);
+ //   final List<CosemObject> allPqObjectsForThisMeter = this.getObjects(polyPhase);
     final GetPowerQualityProfileRequestDataDto requestDto =
-            new GetPowerQualityProfileRequestDataDto(
-                    profile.name(),
-                    Date.from(Instant.now().minus(2, ChronoUnit.DAYS)),
-                    new Date(),
-                    new ArrayList<>());
+        new GetPowerQualityProfileRequestDataDto(
+            profile.name(),
+            Date.from(Instant.now().minus(2, ChronoUnit.DAYS)),
+            new Date(),
+            new ArrayList<>());
     when(this.objectConfigService.getCosemObject(any(), any(), eq(DlmsObjectType.CLOCK)))
         .thenReturn(this.getClockObject());
     when(this.dlmsDevice.getProtocolName()).thenReturn(PROTOCOL_NAME);
@@ -87,11 +89,11 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
     when(this.dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
     when(this.dlmsHelper.getScaledMeterValueWithScalerUnit(any(DataObject.class), any(), any()))
         .thenReturn(new DlmsMeterValueDto(BigDecimal.TEN, DlmsUnitTypeDto.VOLT));
-    when(this.objectConfigService.getCosemObjectsWithProperties(
-            PROTOCOL_NAME,
-            PROTOCOL_VERSION,
-            this.getObjectProperties(profile.name(), PowerQualityRequest.PERIODIC)))
-        .thenReturn(allPqObjectsForThisMeter);
+//    when(this.objectConfigService.getCosemObjectsWithProperties(
+//            PROTOCOL_NAME,
+//            PROTOCOL_VERSION,
+//            this.getObjectProperties(profile.name(), PowerQualityRequest.PERIODIC)))
+//        .thenReturn(allPqObjectsForThisMeter);
     when(this.objectConfigService.getCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_2))
         .thenReturn(
@@ -114,9 +116,9 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
             any(String.class),
             any(AttributeAddress.class)))
         .thenReturn(
-            this.createAllowedCaptureObjects(),
+            this.createPartialNotAllowedCaptureObjects(),
             this.createProfileEntries(),
-            this.createAllowedCaptureObjects(),
+            this.createPartialNotAllowedCaptureObjects(),
             this.createProfileEntries());
 
     // EXECUTE
@@ -126,15 +128,13 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
     final GetPowerQualityProfileResponseDto responseDto =
         handler.handle(this.conn, this.dlmsDevice, requestDto);
 
-    assertThat(responseDto.getPowerQualityProfileResponseDatas())
-        .hasSize(2);
+    assertThat(responseDto.getPowerQualityProfileResponseDatas()).hasSize(2);
 
     PowerQualityProfileDataDto powerQualityProfile1 =
         responseDto.getPowerQualityProfileResponseDatas().get(0);
     assertThat(powerQualityProfile1.getLogicalName().toString())
         .hasToString(profile.name().equals("PRIVATE") ? OBIS_PRIVATE : OBIS_PUBLIC);
-    assertThat(powerQualityProfile1.getCaptureObjects())
-        .hasSize(2);
+    assertThat(powerQualityProfile1.getCaptureObjects()).hasSize(2);
 
     CaptureObjectDto captureObjectClock = powerQualityProfile1.getCaptureObjects().get(0);
     assertThat(captureObjectClock.getLogicalName()).isEqualTo(OBIS_CLOCK);
@@ -143,6 +143,73 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
     CaptureObjectDto captureObject = powerQualityProfile1.getCaptureObjects().get(1);
     assertThat(captureObject.getLogicalName()).isEqualTo(OBIS_INSTANTANEOUS_VOLTAGE_L1);
     assertThat(captureObject.getUnit()).isEqualTo(UNIT_VOLT);
+  }
+
+  @ParameterizedTest
+  @EnumSource(PowerQualityProfile.class)
+  void testHandlePublicOrPrivateProfileWithInvalidConfigThrowsException(
+      final PowerQualityProfile profile) throws ObjectConfigException {
+
+    final boolean polyPhase = true;
+    final GetPowerQualityProfileRequestDataDto requestDto =
+        new GetPowerQualityProfileRequestDataDto(
+            profile.name(),
+            Date.from(Instant.now().minus(2, ChronoUnit.DAYS)),
+            new Date(),
+            new ArrayList<>());
+    when(this.objectConfigService.getCosemObject(any(), any(), eq(DlmsObjectType.CLOCK)))
+        .thenReturn(this.getClockObject());
+    when(this.dlmsDevice.getProtocolName()).thenReturn(PROTOCOL_NAME);
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(PROTOCOL_VERSION);
+    when(this.objectConfigService.getCosemObjectsWithProperties(
+            PROTOCOL_NAME,
+            PROTOCOL_VERSION,
+            this.getObjectProperties(profile.name(), PowerQualityRequest.PERIODIC)))
+        .thenThrow(ObjectConfigException.class);
+    when(this.objectConfigService.getCosemObject(
+            PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_2))
+        .thenReturn(
+            this.createObject(7, "0.1.99.1.2.255", "POWER_QUALITY_PROFILE_2", null, polyPhase));
+    if (profile.name().equals("PRIVATE")) {
+      when(this.objectConfigService.getCosemObject(
+              PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_1))
+          .thenReturn(
+              this.createObject(7, OBIS_PRIVATE, "POWER_QUALITY_PROFILE_1", null, polyPhase));
+
+    } else {
+      when(this.objectConfigService.getCosemObject(
+              PROTOCOL_NAME, PROTOCOL_VERSION, DEFINABLE_LOAD_PROFILE))
+          .thenReturn(this.createObject(7, OBIS_PUBLIC, "DEFINABLE_LOAD_PROFILE", null, polyPhase));
+    }
+
+    final GetPowerQualityProfileNoSelectiveAccessHandler handler =
+        new GetPowerQualityProfileNoSelectiveAccessHandler(
+            this.dlmsHelper, this.objectConfigService);
+
+    assertThrows(
+        ProtocolAdapterException.class,
+        () -> handler.handle(this.conn, this.dlmsDevice, requestDto));
+  }
+
+  @Test
+  void testInvalidProfileThrowsException() {
+    final String INVALID_PROFILE_NAME = "INVALID";
+    final GetPowerQualityProfileRequestDataDto requestDto =
+        new GetPowerQualityProfileRequestDataDto(
+            INVALID_PROFILE_NAME,
+            Date.from(Instant.now().minus(2, ChronoUnit.DAYS)),
+            new Date(),
+            new ArrayList<>());
+    when(this.dlmsDevice.getProtocolName()).thenReturn(PROTOCOL_NAME);
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(PROTOCOL_VERSION);
+
+    final GetPowerQualityProfileNoSelectiveAccessHandler handler =
+        new GetPowerQualityProfileNoSelectiveAccessHandler(
+            this.dlmsHelper, this.objectConfigService);
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> handler.handle(this.conn, this.dlmsDevice, requestDto));
   }
 
   private List<CosemObject> getObjects(final boolean polyphase) {
@@ -172,6 +239,11 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
 
     return new ArrayList<>(
         Arrays.asList(dataObject, registerVoltObject, registerAmpereObject, registerVarObject));
+  }
+
+  private List<CosemObject> getInvalidObjects(final boolean polyphase) {
+    final CosemObject dataObject = this.createObject(CLASS_ID_DATA, null, null, null, polyphase);
+    return new ArrayList<>(Arrays.asList(dataObject));
   }
 
   private List<GetResult> createProfileEntries() {
@@ -205,8 +277,7 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
     return Collections.singletonList(getResult);
   }
 
-  private List<GetResult> createAllowedCaptureObjects() {
-
+  private List<GetResult> createPartialNotAllowedCaptureObjects() {
     final DataObject allowedCaptureObjectClock =
         DataObject.newStructureData(
             DataObject.newUInteger32Data(8),
@@ -219,18 +290,6 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
             DataObject.newOctetStringData(new byte[] {1, 0, 32, 7, 0, (byte) 255}),
             DataObject.newInteger32Data(2),
             DataObject.newUInteger32Data(0));
-
-    final GetResult getResult =
-        new GetResultImpl(
-            DataObject.newArrayData(
-                Arrays.asList(
-                    allowedCaptureObjectClock, allowedCaptureObjectINSTANTANEOUS_VOLTAGE_L1)));
-
-    return Collections.singletonList(getResult);
-  }
-
-  private List<GetResult> createPartialNotAllowedCaptureObjects() {
-
     final DataObject nonAllowedCaptureObject1 =
         DataObject.newStructureData(
             DataObject.newUInteger32Data(1),
@@ -247,7 +306,11 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
     final GetResult getResult =
         new GetResultImpl(
             DataObject.newArrayData(
-                Arrays.asList(nonAllowedCaptureObject1, nonAllowedCaptureObject2)));
+                Arrays.asList(
+                    allowedCaptureObjectClock,
+                    allowedCaptureObjectINSTANTANEOUS_VOLTAGE_L1,
+                    nonAllowedCaptureObject1,
+                    nonAllowedCaptureObject2)));
 
     return Collections.singletonList(getResult);
   }

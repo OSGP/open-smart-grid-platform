@@ -10,14 +10,13 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil;
 
-import org.openmuc.jdlms.AttributeAddress;
-import org.opensmartgridplatform.dlms.objectconfig.*;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.openmuc.jdlms.AttributeAddress;
+import org.opensmartgridplatform.dlms.objectconfig.*;
 
 public class ObjectConfigServiceHelper {
   private static final int ATTRIBUTE_ID_VALUE = 2;
