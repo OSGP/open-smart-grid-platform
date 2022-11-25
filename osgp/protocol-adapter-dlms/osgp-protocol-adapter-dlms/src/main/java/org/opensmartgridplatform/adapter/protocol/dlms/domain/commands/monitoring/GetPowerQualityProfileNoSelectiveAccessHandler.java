@@ -43,7 +43,7 @@ public class GetPowerQualityProfileNoSelectiveAccessHandler
         final ProfileEntryValueDto currentProfileEntryValueDto =
             this.makeProfileEntryValueDto(
                 dataObjects.get(i),
-                selectableCaptureObjects.get(result.size()),
+                selectableCaptureObjects.get(i),
                 previousProfileEntryDto,
                 timeInterval);
         result.add(currentProfileEntryValueDto);

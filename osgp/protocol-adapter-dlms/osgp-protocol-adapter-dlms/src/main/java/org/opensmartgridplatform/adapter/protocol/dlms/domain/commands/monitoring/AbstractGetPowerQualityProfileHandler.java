@@ -18,13 +18,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
@@ -44,7 +43,6 @@ import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
-import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
@@ -72,8 +70,6 @@ public abstract class AbstractGetPowerQualityProfileHandler {
   private static final int INTERVAL_DEFINABLE_LOAD_PROFILE = 15;
   private static final int INTERVAL_PROFILE_1 = 15;
   private static final int INTERVAL_PROFILE_2 = 10;
-  private static final String PUBLIC = "PUBLIC";
-  private static final String PRIVATE = "PRIVATE";
 
   protected final DlmsHelper dlmsHelper;
   private final ObjectConfigService objectConfigService;
@@ -100,27 +96,31 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       throws ProtocolAdapterException {
 
     final String privateOrPublic = request.getProfileType();
-    final List<CosemObject> profilesToRead = this.getProfilesToRead(privateOrPublic, device);
+
+    // Determine which profiles (and values) to read, based on the configuration for the protocol of
+    // the device and if the request is for private or public data.
+    final Map<CosemObject, List<CosemObject>> profiles =
+        this.getProfilesToRead(privateOrPublic, device);
 
     final GetPowerQualityProfileResponseDto response = new GetPowerQualityProfileResponseDto();
     final List<PowerQualityProfileDataDto> responseDatas = new ArrayList<>();
 
-    // TODO: Get objects from property SELECTABLE_OBJECTS in profileToRead
-    final List<CosemObject> cosemConfigObjects = this.getCosemObjects(device, privateOrPublic);
-
-    for (final CosemObject profile : profilesToRead) {
+    for (final Map.Entry<CosemObject, List<CosemObject>> entry : profiles.entrySet()) {
+      final CosemObject profile = entry.getKey();
+      final List<CosemObject> configObjects = entry.getValue();
 
       final ObisCode obisCode = new ObisCode(profile.getObis());
       final DateTime beginDateTime = toDateTime(request.getBeginDate(), device.getTimezone());
       final DateTime endDateTime = toDateTime(request.getEndDate(), device.getTimezone());
 
-      // All value types that can be selected based on the info in the meter
+      // All values that can be selected based on the info in the meter
       final List<GetResult> captureObjects = this.retrieveCaptureObjects(conn, device, obisCode);
 
-      // The values that are allowed to be retrieved from the meter, used as filter either
-      // before or after data retrieval, depending on selective access supported or not
+      // Determine which values should be selected.
+      // Note that if selective access is not supported, more values could be retrieved from the
+      // meter. This list can then be used to filter the retrieved values.
       final Map<Integer, SelectableObject> selectableObjects =
-          this.createSelectableObjects(captureObjects, cosemConfigObjects);
+          this.determineSelectableObjects(captureObjects, configObjects);
 
       // Get the values from the buffer in the meter
       final List<GetResult> bufferList =
@@ -132,7 +132,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
               endDateTime,
               new ArrayList<>(selectableObjects.values()));
 
-      // Convert the retrieved values (e.g. add timestamps and add unit)
+      // Convert the retrieved values (e.g. add timestamps and add unit) and apply filter if needed
       final PowerQualityProfileDataDto responseDataDto =
           this.processData(profile, captureObjects, selectableObjects, bufferList);
 
@@ -144,60 +144,56 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     return response;
   }
 
-  private List<CosemObject> getCosemObjects(final DlmsDevice device, final String profileType)
+  private List<CosemObject> getObjectsFromConfig(final DlmsDevice device, final CosemObject profile)
       throws ProtocolAdapterException {
-    final List<CosemObject> cosemConfigObjects = new ArrayList<>();
-
+    final List<String> tags = (List<String>) profile.getProperty(ObjectProperty.SELECTABLE_OBJECTS);
+    final List<DlmsObjectType> dlmsObjectTypes =
+        tags.stream().map(DlmsObjectType::valueOf).collect(Collectors.toList());
     try {
-      final CosemObject clockObject =
-          this.objectConfigService.getCosemObject(
-              device.getProtocolName(), device.getProtocolVersion(), DlmsObjectType.CLOCK);
-      cosemConfigObjects.add(clockObject);
-
-      final EnumMap<ObjectProperty, List<Object>> pqProperties =
-          new EnumMap<>(ObjectProperty.class);
-      pqProperties.put(ObjectProperty.PQ_PROFILE, Collections.singletonList(profileType));
-      pqProperties.put(
-          ObjectProperty.PQ_REQUEST,
-          Arrays.asList(PowerQualityRequest.PERIODIC.name(), PowerQualityRequest.BOTH.name()));
-
-      final List<CosemObject> cosemObjectsWithProperties =
-          this.objectConfigService.getCosemObjectsWithProperties(
-              device.getProtocolName(), device.getProtocolVersion(), pqProperties);
-
-      cosemConfigObjects.addAll(cosemObjectsWithProperties);
-
-      return cosemConfigObjects;
+      return this.objectConfigService.getCosemObjects(
+          device.getProtocolName(), device.getProtocolVersion(), dlmsObjectTypes);
     } catch (final ObjectConfigException e) {
       throw new ProtocolAdapterException("Error in object config", e);
     }
   }
 
-  private List<CosemObject> getProfilesToRead(final String privateOrPublic, final DlmsDevice device)
+  private Map<CosemObject, List<CosemObject>> getProfilesToRead(
+      final String privateOrPublic, final DlmsDevice device) throws ProtocolAdapterException {
+    final Map<CosemObject, List<CosemObject>> profilesWithObjects = new HashMap<>();
+
+    this.addToMapIfNeeded(DEFINABLE_LOAD_PROFILE, privateOrPublic, device, profilesWithObjects);
+    this.addToMapIfNeeded(POWER_QUALITY_PROFILE_1, privateOrPublic, device, profilesWithObjects);
+    this.addToMapIfNeeded(POWER_QUALITY_PROFILE_2, privateOrPublic, device, profilesWithObjects);
+
+    return profilesWithObjects;
+  }
+
+  private void addToMapIfNeeded(
+      final DlmsObjectType profileType,
+      final String privateOrPublic,
+      final DlmsDevice device,
+      final Map<CosemObject, List<CosemObject>> profilesWithSelectableObjects)
       throws ProtocolAdapterException {
     final String protocol = device.getProtocolName();
     final String version = device.getProtocolVersion();
 
     try {
-      switch (privateOrPublic) {
-        case PUBLIC:
-          return Arrays.asList(
-              this.objectConfigService.getCosemObject(protocol, version, DEFINABLE_LOAD_PROFILE),
-              this.objectConfigService.getCosemObject(protocol, version, POWER_QUALITY_PROFILE_2));
-        case PRIVATE:
-          return Arrays.asList(
-              this.objectConfigService.getCosemObject(protocol, version, POWER_QUALITY_PROFILE_1),
-              this.objectConfigService.getCosemObject(protocol, version, POWER_QUALITY_PROFILE_2));
-        default:
-          throw new IllegalArgumentException(
-              "GetPowerQualityProfile: an unknown profileType was requested: " + privateOrPublic);
+      final CosemObject profileObject =
+          this.objectConfigService.getCosemObject(protocol, version, profileType);
 
-          // TODO: DSMR4 only has DEFINABLE_LOAD_PROFILE, with public and private.
+      final List<CosemObject> selectableObjects = this.getObjectsFromConfig(device, profileObject);
+
+      if (selectableObjects.stream()
+          .anyMatch(object -> this.hasPqProfile(object, privateOrPublic))) {
+        profilesWithSelectableObjects.put(profileObject, selectableObjects);
       }
     } catch (final ObjectConfigException e) {
-      throw new ProtocolAdapterException(
-          privateOrPublic + " profiles not found for " + device.getDeviceIdentification(), e);
+      throw new ProtocolAdapterException("Determining PQ profiles to read failed", e);
     }
+  }
+
+  private boolean hasPqProfile(final CosemObject object, final String privateOrPublic) {
+    return ((String) object.getProperty(ObjectProperty.PQ_PROFILE)).equals(privateOrPublic);
   }
 
   private List<GetResult> retrieveCaptureObjects(
@@ -465,7 +461,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     }
   }
 
-  private Map<Integer, SelectableObject> createSelectableObjects(
+  private Map<Integer, SelectableObject> determineSelectableObjects(
       final List<GetResult> captureObjects, final List<CosemObject> cosemConfigObjects)
       throws ProtocolAdapterException {
 

@@ -67,6 +67,31 @@ public class ObjectConfigService {
     }
   }
 
+  public List<CosemObject> getCosemObjects(
+      final String protocolName,
+      final String protocolVersion,
+      final List<DlmsObjectType> dlmsObjectTypes)
+      throws IllegalArgumentException, ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.getCosemObjects(protocolName, protocolVersion);
+
+    final List<CosemObject> objects = new ArrayList<>();
+
+    dlmsObjectTypes.forEach(
+        objectType -> {
+          if (cosemObjects.containsKey(objectType)) {
+            objects.add(cosemObjects.get(objectType));
+          } else {
+            throw new IllegalArgumentException(
+                String.format(
+                    "No object found of type %s in profile %s version %s",
+                    objectType.value(), protocolName, protocolVersion));
+          }
+        });
+
+    return objects;
+  }
+
   public List<CosemObject> getCosemObjectsWithProperties(
       final String protocolName,
       final String protocolVersion,
