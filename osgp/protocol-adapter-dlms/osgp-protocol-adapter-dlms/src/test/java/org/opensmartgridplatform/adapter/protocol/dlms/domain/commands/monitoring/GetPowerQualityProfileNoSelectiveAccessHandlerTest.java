@@ -67,7 +67,7 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
       final PowerQualityProfile profile) throws ProtocolAdapterException, ObjectConfigException {
 
     final boolean polyPhase = true;
-    //   final List<CosemObject> allPqObjectsForThisMeter = this.getObjects(polyPhase);
+    final List<CosemObject> allPqObjectsForThisMeter = this.getObjects(polyPhase);
     final GetPowerQualityProfileRequestDataDto requestDto =
         new GetPowerQualityProfileRequestDataDto(
             profile.name(),
@@ -89,11 +89,11 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
     when(this.dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
     when(this.dlmsHelper.getScaledMeterValueWithScalerUnit(any(DataObject.class), any(), any()))
         .thenReturn(new DlmsMeterValueDto(BigDecimal.TEN, DlmsUnitTypeDto.VOLT));
-    //    when(this.objectConfigService.getCosemObjectsWithProperties(
-    //            PROTOCOL_NAME,
-    //            PROTOCOL_VERSION,
-    //            this.getObjectProperties(profile.name(), PowerQualityRequest.PERIODIC)))
-    //        .thenReturn(allPqObjectsForThisMeter);
+    when(this.objectConfigService.getCosemObjectsWithProperties(
+            PROTOCOL_NAME,
+            PROTOCOL_VERSION,
+            this.getObjectProperties(profile.name(), PowerQualityRequest.PERIODIC)))
+        .thenReturn(allPqObjectsForThisMeter);
     when(this.objectConfigService.getCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_2))
         .thenReturn(
