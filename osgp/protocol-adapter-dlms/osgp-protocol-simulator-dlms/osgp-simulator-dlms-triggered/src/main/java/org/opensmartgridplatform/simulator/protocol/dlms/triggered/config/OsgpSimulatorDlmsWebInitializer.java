@@ -13,11 +13,9 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.opensmartgridplatform.shared.application.config.AbstractApplicationInitializer;
-import org.springframework.web.WebApplicationInitializer;
 
 /** Web application Java configuration class. */
-public class OsgpSimulatorDlmsWebInitializer extends AbstractApplicationInitializer
-    implements WebApplicationInitializer {
+public class OsgpSimulatorDlmsWebInitializer extends AbstractApplicationInitializer {
 
   private static final String SERVLET_NAME = "CXFServlet";
   private static final String SERVLET_MAPPING = "/*";
@@ -29,7 +27,7 @@ public class OsgpSimulatorDlmsWebInitializer extends AbstractApplicationInitiali
   /** Handles the startup of spring. */
   @Override
   public void onStartup(final ServletContext servletContext) throws ServletException {
-    this.startUp(servletContext);
+    this.onStartup(servletContext);
     this.addApacheCxfServlet(servletContext);
   }
 

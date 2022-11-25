@@ -8,22 +8,12 @@
  */
 package org.opensmartgridplatform.logging.application.config;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import org.opensmartgridplatform.shared.application.config.AbstractWsAdapterInitializer;
-import org.springframework.web.WebApplicationInitializer;
 
 /** Web application Java configuration class. */
-public class OsgpLoggingInitializer extends AbstractWsAdapterInitializer
-    implements WebApplicationInitializer {
+public class OsgpLoggingInitializer extends AbstractWsAdapterInitializer {
 
   public OsgpLoggingInitializer() {
     super(ApplicationContext.class, "java:comp/env/osgp/Logging/log-config");
-  }
-
-  /** Handles startup of Spring context. */
-  @Override
-  public void onStartup(final ServletContext servletContext) throws ServletException {
-    this.startUp(servletContext);
   }
 }

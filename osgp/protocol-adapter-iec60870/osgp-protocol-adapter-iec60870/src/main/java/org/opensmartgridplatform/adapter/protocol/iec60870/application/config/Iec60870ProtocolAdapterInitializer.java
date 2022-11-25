@@ -8,21 +8,12 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.config;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import org.opensmartgridplatform.shared.application.config.AbstractApplicationInitializer;
-import org.springframework.web.WebApplicationInitializer;
 
 /** Web application Java configuration class. */
-public class Iec60870ProtocolAdapterInitializer extends AbstractApplicationInitializer
-    implements WebApplicationInitializer {
+public class Iec60870ProtocolAdapterInitializer extends AbstractApplicationInitializer {
 
   public Iec60870ProtocolAdapterInitializer() {
     super(ApplicationContext.class, "java:comp/env/osgp/AdapterProtocolIec60870/log-config");
-  }
-
-  @Override
-  public void onStartup(final ServletContext servletContext) throws ServletException {
-    this.startUp(servletContext);
   }
 }
