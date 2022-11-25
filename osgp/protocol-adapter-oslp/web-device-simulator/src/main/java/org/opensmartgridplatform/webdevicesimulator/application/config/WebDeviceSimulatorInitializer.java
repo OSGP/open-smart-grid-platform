@@ -29,7 +29,7 @@ public class WebDeviceSimulatorInitializer extends AbstractApplicationInitialize
 
   @Override
   public void onStartup(final ServletContext servletContext) throws ServletException {
-    this.onStartup(servletContext);
+    super.onStartup(servletContext);
 
     InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
 

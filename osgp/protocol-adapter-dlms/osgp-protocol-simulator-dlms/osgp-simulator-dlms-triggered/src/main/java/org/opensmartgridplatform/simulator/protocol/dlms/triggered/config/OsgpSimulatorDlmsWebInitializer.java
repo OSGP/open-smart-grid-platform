@@ -27,7 +27,7 @@ public class OsgpSimulatorDlmsWebInitializer extends AbstractApplicationInitiali
   /** Handles the startup of spring. */
   @Override
   public void onStartup(final ServletContext servletContext) throws ServletException {
-    this.onStartup(servletContext);
+    super.onStartup(servletContext);
     this.addApacheCxfServlet(servletContext);
   }
 
