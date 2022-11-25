@@ -55,6 +55,7 @@ public class SecretManagementServiceTest {
   @Mock private DbEncryptionKeyRepository keyRepository;
   @Mock private RsaEncrypter encrypterForSecretManagementClient;
   @Mock private RsaEncrypter decrypterForSecretManagement;
+  @Mock private SecretManagementMetrics secretManagementMetrics;
 
   @BeforeEach
   public void setUpSecretManagementService() {
@@ -65,7 +66,8 @@ public class SecretManagementServiceTest {
             this.secretRepository,
             this.keyRepository,
             this.encrypterForSecretManagementClient,
-            this.decrypterForSecretManagement);
+            this.decrypterForSecretManagement,
+            this.secretManagementMetrics);
   }
 
   @Test
@@ -120,6 +122,8 @@ public class SecretManagementServiceTest {
             () ->
                 this.service.retrieveSecrets(
                     SOME_DEVICE, Arrays.asList(SecretType.E_METER_MASTER_KEY)));
+
+    verify(this.secretManagementMetrics).incrementEncrypterException(any(EncrypterException.class));
   }
 
   @Test
@@ -294,6 +298,8 @@ public class SecretManagementServiceTest {
 
     assertThatIllegalStateException()
         .isThrownBy(() -> this.service.storeSecrets(SOME_DEVICE, Arrays.asList(typedSecret)));
+
+    verify(this.secretManagementMetrics).incrementEncrypterException(any(EncrypterException.class));
   }
 
   @Test
