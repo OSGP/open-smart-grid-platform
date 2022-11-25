@@ -113,9 +113,8 @@ public class DlmsProfileValidator {
 
   private static String pqProfileShouldHaveSelectableObjects(
       final CosemObject object, final DlmsProfile dlmsProfile) {
-    final Object property = object.getProperty(ObjectProperty.SELECTABLE_OBJECTS);
-
-    final List<String> selectableObjects = (List<String>) property;
+    final List<String> selectableObjects =
+        object.getListProperty(ObjectProperty.SELECTABLE_OBJECTS);
 
     if (selectableObjects == null || selectableObjects.isEmpty()) {
       return "PQ Profile " + object.getTag() + " has no selectable objects";

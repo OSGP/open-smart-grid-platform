@@ -95,6 +95,21 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       final GetPowerQualityProfileRequestDataDto request)
       throws ProtocolAdapterException {
 
+    // Power quality values can be private or public and can be read from the buffers in several
+    // profiles (DLMS class-id 7) in the meter. The values available in meters vary, due to the
+    // protocol version, the meter type or a different setting written by the head end system.
+    // Some meters also don't support selective access. In that case we read more values than
+    // requested from the meter and need to filter afterwards to get the wanted values.
+    // The steps to take are as follows:
+    // 1. Determine which profiles should be read and the values they can contain (config objects)
+    // 2. Get the available values in the meter (capture objects)
+    // 3. Only objects that are in both lists (config and capture objects) can be read: the
+    //    selectable objects
+    // 4. Retrieve the values from the meter, if possible only get the wanted values using selective
+    //    access
+    // 5. If the meter doesn't support selective access, then filter the retrieved values
+    // 6. Convert the retrieved values to DTO's (includes adding the right unit and timestamp)
+
     final String privateOrPublic = request.getProfileType();
 
     // Determine which profiles (and values) to read, based on the configuration for the protocol of
@@ -146,7 +161,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
   private List<CosemObject> getObjectsFromConfig(final DlmsDevice device, final CosemObject profile)
       throws ProtocolAdapterException {
-    final List<String> tags = (List<String>) profile.getProperty(ObjectProperty.SELECTABLE_OBJECTS);
+    final List<String> tags = profile.getListProperty(ObjectProperty.SELECTABLE_OBJECTS);
     final List<DlmsObjectType> dlmsObjectTypes =
         tags.stream().map(DlmsObjectType::valueOf).collect(Collectors.toList());
     try {
@@ -181,10 +196,21 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       final CosemObject profileObject =
           this.objectConfigService.getCosemObject(protocol, version, profileType);
 
-      final List<CosemObject> selectableObjects = this.getObjectsFromConfig(device, profileObject);
+      // Get all selectable objects for this profile
+      final List<CosemObject> selectableObjectsFromConfig =
+          this.getObjectsFromConfig(device, profileObject);
 
-      if (selectableObjects.stream()
-          .anyMatch(object -> this.hasPqProfile(object, privateOrPublic))) {
+      // Filter the list on private/public objects. The clock should always be added.
+      final List<CosemObject> selectableObjects =
+          selectableObjectsFromConfig.stream()
+              .filter(
+                  object ->
+                      object.getClassId() == InterfaceClass.CLOCK.id()
+                          || this.hasPqProfile(object, privateOrPublic))
+              .collect(Collectors.toList());
+
+      // Use this profile when at least the clock object and one other object should be read
+      if (selectableObjects.size() > 1) {
         profilesWithSelectableObjects.put(profileObject, selectableObjects);
       }
     } catch (final ObjectConfigException e) {
@@ -504,18 +530,13 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     return selectableObjects;
   }
 
-  private String getScalerUnit(final CosemObject object) throws ProtocolAdapterException {
+  private String getScalerUnit(final CosemObject object) {
     if (object.getClassId() == InterfaceClass.REGISTER.id()) {
       return object.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId()).getValue();
     } else if (object.getClassId() == InterfaceClass.EXTENDED_REGISTER.id()) {
       return object.getAttribute(ExtendedRegisterAttribute.SCALER_UNIT.attributeId()).getValue();
-    } else if (object.getClassId() == InterfaceClass.CLOCK.id()) {
-      return null;
-    } else if (object.getClassId() == InterfaceClass.DATA.id()) {
-      return null;
     } else {
-      throw new ProtocolAdapterException(
-          "Unexpected class id for getScalerUnit: " + object.getClassId());
+      return null;
     }
   }
 
