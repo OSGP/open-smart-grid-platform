@@ -10,48 +10,68 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitori
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
-import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
+import org.opensmartgridplatform.dlms.objectconfig.PowerQualityProfile;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
-import org.springframework.core.io.ClassPathResource;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.*;
 
 @ExtendWith(MockitoExtension.class)
-class GetPowerQualityProfileSelectiveAccessHandlerTest {
+class GetPowerQualityProfileSelectiveAccessHandlerTest extends ObjectConfigServiceHelper {
+  private static final String PROTOCOL_NAME = "SMR";
+  private static final String PROTOCOL_VERSION = "5.0.0";
+  private static final String OBIS_PRIVATE = "0.1.99.1.1.255";
+  private static final String OBIS_PUBLIC = "0.1.94.31.6.255";
+  private static final String OBIS_CLOCK = "0.0.1.0.0.255";
+  private static final String OBIS_INSTANTANEOUS_VOLTAGE_L1 = "1.0.32.7.0.255";
+  private static final String UNIT_UNDEFINED = "UNDEFINED";
+  private static final String UNIT_VOLT = "V";
 
   @Mock private DlmsHelper dlmsHelper;
-
   @Mock private DlmsConnectionManager conn;
-
   @Mock private DlmsDevice dlmsDevice;
-  private ObjectConfigService objectConfigService;
+  @Mock private ObjectConfigService objectConfigService;
 
-  @BeforeEach
-  public void setup() throws ProtocolAdapterException, IOException, ObjectConfigException {
+  @ParameterizedTest
+  @EnumSource(PowerQualityProfile.class)
+  void testHandlePublicOrPrivateProfileWithoutSelectiveAccessWithPartialNonAllowedObjects(
+      final PowerQualityProfile profile) throws ProtocolAdapterException, ObjectConfigException {
+
+    final boolean polyPhase = true;
+    final GetPowerQualityProfileRequestDataDto requestDto =
+        new GetPowerQualityProfileRequestDataDto(
+            profile.name(),
+            Date.from(Instant.now().minus(2, ChronoUnit.DAYS)),
+            new Date(),
+            new ArrayList<>());
+
+    when(this.objectConfigService.getCosemObject(any(), any(), eq(DlmsObjectType.CLOCK)))
+        .thenReturn(this.getClockObject());
+    when(this.dlmsDevice.getProtocolName()).thenReturn(PROTOCOL_NAME);
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(PROTOCOL_VERSION);
+
     when(this.dlmsHelper.readLogicalName(any(DataObject.class), any(String.class)))
         .thenCallRealMethod();
     when(this.dlmsHelper.readObjectDefinition(any(DataObject.class), any(String.class)))
@@ -62,136 +82,72 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
     when(this.dlmsHelper.convertDataObjectToDateTime(any(DataObject.class))).thenCallRealMethod();
     when(this.dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
     when(this.dlmsHelper.getClockDefinition()).thenCallRealMethod();
-
-    final List<DlmsProfile> dlmsProfileList = this.getDlmsProfileList();
-    this.objectConfigService = new ObjectConfigService(dlmsProfileList);
-  }
-
-  @Test
-  void testHandlePrivateProfileSelectiveAccess() throws ProtocolAdapterException {
-
-    final GetPowerQualityProfileRequestDataDto requestDto =
-        new GetPowerQualityProfileRequestDataDto(
-            "PRIVATE",
-            Date.from(Instant.now().minus(2, ChronoUnit.DAYS)),
-            new Date(),
-            new ArrayList<>());
-    this.dlmsDevice = createDevice("SMR", "5.0");
-
-    when(this.dlmsHelper.getAndCheck(
-            any(DlmsConnectionManager.class),
-            any(DlmsDevice.class),
-            any(String.class),
-            any(AttributeAddress.class)))
+    when(this.dlmsHelper.getScaledMeterValueWithScalerUnit(any(DataObject.class), any(), any()))
+        .thenReturn(new DlmsMeterValueDto(BigDecimal.TEN, DlmsUnitTypeDto.VOLT));
+    when(this.objectConfigService.getCosemObject(
+            PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_2))
         .thenReturn(
-            this.createPrivateCaptureObjects(),
-            this.createProfileEntries(),
-            this.createPrivateCaptureObjectsProfile2(),
-            this.createProfileEntries());
-    when(this.dlmsHelper.getScaledMeterValue(any(DataObject.class), any(DataObject.class), any()))
-        .thenReturn(mock(DlmsMeterValueDto.class));
-
+            this.createObject(7, "0.1.99.1.2.255", "POWER_QUALITY_PROFILE_2", null, polyPhase));
+    when(this.objectConfigService.getCosemObject(
+            PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_2))
+        .thenReturn(
+            this.createObject(7, "0.1.99.1.2.255", "POWER_QUALITY_PROFILE_2", null, polyPhase));
+    if (profile.name().equals("PRIVATE")) {
+      when(this.objectConfigService.getCosemObject(
+              PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_1))
+          .thenReturn(
+              this.createObject(7, OBIS_PRIVATE, "POWER_QUALITY_PROFILE_1", null, polyPhase));
+      when(this.dlmsHelper.getAndCheck(
+              any(DlmsConnectionManager.class),
+              any(DlmsDevice.class),
+              any(String.class),
+              any(AttributeAddress.class)))
+          .thenReturn(
+              this.createPrivateCaptureObjects(),
+              this.createProfileEntries(),
+              this.createPrivateCaptureObjectsProfile2(),
+              this.createProfileEntries());
+    } else {
+      when(this.objectConfigService.getCosemObject(
+              PROTOCOL_NAME, PROTOCOL_VERSION, DEFINABLE_LOAD_PROFILE))
+          .thenReturn(this.createObject(7, OBIS_PUBLIC, "DEFINABLE_LOAD_PROFILE", null, polyPhase));
+      when(this.dlmsHelper.getAndCheck(
+              any(DlmsConnectionManager.class),
+              any(DlmsDevice.class),
+              any(String.class),
+              any(AttributeAddress.class)))
+          .thenReturn(
+              this.createPublicCaptureObjects(),
+              this.createPublicProfileEntries(),
+              this.createPublicCaptureObjectsProfile2(),
+              this.createPublicProfileEntries());
+    }
+    // EXECUTE
     final GetPowerQualityProfileSelectiveAccessHandler handler =
         new GetPowerQualityProfileSelectiveAccessHandler(this.dlmsHelper, this.objectConfigService);
-
     final GetPowerQualityProfileResponseDto responseDto =
         handler.handle(this.conn, this.dlmsDevice, requestDto);
 
     assertThat(responseDto.getPowerQualityProfileResponseDatas()).hasSize(2);
     assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getCaptureObjects())
-        .hasSize(3);
-    assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries())
-        .hasSize(4);
+            .hasSize(3);
 
     for (final ProfileEntryDto profileEntryDto :
-        responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries()) {
+            responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries()) {
       assertThat(profileEntryDto.getProfileEntryValues()).hasSize(3);
     }
-  }
-
-  @Test
-  void testHandlePublicProfileSelectiveAccess() throws ProtocolAdapterException {
-
-    final GetPowerQualityProfileRequestDataDto requestDto =
-        new GetPowerQualityProfileRequestDataDto(
-            "PUBLIC",
-            Date.from(Instant.now().minus(2, ChronoUnit.DAYS)),
-            new Date(),
-            new ArrayList<>());
-    this.dlmsDevice = createDevice("SMR", "5.0");
-
-    when(this.dlmsHelper.getAndCheck(
-            any(DlmsConnectionManager.class),
-            any(DlmsDevice.class),
-            any(String.class),
-            any(AttributeAddress.class)))
-        .thenReturn(
-            this.createPublicCaptureObjects(),
-            this.createPublicProfileEntries(),
-            this.createPublicCaptureObjectsProfile2(),
-            this.createPublicProfileEntries());
-    when(this.dlmsHelper.getScaledMeterValue(any(DataObject.class), any(DataObject.class), any()))
-        .thenReturn(mock(DlmsMeterValueDto.class));
-
-    final GetPowerQualityProfileSelectiveAccessHandler handler =
-        new GetPowerQualityProfileSelectiveAccessHandler(this.dlmsHelper, this.objectConfigService);
-
-    final GetPowerQualityProfileResponseDto responseDto =
-        handler.handle(this.conn, this.dlmsDevice, requestDto);
-
-    assertThat(responseDto.getPowerQualityProfileResponseDatas()).hasSize(2);
-    assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getCaptureObjects())
-        .hasSize(3);
-
-    for (final ProfileEntryDto profileEntryDto :
-        responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries()) {
-      assertThat(profileEntryDto.getProfileEntryValues()).hasSize(3);
-    }
-  }
-
-  private List<GetResult> createProfileEntries() {
-
-    final List<DataObject> structures = new ArrayList<>();
-
-    final DataObject structureData1 =
-        DataObject.newStructureData(
-            DataObject.newOctetStringData(
-                new byte[] {7, (byte) 228, 3, 15, 7, 0, 0, 0, 0, (byte) 255, (byte) 196, 0}),
-            DataObject.newUInteger32Data(3),
-            DataObject.newUInteger32Data(2));
-
-    structures.add(structureData1);
-    structures.add(
-        DataObject.newStructureData(
-            DataObject.newNullData(),
-            DataObject.newUInteger32Data(3),
-            DataObject.newUInteger32Data(2)));
-    structures.add(
-        DataObject.newStructureData(
-            DataObject.newNullData(),
-            DataObject.newUInteger32Data(3),
-            DataObject.newUInteger32Data(2)));
-    structures.add(
-        DataObject.newStructureData(
-            DataObject.newNullData(),
-            DataObject.newUInteger32Data(3),
-            DataObject.newUInteger32Data(2)));
-
-    final GetResult getResult = new GetResultImpl(DataObject.newArrayData(structures));
-
-    return Collections.singletonList(getResult);
   }
 
   private List<GetResult> createPrivateCaptureObjects() {
 
     final DataObject clockDefinition = getClockDefinition();
-    final DataObject structureData2 =
+    final DataObject structureData2 = // AVERAGE_ACTIVE_POWER_IMPORT_L1
         DataObject.newStructureData(
             DataObject.newUInteger32Data(1),
             DataObject.newOctetStringData(new byte[] {1, 0, 21, 4, 0, (byte) 255}),
             DataObject.newInteger32Data(2),
             DataObject.newUInteger32Data(0));
-    final DataObject structureData3 =
+    final DataObject structureData3 = // AVERAGE_REACTIVE_POWER_IMPORT_L1
         DataObject.newStructureData(
             DataObject.newUInteger32Data(1),
             DataObject.newOctetStringData(new byte[] {1, 0, 23, 4, 0, (byte) 255}),
@@ -209,13 +165,13 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
   private List<GetResult> createPrivateCaptureObjectsProfile2() {
 
     final DataObject clockDefinition = getClockDefinition();
-    final DataObject structureData2 =
+    final DataObject structureData2 = // AVERAGE_CURRENT_L1
         DataObject.newStructureData(
             DataObject.newUInteger32Data(1),
             DataObject.newOctetStringData(new byte[] {1, 0, 31, 24, 0, (byte) 255}),
             DataObject.newInteger32Data(2),
             DataObject.newUInteger32Data(0));
-    final DataObject structureData3 =
+    final DataObject structureData3 = // AVERAGE_CURRENT_L2
         DataObject.newStructureData(
             DataObject.newUInteger32Data(1),
             DataObject.newOctetStringData(new byte[] {1, 0, 51, 24, 0, (byte) 255}),
@@ -295,28 +251,42 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest {
     return Collections.singletonList(getResult);
   }
 
+  private List<GetResult> createProfileEntries() {
+
+    final List<DataObject> structures = new ArrayList<>();
+
+    final DataObject structureData1 =
+        DataObject.newStructureData(
+            DataObject.newOctetStringData(
+                new byte[] {7, (byte) 228, 3, 15, 7, 0, 0, 0, 0, (byte) 255, (byte) 196, 0}),
+            DataObject.newUInteger32Data(3),
+            DataObject.newUInteger32Data(2));
+
+    structures.add(structureData1);
+    structures.add(
+        DataObject.newStructureData(
+            DataObject.newNullData(),
+            DataObject.newUInteger32Data(3),
+            DataObject.newUInteger32Data(2)));
+    structures.add(
+        DataObject.newStructureData(
+            DataObject.newNullData(),
+            DataObject.newUInteger32Data(3),
+            DataObject.newUInteger32Data(2)));
+    structures.add(
+        DataObject.newStructureData(
+            DataObject.newNullData(), DataObject.newUInteger32Data(3), DataObject.newNullData()));
+
+    final GetResult getResult = new GetResultImpl(DataObject.newArrayData(structures));
+
+    return Collections.singletonList(getResult);
+  }
+
   private static DataObject getClockDefinition() {
     return DataObject.newStructureData(
         DataObject.newUInteger32Data(8),
         DataObject.newOctetStringData(new byte[] {0, 0, 1, 0, 0, (byte) 255}),
         DataObject.newInteger32Data(2),
         DataObject.newUInteger32Data(0));
-  }
-
-  private List<DlmsProfile> getDlmsProfileList() throws IOException {
-    final ObjectMapper objectMapper = new ObjectMapper();
-    final List<DlmsProfile> DlmsProfileList = new ArrayList<>();
-    final DlmsProfile dlmsProfile50 =
-        objectMapper.readValue(
-            new ClassPathResource("/dlmsprofile-smr50.json").getFile(), DlmsProfile.class);
-    DlmsProfileList.add(dlmsProfile50);
-    return DlmsProfileList;
-  }
-
-  private DlmsDevice createDevice(String protocol, String version) {
-    final DlmsDevice device = new DlmsDevice();
-    device.setProtocol(protocol, version);
-
-    return device;
   }
 }
