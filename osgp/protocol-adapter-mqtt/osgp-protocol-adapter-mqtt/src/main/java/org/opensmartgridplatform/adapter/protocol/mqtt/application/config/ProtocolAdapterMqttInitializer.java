@@ -10,23 +10,14 @@ package org.opensmartgridplatform.adapter.protocol.mqtt.application.config;
 
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Slf4JLoggerFactory;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import org.opensmartgridplatform.shared.application.config.AbstractApplicationInitializer;
-import org.springframework.web.WebApplicationInitializer;
 
-public class ProtocolAdapterMqttInitializer extends AbstractApplicationInitializer
-    implements WebApplicationInitializer {
+public class ProtocolAdapterMqttInitializer extends AbstractApplicationInitializer {
 
   private static final String LOG_CONFIG = "java:comp/env/osgp/AdapterProtocolMqtt/log-config";
 
   public ProtocolAdapterMqttInitializer() {
     super(ApplicationContext.class, LOG_CONFIG);
     InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
-  }
-
-  @Override
-  public void onStartup(final ServletContext servletContext) throws ServletException {
-    this.startUp(servletContext);
   }
 }

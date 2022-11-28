@@ -23,11 +23,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.util.ResourceUtils;
+import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 /** Web application Java configuration class. */
-public abstract class AbstractApplicationInitializer {
+public abstract class AbstractApplicationInitializer implements WebApplicationInitializer {
 
   private static final String DEFAULT_LOG_LOCATION = "classpath:logback-config.xml";
   private static final String GLOBAL_LOG_JNDI_NAME = "java:/comp/env/osgp/Global/log-config";
@@ -57,9 +58,9 @@ public abstract class AbstractApplicationInitializer {
    * @param servletContext Java servlet context as supplied by application server
    * @throws ServletException thrown when a servlet encounters difficulty
    */
-  protected void startUp(final ServletContext servletContext) throws ServletException {
-    // Force the timezone of application to UTC (required for
-    // Hibernate/JDBC)
+  @Override
+  public void onStartup(final ServletContext servletContext) throws ServletException {
+    // Force the timezone of application to UTC (required for Hibernate/JDBC)
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
     this.initializeLogging();
@@ -100,9 +101,8 @@ public abstract class AbstractApplicationInitializer {
       if (new File(location).exists()) {
         this.logger.debug("Using log config {} found through JNDI name {}", location, jndiName);
         return Optional.of(location);
-      } else {
-        return Optional.empty();
       }
+      return Optional.empty();
     } catch (final NamingException e) {
       // The GLOBAL_LOG_JNDI_NAME is optional. If not defined in the ServletContext, a
       // NamingException will occur. No problem.

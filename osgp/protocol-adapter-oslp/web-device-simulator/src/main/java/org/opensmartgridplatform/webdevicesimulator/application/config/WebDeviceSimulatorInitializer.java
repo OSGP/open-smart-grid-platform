@@ -14,12 +14,10 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 import org.opensmartgridplatform.shared.application.config.AbstractApplicationInitializer;
-import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /** Web application Java configuration class. */
-public class WebDeviceSimulatorInitializer extends AbstractApplicationInitializer
-    implements WebApplicationInitializer {
+public class WebDeviceSimulatorInitializer extends AbstractApplicationInitializer {
 
   private static final String DISPATCHER_SERVLET_NAME = "dispatcher";
   private static final String DISPATCHER_SERVLET_MAPPING = "/";
@@ -31,7 +29,7 @@ public class WebDeviceSimulatorInitializer extends AbstractApplicationInitialize
 
   @Override
   public void onStartup(final ServletContext servletContext) throws ServletException {
-    this.startUp(servletContext);
+    super.onStartup(servletContext);
 
     InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
 
