@@ -26,6 +26,7 @@
   <properties>
     <java.version>17</java.version>
     <spring.boot.version>2.7.2</spring.boot.version>
+    <spring.data.commons.version>2.7.2</spring.data.commons.version>
     <jaxb.plugin.version>2.5.0</jaxb.plugin.version>
     <build.helper.maven.plugin.version>3.0.0</build.helper.maven.plugin.version>
     <apache.ws.xlmschema.version>2.0.1</apache.ws.xlmschema.version>
@@ -124,6 +125,11 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+      <version>${spring.boot.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
       <version>${spring.boot.version}</version>
     </dependency>
@@ -156,6 +162,12 @@
       <groupId>javax.jms</groupId>
       <artifactId>javax.jms-api</artifactId>
       <version>${apache.jms.api.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-commons</artifactId>
+      <version>${spring.data.commons.version}</version>
     </dependency>
 
     <dependency>

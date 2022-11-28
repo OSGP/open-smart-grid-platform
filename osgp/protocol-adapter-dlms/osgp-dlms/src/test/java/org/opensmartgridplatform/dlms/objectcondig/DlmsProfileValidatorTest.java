@@ -55,7 +55,7 @@ class DlmsProfileValidatorTest {
     } catch (final ObjectConfigException e) {
       assertThat(e.getMessage())
           .isEqualTo(
-              "DlmsProfile SMR 5.0 register validation error: Register(s) without scaler_unit: AVERAGE_ACTIVE_POWER_IMPORT_L2");
+              "DlmsProfile SMR 5.0.0 register validation error: Register(s) without scaler_unit: AVERAGE_ACTIVE_POWER_IMPORT_L2");
     }
   }
 
@@ -73,7 +73,7 @@ class DlmsProfileValidatorTest {
     } catch (final ObjectConfigException e) {
       assertThat(e.getMessage())
           .isEqualTo(
-              "DlmsProfile SMR 5.0 PQ validation error: AVERAGE_ACTIVE_POWER_IMPORT_L1 doesn't contain PQ Profile, PQ Profile POWER_QUALITY_PROFILE_2 has no selectable objects");
+              "DlmsProfile SMR 5.0.0 PQ validation error: AVERAGE_ACTIVE_POWER_IMPORT_L1 doesn't contain PQ Profile, PQ Profile POWER_QUALITY_PROFILE_2 has no selectable objects");
     }
   }
 }

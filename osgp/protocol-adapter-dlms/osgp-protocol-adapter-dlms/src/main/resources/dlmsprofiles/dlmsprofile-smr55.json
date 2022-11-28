@@ -1,0 +1,11 @@
+{
+  "profile": "SMR",
+  "version": "5.5",
+  "description": "Profile for Smart Meter Requirements 5.5",
+  "inherit": {
+    "profile": "SMR",
+    "version": "5.2"
+  },
+  "properties": [],
+  "objects": []
+}

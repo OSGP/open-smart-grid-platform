@@ -67,17 +67,30 @@ public class ObjectConfigService {
     }
   }
 
-  public List<CosemObject> getCosemObjectsWithProperty(
+  public List<CosemObject> getCosemObjectsWithProperties(
       final String protocolName,
       final String protocolVersion,
-      final ObjectProperty wantedProperty,
-      final Object wantedPropertyValue)
+      final Map<ObjectProperty, List<Object>> properties)
       throws ObjectConfigException {
     final Map<DlmsObjectType, CosemObject> cosemObjects =
         this.getCosemObjects(protocolName, protocolVersion);
 
     return cosemObjects.values().stream()
-        .filter(object -> this.hasProperty(object, wantedProperty, wantedPropertyValue))
+        .filter(object -> this.hasProperties(object, properties))
+        .collect(Collectors.toList());
+  }
+
+  public List<CosemObject> getCosemObjectsWithProperty(
+      final String protocolName,
+      final String protocolVersion,
+      final ObjectProperty wantedProperty,
+      final List<Object> wantedPropertyValues)
+      throws ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.getCosemObjects(protocolName, protocolVersion);
+
+    return cosemObjects.values().stream()
+        .filter(object -> this.hasProperty(object, wantedProperty, wantedPropertyValues))
         .collect(Collectors.toList());
   }
 
@@ -103,16 +116,23 @@ public class ObjectConfigService {
   private boolean hasProperty(
       final CosemObject object,
       final ObjectProperty wantedProperty,
-      final Object wantedPropertyValue) {
+      final List<Object> wantedPropertyValues) {
     final Object property = object.getProperty(wantedProperty);
 
     if (property == null) {
       return false;
-    } else if (wantedPropertyValue != null) {
-      return property.equals(wantedPropertyValue);
+    } else if (wantedPropertyValues != null && !wantedPropertyValues.isEmpty()) {
+      return wantedPropertyValues.contains(property);
     }
 
     return true;
+  }
+
+  private boolean hasProperties(
+      final CosemObject object, final Map<ObjectProperty, List<Object>> properties) {
+
+    return properties.entrySet().stream()
+        .allMatch(entry -> this.hasProperty(object, entry.getKey(), entry.getValue()));
   }
 
   private List<DlmsProfile> getDlmsProfileListFromResources() throws IOException {
