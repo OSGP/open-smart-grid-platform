@@ -39,14 +39,15 @@ public class GetPowerQualityProfileSelectiveAccessHandler
     final List<DataObject> dataObjects = profileEntryDataObject.getValue();
 
     for (int i = 0; i < dataObjects.size(); i++) {
-
-      final ProfileEntryValueDto currentProfileEntryValueDto =
-          super.makeProfileEntryValueDto(
-              dataObjects.get(i),
-              selectableCaptureObjects.get(i),
-              previousProfileEntryDto,
-              timeInterval);
-      result.add(currentProfileEntryValueDto);
+      if (selectableCaptureObjects.get(i) != null) {
+        final ProfileEntryValueDto currentProfileEntryValueDto =
+            super.makeProfileEntryValueDto(
+                dataObjects.get(i),
+                selectableCaptureObjects.get(i),
+                previousProfileEntryDto,
+                timeInterval);
+        result.add(currentProfileEntryValueDto);
+      }
     }
 
     return result;
