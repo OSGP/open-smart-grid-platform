@@ -29,6 +29,39 @@ public class PushNotificationAlarm {
   @When("^an alarm is received from a known device$")
   public void anAlarmIsReceivedFromAKnownDevice(final Map<String, String> settings)
       throws Throwable {
+    this.simulateAlarm(settings, new byte[] {0x2C, 0x00, 0x00, 0x01, 0x02});
+  }
+
+  @When("^an Power Up alarm is received from a device$")
+  public void anPowerUpAlarmIsReceivedFromADevice(final Map<String, String> settings)
+      throws Throwable {
+    this.simulateAlarm(settings, new byte[] {0x2C, 0x00, 0x00, 0x00, 0x04});
+  }
+
+  @When("^a New M-Bus device discovered channel (\\d) alarm is received from a device$")
+  public void aNewMBusDeviceDiscoveredChannelAlarmIsReceivedFromADevice(
+      final int channel, final Map<String, String> settings) throws Throwable {
+    switch (channel) {
+      case 1:
+        this.simulateAlarm(settings, new byte[] {0x2C, 0x01, 0x00, 0x00, 0x00});
+        break;
+      case 2:
+        this.simulateAlarm(settings, new byte[] {0x2C, 0x02, 0x00, 0x00, 0x00});
+        break;
+      case 3:
+        this.simulateAlarm(settings, new byte[] {0x2C, 0x04, 0x00, 0x00, 0x00});
+        break;
+      case 4:
+        this.simulateAlarm(settings, new byte[] {0x2C, 0x08, 0x00, 0x00, 0x00});
+        break;
+      default:
+        throw new IllegalArgumentException(
+            String.format(
+                "'New M-Bus device discovered channel {}' is not an valid alarm", channel));
+    }
+  }
+
+  private void simulateAlarm(final Map<String, String> settings, final byte[] alarmsToPush) {
     try {
       final String deviceIdentification =
           getString(
@@ -37,7 +70,7 @@ public class PushNotificationAlarm {
               PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
       SimulatePushedAlarmsHooks.simulateAlarm(
           deviceIdentification,
-          new byte[] {0x2C, 0x00, 0x00, 0x01, 0x02},
+          alarmsToPush,
           this.serviceEndpoint.getAlarmNotificationsHost(),
           this.serviceEndpoint.getAlarmNotificationsPort());
     } catch (final Exception e) {

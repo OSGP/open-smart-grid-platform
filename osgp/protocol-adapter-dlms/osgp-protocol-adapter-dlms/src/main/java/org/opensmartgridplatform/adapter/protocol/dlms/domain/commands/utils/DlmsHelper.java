@@ -300,7 +300,7 @@ public class DlmsHelper {
       throw new ProtocolAdapterException("Invalid scaler unit: " + scalerUnit);
     }
 
-    final int scaler = Integer.parseInt(scalerUnitParts[0]);
+    final int scaler = Integer.parseInt(scalerUnitParts[0].trim());
     final DlmsUnitTypeDto unit = DlmsUnitTypeDto.getUnitType(scalerUnitParts[1].trim());
     if (unit == null) {
       throw new ProtocolAdapterException("Invalid unit: " + scalerUnitParts[1].trim());
