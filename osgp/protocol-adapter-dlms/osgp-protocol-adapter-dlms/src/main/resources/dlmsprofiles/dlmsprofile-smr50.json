@@ -85,7 +85,7 @@
           "description": "capture period in sec",
           "datatype": "double-long-unsigned",
           "valuetype": "SET_BY_CLIENT",
-          "value": "86400",
+          "value": "900",
           "access": "RW"
         },
         {
