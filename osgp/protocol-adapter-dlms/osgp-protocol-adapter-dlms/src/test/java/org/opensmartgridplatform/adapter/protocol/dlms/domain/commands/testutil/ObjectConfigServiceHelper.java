@@ -21,6 +21,8 @@ import org.opensmartgridplatform.dlms.objectconfig.*;
 public class ObjectConfigServiceHelper {
   private static final int ATTRIBUTE_ID_VALUE = 2;
   private static final int ATTRIBUTE_ID_SCALER_UNIT = 3;
+  private static final String OBIS_CODE_CLOCK = "0.0.1.0.0.255";
+  private static final int CLASS_ID_CLOCK = 8;
 
   public CosemObject createObject(
       final int classId,
@@ -51,7 +53,7 @@ public class ObjectConfigServiceHelper {
     if (polyphase) {
       return Collections.singletonList(MeterType.PP);
     } else {
-      return Arrays.asList(MeterType.SP, MeterType.SP);
+      return Arrays.asList(MeterType.PP, MeterType.SP);
     }
   }
 
@@ -78,8 +80,8 @@ public class ObjectConfigServiceHelper {
   public static CosemObject getClockObject() {
 
     final CosemObject clock = new CosemObject();
-    clock.setClassId(8);
-    clock.setObis("0.0.1.0.0.255");
+    clock.setClassId(CLASS_ID_CLOCK);
+    clock.setObis(OBIS_CODE_CLOCK);
     clock.setTag(DlmsObjectType.CLOCK.name());
 
     return clock;

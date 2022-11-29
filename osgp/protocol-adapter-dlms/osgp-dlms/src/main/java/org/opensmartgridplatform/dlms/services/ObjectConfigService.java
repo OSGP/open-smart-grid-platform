@@ -84,7 +84,7 @@ public class ObjectConfigService {
           } else {
             throw new IllegalArgumentException(
                 String.format(
-                    "No object found of type %s in profile %s version %s",
+                    "No object found of type %s in protocol %s version %s",
                     objectType.value(), protocolName, protocolVersion));
           }
         });
