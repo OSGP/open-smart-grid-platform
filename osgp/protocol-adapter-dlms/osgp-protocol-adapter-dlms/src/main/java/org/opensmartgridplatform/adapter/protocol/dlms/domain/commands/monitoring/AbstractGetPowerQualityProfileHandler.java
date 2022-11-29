@@ -49,9 +49,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
   private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
 
-  private static final int INTERVAL_DEFINABLE_LOAD_PROFILE = 15;
-  private static final int INTERVAL_PROFILE_1 = 15;
-  private static final int INTERVAL_PROFILE_2 = 10;
+  private static final int ATTRIBUTE_ID_INTERVAL = 4;
 
   protected final DlmsHelper dlmsHelper;
   private final ObjectConfigService objectConfigService;
@@ -523,16 +521,10 @@ public abstract class AbstractGetPowerQualityProfileHandler {
   }
 
   private int getIntervalInMinutes(final CosemObject object) throws ProtocolAdapterException {
-    // TODO: Get interval from object (attribute 4, capture period in sec)
-    switch (DlmsObjectType.valueOf(object.getTag())) {
-      case DEFINABLE_LOAD_PROFILE:
-        return INTERVAL_DEFINABLE_LOAD_PROFILE;
-      case POWER_QUALITY_PROFILE_1:
-        return INTERVAL_PROFILE_1;
-      case POWER_QUALITY_PROFILE_2:
-        return INTERVAL_PROFILE_2;
-      default:
-        throw new ProtocolAdapterException("Unknown profile generic " + object.getTag());
+    try{
+      return Integer.parseInt(object.getAttribute(ATTRIBUTE_ID_INTERVAL).getValue())/60;
+    } catch (final Exception e) {
+      throw new ProtocolAdapterException("Error in interval in object config", e);
     }
   }
 

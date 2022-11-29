@@ -33,10 +33,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
-import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
-import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
-import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
-import org.opensmartgridplatform.dlms.objectconfig.PowerQualityProfile;
+import org.opensmartgridplatform.dlms.objectconfig.*;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
@@ -85,17 +82,17 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends ObjectConfigServi
             PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_2))
         .thenReturn(
             this.createObjectWithProperties(
-                7, "0.1.99.1.2.255", "POWER_QUALITY_PROFILE_2", null, polyPhase, profile.name()));
+                7, "0.1.99.1.2.255", "POWER_QUALITY_PROFILE_2", null, polyPhase, profile.name(), true));
     when(this.objectConfigService.getCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_1))
         .thenReturn(
             this.createObjectWithProperties(
-                7, OBIS_PRIVATE, "POWER_QUALITY_PROFILE_1", null, polyPhase, profile.name()));
+                7, OBIS_PRIVATE, "POWER_QUALITY_PROFILE_1", null, polyPhase, profile.name(), true));
     when(this.objectConfigService.getCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, DEFINABLE_LOAD_PROFILE))
         .thenReturn(
             this.createObjectWithProperties(
-                7, OBIS_PROFILE, "DEFINABLE_LOAD_PROFILE", null, polyPhase, profile.name()));
+                7, OBIS_PROFILE, "DEFINABLE_LOAD_PROFILE", null, polyPhase, profile.name(), true));
     when(this.objectConfigService.getCosemObjects(
             PROTOCOL_NAME, PROTOCOL_VERSION, this.getPropertyObjects()))
         .thenReturn(allPqObjectsForThisMeter);
@@ -140,7 +137,7 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends ObjectConfigServi
             NUMBER_OF_VOLTAGE_SAGS_FOR_L2.name(),
             null,
             polyphase,
-            publicOrPrivate);
+            publicOrPrivate, false);
 
     final CosemObject registerVoltObject =
         this.createObjectWithProperties(
@@ -149,7 +146,7 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends ObjectConfigServi
             INSTANTANEOUS_VOLTAGE_L1.name(),
             "0, " + UNIT_VOLT,
             polyphase,
-            publicOrPrivate);
+            publicOrPrivate, false);
 
     final CosemObject registerAmpereObject =
         this.createObjectWithProperties(
@@ -158,7 +155,7 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends ObjectConfigServi
             AVERAGE_CURRENT_L1.name(),
             "-1, A",
             polyphase,
-            publicOrPrivate);
+            publicOrPrivate, false);
 
     final CosemObject registerVarObject =
         this.createObjectWithProperties(
@@ -167,7 +164,7 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends ObjectConfigServi
             AVERAGE_REACTIVE_POWER_IMPORT_L1.name(),
             "2, VAR",
             polyphase,
-            publicOrPrivate);
+            publicOrPrivate, false);
 
     return new ArrayList<>(
         Arrays.asList(dataObject, registerVoltObject, registerAmpereObject, registerVarObject));
@@ -259,7 +256,8 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends ObjectConfigServi
       final String tag,
       final String scalerUnitValue,
       final boolean polyphase,
-      final String publicOrPrivate) {
+      final String publicOrPrivate,
+      final boolean addAttributes) {
 
     final CosemObject object = this.createObject(classId, obis, tag, scalerUnitValue, polyphase);
 
@@ -271,6 +269,19 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends ObjectConfigServi
     properties.put(ObjectProperty.SELECTABLE_OBJECTS, stringProperties);
     properties.put(ObjectProperty.PQ_PROFILE, publicOrPrivate);
     object.setProperties(properties);
+
+    if (addAttributes){
+      List<Attribute> attributeList = new ArrayList<>();
+      Attribute attribute = new Attribute();
+      attribute.setId(3);
+      attribute.setValue("1");
+      attributeList.add(attribute);
+      Attribute attributeInterval = new Attribute();
+      attributeInterval.setId(4);
+      attributeInterval.setValue("15");
+      attributeList.add(attributeInterval);
+      object.setAttributes(attributeList);
+    }
     return object;
   }
 
