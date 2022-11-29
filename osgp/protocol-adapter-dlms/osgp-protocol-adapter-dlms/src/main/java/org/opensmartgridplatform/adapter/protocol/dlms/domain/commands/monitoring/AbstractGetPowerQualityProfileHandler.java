@@ -521,8 +521,8 @@ public abstract class AbstractGetPowerQualityProfileHandler {
   }
 
   private int getIntervalInMinutes(final CosemObject object) throws ProtocolAdapterException {
-    try{
-      return Integer.parseInt(object.getAttribute(ATTRIBUTE_ID_INTERVAL).getValue())/60;
+    try {
+      return Integer.parseInt(object.getAttribute(ATTRIBUTE_ID_INTERVAL).getValue()) / 60;
     } catch (final Exception e) {
       throw new ProtocolAdapterException("Error in interval in object config", e);
     }

@@ -86,7 +86,13 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
             PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_2))
         .thenReturn(
             this.createObjectWithProperties(
-                7, "0.1.99.1.2.255", "POWER_QUALITY_PROFILE_2", null, polyPhase, profile.name(), true));
+                7,
+                "0.1.99.1.2.255",
+                "POWER_QUALITY_PROFILE_2",
+                null,
+                polyPhase,
+                profile.name(),
+                true));
     when(this.objectConfigService.getCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_1))
         .thenReturn(
@@ -155,7 +161,13 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
             PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_2))
         .thenReturn(
             this.createObjectWithProperties(
-                7, "0.1.99.1.2.255", "POWER_QUALITY_PROFILE_2", null, polyPhase, profile.name(), true));
+                7,
+                "0.1.99.1.2.255",
+                "POWER_QUALITY_PROFILE_2",
+                null,
+                polyPhase,
+                profile.name(),
+                true));
     when(this.objectConfigService.getCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_1))
         .thenReturn(
@@ -247,7 +259,8 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
             NUMBER_OF_VOLTAGE_SAGS_FOR_L2.name(),
             null,
             polyphase,
-            publicOrPrivate, false);
+            publicOrPrivate,
+            false);
 
     final CosemObject registerVoltObject =
         this.createObjectWithProperties(
@@ -256,7 +269,8 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
             INSTANTANEOUS_VOLTAGE_L1.name(),
             "0, " + UNIT_VOLT,
             polyphase,
-            publicOrPrivate, false);
+            publicOrPrivate,
+            false);
 
     final CosemObject registerAmpereObject =
         this.createObjectWithProperties(
@@ -265,7 +279,8 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
             AVERAGE_CURRENT_L1.name(),
             "-1, A",
             polyphase,
-            publicOrPrivate, false);
+            publicOrPrivate,
+            false);
 
     final CosemObject registerVarObject =
         this.createObjectWithProperties(
@@ -274,12 +289,12 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
             AVERAGE_REACTIVE_POWER_IMPORT_L1.name(),
             "2, VAR",
             polyphase,
-            publicOrPrivate, false);
+            publicOrPrivate,
+            false);
 
     return new ArrayList<>(
         Arrays.asList(dataObject, registerVoltObject, registerAmpereObject, registerVarObject));
   }
-
 
   private List<GetResult> createProfileEntries() {
     final DataObject allowedCaptureObjectClock =
@@ -381,7 +396,7 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends ObjectConfigSer
     properties.put(ObjectProperty.PQ_PROFILE, publicOrPrivate);
     object.setProperties(properties);
 
-    if (addAttributes){
+    if (addAttributes) {
       List<Attribute> attributeList = new ArrayList<>();
       Attribute attribute = new Attribute();
       attribute.setId(3);
