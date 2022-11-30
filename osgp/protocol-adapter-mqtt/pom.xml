@@ -11,7 +11,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>protocol-adapter-mqtt</artifactId>
-  <version>5.23.4-SNAPSHOT-SNAPSHOT</version>
+  <version>5.23.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>protocol-adapter-mqtt</name>
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->

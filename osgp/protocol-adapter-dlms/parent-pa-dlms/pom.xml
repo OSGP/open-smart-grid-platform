@@ -14,13 +14,13 @@
   <artifactId>parent-pa-dlms</artifactId>
   <packaging>pom</packaging>
   <name>parent-pa-dlms</name>
-  <!-- Description, Organization, Licences, URL and Distribution Management 
+  <!-- Description, Organization, Licences, URL and Distribution Management
     elements are needed for the maven-jxr-plugin to generate a maven site -->
   <description>Parent module.</description>
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>super-osgp</artifactId>
-    <version>5.23.4-SNAPSHOT-SNAPSHOT</version>
+    <version>5.23.4-SNAPSHOT</version>
     <relativePath>../../../super/pom.xml</relativePath>
   </parent>
   <distributionManagement>
