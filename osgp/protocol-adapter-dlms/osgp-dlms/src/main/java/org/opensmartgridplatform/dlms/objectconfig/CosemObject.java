@@ -12,6 +12,7 @@
 package org.opensmartgridplatform.dlms.objectconfig;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import lombok.Data;
@@ -43,5 +44,14 @@ public class CosemObject {
       return null;
     }
     return this.properties.getOrDefault(objectProperty, null);
+  }
+
+  @SuppressWarnings("unchecked")
+  public List<String> getListProperty(final ObjectProperty objectProperty) {
+    if (this.properties != null) {
+      return (List<String>) this.properties.getOrDefault(objectProperty, null);
+    }
+
+    return Collections.emptyList();
   }
 }

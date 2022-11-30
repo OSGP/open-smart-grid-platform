@@ -245,7 +245,7 @@ public class DlmsHelperTest {
     final GetResultImpl getResultValue = new GetResultImpl(DataObject.newUInteger16Data(5));
 
     final DlmsMeterValueDto meterValueDto =
-        this.dlmsHelper.getScaledMeterValue(
+        this.dlmsHelper.getScaledMeterValueWithScalerUnit(
             getResultValue, "0, V", "getScaledMeterValueTest with specified scaler and unit");
 
     assertThat(meterValueDto.getValue()).isEqualTo(BigDecimal.valueOf(5));

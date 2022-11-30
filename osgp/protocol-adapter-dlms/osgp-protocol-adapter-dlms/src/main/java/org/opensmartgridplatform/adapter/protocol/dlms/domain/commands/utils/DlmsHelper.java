@@ -279,8 +279,21 @@ public class DlmsHelper {
    * @return the meter value with dlms unit or null when {@link #readLong(GetResult, String)} is
    *     null
    */
-  public DlmsMeterValueDto getScaledMeterValue(
+  public DlmsMeterValueDto getScaledMeterValueWithScalerUnit(
       final GetResult value, final String scalerUnit, final String description)
+      throws ProtocolAdapterException {
+    return this.getScaledMeterValueWithScalerUnit(value.getResultData(), scalerUnit, description);
+  }
+
+  /**
+   * create a dlms meter value, apply the specified scaler and unit.
+   *
+   * @param scalerUnit specifies the scaler and the unit in a String, formatted as "0, W"
+   * @return the meter value with dlms unit or null when {@link #readLong(GetResult, String)} is
+   *     null
+   */
+  public DlmsMeterValueDto getScaledMeterValueWithScalerUnit(
+      final DataObject value, final String scalerUnit, final String description)
       throws ProtocolAdapterException {
     final String[] scalerUnitParts = scalerUnit.split(",");
     if (scalerUnitParts.length != 2) {
@@ -293,8 +306,7 @@ public class DlmsHelper {
       throw new ProtocolAdapterException("Invalid unit: " + scalerUnitParts[1].trim());
     }
 
-    return this.createDlmsMeterValueBasedOnValueAndScalerAndUnit(
-        value.getResultData(), scaler, unit, description);
+    return this.createDlmsMeterValueBasedOnValueAndScalerAndUnit(value, scaler, unit, description);
   }
 
   public DlmsMeterValueDto getScaledMeterValue(
