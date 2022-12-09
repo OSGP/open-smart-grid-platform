@@ -36,7 +36,8 @@ public abstract class ByteArrayCachingRepository implements CachingRepository<St
 
   @Override
   public byte[] retrieve(final String key) {
-    return this.cache.get(key);
+    // To make sure the byte array in the cache is not changed accidentally, return a copy
+    return this.cache.get(key).clone();
   }
 
   @Override

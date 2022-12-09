@@ -67,6 +67,21 @@ public class FirmwareFileCachingRepositoryTest {
   }
 
   @Test
+  public void retrieveShouldReturnCopyOfFirmwareFile() {
+    // Arrange
+    final byte[] expected = FIRMWARE_FILE;
+    final byte[] actual = this.firmwareFileCachingRepostitory.retrieve(FIRMWARE_IDENTIFICATION);
+    actual[0]++; // Change the first byte in the retrieved array
+
+    // Act
+    // When the file is retrieved again, it should be the original file
+    final byte[] actual2 = this.firmwareFileCachingRepostitory.retrieve(FIRMWARE_IDENTIFICATION);
+
+    // Assert
+    assertThat(actual2).isEqualTo(expected);
+  }
+
+  @Test
   public void retrieveShouldReturnNullWhenFirmwareFileNotInCache() {
     // Arrange
     // Nothing to do
