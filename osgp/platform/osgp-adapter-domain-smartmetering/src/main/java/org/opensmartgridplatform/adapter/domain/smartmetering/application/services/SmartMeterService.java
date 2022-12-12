@@ -50,13 +50,17 @@ public class SmartMeterService {
 
   @Autowired private MapperFactory mapperFactory;
 
+  private static final String DEVICE_TYPE_SMART_METER_E = "SMART_METER_E";
+
   public void storeMeter(
       final String organisationIdentification,
       final AddSmartMeterRequest addSmartMeterRequest,
       SmartMeter smartMeter)
       throws FunctionalException {
     final SmartMeteringDevice smartMeteringDevice = addSmartMeterRequest.getDevice();
-    smartMeter.updateProtocol(this.getProtocolInfo(smartMeteringDevice));
+    if (DEVICE_TYPE_SMART_METER_E.equals(smartMeteringDevice.getDeviceType())) {
+      smartMeter.updateProtocol(this.getProtocolInfo(smartMeteringDevice));
+    }
     smartMeter.setDeviceModel(this.getDeviceModel(addSmartMeterRequest.getDeviceModel()));
     smartMeter = this.smartMeterRepository.save(smartMeter);
     this.storeAuthorization(organisationIdentification, smartMeter);
