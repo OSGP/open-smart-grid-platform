@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class FirmwareFileCachingRepositoryTest {
+class FirmwareFileCachingRepositoryTest {
 
   private static final String FIRMWARE_IDENTIFICATION_UNAVAILABLE = "unavailable";
   private static final String FIRMWARE_IDENTIFICATION = "fw";
@@ -32,7 +32,7 @@ public class FirmwareFileCachingRepositoryTest {
   }
 
   @Test
-  public void isAvailableShouldReturnTrueWhenFirmwareFileInCache() {
+  void isAvailableShouldReturnTrueWhenFirmwareFileInCache() {
     // Arrange
 
     // Act
@@ -43,7 +43,7 @@ public class FirmwareFileCachingRepositoryTest {
   }
 
   @Test
-  public void isAvailableShouldReturnFalseWhenFirmwareFileNotInCache() {
+  void isAvailableShouldReturnFalseWhenFirmwareFileNotInCache() {
     // Arrange
 
     // Act
@@ -55,7 +55,7 @@ public class FirmwareFileCachingRepositoryTest {
   }
 
   @Test
-  public void retrieveShouldReturnFirmwareFileWhenFirmwareFileInCache() {
+  void retrieveShouldReturnFirmwareFileWhenFirmwareFileInCache() {
     // Arrange
     final byte[] expected = FIRMWARE_FILE;
 
@@ -67,7 +67,7 @@ public class FirmwareFileCachingRepositoryTest {
   }
 
   @Test
-  public void retrieveShouldReturnCopyOfFirmwareFile() {
+  void retrieveShouldReturnCopyOfFirmwareFile() {
     // Arrange
     final byte[] expected = FIRMWARE_FILE;
     final byte[] actual = this.firmwareFileCachingRepostitory.retrieve(FIRMWARE_IDENTIFICATION);
@@ -82,7 +82,7 @@ public class FirmwareFileCachingRepositoryTest {
   }
 
   @Test
-  public void retrieveShouldReturnNullWhenFirmwareFileNotInCache() {
+  void retrieveShouldReturnNullWhenFirmwareFileNotInCache() {
     // Arrange
     // Nothing to do
 
@@ -95,7 +95,7 @@ public class FirmwareFileCachingRepositoryTest {
   }
 
   @Test
-  public void storeShouldAddFirmwareFileToCache() {
+  void storeShouldAddFirmwareFileToCache() {
     // Arrange
     final String firmwareIdentificationToAdd = "fw-to-add";
     final byte[] firmwareFileToAdd = firmwareIdentificationToAdd.getBytes();
