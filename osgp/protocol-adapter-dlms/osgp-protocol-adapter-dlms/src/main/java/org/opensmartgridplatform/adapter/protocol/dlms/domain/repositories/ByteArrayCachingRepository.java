@@ -35,10 +35,11 @@ public abstract class ByteArrayCachingRepository implements CachingRepository<St
   }
 
   @Override
+  // Sonar warning is suppressed, because when the key is not found, this function should return
+  // null and not an empty array (which could be a valid array stored in the cache).
+  @SuppressWarnings("java:S1168")
   public byte[] retrieve(final String key) {
-    final byte[] byteArray = this.cache.get(key);
-
-    if (byteArray != null) {
+    if (this.cache.containsKey(key)) {
       // To make sure the byte array in the cache is not changed accidentally, return a copy
       return this.cache.get(key).clone();
     } else {
