@@ -3,7 +3,7 @@ Feature: SmartMetering Installation - Add smart meter
   As a grid operator
   I want to be able to add a smart meter
 
-  Scenario Outline: Add a new device <Testtitle>
+  Scenario Outline: Add a new device
     When receiving a smartmetering add device request
       | DeviceIdentification  | TEST1024000000001 |
       | DeviceType            | SMART_METER_E     |
@@ -34,9 +34,9 @@ Feature: SmartMetering Installation - Add smart meter
     And the new keys are stored in the database in another encryption then the encryption of the keys received in the SOAP request
 
     Examples:
-      | Testtitle        | Timezone         |
-      | with timezone    | Europe/Amsterdam |
-      | without timezone |                  |
+      | Timezone         |
+      | Europe/Amsterdam |
+      |                  |
 
   @NightlyBuildOnly @Skip
   Scenario: Add a new device with incorrectly encrypted keys
@@ -61,3 +61,25 @@ Feature: SmartMetering Installation - Add smart meter
       | Message      | DECRYPTION_EXCEPTION                                          |
       | InnerMessage | Unexpected exception during decryption of E_METER_MASTER key. |
     And the dlms device with identification "TEST1024000000001" does not exist
+
+  @NightlyBuildOnly @Skip
+  Scenario: Add a new gas device with unknown communication method
+   When receiving a smartmetering add device request
+     | DeviceIdentification  | TESTG101205673117        |
+     | DeviceType            | SMART_METER_G            |
+     | CommunicationMethod   | zzzz                     |
+     | protocolName          | SMR                      |
+     | protocolVersion       | 5.5                      |
+     | Master_key            | SECURITY_KEY_M           |
+     | Authentication_key    | SECURITY_KEY_A           |
+     | Encryption_key        | SECURITY_KEY_E           |
+     | ManufacturerCode      | Test                     |
+     | ModelCode             | Test                     |
+   Then the add device response should be returned
+     | DeviceIdentification  | TESTG101205673117        |
+     | Result                | OK                       |
+   And the dlms device with identification "TESTG101205673117" exists with device model
+     | DeviceType            | SMART_METER_G            |
+     | ModelCode             | Test                     |
+     | ManufacturerCode      | Test                     |
+   And the new keys are stored in the database in another encryption then the encryption of the keys received in the SOAP request

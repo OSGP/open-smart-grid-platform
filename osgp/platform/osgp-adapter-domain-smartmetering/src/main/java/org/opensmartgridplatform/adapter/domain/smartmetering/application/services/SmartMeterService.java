@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import java.util.Optional;
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -50,17 +51,13 @@ public class SmartMeterService {
 
   @Autowired private MapperFactory mapperFactory;
 
-  private static final String DEVICE_TYPE_SMART_METER_E = "SMART_METER_E";
-
   public void storeMeter(
       final String organisationIdentification,
       final AddSmartMeterRequest addSmartMeterRequest,
       SmartMeter smartMeter)
       throws FunctionalException {
     final SmartMeteringDevice smartMeteringDevice = addSmartMeterRequest.getDevice();
-    if (DEVICE_TYPE_SMART_METER_E.equals(smartMeteringDevice.getDeviceType())) {
-      smartMeter.updateProtocol(this.getProtocolInfo(smartMeteringDevice));
-    }
+    smartMeter.updateProtocol(this.getProtocolInfo(smartMeteringDevice));
     smartMeter.setDeviceModel(this.getDeviceModel(addSmartMeterRequest.getDeviceModel()));
     smartMeter = this.smartMeterRepository.save(smartMeter);
     this.storeAuthorization(organisationIdentification, smartMeter);
@@ -91,16 +88,24 @@ public class SmartMeterService {
   private ProtocolInfo getProtocolInfo(final SmartMeteringDevice smartMeteringDevice)
       throws FunctionalException {
 
-    final ProtocolInfo protocolInfo =
+    ProtocolInfo protocolInfo =
         this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
             smartMeteringDevice.getProtocolName(),
             smartMeteringDevice.getProtocolVersion(),
             smartMeteringDevice.getProtocolVariant());
+
+    if (protocolInfo == null) {
+      final Optional<ProtocolInfo> protocolInfoOptional =
+          this.protocolInfoRepository.findFirstByProtocolAndProtocolVersion(
+              smartMeteringDevice.getProtocolName(), smartMeteringDevice.getProtocolVersion());
+      protocolInfo = protocolInfoOptional.orElse(null);
+    }
     if (protocolInfo == null) {
       throw new FunctionalException(
           FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION_OR_VARIANT,
           ComponentType.DOMAIN_SMART_METERING);
     }
+
     return protocolInfo;
   }
 
