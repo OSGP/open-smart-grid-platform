@@ -20,6 +20,7 @@ import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openmuc.jdlms.datatypes.CosemDate;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
@@ -85,29 +86,70 @@ class CosemDateTimeFilterTest {
     assertThat(filter.match(cal)).isTrue();
   }
 
-  @Test
-  void testMatchInBetweenAmsterdamTime() {
+  @ParameterizedTest
+  @ValueSource(ints = {-1, 0, 1})
+  void testFromAmsterdamTime(final int offsetSecond) {
     final CosemDateTimeFilter filter = new CosemDateTimeFilter(this.createRangeDescriptor());
 
     final Calendar cal = Calendar.getInstance();
     cal.setTimeZone(TimeZone.getTimeZone("Europe/Amsterdam"));
 
     // month in calendar is 0-based, month in joda DateTime is 1-based
-    cal.set(2017, Calendar.JANUARY, 2, 0, 55);
+    cal.set(2017, Calendar.JANUARY, 1, 1, 0, 0);
+    cal.set(Calendar.MILLISECOND, 0);
 
-    assertThat(filter.match(cal)).isTrue();
+    cal.add(Calendar.SECOND, offsetSecond);
+    assertThat(filter.match(cal)).isEqualTo(offsetSecond > 0);
   }
 
-  @Test
-  void testMatchAfter() {
+  @ParameterizedTest
+  @ValueSource(ints = {-1, 0, 1})
+  void testToAmsterdamTime(final int offsetSecond) {
     final CosemDateTimeFilter filter = new CosemDateTimeFilter(this.createRangeDescriptor());
 
     final Calendar cal = Calendar.getInstance();
+    cal.setTimeZone(TimeZone.getTimeZone("Europe/Amsterdam"));
 
     // month in calendar is 0-based, month in joda DateTime is 1-based
-    cal.set(2017, Calendar.JANUARY, 2);
+    cal.set(2017, Calendar.JANUARY, 2, 1, 0, 0);
+    cal.set(Calendar.MILLISECOND, 0);
 
-    assertThat(filter.match(cal)).isFalse();
+    cal.add(Calendar.SECOND, offsetSecond);
+
+    assertThat(filter.match(cal)).isEqualTo(offsetSecond < 0);
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {-1, 0, 1})
+  void testFrom(final int offsetSecond) {
+    final CosemDateTimeFilter filter = new CosemDateTimeFilter(this.createRangeDescriptor());
+
+    final Calendar cal = Calendar.getInstance();
+    cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+    // month in calendar is 0-based, month in joda DateTime is 1-based
+    cal.set(2017, Calendar.JANUARY, 1, 0, 0, 0);
+    cal.set(Calendar.MILLISECOND, 0);
+
+    cal.add(Calendar.SECOND, offsetSecond);
+    assertThat(filter.match(cal)).isEqualTo(offsetSecond > 0);
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {-1, 0, 1})
+  void testTo(final int offsetSecond) {
+    final CosemDateTimeFilter filter = new CosemDateTimeFilter(this.createRangeDescriptor());
+
+    final Calendar cal = Calendar.getInstance();
+    cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+    // month in calendar is 0-based, month in joda DateTime is 1-based
+    cal.set(2017, Calendar.JANUARY, 2, 0, 0, 0);
+    cal.set(Calendar.MILLISECOND, 0);
+
+    cal.add(Calendar.SECOND, offsetSecond);
+
+    assertThat(filter.match(cal)).isEqualTo(offsetSecond < 0);
   }
 
   private List<DataObject> createRangeDescriptor() {
