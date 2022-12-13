@@ -86,6 +86,18 @@ public abstract class ApplicationPersistenceConfiguration extends BaseApplicatio
 
   protected abstract String getEntitymanagerPackagesToScan();
 
+  protected String getDatabaseUsername() {
+    return databaseUsername;
+  }
+
+  protected String getDatabasePassword() {
+    return databasePassword;
+  }
+
+  protected String getDatabaseHostname() {
+    return databaseHostname;
+  }
+
   /** Default constructor */
   public ApplicationPersistenceConfiguration() {
     // Default constructor
@@ -100,11 +112,11 @@ public abstract class ApplicationPersistenceConfiguration extends BaseApplicatio
 
     final DefaultConnectionPoolFactory factory =
         new DefaultConnectionPoolFactory.Builder()
-            .withUsername(this.databaseUsername)
-            .withPassword(this.databasePassword)
+            .withUsername(this.getDatabaseUsername())
+            .withPassword(this.getDatabasePassword())
             .withDriverClassName(this.databaseDriver)
             .withProtocol(this.databaseProtocol)
-            .withDatabaseHost(this.databaseHostname)
+            .withDatabaseHost(this.getDatabaseHostname())
             .withDatabasePort(this.databasePort)
             .withDatabaseName(this.getDatabaseName())
             .withMinPoolSize(this.databaseMinPoolSize)
