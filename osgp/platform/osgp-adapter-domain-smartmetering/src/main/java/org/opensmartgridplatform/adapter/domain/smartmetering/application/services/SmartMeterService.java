@@ -8,7 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import java.util.Optional;
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -95,10 +94,11 @@ public class SmartMeterService {
             smartMeteringDevice.getProtocolVariant());
 
     if (protocolInfo == null) {
-      final Optional<ProtocolInfo> protocolInfoOptional =
-          this.protocolInfoRepository.findFirstByProtocolAndProtocolVersion(
-              smartMeteringDevice.getProtocolName(), smartMeteringDevice.getProtocolVersion());
-      protocolInfo = protocolInfoOptional.orElse(null);
+      protocolInfo =
+          this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
+              smartMeteringDevice.getProtocolName(),
+              smartMeteringDevice.getProtocolVersion(),
+              null);
     }
     if (protocolInfo == null) {
       throw new FunctionalException(

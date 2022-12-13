@@ -62,24 +62,21 @@ Feature: SmartMetering Installation - Add smart meter
       | InnerMessage | Unexpected exception during decryption of E_METER_MASTER key. |
     And the dlms device with identification "TEST1024000000001" does not exist
 
-  @NightlyBuildOnly @Skip
-  Scenario: Add a new gas device with unknown communication method
+  Scenario: Add a new device with unknown protocol variant, should default to null variant
    When receiving a smartmetering add device request
-     | DeviceIdentification  | TESTG101205673117        |
-     | DeviceType            | SMART_METER_G            |
-     | CommunicationMethod   | zzzz                     |
+     | DeviceIdentification  | TEST1024000000001        |
+     | DeviceType            | SMART_METER_E            |
      | protocolName          | SMR                      |
      | protocolVersion       | 5.5                      |
+     | protocolVariant       | zzzz                     |
      | Master_key            | SECURITY_KEY_M           |
      | Authentication_key    | SECURITY_KEY_A           |
      | Encryption_key        | SECURITY_KEY_E           |
      | ManufacturerCode      | Test                     |
      | ModelCode             | Test                     |
    Then the add device response should be returned
-     | DeviceIdentification  | TESTG101205673117        |
+     | DeviceIdentification  | TEST1024000000001        |
      | Result                | OK                       |
-   And the dlms device with identification "TESTG101205673117" exists with device model
-     | DeviceType            | SMART_METER_G            |
+   And the dlms device with identification "TEST1024000000001" exists with device model
      | ModelCode             | Test                     |
      | ManufacturerCode      | Test                     |
-   And the new keys are stored in the database in another encryption then the encryption of the keys received in the SOAP request
