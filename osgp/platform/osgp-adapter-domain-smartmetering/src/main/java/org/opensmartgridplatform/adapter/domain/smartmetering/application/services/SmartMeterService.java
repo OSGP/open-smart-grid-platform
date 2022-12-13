@@ -87,16 +87,25 @@ public class SmartMeterService {
   private ProtocolInfo getProtocolInfo(final SmartMeteringDevice smartMeteringDevice)
       throws FunctionalException {
 
-    final ProtocolInfo protocolInfo =
+    ProtocolInfo protocolInfo =
         this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
             smartMeteringDevice.getProtocolName(),
             smartMeteringDevice.getProtocolVersion(),
             smartMeteringDevice.getProtocolVariant());
+
+    if (protocolInfo == null) {
+      protocolInfo =
+          this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
+              smartMeteringDevice.getProtocolName(),
+              smartMeteringDevice.getProtocolVersion(),
+              null);
+    }
     if (protocolInfo == null) {
       throw new FunctionalException(
           FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION_OR_VARIANT,
           ComponentType.DOMAIN_SMART_METERING);
     }
+
     return protocolInfo;
   }
 
