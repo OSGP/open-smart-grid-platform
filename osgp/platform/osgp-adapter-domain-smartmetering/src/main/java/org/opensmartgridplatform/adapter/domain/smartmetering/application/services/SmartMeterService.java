@@ -8,7 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -29,15 +28,16 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainSmartMeteringSmartMeterService")
 @Transactional(value = "transactionManager")
-@Slf4j
 public class SmartMeterService {
-
+  private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeterService.class);
   @Autowired private SmartMeterRepository smartMeterRepository;
 
   @Autowired private ManufacturerRepository manufacturerRepository;
@@ -89,7 +89,7 @@ public class SmartMeterService {
   private ProtocolInfo getProtocolInfo(final SmartMeteringDevice smartMeteringDevice)
       throws FunctionalException {
 
-    log.debug(
+    LOGGER.debug(
         "getProtocolInfo with ProtocolName=[{}] ProtocolVersion=[{}] ProtocolVariant=[{}]",
         smartMeteringDevice.getProtocolName(),
         smartMeteringDevice.getProtocolVersion(),
@@ -102,7 +102,7 @@ public class SmartMeterService {
             smartMeteringDevice.getProtocolVariant());
 
     if (protocolInfo == null) {
-      log.debug(
+      LOGGER.debug(
           "getProtocolInfo with ProtocolName=[{}] ProtocolVersion=[{}] And ProtocolVariant is null",
           smartMeteringDevice.getProtocolName(),
           smartMeteringDevice.getProtocolVersion());
