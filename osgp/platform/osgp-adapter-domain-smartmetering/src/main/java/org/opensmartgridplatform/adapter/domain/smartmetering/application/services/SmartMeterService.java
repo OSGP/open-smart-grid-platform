@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -34,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainSmartMeteringSmartMeterService")
 @Transactional(value = "transactionManager")
+@Slf4j
 public class SmartMeterService {
 
   @Autowired private SmartMeterRepository smartMeterRepository;
@@ -87,11 +89,28 @@ public class SmartMeterService {
   private ProtocolInfo getProtocolInfo(final SmartMeteringDevice smartMeteringDevice)
       throws FunctionalException {
 
-    final ProtocolInfo protocolInfo =
+    log.debug(
+        "getProtocolInfo with ProtocolName=[{}] ProtocolVersion=[{}] ProtocolVariant=[{}]",
+        smartMeteringDevice.getProtocolName(),
+        smartMeteringDevice.getProtocolVersion(),
+        smartMeteringDevice.getProtocolVariant());
+
+    ProtocolInfo protocolInfo =
         this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
             smartMeteringDevice.getProtocolName(),
             smartMeteringDevice.getProtocolVersion(),
             smartMeteringDevice.getProtocolVariant());
+
+    if (protocolInfo == null) {
+      log.debug(
+          "getProtocolInfo with ProtocolName=[{}] ProtocolVersion=[{}] And ProtocolVariant is null",
+          smartMeteringDevice.getProtocolName(),
+          smartMeteringDevice.getProtocolVersion());
+
+      protocolInfo =
+          this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariantIsNull(
+              smartMeteringDevice.getProtocolName(), smartMeteringDevice.getProtocolVariant());
+    }
     if (protocolInfo == null) {
       throw new FunctionalException(
           FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION_OR_VARIANT,
