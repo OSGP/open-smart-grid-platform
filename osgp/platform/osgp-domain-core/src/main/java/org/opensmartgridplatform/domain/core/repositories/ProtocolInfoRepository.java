@@ -22,4 +22,7 @@ public interface ProtocolInfoRepository extends JpaRepository<ProtocolInfo, Long
 
   ProtocolInfo findByProtocolAndProtocolVersionAndProtocolVariant(
       String protocol, String protocolVersion, String protocolVariant);
+
+  ProtocolInfo findByProtocolAndProtocolVersionAndProtocolVariantIsNull(
+      final String protocol, final String protocolVersion);
 }
