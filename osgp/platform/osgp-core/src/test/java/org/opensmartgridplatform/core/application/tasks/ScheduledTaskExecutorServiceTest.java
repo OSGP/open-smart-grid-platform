@@ -11,7 +11,9 @@ package org.opensmartgridplatform.core.application.tasks;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +28,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -48,15 +51,6 @@ import org.springframework.data.domain.Pageable;
 @ExtendWith(MockitoExtension.class)
 public class ScheduledTaskExecutorServiceTest {
 
-  private static final MessageMetadata MESSAGE_METADATA =
-      new MessageMetadata.Builder()
-          .withDeviceIdentification("deviceId")
-          .withOrganisationIdentification("organisationId")
-          .withCorrelationUid("correlationId")
-          .withMessageType("messageType")
-          .withMessagePriority(4)
-          .build();
-
   private static final String DOMAIN = "Domain";
 
   private static final String DATA_OBJECT = "data object";
@@ -71,6 +65,8 @@ public class ScheduledTaskExecutorServiceTest {
   @InjectMocks private ScheduledTaskExecutorService scheduledTaskExecutorService;
   @Mock private ScheduledTaskExecutorJobConfig scheduledTaskExecutorJobConfig;
 
+  @Captor private ArgumentCaptor<ScheduledTask> scheduledTaskCaptor;
+
   /**
    * Test the scheduled task runner for the case when the deviceRequestMessageService gives a
    * functional exception
@@ -83,8 +79,9 @@ public class ScheduledTaskExecutorServiceTest {
   public void testRunFunctionalException()
       throws FunctionalException, UnknownHostException, JobExecutionException {
     final List<ScheduledTask> scheduledTasks = new ArrayList<>();
+    final Timestamp scheduledTime = new Timestamp(Calendar.getInstance().getTime().getTime());
     final ScheduledTask scheduledTask =
-        new ScheduledTask(MESSAGE_METADATA, DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
+        new ScheduledTask(this.createMessageMetadata(), DOMAIN, DOMAIN, DATA_OBJECT, scheduledTime);
     scheduledTasks.add(scheduledTask);
 
     when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
@@ -112,64 +109,60 @@ public class ScheduledTaskExecutorServiceTest {
   public void testRetryStrandedPendingTask() {
 
     final List<ScheduledTask> scheduledTasks = new ArrayList<>();
-    final ScheduledTask scheduledTask =
-        new ScheduledTask(MESSAGE_METADATA, DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
-    scheduledTask.setPending();
-    //    scheduledTask.set
-    scheduledTasks.add(scheduledTask);
+    final Timestamp scheduledTime = new Timestamp(Calendar.getInstance().getTime().getTime());
+    final ScheduledTask expiredScheduledTask =
+        new ScheduledTask(
+            this.createExpiredMessageMetadata(), DOMAIN, DOMAIN, DATA_OBJECT, scheduledTime);
+    expiredScheduledTask.setPending();
+    scheduledTasks.add(expiredScheduledTask);
+    final ScheduledTask retryableScheduledTask =
+        new ScheduledTask(
+            this.createMessageMetadata(), DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
+    retryableScheduledTask.setPending();
+    scheduledTasks.add(retryableScheduledTask);
     when(this.scheduledTaskExecutorJobConfig.scheduledTaskPendingDurationMaxSeconds())
         .thenReturn(0L);
     when(this.scheduledTaskExecutorJobConfig.scheduledTaskPageSize()).thenReturn(30);
     when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
-            any(ScheduledTaskStatusType.class), any(Timestamp.class), any(Pageable.class)))
-        .thenReturn(scheduledTasks)
-        .thenReturn(new ArrayList<ScheduledTask>())
+            eq(ScheduledTaskStatusType.PENDING), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(scheduledTasks);
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.NEW), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(new ArrayList<ScheduledTask>());
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.RETRY), any(Timestamp.class), any(Pageable.class)))
         .thenReturn(new ArrayList<ScheduledTask>());
 
     this.scheduledTaskExecutorService.processScheduledTasks();
 
-    final ArgumentCaptor<ScheduledTask> scheduledTaskCaptor =
-        ArgumentCaptor.forClass(ScheduledTask.class);
-    verify(this.scheduledTaskRepository).save(scheduledTaskCaptor.capture());
-    final ScheduledTask savedScheduledTask = scheduledTaskCaptor.getValue();
-    assertThat(savedScheduledTask.getStatus()).isEqualTo(ScheduledTaskStatusType.RETRY);
+    verify(this.scheduledTaskRepository, times(2)).save(this.scheduledTaskCaptor.capture());
+    final List<ScheduledTask> savedScheduledTasks = this.scheduledTaskCaptor.getAllValues();
+
+    assertThat(savedScheduledTasks.get(0).getStatus()).isEqualTo(ScheduledTaskStatusType.FAILED);
+    assertThat(savedScheduledTasks.get(0).getDeviceIdentification()).isEqualTo("deviceId-expired");
+
+    assertThat(savedScheduledTasks.get(1).getStatus()).isEqualTo(ScheduledTaskStatusType.RETRY);
+    assertThat(savedScheduledTasks.get(1).getDeviceIdentification()).isEqualTo("deviceId-retryabl");
   }
 
-  @Test
-  public void testRetryStrandedPendingTaskWhenMaxRetrytimeExceeded() {
+  private MessageMetadata createExpiredMessageMetadata() {
+    return this.createMessageMetadataBuilder()
+        .withMaxScheduleTime(Instant.now().minus(100, ChronoUnit.SECONDS).toEpochMilli())
+        .withDeviceIdentification("deviceId-expired")
+        .build();
+  }
 
-    // MessageMetadata with expired max retry time
-    final MessageMetadata messageMetadata =
-        new MessageMetadata.Builder()
-            .withDeviceIdentification("deviceId")
-            .withOrganisationIdentification("organisationId")
-            .withCorrelationUid("correlationId")
-            .withMessageType("messageType")
-            .withMessagePriority(4)
-            .withMaxScheduleTime(Instant.now().minus(100, ChronoUnit.SECONDS).toEpochMilli())
-            .build();
+  private MessageMetadata createMessageMetadata() {
+    return this.createMessageMetadataBuilder()
+        .withDeviceIdentification("deviceId-retryabl")
+        .build();
+  }
 
-    final List<ScheduledTask> scheduledTasks = new ArrayList<>();
-    final ScheduledTask scheduledTask =
-        new ScheduledTask(messageMetadata, DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
-    scheduledTask.setPending();
-    //    scheduledTask.set
-    scheduledTasks.add(scheduledTask);
-    when(this.scheduledTaskExecutorJobConfig.scheduledTaskPendingDurationMaxSeconds())
-        .thenReturn(0L);
-    when(this.scheduledTaskExecutorJobConfig.scheduledTaskPageSize()).thenReturn(30);
-    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
-            any(ScheduledTaskStatusType.class), any(Timestamp.class), any(Pageable.class)))
-        .thenReturn(scheduledTasks)
-        .thenReturn(new ArrayList<ScheduledTask>())
-        .thenReturn(new ArrayList<ScheduledTask>());
-
-    this.scheduledTaskExecutorService.processScheduledTasks();
-
-    final ArgumentCaptor<ScheduledTask> scheduledTaskCaptor =
-        ArgumentCaptor.forClass(ScheduledTask.class);
-    verify(this.scheduledTaskRepository).save(scheduledTaskCaptor.capture());
-    final ScheduledTask savedScheduledTask = scheduledTaskCaptor.getValue();
-    assertThat(savedScheduledTask.getStatus()).isEqualTo(ScheduledTaskStatusType.FAILED);
+  private MessageMetadata.Builder createMessageMetadataBuilder() {
+    return new MessageMetadata.Builder()
+        .withOrganisationIdentification("organisationId")
+        .withCorrelationUid("correlationId")
+        .withMessageType("messageType")
+        .withMessagePriority(4);
   }
 }

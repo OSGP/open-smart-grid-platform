@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.opensmartgridplatform.core.application.config.ScheduledTaskExecutorJobConfig;
 import org.opensmartgridplatform.core.application.services.DeviceRequestMessageService;
@@ -51,26 +52,26 @@ public class ScheduledTaskExecutorService {
   }
 
   private void processStrandedScheduledTasks() {
+
     final List<ScheduledTask> scheduledTasks =
         this.getScheduledTasks(ScheduledTaskStatusType.PENDING);
+
+    final long maxDurationPending =
+        this.scheduledTaskExecutorJobConfig.scheduledTaskPendingDurationMaxSeconds();
+
+    final Instant ultimatePendingTime = Instant.now().minus(maxDurationPending, ChronoUnit.SECONDS);
+
+    final Predicate<? super ScheduledTask> pendingExceeded =
+        st -> st.getModificationTimeInstant().isBefore(ultimatePendingTime);
+
     final List<ScheduledTask> strandedScheduledTasks =
-        scheduledTasks.stream()
-            .filter(
-                st ->
-                    st.getModificationTimeInstant()
-                        .isBefore(
-                            Instant.now()
-                                .minus(
-                                    this.scheduledTaskExecutorJobConfig
-                                        .scheduledTaskPendingDurationMaxSeconds(),
-                                    ChronoUnit.SECONDS)))
-            .collect(Collectors.toList());
+        scheduledTasks.stream().filter(pendingExceeded).collect(Collectors.toList());
     strandedScheduledTasks.forEach(
         sst -> {
           if (this.maxScheduledTimeNotExceeded(sst)) {
             sst.retryOn(new Date());
           } else {
-            sst.setFailed("No response receive for scheduled task");
+            sst.setFailed("No response received for scheduled task");
           }
           this.scheduledTaskRepository.save(sst);
         });
