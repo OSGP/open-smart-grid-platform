@@ -50,7 +50,7 @@ public class SetActivityCalendarCommandActivationExecutor
             CLASS_ID,
             OBIS_CODE,
             METHOD_ID_ACTIVATE_PASSIVE_CALENDAR,
-            DataObject.newInteger32Data(0));
+            DataObject.newInteger8Data((byte) 0));
 
     conn.getDlmsMessageListener()
         .setDescription(
