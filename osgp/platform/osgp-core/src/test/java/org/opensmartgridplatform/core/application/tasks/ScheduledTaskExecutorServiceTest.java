@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.core.application.tasks;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -17,11 +18,14 @@ import static org.mockito.Mockito.when;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -85,6 +89,7 @@ public class ScheduledTaskExecutorServiceTest {
 
     when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
             any(ScheduledTaskStatusType.class), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(new ArrayList<ScheduledTask>())
         .thenReturn(scheduledTasks)
         .thenReturn(new ArrayList<ScheduledTask>());
 
@@ -101,5 +106,70 @@ public class ScheduledTaskExecutorServiceTest {
 
     // check if task is deleted
     verify(this.scheduledTaskRepository).delete(scheduledTask);
+  }
+
+  @Test
+  public void testRetryStrandedPendingTask() {
+
+    final List<ScheduledTask> scheduledTasks = new ArrayList<>();
+    final ScheduledTask scheduledTask =
+        new ScheduledTask(MESSAGE_METADATA, DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
+    scheduledTask.setPending();
+    //    scheduledTask.set
+    scheduledTasks.add(scheduledTask);
+    when(this.scheduledTaskExecutorJobConfig.scheduledTaskPendingDurationMaxSeconds())
+        .thenReturn(0L);
+    when(this.scheduledTaskExecutorJobConfig.scheduledTaskPageSize()).thenReturn(30);
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            any(ScheduledTaskStatusType.class), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(scheduledTasks)
+        .thenReturn(new ArrayList<ScheduledTask>())
+        .thenReturn(new ArrayList<ScheduledTask>());
+
+    this.scheduledTaskExecutorService.processScheduledTasks();
+
+    final ArgumentCaptor<ScheduledTask> scheduledTaskCaptor =
+        ArgumentCaptor.forClass(ScheduledTask.class);
+    verify(this.scheduledTaskRepository).save(scheduledTaskCaptor.capture());
+    final ScheduledTask savedScheduledTask = scheduledTaskCaptor.getValue();
+    assertThat(savedScheduledTask.getStatus()).isEqualTo(ScheduledTaskStatusType.RETRY);
+  }
+
+  @Test
+  public void testRetryStrandedPendingTaskWhenMaxRetrytimeExceeded() {
+
+    // MessageMetadata with expired max retry time
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification("deviceId")
+            .withOrganisationIdentification("organisationId")
+            .withCorrelationUid("correlationId")
+            .withMessageType("messageType")
+            .withMessagePriority(4)
+            .withMaxScheduleTime(Instant.now().minus(100, ChronoUnit.SECONDS).toEpochMilli())
+            .build();
+
+    final List<ScheduledTask> scheduledTasks = new ArrayList<>();
+    final ScheduledTask scheduledTask =
+        new ScheduledTask(messageMetadata, DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
+    scheduledTask.setPending();
+    //    scheduledTask.set
+    scheduledTasks.add(scheduledTask);
+    when(this.scheduledTaskExecutorJobConfig.scheduledTaskPendingDurationMaxSeconds())
+        .thenReturn(0L);
+    when(this.scheduledTaskExecutorJobConfig.scheduledTaskPageSize()).thenReturn(30);
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            any(ScheduledTaskStatusType.class), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(scheduledTasks)
+        .thenReturn(new ArrayList<ScheduledTask>())
+        .thenReturn(new ArrayList<ScheduledTask>());
+
+    this.scheduledTaskExecutorService.processScheduledTasks();
+
+    final ArgumentCaptor<ScheduledTask> scheduledTaskCaptor =
+        ArgumentCaptor.forClass(ScheduledTask.class);
+    verify(this.scheduledTaskRepository).save(scheduledTaskCaptor.capture());
+    final ScheduledTask savedScheduledTask = scheduledTaskCaptor.getValue();
+    assertThat(savedScheduledTask.getStatus()).isEqualTo(ScheduledTaskStatusType.FAILED);
   }
 }
