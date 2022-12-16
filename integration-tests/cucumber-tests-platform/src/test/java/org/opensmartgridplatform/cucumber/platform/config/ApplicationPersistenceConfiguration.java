@@ -98,6 +98,10 @@ public abstract class ApplicationPersistenceConfiguration extends BaseApplicatio
     return databaseHostname;
   }
 
+  protected int getDatabasePort() {
+    return databasePort;
+  }
+
   /** Default constructor */
   public ApplicationPersistenceConfiguration() {
     // Default constructor
@@ -117,7 +121,7 @@ public abstract class ApplicationPersistenceConfiguration extends BaseApplicatio
             .withDriverClassName(this.databaseDriver)
             .withProtocol(this.databaseProtocol)
             .withDatabaseHost(this.getDatabaseHostname())
-            .withDatabasePort(this.databasePort)
+            .withDatabasePort(this.getDatabasePort())
             .withDatabaseName(this.getDatabaseName())
             .withMinPoolSize(this.databaseMinPoolSize)
             .withMaxPoolSize(this.databaseMaxPoolSize)
