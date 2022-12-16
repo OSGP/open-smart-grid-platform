@@ -76,7 +76,7 @@ public class ScheduledTaskExecutorServiceTest {
    * @throws JobExecutionException
    */
   @Test
-  public void testRunFunctionalException()
+  void testRunFunctionalException()
       throws FunctionalException, UnknownHostException, JobExecutionException {
     final List<ScheduledTask> scheduledTasks = new ArrayList<>();
     final Timestamp scheduledTime = new Timestamp(Calendar.getInstance().getTime().getTime());
@@ -106,7 +106,7 @@ public class ScheduledTaskExecutorServiceTest {
   }
 
   @Test
-  public void testRetryStrandedPendingTask() {
+  void testRetryStrandedPendingTask() {
 
     final List<ScheduledTask> scheduledTasks = new ArrayList<>();
     final Timestamp scheduledTime = new Timestamp(Calendar.getInstance().getTime().getTime());
