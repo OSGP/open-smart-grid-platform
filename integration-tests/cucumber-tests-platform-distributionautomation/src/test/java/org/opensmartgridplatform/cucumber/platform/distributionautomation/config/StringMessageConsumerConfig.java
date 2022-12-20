@@ -25,11 +25,10 @@ public class StringMessageConsumerConfig extends AbstractKafkaConsumerConfig<Str
       final Environment environment,
       @Value("${distributionautomation.kafka.common.properties.prefix}")
           final String propertiesPrefix,
-      @Value("${distributionautomation.kafka.topic.message}") final String topic,
       @Value("${distributionautomation.kafka.consumer.concurrency}") final int concurrency,
       @Value("${distributionautomation.kafka.consumer.poll.timeout}") final int pollTimeout) {
 
-    super(environment, propertiesPrefix, topic, concurrency, pollTimeout);
+    super(environment, propertiesPrefix, concurrency, pollTimeout);
   }
 
   @Bean("distributionAutomationMessageConsumerFactory")

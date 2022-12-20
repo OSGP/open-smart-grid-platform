@@ -27,14 +27,13 @@ public abstract class AbstractKafkaConsumerConfig<K, V> extends KafkaConfig {
   protected AbstractKafkaConsumerConfig(
       final Environment environment,
       final String propertiesPrefix,
-      final String topic,
       final int concurrency,
       final int pollTimeout) {
     super(environment);
 
     LOGGER.debug(
         "=================================================================================");
-    LOGGER.info("Initializing Kafka Consumer for Topic {}", topic);
+    LOGGER.info("Initializing Kafka Consumer");
     LOGGER.debug("Common properties prefix: {}", propertiesPrefix);
     LOGGER.debug("Consumer properties prefix: {}", getConsumerPropertiesPrefix(propertiesPrefix));
     LOGGER.debug(
