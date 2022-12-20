@@ -79,7 +79,7 @@ public class ScheduledTaskExecutorServiceTest {
   void testRunFunctionalException()
       throws FunctionalException, UnknownHostException, JobExecutionException {
     final List<ScheduledTask> scheduledTasks = new ArrayList<>();
-    final Timestamp scheduledTime = new Timestamp(Calendar.getInstance().getTime().getTime());
+    final Timestamp scheduledTime = new Timestamp(System.currentTimeMillis());
     final ScheduledTask scheduledTask =
         new ScheduledTask(this.createMessageMetadata(), DOMAIN, DOMAIN, DATA_OBJECT, scheduledTime);
     scheduledTasks.add(scheduledTask);
