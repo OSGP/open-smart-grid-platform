@@ -1,5 +1,4 @@
-# Skipped due to NotLeaderForPartitionException issues with kafka
-@Skip @DistributionAutomation @Platform @StringMessage
+@DistributionAutomation @Platform @StringMessage
 Feature: DistributionAutomation String message processing
 
   Scenario: Process a String message from MQTT device
