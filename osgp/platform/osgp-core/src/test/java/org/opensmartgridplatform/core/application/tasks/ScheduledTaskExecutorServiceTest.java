@@ -142,7 +142,7 @@ public class ScheduledTaskExecutorServiceTest {
     assertThat(savedScheduledTasks.get(0).getDeviceIdentification()).isEqualTo("deviceId-expired");
 
     assertThat(savedScheduledTasks.get(1).getStatus()).isEqualTo(ScheduledTaskStatusType.RETRY);
-    assertThat(savedScheduledTasks.get(1).getDeviceIdentification()).isEqualTo("deviceId-retryabl");
+    assertThat(savedScheduledTasks.get(1).getDeviceIdentification()).isEqualTo("deviceId-retryable");
   }
 
   private MessageMetadata createExpiredMessageMetadata() {
