@@ -154,7 +154,7 @@ public class ScheduledTaskExecutorServiceTest {
 
   private MessageMetadata createMessageMetadata() {
     return this.createMessageMetadataBuilder()
-        .withDeviceIdentification("deviceId-retryabl")
+        .withDeviceIdentification("deviceId-retryable")
         .build();
   }
 
