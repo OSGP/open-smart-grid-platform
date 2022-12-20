@@ -23,7 +23,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,8 +54,7 @@ public class ScheduledTaskExecutorServiceTest {
 
   private static final String DATA_OBJECT = "data object";
 
-  private static final Timestamp SCHEDULED_TIME =
-      new Timestamp(Calendar.getInstance().getTime().getTime());
+  private static final Timestamp SCHEDULED_TIME = new Timestamp(System.currentTimeMillis());
 
   @Mock private DeviceRequestMessageService deviceRequestMessageService;
 
@@ -108,30 +106,13 @@ public class ScheduledTaskExecutorServiceTest {
   @Test
   void testRetryStrandedPendingTask() {
 
-    final List<ScheduledTask> scheduledTasks = new ArrayList<>();
-    final Timestamp scheduledTime = new Timestamp(Calendar.getInstance().getTime().getTime());
-    final ScheduledTask expiredScheduledTask =
-        new ScheduledTask(
-            this.createExpiredMessageMetadata(), DOMAIN, DOMAIN, DATA_OBJECT, scheduledTime);
-    expiredScheduledTask.setPending();
-    scheduledTasks.add(expiredScheduledTask);
-    final ScheduledTask retryableScheduledTask =
-        new ScheduledTask(
-            this.createMessageMetadata(), DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
-    retryableScheduledTask.setPending();
-    scheduledTasks.add(retryableScheduledTask);
+    final List<ScheduledTask> expiredPendingTasks = this.createExpiredPendingTasks();
+
     when(this.scheduledTaskExecutorJobConfig.scheduledTaskPendingDurationMaxSeconds())
-        .thenReturn(0L);
+        .thenReturn(-1L);
     when(this.scheduledTaskExecutorJobConfig.scheduledTaskPageSize()).thenReturn(30);
-    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
-            eq(ScheduledTaskStatusType.PENDING), any(Timestamp.class), any(Pageable.class)))
-        .thenReturn(scheduledTasks);
-    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
-            eq(ScheduledTaskStatusType.NEW), any(Timestamp.class), any(Pageable.class)))
-        .thenReturn(new ArrayList<ScheduledTask>());
-    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
-            eq(ScheduledTaskStatusType.RETRY), any(Timestamp.class), any(Pageable.class)))
-        .thenReturn(new ArrayList<ScheduledTask>());
+    this.whenFindByStatusAndScheduledTime(
+        expiredPendingTasks, new ArrayList<ScheduledTask>(), new ArrayList<ScheduledTask>());
 
     this.scheduledTaskExecutorService.processScheduledTasks();
 
@@ -142,7 +123,39 @@ public class ScheduledTaskExecutorServiceTest {
     assertThat(savedScheduledTasks.get(0).getDeviceIdentification()).isEqualTo("deviceId-expired");
 
     assertThat(savedScheduledTasks.get(1).getStatus()).isEqualTo(ScheduledTaskStatusType.RETRY);
-    assertThat(savedScheduledTasks.get(1).getDeviceIdentification()).isEqualTo("deviceId-retryable");
+    assertThat(savedScheduledTasks.get(1).getDeviceIdentification())
+        .isEqualTo("deviceId-retryable");
+  }
+
+  private void whenFindByStatusAndScheduledTime(
+      final List<ScheduledTask> pendingTasks,
+      final List<ScheduledTask> newTasks,
+      final List<ScheduledTask> retryTasks) {
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.PENDING), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(pendingTasks);
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.NEW), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(newTasks);
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.RETRY), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(retryTasks);
+  }
+
+  private List<ScheduledTask> createExpiredPendingTasks() {
+    // Create a list of two scheduled tasks both in pending state.
+    final List<ScheduledTask> scheduledTasks = new ArrayList<>();
+    final ScheduledTask expiredScheduledTask =
+        new ScheduledTask(
+            this.createExpiredMessageMetadata(), DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
+    expiredScheduledTask.setPending();
+    scheduledTasks.add(expiredScheduledTask);
+    final ScheduledTask retryableScheduledTask =
+        new ScheduledTask(
+            this.createMessageMetadata(), DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
+    retryableScheduledTask.setPending();
+    scheduledTasks.add(retryableScheduledTask);
+    return scheduledTasks;
   }
 
   private MessageMetadata createExpiredMessageMetadata() {
