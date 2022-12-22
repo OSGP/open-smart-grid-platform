@@ -47,8 +47,8 @@ import org.springframework.util.StringUtils;
 
 public class BasicDataAttributesHelper {
 
-  private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
-  private static final DateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+  private final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
+  private final DateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_PATTERN);
 
   static {
     DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
