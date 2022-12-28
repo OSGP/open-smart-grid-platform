@@ -10,6 +10,11 @@ package org.opensmartgridplatform.shared.application.config.kafka;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.config.SaslConfigs;
+import org.apache.kafka.common.config.SslConfigs;
 
 public class KafkaProperties {
 
@@ -19,78 +24,79 @@ public class KafkaProperties {
 
   public static Map<String, Class<?>> commonProperties() {
     final HashMap<String, Class<?>> map = new HashMap<>();
-    map.put("bootstrap.servers", String.class);
+    map.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, String.class);
 
-    map.put("security.protocol", String.class);
-    map.put("ssl.truststore.location", String.class);
-    map.put("ssl.truststore.password", String.class);
-    map.put("ssl.keystore.location", String.class);
-    map.put("ssl.keystore.password", String.class);
-    map.put("ssl.key.password", String.class);
-    map.put("ssl.endpoint.identification.algorithm", String.class);
-    map.put("ssl.enabled.protocols", String.class);
-    map.put("ssl.keystore.type", String.class);
-    map.put("ssl.protocol", String.class);
-    map.put("ssl.provider", String.class);
-    map.put("ssl.truststore.type", String.class);
-    map.put("sasl.client.callback.handler.class", String.class);
-    map.put("sasl.jaas.config", String.class);
-    map.put("sasl.kerberos.service.name", String.class);
-    map.put("sasl.login.callback.handler.class", String.class);
-    map.put("sasl.login.class", String.class);
-    map.put("sasl.mechanism", String.class);
+    map.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, String.class);
 
+    map.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, String.class);
+    map.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, String.class);
+    map.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, String.class);
+    map.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, String.class);
+    map.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, String.class);
+    map.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, String.class);
+    map.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, String.class);
+    map.put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, String.class);
+    map.put(SslConfigs.SSL_PROTOCOL_CONFIG, String.class);
+    map.put(SslConfigs.SSL_PROVIDER_CONFIG, String.class);
+    map.put(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG, String.class);
+
+    map.put(SaslConfigs.SASL_CLIENT_CALLBACK_HANDLER_CLASS, String.class);
+    map.put(SaslConfigs.SASL_JAAS_CONFIG, String.class);
+    map.put(SaslConfigs.SASL_KERBEROS_SERVICE_NAME, String.class);
+    map.put(SaslConfigs.SASL_LOGIN_CALLBACK_HANDLER_CLASS, String.class);
+    map.put(SaslConfigs.SASL_LOGIN_CLASS, String.class);
+    map.put(SaslConfigs.SASL_MECHANISM, String.class);
     return map;
   }
 
   public static Map<String, Class<?>> producerProperties() {
     final HashMap<String, Class<?>> map = new HashMap<>();
-    map.put("key.serializer", String.class);
-    map.put("value.serializer", String.class);
-    map.put("acks", String.class);
-    map.put("buffer.memory", Long.class);
-    map.put("compression.type", String.class);
-    map.put("retries", Integer.class);
-    map.put("batch.size", Integer.class);
-    map.put("client.id", String.class);
-    map.put("delivery.timeout.ms", Integer.class);
-    map.put("linger.ms", Integer.class);
-    map.put("max.block.ms", Long.class);
-    map.put("max.request.size", Integer.class);
-    map.put("partitioner.class", String.class);
-    map.put("client.dns.lookup", String.class);
-    map.put("connections.max.idle.ms", Long.class);
-    map.put("receive.buffer.bytes", Integer.class);
-    map.put("request.timeout.ms", Integer.class);
-    map.put("retry.backoff.ms", Integer.class);
+    map.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, String.class);
+    map.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, String.class);
+    map.put(ProducerConfig.ACKS_CONFIG, String.class);
+    map.put(ProducerConfig.BUFFER_MEMORY_CONFIG, Long.class);
+    map.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, String.class);
+    map.put(ProducerConfig.RETRIES_CONFIG, Integer.class);
+    map.put(ProducerConfig.BATCH_SIZE_CONFIG, Integer.class);
+    map.put(ProducerConfig.CLIENT_ID_CONFIG, String.class);
+    map.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, Integer.class);
+    map.put(ProducerConfig.LINGER_MS_CONFIG, Integer.class);
+    map.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, Long.class);
+    map.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, Integer.class);
+    map.put(ProducerConfig.PARTITIONER_CLASS_CONFIG, String.class);
+    map.put(ProducerConfig.CLIENT_DNS_LOOKUP_CONFIG, String.class);
+    map.put(ProducerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, Long.class);
+    map.put(ProducerConfig.RECEIVE_BUFFER_CONFIG, Integer.class);
+    map.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, Integer.class);
+    map.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, Integer.class);
     return map;
   }
 
   public static Map<String, Class<?>> consumerProperties() {
     final HashMap<String, Class<?>> map = new HashMap<>();
-    map.put("key.deserializer", String.class);
-    map.put("value.deserializer", String.class);
-    map.put("group.id", String.class);
-    map.put("fetch.min.bytes", Integer.class);
-    map.put("heartbeat.interval.ms", Integer.class);
-    map.put("max.partition.fetch.bytes", Integer.class);
-    map.put("session.timeout.ms", Integer.class);
-    map.put("allow.auto.create.topics", Boolean.class);
-    map.put("auto.offset.reset", String.class);
-    map.put("default.api.timeout.ms", Integer.class);
-    map.put("enable.auto.commit", Boolean.class);
-    map.put("exclude.internal.topics", Boolean.class);
-    map.put("fetch.max.bytes", Integer.class);
-    map.put("group.instance.id", String.class);
-    map.put("isolation.level", String.class);
-    map.put("max.poll.interval.ms", Integer.class);
-    map.put("max.poll.records", Integer.class);
-    map.put("partition.assignment.strategy", String.class);
-    map.put("send.buffer.bytes", Integer.class);
-    map.put("client.dns.lookup", String.class);
-    map.put("connections.max.idle.ms", Long.class);
-    map.put("receive.buffer.bytes", Integer.class);
-    map.put("request.timeout.ms", Integer.class);
+    map.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, String.class);
+    map.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, String.class);
+    map.put(ConsumerConfig.GROUP_ID_CONFIG, String.class);
+    map.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, Integer.class);
+    map.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, Integer.class);
+    map.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, Integer.class);
+    map.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Integer.class);
+    map.put(ConsumerConfig.ALLOW_AUTO_CREATE_TOPICS_CONFIG, Boolean.class);
+    map.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, String.class);
+    map.put(ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, Integer.class);
+    map.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, Boolean.class);
+    map.put(ConsumerConfig.EXCLUDE_INTERNAL_TOPICS_CONFIG, Boolean.class);
+    map.put(ConsumerConfig.FETCH_MAX_BYTES_CONFIG, Integer.class);
+    map.put(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, String.class);
+    map.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, String.class);
+    map.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, Integer.class);
+    map.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, Integer.class);
+    map.put(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG, String.class);
+    map.put(ConsumerConfig.SEND_BUFFER_CONFIG, Integer.class);
+    map.put(ConsumerConfig.CLIENT_DNS_LOOKUP_CONFIG, String.class);
+    map.put(ConsumerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, Long.class);
+    map.put(ConsumerConfig.RECEIVE_BUFFER_CONFIG, Integer.class);
+    map.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, Integer.class);
     return map;
   }
 }

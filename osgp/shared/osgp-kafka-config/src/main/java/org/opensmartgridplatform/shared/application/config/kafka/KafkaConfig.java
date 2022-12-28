@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.core.env.Environment;
 
-public class KafkaConfig {
+public abstract class KafkaConfig {
 
   private final Environment environment;
 
