@@ -108,6 +108,7 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
+        <module>osgp-kafka-config</module>
         <module>osgp-ws-tariffswitching</module>
         <module>osgp-ws-publiclighting</module>
       </modules>
@@ -133,6 +134,7 @@
       </activation>
       <modules>
         <module>osgp-kafka-logger</module>
+        <module>osgp-kafka-config</module>
         <module>osgp-ws-distributionautomation</module>
       </modules>
     </profile>

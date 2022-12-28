@@ -281,6 +281,11 @@
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-kafka-config</artifactId>
+        <version>${osgp.shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>jasper-interface</artifactId>
         <version>${osgp.jasper-interface.version}</version>
       </dependency>
