@@ -30,11 +30,19 @@ public class ScheduledTaskExecutorJobConfig {
   @Value("${scheduling.task.page.size}")
   private int scheduledTaskPageSize;
 
+  @Value("${scheduling.task.pending.duration.max.seconds:3600}")
+  private int scheduledTaskPendingDurationMaxSeconds;
+
   @Autowired private OsgpScheduler osgpScheduler;
 
   @Bean
   public int scheduledTaskPageSize() {
     return this.scheduledTaskPageSize;
+  }
+
+  @Bean
+  public long scheduledTaskPendingDurationMaxSeconds() {
+    return this.scheduledTaskPendingDurationMaxSeconds;
   }
 
   @PostConstruct

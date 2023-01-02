@@ -19,31 +19,31 @@ import org.openmuc.jdlms.datatypes.DataObject.Type;
 public class ActivityCalendar extends CosemInterfaceObject {
 
   @CosemAttribute(id = 2, type = Type.OCTET_STRING)
-  private DataObject calendarNameActive;
+  private final DataObject calendarNameActive;
 
   @CosemAttribute(id = 3, type = Type.ARRAY)
-  private DataObject seasonProfileActive;
+  private final DataObject seasonProfileActive;
 
   @CosemAttribute(id = 4, type = Type.ARRAY)
-  private DataObject weekProfileTableActive;
+  private final DataObject weekProfileTableActive;
 
   @CosemAttribute(id = 5, type = Type.ARRAY)
-  private DataObject dayProfileTableActive;
+  private final DataObject dayProfileTableActive;
 
   @CosemAttribute(id = 6, type = Type.OCTET_STRING)
-  private DataObject calendarNamePassive;
+  private final DataObject calendarNamePassive;
 
   @CosemAttribute(id = 7, type = Type.ARRAY)
-  private DataObject seasonProfilePassive;
+  private final DataObject seasonProfilePassive;
 
   @CosemAttribute(id = 8, type = Type.ARRAY)
-  private DataObject weekProfileTablePassive;
+  private final DataObject weekProfileTablePassive;
 
   @CosemAttribute(id = 9, type = Type.ARRAY)
-  private DataObject dayProfileTablePassive;
+  private final DataObject dayProfileTablePassive;
 
   @CosemAttribute(id = 10, type = Type.OCTET_STRING)
-  private DataObject activatePassiveCalendarTime;
+  private final DataObject activatePassiveCalendarTime;
 
   public ActivityCalendar() {
     super("0.0.13.0.0.255");
@@ -58,7 +58,7 @@ public class ActivityCalendar extends CosemInterfaceObject {
     this.activatePassiveCalendarTime = DataObject.newNullData();
   }
 
-  @CosemMethod(id = 1, consumes = Type.DOUBLE_LONG)
+  @CosemMethod(id = 1, consumes = Type.INTEGER)
   public void activatePassiveCalendar(final DataObject param) {
     // No simulation of action at this point.
   }

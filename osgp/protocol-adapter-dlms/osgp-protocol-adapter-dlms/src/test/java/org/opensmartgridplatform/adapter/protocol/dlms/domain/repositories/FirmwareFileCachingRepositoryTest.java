@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class FirmwareFileCachingRepositoryTest {
+class FirmwareFileCachingRepositoryTest {
 
   private static final String FIRMWARE_IDENTIFICATION_UNAVAILABLE = "unavailable";
   private static final String FIRMWARE_IDENTIFICATION = "fw";
@@ -32,7 +32,7 @@ public class FirmwareFileCachingRepositoryTest {
   }
 
   @Test
-  public void isAvailableShouldReturnTrueWhenFirmwareFileInCache() {
+  void isAvailableShouldReturnTrueWhenFirmwareFileInCache() {
     // Arrange
 
     // Act
@@ -43,7 +43,7 @@ public class FirmwareFileCachingRepositoryTest {
   }
 
   @Test
-  public void isAvailableShouldReturnFalseWhenFirmwareFileNotInCache() {
+  void isAvailableShouldReturnFalseWhenFirmwareFileNotInCache() {
     // Arrange
 
     // Act
@@ -55,7 +55,7 @@ public class FirmwareFileCachingRepositoryTest {
   }
 
   @Test
-  public void retrieveShouldReturnFirmwareFileWhenFirmwareFileInCache() {
+  void retrieveShouldReturnFirmwareFileWhenFirmwareFileInCache() {
     // Arrange
     final byte[] expected = FIRMWARE_FILE;
 
@@ -67,7 +67,22 @@ public class FirmwareFileCachingRepositoryTest {
   }
 
   @Test
-  public void retrieveShouldReturnNullWhenFirmwareFileNotInCache() {
+  void retrieveShouldReturnCopyOfFirmwareFile() {
+    // Arrange
+    final byte[] expected = FIRMWARE_FILE;
+    final byte[] actual = this.firmwareFileCachingRepostitory.retrieve(FIRMWARE_IDENTIFICATION);
+    actual[0]++; // Change the first byte in the retrieved array
+
+    // Act
+    // When the file is retrieved again, it should be the original file
+    final byte[] actual2 = this.firmwareFileCachingRepostitory.retrieve(FIRMWARE_IDENTIFICATION);
+
+    // Assert
+    assertThat(actual2).isEqualTo(expected);
+  }
+
+  @Test
+  void retrieveShouldReturnNullWhenFirmwareFileNotInCache() {
     // Arrange
     // Nothing to do
 
@@ -80,7 +95,7 @@ public class FirmwareFileCachingRepositoryTest {
   }
 
   @Test
-  public void storeShouldAddFirmwareFileToCache() {
+  void storeShouldAddFirmwareFileToCache() {
     // Arrange
     final String firmwareIdentificationToAdd = "fw-to-add";
     final byte[] firmwareFileToAdd = firmwareIdentificationToAdd.getBytes();

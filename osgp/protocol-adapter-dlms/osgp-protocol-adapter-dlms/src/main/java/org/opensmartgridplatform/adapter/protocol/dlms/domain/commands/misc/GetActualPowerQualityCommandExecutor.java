@@ -129,7 +129,7 @@ public class GetActualPowerQualityCommandExecutor
             pqObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId()).getValue();
 
         final DlmsMeterValueDto meterValue =
-            this.dlmsHelper.getScaledMeterValue(
+            this.dlmsHelper.getScaledMeterValueWithScalerUnit(
                 resultValue, scalerUnit, "Actual Power Quality - " + pqObject.getObis());
 
         final BigDecimal value = meterValue != null ? meterValue.getValue() : null;

@@ -26,7 +26,7 @@ public abstract class AbstractWsAdapterInitializer extends AbstractApplicationIn
    * @param contextClass the class holding application specific Spring ApplicationContext
    * @param logConfig jndi property which points to logback configuration
    */
-  public AbstractWsAdapterInitializer(final Class<?> contextClass, final String logConfig) {
+  protected AbstractWsAdapterInitializer(final Class<?> contextClass, final String logConfig) {
     super(contextClass, logConfig);
   }
 
@@ -38,8 +38,8 @@ public abstract class AbstractWsAdapterInitializer extends AbstractApplicationIn
    * @throws ServletException Thrown when a servlet encounters difficulty.
    */
   @Override
-  protected void startUp(final ServletContext servletContext) throws ServletException {
-    super.startUp(servletContext);
+  public void onStartup(final ServletContext servletContext) throws ServletException {
+    super.onStartup(servletContext);
 
     final MessageDispatcherServlet servlet = new MessageDispatcherServlet();
     servlet.setContextClass(AnnotationConfigWebApplicationContext.class);
@@ -65,7 +65,7 @@ public abstract class AbstractWsAdapterInitializer extends AbstractApplicationIn
   protected void customStartUp(
       final ServletContext servletContext, final String servletName, final String servletMapping)
       throws ServletException {
-    super.startUp(servletContext);
+    super.onStartup(servletContext);
 
     final MessageDispatcherServlet servlet = new MessageDispatcherServlet();
     servlet.setContextClass(AnnotationConfigWebApplicationContext.class);

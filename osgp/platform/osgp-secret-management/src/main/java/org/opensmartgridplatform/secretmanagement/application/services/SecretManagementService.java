@@ -259,7 +259,7 @@ public class SecretManagementService {
     return Optional.of(secretsList.iterator().next());
   }
 
-  public synchronized void storeSecrets(
+  public void storeSecrets(
       final String deviceIdentification, final List<TypedSecret> typedSecrets) {
     for (final TypedSecret typedSecret : typedSecrets) {
       this.withdrawExistingKeysWithStatusNew(deviceIdentification, typedSecret.getSecretType());
@@ -305,7 +305,7 @@ public class SecretManagementService {
         > 0;
   }
 
-  public synchronized void activateNewSecrets(
+  public void activateNewSecrets(
       final String deviceIdentification, final List<SecretType> secretTypes) {
     secretTypes.stream()
         .map(t -> this.getUpdatedSecretsForActivation(deviceIdentification, t))
@@ -336,7 +336,7 @@ public class SecretManagementService {
     return updatedSecrets;
   }
 
-  public synchronized List<TypedSecret> generateAndStoreSecrets(
+  public List<TypedSecret> generateAndStoreSecrets(
       final String deviceIdentification, final List<SecretType> secretTypes) {
 
     for (final SecretType secretType : secretTypes) {

@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Assertions;
@@ -69,9 +70,7 @@ class SmartMeterServiceTest {
     final FunctionalException exception =
         Assertions.assertThrows(
             FunctionalException.class,
-            () -> {
-              this.smartMeterService.validateSmartMeterDoesNotExist(deviceIdentification);
-            });
+            () -> this.smartMeterService.validateSmartMeterDoesNotExist(deviceIdentification));
     assertThat(exception.getExceptionType()).isEqualTo(FunctionalExceptionType.EXISTING_DEVICE);
   }
 
@@ -92,10 +91,9 @@ class SmartMeterServiceTest {
     final FunctionalException exception =
         Assertions.assertThrows(
             FunctionalException.class,
-            () -> {
-              this.smartMeterService.storeMeter(
-                  organisationIdentification, addSmartMeterRequest, smartMeter);
-            });
+            () ->
+                this.smartMeterService.storeMeter(
+                    organisationIdentification, addSmartMeterRequest, smartMeter));
     assertThat(exception.getExceptionType())
         .isEqualTo(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION_OR_VARIANT);
   }
@@ -104,18 +102,20 @@ class SmartMeterServiceTest {
   void testStoreMeter() throws FunctionalException {
 
     final String organisationIdentification = "org-1";
-    final SmartMeteringDevice smartMeteringDevice = new SmartMeteringDevice();
-    final DeviceModel deviceModel = new DeviceModel();
+    final SmartMeter smartMeter = mock(SmartMeter.class);
+    final Manufacturer manufacturer = mock(Manufacturer.class);
+    final ProtocolInfo protocolInfo = mock(ProtocolInfo.class);
+    final DeviceModel deviceModel = mock(DeviceModel.class);
+
+    final SmartMeteringDevice smartMeteringDevice = mock(SmartMeteringDevice.class);
+
     final AddSmartMeterRequest addSmartMeterRequest =
         new AddSmartMeterRequest(smartMeteringDevice, deviceModel);
-    final SmartMeter smartMeter = new SmartMeter();
-
-    final Manufacturer manufacturer = new Manufacturer();
-
-    final ProtocolInfo protocolInfo = mock(ProtocolInfo.class);
 
     when(this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
-            any(), any(), any()))
+            smartMeteringDevice.getProtocolName(),
+            smartMeteringDevice.getProtocolVersion(),
+            smartMeteringDevice.getProtocolVariant()))
         .thenReturn(protocolInfo);
     when(this.manufacturerRepository.findByCode(any())).thenReturn(manufacturer);
     when(this.deviceModelRepository.findByManufacturerAndModelCode(any(), any()))
@@ -126,11 +126,40 @@ class SmartMeterServiceTest {
 
     verify(this.protocolInfoRepository)
         .findByProtocolAndProtocolVersionAndProtocolVariant(any(), any(), any());
+    verifyNoMoreInteractions(this.protocolInfoRepository);
     verify(this.manufacturerRepository).findByCode(any());
     verify(this.deviceModelRepository).findByManufacturerAndModelCode(any(), any());
     verify(this.deviceAuthorizationRepository).save(any());
     verify(this.organisationRepository)
         .findByOrganisationIdentification(organisationIdentification);
     verify(this.smartMeterRepository).save(any());
+  }
+
+  @Test
+  void testStoreMeter_Unknown_Name_Or_Version_Or_Variant() {
+    final String organisationIdentification = "org-1";
+    final SmartMeter smartMeter = mock(SmartMeter.class);
+    final DeviceModel deviceModel = mock(DeviceModel.class);
+
+    final SmartMeteringDevice smartMeteringDevice = mock(SmartMeteringDevice.class);
+
+    final AddSmartMeterRequest addSmartMeterRequest =
+        new AddSmartMeterRequest(smartMeteringDevice, deviceModel);
+
+    when(this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
+            smartMeteringDevice.getProtocolName(),
+            smartMeteringDevice.getProtocolVersion(),
+            smartMeteringDevice.getProtocolVariant()))
+        .thenReturn(null);
+
+    when(this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
+            smartMeteringDevice.getProtocolName(), smartMeteringDevice.getProtocolVersion(), null))
+        .thenReturn(null);
+
+    Assertions.assertThrows(
+        FunctionalException.class,
+        () ->
+            this.smartMeterService.storeMeter(
+                organisationIdentification, addSmartMeterRequest, smartMeter));
   }
 }

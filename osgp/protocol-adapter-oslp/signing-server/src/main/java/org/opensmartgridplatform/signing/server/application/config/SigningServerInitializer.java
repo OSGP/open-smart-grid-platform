@@ -8,22 +8,12 @@
  */
 package org.opensmartgridplatform.signing.server.application.config;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import org.opensmartgridplatform.shared.application.config.AbstractApplicationInitializer;
-import org.springframework.web.WebApplicationInitializer;
 
 /** Web application Java configuration class. */
-public class SigningServerInitializer extends AbstractApplicationInitializer
-    implements WebApplicationInitializer {
+public class SigningServerInitializer extends AbstractApplicationInitializer {
 
   public SigningServerInitializer() {
     super(ApplicationContext.class, "java:comp/env/osgp/SigningServer/log-config");
-  }
-
-  /** */
-  @Override
-  public void onStartup(final ServletContext servletContext) throws ServletException {
-    this.startUp(servletContext);
   }
 }

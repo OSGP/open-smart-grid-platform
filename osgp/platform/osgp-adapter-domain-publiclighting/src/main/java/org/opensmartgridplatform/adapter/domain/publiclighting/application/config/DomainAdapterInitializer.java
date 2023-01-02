@@ -8,22 +8,12 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.config;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import org.opensmartgridplatform.shared.application.config.AbstractApplicationInitializer;
-import org.springframework.web.WebApplicationInitializer;
 
 /** Web application Java configuration class. */
-public class DomainAdapterInitializer extends AbstractApplicationInitializer
-    implements WebApplicationInitializer {
+public class DomainAdapterInitializer extends AbstractApplicationInitializer {
 
   public DomainAdapterInitializer() {
     super(ApplicationContext.class, "java:comp/env/osgp/AdapterDomainPublicLighting/log-config");
-  }
-
-  /** Handles startup of Spring context. */
-  @Override
-  public void onStartup(final ServletContext servletContext) throws ServletException {
-    this.startUp(servletContext);
   }
 }

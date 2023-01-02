@@ -9,7 +9,12 @@
 package org.opensmartgridplatform.core.application.tasks;
 
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.opensmartgridplatform.core.application.config.ScheduledTaskExecutorJobConfig;
 import org.opensmartgridplatform.core.application.services.DeviceRequestMessageService;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -41,11 +46,47 @@ public class ScheduledTaskExecutorService {
   @Autowired private ScheduledTaskExecutorJobConfig scheduledTaskExecutorJobConfig;
 
   public void processScheduledTasks() {
+    this.processStrandedScheduledTasks();
     this.processScheduledTasks(ScheduledTaskStatusType.NEW);
     this.processScheduledTasks(ScheduledTaskStatusType.RETRY);
   }
 
+  private void processStrandedScheduledTasks() {
+
+    final List<ScheduledTask> scheduledTasks =
+        this.getScheduledTasks(ScheduledTaskStatusType.PENDING);
+
+    final long maxDurationPending =
+        this.scheduledTaskExecutorJobConfig.scheduledTaskPendingDurationMaxSeconds();
+
+    final Instant ultimatePendingTime = Instant.now().minus(maxDurationPending, ChronoUnit.SECONDS);
+
+    final Predicate<? super ScheduledTask> pendingExceeded =
+        st -> st.getModificationTimeInstant().isBefore(ultimatePendingTime);
+
+    final List<ScheduledTask> strandedScheduledTasks =
+        scheduledTasks.stream().filter(pendingExceeded).collect(Collectors.toList());
+    strandedScheduledTasks.forEach(
+        sst -> {
+          if (this.maxScheduledTimeNotExceeded(sst)) {
+            sst.retryOn(new Date());
+          } else {
+            sst.setFailed("No response received for scheduled task");
+          }
+          this.scheduledTaskRepository.save(sst);
+        });
+  }
+
+  private boolean maxScheduledTimeNotExceeded(final ScheduledTask sst) {
+    return sst.getMaxScheduleTime() == null
+        || sst.getMaxScheduleTime().getTime() > System.currentTimeMillis();
+  }
+
   private void processScheduledTasks(final ScheduledTaskStatusType type) {
+    /*
+     * Fetch scheduled tasks for given scheduledTaskStatusTypes: NEW and RETRY. The processed tasks
+     * are set to PENDING, so they will not be fetched by this method.
+     */
     List<ScheduledTask> scheduledTasks = this.getScheduledTasks(type);
 
     while (!scheduledTasks.isEmpty()) {
@@ -70,9 +111,6 @@ public class ScheduledTaskExecutorService {
   }
 
   /**
-   * Fetch scheduled tasks for given scheduledTaskStatusTypes: NEW and RETRY. The processed tasks
-   * are set to PENDING, so they will not be fetched by this method.
-   *
    * @param type ScheduledTaskStatusType (NEW, PENDING, COMPLETE, FAILED, RETRY)
    * @return List of ScheduledTasks, paged
    */
