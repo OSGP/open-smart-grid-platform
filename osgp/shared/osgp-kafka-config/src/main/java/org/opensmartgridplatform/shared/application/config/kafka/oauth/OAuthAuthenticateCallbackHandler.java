@@ -17,11 +17,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.AppConfigurationEntry;
@@ -37,9 +38,9 @@ public class OAuthAuthenticateCallbackHandler implements AuthenticateCallbackHan
   private static final Logger LOGGER =
       LoggerFactory.getLogger(OAuthAuthenticateCallbackHandler.class);
 
-  private String tokenFilePath;
-  private String clientId;
-  private Set<String> scope;
+  protected String tokenFilePath;
+  protected String clientId;
+  protected Set<String> scope;
 
   @Override
   public void configure(
@@ -47,7 +48,9 @@ public class OAuthAuthenticateCallbackHandler implements AuthenticateCallbackHan
       final String saslMechanism,
       final List<AppConfigurationEntry> jaasConfigEntries) {
     this.clientId = getProperty(KAFKA_OAUTH_CLIENT_ID_CONFIG, configs);
-    this.scope = Collections.singleton(getProperty(KAFKA_OAUTH_SCOPE_CONFIG, configs));
+    this.scope =
+        Arrays.stream(getProperty(KAFKA_OAUTH_SCOPE_CONFIG, configs).split(","))
+            .collect(Collectors.toSet());
     this.tokenFilePath = getProperty(KAFKA_OAUTH_TOKEN_FILE_CONFIG, configs);
   }
 
@@ -81,7 +84,7 @@ public class OAuthAuthenticateCallbackHandler implements AuthenticateCallbackHan
   }
 
   /** Retrieves a new JWT token from Azure Active Directory. */
-  private OAuthBearerToken getToken() {
+  protected OAuthBearerToken getToken() {
     try {
       String token = readTokenFile(tokenFilePath);
       final IClientAssertion credential = ClientCredentialFactory.createFromClientAssertion(token);
@@ -106,7 +109,7 @@ public class OAuthAuthenticateCallbackHandler implements AuthenticateCallbackHan
    *
    * @return content of the token file
    */
-  private String readTokenFile(final String tokenFilePath) {
+  protected static String readTokenFile(final String tokenFilePath) {
     try {
       File tokenFile = new File(tokenFilePath);
       final byte[] bytes = Files.readAllBytes(tokenFile.toPath());

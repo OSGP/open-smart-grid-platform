@@ -18,13 +18,16 @@ class KafkaOAuthConfigTest {
     ConfigDef producerConfigDef = KafkaOAuthConfig.producerConfigDef();
 
     // OAuth
-    assertTrue(producerConfigDef.configKeys().containsKey(KafkaOAuthConfig.KAFKA_OAUTH_SCOPE_CONFIG));
-    assertTrue(producerConfigDef.configKeys().containsKey(KafkaOAuthConfig.KAFKA_OAUTH_CLIENT_ID_CONFIG));
-    assertTrue(producerConfigDef.configKeys().containsKey(KafkaOAuthConfig.KAFKA_OAUTH_SCOPE_CONFIG));
+    assertTrue(
+        producerConfigDef.configKeys().containsKey(KafkaOAuthConfig.KAFKA_OAUTH_SCOPE_CONFIG));
+    assertTrue(
+        producerConfigDef.configKeys().containsKey(KafkaOAuthConfig.KAFKA_OAUTH_CLIENT_ID_CONFIG));
+    assertTrue(
+        producerConfigDef.configKeys().containsKey(KafkaOAuthConfig.KAFKA_OAUTH_SCOPE_CONFIG));
 
     // Producer
-    assertTrue(producerConfigDef.configKeys().containsKey(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG));
-
+    assertTrue(
+        producerConfigDef.configKeys().containsKey(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG));
   }
 
   @Test
@@ -32,11 +35,15 @@ class KafkaOAuthConfigTest {
     ConfigDef consumerConfigDef = KafkaOAuthConfig.consumerConfigDef();
 
     // OAuth
-    assertTrue(consumerConfigDef.configKeys().containsKey(KafkaOAuthConfig.KAFKA_OAUTH_SCOPE_CONFIG));
-    assertTrue(consumerConfigDef.configKeys().containsKey(KafkaOAuthConfig.KAFKA_OAUTH_CLIENT_ID_CONFIG));
-    assertTrue(consumerConfigDef.configKeys().containsKey(KafkaOAuthConfig.KAFKA_OAUTH_SCOPE_CONFIG));
+    assertTrue(
+        consumerConfigDef.configKeys().containsKey(KafkaOAuthConfig.KAFKA_OAUTH_SCOPE_CONFIG));
+    assertTrue(
+        consumerConfigDef.configKeys().containsKey(KafkaOAuthConfig.KAFKA_OAUTH_CLIENT_ID_CONFIG));
+    assertTrue(
+        consumerConfigDef.configKeys().containsKey(KafkaOAuthConfig.KAFKA_OAUTH_SCOPE_CONFIG));
 
     // Consumer
-    assertTrue(consumerConfigDef.configKeys().containsKey(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG));
+    assertTrue(
+        consumerConfigDef.configKeys().containsKey(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG));
   }
 }

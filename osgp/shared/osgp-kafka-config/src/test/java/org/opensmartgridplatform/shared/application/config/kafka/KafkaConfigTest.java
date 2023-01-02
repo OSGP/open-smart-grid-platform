@@ -41,14 +41,15 @@ class KafkaConfigTest {
   void configDefToProperties() {
     KafkaConfig kafkaConfig = new KafkaTestConfig(mockEnvironment);
 
-    ConfigDef configDef = new ConfigDef()
-        .define("one.property", Type.STRING, Importance.MEDIUM, "one")
-        .define("two.property", Type.STRING, Importance.MEDIUM, "one")
-        .define("three.property", Type.STRING, Importance.MEDIUM, "three")
-        .define("boolean.property", Type.BOOLEAN, Importance.MEDIUM, "boolean")
-        .define("list.property", Type.LIST, Importance.MEDIUM, "list")
-        .define("class.property", Type.CLASS, Importance.MEDIUM, "class")
-        .define("undefined.property", Type.STRING, Importance.MEDIUM, "undefined");
+    ConfigDef configDef =
+        new ConfigDef()
+            .define("one.property", Type.STRING, Importance.MEDIUM, "one")
+            .define("two.property", Type.STRING, Importance.MEDIUM, "one")
+            .define("three.property", Type.STRING, Importance.MEDIUM, "three")
+            .define("boolean.property", Type.BOOLEAN, Importance.MEDIUM, "boolean")
+            .define("list.property", Type.LIST, Importance.MEDIUM, "list")
+            .define("class.property", Type.CLASS, Importance.MEDIUM, "class")
+            .define("undefined.property", Type.STRING, Importance.MEDIUM, "undefined");
     Map<String, Object> properties = kafkaConfig.configDefToProperties(configDef, "prefix");
 
     Map<String, Object> expectedProperties = new HashMap<>();
@@ -58,10 +59,7 @@ class KafkaConfigTest {
     expectedProperties.put("boolean.property", true);
     expectedProperties.put("list.property", Arrays.asList("one", "two", "three"));
     expectedProperties.put("class.property", KafkaConfigTest.class);
-    assertEquals(
-        expectedProperties,
-        properties
-    );
+    assertEquals(expectedProperties, properties);
   }
 
   @Test
@@ -91,8 +89,7 @@ class KafkaConfigTest {
     Object threeProperty = kafkaConfig.getValue("three.property", Type.STRING, "prefix");
     assertEquals("prefix-three", threeProperty);
 
-    Object booleanValue =
-        kafkaConfig.getValue("boolean.property", Type.BOOLEAN, "prefix");
+    Object booleanValue = kafkaConfig.getValue("boolean.property", Type.BOOLEAN, "prefix");
     assertTrue(booleanValue instanceof Boolean);
     assertTrue((Boolean) booleanValue);
 
