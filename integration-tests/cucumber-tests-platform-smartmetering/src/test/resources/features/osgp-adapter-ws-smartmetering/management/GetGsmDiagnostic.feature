@@ -24,7 +24,7 @@ Feature: SmartMetering Management - Get GSM Diagnostic
       | operator                    | Utility Connect           |
       | modemRegistrationStatus     | REGISTERED_ROAMING        |
       | circuitSwitchedStatus       | INACTIVE                  |
-      | packetSwitchedStatus        | GPRS                      |
+      | packetSwitchedStatus        | <CommunicationMethod>     |
       | cellId                      |                        77 |
       | locationId                  |                      2230 |
       | signalQuality               | MINUS_87_DBM              |
