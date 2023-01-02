@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.shared.application.config.kafka.oauth;
 
-import static org.opensmartgridplatform.shared.application.config.kafka.oauth.KafkaOauthConfigs.KAFKA_OAUTH_CLIENT_ID_CONFIG;
-import static org.opensmartgridplatform.shared.application.config.kafka.oauth.KafkaOauthConfigs.KAFKA_OAUTH_SCOPE_CONFIG;
-import static org.opensmartgridplatform.shared.application.config.kafka.oauth.KafkaOauthConfigs.KAFKA_OAUTH_TOKEN_FILE_CONFIG;
+import static org.opensmartgridplatform.shared.application.config.kafka.oauth.KafkaOAuthConfig.KAFKA_OAUTH_CLIENT_ID_CONFIG;
+import static org.opensmartgridplatform.shared.application.config.kafka.oauth.KafkaOAuthConfig.KAFKA_OAUTH_SCOPE_CONFIG;
+import static org.opensmartgridplatform.shared.application.config.kafka.oauth.KafkaOAuthConfig.KAFKA_OAUTH_TOKEN_FILE_CONFIG;
 
 import com.microsoft.aad.msal4j.ClientCredentialFactory;
 import com.microsoft.aad.msal4j.ClientCredentialParameters;
@@ -46,9 +46,9 @@ public class OAuthAuthenticateCallbackHandler implements AuthenticateCallbackHan
       final Map<String, ?> configs,
       final String saslMechanism,
       final List<AppConfigurationEntry> jaasConfigEntries) {
-    this.tokenFilePath = getProperty(KAFKA_OAUTH_TOKEN_FILE_CONFIG, configs);
-    this.scope = Collections.singleton(getProperty(KAFKA_OAUTH_SCOPE_CONFIG, configs));
     this.clientId = getProperty(KAFKA_OAUTH_CLIENT_ID_CONFIG, configs);
+    this.scope = Collections.singleton(getProperty(KAFKA_OAUTH_SCOPE_CONFIG, configs));
+    this.tokenFilePath = getProperty(KAFKA_OAUTH_TOKEN_FILE_CONFIG, configs);
   }
 
   private String getProperty(final String propertyName, final Map<String, ?> configs) {

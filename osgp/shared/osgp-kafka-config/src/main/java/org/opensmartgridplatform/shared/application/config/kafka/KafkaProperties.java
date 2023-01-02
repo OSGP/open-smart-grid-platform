@@ -15,6 +15,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.SslConfigs;
+import org.opensmartgridplatform.shared.application.config.kafka.oauth.KafkaOAuthConfig;
 
 public class KafkaProperties {
 
@@ -46,6 +47,10 @@ public class KafkaProperties {
     map.put(SaslConfigs.SASL_LOGIN_CALLBACK_HANDLER_CLASS, String.class);
     map.put(SaslConfigs.SASL_LOGIN_CLASS, String.class);
     map.put(SaslConfigs.SASL_MECHANISM, String.class);
+
+    map.put(KafkaOAuthConfig.KAFKA_OAUTH_CLIENT_ID_CONFIG, String.class);
+    map.put(KafkaOAuthConfig.KAFKA_OAUTH_SCOPE_CONFIG, String.class);
+    map.put(KafkaOAuthConfig.KAFKA_OAUTH_TOKEN_FILE_CONFIG, String.class);
     return map;
   }
 
