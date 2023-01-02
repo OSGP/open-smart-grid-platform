@@ -4,6 +4,13 @@ Feature: SmartMetering Management - Get GSM Diagnostic
   I want to be able to get the GSM Diagnostic of a smart meter
 
   Scenario Outline: Get the gsm diagnostic of an E-Meter
+    Given
+    Given a manufacturer
+      | ManufacturerCode | KAI   |
+      | ManufacturerName | Kaifa |
+    And a device model
+      | ManufacturerName | Kaifa |
+      | ModelCode        | <ModelCode> |
     And a dlms device
       | DeviceIdentification | <DeviceIdentification> |
       | DeviceType           | SMART_METER_E          |
@@ -17,7 +24,7 @@ Feature: SmartMetering Management - Get GSM Diagnostic
       | operator                    | Utility Connect           |
       | modemRegistrationStatus     | REGISTERED_ROAMING        |
       | circuitSwitchedStatus       | INACTIVE                  |
-      | packetSwitchedStatus        | GPRS                      |
+      | packetSwitchedStatus        | <CommunicationMethod>     |
       | cellId                      |                        77 |
       | locationId                  |                      2230 |
       | signalQuality               | MINUS_87_DBM              |
@@ -30,6 +37,6 @@ Feature: SmartMetering Management - Get GSM Diagnostic
 # Reading of captureTime is disabled for now
 #      | captureTime               | 2021-04-13T08:45:00.000Z |
   Examples:
-    | DeviceIdentification  | CommunicationMethod | Protocol | ProtocolVersion | Port |
-    | TEST1028000000001     | GPRS                | SMR      | 5.1             | 1028 |
-    | TEST1025000000001     | CDMA                | DSMR     | 4.3             | 1025 |
+    | DeviceIdentification | Port | Protocol | ProtocolVersion | CommunicationMethod | ModelCode |
+    | TEST1028000000001    | 1028 | SMR      | 5.1             | GPRS                | MA105     |
+    | TEST1031000000001    | 1031 | SMR     | 4.3             | CDMA                | MA105A    |

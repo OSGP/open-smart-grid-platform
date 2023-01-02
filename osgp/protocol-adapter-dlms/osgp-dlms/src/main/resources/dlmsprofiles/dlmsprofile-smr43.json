@@ -1,6 +1,6 @@
 {
-  "profile": "DSMR",
-  "version": "4.2.2",
+  "profile": "SMR",
+  "version": "4.3",
   "description": "Profile for Smart Meter Requirements 4.3",
   "inherit": {
     "profile": "DSMR",

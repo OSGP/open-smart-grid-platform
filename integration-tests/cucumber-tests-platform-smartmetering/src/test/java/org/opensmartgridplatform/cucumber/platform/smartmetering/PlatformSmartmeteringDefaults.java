@@ -78,6 +78,8 @@ public class PlatformSmartmeteringDefaults
         1029L, new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.2").build());
     PORT_MAPPING.put(
         1030L, new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.5").build());
+    PORT_MAPPING.put(
+        1031L, new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("4.3").build());
   }
 
   public static final Long INVOCATION_COUNTER = 12345L;

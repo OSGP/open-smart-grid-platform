@@ -32,24 +32,6 @@
     },
     {
       "profiles": [
-        "default",
-        "minimumMemory"
-      ],
-      "configuration": {
-        "port": 1025,
-        "deviceidentification": {
-          "kemacode": "TEST1025",
-          "productionyear": "00",
-          "serialnumber": "00000000"
-        },
-        "logicalDeviceIds": "1",
-        "security": {
-          "level": 0
-        }
-      }
-    },
-    {
-      "profiles": [
         "e650"
       ],
       "configuration": {
@@ -85,6 +67,25 @@
           "serialnumber": "00000000"
         },
         "logicalDeviceIds": "1"
+      }
+    },
+    {
+      "profiles": [
+        "default",
+        "minimumMemory",
+        "smr43"
+      ],
+      "configuration": {
+        "port": 1031,
+        "deviceidentification": {
+          "kemacode": "TEST1031",
+          "productionyear": "00",
+          "serialnumber": "00000000"
+        },
+        "logicalDeviceIds": "1",
+        "security": {
+          "level": 0
+        }
       }
     }
   ]

@@ -18,6 +18,7 @@ import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnos
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.PACKET_SWITCHED_STATUS;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -28,14 +29,15 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdjacentCellInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BitErrorRateDto;
@@ -80,15 +82,16 @@ public class GetGsmDiagnosticCommandExecutor
   private static final int ADJACENT_CELLS_SIGNAL_QUALITY_INDEX = 1;
 
   private final DlmsHelper dlmsHelper;
-  private final DlmsObjectConfigService dlmsObjectConfigService;
+
+  private final ObjectConfigService objectConfigService;
 
   @Autowired
   public GetGsmDiagnosticCommandExecutor(
-      final DlmsHelper dlmsHelper, final DlmsObjectConfigService dlmsObjectConfigService) {
+      final DlmsHelper dlmsHelper, final ObjectConfigService objectConfigService) {
     super(GetGsmDiagnosticRequestDto.class);
 
     this.dlmsHelper = dlmsHelper;
-    this.dlmsObjectConfigService = dlmsObjectConfigService;
+    this.objectConfigService = objectConfigService;
   }
 
   @Override
@@ -108,21 +111,19 @@ public class GetGsmDiagnosticCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    final DlmsObject dlmsObject =
-        this.dlmsObjectConfigService.getDlmsObjectForCommunicationMethod(
-            device, DlmsObjectType.GSM_DIAGNOSTIC);
+    final CosemObject cosemObject = this.getCosemObject(device);
 
-    final AttributeAddress[] addresses = this.createAttributeAddresses(dlmsObject);
+    final AttributeAddress[] attributeAddresses =
+        this.getAttributeAddresses(cosemObject).toArray(new AttributeAddress[0]);
 
-    final String addressesDescriptions = JdlmsObjectToStringUtil.describeAttributes(addresses);
-
-    conn.getDlmsMessageListener()
-        .setDescription("Get GsmDiagnostic, retrieve attributes: " + addressesDescriptions);
-
-    LOGGER.debug("Get GsmDiagnostic, retrieve attributes: {}", addressesDescriptions);
+    final String description =
+        "Get GsmDiagnostic, retrieve attributes: "
+            + JdlmsObjectToStringUtil.describeAttributes(attributeAddresses);
+    conn.getDlmsMessageListener().setDescription(description);
+    LOGGER.debug(description);
 
     final List<GetResult> getResultList =
-        this.dlmsHelper.getAndCheck(conn, device, "Get GsmDiagnostic", addresses);
+        this.dlmsHelper.getAndCheck(conn, device, "Get GsmDiagnostic", attributeAddresses);
 
     LOGGER.debug("GetResultList: {}", describeGetResults(getResultList));
 
@@ -134,21 +135,50 @@ public class GetGsmDiagnosticCommandExecutor
     return this.createGetGsmDiagnosticResponse(getResultList);
   }
 
-  private AttributeAddress[] createAttributeAddresses(final DlmsObject dlmsObject) {
-    final int classId = dlmsObject.getClassId();
-    final ObisCode obisCode = dlmsObject.getObisCode();
+  public CosemObject getCosemObject(final DlmsDevice device) throws ProtocolAdapterException {
 
-    return new AttributeAddress[] {
-      new AttributeAddress(classId, obisCode, OPERATOR.attributeId()),
-      new AttributeAddress(classId, obisCode, MODEM_REGISTRATION_STATUS.attributeId()),
-      new AttributeAddress(classId, obisCode, CIRCUIT_SWITCHED_STATUS.attributeId()),
-      new AttributeAddress(classId, obisCode, PACKET_SWITCHED_STATUS.attributeId()),
-      new AttributeAddress(classId, obisCode, CELL_INFO.attributeId()),
-      new AttributeAddress(classId, obisCode, ADJACENT_CELLS.attributeId()),
-      // Reading of capture_time is disabled for now, because the jDLMS library appears to handle
-      // the COSEM date-time in the response incorrectly. Also see comment in getCaptureTime.
-      // new AttributeAddress(classId, obisCode, CAPTURE_TIME.attributeId())
-    };
+    final DlmsObjectType dlmsObjectType = determineDlsmObjectType(device);
+
+    try {
+
+      // Get object (should be the first in the list)
+      return this.objectConfigService.getCosemObject(
+          device.getProtocolName(), device.getProtocolVersion(), dlmsObjectType);
+
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException("Error in object config", e);
+    }
+  }
+
+  private static DlmsObjectType determineDlsmObjectType(final DlmsDevice device)
+      throws ProtocolAdapterException {
+    final String diagnostic = String.format("%s_DIAGNOSTIC", device.getCommunicationMethod());
+    final DlmsObjectType dlmsObjectType;
+    try {
+      dlmsObjectType = DlmsObjectType.valueOf(diagnostic);
+    } catch (final IllegalArgumentException e) {
+      throw new ProtocolAdapterException(
+          String.format(
+              "Cannot find %s for communication method %s",
+              diagnostic, device.getCommunicationMethod()));
+    }
+    return dlmsObjectType;
+  }
+
+  private List<AttributeAddress> getAttributeAddresses(final CosemObject cosemObject) {
+    final int classId = cosemObject.getClassId();
+    final ObisCode obisCode = new ObisCode(cosemObject.getObis());
+
+    return Arrays.asList( //
+        new AttributeAddress(classId, obisCode, OPERATOR.attributeId()),
+        new AttributeAddress(classId, obisCode, MODEM_REGISTRATION_STATUS.attributeId()),
+        new AttributeAddress(classId, obisCode, CIRCUIT_SWITCHED_STATUS.attributeId()),
+        new AttributeAddress(classId, obisCode, PACKET_SWITCHED_STATUS.attributeId()),
+        new AttributeAddress(classId, obisCode, CELL_INFO.attributeId()),
+        new AttributeAddress(classId, obisCode, ADJACENT_CELLS.attributeId()));
+    // Reading of capture_time is disabled for now, because the jDLMS library appears to handle
+    // the COSEM date-time in the response incorrectly. Also see comment in getCaptureTime.
+    // new AttributeAddress(classId, obisCode, CAPTURE_TIME.attributeId())
   }
 
   private GetGsmDiagnosticResponseDto createGetGsmDiagnosticResponse(

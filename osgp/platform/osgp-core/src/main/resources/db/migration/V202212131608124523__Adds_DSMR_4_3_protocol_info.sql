@@ -5,8 +5,8 @@ BEGIN
 IF NOT EXISTS (
     SELECT 1
     FROM   protocol_info
-    WHERE  protocol = 'DSMR'
-    AND    protocol_version  = '5.3') THEN
+    WHERE  protocol = 'SMR'
+    AND    protocol_version  = '4.3') THEN
 
 INSERT INTO protocol_info(
     creation_time,
@@ -24,9 +24,9 @@ VALUES (
     '2022-12-13 00:00:00',
     '2022-12-13 00:00:00',
     0,
-    'DSMR',
+    'SMR',
     '4.3',
-    'CDMA',
+    null,
     'jms.protocol.dlms.outgoing.requests',
     'jms.protocol.dlms.incoming.responses',
     'jms.protocol.dlms.incoming.requests',
