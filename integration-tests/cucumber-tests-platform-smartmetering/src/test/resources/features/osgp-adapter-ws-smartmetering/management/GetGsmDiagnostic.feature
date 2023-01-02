@@ -24,7 +24,7 @@ Feature: SmartMetering Management - Get GSM Diagnostic
       | operator                    | Utility Connect           |
       | modemRegistrationStatus     | REGISTERED_ROAMING        |
       | circuitSwitchedStatus       | INACTIVE                  |
-      | packetSwitchedStatus        | <CommunicationMethod>     |
+      | packetSwitchedStatus        | GPRS                      |
       | cellId                      |                        77 |
       | locationId                  |                      2230 |
       | signalQuality               | MINUS_87_DBM              |
@@ -39,4 +39,4 @@ Feature: SmartMetering Management - Get GSM Diagnostic
   Examples:
     | DeviceIdentification | Port | Protocol | ProtocolVersion | CommunicationMethod | ModelCode |
     | TEST1028000000001    | 1028 | SMR      | 5.1             | GPRS                | MA105     |
-    | TEST1031000000001    | 1031 | SMR     | 4.3             | CDMA                | MA105A    |
+    | TEST1031000000001    | 1031 | SMR      | 4.3             | CDMA                | MA105A    |
