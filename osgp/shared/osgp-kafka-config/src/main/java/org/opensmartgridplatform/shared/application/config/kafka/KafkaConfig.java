@@ -19,7 +19,7 @@ public abstract class KafkaConfig {
 
   private final Environment environment;
 
-  public KafkaConfig(final Environment environment) {
+  protected KafkaConfig(final Environment environment) {
     this.environment = environment;
   }
 

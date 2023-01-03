@@ -46,7 +46,7 @@ class OAuthAuthenticateCallbackHandlerTest {
     KafkaException kafkaException =
         assertThrows(KafkaException.class, () -> handler.configure(configs, SASL_SSL.name, null));
 
-    assertEquals("Kafka property: 'oauth.client.id' not supplied", kafkaException.getMessage());
+    assertEquals("Kafka property: oauth.client.id, not supplied", kafkaException.getMessage());
   }
 
   @Test
@@ -58,7 +58,7 @@ class OAuthAuthenticateCallbackHandlerTest {
     OAuthAuthenticateCallbackHandler handler = new OAuthAuthenticateCallbackHandler();
     KafkaException kafkaException =
         assertThrows(KafkaException.class, () -> handler.configure(configs, SASL_SSL.name, null));
-    assertEquals("Kafka property: 'oauth.token.file' not supplied", kafkaException.getMessage());
+    assertEquals("Kafka property: oauth.token.file, not supplied", kafkaException.getMessage());
   }
 
   @Test
@@ -71,7 +71,7 @@ class OAuthAuthenticateCallbackHandlerTest {
 
     KafkaException kafkaException =
         assertThrows(KafkaException.class, () -> handler.configure(configs, SASL_SSL.name, null));
-    assertEquals("Kafka property: 'oauth.scope' not supplied", kafkaException.getMessage());
+    assertEquals("Kafka property: oauth.scope, not supplied", kafkaException.getMessage());
   }
 
   @Test
@@ -85,8 +85,7 @@ class OAuthAuthenticateCallbackHandlerTest {
 
     KafkaException kafkaException =
         assertThrows(KafkaException.class, () -> handler.configure(configs, SASL_SSL.name, null));
-    assertEquals(
-        "Kafka property: 'oauth.scope' is not of type String", kafkaException.getMessage());
+    assertEquals("Kafka property: oauth.scope, is not of type String", kafkaException.getMessage());
   }
 
   @Test
@@ -100,7 +99,7 @@ class OAuthAuthenticateCallbackHandlerTest {
 
     KafkaException kafkaException =
         assertThrows(KafkaException.class, () -> handler.configure(configs, SASL_SSL.name, null));
-    assertEquals("Kafka property: 'oauth.scope' is null", kafkaException.getMessage());
+    assertEquals("Kafka property: oauth.scope, is null", kafkaException.getMessage());
   }
 
   @Test

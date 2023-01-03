@@ -29,6 +29,8 @@ public class KafkaOAuthConfig {
     CONSUMER_CONFIG = addKafkaConfig(ConsumerConfig.configDef());
   }
 
+  private KafkaOAuthConfig() {}
+
   private static ConfigDef addKafkaConfig(ConfigDef configDef) {
     return configDef
         .define(
