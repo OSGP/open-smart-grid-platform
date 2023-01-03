@@ -21,8 +21,8 @@ INSERT INTO protocol_info(
     outgoing_responses_property_prefix,
     parallel_requests_allowed)
 VALUES (
-    '2022-12-13 00:00:00',
-    '2022-12-13 00:00:00',
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP,
     0,
     'SMR',
     '4.3',

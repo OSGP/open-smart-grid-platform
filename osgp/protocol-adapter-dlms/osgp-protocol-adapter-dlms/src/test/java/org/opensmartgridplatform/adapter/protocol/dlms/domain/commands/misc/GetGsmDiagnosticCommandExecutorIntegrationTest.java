@@ -11,14 +11,13 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,14 +27,12 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigConfiguration;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.CommunicationMethod;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdjacentCellInfoDto;
@@ -59,13 +56,40 @@ class GetGsmDiagnosticCommandExecutorIntegrationTest {
 
   private ObjectConfigService objectConfigService;
 
+  @ParameterizedTest
+  @CsvSource({
+    "DSMR_4_2_2,CDMA,false",
+    "DSMR_4_2_2,GPRS,true",
+    "DSMR_4_2_2,LTE,false",
+    "SMR_4_3,CDMA,true",
+    "SMR_4_3,GPRS,true",
+    "SMR_4_3,LTE,false",
+    "SMR_5_0_0,CDMA,true",
+    "SMR_5_0_0,GPRS,true",
+    "SMR_5_0_0,LTE,false",
+    "SMR_5_1,CDMA,true",
+    "SMR_5_1,GPRS,true",
+    "SMR_5_1,LTE,false",
+    "SMR_5_2,CDMA,true",
+    "SMR_5_2,GPRS,true",
+    "SMR_5_2,LTE,true",
+    "SMR_5_5,CDMA,true",
+    "SMR_5_5,GPRS,true",
+    "SMR_5_5,LTE,true"
+  })
+  void executeAndValidate(
+      final String protocol, final String communicationMethod, final boolean succeeds)
+      throws Exception {
+
+    this.executeAndValidate(
+        Protocol.valueOf(protocol), CommunicationMethod.valueOf(communicationMethod), succeeds);
+  }
+
   @BeforeEach
   public void setUp() throws IOException, ObjectConfigException {
     this.objectConfigService = new ObjectConfigService(null);
 
     final DlmsHelper dlmsHelper = new DlmsHelper();
-    final DlmsObjectConfigConfiguration dlmsObjectConfigConfiguration =
-        new DlmsObjectConfigConfiguration();
 
     this.executor = new GetGsmDiagnosticCommandExecutor(dlmsHelper, this.objectConfigService);
 
@@ -74,46 +98,8 @@ class GetGsmDiagnosticCommandExecutorIntegrationTest {
     this.connectionStub.setDefaultReturnValue(DataObject.newArrayData(Collections.emptyList()));
   }
 
-  @ParameterizedTest
-  @CsvSource({
-    "DSMR_4_2_2,GPRS",
-    "SMR_4_3,CDMA",
-    "SMR_5_0_0,GPRS",
-    "SMR_5_0_0,CDMA",
-    "SMR_5_1,CDMA",
-    "SMR_5_1,GPRS",
-    "SMR_5_2,CDMA",
-    "SMR_5_2,GPRS",
-    "SMR_5_2,LTE",
-    "SMR_5_5,LTE",
-  })
-  void executeAndValidateValids(final String protocol, final String communicationMethod)
-      throws Exception {
-
-    this.executeAndValidate(
-        Protocol.valueOf(protocol), CommunicationMethod.valueOf(communicationMethod), false);
-  }
-
-  @ParameterizedTest
-  @CsvSource({
-    "DSMR_4_2_2,GPRS",
-    "SMR_4_3,CDMA",
-    "SMR_4_3,LTE",
-    "SMR_5_0_0,LTE",
-    "SMR_5_1,LTE",
-    "SMR_5_2,CDMA",
-    "SMR_5_5,GPRS",
-    "SMR_5_5,CDMA"
-  })
-  void executeAndValidateInvalids(final String protocol, final String communicationMethod)
-      throws Exception {
-
-    this.executeAndValidate(
-        Protocol.valueOf(protocol), CommunicationMethod.valueOf(communicationMethod), true);
-  }
-
   private void executeAndValidate(
-      final Protocol protocol, final CommunicationMethod method, final boolean expectObjectNotFound)
+      final Protocol protocol, final CommunicationMethod method, final boolean succeeds)
       throws Exception {
 
     // SETUP
@@ -151,113 +137,28 @@ class GetGsmDiagnosticCommandExecutorIntegrationTest {
     this.setResponseForCaptureTime(expectedAddressCaptureTime);
 
     // CALL
-    GetGsmDiagnosticResponseDto response = null;
-    try {
+    final GetGsmDiagnosticResponseDto response;
+
+    if (!succeeds) {
+      final Exception exception =
+          Assertions.assertThrows(
+              IllegalArgumentException.class,
+              () ->
+                  this.executor.execute(
+                      this.connectionManagerStub, device, request, messageMetadata));
+
+      assertThat(exception.getMessage())
+          .isEqualTo(
+              String.format(
+                  "No object found of type %s_DIAGNOSTIC in profile %s version %s",
+                  method.name(), protocol.getName(), protocol.getVersion()));
+      return;
+    } else {
       response =
           this.executor.execute(this.connectionManagerStub, device, request, messageMetadata);
-    } catch (final IllegalArgumentException e) {
-      if (expectObjectNotFound) {
-        assertThat(e.getMessage())
-            .isEqualTo(
-                String.format(
-                    "No object found of type %s_DIAGNOSTIC in profile %s version %s",
-                    method.name(), protocol.getName(), protocol.getVersion()));
-        return;
-      } else {
-        fail("Unexpected ProtocolAdapterException: " + e.getMessage());
-      }
     }
 
     // VERIFY
-
-    // Get resulting requests from connection stub
-    final List<AttributeAddress> requestedAttributeAddresses =
-        this.connectionStub.getRequestedAttributeAddresses();
-    assertThat(requestedAttributeAddresses).hasSize(expectedTotalNumberOfAttributeAddresses);
-
-    // Check response
-    assertThat(response).isNotNull();
-    assertThat(response).isNotNull();
-    assertThat(response.getOperator()).isEqualTo("Operator");
-    assertThat(response.getModemRegistrationStatus())
-        .isEqualTo(ModemRegistrationStatusDto.REGISTERED_ROAMING);
-    assertThat(response.getCircuitSwitchedStatus()).isEqualTo(CircuitSwitchedStatusDto.INACTIVE);
-    assertThat(response.getPacketSwitchedStatus()).isEqualTo(PacketSwitchedStatusDto.CDMA);
-    final CellInfoDto cellInfo = response.getCellInfo();
-    assertThat(cellInfo.getCellId()).isEqualTo(93L);
-    assertThat(cellInfo.getLocationId()).isEqualTo(2232);
-    assertThat(cellInfo.getSignalQuality()).isEqualTo(SignalQualityDto.MINUS_87_DBM);
-    assertThat(cellInfo.getBitErrorRate()).isEqualTo(BitErrorRateDto.RXQUAL_6);
-    assertThat(cellInfo.getMobileCountryCode()).isEqualTo(204);
-    assertThat(cellInfo.getMobileNetworkCode()).isEqualTo(66);
-    assertThat(cellInfo.getChannelNumber()).isEqualTo(107);
-    final List<AdjacentCellInfoDto> adjacentCells = response.getAdjacentCells();
-    assertThat(adjacentCells).hasSize(3);
-    assertThat(adjacentCells.get(0).getCellId()).isEqualTo(85L);
-    assertThat(adjacentCells.get(0).getSignalQuality()).isEqualTo(SignalQualityDto.MINUS_65_DBM);
-    // Reading of capture_time is disabled, so don't check the capture time
-    // assertThat(response.getCaptureTime())
-    //    .isEqualTo(new DateTime(2021, 4, 1, 9, 28, DateTimeZone.UTC).toDate());
-  }
-
-  private void executeNewAndValidate(
-      final Protocol protocol, final CommunicationMethod method, final boolean expectObjectNotFound)
-      throws Exception {
-
-    // SETUP
-    final MessageMetadata messageMetadata =
-        MessageMetadata.newBuilder().withCorrelationUid("123456").build();
-
-    // Reset stub
-    this.connectionStub.clearRequestedAttributeAddresses();
-
-    // Create device with requested protocol version and communication method
-    final DlmsDevice device = this.createDlmsDevice(protocol, method);
-
-    // Create request object
-    final GetGsmDiagnosticRequestDto request = new GetGsmDiagnosticRequestDto();
-
-    // Get expected addresses
-    final AttributeAddress expectedAddressOperator = this.createAttributeAddress(method, 2);
-    final AttributeAddress expectedAddressRegistrationStatus =
-        this.createAttributeAddress(method, 3);
-    final AttributeAddress expectedAddressCsStatus = this.createAttributeAddress(method, 4);
-    final AttributeAddress expectedAddressPsStatus = this.createAttributeAddress(method, 5);
-    final AttributeAddress expectedAddressCellInfo = this.createAttributeAddress(method, 6);
-    final AttributeAddress expectedAddressAdjacentCells = this.createAttributeAddress(method, 7);
-    final AttributeAddress expectedAddressCaptureTime = this.createAttributeAddress(method, 8);
-    // Reading of capture_time is disabled for now, therefore only 6 addresses expected
-    final int expectedTotalNumberOfAttributeAddresses = 6;
-
-    // Set responses in stub
-    this.setResponseForOperator(expectedAddressOperator);
-    this.setResponseForRegistrationStatus(expectedAddressRegistrationStatus);
-    this.setResponseForCsStatus(expectedAddressCsStatus);
-    this.setResponseForPsStatus(expectedAddressPsStatus);
-    this.setResponseForCellInfo(expectedAddressCellInfo);
-    this.setResponseForAdjacentCells(expectedAddressAdjacentCells);
-    this.setResponseForCaptureTime(expectedAddressCaptureTime);
-
-    // CALL
-    GetGsmDiagnosticResponseDto response = null;
-    try {
-      response =
-          this.executor.execute(this.connectionManagerStub, device, request, messageMetadata);
-    } catch (final ProtocolAdapterException e) {
-      if (expectObjectNotFound) {
-        assertThat(e.getMessage())
-            .isEqualTo(
-                "Did not find GSM_DIAGNOSTIC object with communication method "
-                    + method.getMethodName()
-                    + " for device 6789012");
-        return;
-      } else {
-        fail("Unexpected ProtocolAdapterException: " + e.getMessage());
-      }
-    }
-
-    // VERIFY
-
     // Get resulting requests from connection stub
     final List<AttributeAddress> requestedAttributeAddresses =
         this.connectionStub.getRequestedAttributeAddresses();
@@ -366,11 +267,5 @@ class GetGsmDiagnosticCommandExecutorIntegrationTest {
     final DataObject responseDataObject =
         DataObject.newDateTimeData(new CosemDateTime(2021, 4, 1, 9, 28, 0, 0));
     this.connectionStub.addReturnValue(address, responseDataObject);
-  }
-
-  private List<CommunicationMethod> getCommunicationMethodsLteExcluded() {
-    return Arrays.stream(CommunicationMethod.values())
-        .filter(m -> m.equals("LTE"))
-        .collect(Collectors.toList());
   }
 }
