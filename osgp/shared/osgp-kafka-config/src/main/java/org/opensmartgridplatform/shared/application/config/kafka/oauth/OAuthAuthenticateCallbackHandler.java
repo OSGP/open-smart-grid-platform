@@ -98,6 +98,9 @@ public class OAuthAuthenticateCallbackHandler implements AuthenticateCallbackHan
           authResult.expiresOnDate().toInstant().toEpochMilli(),
           aadClient.clientId(),
           System.currentTimeMillis());
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new KafkaOAuthException("Retrieving JWT token was interrupted", e);
     } catch (final Exception e) {
       throw new KafkaOAuthException("Caught an exception while retrieving JWT token", e);
     }
