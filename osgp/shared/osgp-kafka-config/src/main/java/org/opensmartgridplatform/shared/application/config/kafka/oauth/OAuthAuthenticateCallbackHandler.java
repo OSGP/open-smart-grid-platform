@@ -55,13 +55,14 @@ public class OAuthAuthenticateCallbackHandler implements AuthenticateCallbackHan
 
   private String getProperty(final String propertyName, final Map<String, ?> configs) {
     if (!configs.containsKey(propertyName)) {
-      throw new ConfigException("Kafka property: '" + propertyName + "' not supplied");
+      throw new ConfigException(String.format("Kafka property: %s, not supplied", propertyName));
     }
     if (configs.get(propertyName) == null) {
-      throw new ConfigException("Kafka property: '" + propertyName + "' is null");
+      throw new ConfigException(String.format("Kafka property: %s, is null", propertyName));
     }
     if (!(configs.get(propertyName) instanceof String)) {
-      throw new ConfigException("Kafka property: '" + propertyName + "' is not of type String");
+      throw new ConfigException(
+          String.format("Kafka property: %s, is not of type String", propertyName));
     }
     return (String) configs.get(propertyName);
   }
