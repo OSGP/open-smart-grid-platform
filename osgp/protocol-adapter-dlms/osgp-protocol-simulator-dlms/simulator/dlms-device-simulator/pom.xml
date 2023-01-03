@@ -21,6 +21,10 @@
     <version>5.37.0-SNAPSHOT</version>
     <relativePath>../../../osgp-protocol-simulator-dlms/pom.xml</relativePath>
   </parent>
+
+  <properties>
+    <sonar.exclusions>org/opensmartgridplatform/simulator/protocol/dlms/server/profile/**</sonar.exclusions>
+  </properties>
   
   <dependencies>
   
