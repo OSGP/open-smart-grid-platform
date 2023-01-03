@@ -5,7 +5,8 @@
 package org.opensmartgridplatform.shared.application.config.kafka.oauth;
 
 import java.util.Set;
-import java.util.StringJoiner;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.kafka.common.security.oauthbearer.OAuthBearerToken;
 
 /**
@@ -44,7 +45,7 @@ public class BasicOAuthBearerToken implements OAuthBearerToken {
    *     <code>null</code>, non-blank, and non-whitespace only.
    * @param startTimeMs The token's start time, expressed as the number of milliseconds since the
    *     epoch, if available, otherwise <code>null</code>. Must be non-negative if a non-<code>null
-   *     </code> value is provided.
+   *                      </code> value is provided.
    */
   public BasicOAuthBearerToken(
       String token, Set<String> scopes, long lifetimeMs, String principalName, Long startTimeMs) {
@@ -120,12 +121,12 @@ public class BasicOAuthBearerToken implements OAuthBearerToken {
 
   @Override
   public String toString() {
-    return new StringJoiner(", ", BasicOAuthBearerToken.class.getSimpleName() + "[", "]")
-        .add("token='" + token + "'")
-        .add("scopes=" + scopes)
-        .add("lifetimeMs=" + lifetimeMs)
-        .add("principalName='" + principalName + "'")
-        .add("startTimeMs=" + startTimeMs)
-        .toString();
+    return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+        .append("token", this.token)
+        .append("scopes", this.scopes)
+        .append("lifetimeMs", this.lifetimeMs)
+        .append("principalName", this.principalName)
+        .append("startTimeMs", this.startTimeMs)
+        .build();
   }
 }
