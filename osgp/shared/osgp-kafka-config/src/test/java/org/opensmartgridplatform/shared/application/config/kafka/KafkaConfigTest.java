@@ -44,13 +44,15 @@ class KafkaConfigTest {
     ConfigDef configDef =
         new ConfigDef()
             .define("one.property", Type.STRING, Importance.MEDIUM, "one")
-            .define("two.property", Type.STRING, Importance.MEDIUM, "one")
+            .define("two.property", Type.STRING, Importance.MEDIUM, "two")
             .define("three.property", Type.STRING, Importance.MEDIUM, "three")
             .define("boolean.property", Type.BOOLEAN, Importance.MEDIUM, "boolean")
             .define("list.property", Type.LIST, Importance.MEDIUM, "list")
             .define("class.property", Type.CLASS, Importance.MEDIUM, "class")
             .define("undefined.property", Type.STRING, Importance.MEDIUM, "undefined");
     Map<String, Object> properties = kafkaConfig.configDefToProperties(configDef, "prefix");
+
+    assertEquals(6, properties.size());
 
     Map<String, Object> expectedProperties = new HashMap<>();
     expectedProperties.put("one.property", "prefix-one");
@@ -99,7 +101,9 @@ class KafkaConfigTest {
 
     Object classValue = kafkaConfig.getValue("class.property", Type.CLASS, "prefix");
     assertTrue(classValue instanceof Class);
-
     assertEquals(KafkaConfigTest.class, classValue);
+
+    Object undefinedValue = kafkaConfig.getValue("undefined.property", Type.CLASS, "prefix");
+    assertNull(undefinedValue);
   }
 }

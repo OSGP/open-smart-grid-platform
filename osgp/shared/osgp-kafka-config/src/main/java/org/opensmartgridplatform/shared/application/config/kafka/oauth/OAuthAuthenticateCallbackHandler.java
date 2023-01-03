@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.UnsupportedCallbackException;
@@ -58,11 +57,11 @@ public class OAuthAuthenticateCallbackHandler implements AuthenticateCallbackHan
     if (!configs.containsKey(propertyName)) {
       throw new ConfigException("Kafka property: '" + propertyName + "' not supplied");
     }
-    if (!(configs.get(propertyName) instanceof String)) {
-      throw new ConfigException("Kafka property: '" + propertyName + "' is not of type String");
-    }
     if (configs.get(propertyName) == null) {
       throw new ConfigException("Kafka property: '" + propertyName + "' is null");
+    }
+    if (!(configs.get(propertyName) instanceof String)) {
+      throw new ConfigException("Kafka property: '" + propertyName + "' is not of type String");
     }
     return (String) configs.get(propertyName);
   }
@@ -99,8 +98,8 @@ public class OAuthAuthenticateCallbackHandler implements AuthenticateCallbackHan
           authResult.expiresOnDate().toInstant().toEpochMilli(),
           aadClient.clientId(),
           System.currentTimeMillis());
-    } catch (final InterruptedException | ExecutionException e) {
-      throw new RuntimeException("Caught an exception retrieving JWT token", e);
+    } catch (final Exception e) {
+      throw new KafkaOAuthException("Caught an exception while retrieving JWT token", e);
     }
   }
 
@@ -115,7 +114,7 @@ public class OAuthAuthenticateCallbackHandler implements AuthenticateCallbackHan
       final byte[] bytes = Files.readAllBytes(tokenFile.toPath());
       return new String(bytes, StandardCharsets.UTF_8);
     } catch (IOException e) {
-      throw new ConfigException("Could not read Token file from: " + tokenFilePath, e);
+      throw new KafkaOAuthException("Could not read Token file from: " + tokenFilePath, e);
     }
   }
 
