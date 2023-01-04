@@ -138,13 +138,6 @@
       <artifactId>spring-orm</artifactId>
     </dependency>
 
-    <!-- Spring Kafka -->
-    <dependency>
-      <groupId>org.springframework.kafka</groupId>
-      <artifactId>spring-kafka</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
     <!-- Hibernate -->
     <dependency>
       <groupId>org.hibernate</groupId>

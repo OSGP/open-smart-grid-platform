@@ -10,6 +10,7 @@ package org.opensmartgridplatform.shared.application.config.kafka;
 
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.shared.application.config.kafka.oauth.KafkaOAuthConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -63,11 +64,6 @@ public abstract class AbstractKafkaProducerConfig<K, V> extends KafkaConfig {
   }
 
   private Map<String, Object> producerConfigs(final String propertiesPrefix) {
-    final Map<String, Object> properties = this.createCommonProperties(propertiesPrefix);
-    KafkaProperties.producerProperties()
-        .forEach(
-            (k, v) ->
-                this.addIfExist(properties, k, getProducerPropertiesPrefix(propertiesPrefix), v));
-    return properties;
+    return configDefToProperties(KafkaOAuthConfig.producerConfigDef(), propertiesPrefix);
   }
 }
