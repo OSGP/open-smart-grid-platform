@@ -23,7 +23,8 @@
   </parent>
 
   <properties>
-    <sonar.exclusions>org/opensmartgridplatform/simulator/protocol/dlms/server/profile/**</sonar.exclusions>
+    <!-- exclude the Simulator profiles for code analysis -->
+    <sonar.exclusions>**/simulator/protocol/dlms/server/profile/**</sonar.exclusions>
   </properties>
   
   <dependencies>
