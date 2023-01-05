@@ -45,6 +45,8 @@ public class ScheduledTaskExecutorService {
 
   @Autowired private ScheduledTaskExecutorJobConfig scheduledTaskExecutorJobConfig;
 
+  @Autowired private int getMaxRetryCount;
+
   public void processScheduledTasks() {
     this.processStrandedScheduledTasks();
     this.processScheduledTasks(ScheduledTaskStatusType.NEW);
@@ -68,7 +70,7 @@ public class ScheduledTaskExecutorService {
         scheduledTasks.stream().filter(pendingExceeded).collect(Collectors.toList());
     strandedScheduledTasks.forEach(
         sst -> {
-          if (this.maxScheduledTimeNotExceeded(sst)) {
+          if (this.shouldBeRetried(sst)) {
             sst.retryOn(new Date());
           } else {
             sst.setFailed("No response received for scheduled task");
@@ -77,9 +79,17 @@ public class ScheduledTaskExecutorService {
         });
   }
 
-  private boolean maxScheduledTimeNotExceeded(final ScheduledTask sst) {
-    return sst.getMaxScheduleTime() == null
-        || sst.getMaxScheduleTime().getTime() > System.currentTimeMillis();
+  private boolean shouldBeRetried(final ScheduledTask sst) {
+    return !this.maxScheduledTimeExceeded(sst) && !this.maxRetriesExeeded(sst);
+  }
+
+  private boolean maxRetriesExeeded(final ScheduledTask sst) {
+    return sst.getRetry() > this.getMaxRetryCount;
+  }
+
+  private boolean maxScheduledTimeExceeded(final ScheduledTask sst) {
+    return sst.getMaxScheduleTime() != null
+        && sst.getMaxScheduleTime().getTime() <= System.currentTimeMillis();
   }
 
   private void processScheduledTasks(final ScheduledTaskStatusType type) {
