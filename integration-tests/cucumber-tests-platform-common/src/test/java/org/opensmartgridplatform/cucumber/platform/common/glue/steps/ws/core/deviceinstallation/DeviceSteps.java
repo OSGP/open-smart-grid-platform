@@ -10,6 +10,7 @@ package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.de
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getFloat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
@@ -112,12 +113,12 @@ public class DeviceSteps {
 
     if (expectedDevice.containsKey(PlatformKeys.KEY_LATITUDE)) {
       assertThat(actualDevice.getGpsLatitude())
-          .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_LATITUDE));
+          .isEqualTo(getFloat(expectedDevice, PlatformKeys.KEY_LATITUDE));
     }
 
     if (expectedDevice.containsKey(PlatformKeys.KEY_LONGITUDE)) {
       assertThat(actualDevice.getGpsLongitude())
-          .isEqualTo(getString(expectedDevice, PlatformKeys.KEY_LONGITUDE));
+          .isEqualTo(getFloat(expectedDevice, PlatformKeys.KEY_LONGITUDE));
     }
 
     if (expectedDevice.containsKey(PlatformKeys.KEY_OWNER)) {
