@@ -18,12 +18,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -31,16 +31,16 @@ import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.CommunicationMethod;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BitErrorRateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CircuitSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticRequestDto;
@@ -52,54 +52,53 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class GetGsmDiagnosticCommandExecutorTest {
+class GetGsmDiagnosticCommandExecutorTest {
 
-  @InjectMocks private GetGsmDiagnosticCommandExecutor executor;
+  private GetGsmDiagnosticCommandExecutor executor;
 
   @Mock private DlmsMessageListener dlmsMessageListener;
 
   @Mock private DlmsHelper dlmsHelper;
 
-  @Mock private DlmsObjectConfigService dlmsObjectConfigService;
-
   @Mock private DlmsConnectionManager connectionManager;
 
+  private ObjectConfigService objectConfigService;
+
   private final DlmsDevice device = this.createDevice(Protocol.SMR_5_1, CommunicationMethod.CDMA);
-  private final int classId = 99;
-  private final String obisCode = "1.2.3.4.5.6";
+  private final int classId = InterfaceClass.GSM_DIAGNOSTIC.id();
+  private final String obisCode = "0.1.25.6.0.255";
   private final GetGsmDiagnosticRequestDto request = new GetGsmDiagnosticRequestDto();
   private MessageMetadata messageMetadata;
 
   @BeforeEach
-  public void setUp() {
+  public void setUp() throws IOException, ObjectConfigException {
+    this.objectConfigService = new ObjectConfigService(null);
+    this.executor = new GetGsmDiagnosticCommandExecutor(this.dlmsHelper, this.objectConfigService);
+
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
   }
 
   @Test
-  public void testExecuteObjectNotFound() throws ProtocolAdapterException {
-    // SETUP
-    when(this.dlmsObjectConfigService.getDlmsObjectForCommunicationMethod(any(), any()))
-        .thenThrow(new ProtocolAdapterException("Object not found"));
+  void testExecuteObjectNotFound() throws ProtocolAdapterException {
 
     // CALL
     try {
       this.executor.execute(
-          this.connectionManager, this.device, this.request, this.messageMetadata);
+          this.connectionManager,
+          this.createDevice(Protocol.SMR_4_3, CommunicationMethod.LTE),
+          this.request,
+          this.messageMetadata);
       fail("When no matching object is found, then execute should fail");
-    } catch (final ProtocolAdapterException e) {
-      assertThat(e.getMessage()).isEqualTo("Object not found");
+    } catch (final IllegalArgumentException e) {
+      assertThat(e.getMessage())
+          .isEqualTo("No object found of type LTE_DIAGNOSTIC in profile SMR version 4.3");
     }
   }
 
   @Test
-  public void testHappy() throws Exception {
-
-    // SETUP
-    when(this.dlmsObjectConfigService.getDlmsObjectForCommunicationMethod(
-            this.device, DlmsObjectType.GSM_DIAGNOSTIC))
-        .thenReturn(new DlmsObject(DlmsObjectType.GSM_DIAGNOSTIC, this.classId, this.obisCode));
+  void testHappy() throws Exception {
 
     // SETUP - mock return data objects
     final GetResult result2 = mock(GetResult.class);
@@ -184,9 +183,6 @@ public class GetGsmDiagnosticCommandExecutorTest {
                 this.createAttributeAddress(6),
                 this.createAttributeAddress(7)));
 
-    verify(this.dlmsObjectConfigService)
-        .getDlmsObjectForCommunicationMethod(this.device, DlmsObjectType.GSM_DIAGNOSTIC);
-
     // VERIFY contents of the return value
     assertThat(result.getOperator()).isEqualTo("AB");
     assertThat(result.getModemRegistrationStatus())
@@ -203,19 +199,16 @@ public class GetGsmDiagnosticCommandExecutorTest {
     assertThat(result.getCellInfo().getMobileCountryCode()).isEqualTo(4);
     assertThat(result.getCellInfo().getMobileNetworkCode()).isEqualTo(5);
     assertThat(result.getCellInfo().getChannelNumber()).isEqualTo(6);
-    assertThat(result.getAdjacentCells().size()).isEqualTo(1);
+    assertThat(result.getAdjacentCells()).hasSize(1);
     assertThat(result.getAdjacentCells().get(0).getCellId()).isEqualTo(256L);
     assertThat(result.getAdjacentCells().get(0).getSignalQuality())
         .isEqualTo(SignalQualityDto.fromIndexValue(7));
   }
 
   @Test
-  public void testUnhappy() throws Exception {
+  void testUnhappy() throws Exception {
 
     // SETUP
-    when(this.dlmsObjectConfigService.getDlmsObjectForCommunicationMethod(
-            this.device, DlmsObjectType.GSM_DIAGNOSTIC))
-        .thenReturn(new DlmsObject(DlmsObjectType.GSM_DIAGNOSTIC, this.classId, this.obisCode));
 
     final GetResult result = mock(GetResult.class);
     when(result.getResultCode()).thenReturn(AccessResultCode.HARDWARE_FAULT);

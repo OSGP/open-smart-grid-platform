@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.entities;
 
 public enum Protocol {
   DSMR_4_2_2("DSMR", "4.2.2", true),
+  SMR_4_3("SMR", "4.3", true),
   SMR_5_0_0("SMR", "5.0.0", true),
   SMR_5_1("SMR", "5.1", true),
   SMR_5_2("SMR", "5.2", true),
