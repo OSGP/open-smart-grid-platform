@@ -50,7 +50,6 @@ public class OsgpServerConnectionListener implements ServerConnectionListener {
             connectionInfo.getLogicalDeviceAddress());
         Thread.sleep(randomSleep);
       } catch (final InterruptedException e) {
-        LOGGER.error("Sleep was interupted", e);
         Thread.currentThread().interrupt();
         throw new SimulatorRuntimeException(e);
       }

@@ -106,7 +106,11 @@ public class ScheduledTaskExecutorServiceTest {
   @Test
   void testRetryStrandedPendingTask() {
 
-    final List<ScheduledTask> expiredPendingTasks = this.createExpiredPendingTasks();
+    // 0) expired (beyond max scheduled time but not exceeded max number of retries);
+    // 1) retryable (before max scheduled time and not exceeded max number of retries)
+    // 2) expired and exceeded (beyond max scheduled time and exceeded max number of retries);
+    // 3) exceeded (before max scheduled time but exceeded max number of retries)
+    final List<ScheduledTask> expiredPendingTasks = this.createPendingTasks();
 
     when(this.scheduledTaskExecutorJobConfig.scheduledTaskPendingDurationMaxSeconds())
         .thenReturn(-1L);
@@ -116,15 +120,13 @@ public class ScheduledTaskExecutorServiceTest {
 
     this.scheduledTaskExecutorService.processScheduledTasks();
 
-    verify(this.scheduledTaskRepository, times(2)).save(this.scheduledTaskCaptor.capture());
+    verify(this.scheduledTaskRepository, times(4)).save(this.scheduledTaskCaptor.capture());
     final List<ScheduledTask> savedScheduledTasks = this.scheduledTaskCaptor.getAllValues();
 
     assertThat(savedScheduledTasks.get(0).getStatus()).isEqualTo(ScheduledTaskStatusType.FAILED);
-    assertThat(savedScheduledTasks.get(0).getDeviceIdentification()).isEqualTo("deviceId-expired");
-
     assertThat(savedScheduledTasks.get(1).getStatus()).isEqualTo(ScheduledTaskStatusType.RETRY);
-    assertThat(savedScheduledTasks.get(1).getDeviceIdentification())
-        .isEqualTo("deviceId-retryable");
+    assertThat(savedScheduledTasks.get(2).getStatus()).isEqualTo(ScheduledTaskStatusType.FAILED);
+    assertThat(savedScheduledTasks.get(3).getStatus()).isEqualTo(ScheduledTaskStatusType.FAILED);
   }
 
   private void whenFindByStatusAndScheduledTime(
@@ -142,33 +144,46 @@ public class ScheduledTaskExecutorServiceTest {
         .thenReturn(retryTasks);
   }
 
-  private List<ScheduledTask> createExpiredPendingTasks() {
+  private List<ScheduledTask> createPendingTasks() {
     // Create a list of two scheduled tasks both in pending state.
     final List<ScheduledTask> scheduledTasks = new ArrayList<>();
-    final ScheduledTask expiredScheduledTask =
-        new ScheduledTask(
-            this.createExpiredMessageMetadata(), DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
-    expiredScheduledTask.setPending();
-    scheduledTasks.add(expiredScheduledTask);
-    final ScheduledTask retryableScheduledTask =
-        new ScheduledTask(
-            this.createMessageMetadata(), DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
-    retryableScheduledTask.setPending();
-    scheduledTasks.add(retryableScheduledTask);
+    scheduledTasks.add(this.createScheduledTask(false, true));
+    scheduledTasks.add(this.createScheduledTask(false, false));
+    scheduledTasks.add(this.createScheduledTask(true, true));
+    scheduledTasks.add(this.createScheduledTask(true, false));
     return scheduledTasks;
+  }
+
+  private ScheduledTask createScheduledTask(
+      final boolean exceededMaxRetry, final boolean expiredTask) {
+    MessageMetadata messageMetadata;
+    if (expiredTask) {
+      messageMetadata = this.createExpiredMessageMetadata();
+    } else {
+      messageMetadata = this.createMessageMetadata();
+    }
+    final ScheduledTask expiredScheduledTask =
+        new ScheduledTask(messageMetadata, DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
+    // retryOn() will raise the number of retries. The retry time will not change since it is the
+    // same as the retry time in the message metadata. State will be set RETRY and will be reset to
+    // PENDING by the setPending method. This is the only way to raise the number of retry above the
+    // maxRetries (0)
+    if (exceededMaxRetry) {
+      expiredScheduledTask.retryOn(SCHEDULED_TIME);
+    }
+    expiredScheduledTask.setPending();
+    return expiredScheduledTask;
   }
 
   private MessageMetadata createExpiredMessageMetadata() {
     return this.createMessageMetadataBuilder()
         .withMaxScheduleTime(Instant.now().minus(100, ChronoUnit.SECONDS).toEpochMilli())
-        .withDeviceIdentification("deviceId-expired")
+        .withDeviceIdentification("expired")
         .build();
   }
 
   private MessageMetadata createMessageMetadata() {
-    return this.createMessageMetadataBuilder()
-        .withDeviceIdentification("deviceId-retryable")
-        .build();
+    return this.createMessageMetadataBuilder().withDeviceIdentification("retryable").build();
   }
 
   private MessageMetadata.Builder createMessageMetadataBuilder() {

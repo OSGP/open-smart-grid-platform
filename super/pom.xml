@@ -79,6 +79,7 @@
     <apache.httpcomponents.httpcore.version>4.4.13</apache.httpcomponents.httpcore.version>
     <commons.codec.version>1.14</commons.codec.version>
     <orika.version>1.5.4</orika.version>
+    <msal.version>1.13.0</msal.version>
     <jxr.version>3.1.1</jxr.version>
     <maven.project.info.reports.plugin.version>3.2.2</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.11.0</maven.site.plugin>
@@ -280,6 +281,11 @@
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-kafka-logger</artifactId>
+        <version>${osgp.shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-kafka-config</artifactId>
         <version>${osgp.shared.version}</version>
       </dependency>
       <dependency>
@@ -841,6 +847,13 @@
       <artifactId>hivemq-mqtt-client</artifactId>
       <version>${hivemq-mqtt-client.version}</version>
     </dependency>
+
+      <!-- MSAL Azure AD -->
+      <dependency>
+        <groupId>com.microsoft.azure</groupId>
+        <artifactId>msal4j</artifactId>
+        <version>${msal.version}</version>
+      </dependency>
 
       <!-- Orika (mapping framework) -->
       <dependency>
