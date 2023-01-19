@@ -23,6 +23,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
@@ -37,20 +38,21 @@ public class JreEncryptionProvider implements EncryptionProvider {
   private static final int KEY_LENGTH = 16;
   private static final int GCM_IV_LENGTH = 16;
 
-  private final byte[] key;
+  private final SecretKeySpec secretKeySpec;
 
   private final SecureRandom secureRandom = new SecureRandom();
 
   public JreEncryptionProvider(final File keyStoreFile) {
     try {
-      this.key = Files.readAllBytes(Paths.get(keyStoreFile.getAbsolutePath()));
+      final byte[] keyStore = Files.readAllBytes(Paths.get(keyStoreFile.getAbsolutePath()));
+      this.secretKeySpec = new SecretKeySpec(keyStore, ALGORITHM);
     } catch (final IOException e) {
       throw new EncrypterException("Could not read keystore", e);
     }
   }
 
   public JreEncryptionProvider(final byte[] keyStore) {
-    this.key = keyStore;
+    this.secretKeySpec = new SecretKeySpec(keyStore, ALGORITHM);
   }
 
   private Cipher getCipher() {
@@ -82,7 +84,7 @@ public class JreEncryptionProvider implements EncryptionProvider {
 
       @Override
       public byte[] getEncoded() {
-        return JreEncryptionProvider.this.key;
+        return JreEncryptionProvider.this.secretKeySpec.getEncoded();
       }
     };
   }

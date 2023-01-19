@@ -402,9 +402,9 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerWindow        | <TriggerWindow>   |
       | ScheduledTime        | 2016-12-15        |
     Then the set light schedule response contains soap fault
-      | FaultCode        | SOAP-ENV:Client                                                                                                                                                                                                          |
-      | FaultString      | Validation error                                                                                                                                                                                                         |
-      | ValidationErrors | cvc-complex-type.2.4.a: Invalid content was found starting with element 'ns2:Schedules'. One of '{"http://www.opensmartgridplatform.org/schemas/publiclighting/schedulemanagement/2014/10":scheduled_time}' is expected. |
+      | FaultCode        | SOAP-ENV:Client                                                                                                                                                                                                                                                           |
+      | FaultString      | Validation error                                                                                                                                                                                                                                                          |
+      | ValidationErrors | cvc-complex-type.2.4.e: 'ns2:Schedules' can occur a maximum of '50' times in the current sequence. This limit was exceeded. At this point one of '{"http://www.opensmartgridplatform.org/schemas/publiclighting/schedulemanagement/2014/10":scheduled_time}' is expected. |
 
     Examples:
       | WeekDay     | StartDay   | EndDay     | ActionTime   | Time         | TriggerWindow | LightValues | TriggerType   |

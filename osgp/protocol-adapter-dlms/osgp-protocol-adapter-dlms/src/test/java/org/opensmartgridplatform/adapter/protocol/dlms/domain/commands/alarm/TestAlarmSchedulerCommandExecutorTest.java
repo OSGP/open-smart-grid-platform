@@ -113,22 +113,22 @@ class TestAlarmSchedulerCommandExecutorTest {
 
   @ParameterizedTest
   @CsvSource({
-    "2060-10-07 22:00:00,Europe/Amsterdam,PARTIAL_POWER_OUTAGE,0.0.15.1.4.255,2060-10-08T00:00:00+00:00[Europe/Amsterdam]",
-    "2060-10-07 22:00:00,Europe/Amsterdam,LAST_GASP,0.0.15.2.4.255, 2060-10-08T00:00:00+00:00[Europe/Amsterdam]",
+    "2060-10-07 22:00:00,Europe/Amsterdam,PARTIAL_POWER_OUTAGE,0.0.15.1.4.255,2060-10-08T00:00:00+02:00[Europe/Amsterdam]",
+    "2060-10-07 22:00:00,Europe/Amsterdam,LAST_GASP,0.0.15.2.4.255, 2060-10-08T00:00:00+02:00[Europe/Amsterdam]",
     "2060-10-08 00:00:00,UTC,PARTIAL_POWER_OUTAGE,0.0.15.1.4.255,2060-10-08T00:00:00+00:00[UTC]",
     "2060-10-08 00:00:00,UTC,LAST_GASP,0.0.15.2.4.255, 2060-10-08T00:00:00+00:00[UTC]"
   })
   void executeSuccess(
-      final String dateTimeParameter,
-      final String timezone,
+      final String dateTimeParameterInUtc,
+      final String deviceTimezone,
       final String alarmTypeParameter,
       final String expectedObisCode,
       final String expectedTimeString)
       throws ParseException, ProtocolAdapterException {
 
-    Mockito.when(this.device.getTimezone()).thenReturn(timezone);
+    Mockito.when(this.device.getTimezone()).thenReturn(deviceTimezone);
 
-    final Date date = this.sdf.parse(dateTimeParameter);
+    final Date date = this.sdf.parse(dateTimeParameterInUtc);
     final ZonedDateTime expectedDateTime =
         DateTimeParserUtil.parseToZonedDateTime(expectedTimeString);
 
