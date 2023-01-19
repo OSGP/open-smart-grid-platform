@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
-import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,12 +38,9 @@ class ProtocolResponseMessageSendingHandlerTest {
   private static final String ORGANISATION_IDENTIFICATION = "test-org";
   private static final String DEVICE_IDENTIFICATION = "test-device";
 
-  @Mock
-  OutboundOsgpCoreResponseMessageSender outboundOsgpCoreResponseMessageSender;
-  @Mock
-  CorrelationIdProviderService correlationIdProviderService;
-  @Captor
-  ArgumentCaptor<ResponseMessage> responseMessageCaptor;
+  @Mock OutboundOsgpCoreResponseMessageSender outboundOsgpCoreResponseMessageSender;
+  @Mock CorrelationIdProviderService correlationIdProviderService;
+  @Captor ArgumentCaptor<ResponseMessage> responseMessageCaptor;
 
   private final PrometheusMeterRegistry meterRegistry;
   private final MetricsNameService metricsNameService = new MetricsNameService();
