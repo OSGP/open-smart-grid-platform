@@ -207,8 +207,7 @@ public class ActivityCalendarValidatorTest {
     final FunctionalException exception =
         assertThrows(
             FunctionalException.class,
-            () -> ActivityCalendarValidator.validate(activityCalendarDto)
-        );
+            () -> ActivityCalendarValidator.validate(activityCalendarDto));
     assertThat(exception).getCause().hasMessage(exceptionMessage);
   }
 }
