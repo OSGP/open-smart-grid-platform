@@ -63,9 +63,9 @@
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
     <servlet.version>4.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
-    <hibernate.version>5.6.9.Final</hibernate.version>
+    <hibernate.version>5.6.12.Final</hibernate.version>
     <hibernate.validator.version>6.1.5.Final</hibernate.validator.version>
-    <hibernate.jpa.version>1.0.2.Final</hibernate.jpa.version>
+    <javax.persistence.api.version>2.2</javax.persistence.api.version>
     <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
     <junit.version>5.7.0</junit.version>
     <junit.platform.launcher.version>1.6.2</junit.platform.launcher.version>
@@ -692,9 +692,9 @@
         <version>${hibernate.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hibernate.javax.persistence</groupId>
-        <artifactId>hibernate-jpa-2.1-api</artifactId>
-        <version>${hibernate.jpa.version}</version>
+          <groupId>javax.persistence</groupId>
+          <artifactId>javax.persistence-api</artifactId>
+          <version>${javax.persistence.api.version}</version>
       </dependency>
 
       <!-- Hibernate validator -->
