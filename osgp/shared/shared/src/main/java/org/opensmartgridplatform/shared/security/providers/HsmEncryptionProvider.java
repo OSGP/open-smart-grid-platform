@@ -119,8 +119,8 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider {
 
   @Override
   protected AlgorithmParameterSpec getAlgorithmParameterSpec() {
-    byte[] bytesIV = new byte[16];
-    random.nextBytes(bytesIV);
+    final byte[] bytesIV = new byte[KEY_LENGTH];
+    this.random.nextBytes(bytesIV);
 
     return new IvParameterSpec(bytesIV);
   }
