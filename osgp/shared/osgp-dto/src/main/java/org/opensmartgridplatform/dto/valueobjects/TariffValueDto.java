@@ -36,12 +36,16 @@ public class TariffValueDto implements Serializable {
     this.index = value;
   }
 
-  /** @return the value of the high property. */
+  /**
+   * @return the value of the high property.
+   */
   public boolean isHigh() {
     return this.high;
   }
 
-  /** @param value the value of the high property to set */
+  /**
+   * @param value the value of the high property to set
+   */
   public void setHigh(final boolean value) {
     this.high = value;
   }

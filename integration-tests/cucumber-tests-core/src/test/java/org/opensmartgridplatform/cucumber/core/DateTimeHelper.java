@@ -30,12 +30,16 @@ public class DateTimeHelper {
   private static final String TIME_FORMAT = "HH:mm";
   private static final String CET_TIMEZONE = "Europe/Paris";
 
-  /** @return CET/CEST time zone based on ID {@value #CET_TIMEZONE} */
+  /**
+   * @return CET/CEST time zone based on ID {@value #CET_TIMEZONE}
+   */
   public static DateTimeZone getCentralEuropeanTimeZone() {
     return DateTimeZone.forID(CET_TIMEZONE);
   }
 
-  /** @return CET/CEST time zone based on ID {@value #CET_TIMEZONE} */
+  /**
+   * @return CET/CEST time zone based on ID {@value #CET_TIMEZONE}
+   */
   public static ZoneId getCentralEuropeanZoneId() {
     return ZoneId.of(CET_TIMEZONE);
   }

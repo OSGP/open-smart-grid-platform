@@ -353,7 +353,8 @@ public class FirmwareManagementService extends AbstractService {
     final String deviceIdentification = ids.getDeviceIdentification();
 
     final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate =
-        this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(deviceIdentification)
+        this.ssldPendingFirmwareUpdateRepository
+            .findByDeviceIdentification(deviceIdentification)
             .stream()
             .filter(
                 pendingUpdate -> pendingUpdate.getCorrelationUid().equals(ids.getCorrelationUid()))

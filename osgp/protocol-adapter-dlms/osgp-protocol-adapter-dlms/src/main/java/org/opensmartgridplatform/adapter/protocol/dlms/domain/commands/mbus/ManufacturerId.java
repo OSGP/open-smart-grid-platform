@@ -158,7 +158,9 @@ public class ManufacturerId {
         "ManufacturerId[%s(%d)]", this.identification, calculateId(this.identification));
   }
 
-  /** @return a DataObject with the long-unsigned value of the manufacturer id */
+  /**
+   * @return a DataObject with the long-unsigned value of the manufacturer id
+   */
   public DataObject asDataObject() {
     return DataObject.newUInteger16Data(calculateId(this.identification));
   }

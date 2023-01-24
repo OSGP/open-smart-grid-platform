@@ -122,7 +122,9 @@ public class DlmsConfig extends AbstractConfig {
     return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_DLMS_PORT_SERVER));
   }
 
-  /** @return a new {@link DlmsChannelHandlerServer}. */
+  /**
+   * @return a new {@link DlmsChannelHandlerServer}.
+   */
   @Bean
   public DlmsChannelHandlerServer dlmsChannelHandlerServer() {
     return new DlmsChannelHandlerServer();

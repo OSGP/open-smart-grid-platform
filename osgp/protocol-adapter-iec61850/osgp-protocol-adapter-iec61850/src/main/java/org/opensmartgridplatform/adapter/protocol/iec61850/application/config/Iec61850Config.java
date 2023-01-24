@@ -171,7 +171,9 @@ public class Iec61850Config extends AbstractConfig {
         this.environment.getRequiredProperty(PROPERTY_NAME_IEC61850_PORT_LISTENER));
   }
 
-  /** @return a new {@link Iec61850ChannelHandlerServer}. */
+  /**
+   * @return a new {@link Iec61850ChannelHandlerServer}.
+   */
   @Bean
   public Iec61850ChannelHandlerServer iec61850ChannelHandlerServer() {
     return new Iec61850ChannelHandlerServer();

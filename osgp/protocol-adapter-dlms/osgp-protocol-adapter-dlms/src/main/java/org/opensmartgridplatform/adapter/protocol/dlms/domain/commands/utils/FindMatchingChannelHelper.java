@@ -52,7 +52,9 @@ public class FindMatchingChannelHelper {
         && hasMbusChannelElementMatch(mbusChannelElements, channelElementValues);
   }
 
-  /** @return true is all the channel elements are equal. */
+  /**
+   * @return true is all the channel elements are equal.
+   */
   private static boolean hasMbusChannelElementMatch(
       final MbusChannelElementsDto mbusChannelElements,
       final ChannelElementValuesDto channelElementValues) {
@@ -68,7 +70,9 @@ public class FindMatchingChannelHelper {
             channelElementValues.getDeviceTypeIdentification());
   }
 
-  /** @return true is all M-Bus parameters are present */
+  /**
+   * @return true is all M-Bus parameters are present
+   */
   private static boolean hasMbusDeviceInfo(final MbusChannelElementsDto mbusChannelElements) {
     return mbusChannelElements.hasMbusIdentificationNumber()
         && mbusChannelElements.hasMbusManufacturerIdentification()
@@ -84,7 +88,9 @@ public class FindMatchingChannelHelper {
         && validateMbusDeviceInfoMatch(mbusChannelElements, channelElementValues);
   }
 
-  /** @return true when no single M-Bus parameter check has failed */
+  /**
+   * @return true when no single M-Bus parameter check has failed
+   */
   private static boolean validateMbusDeviceInfoMatch(
       final MbusChannelElementsDto mbusChannelElements,
       final ChannelElementValuesDto channelElementValues) {
@@ -94,7 +100,9 @@ public class FindMatchingChannelHelper {
         || failMatchOnMbusDeviceTypeIdentification(mbusChannelElements, channelElementValues));
   }
 
-  /** @return return true if M-Bus slave device is configured and primary address matches */
+  /**
+   * @return return true if M-Bus slave device is configured and primary address matches
+   */
   private static boolean hasValidMbusAttributes(
       final MbusChannelElementsDto mbusChannelElements,
       final ChannelElementValuesDto channelElementValues) {
@@ -154,7 +162,9 @@ public class FindMatchingChannelHelper {
         && validateMbusDeviceInfoPartialMatch(mbusChannelElements, channelElementValues);
   }
 
-  /** @return true if there no single partial check has failed */
+  /**
+   * @return true if there no single partial check has failed
+   */
   private static boolean validateMbusDeviceInfoPartialMatch(
       final MbusChannelElementsDto mbusChannelElements,
       final ChannelElementValuesDto channelElementValues) {

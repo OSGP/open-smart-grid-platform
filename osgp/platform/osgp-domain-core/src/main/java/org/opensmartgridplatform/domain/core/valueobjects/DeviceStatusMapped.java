@@ -39,7 +39,9 @@ public class DeviceStatusMapped extends DeviceStatus {
     this.tariffValues = tariffValues;
   }
 
-  /** @return the tariffValues */
+  /**
+   * @return the tariffValues
+   */
   public List<TariffValue> getTariffValues() {
     return this.tariffValues;
   }

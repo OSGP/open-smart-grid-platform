@@ -104,7 +104,9 @@ public class OslpEnvelope implements Serializable {
     }
   }
 
-  /** @return security key bytes. */
+  /**
+   * @return security key bytes.
+   */
   public byte[] getSecurityKey() {
     return Arrays.copyOf(this.securityKey, this.securityKey.length);
   }
@@ -122,7 +124,9 @@ public class OslpEnvelope implements Serializable {
     }
   }
 
-  /** @return length indicator, based on overall message length including envelope. */
+  /**
+   * @return length indicator, based on overall message length including envelope.
+   */
   public byte[] getLengthIndicator() {
     int messageLength = 0;
 
@@ -137,7 +141,9 @@ public class OslpEnvelope implements Serializable {
     return sizeBytes;
   }
 
-  /** @return sequence number */
+  /**
+   * @return sequence number
+   */
   public byte[] getSequenceNumber() {
     return Arrays.copyOf(this.sequenceNumber, this.sequenceNumber.length);
   }
@@ -155,7 +161,9 @@ public class OslpEnvelope implements Serializable {
     }
   }
 
-  /** @return deviceid */
+  /**
+   * @return deviceid
+   */
   public byte[] getDeviceId() {
     return Arrays.copyOf(this.deviceId, this.deviceId.length);
   }
@@ -179,7 +187,9 @@ public class OslpEnvelope implements Serializable {
     }
   }
 
-  /** @return OSLP payload */
+  /**
+   * @return OSLP payload
+   */
   public Message getPayloadMessage() {
     return this.payloadMessage;
   }

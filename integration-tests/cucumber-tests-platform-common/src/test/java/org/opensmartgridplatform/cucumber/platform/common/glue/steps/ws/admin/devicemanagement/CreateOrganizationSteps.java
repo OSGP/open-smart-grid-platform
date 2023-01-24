@@ -35,7 +35,9 @@ public class CreateOrganizationSteps {
 
   @Autowired private AdminDeviceManagementClient client;
 
-  /** @throws Throwable */
+  /**
+   * @throws Throwable
+   */
   @When("^receiving a create organization request$")
   public void receivingACreateOrganizationRequest(final Map<String, String> requestSettings)
       throws Throwable {
@@ -94,7 +96,9 @@ public class CreateOrganizationSteps {
     }
   }
 
-  /** @throws Throwable */
+  /**
+   * @throws Throwable
+   */
   @When("^receiving a create organization request as an unauthorized organization$")
   public void receivingACreateOrganizationRequestAsAnUnauthorizedOrganization(
       final Map<String, String> requestSettings) throws Throwable {

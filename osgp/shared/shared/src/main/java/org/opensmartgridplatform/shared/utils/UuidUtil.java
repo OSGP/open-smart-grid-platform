@@ -18,7 +18,9 @@ public class UuidUtil {
     // hide implicit public constructor
   }
 
-  /** @return a byte array representing a random UUID */
+  /**
+   * @return a byte array representing a random UUID
+   */
   public static byte[] getBytesFromRandomUuid() {
     return getBytesFromUUID(UUID.randomUUID());
   }
