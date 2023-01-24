@@ -86,7 +86,8 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends GetPowerQuality
             this.createProfile(PQ_PROFILE_2, "POWER_QUALITY_PROFILE_2", PQ_PROFILE_2_INTERVAL));
     when(this.objectConfigService.getCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_1))
-        .thenReturn(this.createProfile(PQ_DEFINABLE, "DEFINABLE_LOAD_PROFILE", PQ_DEFINABLE_INTERVAL));
+        .thenReturn(
+            this.createProfile(PQ_DEFINABLE, "DEFINABLE_LOAD_PROFILE", PQ_DEFINABLE_INTERVAL));
     when(this.objectConfigService.getCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, DEFINABLE_LOAD_PROFILE))
         .thenReturn(
@@ -107,7 +108,7 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends GetPowerQuality
             any(DlmsDevice.class),
             eq("retrieve profile generic buffer"),
             any(AttributeAddress.class)))
-        .thenReturn(this.createProfileEntries());
+        .thenReturn(this.createProfileEntries(false));
 
     // EXECUTE
     final GetPowerQualityProfileNoSelectiveAccessHandler handler =
@@ -144,7 +145,8 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends GetPowerQuality
             this.createProfile(PQ_PROFILE_2, "POWER_QUALITY_PROFILE_2", PQ_PROFILE_2_INTERVAL));
     when(this.objectConfigService.getCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_1))
-        .thenReturn(this.createProfile(PQ_DEFINABLE, "DEFINABLE_LOAD_PROFILE", PQ_DEFINABLE_INTERVAL));
+        .thenReturn(
+            this.createProfile(PQ_DEFINABLE, "DEFINABLE_LOAD_PROFILE", PQ_DEFINABLE_INTERVAL));
     when(this.objectConfigService.getCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, DEFINABLE_LOAD_PROFILE))
         .thenReturn(

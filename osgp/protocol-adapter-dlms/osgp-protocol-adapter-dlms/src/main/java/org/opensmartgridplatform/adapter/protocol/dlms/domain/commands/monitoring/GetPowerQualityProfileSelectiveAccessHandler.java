@@ -10,8 +10,8 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitori
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
@@ -32,20 +32,22 @@ public class GetPowerQualityProfileSelectiveAccessHandler
   protected List<ProfileEntryValueDto> createProfileEntryValueDto(
       final DataObject profileEntryDataObject,
       final ProfileEntryDto previousProfileEntryDto,
-      final Map<Integer, SelectableObject> selectableCaptureObjects,
+      final LinkedHashMap<Integer, SelectableObject> selectedObjects,
       final int timeInterval) {
 
     final List<ProfileEntryValueDto> result = new ArrayList<>();
     final List<DataObject> dataObjects = profileEntryDataObject.getValue();
 
-    for (int i = 0; i < dataObjects.size(); i++) {
-      if (selectableCaptureObjects.get(i) != null) {
+    // The values are retrieved using selective access, so we should have the same amount of
+    // selectedObjects. Since we use a LinkedHashMap the selectedObjects are in the right order
+    // and we can simply iterate over them.
+    final var iterator = selectedObjects.entrySet().iterator();
+
+    for (final DataObject dataObject : dataObjects) {
+      if (iterator.hasNext()) {
         final ProfileEntryValueDto currentProfileEntryValueDto =
             super.makeProfileEntryValueDto(
-                dataObjects.get(i),
-                selectableCaptureObjects.get(i),
-                previousProfileEntryDto,
-                timeInterval);
+                dataObject, iterator.next().getValue(), previousProfileEntryDto, timeInterval);
         result.add(currentProfileEntryValueDto);
       }
     }

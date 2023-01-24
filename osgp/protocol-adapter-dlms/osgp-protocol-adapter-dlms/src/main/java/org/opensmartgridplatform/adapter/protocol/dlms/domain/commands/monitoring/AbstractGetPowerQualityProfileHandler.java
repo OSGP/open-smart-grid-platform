@@ -21,10 +21,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
@@ -87,7 +87,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
   protected abstract List<ProfileEntryValueDto> createProfileEntryValueDto(
       final DataObject profileEntryDataObject,
       ProfileEntryDto previousProfileEntryDto,
-      final Map<Integer, SelectableObject> selectableCaptureObjects,
+      final LinkedHashMap<Integer, SelectableObject> selectableCaptureObjects,
       int timeInterval);
 
   protected GetPowerQualityProfileResponseDto handle(
@@ -134,8 +134,9 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
       // Determine which values should be selected.
       // Note that if selective access is not supported, more values could be retrieved from the
-      // meter. This list can then be used to filter the retrieved values.
-      final Map<Integer, SelectableObject> selectableObjects =
+      // meter. This list can then be used to filter the retrieved values. A LinkedHashMap is used
+      // to preserve the order of entries (which will be used in the handler for selective access).
+      final LinkedHashMap<Integer, SelectableObject> selectableObjects =
           this.determineSelectableObjects(captureObjects, configObjects);
 
       // Get the values from the buffer in the meter
@@ -164,7 +165,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       throws ProtocolAdapterException {
     final List<String> tags = profile.getListProperty(ObjectProperty.SELECTABLE_OBJECTS);
     final List<DlmsObjectType> dlmsObjectTypes =
-        tags.stream().map(DlmsObjectType::valueOf).collect(Collectors.toList());
+        tags.stream().map(DlmsObjectType::valueOf).toList();
     try {
       return this.objectConfigService.getCosemObjects(
           device.getProtocolName(), device.getProtocolVersion(), dlmsObjectTypes);
@@ -208,7 +209,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
                   object ->
                       object.getClassId() == InterfaceClass.CLOCK.id()
                           || this.hasPqProfile(object, privateOrPublic))
-              .collect(Collectors.toList());
+              .toList();
 
       // Use this profile when at least the clock object and one other object should be read
       if (selectableObjects.size() > 1) {
@@ -263,7 +264,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
   private PowerQualityProfileDataDto processData(
       final CosemObject profile,
       final List<GetResult> captureObjects,
-      final Map<Integer, SelectableObject> selectableCaptureObjects,
+      final LinkedHashMap<Integer, SelectableObject> selectableCaptureObjects,
       final List<GetResult> bufferList)
       throws ProtocolAdapterException {
 
@@ -280,7 +281,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
   private List<ProfileEntryDto> createProfileEntries(
       final List<GetResult> bufferList,
-      final Map<Integer, SelectableObject> selectableCaptureObjects,
+      final LinkedHashMap<Integer, SelectableObject> selectableCaptureObjects,
       final int timeInterval) {
 
     final List<ProfileEntryDto> profileEntryDtos = new ArrayList<>();
@@ -488,11 +489,11 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     }
   }
 
-  private Map<Integer, SelectableObject> determineSelectableObjects(
+  private LinkedHashMap<Integer, SelectableObject> determineSelectableObjects(
       final List<GetResult> captureObjects, final List<CosemObject> cosemConfigObjects)
       throws ProtocolAdapterException {
 
-    final Map<Integer, SelectableObject> selectableObjects = new HashMap<>();
+    final LinkedHashMap<Integer, SelectableObject> selectableObjects = new LinkedHashMap<>();
 
     // there is always only one GetResult
     for (final GetResult captureObjectResult : captureObjects) {
@@ -535,10 +536,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
     // An obis with an x indicates that multiple objects could exist for the m-bus channels
     if (configObis.contains("x")) {
-      obisCodesToMatch =
-          CHANNELS.stream()
-              .map(i -> configObis.replace("x", i.toString()))
-              .collect(Collectors.toList());
+      obisCodesToMatch = CHANNELS.stream().map(i -> configObis.replace("x", i.toString())).toList();
     }
 
     return obisCodesToMatch.contains(captureObis);

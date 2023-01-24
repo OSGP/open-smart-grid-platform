@@ -70,6 +70,7 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends GetPowerQualityPr
     when(this.dlmsHelper.getScaledMeterValueWithScalerUnit(
             any(DataObject.class), any(String.class), any(String.class)))
         .thenCallRealMethod();
+
     when(this.dlmsHelper.convertDataObjectToDateTime(any(DataObject.class))).thenCallRealMethod();
     when(this.dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
     when(this.objectConfigService.getCosemObject(
@@ -100,7 +101,7 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends GetPowerQualityPr
             any(DlmsDevice.class),
             eq("retrieve profile generic buffer"),
             any(AttributeAddress.class)))
-        .thenReturn(this.createProfileEntries());
+        .thenReturn(this.createProfileEntries(true));
 
     // EXECUTE
     final GetPowerQualityProfileSelectiveAccessHandler handler =

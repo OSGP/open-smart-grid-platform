@@ -22,14 +22,13 @@ import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.NUMBER_
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.joda.time.DateTime;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
@@ -185,16 +184,12 @@ public abstract class GetPowerQualityProfileTest {
   }
 
   private void verifyProfileEntry(
-      final ProfileEntryDto entry, final int index, final long intervalInMinutes) {
+      final ProfileEntryDto entry, final int index, final int intervalInMinutes) {
     final List<ProfileEntryValueDto> values = entry.getProfileEntryValues();
     assertThat(values).hasSize(2);
     assertThat((Date) values.get(0).getValue())
         .isEqualTo(
-            Date.from(
-                new GregorianCalendar(2023, Calendar.JANUARY, 12)
-                    .getTime()
-                    .toInstant()
-                    .plusSeconds(index * intervalInMinutes * SECONDS_PER_MINUTE)));
+            new DateTime(2023, 1, 12, 0, 0, 0).plusMinutes(index * intervalInMinutes).toDate());
     assertThat((BigDecimal) values.get(1).getValue()).isEqualTo(BigDecimal.valueOf(index));
   }
 
@@ -209,48 +204,73 @@ public abstract class GetPowerQualityProfileTest {
     return objects;
   }
 
-  protected List<GetResult> createProfileEntries() {
-    final DataObject entry1 =
-        DataObject.newStructureData(
-            DataObject.newOctetStringData(
-                new byte[] {
-                  (byte) 0x07,
-                  (byte) 0xE7,
-                  (byte) 0x01,
-                  (byte) 0x0C,
-                  (byte) 0x04,
-                  (byte) 0x00,
-                  (byte) 0x00,
-                  (byte) 0x00,
-                  (byte) 0x00,
-                  (byte) 0xFF,
-                  (byte) 0xC4,
-                  (byte) 0x00
-                }),
-            DataObject.newUInteger8Data((short) 0),
-            DataObject.newUInteger16Data(2335),
-            DataObject.newUInteger16Data(0));
+  protected List<GetResult> createProfileEntries(final boolean selectiveAccess) {
+    final byte[] timestamp =
+        new byte[] {
+          (byte) 0x07,
+          (byte) 0xE7,
+          (byte) 0x01,
+          (byte) 0x0C,
+          (byte) 0x04,
+          (byte) 0x00,
+          (byte) 0x00,
+          (byte) 0x00,
+          (byte) 0x00,
+          (byte) 0xFF,
+          (byte) 0xC4,
+          (byte) 0x00
+        };
 
-    final DataObject entry2 =
-        DataObject.newStructureData(
-            DataObject.newNullData(),
-            DataObject.newUInteger8Data((short) 1),
-            DataObject.newUInteger16Data(2336),
-            DataObject.newUInteger16Data(2));
+    final DataObject entry1;
+    final DataObject entry2;
+    final DataObject entry3;
+    final DataObject entry4;
 
-    final DataObject entry3 =
-        DataObject.newStructureData(
-            DataObject.newNullData(),
-            DataObject.newUInteger8Data((short) 2),
-            DataObject.newUInteger16Data(2337),
-            DataObject.newUInteger16Data(4));
+    if (selectiveAccess) {
+      entry1 =
+          DataObject.newStructureData(
+              DataObject.newOctetStringData(timestamp), DataObject.newUInteger8Data((short) 0));
 
-    final DataObject entry4 =
-        DataObject.newStructureData(
-            DataObject.newNullData(),
-            DataObject.newUInteger8Data((short) 3),
-            DataObject.newUInteger16Data(2338),
-            DataObject.newUInteger16Data(6));
+      entry2 =
+          DataObject.newStructureData(
+              DataObject.newNullData(), DataObject.newUInteger8Data((short) 1));
+
+      entry3 =
+          DataObject.newStructureData(
+              DataObject.newNullData(), DataObject.newUInteger8Data((short) 2));
+
+      entry4 =
+          DataObject.newStructureData(
+              DataObject.newNullData(), DataObject.newUInteger8Data((short) 3));
+    } else {
+      entry1 =
+          DataObject.newStructureData(
+              DataObject.newOctetStringData(timestamp),
+              DataObject.newUInteger16Data(2335), // not selected value
+              DataObject.newUInteger8Data((short) 0), // selected value
+              DataObject.newUInteger16Data(10)); // not selected value
+
+      entry2 =
+          DataObject.newStructureData(
+              DataObject.newNullData(), // null means timestamp is calculated
+              DataObject.newUInteger16Data(2336), // not selected value
+              DataObject.newUInteger8Data((short) 1), // selected value
+              DataObject.newUInteger16Data(11)); // not selected value
+
+      entry3 =
+          DataObject.newStructureData(
+              DataObject.newNullData(), // null means timestamp is calculated
+              DataObject.newUInteger16Data(2337), // not selected value
+              DataObject.newUInteger8Data((short) 2), // selected value
+              DataObject.newUInteger16Data(12)); // not selected value
+
+      entry4 =
+          DataObject.newStructureData(
+              DataObject.newNullData(), // null means timestamp is calculated
+              DataObject.newUInteger16Data(2338), // not selected value
+              DataObject.newUInteger8Data((short) 3), // selected value
+              DataObject.newUInteger16Data(13)); // not selected value
+    }
 
     final GetResult getResult =
         new GetResultImpl(DataObject.newArrayData(List.of(entry1, entry2, entry3, entry4)));
@@ -291,8 +311,8 @@ public abstract class GetPowerQualityProfileTest {
             DataObject.newArrayData(
                 List.of(
                     allowedCaptureObjectClock,
-                    allowedCaptureObjectINSTANTANEOUS_VOLTAGE_L1,
                     nonAllowedCaptureObject1,
+                    allowedCaptureObjectINSTANTANEOUS_VOLTAGE_L1,
                     nonAllowedCaptureObject2)));
 
     return List.of(getResult);
