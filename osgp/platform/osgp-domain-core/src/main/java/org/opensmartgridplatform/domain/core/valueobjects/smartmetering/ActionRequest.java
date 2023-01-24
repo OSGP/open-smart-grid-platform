@@ -20,6 +20,8 @@ public interface ActionRequest extends Serializable {
    */
   void validate() throws FunctionalException;
 
-  /** @returns the appropriate {@link DeviceFunction} for the object */
+  /**
+   * @returns the appropriate {@link DeviceFunction} for the object
+   */
   DeviceFunction getDeviceFunction();
 }

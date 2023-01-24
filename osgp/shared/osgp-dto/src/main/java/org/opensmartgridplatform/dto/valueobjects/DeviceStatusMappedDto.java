@@ -39,7 +39,9 @@ public class DeviceStatusMappedDto extends DeviceStatusDto {
     this.tariffValues = tariffValues;
   }
 
-  /** @return the tariffValues */
+  /**
+   * @return the tariffValues
+   */
   public List<TariffValueDto> getTariffValues() {
     return this.tariffValues;
   }

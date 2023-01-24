@@ -102,7 +102,9 @@ public class IdentificationNumber {
         this.textualRepresentation, toBcdRepresentationAsLong(this.textualRepresentation));
   }
 
-  /** @return a DataObject with the double-long-unsigned value of the identification number */
+  /**
+   * @return a DataObject with the double-long-unsigned value of the identification number
+   */
   public DataObject asDataObjectInBcdRepresentation() {
     if (StringUtils.isBlank(this.textualRepresentation)) {
       return DataObject.newNullData();

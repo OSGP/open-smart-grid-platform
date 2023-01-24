@@ -50,32 +50,44 @@ public abstract class AbstractEntity implements Serializable {
 
   // === GETTERS & SETTERS [START] ===
 
-  /** @return the id */
+  /**
+   * @return the id
+   */
   public Long getId() {
     return this.id;
   }
 
-  /** @return the creation time */
+  /**
+   * @return the creation time
+   */
   public Date getCreationTime() {
     return (Date) this.creationTime.clone();
   }
 
-  /** @return the creation time */
+  /**
+   * @return the creation time
+   */
   public Instant getCreationTimeInstant() {
     return this.creationTime.toInstant();
   }
 
-  /** @return the modification time */
+  /**
+   * @return the modification time
+   */
   public Date getModificationTime() {
     return (Date) this.modificationTime.clone();
   }
 
-  /** @return the modification time */
+  /**
+   * @return the modification time
+   */
   public Instant getModificationTimeInstant() {
     return this.modificationTime.toInstant();
   }
 
-  /** @return the version */
+  /**
+   * @return the version
+   */
   public Long getVersion() {
     return this.version;
   }

@@ -30,27 +30,37 @@ public class GenericNotification {
     this.notificationType = notificationType;
   }
 
-  /** @return the message */
+  /**
+   * @return the message
+   */
   public String getMessage() {
     return this.message;
   }
 
-  /** @return the result */
+  /**
+   * @return the result
+   */
   public String getResult() {
     return this.result;
   }
 
-  /** @return the deviceIdentification */
+  /**
+   * @return the deviceIdentification
+   */
   public String getDeviceIdentification() {
     return this.deviceIdentification;
   }
 
-  /** @return the correlationUid */
+  /**
+   * @return the correlationUid
+   */
   public String getCorrelationUid() {
     return this.correlationUid;
   }
 
-  /** @return the notificationType */
+  /**
+   * @return the notificationType
+   */
   public String getNotificationType() {
     return this.notificationType;
   }
