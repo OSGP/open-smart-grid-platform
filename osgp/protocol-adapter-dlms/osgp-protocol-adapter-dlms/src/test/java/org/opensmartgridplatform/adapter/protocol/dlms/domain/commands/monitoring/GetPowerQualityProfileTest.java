@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
@@ -189,7 +190,9 @@ public abstract class GetPowerQualityProfileTest {
     assertThat(values).hasSize(2);
     assertThat((Date) values.get(0).getValue())
         .isEqualTo(
-            new DateTime(2023, 1, 12, 0, 0, 0).plusMinutes(index * intervalInMinutes).toDate());
+            new DateTime(2023, 1, 12, 0, 0, 0, DateTimeZone.forID("Europe/Amsterdam"))
+                .plusMinutes(index * intervalInMinutes)
+                .toDate());
     assertThat((BigDecimal) values.get(1).getValue()).isEqualTo(BigDecimal.valueOf(index));
   }
 
