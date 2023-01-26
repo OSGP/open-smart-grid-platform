@@ -9,8 +9,8 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitoring;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
@@ -31,7 +31,7 @@ public class GetPowerQualityProfileNoSelectiveAccessHandler
   protected List<ProfileEntryValueDto> createProfileEntryValueDto(
       final DataObject profileEntryDataObject,
       final ProfileEntryDto previousProfileEntryDto,
-      final Map<Integer, SelectableObject> selectableCaptureObjects,
+      final LinkedHashMap<Integer, SelectableObject> selectedObjects,
       final int timeInterval) {
 
     final List<ProfileEntryValueDto> result = new ArrayList<>();
@@ -39,13 +39,13 @@ public class GetPowerQualityProfileNoSelectiveAccessHandler
 
     for (int i = 0; i < dataObjects.size(); i++) {
 
-      if (selectableCaptureObjects.containsKey(i)) {
+      // The values are retrieved without selective access, so the meter could have returned more
+      // values than we need. Only the values that are present in the selectedObjects should be
+      // returned.
+      if (selectedObjects.containsKey(i)) {
         final ProfileEntryValueDto currentProfileEntryValueDto =
             this.makeProfileEntryValueDto(
-                dataObjects.get(i),
-                selectableCaptureObjects.get(i),
-                previousProfileEntryDto,
-                timeInterval);
+                dataObjects.get(i), selectedObjects.get(i), previousProfileEntryDto, timeInterval);
         result.add(currentProfileEntryValueDto);
       }
     }
