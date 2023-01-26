@@ -64,6 +64,7 @@ public abstract class GetPowerQualityProfileTest {
   private static final String OBIS_CLOCK = "0.0.1.0.0.255";
   private static final String UNIT_VOLT = "V";
   private static final String UNIT_UNDEFINED = "UNDEFINED";
+  private static final int[] VALUES = new int[] {8, 7, 6, 5};
 
   public static CosemObject createObject(
       final int classId,
@@ -193,7 +194,7 @@ public abstract class GetPowerQualityProfileTest {
             new DateTime(2023, 1, 12, 0, 0, 0, DateTimeZone.forID("Europe/Amsterdam"))
                 .plusMinutes(index * intervalInMinutes)
                 .toDate());
-    assertThat((BigDecimal) values.get(1).getValue()).isEqualTo(BigDecimal.valueOf(index));
+    assertThat((BigDecimal) values.get(1).getValue()).isEqualTo(BigDecimal.valueOf(VALUES[index]));
   }
 
   protected List<DlmsObjectType> getPropertyObjects() {
@@ -208,6 +209,7 @@ public abstract class GetPowerQualityProfileTest {
   }
 
   protected List<GetResult> createProfileEntries(final boolean selectiveAccess) {
+    // Timestamp in DLMS datetime format for January 1, 2023
     final byte[] timestamp =
         new byte[] {
           (byte) 0x07,
@@ -224,61 +226,42 @@ public abstract class GetPowerQualityProfileTest {
           (byte) 0x00
         };
 
-    final DataObject entry1;
-    final DataObject entry2;
-    final DataObject entry3;
-    final DataObject entry4;
-
-    if (selectiveAccess) {
-      entry1 =
-          DataObject.newStructureData(
-              DataObject.newOctetStringData(timestamp), DataObject.newUInteger8Data((short) 0));
-
-      entry2 =
-          DataObject.newStructureData(
-              DataObject.newNullData(), DataObject.newUInteger8Data((short) 1));
-
-      entry3 =
-          DataObject.newStructureData(
-              DataObject.newNullData(), DataObject.newUInteger8Data((short) 2));
-
-      entry4 =
-          DataObject.newStructureData(
-              DataObject.newNullData(), DataObject.newUInteger8Data((short) 3));
-    } else {
-      entry1 =
-          DataObject.newStructureData(
-              DataObject.newOctetStringData(timestamp),
-              DataObject.newUInteger16Data(2335), // not selected value
-              DataObject.newUInteger8Data((short) 0), // selected value
-              DataObject.newUInteger16Data(10)); // not selected value
-
-      entry2 =
-          DataObject.newStructureData(
-              DataObject.newNullData(), // null means timestamp is calculated
-              DataObject.newUInteger16Data(2336), // not selected value
-              DataObject.newUInteger8Data((short) 1), // selected value
-              DataObject.newUInteger16Data(11)); // not selected value
-
-      entry3 =
-          DataObject.newStructureData(
-              DataObject.newNullData(), // null means timestamp is calculated
-              DataObject.newUInteger16Data(2337), // not selected value
-              DataObject.newUInteger8Data((short) 2), // selected value
-              DataObject.newUInteger16Data(12)); // not selected value
-
-      entry4 =
-          DataObject.newStructureData(
-              DataObject.newNullData(), // null means timestamp is calculated
-              DataObject.newUInteger16Data(2338), // not selected value
-              DataObject.newUInteger8Data((short) 3), // selected value
-              DataObject.newUInteger16Data(13)); // not selected value
-    }
+    final DataObject entry1 = this.createEntry(timestamp, 2335, VALUES[0], 10, selectiveAccess);
+    final DataObject entry2 = this.createEntry(null, 2336, VALUES[1], 11, selectiveAccess);
+    final DataObject entry3 = this.createEntry(null, 2337, VALUES[2], 12, selectiveAccess);
+    final DataObject entry4 = this.createEntry(null, 2338, VALUES[3], 13, selectiveAccess);
 
     final GetResult getResult =
         new GetResultImpl(DataObject.newArrayData(List.of(entry1, entry2, entry3, entry4)));
 
     return List.of(getResult);
+  }
+
+  private DataObject createEntry(
+      final byte[] timestamp,
+      final int value1,
+      final int value2,
+      final int value3,
+      final boolean selectiveAccess) {
+    final List<DataObject> values = new ArrayList<>();
+
+    if (timestamp != null) {
+      values.add(DataObject.newOctetStringData(timestamp));
+    } else {
+      values.add(DataObject.newNullData()); // null means timestamp is calculated
+    }
+
+    if (!selectiveAccess) {
+      values.add(DataObject.newUInteger16Data(value1));
+    }
+
+    values.add(DataObject.newUInteger8Data((short) value2));
+
+    if (!selectiveAccess) {
+      values.add(DataObject.newUInteger16Data(value3));
+    }
+
+    return DataObject.newStructureData(values);
   }
 
   protected List<GetResult> createPartialNotAllowedCaptureObjects() {
