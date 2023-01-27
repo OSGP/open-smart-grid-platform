@@ -69,7 +69,9 @@ public class DlmsObject {
     return DEFAULT_ATTRIBUTE_ID;
   }
 
-  /** @param medium Specifies the medium to match on in overriding classes */
+  /**
+   * @param medium Specifies the medium to match on in overriding classes
+   */
   public boolean mediumMatches(final Medium medium) {
     return true;
   }

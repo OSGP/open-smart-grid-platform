@@ -117,7 +117,9 @@ public class ChannelCache {
     }
   }
 
-  /** @return the number of cached channels */
+  /**
+   * @return the number of cached channels
+   */
   public int size() {
     return this.channelMap.size();
   }

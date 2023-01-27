@@ -16,7 +16,9 @@ public class GenericSendNotificationRequest {
     this.notification = notification;
   }
 
-  /** @return the notification */
+  /**
+   * @return the notification
+   */
   public GenericNotification getNotification() {
     return this.notification;
   }

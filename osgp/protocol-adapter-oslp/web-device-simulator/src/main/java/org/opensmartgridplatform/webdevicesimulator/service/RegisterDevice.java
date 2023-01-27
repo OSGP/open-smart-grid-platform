@@ -367,7 +367,9 @@ public class RegisterDevice {
     }
   }
 
-  /** @deprecated No longer used, as device creation scripts create device UID */
+  /**
+   * @deprecated No longer used, as device creation scripts create device UID
+   */
   @Deprecated
   private byte[] createRandomDeviceUid() {
     // Generate random bytes for UID

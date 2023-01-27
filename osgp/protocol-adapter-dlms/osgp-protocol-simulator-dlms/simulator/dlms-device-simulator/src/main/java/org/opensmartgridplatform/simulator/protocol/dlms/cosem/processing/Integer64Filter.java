@@ -26,10 +26,10 @@ class Integer64Filter extends RangeDescriptorFilter {
   public boolean match(final Object match) {
     final Long value;
 
-    if (match instanceof Long) {
-      value = (Long) match;
-    } else if (match instanceof Integer) {
-      value = Long.valueOf((Integer) match);
+    if (match instanceof Long longMatch) {
+      value = longMatch;
+    } else if (match instanceof Integer integerMatch) {
+      value = Long.valueOf(integerMatch);
     } else {
       throw new IllegalArgumentException(
           this.getClass().getSimpleName()

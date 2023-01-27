@@ -106,7 +106,8 @@ public class LightMeasurementRtuDeviceResponseService extends AbstractDeviceResp
       final Consumer<? super Iec60870Device> actionPerDevice) {
 
     final List<Iec60870Device> lightMeasurementDevices =
-        this.iec60870DeviceRepository.findByGatewayDeviceIdentification(rtuDeviceIdentification)
+        this.iec60870DeviceRepository
+            .findByGatewayDeviceIdentification(rtuDeviceIdentification)
             .stream()
             .filter(device -> DeviceType.LIGHT_SENSOR == device.getDeviceType())
             .collect(Collectors.toList());

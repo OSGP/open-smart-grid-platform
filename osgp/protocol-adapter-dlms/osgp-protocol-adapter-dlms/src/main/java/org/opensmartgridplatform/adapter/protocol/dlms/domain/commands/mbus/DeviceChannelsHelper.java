@@ -390,7 +390,9 @@ public class DeviceChannelsHelper {
     return null;
   }
 
-  /** @return true if all channel elements are 0 or null */
+  /**
+   * @return true if all channel elements are 0 or null
+   */
   private boolean checkChannelConfigurationValues(
       final ChannelElementValuesDto channelElementValues) {
     return (channelElementValues.getVersion() == 0)
@@ -398,7 +400,9 @@ public class DeviceChannelsHelper {
         && channelElementValues.getManufacturerIdentification() == null;
   }
 
-  /** @return true if all channel elements are 0 or null */
+  /**
+   * @return true if all channel elements are 0 or null
+   */
   private boolean checkChannelIdentificationValues(
       final ChannelElementValuesDto channelElementValues) {
     return (channelElementValues.getIdentificationNumber() == null
