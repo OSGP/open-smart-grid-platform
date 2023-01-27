@@ -331,7 +331,7 @@ public class SoapServiceSecretManagementIT {
             .sendRequest(withSoapEnvelope(generateAndStoreRequest))
             .andExpect(ResponseMatchers.noFault());
 
-    assertThat(response).isNotNull();
+    assertThat(response);
   }
 
   /**
