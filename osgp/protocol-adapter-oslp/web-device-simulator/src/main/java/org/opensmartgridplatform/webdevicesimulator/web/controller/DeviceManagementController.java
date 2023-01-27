@@ -386,27 +386,31 @@ public class DeviceManagementController extends AbstractController {
       final Model model) {
 
     if (!bindingResult.hasErrors()) {
-      // Find device
-      final Device deviceToUpdate = this.deviceManagementService.findDevice(deviceId);
-      if (deviceToUpdate != null) {
-        // Update data
-        deviceToUpdate.setIpAddress(updated.getIpAddress());
-        deviceToUpdate.setDeviceType(updated.getDeviceType());
-        deviceToUpdate.setActualLinkType(updated.getActualLinkType());
-        deviceToUpdate.setTariffOn(updated.isTariffOn());
-        deviceToUpdate.setProtocol(updated.getProtocol());
-        deviceToUpdate.setFirmwareVersion(updated.getFirmwareVersion());
-
-        // Store device
-        final Device device = this.deviceManagementService.updateDevice(deviceToUpdate);
-        this.addFeedbackMessage(
-            attributes, FEEDBACK_MESSAGE_KEY_DEVICE_UPDATED, device.getDeviceIdentification());
-
-        model.addAttribute(MODEL_ATTRIBUTE_DEVICE, deviceToUpdate);
-      }
+      this.updateDevice(updated, deviceId);
+      this.addFeedbackMessage(
+          attributes, FEEDBACK_MESSAGE_KEY_DEVICE_UPDATED, updated.getDeviceIdentification());
+      model.addAttribute(MODEL_ATTRIBUTE_DEVICE, updated);
     }
 
     return DEVICE_EDIT_VIEW;
+  }
+
+  private void updateDevice(final Device updated, final Long deviceId) {
+    // Find device
+    final Device deviceToUpdate = this.deviceManagementService.findDevice(deviceId);
+    if (deviceToUpdate != null) {
+
+      // Update data
+      deviceToUpdate.setIpAddress(updated.getIpAddress());
+      deviceToUpdate.setDeviceType(updated.getDeviceType());
+      deviceToUpdate.setActualLinkType(updated.getActualLinkType());
+      deviceToUpdate.setTariffOn(updated.isTariffOn());
+      deviceToUpdate.setProtocol(updated.getProtocol());
+      deviceToUpdate.setFirmwareVersion(updated.getFirmwareVersion());
+
+      // Store device
+      this.deviceManagementService.updateDevice(deviceToUpdate);
+    }
   }
 
   @PostMapping(value = COMMAND_REGISTER_URL)
