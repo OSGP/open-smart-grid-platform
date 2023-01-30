@@ -15,9 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -55,11 +53,6 @@ public class Ssld extends Device {
       orphanRemoval = true)
   @LazyCollection(LazyCollectionOption.FALSE)
   private final List<Ean> eans = new ArrayList<>();
-
-  @LazyCollection(LazyCollectionOption.FALSE)
-  @ElementCollection()
-  @CollectionTable(name = "device_output_setting", joinColumns = @JoinColumn(name = "device_id"))
-  private List<DeviceOutputSetting> outputSettings = new ArrayList<>();
 
   @OneToMany(
       mappedBy = "device",
