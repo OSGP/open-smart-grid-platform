@@ -41,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.SoapMessage;
 import org.springframework.ws.test.server.MockWebServiceClient;
-import org.springframework.ws.test.server.ResponseActions;
 import org.springframework.ws.test.server.ResponseMatchers;
 
 @SpringBootTest
@@ -326,12 +325,10 @@ public class SoapServiceSecretManagementIT {
     // Generate and store secret: this should NOT result in a fault message
     final Resource generateAndStoreRequest =
         new ClassPathResource("test-requests/generateAndStoreSecrets.xml");
-    final ResponseActions response =
-        this.mockWebServiceClient
-            .sendRequest(withSoapEnvelope(generateAndStoreRequest))
-            .andExpect(ResponseMatchers.noFault());
 
-    assertThat(response);
+    this.mockWebServiceClient
+        .sendRequest(withSoapEnvelope(generateAndStoreRequest))
+        .andExpect(ResponseMatchers.noFault());
   }
 
   /**
