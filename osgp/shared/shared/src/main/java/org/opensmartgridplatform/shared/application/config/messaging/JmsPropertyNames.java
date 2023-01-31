@@ -11,6 +11,7 @@ package org.opensmartgridplatform.shared.application.config.messaging;
 /** Common property names for JMS configuration classes. */
 public final class JmsPropertyNames {
 
+  public static final String PROPERTY_NAME_BROKER_TYPE = "broker.type";
   public static final String PROPERTY_NAME_BROKER_URL = "broker.url";
   public static final String PROPERTY_NAME_QUEUE = "queue";
 
@@ -28,6 +29,8 @@ public final class JmsPropertyNames {
       "connection.pool.time.between.expiration.check.millis";
   public static final String PROPERTY_NAME_CONNECTION_POOL_IDLE_TIMEOUT =
       "connection.pool.idle.timeout";
+  public static String PROPERTY_NAME_CONNECTION_QUEUE_CONSUMER_WINDOW_SIZE =
+      "connection.queue.consumer.window.size";
   public static final String PROPERTY_NAME_CONNECTION_QUEUE_PREFETCH = "connection.queue.prefetch";
   public static final String PROPERTY_NAME_CONNECTION_MESSAGE_PRIORITY_SUPPORTED =
       "connection.message.priority.supported";
