@@ -39,6 +39,8 @@ public class LightMeasurementDeviceAsduFactory implements Iec60870AsduFactory {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(LightMeasurementDeviceAsduFactory.class);
 
+  private Random random = new Random();
+
   @Value("${general_interrogation_object_addresses}")
   private final int[] ioa = new int[0];
 
@@ -91,7 +93,7 @@ public class LightMeasurementDeviceAsduFactory implements Iec60870AsduFactory {
     final long timestamp = System.currentTimeMillis();
     final InformationObject[] informationObjects = new InformationObject[1];
 
-    final int index = new Random().nextInt(this.ioa.length);
+    final int index = this.random.nextInt(this.ioa.length);
     this.switchValue(index);
     final String eventValue = this.iev[index] ? "DARK" : "LIGHT";
 

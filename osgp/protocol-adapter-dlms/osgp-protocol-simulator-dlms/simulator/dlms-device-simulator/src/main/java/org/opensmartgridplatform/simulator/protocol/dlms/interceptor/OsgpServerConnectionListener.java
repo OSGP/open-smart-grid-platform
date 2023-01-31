@@ -20,6 +20,8 @@ public class OsgpServerConnectionListener implements ServerConnectionListener {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OsgpServerConnectionListener.class);
 
+  private Random random = new Random();
+
   private final int connectionSetupDelayMin;
   private final int connectionSetupDelayMax;
 
@@ -60,7 +62,7 @@ public class OsgpServerConnectionListener implements ServerConnectionListener {
     if (this.connectionSetupDelayMin == this.connectionSetupDelayMax) {
       return this.connectionSetupDelayMax;
     }
-    return new Random().nextInt(this.connectionSetupDelayMax - this.connectionSetupDelayMin)
+    return this.random.nextInt(this.connectionSetupDelayMax - this.connectionSetupDelayMin)
         + this.connectionSetupDelayMin;
   }
 }
