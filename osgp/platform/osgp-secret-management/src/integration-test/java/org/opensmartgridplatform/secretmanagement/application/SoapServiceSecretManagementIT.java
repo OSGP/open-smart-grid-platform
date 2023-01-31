@@ -325,6 +325,7 @@ public class SoapServiceSecretManagementIT {
     // Generate and store secret: this should NOT result in a fault message
     final Resource generateAndStoreRequest =
         new ClassPathResource("test-requests/generateAndStoreSecrets.xml");
+
     this.mockWebServiceClient
         .sendRequest(withSoapEnvelope(generateAndStoreRequest))
         .andExpect(ResponseMatchers.noFault());

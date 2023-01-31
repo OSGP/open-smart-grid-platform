@@ -24,14 +24,19 @@ class Integer64Filter extends RangeDescriptorFilter {
 
   @Override
   public boolean match(final Object match) {
-    if (!(match instanceof Integer)) {
+    final Long value;
+
+    if (match instanceof Long longMatch) {
+      value = longMatch;
+    } else if (match instanceof Integer integerMatch) {
+      value = Long.valueOf(integerMatch);
+    } else {
       throw new IllegalArgumentException(
           this.getClass().getSimpleName()
               + " does not support matching of type "
               + match.getClass().getSimpleName());
     }
 
-    final Long value = (Long) match;
     return value >= this.from && value <= this.to;
   }
 }

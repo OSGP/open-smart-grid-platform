@@ -66,14 +66,12 @@ public class AssociationLnObjects {
         .isNotNull();
 
     assertThat(response.getAssociationLnList().getAssociationLnListElement().get(0))
-        .as("AssociationLnList shoudl have at least one entry")
+        .as("AssociationLnList should have at least one entry")
         .isNotNull();
 
     final AssociationLnListElement element =
         response.getAssociationLnList().getAssociationLnListElement().get(0);
     assertThat(element.getAccessRights()).as("AccessRights should be present").isNotNull();
-
-    assertThat(element.getClassId()).as("ClassId should be present").isNotNull();
 
     assertThat(element.getLogicalName()).as("LogicalName should be present").isNotNull();
 

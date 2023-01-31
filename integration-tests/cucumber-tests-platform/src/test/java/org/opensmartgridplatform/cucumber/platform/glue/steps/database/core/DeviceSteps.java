@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getFloat;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import io.cucumber.java.en.Then;
@@ -89,7 +90,7 @@ public class DeviceSteps extends BaseDeviceSteps {
     }
     if (settings.containsKey(PlatformKeys.CONTAINER_NUMBER)) {
       assertThat(device.getContainerAddress().getNumber())
-          .isEqualTo(getString(settings, PlatformKeys.CONTAINER_NUMBER));
+          .isEqualTo(getInteger(settings, PlatformKeys.CONTAINER_NUMBER));
     }
     if (settings.containsKey(PlatformKeys.CONTAINER_MUNICIPALITY)) {
       assertThat(device.getContainerAddress().getMunicipality())
@@ -205,7 +206,7 @@ public class DeviceSteps extends BaseDeviceSteps {
 
   /** Checks whether the device exists in the database.. */
   @Then("^the device with id \"([^\"]*)\" exists$")
-  public void theDeviceWithIdExists(final String deviceIdentification) throws Throwable {
+  public void theDeviceWithIdExists(final String deviceIdentification) {
     Wait.until(
         () -> {
           final Device entity =

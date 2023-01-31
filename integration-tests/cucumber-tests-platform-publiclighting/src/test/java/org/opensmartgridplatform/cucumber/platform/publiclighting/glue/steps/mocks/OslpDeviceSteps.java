@@ -1184,7 +1184,7 @@ public class OslpDeviceSteps {
 
     final EventNotificationResponse response = responseMessage.getEventNotificationResponse();
 
-    assertThat(response.getStatus())
+    assertThat(response.getStatus().name())
         .isEqualTo(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS));
   }
 
@@ -1416,9 +1416,7 @@ public class OslpDeviceSteps {
       final RegisterDeviceResponse response = responseMessage.getRegisterDeviceResponse();
 
       assertThat(response.getCurrentTime()).isNotNull();
-      assertThat(response.getLocationInfo().getLongitude()).isNotNull();
-      assertThat(response.getLocationInfo().getLatitude()).isNotNull();
-      assertThat(response.getLocationInfo().getTimeOffset()).isNotNull();
+      assertThat(response.getLocationInfo()).isNotNull();
 
       assertThat(response.getStatus().name())
           .isEqualTo(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS));

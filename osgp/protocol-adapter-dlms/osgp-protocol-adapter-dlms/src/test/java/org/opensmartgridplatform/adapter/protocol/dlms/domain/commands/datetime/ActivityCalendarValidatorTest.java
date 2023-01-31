@@ -41,8 +41,7 @@ public class ActivityCalendarValidatorTest {
     INVALID_WEEK_NAME
   }
 
-  ActivityCalendarDto createActivityCalendarDto(final TestAnomaly testAnomaly)
-      throws FunctionalException {
+  ActivityCalendarDto createActivityCalendarDto(final TestAnomaly testAnomaly) {
     final DayProfileActionDto dayAction1 = new DayProfileActionDto(1, new CosemTimeDto());
     final DayProfileActionDto dayAction2 = new DayProfileActionDto(2, new CosemTimeDto());
     final DayProfileActionDto dayAction3 = new DayProfileActionDto(3, new CosemTimeDto());
@@ -204,12 +203,11 @@ public class ActivityCalendarValidatorTest {
   }
 
   private void testExpectException(final TestAnomaly testAnomaly, final String exceptionMessage) {
+    final ActivityCalendarDto activityCalendarDto = this.createActivityCalendarDto(testAnomaly);
     final FunctionalException exception =
         assertThrows(
             FunctionalException.class,
-            () -> {
-              ActivityCalendarValidator.validate(this.createActivityCalendarDto(testAnomaly));
-            });
+            () -> ActivityCalendarValidator.validate(activityCalendarDto));
     assertThat(exception).getCause().hasMessage(exceptionMessage);
   }
 }

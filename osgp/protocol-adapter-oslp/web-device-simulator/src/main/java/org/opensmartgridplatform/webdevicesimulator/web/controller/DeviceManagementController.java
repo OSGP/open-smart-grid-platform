@@ -378,40 +378,39 @@ public class DeviceManagementController extends AbstractController {
 
   @PostMapping(value = DEVICE_EDIT_URL)
   public String editDevice(
-      @SuppressWarnings("squid:S4684") @ModelAttribute(MODEL_ATTRIBUTE_DEVICE)
-          final Device
-              updated, // webdevicesimulator doesn't have to be as strict in this Sonar issue
+      // web device simulator doesn't have to be as strict in this Sonar issue
+      @SuppressWarnings("squid:S4684") @ModelAttribute(MODEL_ATTRIBUTE_DEVICE) final Device updated,
       @PathVariable final Long deviceId,
       final BindingResult bindingResult,
       final RedirectAttributes attributes,
       final Model model) {
 
-    if (bindingResult.hasErrors()) {
-      return DEVICE_EDIT_VIEW;
+    if (!bindingResult.hasErrors()) {
+      this.updateDevice(updated, deviceId);
+      this.addFeedbackMessage(
+          attributes, FEEDBACK_MESSAGE_KEY_DEVICE_UPDATED, updated.getDeviceIdentification());
+      model.addAttribute(MODEL_ATTRIBUTE_DEVICE, updated);
     }
-
-    // Find device
-    final Device deviceToUpdate = this.deviceManagementService.findDevice(deviceId);
-    if (deviceToUpdate == null) {
-      return DEVICE_EDIT_VIEW;
-    }
-
-    // Update data
-    deviceToUpdate.setIpAddress(updated.getIpAddress());
-    deviceToUpdate.setDeviceType(updated.getDeviceType());
-    deviceToUpdate.setActualLinkType(updated.getActualLinkType());
-    deviceToUpdate.setTariffOn(updated.isTariffOn());
-    deviceToUpdate.setProtocol(updated.getProtocol());
-    deviceToUpdate.setFirmwareVersion(updated.getFirmwareVersion());
-
-    // Store device
-    final Device device = this.deviceManagementService.updateDevice(deviceToUpdate);
-    this.addFeedbackMessage(
-        attributes, FEEDBACK_MESSAGE_KEY_DEVICE_UPDATED, device.getDeviceIdentification());
-
-    model.addAttribute(MODEL_ATTRIBUTE_DEVICE, deviceToUpdate);
 
     return DEVICE_EDIT_VIEW;
+  }
+
+  private void updateDevice(final Device updated, final Long deviceId) {
+    // Find device
+    final Device deviceToUpdate = this.deviceManagementService.findDevice(deviceId);
+    if (deviceToUpdate != null) {
+
+      // Update data
+      deviceToUpdate.setIpAddress(updated.getIpAddress());
+      deviceToUpdate.setDeviceType(updated.getDeviceType());
+      deviceToUpdate.setActualLinkType(updated.getActualLinkType());
+      deviceToUpdate.setTariffOn(updated.isTariffOn());
+      deviceToUpdate.setProtocol(updated.getProtocol());
+      deviceToUpdate.setFirmwareVersion(updated.getFirmwareVersion());
+
+      // Store device
+      this.deviceManagementService.updateDevice(deviceToUpdate);
+    }
   }
 
   @PostMapping(value = COMMAND_REGISTER_URL)

@@ -104,7 +104,6 @@ public class CosemDateTimeConverterTest {
             .map(COSEMDATETIME_BYTE_ARRAY_NORMAL, CosemDateTime.class);
 
     assertThat(cosemDateTime).isNotNull();
-    assertThat(cosemDateTime.getDeviation()).isNotNull();
     assertThat((byte) (cosemDateTime.getDeviation() >> 8)).isEqualTo(FIRST_BYTE_FOR_DEVIATION);
     assertThat((byte) (cosemDateTime.getDeviation() & 0xFF)).isEqualTo(SECOND_BYTE_FOR_DEVIATION);
 
@@ -115,7 +114,6 @@ public class CosemDateTimeConverterTest {
             .map(COSEMDATETIME_BYTE_ARRAY_POSITIVE_DEVIATION, CosemDateTime.class);
 
     assertThat(cosemDateTime).isNotNull();
-    assertThat(cosemDateTime.getDeviation()).isNotNull();
     assertThat((byte) (cosemDateTime.getDeviation() >> 8))
         .isEqualTo(FIRST_BYTE_FOR_POSITIVE_DEVIATION);
     assertThat((byte) (cosemDateTime.getDeviation() & 0xFF))
@@ -172,7 +170,6 @@ public class CosemDateTimeConverterTest {
 
     assertThat(cosemDateTime).isNotNull();
     assertThat(cosemDateTime.getDate()).isNotNull();
-    assertThat(cosemDateTime.getDate().getYear()).isNotNull();
     assertThat(cosemDateTime.getDate().getYear()).isEqualTo(CosemDate.YEAR_NOT_SPECIFIED);
   }
 }
