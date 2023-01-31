@@ -52,7 +52,7 @@ public class JmsBrokerActiveMq implements JmsBroker {
 
   public JmsBrokerActiveMq(final JmsPropertyReader propertyReader) {
     this.propertyReader = propertyReader;
-    this.redeliveryPolicy = this.initRedeliveryPolicy();
+    this.redeliveryPolicy = this.getRedeliveryPolicy();
   }
 
   @Override
@@ -129,7 +129,8 @@ public class JmsBrokerActiveMq implements JmsBroker {
     return redeliveryPolicyMap;
   }
 
-  private RedeliveryPolicy initRedeliveryPolicy() {
+  @Override
+  public RedeliveryPolicy getRedeliveryPolicy() {
     LOGGER.debug("Initializing redelivery policy.");
 
     final RedeliveryPolicy policy = new RedeliveryPolicy();

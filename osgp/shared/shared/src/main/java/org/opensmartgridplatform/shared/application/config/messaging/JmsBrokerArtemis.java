@@ -22,8 +22,10 @@ import static org.opensmartgridplatform.shared.application.config.messaging.JmsP
 
 import javax.jms.Destination;
 import javax.net.ssl.SSLException;
+import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.apache.activemq.artemis.jms.client.ActiveMQQueue;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +48,11 @@ public class JmsBrokerArtemis implements JmsBroker {
   @Override
   public Destination getQueue() {
     return new ActiveMQQueue(this.propertyReader.get(PROPERTY_NAME_QUEUE, String.class));
+  }
+
+  @Override
+  public RedeliveryPolicy getRedeliveryPolicy() {
+    throw new NotImplementedException("RedeliveryPolicy should be implemented in broker.xml");
   }
 
   @Override

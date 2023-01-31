@@ -29,6 +29,7 @@ import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.MessageListener;
 import javax.net.ssl.SSLException;
+import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.opensmartgridplatform.shared.infra.jms.OsgpJmsTemplate;
 import org.slf4j.Logger;
@@ -193,12 +194,7 @@ public class JmsConfigurationFactory {
     return connectionFactory;
   }
 
-  protected JmsBrokerType getBrokerType() {
-    final String brokerType = this.getPropertyReader().get(PROPERTY_NAME_BROKER_TYPE, String.class);
-    try {
-      return JmsBrokerType.valueOf(brokerType);
-    } catch (final IllegalArgumentException e) {
-      throw new IllegalArgumentException("Unknown broker type: " + brokerType, e);
-    }
+  public RedeliveryPolicy getRedeliveryPolicy() {
+    return this.jmsBroker.getRedeliveryPolicy();
   }
 }

@@ -12,6 +12,7 @@ package org.opensmartgridplatform.shared.application.config.messaging;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.net.ssl.SSLException;
+import org.apache.activemq.RedeliveryPolicy;
 
 public interface JmsBroker {
 
@@ -20,4 +21,6 @@ public interface JmsBroker {
   Destination getQueue();
 
   ConnectionFactory initConnectionFactory() throws SSLException;
+
+  RedeliveryPolicy getRedeliveryPolicy();
 }
