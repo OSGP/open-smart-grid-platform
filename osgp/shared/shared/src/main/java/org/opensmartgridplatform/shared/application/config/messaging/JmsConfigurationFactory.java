@@ -17,12 +17,9 @@ import static org.opensmartgridplatform.shared.application.config.messaging.JmsP
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_POOL_MAX_ACTIVE_SESSIONS;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_POOL_SIZE;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_POOL_TIME_BETWEEN_EXPIRATION_CHECK_MILLIS;
-import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_QUEUE_CONSUMER_WINDOW_SIZE;
-import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_QUEUE_PREFETCH;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_DELIVERY_PERSISTENT;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_EXPLICIT_QOS_ENABLED;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_MAX_CONCURRENT_CONSUMERS;
-import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_QUEUE;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_TIME_TO_LIVE;
 
 import javax.jms.ConnectionFactory;
@@ -58,32 +55,7 @@ public class JmsConfigurationFactory {
         new JmsPropertyReader(environment, propertyPrefix, defaultJmsConfiguration);
     this.jmsBroker = this.getBroker();
     this.pooledConnectionFactory = this.initPooledConnectionFactory();
-    if (this.hasCustomPrefetchOrConsumerWindowSize(defaultJmsConfiguration)) {
-      LOGGER.info(
-          "Not using PooledConnectionFactory for consumers, because prefetch/customer.window.size property has been set for queue \"{}\" (see https://activemq.apache.org/what-is-the-prefetch-limit-for).",
-          this.propertyReader.get(PROPERTY_NAME_QUEUE, String.class));
-      this.consumerConnectionFactory = this.initConnectionFactory();
-    } else {
-      this.consumerConnectionFactory = this.pooledConnectionFactory;
-    }
-  }
-
-  private boolean hasCustomPrefetchOrConsumerWindowSize(
-      final JmsConfiguration defaultJmsConfiguration) {
-    final JmsBrokerType jmsBrokerType =
-        this.propertyReader.get(PROPERTY_NAME_BROKER_TYPE, JmsBrokerType.class);
-    switch (jmsBrokerType) {
-      case ACTIVE_MQ -> {
-        return this.propertyReader.get(PROPERTY_NAME_CONNECTION_QUEUE_PREFETCH, int.class)
-            != defaultJmsConfiguration.getConnectionQueuePrefetch();
-      }
-      case ARTEMIS -> {
-        return this.propertyReader.get(
-                PROPERTY_NAME_CONNECTION_QUEUE_CONSUMER_WINDOW_SIZE, int.class)
-            != defaultJmsConfiguration.getConnectionQueueConsumerWindowSize();
-      }
-      default -> throw new IllegalArgumentException("Unknown broker type: " + jmsBrokerType);
-    }
+    this.consumerConnectionFactory = this.initConnectionFactory();
   }
 
   private JmsBroker getBroker() {
@@ -103,10 +75,6 @@ public class JmsConfigurationFactory {
 
   public PooledConnectionFactory getPooledConnectionFactory() {
     return this.pooledConnectionFactory;
-  }
-
-  public JmsPropertyReader getPropertyReader() {
-    return this.propertyReader;
   }
 
   public JmsTemplate initJmsTemplate() {
