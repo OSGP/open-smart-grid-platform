@@ -24,7 +24,6 @@ import static org.opensmartgridplatform.shared.application.config.messaging.JmsP
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_MAXIMUM_REDELIVERIES;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_MAXIMUM_REDELIVERY_DELAY;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_MAX_THREAD_POOL_SIZE;
-import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_QUEUE;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_REDELIVERY_DELAY;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_TRUSTED_PACKAGES;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_TRUST_ALL_PACKAGES;
@@ -61,8 +60,8 @@ public class JmsBrokerActiveMq implements JmsBroker {
   }
 
   @Override
-  public Destination getQueue() {
-    return new ActiveMQQueue(this.propertyReader.get(PROPERTY_NAME_QUEUE, String.class));
+  public Destination getQueue(final String queueName) {
+    return new ActiveMQQueue(queueName);
   }
 
   @Override

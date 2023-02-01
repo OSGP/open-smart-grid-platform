@@ -9,7 +9,7 @@
 package org.opensmartgridplatform.core.application.config.messaging;
 
 import javax.net.ssl.SSLException;
-import org.apache.activemq.pool.PooledConnectionFactory;
+import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationNames;
@@ -25,7 +25,7 @@ public class OutboundLogItemRequestsMessagingConfig {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(OutboundLogItemRequestsMessagingConfig.class);
 
-  private JmsConfigurationFactory jmsConfigurationFactory;
+  private final JmsConfigurationFactory jmsConfigurationFactory;
 
   public OutboundLogItemRequestsMessagingConfig(
       final Environment environment, final JmsConfiguration defaultJmsConfiguration)

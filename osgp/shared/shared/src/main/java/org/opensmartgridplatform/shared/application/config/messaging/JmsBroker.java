@@ -18,7 +18,7 @@ public interface JmsBroker {
 
   JmsBrokerType getBrokerType();
 
-  Destination getQueue();
+  Destination getQueue(String queueName);
 
   ConnectionFactory initConnectionFactory() throws SSLException;
 

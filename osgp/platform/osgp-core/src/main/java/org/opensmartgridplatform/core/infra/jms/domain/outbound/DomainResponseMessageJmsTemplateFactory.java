@@ -11,7 +11,7 @@ package org.opensmartgridplatform.core.infra.jms.domain.outbound;
 import java.util.ArrayList;
 import java.util.List;
 import javax.net.ssl.SSLException;
-import org.apache.activemq.pool.PooledConnectionFactory;
+import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.opensmartgridplatform.core.infra.jms.ConnectionFactoryRegistry;
 import org.opensmartgridplatform.core.infra.jms.Registry;
 import org.opensmartgridplatform.core.infra.jms.domain.DefaultDomainJmsConfiguration;
@@ -30,13 +30,14 @@ public class DomainResponseMessageJmsTemplateFactory implements InitializingBean
   private static final Logger LOGGER =
       LoggerFactory.getLogger(DomainResponseMessageJmsTemplateFactory.class);
 
-  private ConnectionFactoryRegistry connectionFactoryRegistry = new ConnectionFactoryRegistry();
-  private Registry<JmsTemplate> jmsTemplateRegistry = new Registry<>();
+  private final ConnectionFactoryRegistry connectionFactoryRegistry =
+      new ConnectionFactoryRegistry();
+  private final Registry<JmsTemplate> jmsTemplateRegistry = new Registry<>();
 
   @Autowired private DefaultDomainJmsConfiguration defaultDomainJmsConfiguration;
 
-  private Environment environment;
-  private List<DomainInfo> domainInfos;
+  private final Environment environment;
+  private final List<DomainInfo> domainInfos;
 
   public DomainResponseMessageJmsTemplateFactory(
       final Environment environment, final List<DomainInfo> domainInfos) {

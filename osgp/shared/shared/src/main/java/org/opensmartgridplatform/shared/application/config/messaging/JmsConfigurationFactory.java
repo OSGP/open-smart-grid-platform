@@ -20,6 +20,7 @@ import static org.opensmartgridplatform.shared.application.config.messaging.JmsP
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_DELIVERY_PERSISTENT;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_EXPLICIT_QOS_ENABLED;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_MAX_CONCURRENT_CONSUMERS;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_QUEUE;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_TIME_TO_LIVE;
 
 import javax.jms.ConnectionFactory;
@@ -27,7 +28,7 @@ import javax.jms.Destination;
 import javax.jms.MessageListener;
 import javax.net.ssl.SSLException;
 import org.apache.activemq.RedeliveryPolicy;
-import org.apache.activemq.pool.PooledConnectionFactory;
+import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.opensmartgridplatform.shared.infra.jms.OsgpJmsTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,8 +66,8 @@ public class JmsConfigurationFactory {
     return jmsBrokerFactory.getBroker(jmsBrokerType);
   }
 
-  private Destination getQueue() {
-    return this.jmsBroker.getQueue();
+  public Destination getQueue(final String queueName) {
+    return this.jmsBroker.getQueue(queueName);
   }
 
   private ConnectionFactory initConnectionFactory() throws SSLException {
@@ -80,7 +81,7 @@ public class JmsConfigurationFactory {
   public JmsTemplate initJmsTemplate() {
     LOGGER.debug("Initializing JMS template.");
 
-    final Destination destination = this.getQueue();
+    final Destination destination = this.getQueue(this.getQueueName());
     return this.initJmsTemplate(destination);
   }
 
@@ -101,8 +102,12 @@ public class JmsConfigurationFactory {
       final MessageListener messageListener) {
     LOGGER.debug(
         "Initializing message listener container for message listener: {}.", messageListener);
-    final Destination destination = this.getQueue();
+    final Destination destination = this.getQueue(this.getQueueName());
     return this.initMessageListenerContainer(messageListener, destination);
+  }
+
+  private String getQueueName() {
+    return this.propertyReader.get(PROPERTY_NAME_QUEUE, String.class);
   }
 
   public DefaultMessageListenerContainer initMessageListenerContainer(

@@ -18,7 +18,6 @@ import static org.opensmartgridplatform.shared.application.config.messaging.JmsP
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_BROKER_USERNAME;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_QUEUE_CONSUMER_WINDOW_SIZE;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_MAX_THREAD_POOL_SIZE;
-import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_QUEUE;
 
 import javax.jms.Destination;
 import javax.net.ssl.SSLException;
@@ -46,8 +45,8 @@ public class JmsBrokerArtemis implements JmsBroker {
   }
 
   @Override
-  public Destination getQueue() {
-    return new ActiveMQQueue(this.propertyReader.get(PROPERTY_NAME_QUEUE, String.class));
+  public Destination getQueue(final String queueName) {
+    return new ActiveMQQueue(queueName);
   }
 
   @Override
