@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,7 +65,8 @@ class ProtocolResponseMessageSendingHandlerTest {
     verify(this.outboundOsgpCoreResponseMessageSender).send(this.responseMessageCaptor.capture());
     final ResponseMessage actualResponseMessage = this.responseMessageCaptor.getValue();
     assertThat(actualResponseMessage.getResult()).isEqualTo(ResponseMessageResultType.OK);
-    assertThat(actualResponseMessage.getDataObject()).isEqualTo(payload);
+    final Serializable dataObject = payload;
+    assertThat(actualResponseMessage.getDataObject()).isEqualTo(dataObject);
     this.assertIncrementReceivedMessage();
   }
 

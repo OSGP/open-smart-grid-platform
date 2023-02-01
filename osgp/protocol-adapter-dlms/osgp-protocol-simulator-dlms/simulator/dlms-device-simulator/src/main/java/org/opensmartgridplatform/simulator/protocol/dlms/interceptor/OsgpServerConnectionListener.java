@@ -8,7 +8,7 @@
  */
 package org.opensmartgridplatform.simulator.protocol.dlms.interceptor;
 
-import java.util.Random;
+import java.security.SecureRandom;
 import org.openmuc.jdlms.ServerConnectionInfo;
 import org.openmuc.jdlms.ServerConnectionInfo.Status;
 import org.openmuc.jdlms.ServerConnectionListener;
@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 public class OsgpServerConnectionListener implements ServerConnectionListener {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OsgpServerConnectionListener.class);
+
+  private SecureRandom random = new SecureRandom();
 
   private final int connectionSetupDelayMin;
   private final int connectionSetupDelayMax;
@@ -60,7 +62,7 @@ public class OsgpServerConnectionListener implements ServerConnectionListener {
     if (this.connectionSetupDelayMin == this.connectionSetupDelayMax) {
       return this.connectionSetupDelayMax;
     }
-    return new Random().nextInt(this.connectionSetupDelayMax - this.connectionSetupDelayMin)
+    return this.random.nextInt(this.connectionSetupDelayMax - this.connectionSetupDelayMin)
         + this.connectionSetupDelayMin;
   }
 }
