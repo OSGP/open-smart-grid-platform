@@ -92,7 +92,7 @@ public class JmsBrokerArtemis implements JmsBroker {
 
     if (StringUtils.isEmpty(clientKeyStore)) {
       LOGGER.debug(
-          "No " + PROPERTY_NAME_BROKER_CLIENT_KEY_STORE + " found, use brokerUrl: " + brokerUrl);
+          "No {} found, use brokerUrl: {}", PROPERTY_NAME_BROKER_CLIENT_KEY_STORE, brokerUrl);
       return brokerUrl;
     }
 
@@ -110,7 +110,7 @@ public class JmsBrokerArtemis implements JmsBroker {
             trustKeyStorePwd,
             clientKeyStore,
             clientKeyStorePwd);
-    LOGGER.info("Using brokerUrl: " + sslBrokerUrl);
+    LOGGER.info("Using brokerUrl: {}", sslBrokerUrl);
     return sslBrokerUrl;
   }
 }

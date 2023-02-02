@@ -63,7 +63,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 @ExtendWith(MockitoExtension.class)
-public class JmsConfigurationFactoryTest {
+class JmsConfigurationFactoryTest {
 
   @Mock private Environment environment;
   @Mock private DefaultJmsConfiguration defaultJmsConfiguration;
@@ -116,13 +116,13 @@ public class JmsConfigurationFactoryTest {
       final ActiveMQConnectionFactory connectionFactory =
           (ActiveMQConnectionFactory) pooledConnectionFactory.getConnectionFactory();
       final Map<String, Object> params = connectionFactory.getStaticConnectors()[0].getParams();
-      assertThat(params.get("host")).isEqualTo("localhost");
-      assertThat(params.get("port")).isEqualTo("61616");
-      assertThat(params.get("sslEnabled")).isEqualTo("true");
-      assertThat(params.get("keyStorePath")).isEqualTo("key_store");
-      assertThat(params.get("keyStorePassword")).isEqualTo("key_store_secret");
-      assertThat(params.get("trustStorePath")).isEqualTo("trust_store");
-      assertThat(params.get("trustStorePassword")).isEqualTo("trust_store_secret");
+      assertThat(params).hasFieldOrPropertyWithValue("host", "localhost");
+      assertThat(params).hasFieldOrPropertyWithValue("port", "61616");
+      assertThat(params).hasFieldOrPropertyWithValue("sslEnabled", "true");
+      assertThat(params).hasFieldOrPropertyWithValue("keyStorePath", "key_store");
+      assertThat(params).hasFieldOrPropertyWithValue("keyStorePassword", "key_store_secret");
+      assertThat(params).hasFieldOrPropertyWithValue("trustStorePath", "trust_store");
+      assertThat(params).hasFieldOrPropertyWithValue("trustStorePassword", "trust_store_secret");
     } else if (jmsBrokerType == JmsBrokerType.ACTIVE_MQ) {
       final String expectedBrokerUrl =
           String.format(
