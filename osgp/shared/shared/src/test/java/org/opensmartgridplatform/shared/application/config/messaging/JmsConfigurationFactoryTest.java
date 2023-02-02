@@ -42,6 +42,7 @@ import static org.opensmartgridplatform.shared.application.config.messaging.JmsP
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_TRUST_ALL_PACKAGES;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_USE_EXPONENTIAL_BACK_OFF;
 
+import java.util.Map;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.MessageListener;
@@ -95,6 +96,55 @@ public class JmsConfigurationFactoryTest {
         jmsConfigurationFactory.getPooledConnectionFactory();
 
     assertThat(pooledConnectionFactory).isInstanceOf(PooledConnectionFactory.class);
+    if (jmsBrokerType == JmsBrokerType.ARTEMIS) {
+      assertThat(((ActiveMQConnectionFactory) pooledConnectionFactory.getConnectionFactory()))
+          .isInstanceOf(ActiveMQConnectionFactory.class);
+
+      final String expectedBrokerUrl =
+          String.format(
+              "%s?"
+                  + "sslEnabled=true"
+                  + "&trustStorePath=%s"
+                  + "&trustStorePassword=%s"
+                  + "&keyStorePath=%s"
+                  + "&keyStorePassword=%s",
+              "tcp://localhost:61616",
+              "trust_store",
+              "trust_store_secret",
+              "key_store",
+              "key_store_secret");
+      final ActiveMQConnectionFactory connectionFactory =
+          (ActiveMQConnectionFactory) pooledConnectionFactory.getConnectionFactory();
+      final Map<String, Object> params = connectionFactory.getStaticConnectors()[0].getParams();
+      assertThat(params.get("host")).isEqualTo("localhost");
+      assertThat(params.get("port")).isEqualTo("61616");
+      assertThat(params.get("sslEnabled")).isEqualTo("true");
+      assertThat(params.get("keyStorePath")).isEqualTo("key_store");
+      assertThat(params.get("keyStorePassword")).isEqualTo("key_store_secret");
+      assertThat(params.get("trustStorePath")).isEqualTo("trust_store");
+      assertThat(params.get("trustStorePassword")).isEqualTo("trust_store_secret");
+    } else if (jmsBrokerType == JmsBrokerType.ACTIVE_MQ) {
+      final String expectedBrokerUrl =
+          String.format(
+              "%s?"
+                  + "sslEnabled=true"
+                  + "&trustStorePath=%s"
+                  + "&trustStorePassword=%s"
+                  + "&keyStorePath=%s"
+                  + "&keyStorePassword=%s",
+              "tcp://localhost:61616",
+              "trust_store",
+              "trust_store_secret",
+              "key_store",
+              "key_store_secret");
+      final ActiveMQSslConnectionFactory connectionFactory =
+          (ActiveMQSslConnectionFactory) pooledConnectionFactory.getConnectionFactory();
+      assertThat(connectionFactory.getBrokerURL()).isEqualTo("ssl://localhost:61616");
+      assertThat(connectionFactory.getKeyStore()).isEqualTo("key_store");
+      assertThat(connectionFactory.getKeyStorePassword()).isEqualTo("key_store_secret");
+      assertThat(connectionFactory.getTrustStore()).isEqualTo("trust_store");
+      assertThat(connectionFactory.getTrustStorePassword()).isEqualTo("trust_store_secret");
+    }
   }
 
   @ParameterizedTest
@@ -278,9 +328,6 @@ public class JmsConfigurationFactoryTest {
     when(this.environment.getProperty(
             this.propertyPrefix + "." + PROPERTY_NAME_BROKER_TYPE, JmsBrokerType.class))
         .thenReturn(jmsBrokerType);
-    when(this.environment.getProperty(
-            this.propertyPrefix + "." + PROPERTY_NAME_BROKER_URL, String.class))
-        .thenReturn("tcp://localhost:61616");
 
     when(this.environment.getProperty(
             this.propertyPrefix + "." + PROPERTY_NAME_BROKER_CLIENT_KEY_STORE, String.class))
@@ -312,6 +359,9 @@ public class JmsConfigurationFactoryTest {
 
   private void setupArtemis() {
     when(this.environment.getProperty(
+            this.propertyPrefix + "." + PROPERTY_NAME_BROKER_URL, String.class))
+        .thenReturn("tcp://localhost:61616");
+    when(this.environment.getProperty(
             this.propertyPrefix + "." + PROPERTY_NAME_CONNECTION_QUEUE_CONSUMER_WINDOW_SIZE,
             int.class))
         .thenReturn(1);
@@ -328,6 +378,9 @@ public class JmsConfigurationFactoryTest {
   }
 
   private void setupActiveMq() {
+    when(this.environment.getProperty(
+            this.propertyPrefix + "." + PROPERTY_NAME_BROKER_URL, String.class))
+        .thenReturn("ssl://localhost:61616");
     when(this.environment.getProperty(
             this.propertyPrefix + "." + PROPERTY_NAME_CONNECTION_QUEUE_PREFETCH, int.class))
         .thenReturn(1);

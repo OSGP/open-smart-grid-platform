@@ -90,7 +90,7 @@ public class JmsBrokerArtemis implements JmsBroker {
     final String trustKeyStorePwd =
         this.propertyReader.get(PROPERTY_NAME_BROKER_CLIENT_TRUST_STORE_SECRET, String.class);
 
-    if (clientKeyStore == null) {
+    if (StringUtils.isEmpty(clientKeyStore)) {
       LOGGER.debug(
           "No " + PROPERTY_NAME_BROKER_CLIENT_KEY_STORE + " found, use brokerUrl: " + brokerUrl);
       return brokerUrl;
