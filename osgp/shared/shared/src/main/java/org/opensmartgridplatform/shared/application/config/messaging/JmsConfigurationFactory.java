@@ -59,23 +59,16 @@ public class JmsConfigurationFactory {
     this.consumerConnectionFactory = this.initConnectionFactory();
   }
 
-  private JmsBroker getBroker() {
-    final JmsBrokerType jmsBrokerType =
-        this.propertyReader.get(PROPERTY_NAME_BROKER_TYPE, JmsBrokerType.class);
-    final JmsBrokerFactory jmsBrokerFactory = new JmsBrokerFactory(this.propertyReader);
-    return jmsBrokerFactory.getBroker(jmsBrokerType);
-  }
-
   public Destination getQueue(final String queueName) {
     return this.jmsBroker.getQueue(queueName);
   }
 
-  private ConnectionFactory initConnectionFactory() throws SSLException {
-    return this.jmsBroker.initConnectionFactory();
-  }
-
   public PooledConnectionFactory getPooledConnectionFactory() {
     return this.pooledConnectionFactory;
+  }
+
+  public ConnectionFactory getConsumerConnectionFactory() {
+    return this.consumerConnectionFactory;
   }
 
   public JmsTemplate initJmsTemplate() {
@@ -106,10 +99,6 @@ public class JmsConfigurationFactory {
     return this.initMessageListenerContainer(messageListener, destination);
   }
 
-  private String getQueueName() {
-    return this.propertyReader.get(PROPERTY_NAME_QUEUE, String.class);
-  }
-
   public DefaultMessageListenerContainer initMessageListenerContainer(
       final MessageListener messageListener, final Destination destination) {
     LOGGER.debug(
@@ -122,6 +111,25 @@ public class JmsConfigurationFactory {
     messageListenerContainer.setDestination(destination);
     messageListenerContainer.setMessageListener(messageListener);
     return messageListenerContainer;
+  }
+
+  public RedeliveryPolicy getRedeliveryPolicy() {
+    return this.jmsBroker.getRedeliveryPolicy();
+  }
+
+  private ConnectionFactory initConnectionFactory() throws SSLException {
+    return this.jmsBroker.initConnectionFactory();
+  }
+
+  private JmsBroker getBroker() {
+    final JmsBrokerType jmsBrokerType =
+        this.propertyReader.get(PROPERTY_NAME_BROKER_TYPE, JmsBrokerType.class);
+    final JmsBrokerFactory jmsBrokerFactory = new JmsBrokerFactory(this.propertyReader);
+    return jmsBrokerFactory.getBroker(jmsBrokerType);
+  }
+
+  private String getQueueName() {
+    return this.propertyReader.get(PROPERTY_NAME_QUEUE, String.class);
   }
 
   private DefaultMessageListenerContainer initMessageListenerContainer() {
@@ -165,9 +173,5 @@ public class JmsConfigurationFactory {
             PROPERTY_NAME_CONNECTION_POOL_TIME_BETWEEN_EXPIRATION_CHECK_MILLIS, long.class));
 
     return connectionFactory;
-  }
-
-  public RedeliveryPolicy getRedeliveryPolicy() {
-    return this.jmsBroker.getRedeliveryPolicy();
   }
 }

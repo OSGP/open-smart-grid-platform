@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 /** This class provides the basic components used for JMS messaging. */
 public class JmsBrokerArtemis implements JmsBroker {
-  private static final Logger LOGGER = LoggerFactory.getLogger(JmsBrokerActiveMq.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(JmsBrokerArtemis.class);
 
   private final JmsPropertyReader propertyReader;
 

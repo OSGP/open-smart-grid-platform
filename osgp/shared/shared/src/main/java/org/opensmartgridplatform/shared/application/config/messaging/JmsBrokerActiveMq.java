@@ -47,11 +47,9 @@ public class JmsBrokerActiveMq implements JmsBroker {
   private static final Logger LOGGER = LoggerFactory.getLogger(JmsBrokerActiveMq.class);
 
   private final JmsPropertyReader propertyReader;
-  private final RedeliveryPolicy redeliveryPolicy;
 
   public JmsBrokerActiveMq(final JmsPropertyReader propertyReader) {
     this.propertyReader = propertyReader;
-    this.redeliveryPolicy = this.getRedeliveryPolicy();
   }
 
   @Override
@@ -124,7 +122,7 @@ public class JmsBrokerActiveMq implements JmsBroker {
     LOGGER.debug("Initializing redelivery policy map.");
 
     final RedeliveryPolicyMap redeliveryPolicyMap = new RedeliveryPolicyMap();
-    redeliveryPolicyMap.setDefaultEntry(this.redeliveryPolicy);
+    redeliveryPolicyMap.setDefaultEntry(this.getRedeliveryPolicy());
     return redeliveryPolicyMap;
   }
 
