@@ -29,7 +29,7 @@ public final class JmsPropertyNames {
       "connection.pool.time.between.expiration.check.millis";
   public static final String PROPERTY_NAME_CONNECTION_POOL_IDLE_TIMEOUT =
       "connection.pool.idle.timeout";
-  public static String PROPERTY_NAME_CONNECTION_QUEUE_CONSUMER_WINDOW_SIZE =
+  public static final String PROPERTY_NAME_CONNECTION_QUEUE_CONSUMER_WINDOW_SIZE =
       "connection.queue.consumer.window.size";
   public static final String PROPERTY_NAME_CONNECTION_QUEUE_PREFETCH = "connection.queue.prefetch";
   public static final String PROPERTY_NAME_CONNECTION_MESSAGE_PRIORITY_SUPPORTED =
