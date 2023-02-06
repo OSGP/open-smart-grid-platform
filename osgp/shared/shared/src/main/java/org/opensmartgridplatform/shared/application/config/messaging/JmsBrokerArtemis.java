@@ -96,18 +96,21 @@ public class JmsBrokerArtemis implements JmsBroker {
       return brokerUrl;
     }
 
-    return String.format(
-        "%s%s"
-            + "sslEnabled=true"
-            + "&trustStorePath=%s"
-            + "&trustStorePassword=%s"
-            + "&keyStorePath=%s"
-            + "&keyStorePassword=%s",
-        brokerUrl,
-        brokerUrl.contains("?") ? "&" : "?",
-        trustKeyStore,
-        trustKeyStorePwd,
-        clientKeyStore,
-        clientKeyStorePwd);
+    final String sslBrokerUrl =
+        String.format(
+            "%s%s"
+                + "sslEnabled=true"
+                + "&trustStorePath=%s"
+                + "&trustStorePassword=%s"
+                + "&keyStorePath=%s"
+                + "&keyStorePassword=%s",
+            brokerUrl,
+            brokerUrl.contains("?") ? "&" : "?",
+            trustKeyStore,
+            trustKeyStorePwd,
+            clientKeyStore,
+            clientKeyStorePwd);
+    LOGGER.info("Using brokerUrl: {}", brokerUrl);
+    return sslBrokerUrl;
   }
 }
