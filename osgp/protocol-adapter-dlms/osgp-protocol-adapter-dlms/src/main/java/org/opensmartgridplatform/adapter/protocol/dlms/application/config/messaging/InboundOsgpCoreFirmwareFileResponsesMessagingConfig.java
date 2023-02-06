@@ -12,10 +12,9 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.config.messa
 
 import java.util.UUID;
 import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
 import javax.jms.MessageListener;
 import javax.net.ssl.SSLException;
-import org.apache.activemq.command.ActiveMQDestination;
-import org.apache.activemq.command.ActiveMQQueue;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
 import org.slf4j.Logger;
@@ -75,11 +74,11 @@ public class InboundOsgpCoreFirmwareFileResponsesMessagingConfig {
    * to this instance.
    */
   @Bean(name = "protocolDlmsReplyToQueue")
-  public ActiveMQDestination replyToQueue() {
+  public Destination replyToQueue() {
     final String queueName =
         this.createUniqueQueueName(PROPERTY_NAME_FIRMWARE_FILE_RESPONSES_QUEUE);
     LOGGER.info("------> replyToQueue: {}", queueName);
-    return new ActiveMQQueue(queueName);
+    return this.jmsConfigurationFactory.getQueue(queueName);
   }
 
   private String createUniqueQueueName(final String responseQueuePropertyName) {

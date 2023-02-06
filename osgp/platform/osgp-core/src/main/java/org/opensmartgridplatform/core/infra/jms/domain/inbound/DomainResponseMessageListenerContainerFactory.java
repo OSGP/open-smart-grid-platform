@@ -11,7 +11,7 @@ package org.opensmartgridplatform.core.infra.jms.domain.inbound;
 import java.util.ArrayList;
 import java.util.List;
 import javax.net.ssl.SSLException;
-import org.apache.activemq.pool.PooledConnectionFactory;
+import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.opensmartgridplatform.core.domain.model.protocol.ProtocolResponseService;
 import org.opensmartgridplatform.core.infra.jms.ConnectionFactoryRegistry;
 import org.opensmartgridplatform.core.infra.jms.MessageListenerContainerRegistry;
@@ -37,12 +37,13 @@ public class DomainResponseMessageListenerContainerFactory
 
   @Autowired private DefaultDomainJmsConfiguration defaultDomainJmsConfiguration;
 
-  private Environment environment;
+  private final Environment environment;
   private final List<DomainInfo> domainInfos;
-  private List<ProtocolInfo> protocolInfos;
+  private final List<ProtocolInfo> protocolInfos;
 
-  private ConnectionFactoryRegistry connectionFactoryRegistry = new ConnectionFactoryRegistry();
-  private MessageListenerContainerRegistry messageListenerRegistry =
+  private final ConnectionFactoryRegistry connectionFactoryRegistry =
+      new ConnectionFactoryRegistry();
+  private final MessageListenerContainerRegistry messageListenerRegistry =
       new MessageListenerContainerRegistry();
 
   public DomainResponseMessageListenerContainerFactory(

@@ -11,6 +11,8 @@ package org.opensmartgridplatform.shared.application.config.messaging;
 
 public interface JmsConfiguration {
 
+  JmsBrokerType getBrokerType();
+
   String getBrokerUrl();
 
   int getConnectionPoolSize();
@@ -30,6 +32,8 @@ public interface JmsConfiguration {
   int getConnectionPoolIdleTimeout();
 
   int getConnectionQueuePrefetch();
+
+  int getConnectionQueueConsumerWindowSize();
 
   boolean isConnectionMessagePrioritySupported();
 

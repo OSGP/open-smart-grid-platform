@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Value;
 /** This class provides the default configuration properties used for JMS messaging. */
 public class DefaultJmsConfiguration implements JmsConfiguration {
 
+  @Value("${jms.default.broker.type:ACTIVE_MQ}")
+  private String jmsDefaultBrokerType;
+
   @Value("${jms.default.broker.url:failover:(tcp://localhost:61616)}")
   private String jmsDefaultBrokerUrl;
 
@@ -42,6 +45,9 @@ public class DefaultJmsConfiguration implements JmsConfiguration {
 
   @Value("${jms.default.connection.queue.prefetch:1000}")
   private int jmsDefaultConnectionQueuePrefetch;
+
+  @Value("${jms.default.connection.queue.consumer.window.size:1000}")
+  private int jmsDefaultConnectionQueueConsumerWindowSize;
 
   @Value("${jms.default.connection.message.priority.supported:true}")
   private boolean jmsDefaultConnectionMessagePrioritySupported;
@@ -114,6 +120,11 @@ public class DefaultJmsConfiguration implements JmsConfiguration {
   private boolean jmsDefaultExplicitQosEnabled;
 
   @Override
+  public JmsBrokerType getBrokerType() {
+    return JmsBrokerType.valueOf(this.jmsDefaultBrokerType);
+  }
+
+  @Override
   public String getBrokerUrl() {
     return this.jmsDefaultBrokerUrl;
   }
@@ -156,6 +167,11 @@ public class DefaultJmsConfiguration implements JmsConfiguration {
   @Override
   public int getConnectionQueuePrefetch() {
     return this.jmsDefaultConnectionQueuePrefetch;
+  }
+
+  @Override
+  public int getConnectionQueueConsumerWindowSize() {
+    return this.jmsDefaultConnectionQueueConsumerWindowSize;
   }
 
   @Override
