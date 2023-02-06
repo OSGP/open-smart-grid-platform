@@ -110,7 +110,11 @@ public class JmsBrokerArtemis implements JmsBroker {
             trustKeyStorePwd,
             clientKeyStore,
             clientKeyStorePwd);
-    LOGGER.info("Using brokerUrl: {}", brokerUrl);
+    LOGGER.info(
+        "Using brokerUrl: {}, trustStorePath: {}, keyStorePath: {}",
+        brokerUrl,
+        trustKeyStore,
+        clientKeyStore);
     return sslBrokerUrl;
   }
 }
