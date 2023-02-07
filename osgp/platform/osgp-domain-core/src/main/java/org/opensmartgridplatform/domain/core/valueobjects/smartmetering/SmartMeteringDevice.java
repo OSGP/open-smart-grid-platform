@@ -58,4 +58,10 @@ public class SmartMeteringDevice implements Serializable {
   private byte[] mbusDefaultKey;
 
   private String timezone;
+  private boolean polyphase;
+  private Long port;
+  private Integer challengeLength;
+  private boolean ipAddressIsStatic;
+  private boolean withListSupported;
+  private boolean selectiveAccessSupported;
 }
