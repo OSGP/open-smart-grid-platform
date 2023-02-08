@@ -38,7 +38,7 @@ public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceD
     dlmsDevice.setSelectiveAccessSupported(source.isSelectiveAccessSupported());
     dlmsDevice.setPolyphase(source.isPolyphase());
     dlmsDevice.setPort(source.getPort());
-    if (source.getChallengeLength() != null) {
+    if (source.getChallengeLength() != null && source.getChallengeLength() > 0) {
       dlmsDevice.setChallengeLength(source.getChallengeLength());
     }
 
