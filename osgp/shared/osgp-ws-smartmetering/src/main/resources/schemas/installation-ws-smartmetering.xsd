@@ -330,7 +330,7 @@
         minOccurs="0" />
       <xsd:element name="IpAddressIsStatic" type="xsd:boolean"
         minOccurs="0" />
-      <xsd:element name="WithlistSupported" type="xsd:boolean"
+      <xsd:element name="WithListSupported" type="xsd:boolean"
       minOccurs="0" /><xsd:element name="SelectiveAccessSupported" type="xsd:boolean"
       minOccurs="0" />
       <xsd:element name="ChallengeLength" type="xsd:int" />

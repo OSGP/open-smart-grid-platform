@@ -137,7 +137,7 @@ class DeviceMappingTest {
     device.setChallengeLength(CHALLENGE_LENGTH);
     device.setIpAddressIsStatic(IS_ACTIVE);
     device.setSelectiveAccessSupported(IS_ACTIVE);
-    device.setWithlistSupported(IS_ACTIVE);
+    device.setWithListSupported(IS_ACTIVE);
     return device;
   }
 
