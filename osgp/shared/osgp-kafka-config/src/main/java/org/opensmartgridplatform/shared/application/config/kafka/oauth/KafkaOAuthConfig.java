@@ -17,6 +17,10 @@ public class KafkaOAuthConfig {
   public static final String KAFKA_OAUTH_CLIENT_ID_CONFIG = "oauth.client.id";
   public static final String KAFKA_OAUTH_CLIENT_ID_DOC = "Client id of the azure ad OAuth client";
 
+  public static final String KAFKA_OAUTH_TOKEN_ENDPOINT_CONFIG = "oauth.token.endpoint";
+  public static final String KAFKA_OAUTH_TOKEN_ENDPOINT_DOC =
+      "Token endpoint of the azure ad OAuth client";
+
   public static final String KAFKA_OAUTH_SCOPE_CONFIG = "oauth.scope";
   public static final String KAFKA_OAUTH_SCOPE_DOC = "Scope of the OAuth JWT token";
 
@@ -38,6 +42,11 @@ public class KafkaOAuthConfig {
             ConfigDef.Type.STRING,
             ConfigDef.Importance.MEDIUM,
             KAFKA_OAUTH_CLIENT_ID_DOC)
+        .define(
+            KAFKA_OAUTH_TOKEN_ENDPOINT_CONFIG,
+            ConfigDef.Type.STRING,
+            ConfigDef.Importance.MEDIUM,
+            KAFKA_OAUTH_TOKEN_ENDPOINT_DOC)
         .define(
             KAFKA_OAUTH_SCOPE_CONFIG,
             ConfigDef.Type.STRING,
