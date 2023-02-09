@@ -8,12 +8,16 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_ENCRYPTION;
+
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.Map;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
+import org.openmuc.jdlms.SecuritySuite.EncryptionMechanism;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -83,33 +87,41 @@ public class Lls1Connector extends SecureDlmsConnector {
       final TcpConnectionBuilder tcpConnectionBuilder)
       throws OsgpException {
 
-    final byte[] password;
     try {
-      password =
-          keyProvider
-              .getKeys(
-                  messageMetadata,
-                  device.getDeviceIdentification(),
-                  Collections.singletonList(SecurityKeyType.PASSWORD))
-              .get(SecurityKeyType.PASSWORD);
+      final Map<SecurityKeyType, byte[]> encryptedKeys =
+          keyProvider.getKeys(
+              messageMetadata,
+              device.getDeviceIdentification(),
+              Arrays.asList(SecurityKeyType.PASSWORD, E_METER_ENCRYPTION));
+      final byte[] password = encryptedKeys.get(SecurityKeyType.PASSWORD);
+      final byte[] dlmsEncryptionKey = encryptedKeys.get(E_METER_ENCRYPTION);
+      if (password == null) {
+        LOGGER.error(
+            "There is no password available for device {}", device.getDeviceIdentification());
+        throw new FunctionalException(
+            FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION, ComponentType.PROTOCOL_DLMS);
+      }
+      if (dlmsEncryptionKey == null) {
+        LOGGER.error(
+            "There is no encryption key available for device {}", device.getDeviceIdentification());
+        throw new FunctionalException(
+            FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION, ComponentType.PROTOCOL_DLMS);
+      }
+
+      final SecuritySuite securitySuite =
+          SecuritySuite.builder()
+              .setAuthenticationMechanism(AuthenticationMechanism.LOW)
+              .setPassword(password)
+              .setGlobalUnicastEncryptionKey(dlmsEncryptionKey)
+              .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
+              .build();
+
+      tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientId);
+
     } catch (final EncrypterException e) {
       LOGGER.error("Error determining DLMS password setting up LLS1 connection", e);
       throw new FunctionalException(
           FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION, ComponentType.PROTOCOL_DLMS);
     }
-    if (password == null) {
-      LOGGER.error(
-          "There is no password available for device {}", device.getDeviceIdentification());
-      throw new FunctionalException(
-          FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION, ComponentType.PROTOCOL_DLMS);
-    }
-
-    final SecuritySuite securitySuite =
-        SecuritySuite.builder()
-            .setAuthenticationMechanism(AuthenticationMechanism.LOW)
-            .setPassword(password)
-            .build();
-
-    tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientId);
   }
 }
