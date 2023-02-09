@@ -11,7 +11,7 @@ package org.opensmartgridplatform.core.infra.jms.protocol.outbound;
 import java.util.ArrayList;
 import java.util.List;
 import javax.net.ssl.SSLException;
-import org.apache.activemq.pool.PooledConnectionFactory;
+import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.opensmartgridplatform.core.infra.jms.ConnectionFactoryRegistry;
 import org.opensmartgridplatform.core.infra.jms.Registry;
 import org.opensmartgridplatform.core.infra.jms.protocol.DefaultProtocolJmsConfiguration;
@@ -32,11 +32,12 @@ public class ProtocolResponseMessageJmsTemplateFactory implements InitializingBe
 
   @Autowired private DefaultProtocolJmsConfiguration defaultProtocolJmsConfiguration;
 
-  private Environment environment;
-  private List<ProtocolInfo> protocolInfos;
+  private final Environment environment;
+  private final List<ProtocolInfo> protocolInfos;
 
-  private ConnectionFactoryRegistry connectionFactoryRegistry = new ConnectionFactoryRegistry();
-  private Registry<JmsTemplate> jmsTemplateRegistry = new Registry<>();
+  private final ConnectionFactoryRegistry connectionFactoryRegistry =
+      new ConnectionFactoryRegistry();
+  private final Registry<JmsTemplate> jmsTemplateRegistry = new Registry<>();
 
   public ProtocolResponseMessageJmsTemplateFactory(
       final Environment environment, final List<ProtocolInfo> protocolInfos) {

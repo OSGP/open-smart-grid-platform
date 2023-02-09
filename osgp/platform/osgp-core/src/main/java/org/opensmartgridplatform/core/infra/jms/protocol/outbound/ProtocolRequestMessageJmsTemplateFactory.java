@@ -11,7 +11,7 @@ package org.opensmartgridplatform.core.infra.jms.protocol.outbound;
 import java.util.ArrayList;
 import java.util.List;
 import javax.net.ssl.SSLException;
-import org.apache.activemq.pool.PooledConnectionFactory;
+import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.opensmartgridplatform.core.infra.jms.ConnectionFactoryRegistry;
 import org.opensmartgridplatform.core.infra.jms.Registry;
 import org.opensmartgridplatform.core.infra.jms.protocol.DefaultProtocolJmsConfiguration;

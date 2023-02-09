@@ -21,26 +21,32 @@ import org.mockito.Mockito;
 
 class OAuthAuthenticateCallbackHandlerTest {
 
-  @Test
-  void successfulConfigure() {
-    final Map<String, Object> configs = new HashMap<>();
+  private Map<String, Object> correctConfiguration() {
+    Map<String, Object> configs = new HashMap<>();
     configs.put(KAFKA_OAUTH_CLIENT_ID_CONFIG, "client-id");
+    configs.put(KAFKA_OAUTH_TOKEN_ENDPOINT_CONFIG, "https://token.server.com");
     configs.put(KAFKA_OAUTH_TOKEN_FILE_CONFIG, "file");
     configs.put(KAFKA_OAUTH_SCOPE_CONFIG, "scope-one,scope-two");
+    return configs;
+  }
+
+  @Test
+  void successfulConfigure() {
+    final Map<String, Object> configs = correctConfiguration();
 
     OAuthAuthenticateCallbackHandler handler = new OAuthAuthenticateCallbackHandler();
     handler.configure(configs, SASL_SSL.name, null);
 
     assertEquals("client-id", handler.clientId);
     assertEquals("file", handler.tokenFilePath);
+    assertEquals("https://token.server.com", handler.tokenEndPoint);
     assertEquals(new HashSet<>(Arrays.asList("scope-one", "scope-two")), handler.scope);
   }
 
   @Test
   void noClientIdConfigured() {
-    final Map<String, Object> configs = new HashMap<>();
-    configs.put(KAFKA_OAUTH_TOKEN_FILE_CONFIG, "file");
-    configs.put(KAFKA_OAUTH_SCOPE_CONFIG, "scope-one,scope-two");
+    final Map<String, Object> configs = correctConfiguration();
+    configs.remove(KAFKA_OAUTH_CLIENT_ID_CONFIG);
 
     OAuthAuthenticateCallbackHandler handler = new OAuthAuthenticateCallbackHandler();
     KafkaException kafkaException =
@@ -50,10 +56,21 @@ class OAuthAuthenticateCallbackHandlerTest {
   }
 
   @Test
+  void noTokenEndpointConfigured() {
+    final Map<String, Object> configs = correctConfiguration();
+    configs.remove(KAFKA_OAUTH_TOKEN_ENDPOINT_CONFIG);
+
+    OAuthAuthenticateCallbackHandler handler = new OAuthAuthenticateCallbackHandler();
+
+    KafkaException kafkaException =
+        assertThrows(KafkaException.class, () -> handler.configure(configs, SASL_SSL.name, null));
+    assertEquals("Kafka property: oauth.token.endpoint, not supplied", kafkaException.getMessage());
+  }
+
+  @Test
   void noFileConfigured() {
-    final Map<String, Object> configs = new HashMap<>();
-    configs.put(KAFKA_OAUTH_CLIENT_ID_CONFIG, "client-id");
-    configs.put(KAFKA_OAUTH_SCOPE_CONFIG, "scope-one,scope-two");
+    final Map<String, Object> configs = correctConfiguration();
+    configs.remove(KAFKA_OAUTH_TOKEN_FILE_CONFIG);
 
     OAuthAuthenticateCallbackHandler handler = new OAuthAuthenticateCallbackHandler();
     KafkaException kafkaException =
@@ -63,9 +80,8 @@ class OAuthAuthenticateCallbackHandlerTest {
 
   @Test
   void noScopeConfigured() {
-    final Map<String, Object> configs = new HashMap<>();
-    configs.put(KAFKA_OAUTH_CLIENT_ID_CONFIG, "client-id");
-    configs.put(KAFKA_OAUTH_TOKEN_FILE_CONFIG, "file");
+    final Map<String, Object> configs = correctConfiguration();
+    configs.remove(KAFKA_OAUTH_SCOPE_CONFIG);
 
     OAuthAuthenticateCallbackHandler handler = new OAuthAuthenticateCallbackHandler();
 
@@ -76,10 +92,8 @@ class OAuthAuthenticateCallbackHandlerTest {
 
   @Test
   void incorrectConfig() {
-    final Map<String, Object> configs = new HashMap<>();
-    configs.put(KAFKA_OAUTH_CLIENT_ID_CONFIG, "client-id");
-    configs.put(KAFKA_OAUTH_TOKEN_FILE_CONFIG, "file");
-    configs.put(KAFKA_OAUTH_SCOPE_CONFIG, new String[] {"one", "two"});
+    final Map<String, Object> configs = correctConfiguration();
+    configs.replace(KAFKA_OAUTH_SCOPE_CONFIG, new String[] {"one", "two"});
 
     OAuthAuthenticateCallbackHandler handler = new OAuthAuthenticateCallbackHandler();
 
@@ -90,10 +104,8 @@ class OAuthAuthenticateCallbackHandlerTest {
 
   @Test
   void nullConfig() {
-    final Map<String, Object> configs = new HashMap<>();
-    configs.put(KAFKA_OAUTH_CLIENT_ID_CONFIG, "client-id");
-    configs.put(KAFKA_OAUTH_TOKEN_FILE_CONFIG, "file");
-    configs.put(KAFKA_OAUTH_SCOPE_CONFIG, null);
+    final Map<String, Object> configs = correctConfiguration();
+    configs.replace(KAFKA_OAUTH_SCOPE_CONFIG, null);
 
     OAuthAuthenticateCallbackHandler handler = new OAuthAuthenticateCallbackHandler();
 
@@ -114,10 +126,7 @@ class OAuthAuthenticateCallbackHandlerTest {
                 "principal-name",
                 10000L));
 
-    final Map<String, Object> configs = new HashMap<>();
-    configs.put(KAFKA_OAUTH_CLIENT_ID_CONFIG, "client-id");
-    configs.put(KAFKA_OAUTH_TOKEN_FILE_CONFIG, "file");
-    configs.put(KAFKA_OAUTH_SCOPE_CONFIG, "scope-one,scope-two");
+    final Map<String, Object> configs = correctConfiguration();
 
     handler.configure(configs, SASL_SSL.name, null);
 

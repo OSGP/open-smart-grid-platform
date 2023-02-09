@@ -8,10 +8,10 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core;
 
+import javax.jms.Destination;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.activemq.command.ActiveMQDestination;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
@@ -30,7 +30,7 @@ public class OsgpRequestMessageSender {
 
   @Autowired
   @Qualifier("protocolDlmsReplyToQueue")
-  private ActiveMQDestination replyToQueue;
+  private Destination replyToQueue;
 
   public void send(
       final RequestMessage requestMessage,

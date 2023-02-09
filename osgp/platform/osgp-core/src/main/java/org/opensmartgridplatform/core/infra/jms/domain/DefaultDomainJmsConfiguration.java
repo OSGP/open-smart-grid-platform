@@ -8,10 +8,14 @@
  */
 package org.opensmartgridplatform.core.infra.jms.domain;
 
+import org.opensmartgridplatform.shared.application.config.messaging.JmsBrokerType;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration;
 import org.springframework.beans.factory.annotation.Value;
 
 public class DefaultDomainJmsConfiguration implements JmsConfiguration {
+
+  @Value("${jms.domain.default.broker.type:ACTIVE_MQ}")
+  private String jmsDefaultBrokerType;
 
   @Value("${jms.domain.default.broker.url:failover:(tcp://localhost:61616)}")
   private String jmsDefaultBrokerUrl;
@@ -42,6 +46,9 @@ public class DefaultDomainJmsConfiguration implements JmsConfiguration {
 
   @Value("${jms.domain.default.connection.queue.prefetch:1000}")
   private int jmsDefaultConnectionQueuePrefetch;
+
+  @Value("${jms.default.connection.queue.consumer.window.size:1000}")
+  private int jmsDefaultConnectionQueueConsumerWindowSize;
 
   @Value("${jms.domain.default.connection.message.priority.supported:true}")
   private boolean jmsDefaultConnectionMessagePrioritySupported;
@@ -117,6 +124,11 @@ public class DefaultDomainJmsConfiguration implements JmsConfiguration {
   private boolean jmsDefaultExplicitQosEnabled;
 
   @Override
+  public JmsBrokerType getBrokerType() {
+    return JmsBrokerType.valueOf(this.jmsDefaultBrokerType);
+  }
+
+  @Override
   public String getBrokerUrl() {
     return this.jmsDefaultBrokerUrl;
   }
@@ -159,6 +171,11 @@ public class DefaultDomainJmsConfiguration implements JmsConfiguration {
   @Override
   public int getConnectionQueuePrefetch() {
     return this.jmsDefaultConnectionQueuePrefetch;
+  }
+
+  @Override
+  public int getConnectionQueueConsumerWindowSize() {
+    return this.jmsDefaultConnectionQueueConsumerWindowSize;
   }
 
   @Override

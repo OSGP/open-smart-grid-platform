@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import javax.jms.Destination;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.mockito.Mockito;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
@@ -114,7 +115,7 @@ public class MessagingTestConfiguration extends AbstractConfig {
   }
 
   @Bean("protocolDlmsReplyToQueue")
-  public ActiveMQDestination replyToQueue() {
+  public Destination replyToQueue() {
     return Mockito.mock(ActiveMQDestination.class);
   }
 
