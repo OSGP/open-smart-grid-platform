@@ -6,6 +6,7 @@ package org.opensmartgridplatform.shared.application.config.kafka.oauth;
 
 import static org.opensmartgridplatform.shared.application.config.kafka.oauth.KafkaOAuthConfig.KAFKA_OAUTH_CLIENT_ID_CONFIG;
 import static org.opensmartgridplatform.shared.application.config.kafka.oauth.KafkaOAuthConfig.KAFKA_OAUTH_SCOPE_CONFIG;
+import static org.opensmartgridplatform.shared.application.config.kafka.oauth.KafkaOAuthConfig.KAFKA_OAUTH_TOKEN_ENDPOINT_CONFIG;
 import static org.opensmartgridplatform.shared.application.config.kafka.oauth.KafkaOAuthConfig.KAFKA_OAUTH_TOKEN_FILE_CONFIG;
 
 import com.microsoft.aad.msal4j.ClientCredentialFactory;
@@ -38,6 +39,7 @@ public class OAuthAuthenticateCallbackHandler implements AuthenticateCallbackHan
       LoggerFactory.getLogger(OAuthAuthenticateCallbackHandler.class);
 
   protected String tokenFilePath;
+  protected String tokenEndPoint;
   protected String clientId;
   protected Set<String> scope;
 
@@ -47,6 +49,7 @@ public class OAuthAuthenticateCallbackHandler implements AuthenticateCallbackHan
       final String saslMechanism,
       final List<AppConfigurationEntry> jaasConfigEntries) {
     this.clientId = getProperty(KAFKA_OAUTH_CLIENT_ID_CONFIG, configs);
+    this.tokenEndPoint = getProperty(KAFKA_OAUTH_TOKEN_ENDPOINT_CONFIG, configs);
     this.scope =
         Arrays.stream(getProperty(KAFKA_OAUTH_SCOPE_CONFIG, configs).split(","))
             .collect(Collectors.toSet());
@@ -90,7 +93,9 @@ public class OAuthAuthenticateCallbackHandler implements AuthenticateCallbackHan
       final IClientAssertion credential = ClientCredentialFactory.createFromClientAssertion(token);
       ClientCredentialParameters aadParameters = ClientCredentialParameters.builder(scope).build();
       ConfidentialClientApplication aadClient =
-          ConfidentialClientApplication.builder(clientId, credential).build();
+          ConfidentialClientApplication.builder(clientId, credential)
+              .authority(tokenEndPoint)
+              .build();
       final IAuthenticationResult authResult = aadClient.acquireToken(aadParameters).get();
 
       return new BasicOAuthBearerToken(
