@@ -28,6 +28,19 @@ class DeviceConverterTest {
         .isEqualToIgnoringGivenFields(expected, "creationTime", "modificationTime", "version");
   }
 
+  @Test
+  void convertsSmartMeteringDtoToDlmsDeviceWithEmptyPortAndChallengeLength() {
+    final SmartMeteringDeviceDto dto = new SmartMeteringDeviceDtoBuilder().build();
+    dto.setPort(null);
+    dto.setChallengeLength(null);
+    final DlmsDevice result = this.converter.convertTo(dto, null, null);
+
+    final DlmsDevice expected = this.converted(dto);
+
+    Assertions.assertThat(result)
+        .isEqualToIgnoringGivenFields(expected, "creationTime", "modificationTime", "version");
+  }
+
   private DlmsDevice converted(final SmartMeteringDeviceDto dto) {
     final DlmsDevice dlmsDevice = new DlmsDevice();
     dlmsDevice.setDeviceIdentification(dto.getDeviceIdentification());
