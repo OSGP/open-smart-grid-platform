@@ -14,12 +14,25 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDtoBuilder;
 
-public class DeviceConverterTest {
+class DeviceConverterTest {
   private final DeviceConverter converter = new DeviceConverter();
 
   @Test
-  public void convertsSmartMeteringDtoToDlmsDevice() {
+  void convertsSmartMeteringDtoToDlmsDevice() {
     final SmartMeteringDeviceDto dto = new SmartMeteringDeviceDtoBuilder().build();
+    final DlmsDevice result = this.converter.convertTo(dto, null, null);
+
+    final DlmsDevice expected = this.converted(dto);
+
+    Assertions.assertThat(result)
+        .isEqualToIgnoringGivenFields(expected, "creationTime", "modificationTime", "version");
+  }
+
+  @Test
+  void convertsSmartMeteringDtoToDlmsDeviceWithEmptyPortAndChallengeLength() {
+    final SmartMeteringDeviceDto dto = new SmartMeteringDeviceDtoBuilder().build();
+    dto.setPort(null);
+    dto.setChallengeLength(null);
     final DlmsDevice result = this.converter.convertTo(dto, null, null);
 
     final DlmsDevice expected = this.converted(dto);
@@ -40,7 +53,12 @@ public class DeviceConverterTest {
     dlmsDevice.setMbusIdentificationNumber(dto.getMbusIdentificationNumber());
     dlmsDevice.setMbusManufacturerIdentification(dto.getMbusManufacturerIdentification());
     dlmsDevice.setProtocol(dto.getProtocolName(), dto.getProtocolVersion());
-
+    dlmsDevice.setPolyphase(dto.isPolyphase());
+    dlmsDevice.setPort(dto.getPort());
+    dlmsDevice.setChallengeLength(dto.getChallengeLength());
+    dlmsDevice.setIpAddressIsStatic(dto.isIpAddressIsStatic());
+    dlmsDevice.setWithListSupported(dto.isWithListSupported());
+    dlmsDevice.setSelectiveAccessSupported(dto.isSelectiveAccessSupported());
     return dlmsDevice;
   }
 }
