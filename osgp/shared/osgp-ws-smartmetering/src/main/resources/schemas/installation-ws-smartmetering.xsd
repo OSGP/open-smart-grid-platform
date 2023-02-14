@@ -326,6 +326,17 @@
       <xsd:element name="Mbus_default_key" type="xsd:hexBinary"
         minOccurs="0" />
 
+      <xsd:element name="Polyphase" type="xsd:boolean"
+        minOccurs="0" />
+      <xsd:element name="IpAddressIsStatic" type="xsd:boolean"
+        minOccurs="0" />
+      <xsd:element name="WithListSupported" type="xsd:boolean"
+        minOccurs="0" />
+      <xsd:element name="SelectiveAccessSupported" type="xsd:boolean"
+        minOccurs="0" />
+      <xsd:element name="ChallengeLength" type="xsd:int" />
+      <xsd:element name="Port" type="xsd:long" />
+
     </xsd:sequence>
   </xsd:complexType>
 

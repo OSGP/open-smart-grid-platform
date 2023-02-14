@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.Device;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 
-public class DeviceMappingTest {
+class DeviceMappingTest {
 
   private static final String DEVICE_IDENTIFICATION = "nr1";
   private static final String DEVICE_TYPE = "typeA";
@@ -32,6 +32,8 @@ public class DeviceMappingTest {
   private static final String PROTOCOL_VERSION = "test-protocol-version";
   private static final String PROTOCOL_VARIANT = "test-protocol-variant";
   private static final String SUPPLIER = "supplier1";
+  private static final Long PORT = 3000L;
+  private static final int CHALLENGE_LENGTH = 15;
   private static final boolean IS_ACTIVE = true;
   private static final byte[] KEY = "key".getBytes();
   private final InstallationMapper installationMapper = new InstallationMapper();
@@ -58,6 +60,12 @@ public class DeviceMappingTest {
     assertThat(smartMeteringDevice.getMasterKey()).isEqualTo(KEY);
     assertThat(smartMeteringDevice.getGlobalEncryptionUnicastKey()).isEqualTo(KEY);
     assertThat(smartMeteringDevice.getAuthenticationKey()).isEqualTo(KEY);
+    assertThat(smartMeteringDevice.getPort()).isEqualTo(PORT);
+    assertThat(smartMeteringDevice.isPolyphase()).isEqualTo(IS_ACTIVE);
+    assertThat(smartMeteringDevice.isIpAddressIsStatic()).isEqualTo(IS_ACTIVE);
+    assertThat(smartMeteringDevice.isSelectiveAccessSupported()).isEqualTo(IS_ACTIVE);
+    assertThat(smartMeteringDevice.isWithListSupported()).isEqualTo(IS_ACTIVE);
+    assertThat(smartMeteringDevice.getChallengeLength()).isEqualTo(CHALLENGE_LENGTH);
 
     // convert a Date object to a joda DateTime object, because the
     // getYear/getMonth and getDay methods in Date are deprecated and give
@@ -124,6 +132,12 @@ public class DeviceMappingTest {
     device.setGlobalEncryptionUnicastKey(KEY);
     device.setAuthenticationKey(KEY);
     device.setDeliveryDate(this.deliveryDateDevice);
+    device.setPolyphase(IS_ACTIVE);
+    device.setPort(PORT);
+    device.setChallengeLength(CHALLENGE_LENGTH);
+    device.setIpAddressIsStatic(IS_ACTIVE);
+    device.setSelectiveAccessSupported(IS_ACTIVE);
+    device.setWithListSupported(IS_ACTIVE);
     return device;
   }
 
@@ -147,6 +161,13 @@ public class DeviceMappingTest {
     smartMeteringDevice.setGlobalEncryptionUnicastKey(KEY);
     smartMeteringDevice.setAuthenticationKey(KEY);
     smartMeteringDevice.setDeliveryDate(this.deliveryDateSmartMeteringDevice);
+    smartMeteringDevice.setPolyphase(IS_ACTIVE);
+    smartMeteringDevice.setPort(PORT);
+    smartMeteringDevice.setChallengeLength(CHALLENGE_LENGTH);
+    smartMeteringDevice.setIpAddressIsStatic(IS_ACTIVE);
+    smartMeteringDevice.setWithListSupported(IS_ACTIVE);
+    smartMeteringDevice.setSelectiveAccessSupported(IS_ACTIVE);
+
     return smartMeteringDevice;
   }
 
@@ -163,7 +184,7 @@ public class DeviceMappingTest {
 
   /** Test to see if a Device object can be mapped to a SmartMeteringDevice object */
   @Test
-  public void testDeviceMapping() {
+  void testDeviceMapping() {
 
     // build test data
     final Device device = this.createDevice();
@@ -178,7 +199,7 @@ public class DeviceMappingTest {
 
   /** Test to see if a SmartMeteringDevice can be mapped to a Device */
   @Test
-  public void testSmartMeteringDeviceMapping() {
+  void testSmartMeteringDeviceMapping() {
     // build test data
     final SmartMeteringDevice smartMeteringDevice = this.createSmartMeteringDevice();
 

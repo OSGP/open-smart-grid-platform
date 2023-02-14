@@ -37,6 +37,12 @@ public class SmartMeteringDeviceDtoBuilder {
     dto.setMbusDeviceTypeIdentification((short) (100 + counter));
     dto.setMbusDefaultKey(("defaultKey" + counter).getBytes());
     dto.setSupplier("supplier" + counter);
+    dto.setPolyphase(true);
+    dto.setPort(4000L);
+    dto.setChallengeLength(15);
+    dto.setIpAddressIsStatic(false);
+    dto.setWithListSupported(true);
+    dto.setSelectiveAccessSupported(false);
     return dto;
   }
 }
