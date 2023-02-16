@@ -10,6 +10,11 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import javax.net.ssl.SSLContext;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
@@ -100,11 +105,15 @@ public class SoapClientConfig {
   }
 
   @Bean
-  public HttpComponentsMessageSender httpComponentsMessageSender() throws Exception {
+  public HttpComponentsMessageSender httpComponentsMessageSender()
+      throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException,
+          KeyStoreException, KeyManagementException {
     return new HttpComponentsMessageSender(this.httpClient());
   }
 
-  public HttpClient httpClient() throws Exception {
+  public HttpClient httpClient()
+      throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException,
+          KeyStoreException, KeyManagementException {
     return HttpClientBuilder.create()
         .setSSLSocketFactory(this.sslConnectionSocketFactory())
         .addInterceptorFirst(new RemoveSoapHeadersInterceptor())
@@ -113,7 +122,9 @@ public class SoapClientConfig {
         .build();
   }
 
-  public SSLConnectionSocketFactory sslConnectionSocketFactory() throws Exception {
+  public SSLConnectionSocketFactory sslConnectionSocketFactory()
+      throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException,
+          KeyStoreException, KeyManagementException {
     if (!Boolean.parseBoolean(this.useHostNameVerifier)) {
       return new SSLConnectionSocketFactory(this.sslContext(), NoopHostnameVerifier.INSTANCE);
     } else {
@@ -121,7 +132,9 @@ public class SoapClientConfig {
     }
   }
 
-  public SSLContext sslContext() throws Exception {
+  public SSLContext sslContext()
+      throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException,
+          KeyStoreException, KeyManagementException {
     return SSLContextBuilder.create()
         .loadKeyMaterial(
             this.keyStore.getFile(),
