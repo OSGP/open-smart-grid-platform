@@ -15,6 +15,8 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.opensmartgridplatform.throttling.api.Permit;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
 import org.slf4j.Logger;
@@ -42,22 +44,36 @@ public class ThrottlingClient {
   public ThrottlingClient(
       final ThrottlingConfig throttlingConfig,
       final String throttlingServiceUrl,
-      final Duration timeout) {
+      final Duration timeout,
+      final int maxConnPerRoute,
+      final int maxConnTotal) {
 
     this.throttlingConfig =
         Objects.requireNonNull(throttlingConfig, "throttlingConfig must not be null");
     this.restTemplate =
         this.createAndConfigureRestTemplate(
             Objects.requireNonNull(throttlingServiceUrl, "throttlingServiceUrl must not be null"),
-            Objects.requireNonNull(timeout, "timeout must not be null"));
+            Objects.requireNonNull(timeout, "timeout must not be null"),
+            Objects.requireNonNull(maxConnPerRoute, "maxConnPerRoute must not be null"),
+            Objects.requireNonNull(maxConnTotal, "maxConnTotal must not be null"));
   }
 
   private RestTemplate createAndConfigureRestTemplate(
-      final String throttlingServiceUrl, final Duration timeout) {
+      final String throttlingServiceUrl,
+      final Duration timeout,
+      final int maxConnPerRoute,
+      final int maxConnTotal) {
 
+    final HttpClient httpClient =
+        HttpClientBuilder.create()
+            .setMaxConnPerRoute(maxConnPerRoute)
+            .setMaxConnTotal(maxConnTotal)
+            .build();
     final HttpComponentsClientHttpRequestFactory clientHttpRequestFactory =
         new HttpComponentsClientHttpRequestFactory();
+    clientHttpRequestFactory.setHttpClient(httpClient);
     clientHttpRequestFactory.setConnectTimeout((int) timeout.toMillis());
+
     final RestTemplate template = new RestTemplate(clientHttpRequestFactory);
 
     final DefaultUriBuilderFactory uriBuilderFactory =
