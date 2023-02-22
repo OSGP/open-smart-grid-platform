@@ -47,7 +47,9 @@ class ThrottlingClientTest {
         new ThrottlingClient(
             this.throttlingConfig,
             this.mockWebServer.url("/").url().toExternalForm(),
-            Duration.ofSeconds(1));
+            Duration.ofSeconds(1),
+            2,
+            10);
   }
 
   private MockResponse requestReceivedAtUnexpectedEndpointResponse() {

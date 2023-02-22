@@ -76,10 +76,10 @@ public class SoapClientConfig {
   @Value("${encryption.rsa.public.key.gxf.smartmetering}")
   private Resource rsaPublicKeyGxfSmartMetering;
 
-  @Value("${soapclient.maxConnPerRoute:2}")
+  @Value("${soapclient.max-conn-per-route:20}")
   private int maxConnPerRoute;
 
-  @Value("${soapclient.maxConnTotal:20}")
+  @Value("${soapclient.max-conn-total:100}")
   private int maxConnTotal;
 
   @Bean
@@ -114,6 +114,7 @@ public class SoapClientConfig {
   public HttpClient httpClient()
       throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException,
           KeyStoreException, KeyManagementException {
+
     return HttpClientBuilder.create()
         .setSSLSocketFactory(this.sslConnectionSocketFactory())
         .addInterceptorFirst(new RemoveSoapHeadersInterceptor())
