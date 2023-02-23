@@ -132,7 +132,7 @@
     <cucumber.version>5.7.0</cucumber.version>
     <testcontainers.version>1.16.2</testcontainers.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
-    <postgresql.version>42.5.0</postgresql.version>
+    <postgresql.version>42.5.4</postgresql.version>
     <javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
     <!-- to avoid conflicts with spring-kafka-test the older kafka version 2.4.1 is used-->
     <kafka.version>2.4.1</kafka.version>
