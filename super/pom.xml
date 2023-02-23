@@ -71,7 +71,7 @@
     <junit.platform.launcher.version>1.6.2</junit.platform.launcher.version>
     <byte.buddy.version>1.12.17</byte.buddy.version>
     <joda.version>2.10.6</joda.version>
-    <flyway.version>7.3.0</flyway.version>
+    <flyway.version>9.15.0</flyway.version>
     <slf4j.version>1.7.30</slf4j.version>
     <apache.commons.lang.version>3.10</apache.commons.lang.version>
     <apache.commons.text.version>1.10.0</apache.commons.text.version>
