@@ -335,7 +335,7 @@
       <xsd:element name="SelectiveAccessSupported" type="xsd:boolean"
         minOccurs="0" />
       <xsd:element name="ChallengeLength" type="xsd:int" />
-      <xsd:element name="Port" type="xsd:long" />
+      <xsd:element name="Port" type="xsd:long" minOccurs="0" maxOccurs="1"  />
 
     </xsd:sequence>
   </xsd:complexType>
