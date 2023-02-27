@@ -8,11 +8,14 @@
  */
 package org.opensmartgridplatform.shared.application.scheduling;
 
+import static org.quartz.DateBuilder.futureDate;
+
 import com.google.common.collect.Sets;
 import java.util.TimeZone;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.shared.application.config.AbstractOsgpSchedulerConfig;
 import org.quartz.CronScheduleBuilder;
+import org.quartz.DateBuilder.IntervalUnit;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
@@ -127,6 +130,30 @@ public class OsgpScheduler {
         .build();
   }
 
+  /**
+   * Create a {@link Trigger} instance using a {@link JobDetail} instance and a delay
+   *
+   * @param jobDetail A {@link JobDetail} instance, possibly created using {@link
+   *     OsgpScheduler#createJobDetail(Class)}.
+   * @param interval Interval of the trigger.
+   * @param intervalUnit Interval unit.
+   * @param jobDataMap A map containing data that can be used by job.
+   * @return A {@link Trigger} instance.
+   */
+  public Trigger createJobTrigger(
+      final JobDetail jobDetail,
+      final Integer interval,
+      final IntervalUnit intervalUnit,
+      final JobDataMap jobDataMap) {
+    return TriggerBuilder.newTrigger()
+        .forJob(jobDetail)
+        .withIdentity(this.getTriggerIdentity(jobDetail))
+        .startAt(futureDate(interval, intervalUnit))
+        .usingJobData(jobDataMap)
+        .forJob(jobDetail)
+        .build();
+  }
+
   public TriggerKey getTriggerKey(final Class<? extends Job> jobClass) {
     final JobDetail jobDetail = this.createJobDetail(jobClass);
     return TriggerKey.triggerKey(this.getTriggerIdentity(jobDetail));
@@ -169,6 +196,37 @@ public class OsgpScheduler {
    * OsgpScheduler#createJobTrigger(JobDetail, String)}.
    *
    * @param jobClass The class which defines the actions of the scheduled job.
+   * @param interval Interval of the trigger.
+   * @param intervalUnit Interval unit.
+   * @throws SchedulerException In case adding or scheduling of the job fails.
+   */
+  public void createAndScheduleJob(
+      final Class<? extends Job> jobClass,
+      final Integer interval,
+      final IntervalUnit intervalUnit,
+      final JobDataMap jobDataMap)
+      throws SchedulerException {
+
+    LOGGER.info(
+        "Scheduling job: {} using Quartz delay of: {} {}",
+        jobClass.getSimpleName(),
+        interval,
+        intervalUnit);
+
+    // Create job and trigger.
+    final JobDetail jobDetail = this.createJobDetail(jobClass);
+    final Trigger trigger = this.createJobTrigger(jobDetail, interval, intervalUnit, jobDataMap);
+
+    // Add and schedule for trigger.
+    this.addAndScheduleJob(jobDetail, trigger);
+  }
+
+  /**
+   * Convenience method for creating a job and trigger, then adding and scheduling the job using the
+   * trigger. This method uses {@link OsgpScheduler#createJobDetail(Class)} and {@link
+   * OsgpScheduler#createJobTrigger(JobDetail, String)}.
+   *
+   * @param jobClass The class which defines the actions of the scheduled job.
    * @param cronExpression The input for the trigger, a Quartz CRON expression like {@code 0 0/1 * *
    *     * ?} for example.
    * @param timeZone A Timezone for the CRON-expression.
@@ -192,6 +250,11 @@ public class OsgpScheduler {
     final Trigger trigger = this.createJobTrigger(jobDetail, cronExpression, timeZone, jobDataMap);
 
     // Add and schedule for trigger.
+    this.addAndScheduleJob(jobDetail, trigger);
+  }
+
+  private void addAndScheduleJob(final JobDetail jobDetail, final Trigger trigger)
+      throws SchedulerException {
     this.quartzScheduler.addJob(jobDetail, true);
     this.quartzScheduler.scheduleJob(jobDetail, Sets.newHashSet(trigger), true);
   }

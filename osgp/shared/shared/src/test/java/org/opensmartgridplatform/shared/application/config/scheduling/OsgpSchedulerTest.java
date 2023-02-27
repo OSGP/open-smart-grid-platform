@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Set;
 import java.util.TimeZone;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,11 +27,13 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.shared.application.scheduling.OsgpScheduler;
 import org.quartz.CronTrigger;
+import org.quartz.DateBuilder.IntervalUnit;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 
@@ -64,7 +67,8 @@ class OsgpSchedulerTest {
   void testCreateAndScheduleJob2Args() throws SchedulerException {
     this.osgpScheduler.createAndScheduleJob(TestJob.class, CRON_EXPRESSION);
 
-    this.assertQuartzTrigger(TestJob.class, CRON_EXPRESSION, DateTimeZone.UTC.toTimeZone());
+    final CronTrigger cronTrigger = (CronTrigger) this.assertJobDetail(TestJob.class);
+    this.assertCronTrigger(cronTrigger, CRON_EXPRESSION, DateTimeZone.UTC.toTimeZone());
   }
 
   @Test
@@ -72,7 +76,8 @@ class OsgpSchedulerTest {
     final TimeZone timeZone = TimeZone.getTimeZone("Europe/Amsterdam");
     this.osgpScheduler.createAndScheduleJob(TestJob.class, CRON_EXPRESSION, timeZone);
 
-    this.assertQuartzTrigger(TestJob.class, CRON_EXPRESSION, timeZone);
+    final CronTrigger cronTrigger = (CronTrigger) this.assertJobDetail(TestJob.class);
+    this.assertCronTrigger(cronTrigger, CRON_EXPRESSION, timeZone);
   }
 
   @Test
@@ -82,11 +87,25 @@ class OsgpSchedulerTest {
     final TimeZone timeZone = TimeZone.getTimeZone("Europe/Amsterdam");
     this.osgpScheduler.createAndScheduleJob(TestJob.class, CRON_EXPRESSION, timeZone, jobDataMap);
 
-    final CronTrigger cronTrigger =
-        this.assertQuartzTrigger(TestJob.class, CRON_EXPRESSION, timeZone);
+    final CronTrigger cronTrigger = (CronTrigger) this.assertJobDetail(TestJob.class);
+    this.assertCronTrigger(cronTrigger, CRON_EXPRESSION, timeZone);
 
     assertThat(cronTrigger.getJobDataMap().size()).isOne();
     assertThat(cronTrigger.getJobDataMap().get("A")).isEqualTo(1L);
+  }
+
+  @Test
+  void testCreateAndScheduleSimpleJobDataMap() throws SchedulerException {
+    final JobDataMap jobDataMap = new JobDataMap();
+    jobDataMap.put("A", 1L);
+    this.osgpScheduler.createAndScheduleJob(TestJob.class, 40, IntervalUnit.SECOND, jobDataMap);
+
+    final SimpleTrigger simpleTrigger = (SimpleTrigger) this.assertJobDetail(TestJob.class);
+
+    assertThat(simpleTrigger.getStartTime())
+        .isCloseTo(new DateTime().plusSeconds(40).toDate(), 100l);
+    assertThat(simpleTrigger.getJobDataMap().size()).isOne();
+    assertThat(simpleTrigger.getJobDataMap().get("A")).isEqualTo(1L);
   }
 
   @Test
@@ -96,26 +115,26 @@ class OsgpSchedulerTest {
     assertThat(triggerKey.getGroup()).isEqualTo("DEFAULT");
   }
 
-  CronTrigger assertQuartzTrigger(
-      final Class<? extends Job> jobClazz, final String cronExpression, final TimeZone timeZone)
-      throws SchedulerException {
+  Trigger assertJobDetail(final Class<? extends Job> jobClazz) throws SchedulerException {
 
     verify(this.quartzScheduler).addJob(this.jobDetailArgumentCaptor.capture(), eq(true));
-    assertThat(this.jobDetailArgumentCaptor.getValue().getKey().getName())
-        .isEqualTo(jobClazz.getSimpleName());
+    final JobDetail jobDetail = this.jobDetailArgumentCaptor.getValue();
+
     verify(this.quartzScheduler)
-        .scheduleJob(
-            this.jobDetail2ArgumentCaptor.capture(),
-            this.jobTriggerSetArgumentCaptor.capture(),
-            eq(true));
-    assertThat(this.jobDetail2ArgumentCaptor.getValue())
-        .isEqualTo(this.jobDetailArgumentCaptor.getValue());
-    assertThat(this.jobTriggerSetArgumentCaptor.getValue().size()).isOne();
-    final CronTrigger cronTrigger =
-        (CronTrigger) this.jobTriggerSetArgumentCaptor.getValue().iterator().next();
+        .scheduleJob(eq(jobDetail), this.jobTriggerSetArgumentCaptor.capture(), eq(true));
+    final Set<? extends Trigger> triggers = this.jobTriggerSetArgumentCaptor.getValue();
+
+    assertThat(jobDetail.getKey().getName()).isEqualTo(jobClazz.getSimpleName());
+    assertThat(triggers.size()).isOne();
+
+    return triggers.iterator().next();
+  }
+
+  void assertCronTrigger(
+      final CronTrigger cronTrigger, final String cronExpression, final TimeZone timeZone)
+      throws SchedulerException {
+
     assertThat(cronTrigger.getCronExpression()).isEqualTo(cronExpression);
     assertThat(cronTrigger.getTimeZone()).isEqualTo(timeZone);
-
-    return cronTrigger;
   }
 }
