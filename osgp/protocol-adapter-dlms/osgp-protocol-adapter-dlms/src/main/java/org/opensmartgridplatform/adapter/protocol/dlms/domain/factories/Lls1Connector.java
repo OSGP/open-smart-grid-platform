@@ -8,7 +8,9 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_AUTHENTICATION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_ENCRYPTION;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.PASSWORD;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -37,6 +39,8 @@ import org.slf4j.LoggerFactory;
 public class Lls1Connector extends SecureDlmsConnector {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Lls1Connector.class);
+
+  private static final int AES_GCM_128 = 128;
 
   private final SecretManagementService secretManagementService;
 
@@ -87,41 +91,50 @@ public class Lls1Connector extends SecureDlmsConnector {
       final TcpConnectionBuilder tcpConnectionBuilder)
       throws OsgpException {
 
-    try {
-      final Map<SecurityKeyType, byte[]> encryptedKeys =
-          keyProvider.getKeys(
-              messageMetadata,
-              device.getDeviceIdentification(),
-              Arrays.asList(SecurityKeyType.PASSWORD, E_METER_ENCRYPTION));
-      final byte[] password = encryptedKeys.get(SecurityKeyType.PASSWORD);
-      final byte[] dlmsEncryptionKey = encryptedKeys.get(E_METER_ENCRYPTION);
-      if (password == null) {
-        LOGGER.error(
-            "There is no password available for device {}", device.getDeviceIdentification());
-        throw new FunctionalException(
-            FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION, ComponentType.PROTOCOL_DLMS);
-      }
-      if (dlmsEncryptionKey == null) {
-        LOGGER.error(
-            "There is no encryption key available for device {}", device.getDeviceIdentification());
-        throw new FunctionalException(
-            FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION, ComponentType.PROTOCOL_DLMS);
-      }
+    final Map<SecurityKeyType, byte[]> encryptedKeys =
+        keyProvider.getKeys(
+            messageMetadata,
+            device.getDeviceIdentification(),
+            Arrays.asList(PASSWORD, E_METER_ENCRYPTION, E_METER_AUTHENTICATION));
+    final byte[] password = this.getKey(encryptedKeys, PASSWORD, device);
+    final byte[] encryptionKey = this.getKey(encryptedKeys, E_METER_ENCRYPTION, device);
+    final byte[] authenticationKey = this.getKey(encryptedKeys, E_METER_AUTHENTICATION, device);
 
-      final SecuritySuite securitySuite =
-          SecuritySuite.builder()
-              .setAuthenticationMechanism(AuthenticationMechanism.LOW)
-              .setPassword(password)
-              .setGlobalUnicastEncryptionKey(dlmsEncryptionKey)
-              .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
-              .build();
+    final SecuritySuite securitySuite =
+        SecuritySuite.builder()
+            .setAuthenticationMechanism(AuthenticationMechanism.LOW)
+            .setPassword(password)
+            .setGlobalUnicastEncryptionKey(encryptionKey)
+            .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
+            .setAuthenticationKey(authenticationKey)
+            .build();
 
-      tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientId);
+    tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientId);
+  }
 
-    } catch (final EncrypterException e) {
-      LOGGER.error("Error determining DLMS password setting up LLS1 connection", e);
+  final byte[] getKey(
+      final Map<SecurityKeyType, byte[]> encryptedKeys,
+      final SecurityKeyType keyType,
+      final DlmsDevice device)
+      throws FunctionalException {
+    final byte[] key = encryptedKeys.get(keyType);
+
+    if (key == null) {
+      LOGGER.error(
+          "There is no {} key available for device {}", keyType, device.getDeviceIdentification());
       throw new FunctionalException(
-          FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION, ComponentType.PROTOCOL_DLMS);
+          FunctionalExceptionType.KEY_NOT_PRESENT, ComponentType.PROTOCOL_DLMS);
     }
+
+    if (keyType != PASSWORD && key.length * 8 != AES_GCM_128) {
+      LOGGER.error(
+          "The {} key has an invalid length for device {}",
+          keyType,
+          device.getDeviceIdentification());
+      throw new FunctionalException(
+          FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
+    }
+
+    return key;
   }
 }

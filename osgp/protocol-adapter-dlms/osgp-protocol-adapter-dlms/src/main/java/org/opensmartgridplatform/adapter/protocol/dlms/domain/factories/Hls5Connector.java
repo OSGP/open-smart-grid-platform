@@ -43,7 +43,7 @@ public class Hls5Connector extends SecureDlmsConnector {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Hls5Connector.class);
 
-  private static final int AES_GMC_128 = 128;
+  private static final int AES_GCM_128 = 128;
 
   private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
@@ -204,13 +204,13 @@ public class Hls5Connector extends SecureDlmsConnector {
           "The authentication key is empty", FunctionalExceptionType.KEY_NOT_PRESENT);
     }
 
-    if (this.checkLenghtKey(encryptionKey)) {
+    if (this.checkLengthKey(encryptionKey)) {
       this.throwFunctionalException(
           "The encryption key has an invalid length",
           FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT);
     }
 
-    if (this.checkLenghtKey(authenticationKey)) {
+    if (this.checkLengthKey(authenticationKey)) {
       this.throwFunctionalException(
           "The authentication key has an invalid length",
           FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT);
@@ -221,8 +221,8 @@ public class Hls5Connector extends SecureDlmsConnector {
     return key == null;
   }
 
-  private boolean checkLenghtKey(final byte[] key) {
-    return key.length * 8 != AES_GMC_128;
+  private boolean checkLengthKey(final byte[] key) {
+    return key.length * 8 != AES_GCM_128;
   }
 
   private void throwFunctionalException(final String msg, final FunctionalExceptionType type)
