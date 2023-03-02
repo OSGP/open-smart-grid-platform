@@ -20,6 +20,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileE
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntry;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntryValue;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileType;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileTypeValue;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileTypes;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData;
 
@@ -48,11 +49,10 @@ public class PowerQualityProfileResponseDataConverter
                 .PowerQualityProfileData();
     result.setLogicalName(this.mapperFacade.map(source.getLogicalName(), ObisCodeValues.class));
 
-    // TODO  result.setProfileTypes =   source.getProfileTypes();
+    // add  source.getProfileTypes() to result
     final ProfileTypes profileTypes = new ProfileTypes();
     profileTypes.getProfileType().addAll(this.mapProfileTypes(source));
-
-    //    result.setProfileTypes(source.getProfileTypes());
+    result.setProfileTypes(profileTypes);
 
     final CaptureObjects captureObjects = new CaptureObjects();
     captureObjects
@@ -87,20 +87,19 @@ public class PowerQualityProfileResponseDataConverter
 
   private List<ProfileType> mapProfileTypes(final PowerQualityProfileData source) {
     final List<ProfileType> result = new ArrayList<>();
-    //    for (final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileType
-    //        profileTypeValuesVo : source.getProfileTypes()) {
-    //      final ProfileType profileType = new ProfileType();
-    //
-    //      for (final
-    // org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileTypeValue
-    //          profileTypeValueValueVo : profileTypeValuesVo.getProfileTypeValues()) {
-    //        profileType
-    //            .
-    //            .add(this.mapperFacade.map(profileEntryValueVo, ProfileEntryValue.class));
-    //      }
-    //
-    //      result.add(profileType);
-    //    }
+    for (final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileType
+        profileTypeValuesVo : source.getProfileTypes()) {
+      final ProfileType profileType = new ProfileType();
+
+      for (final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileTypeValue
+          profileTypeValueVo : profileTypeValuesVo.getProfileTypeValues()) {
+        profileType
+            .getProfileTypeValue()
+            .add(this.mapperFacade.map(profileTypeValueVo, ProfileTypeValue.class));
+      }
+
+      result.add(profileType);
+    }
     return result;
   }
 }
