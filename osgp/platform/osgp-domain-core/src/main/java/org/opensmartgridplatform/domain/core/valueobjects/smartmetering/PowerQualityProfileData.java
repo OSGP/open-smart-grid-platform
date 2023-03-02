@@ -18,15 +18,18 @@ public class PowerQualityProfileData extends ActionResponse implements Serializa
   private final ObisCodeValues logicalName;
   private final List<CaptureObject> captureObjects;
   private final List<ProfileEntry> profileEntries;
+  private final List<ProfileType> profileTypes;
 
   public PowerQualityProfileData(
       final ObisCodeValues logicalName,
       final List<CaptureObject> captureObjects,
-      final List<ProfileEntry> profileEntries) {
+      final List<ProfileEntry> profileEntries,
+      final List<ProfileType> profileTypes) {
     super();
     this.logicalName = logicalName;
     this.captureObjects = captureObjects;
     this.profileEntries = profileEntries;
+    this.profileTypes = profileTypes;
   }
 
   public ObisCodeValues getLogicalName() {
@@ -39,5 +42,9 @@ public class PowerQualityProfileData extends ActionResponse implements Serializa
 
   public List<ProfileEntry> getProfileEntries() {
     return this.profileEntries;
+  }
+
+  public List<ProfileType> getProfileTypes() {
+    return this.profileTypes;
   }
 }

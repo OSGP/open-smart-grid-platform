@@ -19,6 +19,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCode
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntries;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntry;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntryValue;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileType;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileTypes;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData;
 
 public class PowerQualityProfileResponseDataConverter
@@ -45,6 +47,12 @@ public class PowerQualityProfileResponseDataConverter
             new org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring
                 .PowerQualityProfileData();
     result.setLogicalName(this.mapperFacade.map(source.getLogicalName(), ObisCodeValues.class));
+
+    // TODO  result.setProfileTypes =   source.getProfileTypes();
+    final ProfileTypes profileTypes = new ProfileTypes();
+    profileTypes.getProfileType().addAll(this.mapProfileTypes(source));
+
+    //    result.setProfileTypes(source.getProfileTypes());
 
     final CaptureObjects captureObjects = new CaptureObjects();
     captureObjects
@@ -74,6 +82,25 @@ public class PowerQualityProfileResponseDataConverter
 
       result.add(profileEntry);
     }
+    return result;
+  }
+
+  private List<ProfileType> mapProfileTypes(final PowerQualityProfileData source) {
+    final List<ProfileType> result = new ArrayList<>();
+    //    for (final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileType
+    //        profileTypeValuesVo : source.getProfileTypes()) {
+    //      final ProfileType profileType = new ProfileType();
+    //
+    //      for (final
+    // org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileTypeValue
+    //          profileTypeValueValueVo : profileTypeValuesVo.getProfileTypeValues()) {
+    //        profileType
+    //            .
+    //            .add(this.mapperFacade.map(profileEntryValueVo, ProfileEntryValue.class));
+    //      }
+    //
+    //      result.add(profileType);
+    //    }
     return result;
   }
 }
