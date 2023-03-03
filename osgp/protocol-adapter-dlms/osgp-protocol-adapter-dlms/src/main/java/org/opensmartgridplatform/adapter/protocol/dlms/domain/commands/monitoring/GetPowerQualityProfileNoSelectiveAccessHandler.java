@@ -16,8 +16,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileTypeValueDto;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -49,30 +47,6 @@ public class GetPowerQualityProfileNoSelectiveAccessHandler
             this.makeProfileEntryValueDto(
                 dataObjects.get(i), selectedObjects.get(i), previousProfileEntryDto, timeInterval);
         result.add(currentProfileEntryValueDto);
-      }
-    }
-
-    return result;
-  }
-
-  @Override
-  protected List<ProfileTypeValueDto> createProfileTypeValueDto(
-      final DataObject profileTypeDataObject,
-      final ProfileTypeDto previousProfileTypeDto,
-      final LinkedHashMap<Integer, SelectableObject> selectedObjects,
-      final int timeInterval) {
-    final List<ProfileTypeValueDto> result = new ArrayList<>();
-    final List<DataObject> dataObjects = profileTypeDataObject.getValue();
-
-    for (int i = 0; i < dataObjects.size(); i++) {
-
-      if (selectedObjects.containsKey(i)) {
-        final ProfileTypeValueDto currentProfileTypeValueDto = null;
-        // TODO implement????????
-        //            this.makeProfileTypeValueDto(
-        //                dataObjects.get(i), selectedObjects.get(i), previousProfileTypeDto,
-        // timeInterval);
-        result.add(currentProfileTypeValueDto);
       }
     }
 

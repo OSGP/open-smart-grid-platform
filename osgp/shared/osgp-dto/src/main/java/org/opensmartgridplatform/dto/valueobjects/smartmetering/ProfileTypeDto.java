@@ -8,21 +8,7 @@
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
-import java.io.Serializable;
-import java.util.List;
-
-public class ProfileTypeDto implements Serializable {
-
-  private static final long serialVersionUID = 2123390296585369209L;
-
-  private final List<ProfileTypeValueDto> profileTypeValues;
-
-  public ProfileTypeDto(final List<ProfileTypeValueDto> profileTypeValues) {
-    super();
-    this.profileTypeValues = profileTypeValues;
-  }
-
-  public List<ProfileTypeValueDto> getProfileTypeValues() {
-    return this.profileTypeValues;
-  }
+public enum ProfileTypeDto {
+  PUBLIC,
+  PRIVATE
 }

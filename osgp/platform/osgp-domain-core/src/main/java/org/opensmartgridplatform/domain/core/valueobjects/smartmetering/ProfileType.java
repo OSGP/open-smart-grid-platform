@@ -8,19 +8,7 @@
  */
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
-import java.io.Serializable;
-import java.util.List;
-
-public class ProfileType implements Serializable {
-
-  private final List<ProfileTypeValue> profileTypeValues;
-
-  public ProfileType(final List<ProfileTypeValue> profileTypeValues) {
-    super();
-    this.profileTypeValues = profileTypeValues;
-  }
-
-  public List<ProfileTypeValue> getProfileTypeValues() {
-    return this.profileTypeValues;
-  }
+public enum ProfileType {
+  PUBLIC,
+  PRIVATE
 }

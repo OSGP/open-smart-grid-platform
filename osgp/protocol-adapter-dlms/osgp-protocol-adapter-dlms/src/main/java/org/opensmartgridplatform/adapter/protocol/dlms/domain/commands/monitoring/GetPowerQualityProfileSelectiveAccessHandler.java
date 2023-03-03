@@ -17,8 +17,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileTypeValueDto;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -55,15 +53,6 @@ public class GetPowerQualityProfileSelectiveAccessHandler
     }
 
     return result;
-  }
-
-  @Override
-  protected List<ProfileTypeValueDto> createProfileTypeValueDto(
-      final DataObject profileTypeDataObject,
-      final ProfileTypeDto previousProfileTypeDto,
-      final LinkedHashMap<Integer, SelectableObject> selectableCaptureObjects,
-      final int timeInterval) {
-    return null;
   }
 
   @Override

@@ -57,7 +57,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityProf
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileTypeValueDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,12 +88,6 @@ public abstract class AbstractGetPowerQualityProfileHandler {
   protected abstract List<ProfileEntryValueDto> createProfileEntryValueDto(
       final DataObject profileEntryDataObject,
       ProfileEntryDto previousProfileEntryDto,
-      final LinkedHashMap<Integer, SelectableObject> selectableCaptureObjects,
-      int timeInterval);
-
-  protected abstract List<ProfileTypeValueDto> createProfileTypeValueDto(
-      final DataObject profileTypeDataObject,
-      ProfileTypeDto previousProfileTypeDto,
       final LinkedHashMap<Integer, SelectableObject> selectableCaptureObjects,
       int timeInterval);
 
@@ -284,12 +277,12 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     final List<ProfileEntryDto> profileEntryDtos =
         this.createProfileEntries(
             bufferList, selectableCaptureObjects, this.getIntervalInMinutes(profile));
-    final List<ProfileTypeDto> profileTypeDtos = this.createProfileTypes(publicOrPrivate);
+    final ProfileTypeDto profileTypeDto = ProfileTypeDto.valueOf(publicOrPrivate);
     return new PowerQualityProfileDataDto(
         new ObisCodeValuesDto(profile.getObis()),
         captureObjectDtos,
         profileEntryDtos,
-        profileTypeDtos);
+        profileTypeDto);
   }
 
   private List<ProfileEntryDto> createProfileEntries(
@@ -322,14 +315,6 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       }
     }
     return profileEntryDtos;
-  }
-
-  private List<ProfileTypeDto> createProfileTypes(final String publicOrPrivate) {
-
-    final List<ProfileTypeValueDto> profileTypeValues = new ArrayList<>();
-    final ProfileTypeValueDto profileTypeValueDto = new ProfileTypeValueDto(publicOrPrivate);
-    profileTypeValues.add(profileTypeValueDto);
-    return (List<ProfileTypeDto>) new ProfileTypeDto(profileTypeValues);
   }
 
   // the available CaptureObjects are filtered with the ones that can be

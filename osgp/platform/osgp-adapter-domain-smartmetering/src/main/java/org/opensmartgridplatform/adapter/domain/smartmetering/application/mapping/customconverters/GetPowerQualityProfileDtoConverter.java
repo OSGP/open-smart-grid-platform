@@ -22,13 +22,10 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQua
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntry;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileType;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileTypeValue;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityProfileDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileTypeValueDto;
 
 public class GetPowerQualityProfileDtoConverter
     extends CustomConverter<GetPowerQualityProfileResponseDto, GetPowerQualityProfileResponse> {
@@ -64,12 +61,13 @@ public class GetPowerQualityProfileDtoConverter
 
       final List<ProfileEntry> profileEntries = this.makeProfileEntries(responseDataDto);
 
-      // TODO get profileTyps (PUBLIC/PRIVATE)
-      final List<ProfileType> profileTypes = this.makeProfileTypes(responseDataDto);
+      final ProfileType profileType =
+          this.mapperFactory
+              .getMapperFacade()
+              .map(responseDataDto.getProfileType(), ProfileType.class);
 
       powerQualityProfileDatas.add(
-          new PowerQualityProfileData(
-              obisCodeValues, captureObjects, profileEntries, profileTypes));
+          new PowerQualityProfileData(obisCodeValues, captureObjects, profileEntries, profileType));
     }
 
     response.setPowerQualityProfileDatas(powerQualityProfileDatas);
@@ -119,25 +117,5 @@ public class GetPowerQualityProfileDtoConverter
     }
 
     return profileEntries;
-  }
-
-  private List<ProfileType> makeProfileTypes(final PowerQualityProfileDataDto responseDataDto) {
-
-    final List<ProfileType> profileTypes = new ArrayList<>();
-
-    for (final ProfileTypeDto profileTypeDto : responseDataDto.getProfileTypes()) {
-
-      final List<ProfileTypeValue> profileTypeValues = new ArrayList<>();
-
-      for (final ProfileTypeValueDto profileTypeValueDto : profileTypeDto.getProfileTypeValues()) {
-
-        final ProfileTypeValue profileTypeValue =
-            this.mapperFactory.getMapperFacade().map(profileTypeValueDto, ProfileTypeValue.class);
-        profileTypeValues.add(profileTypeValue);
-      }
-      profileTypes.add(new ProfileType(profileTypeValues));
-    }
-
-    return profileTypes;
   }
 }
