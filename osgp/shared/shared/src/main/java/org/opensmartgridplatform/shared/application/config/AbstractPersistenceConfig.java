@@ -48,6 +48,9 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
   @Value("${db.port:5432}")
   private int databasePort;
 
+  @Value("${db.hosts:#{null}}")
+  private String[] databaseHosts;
+
   @Value("${db.name}")
   private String databaseName;
 
@@ -122,14 +125,7 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
 
   protected DataSource getDataSource() {
     if (this.dataSource == null) {
-      final DefaultConnectionPoolFactory.Builder builder =
-          this.builder()
-              .withUsername(this.username)
-              .withPassword(this.password)
-              .withDatabaseHost(this.databaseHost)
-              .withDatabasePort(this.databasePort)
-              .withDatabaseName(this.databaseName);
-      final DefaultConnectionPoolFactory factory = builder.build();
+      final DefaultConnectionPoolFactory factory = this.builder().build();
       this.dataSource = factory.getDefaultConnectionPool();
     }
 
@@ -240,6 +236,12 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
         .withMaxLifetime(this.maxLifetime)
         .withInitializationFailTimeout(this.initializationFailTimeout)
         .withValidationTimeout(this.validationTimeout)
-        .withConnectionTimeout(this.connectionTimeout);
+        .withConnectionTimeout(this.connectionTimeout)
+        .withDatabaseHosts(this.databaseHosts)
+        .withDatabaseHost(this.databaseHost)
+        .withDatabasePort(this.databasePort)
+        .withDatabaseName(this.databaseName)
+        .withUsername(this.username)
+        .withPassword(this.password);
   }
 }
