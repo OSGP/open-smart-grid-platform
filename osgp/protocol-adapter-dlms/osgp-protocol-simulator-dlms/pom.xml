@@ -62,7 +62,7 @@
     <dependency>
         <groupId>org.openmuc</groupId>
         <artifactId>jdlms-annotation-processor</artifactId>
-        <version>${openmuc.jdlms.version}</version>
+        <version>${openmuc.jdlms-annotation.version}</version>
         <scope>provided</scope>
       </dependency>
       <!-- Spring Boot (N.B. This makes some explicit spring dependencies unnecessary) -->
