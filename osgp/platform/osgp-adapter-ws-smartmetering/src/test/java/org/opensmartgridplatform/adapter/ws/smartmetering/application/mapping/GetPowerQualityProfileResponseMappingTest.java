@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Smart Society Services B.V.
+ * Copyright 2014-2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -27,6 +27,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCode
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntry;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileType;
 
 public class GetPowerQualityProfileResponseMappingTest {
 
@@ -191,7 +192,7 @@ public class GetPowerQualityProfileResponseMappingTest {
     final List<ProfileEntry> profileEntries = this.makeProfileEntries();
 
     final PowerQualityProfileData responseData =
-        new PowerQualityProfileData(obisCode, captureObjects, profileEntries);
+        new PowerQualityProfileData(obisCode, captureObjects, profileEntries, ProfileType.PUBLIC);
 
     final GetPowerQualityProfileResponse source = new GetPowerQualityProfileResponse();
     source.setPowerQualityProfileDatas(Collections.singletonList(responseData));
