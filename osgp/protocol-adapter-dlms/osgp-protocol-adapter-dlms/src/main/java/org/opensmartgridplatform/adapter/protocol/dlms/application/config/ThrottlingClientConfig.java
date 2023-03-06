@@ -32,6 +32,12 @@ public class ThrottlingClientConfig {
   @Value("${throttling.service.url:http://localhost:9090}")
   private String throttlingServiceUrl;
 
+  @Value("${throttling.client.max-conn-per-route:20}")
+  private int maxConnPerRoute;
+
+  @Value("${throttling.client.max-conn-total:100}")
+  private int maxConnTotal;
+
   @Value("#{T(java.time.Duration).parse('${throttling.service.timeout:PT30S}')}")
   private Duration timeout;
 
@@ -52,7 +58,9 @@ public class ThrottlingClientConfig {
     return new ThrottlingClient(
         new ThrottlingConfig(this.configurationName, this.configurationMaxConcurrency),
         this.throttlingServiceUrl,
-        this.timeout);
+        this.timeout,
+        this.maxConnPerRoute,
+        this.maxConnTotal);
   }
 
   /**
