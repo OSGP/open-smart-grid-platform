@@ -164,8 +164,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
       this.throwExceptionIfResultNotOk(responseData, "Add Device");
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-      if (responseData.getMessageData() instanceof String) {
-        response.setDescription((String) responseData.getMessageData());
+      if (responseData.getMessageData() instanceof String messageData) {
+        response.setDescription(messageData);
       }
 
     } catch (final Exception e) {
@@ -238,14 +238,19 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
       this.throwExceptionIfResultNotOk(responseData, "Couple Mbus Device");
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-      if (responseData.getMessageData() instanceof String) {
-        response.setDescription((String) responseData.getMessageData());
-      }
+      populateResponseMessageData(response, responseData);
 
     } catch (final Exception e) {
       this.handleException(e);
     }
     return response;
+  }
+
+  private static void populateResponseMessageData(
+      final CoupleMbusDeviceResponse response, final ResponseData responseData) {
+    if (responseData.getMessageData() instanceof String messageData) {
+      response.setDescription(messageData);
+    }
   }
 
   /**
@@ -350,8 +355,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
       this.throwExceptionIfResultNotOk(responseData, "Decouple Mbus Device");
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-      if (responseData.getMessageData() instanceof String) {
-        response.setDescription((String) responseData.getMessageData());
+      if (responseData.getMessageData() instanceof String messageData) {
+        response.setDescription(messageData);
       }
 
     } catch (final Exception e) {
@@ -383,8 +388,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
       this.throwExceptionIfResultNotOk(responseData, "Decouple Mbus Device Administrative");
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-      if (responseData.getMessageData() instanceof String) {
-        response.setDescription((String) responseData.getMessageData());
+      if (responseData.getMessageData() instanceof String messageData) {
+        response.setDescription(messageData);
       }
 
     } catch (final Exception e) {
@@ -459,8 +464,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
       this.throwExceptionIfResultNotOk(responseData, "Couple Mbus Device By Channel");
 
-      if (responseData.getMessageData() instanceof String) {
-        response.setResultString((String) responseData.getMessageData());
+      if (responseData.getMessageData() instanceof String messageData) {
+        response.setResultString(messageData);
       }
       response =
           this.installationMapper.map(
