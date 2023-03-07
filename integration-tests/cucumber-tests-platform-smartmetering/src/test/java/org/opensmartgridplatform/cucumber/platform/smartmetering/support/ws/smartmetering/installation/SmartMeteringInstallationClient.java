@@ -20,6 +20,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.Co
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMBusDeviceAdministrativeAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMBusDeviceAdministrativeRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceAdministrativeAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceAdministrativeResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelAsyncRequest;
@@ -89,6 +93,15 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
     return (DecoupleMbusDeviceAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
   }
 
+  public DecoupleMBusDeviceAdministrativeAsyncResponse decoupleMbusDeviceAdministrative(
+      final DecoupleMBusDeviceAdministrativeRequest request) throws WebServiceSecurityException {
+    final WebServiceTemplate webServiceTemplate =
+        this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (DecoupleMBusDeviceAdministrativeAsyncResponse)
+        webServiceTemplate.marshalSendAndReceive(request);
+  }
+
   public DecoupleMbusDeviceResponse getDecoupleMbusDeviceResponse(
       final DecoupleMbusDeviceAsyncRequest asyncRequest) throws WebServiceSecurityException {
 
@@ -99,6 +112,20 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
         this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
             this.getOrganizationIdentification(), this.getUserName());
     return (DecoupleMbusDeviceResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
+  }
+
+  public DecoupleMbusDeviceAdministrativeResponse getDecoupleMbusDeviceAdministrativeResponse(
+      final DecoupleMbusDeviceAdministrativeAsyncRequest asyncRequest)
+      throws WebServiceSecurityException {
+
+    final String correlationUid = asyncRequest.getCorrelationUid();
+    this.waitForNotification(correlationUid);
+
+    final WebServiceTemplate webServiceTemplate =
+        this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (DecoupleMbusDeviceAdministrativeResponse)
+        webServiceTemplate.marshalSendAndReceive(asyncRequest);
   }
 
   public CoupleMbusDeviceByChannelAsyncResponse coupleMbusDeviceByChannel(

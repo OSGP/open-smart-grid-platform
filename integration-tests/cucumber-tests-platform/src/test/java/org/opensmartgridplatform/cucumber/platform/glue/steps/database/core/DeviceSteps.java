@@ -41,6 +41,15 @@ public class DeviceSteps extends BaseDeviceSteps {
 
   @Autowired private SsldRepository ssldRepository;
 
+  @Then("^the mbus primary address of device \"([^\"]*)\" is cleared$")
+  public void theMBusPrimaryAddressIsCleared(final String gMeter) {
+    final SmartMeter mbusDevice = this.smartMeterRepository.findByDeviceIdentification(gMeter);
+
+    assertThat(mbusDevice).as("No MbusDevice found").isNotNull();
+
+    assertThat(mbusDevice.getMbusPrimaryAddress()).as("MbusPrimaryAddress must be empty").isNull();
+  }
+
   @Then("^the channel of device \"([^\"]*)\" is cleared$")
   public void theChannelOfDeviceIsCleared(final String gMeter) {
     final SmartMeter mbusDevice = this.smartMeterRepository.findByDeviceIdentification(gMeter);

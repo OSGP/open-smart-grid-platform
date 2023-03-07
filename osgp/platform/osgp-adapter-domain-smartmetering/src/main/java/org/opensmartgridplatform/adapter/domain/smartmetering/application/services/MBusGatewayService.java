@@ -19,6 +19,7 @@ import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceAdministrativeRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.smartmetering.exceptions.MbusChannelNotFoundException;
@@ -132,6 +133,28 @@ public class MBusGatewayService {
               .withIpAddress(gatewayDevice.getIpAddress())
               .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
               .build());
+    }
+  }
+
+  public void decoupleMbusDeviceAdministrative(
+      final MessageMetadata messageMetadata,
+      final DecoupleMbusDeviceAdministrativeRequestData requestData)
+      throws FunctionalException {
+
+    final String mbusDeviceIdentification = requestData.getMbusDeviceIdentification();
+
+    log.debug(
+        "decoupleMbusDeviceAdministrative for organizationIdentification: {} m-bus device {} ",
+        messageMetadata.getOrganisationIdentification(),
+        mbusDeviceIdentification);
+
+    final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
+
+    if (mbusDevice.getGatewayDevice() != null) {
+      mbusDevice.setChannel(null);
+      mbusDevice.setMbusPrimaryAddress(null);
+      mbusDevice.updateGatewayDevice(null);
+      this.smartMeteringDeviceRepository.saveAndFlush(mbusDevice);
     }
   }
 

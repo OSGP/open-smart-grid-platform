@@ -30,14 +30,17 @@
     <wsdl:part element="sminst:AddDeviceRequest" name="AddDeviceRequest">
     </wsdl:part>
   </wsdl:message>
+
   <wsdl:message name="AddDeviceAsyncResponse">
     <wsdl:part element="sminst:AddDeviceAsyncResponse" name="AddDeviceAsyncResponse">
     </wsdl:part>
   </wsdl:message>
+
   <wsdl:message name="AddDeviceAsyncRequest">
     <wsdl:part element="sminst:AddDeviceAsyncRequest" name="AddDeviceAsyncRequest">
     </wsdl:part>
   </wsdl:message>
+
   <wsdl:message name="AddDeviceResponse">
     <wsdl:part element="sminst:AddDeviceResponse" name="AddDeviceResponse">
     </wsdl:part>
@@ -47,16 +50,19 @@
     <wsdl:part element="sminst:CoupleMbusDeviceRequest" name="CoupleMbusDeviceRequest">
     </wsdl:part>
   </wsdl:message>
+
   <wsdl:message name="CoupleMbusDeviceAsyncResponse">
     <wsdl:part element="sminst:CoupleMbusDeviceAsyncResponse"
       name="CoupleMbusDeviceAsyncResponse">
     </wsdl:part>
   </wsdl:message>
+
   <wsdl:message name="CoupleMbusDeviceAsyncRequest">
     <wsdl:part element="sminst:CoupleMbusDeviceAsyncRequest"
       name="CoupleMbusDeviceAsyncRequest">
     </wsdl:part>
   </wsdl:message>
+
   <wsdl:message name="CoupleMbusDeviceResponse">
     <wsdl:part element="sminst:CoupleMbusDeviceResponse" name="CoupleMbusDeviceResponse">
     </wsdl:part>
@@ -67,11 +73,25 @@
       name="DecoupleMbusDeviceRequest">
     </wsdl:part>
   </wsdl:message>
+
   <wsdl:message name="DecoupleMbusDeviceAsyncResponse">
     <wsdl:part element="sminst:DecoupleMbusDeviceAsyncResponse"
       name="DecoupleMbusDeviceAsyncResponse">
     </wsdl:part>
   </wsdl:message>
+
+  <wsdl:message name="DecoupleMBusDeviceAdministrativeRequest">
+    <wsdl:part element="sminst:DecoupleMBusDeviceAdministrativeRequest"
+      name="DecoupleMBusDeviceAdministrativeRequest">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="DecoupleMBusDeviceAdministrativeAsyncResponse">
+    <wsdl:part element="sminst:DecoupleMBusDeviceAdministrativeAsyncResponse"
+      name="DecoupleMBusDeviceAdministrativeAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+
   <wsdl:message name="DecoupleMbusDeviceAsyncRequest">
     <wsdl:part element="sminst:DecoupleMbusDeviceAsyncRequest"
       name="DecoupleMbusDeviceAsyncRequest">
@@ -165,6 +185,24 @@
         name="DecoupleMbusDeviceAsyncResponse">
       </wsdl:output>
     </wsdl:operation>
+
+    <wsdl:operation name="DecoupleMbusDeviceAdministrative">
+      <wsdl:input message="tns:DecoupleMBusDeviceAdministrativeRequest"
+        name="DecoupleMBusDeviceAdministrativeRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:DecoupleMbusDeviceAdministrativeAsyncResponse"
+        name="DecoupleMbusDeviceAdministrativeAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDecoupleMbusDeviceAdministrativeReponse">
+      <wsdl:input message="tns:DecoupleMbusDeviceAdministrativeAsyncRequest"
+        name="DecoupleMbusDeviceAdministrativeAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:DecoupleMbusDeviceAdministrativeResponse"
+        name="DecoupleMbusDeviceAdministrativeResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
     <wsdl:operation name="GetDecoupleMbusDeviceReponse">
       <wsdl:input message="tns:DecoupleMbusDeviceAsyncRequest"
         name="DecoupleMbusDeviceAsyncRequest">
