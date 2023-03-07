@@ -10,7 +10,7 @@
 package org.opensmartgridplatform.shared.application.config.kafka;
 
 import java.util.Map;
-import org.opensmartgridplatform.shared.application.config.kafka.oauth.KafkaOAuthConfig;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -79,6 +79,6 @@ public abstract class AbstractKafkaConsumerConfig<K, V> extends KafkaConfig {
   }
 
   private Map<String, Object> consumerConfigs(final String propertiesPrefix) {
-    return configDefToProperties(KafkaOAuthConfig.consumerConfigDef(), propertiesPrefix);
+    return configDefToProperties(ConsumerConfig.configDef(), propertiesPrefix);
   }
 }
