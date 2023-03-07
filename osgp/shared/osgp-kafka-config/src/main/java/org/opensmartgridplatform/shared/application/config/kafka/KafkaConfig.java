@@ -13,9 +13,13 @@ import static java.util.stream.Collectors.*;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.config.ConfigDef;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
 public abstract class KafkaConfig {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConfig.class);
 
   private final Environment environment;
 
@@ -41,13 +45,17 @@ public abstract class KafkaConfig {
   protected Object getValue(
       final String configName, final ConfigDef.Type configType, final String prefix) {
 
-    final String prefixedValue = this.environment.getProperty(prefix + "." + configName);
+    final String prefixedPropertyName = prefix + "." + configName;
+
+    final String prefixedValue = this.environment.getProperty(prefixedPropertyName);
     if (StringUtils.isNotEmpty(prefixedValue)) {
+      LOGGER.trace("Found prefixed property: {} = {}", prefixedPropertyName, prefixedValue);
       return ConfigDef.parseType(configName, prefixedValue, configType);
     }
 
     final String value = this.environment.getProperty(configName);
     if (StringUtils.isNotEmpty(value)) {
+      LOGGER.trace("Found property: {} = {}", configName, prefixedValue);
       return ConfigDef.parseType(configName, value, configType);
     }
 
