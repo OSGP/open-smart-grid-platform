@@ -89,6 +89,8 @@ public class OAuthAuthenticateCallbackHandler implements AuthenticateCallbackHan
   /** Retrieves a new JWT token from Azure Active Directory. */
   protected OAuthBearerToken getToken() {
     try {
+      LOGGER.debug("Retrieving Kafka OAuth Token");
+
       String token = readTokenFile(tokenFilePath);
       final IClientAssertion credential = ClientCredentialFactory.createFromClientAssertion(token);
       ClientCredentialParameters aadParameters = ClientCredentialParameters.builder(scope).build();
