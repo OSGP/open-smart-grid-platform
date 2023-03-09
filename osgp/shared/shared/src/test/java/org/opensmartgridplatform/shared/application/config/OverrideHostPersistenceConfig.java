@@ -17,11 +17,14 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 @Configuration
-@PropertySource("classpath:multiple-hosts.properties")
-public class MultipleHostPersistnceConfig extends AbstractPersistenceConfig {
+// this file MUST be addressed as an external file, NOT on the classpath, otherwise it won't take
+// precedence over global.properties
+@PropertySource("file:target/test-classes/override-host.properties")
+@PropertySource("classpath:global.properties")
+public class OverrideHostPersistenceConfig extends AbstractPersistenceConfig {
 
   @Override
-  @Bean("multipleHostsBuilder")
+  @Bean("testBuilder")
   protected Builder builder() {
     return super.builder();
   }

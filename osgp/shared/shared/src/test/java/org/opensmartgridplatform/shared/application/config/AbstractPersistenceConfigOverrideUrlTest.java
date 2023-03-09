@@ -21,15 +21,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = SingleHostPersistenceConfig.class)
-class AbstractPersistenceConfigSingleHostTest {
+@ContextConfiguration(classes = OverrideUrlPersistenceConfig.class)
+class AbstractPersistenceConfigOverrideUrlTest {
   @Autowired private ApplicationContext applicationContext;
 
   @Test
-  void testSingleDatabaseHost() {
-    final Builder singleHostBuilder =
-        (Builder) this.applicationContext.getBean("singleHostBuilder");
-    final String connectionString = singleHostBuilder.build().getDatabaseConnectionString();
-    assertThat(connectionString).isEqualTo("single://singlehost:1234/single_database");
+  void testOverrideUrl() {
+    final Builder singleHostBuilder = (Builder) this.applicationContext.getBean("testBuilder");
+    final String connectionString = singleHostBuilder.getDatabaseConnectionString();
+    assertThat(connectionString).isEqualTo("a:whole://other:test/result");
   }
 }

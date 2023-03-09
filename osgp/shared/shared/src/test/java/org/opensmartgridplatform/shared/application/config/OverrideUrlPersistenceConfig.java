@@ -17,11 +17,14 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 @Configuration
-@PropertySource("classpath:single-host.properties")
-public class SingleHostPersistenceConfig extends AbstractPersistenceConfig {
+// this file MUST be addressed as an external file, NOT on the classpath, otherwise it won't take
+// precedence over global.properties
+@PropertySource("file:target/test-classes/override-url.properties")
+@PropertySource("classpath:global.properties")
+public class OverrideUrlPersistenceConfig extends AbstractPersistenceConfig {
 
   @Override
-  @Bean("singleHostBuilder")
+  @Bean("testBuilder")
   protected Builder builder() {
     return super.builder();
   }

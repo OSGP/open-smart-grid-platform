@@ -18,7 +18,9 @@ import org.opensmartgridplatform.shared.exceptionhandling.DeprecatedPropertyExce
 import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.support.AbstractPlatformTransactionManager;
@@ -39,20 +41,19 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
   @Value("${db.driver}")
   private String driverClassName;
 
-  @Value("${db.protocol}")
-  private String databaseProtocol;
+  // Accept a direct property db.url or else construct it from the individual db propeties
 
-  @Value("${db.host}")
-  private String databaseHost;
-
-  @Value("${db.port:5432}")
-  private int databasePort;
-
-  @Value("${db.hosts:#{null}}")
-  private String[] databaseHosts;
-
-  @Value("${db.name}")
-  private String databaseName;
+  /**
+   * The JDBC URL for the database. This can be constructed in two ways:
+   *
+   * <ul>
+   *   <li>a property {@code db.url} with the whole JDBC URL in it (e.g. for db host failover)
+   *   <li>- four properties: {@code db.protocol}, {@code db.host}, {@code db.port} (defaults to
+   *       5432) and {@code db.name}
+   * </ul>
+   */
+  @Value("${db.url:${db.protocol}${db.host}:${db.port:5432}/${db.name}}")
+  private String databaseUrl;
 
   @Value("${db.min_pool_size:1}")
   private int minPoolSize;
@@ -120,6 +121,8 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
 
   @Value("${entitymanager.packages.to.scan}")
   private String entitymanagerPackagesToScan;
+
+  @Autowired private Environment env;
 
   private HikariDataSource dataSource;
 
@@ -228,7 +231,7 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
   protected DefaultConnectionPoolFactory.Builder builder() {
     return new DefaultConnectionPoolFactory.Builder()
         .withDriverClassName(this.driverClassName)
-        .withProtocol(this.databaseProtocol)
+        .withDatabaseUrl(this.databaseUrl)
         .withMinPoolSize(this.minPoolSize)
         .withMaxPoolSize(this.maxPoolSize)
         .withAutoCommit(this.isAutoCommit)
@@ -237,10 +240,6 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
         .withInitializationFailTimeout(this.initializationFailTimeout)
         .withValidationTimeout(this.validationTimeout)
         .withConnectionTimeout(this.connectionTimeout)
-        .withDatabaseHosts(this.databaseHosts)
-        .withDatabaseHost(this.databaseHost)
-        .withDatabasePort(this.databasePort)
-        .withDatabaseName(this.databaseName)
         .withUsername(this.username)
         .withPassword(this.password);
   }

@@ -21,16 +21,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = MultipleHostPersistnceConfig.class)
-class AbstractPersistenceConfigMultipleHostsTest {
+@ContextConfiguration(classes = OverrideHostPersistenceConfig.class)
+class AbstractPersistenceConfigOverrideHostTest {
   @Autowired private ApplicationContext applicationContext;
 
   @Test
-  void testMultipleDatabaseHost() {
-    final Builder multipleHostsBuilder =
-        (Builder) this.applicationContext.getBean("multipleHostsBuilder");
-    final String connectionString = multipleHostsBuilder.build().getDatabaseConnectionString();
-    assertThat(connectionString)
-        .isEqualTo("multiple://firstHost:1111,secondHost:2222,thirdHost:3333/multiple_database");
+  void testOverrideHost() {
+    final Builder singleHostBuilder = (Builder) this.applicationContext.getBean("testBuilder");
+    final String connectionString = singleHostBuilder.getDatabaseConnectionString();
+    assertThat(connectionString).isEqualTo("some:protocol://test-host:5432/a_database");
   }
 }
