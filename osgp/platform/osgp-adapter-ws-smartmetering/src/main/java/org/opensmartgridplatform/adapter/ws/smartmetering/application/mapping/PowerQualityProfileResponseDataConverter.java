@@ -46,7 +46,6 @@ public class PowerQualityProfileResponseDataConverter
                 .PowerQualityProfileData();
     result.setLogicalName(this.mapperFacade.map(source.getLogicalName(), ObisCodeValues.class));
 
-    // add  source.getProfileTypes() to result
     result.setProfileType(
         org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileType.valueOf(
             source.getProfileType().toString()));
