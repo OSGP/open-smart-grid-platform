@@ -150,7 +150,7 @@ public class MBusGatewayService {
 
     final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
-    if (mbusDevice.getGatewayDevice() != null) {
+    if (mbusDevice != null) {
       mbusDevice.setChannel(null);
       mbusDevice.setMbusPrimaryAddress(null);
       mbusDevice.updateGatewayDevice(null);
