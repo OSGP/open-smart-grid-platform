@@ -27,6 +27,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCode
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntry;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileType;
 
 public class GetPowerQualityProfileResponseMappingTest {
 
@@ -191,7 +192,7 @@ public class GetPowerQualityProfileResponseMappingTest {
     final List<ProfileEntry> profileEntries = this.makeProfileEntries();
 
     final PowerQualityProfileData responseData =
-        new PowerQualityProfileData(obisCode, captureObjects, profileEntries);
+        new PowerQualityProfileData(obisCode, captureObjects, profileEntries, ProfileType.PUBLIC);
 
     final GetPowerQualityProfileResponse source = new GetPowerQualityProfileResponse();
     source.setPowerQualityProfileDatas(Collections.singletonList(responseData));

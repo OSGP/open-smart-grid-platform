@@ -56,6 +56,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityProfileDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,7 +152,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
       // Convert the retrieved values (e.g. add timestamps and add unit) and apply filter if needed
       final PowerQualityProfileDataDto responseDataDto =
-          this.processData(profile, captureObjects, selectableObjects, bufferList);
+          this.processData(profile, captureObjects, selectableObjects, bufferList, privateOrPublic);
 
       responseDatas.add(responseDataDto);
     }
@@ -265,7 +266,8 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       final CosemObject profile,
       final List<GetResult> captureObjects,
       final LinkedHashMap<Integer, SelectableObject> selectableCaptureObjects,
-      final List<GetResult> bufferList)
+      final List<GetResult> bufferList,
+      final String publicOrPrivate)
       throws ProtocolAdapterException {
 
     final List<CaptureObjectDto> captureObjectDtos =
@@ -275,8 +277,12 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     final List<ProfileEntryDto> profileEntryDtos =
         this.createProfileEntries(
             bufferList, selectableCaptureObjects, this.getIntervalInMinutes(profile));
+    final ProfileTypeDto profileTypeDto = ProfileTypeDto.valueOf(publicOrPrivate);
     return new PowerQualityProfileDataDto(
-        new ObisCodeValuesDto(profile.getObis()), captureObjectDtos, profileEntryDtos);
+        new ObisCodeValuesDto(profile.getObis()),
+        captureObjectDtos,
+        profileEntryDtos,
+        profileTypeDto);
   }
 
   private List<ProfileEntryDto> createProfileEntries(

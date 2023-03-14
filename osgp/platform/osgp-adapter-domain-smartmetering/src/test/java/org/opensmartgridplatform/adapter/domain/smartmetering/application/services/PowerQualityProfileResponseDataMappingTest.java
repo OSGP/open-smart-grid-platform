@@ -18,25 +18,30 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObject;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpUnit;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntry;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityProfileDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileTypeDto;
 
 public class PowerQualityProfileResponseDataMappingTest {
 
   private final MonitoringMapper mapper = new MonitoringMapper();
 
-  @Test
-  public void testConvertGetPowerQualityProfileResponseDto() {
-    final PowerQualityProfileDataDto dto = this.makePowerQualityProfileResponseDataDto();
+  @ParameterizedTest
+  @ValueSource(strings = {"PUBLIC", "PRIVATE"})
+  public void testConvertGetPowerQualityProfileResponseDto(final String profileType) {
+    final PowerQualityProfileDataDto dto = this.makePowerQualityProfileResponseDataDto(profileType);
     final PowerQualityProfileData result = this.mapper.map(dto, PowerQualityProfileData.class);
     assertThat(result)
         .withFailMessage("mapping GetPowerQualityProfileResponseData should not return null")
@@ -44,6 +49,7 @@ public class PowerQualityProfileResponseDataMappingTest {
     assertThat(result)
         .withFailMessage("mapping GetPowerQualityProfileResponseData should return correct type")
         .isOfAnyClassIn(PowerQualityProfileData.class);
+    assertThat(result.getProfileType()).isEqualTo(ProfileType.valueOf(profileType));
   }
 
   @Test
@@ -80,9 +86,13 @@ public class PowerQualityProfileResponseDataMappingTest {
         .isOfAnyClassIn(ProfileEntry.class);
   }
 
-  private PowerQualityProfileDataDto makePowerQualityProfileResponseDataDto() {
+  private PowerQualityProfileDataDto makePowerQualityProfileResponseDataDto(
+      final String profileType) {
     return new PowerQualityProfileDataDto(
-        this.obisCodeDto(), this.makeCaptureObjectsDto(), this.makeProfileEntryDtoList());
+        this.obisCodeDto(),
+        this.makeCaptureObjectsDto(),
+        this.makeProfileEntryDtoList(),
+        ProfileTypeDto.valueOf(profileType));
   }
 
   private List<CaptureObjectDto> makeCaptureObjectsDto() {
