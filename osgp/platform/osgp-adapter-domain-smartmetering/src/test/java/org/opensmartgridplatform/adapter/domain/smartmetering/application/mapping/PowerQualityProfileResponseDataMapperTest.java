@@ -14,14 +14,17 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityProfileDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileTypeDto;
 
 public class PowerQualityProfileResponseDataMapperTest {
 
@@ -30,9 +33,10 @@ public class PowerQualityProfileResponseDataMapperTest {
   private static final Class<?>[] EXPECTED_CLASS =
       new Class<?>[] {String.class, Date.class, BigDecimal.class, Long.class};
 
-  @Test
-  public void testConvertGetPowerQualityProfileResponseVo() {
-    final PowerQualityProfileDataDto responseDto = this.makeResponseDataDto();
+  @ParameterizedTest
+  @ValueSource(strings = {"PUBLIC", "PRIVATE"})
+  public void testConvertGetPowerQualityProfileResponseVo(final String profileType) {
+    final PowerQualityProfileDataDto responseDto = this.makeResponseDataDto(profileType);
     final PowerQualityProfileData responseVo =
         this.mapper.map(responseDto, PowerQualityProfileData.class);
     assertThat(responseVo).withFailMessage("response object should not be null").isNotNull();
@@ -40,6 +44,8 @@ public class PowerQualityProfileResponseDataMapperTest {
     assertThat(responseVo.getProfileEntries().get(0).getProfileEntryValues().size())
         .withFailMessage("response object should return same number of profilentries")
         .isEqualTo(EXPECTED_CLASS.length);
+    assertThat(responseVo.getProfileType()).isEqualTo(ProfileType.valueOf(profileType));
+
     int i = 0;
     for (final ProfileEntryValue profileEntryValueVo :
         responseVo.getProfileEntries().get(0).getProfileEntryValues()) {
@@ -50,11 +56,14 @@ public class PowerQualityProfileResponseDataMapperTest {
     }
   }
 
-  private PowerQualityProfileDataDto makeResponseDataDto() {
+  private PowerQualityProfileDataDto makeResponseDataDto(final String profileType) {
     final ObisCodeValuesDto obisCodeValuesDto =
         new ObisCodeValuesDto((byte) 1, (byte) 1, (byte) 1, (byte) 1, (byte) 1, (byte) 1);
     return new PowerQualityProfileDataDto(
-        obisCodeValuesDto, this.makeCaptureObjectDtos(), this.makeProfileEntryDtos());
+        obisCodeValuesDto,
+        this.makeCaptureObjectDtos(),
+        this.makeProfileEntryDtos(),
+        ProfileTypeDto.valueOf(profileType));
   }
 
   private List<CaptureObjectDto> makeCaptureObjectDtos() {

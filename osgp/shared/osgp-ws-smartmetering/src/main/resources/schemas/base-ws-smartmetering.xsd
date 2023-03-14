@@ -198,6 +198,13 @@
     </xsd:choice>
   </xsd:complexType>
 
+  <xsd:simpleType name="ProfileType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="PUBLIC"/>
+      <xsd:enumeration value="PRIVATE"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
   <xsd:complexType name="MbusShortEquipmentIdentifier">
     <xsd:sequence>
       <xsd:element name="IdentificationNumber" nillable="true"

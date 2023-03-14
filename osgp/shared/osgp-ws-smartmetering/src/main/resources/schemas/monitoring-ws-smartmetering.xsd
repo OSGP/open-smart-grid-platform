@@ -554,6 +554,7 @@
       <xsd:element name="LogicalName" type="common:ObisCodeValues"/>
       <xsd:element name="CaptureObjects" type="common:CaptureObjects"/>
       <xsd:element name="ProfileEntries" type="common:ProfileEntries"/>
+      <xsd:element name="ProfileType" type="common:ProfileType"/>
     </xsd:sequence>
   </xsd:complexType>
 

@@ -18,15 +18,18 @@ public class PowerQualityProfileDataDto implements Serializable {
   private final ObisCodeValuesDto logicalName;
   private final List<CaptureObjectDto> captureObjects;
   private final List<ProfileEntryDto> profileEntries;
+  private final ProfileTypeDto profileType;
 
   public PowerQualityProfileDataDto(
       final ObisCodeValuesDto logicalName,
       final List<CaptureObjectDto> captureObjects,
-      final List<ProfileEntryDto> profileEntries) {
+      final List<ProfileEntryDto> profileEntries,
+      final ProfileTypeDto profileType) {
     super();
     this.logicalName = logicalName;
     this.captureObjects = captureObjects;
     this.profileEntries = profileEntries;
+    this.profileType = profileType;
   }
 
   public ObisCodeValuesDto getLogicalName() {
@@ -39,5 +42,9 @@ public class PowerQualityProfileDataDto implements Serializable {
 
   public List<ProfileEntryDto> getProfileEntries() {
     return this.profileEntries;
+  }
+
+  public ProfileTypeDto getProfileType() {
+    return this.profileType;
   }
 }
