@@ -17,6 +17,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmart
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceAdministrativeRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceAdministrativeResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceRequestData;
@@ -120,6 +122,27 @@ public class InstallationService {
       final MessageMetadata messageMetadata, final DecoupleMbusDeviceRequestData requestData)
       throws FunctionalException {
     this.mBusGatewayService.decoupleMbusDevice(messageMetadata, requestData);
+  }
+
+  @Transactional(value = "transactionManager")
+  public void decoupleMbusDeviceAdministrative(
+      final MessageMetadata messageMetadata,
+      final DecoupleMbusDeviceAdministrativeRequestData requestData)
+      throws FunctionalException {
+    this.mBusGatewayService.decoupleMbusDeviceAdministrative(messageMetadata, requestData);
+
+    final DecoupleMbusDeviceAdministrativeResponse response =
+        new DecoupleMbusDeviceAdministrativeResponse(requestData.getMbusDeviceIdentification());
+
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withMessageMetadata(messageMetadata)
+            .withResult(ResponseMessageResultType.OK)
+            .withOsgpException(null)
+            .withDataObject(response)
+            .build();
+
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
   @Transactional(value = "transactionManager")

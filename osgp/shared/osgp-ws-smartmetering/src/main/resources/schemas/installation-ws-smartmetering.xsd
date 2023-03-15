@@ -89,14 +89,6 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="DecoupleMbusDeviceAsyncResponse">
-    <xsd:complexType>
-      <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse" />
-      </xsd:complexContent>
-    </xsd:complexType>
-  </xsd:element>
-
   <xsd:element name="DecoupleMbusDeviceAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
@@ -114,6 +106,49 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
+
+  <xsd:element name="DecoupleMbusDeviceAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="DecoupleMBusDeviceAdministrativeRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="MbusDeviceIdentification" type="common:DeviceIdentification" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="DecoupleMBusDeviceAdministrativeAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="DecoupleMbusDeviceAdministrativeAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="DecoupleMbusDeviceAdministrativeResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType" />
+        <xsd:element name="Description" type="xsd:string"
+          minOccurs="0" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
 
   <xsd:element name="CoupleMbusDeviceByChannelRequest">
     <xsd:complexType>

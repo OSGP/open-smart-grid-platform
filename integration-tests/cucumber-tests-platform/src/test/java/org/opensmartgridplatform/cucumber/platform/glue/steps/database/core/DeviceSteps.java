@@ -18,8 +18,10 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import io.cucumber.java.en.Then;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
+import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.keys.DeviceKeys;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
@@ -40,6 +42,15 @@ public class DeviceSteps extends BaseDeviceSteps {
   @Autowired private SmartMeterRepository smartMeterRepository;
 
   @Autowired private SsldRepository ssldRepository;
+
+  @Then("^the mbus primary address of device \"([^\"]*)\" is cleared$")
+  public void theMBusPrimaryAddressIsCleared(final String gMeter) {
+    final SmartMeter mbusDevice = this.smartMeterRepository.findByDeviceIdentification(gMeter);
+
+    assertThat(mbusDevice).as("No MbusDevice found").isNotNull();
+
+    assertThat(mbusDevice.getMbusPrimaryAddress()).as("MbusPrimaryAddress must be empty").isNull();
+  }
 
   @Then("^the channel of device \"([^\"]*)\" is cleared$")
   public void theChannelOfDeviceIsCleared(final String gMeter) {
@@ -296,6 +307,36 @@ public class DeviceSteps extends BaseDeviceSteps {
               .as("MbusDevice should not be coupled to this GatewayDevice")
               .isNotEqualTo(gatewayDevice);
         });
+  }
+
+  @Then("^the mbus device \"([^\"]*)\" has properties$")
+  public void theMbusDeviceHasProperties(
+      final String gMeter, final Map<String, String> properties) {
+    final SmartMeter mbusDevice =
+        Wait.untilAndReturn(
+            () -> {
+              final SmartMeter smartMeter =
+                  this.smartMeterRepository.findByDeviceIdentification(gMeter);
+              if (smartMeter == null) {
+                throw new Exception("Device with identification [" + gMeter + "]");
+              }
+              return smartMeter;
+            });
+
+    assertThat(mbusDevice).as("No MbusDevice found").isNotNull();
+    checkForProperty(properties, DeviceKeys.GATEWAY_DEVICE, () -> mbusDevice.getGatewayDevice());
+    checkForProperty(properties, DeviceKeys.CHANNEL, () -> mbusDevice.getChannel());
+    checkForProperty(
+        properties, DeviceKeys.MBUS_PRIMARY_ADDRESS, () -> mbusDevice.getMbusPrimaryAddress());
+  }
+
+  private static void checkForProperty(
+      final Map<String, String> properties,
+      final String propertyName,
+      final Supplier<Object> supplier) {
+    if (properties.get(propertyName) != null) {
+      assertThat(properties.get(propertyName)).hasToString("" + supplier.get());
+    }
   }
 
   @Then("^the default values for the GPS coordinates remain for device (.+)$")
