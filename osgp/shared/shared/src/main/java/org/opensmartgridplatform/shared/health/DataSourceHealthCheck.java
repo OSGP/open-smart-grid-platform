@@ -13,6 +13,7 @@ package org.opensmartgridplatform.shared.health;
 import java.sql.SQLException;
 import java.util.Optional;
 import javax.sql.DataSource;
+import org.jetbrains.annotations.NotNull;
 import org.opensmartgridplatform.shared.config.AppHealthEnabledCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,11 +40,23 @@ public class DataSourceHealthCheck implements HealthCheck {
   public HealthResponse isHealthy() {
     try {
       if (this.dataSource != null) {
-        this.dataSource.getConnection();
+        return this.checkConnection();
+      } else {
+        return HealthResponse.ok();
       }
-      return HealthResponse.ok();
     } catch (final SQLException e) {
       return HealthResponse.notOk(e.getMessage());
+    }
+  }
+
+  @NotNull
+  private HealthResponse checkConnection() throws SQLException {
+    try (final var connection = this.dataSource.getConnection()) {
+      if (connection.isValid(2)) {
+        return HealthResponse.ok();
+      } else {
+        return HealthResponse.notOk("Connection is present but not valid");
+      }
     }
   }
 }
