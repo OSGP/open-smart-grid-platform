@@ -18,6 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import org.opensmartgridplatform.shared.config.AppHealthEnabledCondition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
@@ -25,13 +27,15 @@ import org.springframework.stereotype.Service;
 @Service
 @Conditional(AppHealthEnabledCondition.class)
 public class AppHealthServer {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AppHealthServer.class);
   private static final int HTTP_RESPONSE_OK = 200;
   private static final int HTTP_RESPONSE_NOT_OK = 503;
 
-  @Value("${actuator.port}")
+  @Value("${healthcheck.port}")
   private Integer port;
 
   private final List<HealthCheck> healthChecks;
+  private HttpServer server;
 
   public AppHealthServer(final List<HealthCheck> healthChecks) {
     this.healthChecks = healthChecks;
@@ -39,8 +43,14 @@ public class AppHealthServer {
 
   @PostConstruct
   public void start() throws IOException {
-    final var httpServer = HttpServer.create(new InetSocketAddress(this.port), 0);
-    httpServer.createContext("/health", this::handle);
+    this.createHttpServer();
+    LOGGER.debug("AppHealth server created.");
+
+    this.newDaemonThread(this.server::start).start();
+    LOGGER.info(
+        "AppHealth server started on http://localhost:{}/health with {} checks.",
+        this.port,
+        this.healthChecks.size());
   }
 
   private void handle(final HttpExchange httpExchange) throws IOException {
@@ -55,6 +65,17 @@ public class AppHealthServer {
     } else {
       this.respond(httpExchange, HTTP_RESPONSE_NOT_OK, String.join(", ", errors));
     }
+  }
+
+  private void createHttpServer() throws IOException {
+    this.server = HttpServer.create(new InetSocketAddress(this.port), 0);
+    this.server.createContext("/health", this::handle);
+  }
+
+  private Thread newDaemonThread(final Runnable runnable) {
+    final Thread thread = new Thread(runnable);
+    thread.setDaemon(true);
+    return thread;
   }
 
   private void respond(

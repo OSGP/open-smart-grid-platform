@@ -20,6 +20,6 @@ public class AppHealthEnabledCondition implements Condition {
   @Override
   public boolean matches(
       final ConditionContext context, final @NotNull AnnotatedTypeMetadata metadata) {
-    return "true".equalsIgnoreCase(context.getEnvironment().getProperty("actuator.enabled"));
+    return "true".equalsIgnoreCase(context.getEnvironment().getProperty("healthcheck.enabled"));
   }
 }
