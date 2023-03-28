@@ -111,7 +111,12 @@ public class DlmsServerConfig implements ApplicationContextAware {
         builder.setClientId(DLMS_PUBLIC_CLIENT_ID);
         break;
       case LLS1:
-        builder.setClientId(DLMS_DATA_COLLECTION_CLIENT);
+        builder
+            .setClientId(DLMS_DATA_COLLECTION_CLIENT)
+            .setAuthenticationKeyPath(
+                this.keyPathProvider.getAuthenticationKeyFile(logicalDeviceId))
+            .setEncryptionKeyPath(this.keyPathProvider.getEncryptionKeyFile(logicalDeviceId))
+            .setMasterKeyPath(this.keyPathProvider.getMasterKeyFile(logicalDeviceId));
         break;
       case HLS5:
         builder
