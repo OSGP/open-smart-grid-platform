@@ -13,8 +13,12 @@ import org.opensmartgridplatform.shared.infra.networking.ping.Pinger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 @Configuration
+@PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true)
 public class DevicePingConfig {
 
   @Value("${device.ping.enabled:false}")
