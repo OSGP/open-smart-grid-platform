@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.HexUtils;
@@ -237,21 +235,21 @@ public class SecretManagementService {
       final List<SecretType> secretTypes,
       final SecretStatus status) {
 
-    final Map<SecretType, DbEncryptedSecret> dbEncryptedSecretByType =
+    final Map<SecretType, Optional<DbEncryptedSecret>> dbEncryptedSecretByType =
         this.getValidatedDbEncryptedSecretByType(deviceIdentification, secretTypes, status);
 
     return secretTypes.stream()
         .map(
             secretType ->
-                this.mapAsEncryptedTypedSecret(dbEncryptedSecretByType.get(secretType), secretType))
+                this.mapAsEncryptedTypedSecret(secretType, dbEncryptedSecretByType.get(secretType)))
         .toList();
   }
 
   private EncryptedTypedSecret mapAsEncryptedTypedSecret(
-      final DbEncryptedSecret dbEncryptedSecret, final SecretType secretType) {
-    if (dbEncryptedSecret != null) {
+      final SecretType secretType, final Optional<DbEncryptedSecret> optionalDbEncryptedSecret) {
+    if (optionalDbEncryptedSecret.isPresent()) {
       try {
-        return EncryptedTypedSecret.fromDbEncryptedSecret(dbEncryptedSecret);
+        return EncryptedTypedSecret.fromDbEncryptedSecret(optionalDbEncryptedSecret.get());
       } catch (final FunctionalException e) {
         throw new ExceptionWrapper(e);
       }
@@ -260,27 +258,7 @@ public class SecretManagementService {
     }
   }
 
-  private Optional<DbEncryptedSecret> getSingleDbEncryptedSecret(
-      final String deviceIdentification,
-      final SecretType secretType,
-      final SecretStatus secretStatus) {
-    final List<DbEncryptedSecret> secretsList =
-        this.secretRepository.findSecrets(deviceIdentification, secretType, secretStatus);
-    final boolean onlySingleSecretAllowed =
-        SecretStatus.NEW.equals(secretStatus) || SecretStatus.ACTIVE.equals(secretStatus);
-    if (secretsList.isEmpty()) {
-      return Optional.empty();
-    } else if (secretsList.size() > 1 && onlySingleSecretAllowed) {
-      final String msgFormat =
-          "Only 1 instance allowed with status %s, but found %s for device %s, secret type %s";
-      throw new IllegalStateException(
-          String.format(
-              msgFormat, secretStatus, secretsList.size(), deviceIdentification, secretType));
-    }
-    return Optional.of(secretsList.iterator().next());
-  }
-
-  private Map<SecretType, DbEncryptedSecret> getValidatedDbEncryptedSecretByType(
+  private Map<SecretType, Optional<DbEncryptedSecret>> getValidatedDbEncryptedSecretByType(
       final String deviceIdentification,
       final List<SecretType> secretTypes,
       final SecretStatus secretStatus) {
@@ -289,28 +267,32 @@ public class SecretManagementService {
       return new HashMap<>();
     }
 
-    final List<DbEncryptedSecret> secretsList =
-        this.secretRepository.findSecrets(deviceIdentification, secretTypes, secretStatus);
+    final Map<SecretType, List<DbEncryptedSecret>> dbEncryptedSecretByType =
+        this.secretRepository.findSecrets(deviceIdentification, secretTypes, secretStatus).stream()
+            .collect(groupingBy(DbEncryptedSecret::getSecretType));
 
-    validateSecrets(secretsList, deviceIdentification, secretTypes, secretStatus);
+    validateSecrets(dbEncryptedSecretByType, deviceIdentification, secretTypes, secretStatus);
 
-    return secretsList.stream()
-        .collect(
-            Collectors.toMap(
-                DbEncryptedSecret::getSecretType,
-                Function.identity(),
-                BinaryOperator.maxBy(
-                    Comparator.comparing(DbEncryptedSecret::getCreationTime, reverseOrder())
-                        .thenComparing(DbEncryptedSecret::getId, reverseOrder()))));
+    final Map<SecretType, Optional<DbEncryptedSecret>> validatedDbEncryptedSecretByType =
+        new HashMap<>();
+    secretTypes.forEach(
+        secretType -> {
+          final Optional<DbEncryptedSecret> optionalDbEncryptedSecret =
+              dbEncryptedSecretByType.getOrDefault(secretType, new ArrayList<>()).stream()
+                  .min(
+                      Comparator.comparing(DbEncryptedSecret::getCreationTime, reverseOrder())
+                          .thenComparing(DbEncryptedSecret::getId, reverseOrder()));
+
+          validatedDbEncryptedSecretByType.put(secretType, optionalDbEncryptedSecret);
+        });
+    return validatedDbEncryptedSecretByType;
   }
 
   private static void validateSecrets(
-      final List<DbEncryptedSecret> secretsList,
+      final Map<SecretType, List<DbEncryptedSecret>> dbEncryptedSecretByType,
       final String deviceIdentification,
       final List<SecretType> secretTypes,
       final SecretStatus secretStatus) {
-    final Map<SecretType, List<DbEncryptedSecret>> secretsListByType =
-        secretsList.stream().collect(groupingBy(DbEncryptedSecret::getSecretType));
 
     final boolean onlySingleSecretByTypeAllowed =
         SecretStatus.NEW.equals(secretStatus) || SecretStatus.ACTIVE.equals(secretStatus);
@@ -318,7 +300,7 @@ public class SecretManagementService {
     secretTypes.forEach(
         secretType -> {
           final List<DbEncryptedSecret> secretsListForType =
-              secretsListByType.getOrDefault(secretType, new ArrayList<>());
+              dbEncryptedSecretByType.getOrDefault(secretType, new ArrayList<>());
           if (secretsListForType.size() > 1 && onlySingleSecretByTypeAllowed) {
             final String msgFormat =
                 "Only 1 instance allowed with status %s, but found %s for device %s, secret type %s";
@@ -375,21 +357,29 @@ public class SecretManagementService {
 
   public void activateNewSecrets(
       final String deviceIdentification, final List<SecretType> secretTypes) {
+    final Map<SecretType, Optional<DbEncryptedSecret>> dbEncryptedSecretsNew =
+        this.getValidatedDbEncryptedSecretByType(
+            deviceIdentification, secretTypes, SecretStatus.NEW);
+    final Map<SecretType, Optional<DbEncryptedSecret>> dbEncryptedSecretsActive =
+        this.getValidatedDbEncryptedSecretByType(
+            deviceIdentification, secretTypes, SecretStatus.ACTIVE);
+
     secretTypes.stream()
-        .map(t -> this.getUpdatedSecretsForActivation(deviceIdentification, t))
+        .map(
+            t ->
+                this.getUpdatedSecretsForActivation(
+                    dbEncryptedSecretsNew.get(t), dbEncryptedSecretsActive.get(t), t))
         .flatMap(Collection::stream)
         .collect(collectingAndThen(toList(), this.secretRepository::saveAll));
   }
 
   private List<DbEncryptedSecret> getUpdatedSecretsForActivation(
-      final String deviceIdentification, final SecretType secretType) {
+      final Optional<DbEncryptedSecret> newSecretOptional,
+      final Optional<DbEncryptedSecret> activeSecretOptional,
+      final SecretType secretType) {
     final List<DbEncryptedSecret> updatedSecrets = new ArrayList<>();
 
-    final Optional<DbEncryptedSecret> newSecretOptional =
-        this.getSingleDbEncryptedSecret(deviceIdentification, secretType, SecretStatus.NEW);
     if (newSecretOptional.isPresent()) {
-      final Optional<DbEncryptedSecret> activeSecretOptional =
-          this.getSingleDbEncryptedSecret(deviceIdentification, secretType, SecretStatus.ACTIVE);
       if (activeSecretOptional.isPresent()) {
         final DbEncryptedSecret currentSecret = activeSecretOptional.get();
         currentSecret.setSecretStatus(SecretStatus.EXPIRED);
