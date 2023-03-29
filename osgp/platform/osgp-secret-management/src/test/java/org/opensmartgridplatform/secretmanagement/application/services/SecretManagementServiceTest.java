@@ -84,7 +84,7 @@ public class SecretManagementServiceTest {
     final byte[] rsaSecret = "1000000000terces".getBytes();
 
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
+            SOME_DEVICE, List.of(SecretType.E_METER_MASTER_KEY), SecretStatus.ACTIVE))
         .thenReturn(secretList);
     when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(decryptedSecret);
     when(this.encrypterForSecretManagementClient.encrypt(any())).thenReturn(rsaSecret);
@@ -111,7 +111,7 @@ public class SecretManagementServiceTest {
     final List<DbEncryptedSecret> secretPage = Arrays.asList(secret);
 
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
+            SOME_DEVICE, List.of(SecretType.E_METER_MASTER_KEY), SecretStatus.ACTIVE))
         .thenReturn(secretPage);
     when(this.encryptionDelegate.decrypt(any(), any()))
         .thenThrow(new EncrypterException("Decryption error"));

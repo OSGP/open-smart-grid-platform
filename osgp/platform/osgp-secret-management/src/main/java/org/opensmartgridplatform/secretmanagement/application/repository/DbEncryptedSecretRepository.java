@@ -34,6 +34,19 @@ public interface DbEncryptedSecretRepository extends JpaRepository<DbEncryptedSe
 
   @Query(
       value =
+          "SELECT es FROM DbEncryptedSecret es "
+              + "JOIN FETCH es.encryptionKeyReference "
+              + "WHERE es.deviceIdentification = :deviceIdentification "
+              + "AND es.secretType IN (:secretTypes) "
+              + "AND es.secretStatus = :secretStatus "
+              + "ORDER BY es.creationTime DESC, es.id DESC")
+  List<DbEncryptedSecret> findSecrets(
+      @Param("deviceIdentification") String deviceIdentification,
+      @Param("secretTypes") List<SecretType> secretTypes,
+      @Param("secretStatus") SecretStatus secretStatus);
+
+  @Query(
+      value =
           "SELECT count(es) FROM DbEncryptedSecret es "
               + "WHERE es.deviceIdentification = :deviceIdentification AND es.secretType = :secretType "
               + "AND es.secretStatus= :secretStatus")
