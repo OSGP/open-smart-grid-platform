@@ -27,7 +27,6 @@ import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
 import org.opensmartgridplatform.secretmanagement.application.exception.ExceptionWrapper;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptedSecretRepository;
-import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptionKeyRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -119,7 +118,7 @@ public class SecretManagementService {
   private final EncryptionDelegate encryptionDelegateForKeyStorage;
   private final EncryptionProviderType encryptionProviderType;
   private final DbEncryptedSecretRepository secretRepository;
-  private final DbEncryptionKeyRepository keyRepository;
+  private final EncryptionKeyReferenceCacheService encryptionKeyReferenceCacheService;
   private final RsaEncrypter encrypterForSecretManagementClient;
   private final RsaEncrypter decrypterForSecretManagement;
   private final SecretManagementMetrics secretManagementMetrics;
@@ -129,7 +128,7 @@ public class SecretManagementService {
           final EncryptionDelegate defaultEncryptionDelegateForKeyStorage,
       final EncryptionProviderType encryptionProviderType,
       final DbEncryptedSecretRepository secretRepository,
-      final DbEncryptionKeyRepository keyRepository,
+      final EncryptionKeyReferenceCacheService encryptionKeyReferenceCacheService,
       @Qualifier(value = "encrypterForSecretManagementClient")
           final RsaEncrypter encrypterForSecretManagementClient,
       @Qualifier(value = "decrypterForSecretManagement")
@@ -138,7 +137,7 @@ public class SecretManagementService {
     this.encryptionDelegateForKeyStorage = defaultEncryptionDelegateForKeyStorage;
     this.encryptionProviderType = encryptionProviderType;
     this.secretRepository = secretRepository;
-    this.keyRepository = keyRepository;
+    this.encryptionKeyReferenceCacheService = encryptionKeyReferenceCacheService;
     this.encrypterForSecretManagementClient = encrypterForSecretManagementClient;
     this.decrypterForSecretManagement = decrypterForSecretManagement;
     this.secretManagementMetrics = secretManagementMetrics;
@@ -147,7 +146,8 @@ public class SecretManagementService {
   private DbEncryptionKeyReference getCurrentKey() {
     final Date now = new Date();
     final List<DbEncryptionKeyReference> keyRefs =
-        this.keyRepository.findByTypeAndValid(this.encryptionProviderType, now);
+        this.encryptionKeyReferenceCacheService.findAllByTypeAndValid(
+            this.encryptionProviderType, now);
     if (keyRefs.size() > 1) {
       final String messageFormat = "Multiple encryption keys found of type %s that are valid at %s";
       throw new IllegalStateException(
@@ -161,7 +161,8 @@ public class SecretManagementService {
   }
 
   private DbEncryptionKeyReference getKeyByReference(final String reference) {
-    return this.keyRepository.findByTypeAndReference(this.encryptionProviderType, reference);
+    return this.encryptionKeyReferenceCacheService.getKeyByReference(
+        this.encryptionProviderType, reference);
   }
 
   private EncryptedTypedSecret validateAndReturnNewSecret(final EncryptedTypedSecret secret) {
@@ -261,9 +262,11 @@ public class SecretManagementService {
 
   public void storeSecrets(
       final String deviceIdentification, final List<TypedSecret> typedSecrets) {
-    for (final TypedSecret typedSecret : typedSecrets) {
-      this.withdrawExistingKeysWithStatusNew(deviceIdentification, typedSecret.getSecretType());
-    }
+
+    final List<SecretType> secretTypeList =
+        typedSecrets.stream().map(TypedSecret::getSecretType).toList();
+    this.withdrawExistingKeysWithStatusNew(deviceIdentification, secretTypeList);
+
     final List<EncryptedTypedSecret> aesSecrets =
         typedSecrets.stream()
             .map(ts -> new EncryptedTypedSecret(ts.getSecret(), ts.getSecretType()))
@@ -273,20 +276,12 @@ public class SecretManagementService {
   }
 
   private void withdrawExistingKeysWithStatusNew(
-      final String deviceIdentification, final SecretType secretType) {
-    // All NEW keys of the device and type are set to status WITHDRAWN.
-    final List<DbEncryptedSecret> foundSecrets =
-        this.secretRepository.findSecrets(deviceIdentification, secretType, SecretStatus.NEW);
-
-    for (final DbEncryptedSecret foundSecret : foundSecrets) {
-      foundSecret.setSecretStatus(SecretStatus.WITHDRAWN);
-      this.secretRepository.save(foundSecret);
-      log.warn(
-          String.format(
-              "During (GenerateOr)Replace Key Process one or more keys with status NEW of type %s for "
-                  + "device %s have been found. These keys will be withdrawn (status WITHDRAWN)",
-              secretType.name(), deviceIdentification));
+      final String deviceIdentification, final List<SecretType> secretTypes) {
+    if (secretTypes.isEmpty()) {
+      return;
     }
+    // All NEW keys of the device and type are set to status WITHDRAWN.
+    this.secretRepository.withdrawSecretsWithStatusNew(deviceIdentification, secretTypes);
   }
 
   private void storeAesSecrets(
@@ -339,9 +334,7 @@ public class SecretManagementService {
   public List<TypedSecret> generateAndStoreSecrets(
       final String deviceIdentification, final List<SecretType> secretTypes) {
 
-    for (final SecretType secretType : secretTypes) {
-      this.withdrawExistingKeysWithStatusNew(deviceIdentification, secretType);
-    }
+    this.withdrawExistingKeysWithStatusNew(deviceIdentification, secretTypes);
     final List<EncryptedTypedSecret> encryptedTypedSecrets =
         secretTypes.stream().map(this::generateAes128BitsSecret).collect(Collectors.toList());
 

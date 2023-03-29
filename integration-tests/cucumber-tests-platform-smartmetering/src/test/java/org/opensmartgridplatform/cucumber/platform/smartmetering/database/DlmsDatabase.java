@@ -37,9 +37,10 @@ public class DlmsDatabase {
     this.dlmsDeviceRepo.deleteAllInBatch();
 
     this.secretRepository.deleteAllInBatch();
-    this.encryptionKeyRepository.deleteAllInBatch();
-    final DbEncryptionKeyReference jreEncryptionKey = this.getJreEncryptionKey(new Date());
-    this.encryptionKeyRepository.save(jreEncryptionKey);
+    if (this.encryptionKeyRepository.count() == 0) {
+      final DbEncryptionKeyReference jreEncryptionKey = this.getJreEncryptionKey(new Date());
+      this.encryptionKeyRepository.save(jreEncryptionKey);
+    }
   }
 
   private DbEncryptionKeyReference getJreEncryptionKey(final Date now) {
