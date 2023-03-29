@@ -17,13 +17,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface DbEncryptedSecretRepository extends JpaRepository<DbEncryptedSecret, Long> {
   @Query(
       value =
           "SELECT es FROM DbEncryptedSecret es "
+              + "JOIN FETCH es.encryptionKeyReference "
               + "WHERE es.deviceIdentification = :deviceIdentification AND es.secretType = :secretType "
               + "AND es.secretStatus= :secretStatus "
               + "ORDER BY es.creationTime DESC, es.id DESC")
@@ -43,7 +43,6 @@ public interface DbEncryptedSecretRepository extends JpaRepository<DbEncryptedSe
       @Param("secretStatus") SecretStatus secretStatus);
 
   @Modifying
-  @Transactional
   @Query(
       value =
           "UPDATE DbEncryptedSecret es "

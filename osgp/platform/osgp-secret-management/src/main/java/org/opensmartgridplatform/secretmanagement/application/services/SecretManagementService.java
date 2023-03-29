@@ -37,6 +37,7 @@ import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service that manages secrets (store, retrieve, activate, generate). Secrets in this service are
@@ -53,6 +54,7 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
+@Transactional
 public class SecretManagementService {
 
   // Internal datastructure to keep track of (intermediate) secret details
@@ -275,13 +277,13 @@ public class SecretManagementService {
     this.storeAesSecrets(deviceIdentification, aesSecrets);
   }
 
-  private void withdrawExistingKeysWithStatusNew(
+  private int withdrawExistingKeysWithStatusNew(
       final String deviceIdentification, final List<SecretType> secretTypes) {
     if (secretTypes.isEmpty()) {
-      return;
+      return 0;
     }
     // All NEW keys of the device and type are set to status WITHDRAWN.
-    this.secretRepository.withdrawSecretsWithStatusNew(deviceIdentification, secretTypes);
+    return this.secretRepository.withdrawSecretsWithStatusNew(deviceIdentification, secretTypes);
   }
 
   private void storeAesSecrets(
@@ -334,7 +336,8 @@ public class SecretManagementService {
   public List<TypedSecret> generateAndStoreSecrets(
       final String deviceIdentification, final List<SecretType> secretTypes) {
 
-    this.withdrawExistingKeysWithStatusNew(deviceIdentification, secretTypes);
+    final int updatedRecords =
+        this.withdrawExistingKeysWithStatusNew(deviceIdentification, secretTypes);
     final List<EncryptedTypedSecret> encryptedTypedSecrets =
         secretTypes.stream().map(this::generateAes128BitsSecret).collect(Collectors.toList());
 
