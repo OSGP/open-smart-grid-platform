@@ -13,10 +13,10 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_AUTHENTICATION_KEY;
+import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_MASTER_KEY;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -29,13 +29,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretStatus;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptedSecretRepository;
-import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptionKeyRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionDelegate;
@@ -52,7 +52,7 @@ public class SecretManagementServiceTest {
 
   @Mock private EncryptionDelegate encryptionDelegate;
   @Mock private DbEncryptedSecretRepository secretRepository;
-  @Mock private DbEncryptionKeyRepository keyRepository;
+  @Mock private EncryptionKeyReferenceCacheService encryptionKeyReferenceCacheService;
   @Mock private RsaEncrypter encrypterForSecretManagementClient;
   @Mock private RsaEncrypter decrypterForSecretManagement;
   @Mock private SecretManagementMetrics secretManagementMetrics;
@@ -64,7 +64,7 @@ public class SecretManagementServiceTest {
             this.encryptionDelegate,
             ENCRYPTION_PROVIDER_TYPE,
             this.secretRepository,
-            this.keyRepository,
+            this.encryptionKeyReferenceCacheService,
             this.encrypterForSecretManagementClient,
             this.decrypterForSecretManagement,
             this.secretManagementMetrics);
@@ -77,7 +77,7 @@ public class SecretManagementServiceTest {
     keyReference.setEncryptionProviderType(ENCRYPTION_PROVIDER_TYPE);
     keyReference.setReference("1");
     final DbEncryptedSecret secret = new DbEncryptedSecret();
-    secret.setSecretType(SecretType.E_METER_MASTER_KEY);
+    secret.setSecretType(E_METER_MASTER_KEY);
     secret.setEncryptionKeyReference(keyReference);
     secret.setEncodedSecret("ABCDEF01234567890123456789ABCDEF");
     final List<DbEncryptedSecret> secretList = Arrays.asList(secret);
@@ -85,18 +85,18 @@ public class SecretManagementServiceTest {
     final byte[] rsaSecret = "1000000000terces".getBytes();
 
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
+            SOME_DEVICE, List.of(E_METER_MASTER_KEY), SecretStatus.ACTIVE))
         .thenReturn(secretList);
     when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(decryptedSecret);
     when(this.encrypterForSecretManagementClient.encrypt(any())).thenReturn(rsaSecret);
     final List<TypedSecret> typedSecrets =
-        this.service.retrieveSecrets(SOME_DEVICE, Arrays.asList(SecretType.E_METER_MASTER_KEY));
+        this.service.retrieveSecrets(SOME_DEVICE, Arrays.asList(E_METER_MASTER_KEY));
 
     assertThat(typedSecrets).isNotNull();
     assertThat(typedSecrets.size()).isEqualTo(1);
     final TypedSecret typedSecret = typedSecrets.get(0);
     assertThat(typedSecret.getSecret()).isEqualTo(rsaSecret);
-    assertThat(typedSecret.getSecretType()).isEqualTo(SecretType.E_METER_MASTER_KEY);
+    assertThat(typedSecret.getSecretType()).isEqualTo(E_METER_MASTER_KEY);
   }
 
   @Test
@@ -106,22 +106,20 @@ public class SecretManagementServiceTest {
     keyReference.setEncryptionProviderType(ENCRYPTION_PROVIDER_TYPE);
     keyReference.setReference("1");
     final DbEncryptedSecret secret = new DbEncryptedSecret();
-    secret.setSecretType(SecretType.E_METER_MASTER_KEY);
+    secret.setSecretType(E_METER_MASTER_KEY);
     secret.setEncryptionKeyReference(keyReference);
     secret.setEncodedSecret("0123456789ABCDEF0123456789ABCDEF");
     final List<DbEncryptedSecret> secretPage = Arrays.asList(secret);
 
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
+            SOME_DEVICE, List.of(E_METER_MASTER_KEY), SecretStatus.ACTIVE))
         .thenReturn(secretPage);
     when(this.encryptionDelegate.decrypt(any(), any()))
         .thenThrow(new EncrypterException("Decryption error"));
 
     assertThatIllegalStateException()
         .isThrownBy(
-            () ->
-                this.service.retrieveSecrets(
-                    SOME_DEVICE, Arrays.asList(SecretType.E_METER_MASTER_KEY)));
+            () -> this.service.retrieveSecrets(SOME_DEVICE, Arrays.asList(E_METER_MASTER_KEY)));
 
     verify(this.secretManagementMetrics).incrementEncrypterException(any(EncrypterException.class));
   }
@@ -131,23 +129,21 @@ public class SecretManagementServiceTest {
     final DbEncryptedSecret secret = new DbEncryptedSecret();
     final List<DbEncryptedSecret> secretList = Arrays.asList(secret);
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
+            SOME_DEVICE, List.of(E_METER_MASTER_KEY), SecretStatus.ACTIVE))
         .thenReturn(secretList);
     assertThatIllegalStateException()
         .isThrownBy(
-            () ->
-                this.service.retrieveSecrets(
-                    SOME_DEVICE, Arrays.asList(SecretType.E_METER_MASTER_KEY)));
+            () -> this.service.retrieveSecrets(SOME_DEVICE, Arrays.asList(E_METER_MASTER_KEY)));
   }
 
   @Test
   public void retrieveSecretsNoSecrets() {
-    final List<SecretType> secretTypes = Arrays.asList(SecretType.E_METER_MASTER_KEY);
+    final List<SecretType> secretTypes = Arrays.asList(E_METER_MASTER_KEY);
     final List<TypedSecret> result = this.service.retrieveSecrets(SOME_DEVICE, secretTypes);
     assertThat(result).isNotNull();
     assertThat(result.size()).isEqualTo(secretTypes.size());
     assertThat(result.get(0)).isNotNull();
-    assertThat(result.get(0).getSecretType()).isEqualTo(SecretType.E_METER_MASTER_KEY);
+    assertThat(result.get(0).getSecretType()).isEqualTo(E_METER_MASTER_KEY);
     assertThat(result.get(0).getSecret()).isNull();
   }
 
@@ -162,9 +158,9 @@ public class SecretManagementServiceTest {
     final EncryptedSecret encryptedSecret =
         new EncryptedSecret(ENCRYPTION_PROVIDER_TYPE, "aesSecret0000001".getBytes());
 
-    when(this.keyRepository.findByTypeAndValid(any(), any()))
+    when(this.encryptionKeyReferenceCacheService.findAllByTypeAndValid(any(), any()))
         .thenReturn(Arrays.asList(keyReference));
-    when(this.keyRepository.findByTypeAndReference(ENCRYPTION_PROVIDER_TYPE, "1"))
+    when(this.encryptionKeyReferenceCacheService.getKeyByReference(ENCRYPTION_PROVIDER_TYPE, "1"))
         .thenReturn(keyReference);
     when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenReturn(encryptedSecret);
 
@@ -212,13 +208,18 @@ public class SecretManagementServiceTest {
     final DbEncryptedSecret dbEncryptedSecret =
         this.getSecret(SecretType.E_METER_ENCRYPTION_KEY_UNICAST, 100);
 
-    when(this.keyRepository.findByTypeAndValid(any(), any()))
+    when(this.encryptionKeyReferenceCacheService.findAllByTypeAndValid(any(), any()))
         .thenReturn(Arrays.asList(keyReference));
-    when(this.keyRepository.findByTypeAndReference(ENCRYPTION_PROVIDER_TYPE, "1"))
+    when(this.encryptionKeyReferenceCacheService.getKeyByReference(ENCRYPTION_PROVIDER_TYPE, "1"))
         .thenReturn(keyReference);
-    when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
-        .thenReturn(Arrays.asList(dbEncryptedSecret));
+    when(this.secretRepository.withdrawSecretsWithStatusNew(
+            SOME_DEVICE, List.of(SecretType.E_METER_ENCRYPTION_KEY_UNICAST)))
+        .thenAnswer(
+            (Answer<Integer>)
+                invocationOnMock -> {
+                  dbEncryptedSecret.setSecretStatus(SecretStatus.WITHDRAWN);
+                  return 1;
+                });
     when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenReturn(encryptedSecret);
 
     this.service.storeSecrets(SOME_DEVICE, Arrays.asList(typedSecret));
@@ -227,11 +228,6 @@ public class SecretManagementServiceTest {
         this.getListOfDbEncryptedSecretsArgumentCaptor();
     verify(this.secretRepository).saveAll(secretListArgumentCaptor.capture());
     final List<DbEncryptedSecret> savedSecrets = secretListArgumentCaptor.getValue();
-
-    final ArgumentCaptor<DbEncryptedSecret> secretToWithdrawArgumentCaptor =
-        ArgumentCaptor.forClass(DbEncryptedSecret.class);
-    verify(this.secretRepository, times(1)).save(secretToWithdrawArgumentCaptor.capture());
-    final DbEncryptedSecret savedSecretToWithdraw = secretToWithdrawArgumentCaptor.getValue();
 
     assertThat(savedSecrets).isNotNull();
     assertThat(savedSecrets.size()).isEqualTo(1);
@@ -246,24 +242,24 @@ public class SecretManagementServiceTest {
         .isEqualTo(HexUtils.toHexString(encryptedSecret.getSecret()));
     assertThat(savedSecret.getSecretStatus()).isEqualTo(SecretStatus.NEW);
 
-    assertThat(savedSecretToWithdraw.getDeviceIdentification()).isEqualTo(SOME_DEVICE);
-    assertThat(savedSecretToWithdraw.getSecretType()).isEqualTo(typedSecret.getSecretType());
-    assertThat(savedSecretToWithdraw.getEncryptionKeyReference())
+    assertThat(dbEncryptedSecret.getDeviceIdentification()).isEqualTo(SOME_DEVICE);
+    assertThat(dbEncryptedSecret.getSecretType()).isEqualTo(typedSecret.getSecretType());
+    assertThat(dbEncryptedSecret.getEncryptionKeyReference())
         .isEqualTo(dbEncryptedSecret.getEncryptionKeyReference());
-    assertThat(savedSecretToWithdraw.getCreationTime()).isNotNull();
+    assertThat(dbEncryptedSecret.getCreationTime()).isNotNull();
 
-    assertThat(savedSecretToWithdraw.getEncodedSecret())
+    assertThat(dbEncryptedSecret.getEncodedSecret())
         .isEqualTo(dbEncryptedSecret.getEncodedSecret());
-    assertThat(savedSecretToWithdraw.getSecretStatus()).isEqualTo(SecretStatus.WITHDRAWN);
+    assertThat(dbEncryptedSecret.getSecretStatus()).isEqualTo(SecretStatus.WITHDRAWN);
   }
 
   @Test
   public void storeSecretsNoKey() {
 
-    final TypedSecret typedSecret =
-        new TypedSecret("$3cr3t".getBytes(), SecretType.E_METER_MASTER_KEY);
+    final TypedSecret typedSecret = new TypedSecret("$3cr3t".getBytes(), E_METER_MASTER_KEY);
 
-    when(this.keyRepository.findByTypeAndValid(any(), any())).thenReturn(Arrays.asList());
+    when(this.encryptionKeyReferenceCacheService.findAllByTypeAndValid(any(), any()))
+        .thenReturn(Arrays.asList());
 
     assertThatExceptionOfType(NoSuchElementException.class)
         .isThrownBy(() -> this.service.storeSecrets(SOME_DEVICE, Arrays.asList(typedSecret)));
@@ -272,10 +268,9 @@ public class SecretManagementServiceTest {
   @Test
   public void storeSecretsMultipleKeys() {
 
-    final TypedSecret typedSecret =
-        new TypedSecret("$3cr3t".getBytes(), SecretType.E_METER_MASTER_KEY);
+    final TypedSecret typedSecret = new TypedSecret("$3cr3t".getBytes(), E_METER_MASTER_KEY);
 
-    when(this.keyRepository.findByTypeAndValid(any(), any()))
+    when(this.encryptionKeyReferenceCacheService.findAllByTypeAndValid(any(), any()))
         .thenReturn(Arrays.asList(new DbEncryptionKeyReference(), new DbEncryptionKeyReference()));
 
     assertThatIllegalStateException()
@@ -285,13 +280,12 @@ public class SecretManagementServiceTest {
   @Test
   public void storeSecretsEncryptionError() throws EncrypterException {
 
-    final TypedSecret typedSecret =
-        new TypedSecret("$3cr3t".getBytes(), SecretType.E_METER_MASTER_KEY);
+    final TypedSecret typedSecret = new TypedSecret("$3cr3t".getBytes(), E_METER_MASTER_KEY);
     final DbEncryptionKeyReference keyReference = new DbEncryptionKeyReference();
     keyReference.setEncryptionProviderType(ENCRYPTION_PROVIDER_TYPE);
     keyReference.setReference("keyReferenceString");
 
-    when(this.keyRepository.findByTypeAndValid(any(), any()))
+    when(this.encryptionKeyReferenceCacheService.findAllByTypeAndValid(any(), any()))
         .thenReturn(Arrays.asList(keyReference));
     when(this.encryptionDelegate.encrypt(any(), any(), anyString()))
         .thenThrow(new EncrypterException("Encryption error"));
@@ -306,7 +300,7 @@ public class SecretManagementServiceTest {
   public void storeSecretsExistingSecret() throws Exception {
 
     final TypedSecret typedSecret =
-        new TypedSecret("n3w$3cr3t0000001".getBytes(), SecretType.E_METER_MASTER_KEY);
+        new TypedSecret("n3w$3cr3t0000001".getBytes(), E_METER_MASTER_KEY);
     final DbEncryptionKeyReference keyReference = new DbEncryptionKeyReference();
     keyReference.setEncryptionProviderType(ENCRYPTION_PROVIDER_TYPE);
     keyReference.setReference("1");
@@ -314,14 +308,14 @@ public class SecretManagementServiceTest {
         new EncryptedSecret(ENCRYPTION_PROVIDER_TYPE, "n3w$3cr3t0000001".getBytes());
     final DbEncryptedSecret existingDbSecret = new DbEncryptedSecret();
     existingDbSecret.setCreationTime(new Date());
-    existingDbSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
+    existingDbSecret.setSecretType(E_METER_MASTER_KEY);
     existingDbSecret.setEncodedSecret("1234567890ABCDEF");
     existingDbSecret.setDeviceIdentification(SOME_DEVICE);
     existingDbSecret.setEncryptionKeyReference(keyReference);
 
-    when(this.keyRepository.findByTypeAndValid(any(), any()))
+    when(this.encryptionKeyReferenceCacheService.findAllByTypeAndValid(any(), any()))
         .thenReturn(Arrays.asList(keyReference));
-    when(this.keyRepository.findByTypeAndReference(ENCRYPTION_PROVIDER_TYPE, "1"))
+    when(this.encryptionKeyReferenceCacheService.getKeyByReference(ENCRYPTION_PROVIDER_TYPE, "1"))
         .thenReturn(keyReference);
     when(this.encryptionDelegate.encrypt(any(), any(), anyString()))
         .thenReturn(encryptedSecret); // encrypt new DB secret
@@ -349,15 +343,15 @@ public class SecretManagementServiceTest {
 
     final DbEncryptedSecret newSecret = new DbEncryptedSecret();
     newSecret.setId(1L);
-    newSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
+    newSecret.setSecretType(E_METER_MASTER_KEY);
     newSecret.setSecretStatus(SecretStatus.NEW);
 
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
+            SOME_DEVICE, List.of(E_METER_MASTER_KEY), SecretStatus.NEW))
         .thenReturn(Arrays.asList(newSecret));
     when(this.secretRepository.saveAll(Arrays.asList(newSecret)))
         .thenReturn(Arrays.asList(newSecret));
-    this.service.activateNewSecrets(SOME_DEVICE, Arrays.asList(SecretType.E_METER_MASTER_KEY));
+    this.service.activateNewSecrets(SOME_DEVICE, Arrays.asList(E_METER_MASTER_KEY));
 
     assertThat(newSecret.getSecretStatus()).isEqualTo(SecretStatus.ACTIVE);
 
@@ -378,18 +372,20 @@ public class SecretManagementServiceTest {
     final DbEncryptedSecret newSecret = new DbEncryptedSecret();
     newSecret.setId(1L);
     newSecret.setSecretStatus(SecretStatus.NEW);
+    newSecret.setSecretType(E_METER_MASTER_KEY);
     final DbEncryptedSecret activeSecret = new DbEncryptedSecret();
-    newSecret.setId(2L);
-    newSecret.setSecretStatus(SecretStatus.ACTIVE);
+    activeSecret.setId(2L);
+    activeSecret.setSecretStatus(SecretStatus.ACTIVE);
+    activeSecret.setSecretType(E_METER_MASTER_KEY);
 
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
+            SOME_DEVICE, List.of(E_METER_MASTER_KEY), SecretStatus.ACTIVE))
         .thenReturn(Arrays.asList(activeSecret));
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
+            SOME_DEVICE, List.of(E_METER_MASTER_KEY), SecretStatus.NEW))
         .thenReturn(Arrays.asList(newSecret));
     when(this.secretRepository.saveAll(any())).thenReturn(Arrays.asList(newSecret, activeSecret));
-    this.service.activateNewSecrets(SOME_DEVICE, Arrays.asList(SecretType.E_METER_MASTER_KEY));
+    this.service.activateNewSecrets(SOME_DEVICE, Arrays.asList(E_METER_MASTER_KEY));
 
     assertThat(newSecret.getSecretStatus()).isEqualTo(SecretStatus.ACTIVE);
     assertThat(activeSecret.getSecretStatus()).isEqualTo(SecretStatus.EXPIRED);
@@ -398,7 +394,7 @@ public class SecretManagementServiceTest {
   @Test
   public void activateSecretsNoNewSecret() {
 
-    this.service.activateNewSecrets("SOME_DEVICE", Arrays.asList(SecretType.E_METER_MASTER_KEY));
+    this.service.activateNewSecrets("SOME_DEVICE", Arrays.asList(E_METER_MASTER_KEY));
 
     final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
         this.getListOfDbEncryptedSecretsArgumentCaptor();
@@ -415,11 +411,10 @@ public class SecretManagementServiceTest {
   @Test
   public void hasNewSecret() {
 
-    when(this.secretRepository.getSecretCount(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
+    when(this.secretRepository.getSecretCount(SOME_DEVICE, E_METER_MASTER_KEY, SecretStatus.NEW))
         .thenReturn(1);
 
-    final boolean result = this.service.hasNewSecret(SOME_DEVICE, SecretType.E_METER_MASTER_KEY);
+    final boolean result = this.service.hasNewSecret(SOME_DEVICE, E_METER_MASTER_KEY);
 
     assertThat(result).isTrue();
   }
@@ -427,11 +422,10 @@ public class SecretManagementServiceTest {
   @Test
   public void hasNoNewSecret() {
 
-    when(this.secretRepository.getSecretCount(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
+    when(this.secretRepository.getSecretCount(SOME_DEVICE, E_METER_MASTER_KEY, SecretStatus.NEW))
         .thenReturn(0);
 
-    final boolean result = this.service.hasNewSecret(SOME_DEVICE, SecretType.E_METER_MASTER_KEY);
+    final boolean result = this.service.hasNewSecret(SOME_DEVICE, E_METER_MASTER_KEY);
 
     assertThat(result).isFalse();
   }
@@ -447,7 +441,7 @@ public class SecretManagementServiceTest {
     keyReference.setReference(reference);
     keyReference.setEncryptionProviderType(ENCRYPTION_PROVIDER_TYPE);
     keyReference.setValidFrom(now);
-    when(this.keyRepository.findByTypeAndValid(any(), any()))
+    when(this.encryptionKeyReferenceCacheService.findAllByTypeAndValid(any(), any()))
         .thenReturn(Arrays.asList(keyReference));
     when(this.encryptionDelegate.generateAes128BitsSecret(ENCRYPTION_PROVIDER_TYPE, reference))
         .thenReturn(aesSecret);
@@ -455,10 +449,10 @@ public class SecretManagementServiceTest {
     when(this.encrypterForSecretManagementClient.encrypt(any())).thenReturn(rsaSecret);
     final List<TypedSecret> secrets =
         this.service.generateAndStoreSecrets(
-            SOME_DEVICE, Arrays.asList(SecretType.E_METER_AUTHENTICATION_KEY));
+            SOME_DEVICE, Arrays.asList(E_METER_AUTHENTICATION_KEY));
     assertThat(secrets.size()).isEqualTo(1);
     final TypedSecret typedSecret = secrets.get(0);
-    assertThat(typedSecret.getSecretType()).isEqualTo(SecretType.E_METER_AUTHENTICATION_KEY);
+    assertThat(typedSecret.getSecretType()).isEqualTo(E_METER_AUTHENTICATION_KEY);
     assertThat(typedSecret.getSecret()).isEqualTo(rsaSecret);
   }
 
@@ -479,13 +473,18 @@ public class SecretManagementServiceTest {
     keyReference.setEncryptionProviderType(ENCRYPTION_PROVIDER_TYPE);
     keyReference.setValidFrom(now);
 
-    when(this.keyRepository.findByTypeAndValid(any(), any()))
+    when(this.encryptionKeyReferenceCacheService.findAllByTypeAndValid(any(), any()))
         .thenReturn(Arrays.asList(keyReference));
     when(this.encryptionDelegate.generateAes128BitsSecret(ENCRYPTION_PROVIDER_TYPE, reference))
         .thenReturn(aesSecret);
-    when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
-        .thenReturn(Arrays.asList(dbEncryptedSecret));
+    when(this.secretRepository.withdrawSecretsWithStatusNew(
+            SOME_DEVICE, List.of(SecretType.E_METER_ENCRYPTION_KEY_UNICAST)))
+        .thenAnswer(
+            (Answer<Integer>)
+                invocationOnMock -> {
+                  dbEncryptedSecret.setSecretStatus(SecretStatus.WITHDRAWN);
+                  return 1;
+                });
 
     when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(secret);
     when(this.encrypterForSecretManagementClient.encrypt(any())).thenReturn(rsaSecret);
@@ -493,12 +492,11 @@ public class SecretManagementServiceTest {
     final SecretType secretType = SecretType.E_METER_ENCRYPTION_KEY_UNICAST;
     this.service.generateAndStoreSecrets(SOME_DEVICE, Arrays.asList(secretType));
 
-    final List<DbEncryptedSecret> foundSecrets =
-        this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW);
-    assertThat(foundSecrets).hasSize(1);
+    final int updatedSecrets =
+        this.secretRepository.withdrawSecretsWithStatusNew(
+            SOME_DEVICE, List.of(SecretType.E_METER_ENCRYPTION_KEY_UNICAST));
+    assertThat(updatedSecrets).isEqualTo(1);
 
-    verify(this.secretRepository, never()).saveAll(Arrays.asList(dbEncryptedSecret));
     assertThat(dbEncryptedSecret.getCreationTime()).isEqualTo(originalCreationTime);
     assertThat(dbEncryptedSecret.getSecretStatus()).isEqualTo(SecretStatus.WITHDRAWN);
   }
@@ -524,25 +522,28 @@ public class SecretManagementServiceTest {
 
     final Date olderCreationTime = secretOlderEncryption.getCreationTime();
 
-    when(this.keyRepository.findByTypeAndValid(any(), any()))
+    final SecretType encryptionSecretType = SecretType.E_METER_ENCRYPTION_KEY_UNICAST;
+    final SecretType authenticationSecretType = E_METER_AUTHENTICATION_KEY;
+
+    when(this.encryptionKeyReferenceCacheService.findAllByTypeAndValid(any(), any()))
         .thenReturn(Arrays.asList(keyReference));
     when(this.encryptionDelegate.generateAes128BitsSecret(ENCRYPTION_PROVIDER_TYPE, reference))
         .thenReturn(aesSecret);
-    when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
-        .thenReturn(Arrays.asList(secretOldEncryption, secretOlderEncryption));
+    when(this.secretRepository.withdrawSecretsWithStatusNew(
+            SOME_DEVICE, List.of(encryptionSecretType, authenticationSecretType)))
+        .thenAnswer(
+            (Answer<Integer>)
+                invocationOnMock -> {
+                  secretOldEncryption.setSecretStatus(SecretStatus.WITHDRAWN);
+                  secretOlderEncryption.setSecretStatus(SecretStatus.WITHDRAWN);
+                  return 2;
+                });
 
     when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(secret);
     when(this.encrypterForSecretManagementClient.encrypt(any())).thenReturn(rsaSecret);
 
-    final SecretType encryptionSecretType = SecretType.E_METER_ENCRYPTION_KEY_UNICAST;
-    final SecretType authenticationSecretType = SecretType.E_METER_AUTHENTICATION_KEY;
-
     this.service.generateAndStoreSecrets(
         SOME_DEVICE, Arrays.asList(encryptionSecretType, authenticationSecretType));
-
-    verify(this.secretRepository, never()).saveAll(Arrays.asList(secretOldEncryption));
-    verify(this.secretRepository, never()).saveAll(Arrays.asList(secretOldEncryption));
 
     assertThat(secretOldEncryption.getCreationTime())
         .isEqualTo(originalCreationTimeEncryptionSecret);

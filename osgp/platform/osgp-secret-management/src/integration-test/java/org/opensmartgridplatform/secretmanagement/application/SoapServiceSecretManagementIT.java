@@ -306,7 +306,9 @@ public class SoapServiceSecretManagementIT {
             });
     final List<DbEncryptedSecret> authKeys =
         this.secretRepository.findSecrets(
-            DEVICE_IDENTIFICATION, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.NEW);
+            DEVICE_IDENTIFICATION,
+            List.of(SecretType.E_METER_AUTHENTICATION_KEY),
+            SecretStatus.NEW);
     assertThat(authKeys).hasSize(1);
     final DbEncryptedSecret authKey = authKeys.get(0);
     assertThat(authKey.getEncodedSecret()).hasSize(64);
