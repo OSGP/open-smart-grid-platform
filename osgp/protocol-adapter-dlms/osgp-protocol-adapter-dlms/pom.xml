@@ -29,6 +29,7 @@
     <display.version>${project.version}-${BUILD_TAG}</display.version>
     <osgp-ws-secret-management-version>${project.version}</osgp-ws-secret-management-version>
     <skipITs>true</skipITs>
+    <openmuc.jdlms.version>1.7.2</openmuc.jdlms.version>
   </properties>
 
   <build>
@@ -98,6 +99,7 @@
     <dependency>
       <groupId>org.openmuc</groupId>
       <artifactId>jdlms</artifactId>
+      <version>${openmuc.jdlms.version}</version>
     </dependency>
 
     <!-- OSGP -->
