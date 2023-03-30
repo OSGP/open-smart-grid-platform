@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.openmuc.jdlms.AttributeAddress;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsRegister;
 
@@ -48,7 +47,7 @@ public class AttributeAddressForProfile {
   public DlmsCaptureObject getCaptureObject(final DlmsObjectType dlmsObjectType) {
     return this.selectedObjects.stream()
         .filter(c -> c.getRelatedObject().getType() == dlmsObjectType)
-        .collect(Collectors.toList())
+        .toList()
         .get(0);
   }
 
@@ -62,6 +61,6 @@ public class AttributeAddressForProfile {
         .map(DlmsCaptureObject::getRelatedObject)
         .filter(dlmsObjectClass::isInstance)
         .map(DlmsRegister.class::cast)
-        .collect(Collectors.toList());
+        .toList();
   }
 }

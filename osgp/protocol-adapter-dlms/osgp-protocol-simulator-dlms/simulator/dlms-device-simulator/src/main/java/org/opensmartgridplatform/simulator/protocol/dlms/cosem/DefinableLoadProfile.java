@@ -657,7 +657,6 @@ public class DefinableLoadProfile extends ProfileGeneric {
       try {
         initCaptureObject = CaptureObject.newCaptureObject(captureObject);
       } catch (final RuntimeException e) {
-        LOGGER.error("Unable to create capture object from: {}", captureObject, e);
         throw new IllegalAttributeAccessException(
             AccessResultCode.OTHER_REASON,
             new IllegalArgumentException(

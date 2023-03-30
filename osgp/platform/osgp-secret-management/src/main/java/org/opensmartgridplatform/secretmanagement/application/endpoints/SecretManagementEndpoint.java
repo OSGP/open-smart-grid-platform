@@ -12,7 +12,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -276,15 +275,13 @@ public class SecretManagementEndpoint {
     }
     return secretTypes.getSecretType().stream()
         .map(org.opensmartgridplatform.ws.schema.core.secret.management.SecretType::name)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private List<String> nameList(final TypedSecrets typedSecrets) {
     if (typedSecrets == null) {
       return Collections.emptyList();
     }
-    return typedSecrets.getTypedSecret().stream()
-        .map(ts -> ts.getType().name())
-        .collect(Collectors.toList());
+    return typedSecrets.getTypedSecret().stream().map(ts -> ts.getType().name()).toList();
   }
 }

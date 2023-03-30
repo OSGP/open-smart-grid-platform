@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
@@ -102,7 +101,7 @@ public class ObjectConfigService {
 
     return cosemObjects.values().stream()
         .filter(object -> this.hasProperties(object, properties))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public List<CosemObject> getCosemObjectsWithProperty(
@@ -116,7 +115,7 @@ public class ObjectConfigService {
 
     return cosemObjects.values().stream()
         .filter(object -> this.hasProperty(object, wantedProperty, wantedPropertyValues))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public Map<DlmsObjectType, CosemObject> getCosemObjects(
