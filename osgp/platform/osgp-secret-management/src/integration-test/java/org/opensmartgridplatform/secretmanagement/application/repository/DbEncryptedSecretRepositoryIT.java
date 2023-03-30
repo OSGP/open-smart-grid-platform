@@ -70,7 +70,7 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
     final List<DbEncryptedSecret> secretsList =
         this.repository.findSecrets(
             this.dbEncryptedSecret.getDeviceIdentification(),
-            this.dbEncryptedSecret.getSecretType(),
+            List.of(this.dbEncryptedSecret.getSecretType()),
             SecretStatus.ACTIVE);
     assertThat(secretsList).hasSize(1);
     assertThat(secretsList.iterator().next().getId()).isEqualTo(this.dbEncryptedSecret.getId());
@@ -93,7 +93,7 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
     final List<DbEncryptedSecret> secretsList =
         this.repository.findSecrets(
             this.dbEncryptedSecret.getDeviceIdentification(),
-            this.dbEncryptedSecret.getSecretType(),
+            List.of(this.dbEncryptedSecret.getSecretType()),
             SecretStatus.ACTIVE);
     assertThat(secretsList).hasSize(1);
     final DbEncryptedSecret secret = secretsList.get(0);

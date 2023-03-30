@@ -397,8 +397,7 @@ public class SecretManagementService {
   public List<TypedSecret> generateAndStoreSecrets(
       final String deviceIdentification, final List<SecretType> secretTypes) {
 
-    final int updatedRecords =
-        this.withdrawExistingKeysWithStatusNew(deviceIdentification, secretTypes);
+    this.withdrawExistingKeysWithStatusNew(deviceIdentification, secretTypes);
     final List<EncryptedTypedSecret> encryptedTypedSecrets =
         secretTypes.stream().map(this::generateAes128BitsSecret).collect(Collectors.toList());
 

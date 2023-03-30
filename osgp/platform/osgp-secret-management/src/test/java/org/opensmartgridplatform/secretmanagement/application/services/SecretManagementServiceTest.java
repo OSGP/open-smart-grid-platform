@@ -128,7 +128,8 @@ public class SecretManagementServiceTest {
   public void retrieveSecretsSecretWithoutKey() {
     final DbEncryptedSecret secret = new DbEncryptedSecret();
     final List<DbEncryptedSecret> secretList = Arrays.asList(secret);
-    when(this.secretRepository.findSecrets(SOME_DEVICE, E_METER_MASTER_KEY, SecretStatus.ACTIVE))
+    when(this.secretRepository.findSecrets(
+            SOME_DEVICE, List.of(E_METER_MASTER_KEY), SecretStatus.ACTIVE))
         .thenReturn(secretList);
     assertThatIllegalStateException()
         .isThrownBy(

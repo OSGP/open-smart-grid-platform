@@ -20,17 +20,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DbEncryptedSecretRepository extends JpaRepository<DbEncryptedSecret, Long> {
-  @Query(
-      value =
-          "SELECT es FROM DbEncryptedSecret es "
-              + "JOIN FETCH es.encryptionKeyReference "
-              + "WHERE es.deviceIdentification = :deviceIdentification AND es.secretType = :secretType "
-              + "AND es.secretStatus= :secretStatus "
-              + "ORDER BY es.creationTime DESC, es.id DESC")
-  List<DbEncryptedSecret> findSecrets(
-      @Param("deviceIdentification") String deviceIdentification,
-      @Param("secretType") SecretType secretType,
-      @Param("secretStatus") SecretStatus secretStatus);
 
   @Query(
       value =
