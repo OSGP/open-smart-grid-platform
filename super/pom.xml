@@ -109,8 +109,8 @@
     <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
     <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
     <netty.version>4.1.80.Final</netty.version>
-    <openmuc.jdlms.version>1.7.3-SNAPSHOT</openmuc.jdlms.version>
-    <openmuc.jdlms-annotation.version>1.7.1</openmuc.jdlms-annotation.version>
+    <openmuc.jdlms.version>1.7.2</openmuc.jdlms.version>
+    <openmuc.jdlms-annotation.version>1.7.2</openmuc.jdlms-annotation.version>
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
     <openmuc.j60870.version>1.4.0</openmuc.j60870.version>
     <javax.inject.version>1</javax.inject.version>
