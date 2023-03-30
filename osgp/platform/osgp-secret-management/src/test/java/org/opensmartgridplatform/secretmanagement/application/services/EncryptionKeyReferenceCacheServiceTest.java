@@ -26,7 +26,7 @@ import org.opensmartgridplatform.secretmanagement.application.repository.DbEncry
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 
 @ExtendWith(MockitoExtension.class)
-public class EncryptionKeyReferenceCacheServiceTest {
+class EncryptionKeyReferenceCacheServiceTest {
   @Mock private DbEncryptionKeyRepository keyRepository;
   @InjectMocks private EncryptionKeyReferenceCacheService service;
 

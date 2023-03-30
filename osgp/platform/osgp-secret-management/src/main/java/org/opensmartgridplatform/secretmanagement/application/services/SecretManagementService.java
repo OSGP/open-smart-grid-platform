@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -258,13 +258,13 @@ public class SecretManagementService {
     }
   }
 
-  private Map<SecretType, Optional<DbEncryptedSecret>> getValidatedDbEncryptedSecretByType(
+  private EnumMap<SecretType, Optional<DbEncryptedSecret>> getValidatedDbEncryptedSecretByType(
       final String deviceIdentification,
       final List<SecretType> secretTypes,
       final SecretStatus secretStatus) {
 
     if (secretTypes.isEmpty()) {
-      return new HashMap<>();
+      return new EnumMap<>(SecretType.class);
     }
 
     final Map<SecretType, List<DbEncryptedSecret>> dbEncryptedSecretByType =
@@ -273,8 +273,8 @@ public class SecretManagementService {
 
     validateSecrets(dbEncryptedSecretByType, deviceIdentification, secretTypes, secretStatus);
 
-    final Map<SecretType, Optional<DbEncryptedSecret>> validatedDbEncryptedSecretByType =
-        new HashMap<>();
+    final EnumMap<SecretType, Optional<DbEncryptedSecret>> validatedDbEncryptedSecretByType =
+        new EnumMap<>(SecretType.class);
     secretTypes.forEach(
         secretType -> {
           final Optional<DbEncryptedSecret> optionalDbEncryptedSecret =

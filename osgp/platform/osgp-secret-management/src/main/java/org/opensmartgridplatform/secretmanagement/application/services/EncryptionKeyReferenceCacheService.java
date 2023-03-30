@@ -12,9 +12,8 @@ package org.opensmartgridplatform.secretmanagement.application.services;
 
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
@@ -26,12 +25,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class EncryptionKeyReferenceCacheService {
   private final DbEncryptionKeyRepository keyRepository;
-  private final Map<EncryptionProviderType, List<DbEncryptionKeyReference>>
+  private final EnumMap<EncryptionProviderType, List<DbEncryptionKeyReference>>
       encryptionKeyReferenceCache;
 
   public EncryptionKeyReferenceCacheService(final DbEncryptionKeyRepository keyRepository) {
     this.keyRepository = keyRepository;
-    this.encryptionKeyReferenceCache = new HashMap<>();
+    this.encryptionKeyReferenceCache = new EnumMap<>(EncryptionProviderType.class);
   }
 
   public DbEncryptionKeyReference getKeyByReference(
