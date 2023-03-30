@@ -276,7 +276,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       final List<GetResult> getResultList,
       final List<AttributeAddress> attributeAddresses,
       final AttributeAddressForProfile attributeAddressForProfile,
-      final Integer channel) {
+      final Integer channel)
+      throws ProtocolAdapterException {
 
     final DlmsCaptureObject captureObject =
         attributeAddressForProfile.getCaptureObject(DlmsObjectType.MBUS_MASTER_VALUE);

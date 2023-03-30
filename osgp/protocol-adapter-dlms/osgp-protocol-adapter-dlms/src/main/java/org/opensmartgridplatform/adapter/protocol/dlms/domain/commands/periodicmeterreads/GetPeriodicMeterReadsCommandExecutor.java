@@ -315,7 +315,8 @@ public class GetPeriodicMeterReadsCommandExecutor
       final List<GetResult> getResultList,
       final List<AttributeAddress> attributeAddresses,
       final AttributeAddressForProfile attributeAddressForProfile,
-      final DlmsObjectType objectType) {
+      final DlmsObjectType objectType)
+      throws ProtocolAdapterException {
 
     final DlmsCaptureObject captureObject = attributeAddressForProfile.getCaptureObject(objectType);
 
