@@ -8,13 +8,18 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.services;
 
+import static java.util.Collections.reverseOrder;
 import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,7 +32,6 @@ import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
 import org.opensmartgridplatform.secretmanagement.application.exception.ExceptionWrapper;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptedSecretRepository;
-import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptionKeyRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -38,6 +42,7 @@ import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service that manages secrets (store, retrieve, activate, generate). Secrets in this service are
@@ -54,6 +59,7 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
+@Transactional
 public class SecretManagementService {
 
   // Internal datastructure to keep track of (intermediate) secret details
@@ -119,7 +125,7 @@ public class SecretManagementService {
   private final EncryptionDelegate encryptionDelegateForKeyStorage;
   private final EncryptionProviderType encryptionProviderType;
   private final DbEncryptedSecretRepository secretRepository;
-  private final DbEncryptionKeyRepository keyRepository;
+  private final EncryptionKeyReferenceCacheService encryptionKeyReferenceCacheService;
   private final RsaEncrypter encrypterForSecretManagementClient;
   private final RsaEncrypter decrypterForSecretManagement;
   private final SecretManagementMetrics secretManagementMetrics;
@@ -129,7 +135,7 @@ public class SecretManagementService {
           final EncryptionDelegate defaultEncryptionDelegateForKeyStorage,
       final EncryptionProviderType encryptionProviderType,
       final DbEncryptedSecretRepository secretRepository,
-      final DbEncryptionKeyRepository keyRepository,
+      final EncryptionKeyReferenceCacheService encryptionKeyReferenceCacheService,
       @Qualifier(value = "encrypterForSecretManagementClient")
           final RsaEncrypter encrypterForSecretManagementClient,
       @Qualifier(value = "decrypterForSecretManagement")
@@ -138,7 +144,7 @@ public class SecretManagementService {
     this.encryptionDelegateForKeyStorage = defaultEncryptionDelegateForKeyStorage;
     this.encryptionProviderType = encryptionProviderType;
     this.secretRepository = secretRepository;
-    this.keyRepository = keyRepository;
+    this.encryptionKeyReferenceCacheService = encryptionKeyReferenceCacheService;
     this.encrypterForSecretManagementClient = encrypterForSecretManagementClient;
     this.decrypterForSecretManagement = decrypterForSecretManagement;
     this.secretManagementMetrics = secretManagementMetrics;
@@ -147,7 +153,8 @@ public class SecretManagementService {
   private DbEncryptionKeyReference getCurrentKey() {
     final Date now = new Date();
     final List<DbEncryptionKeyReference> keyRefs =
-        this.keyRepository.findByTypeAndValid(this.encryptionProviderType, now);
+        this.encryptionKeyReferenceCacheService.findAllByTypeAndValid(
+            this.encryptionProviderType, now);
     if (keyRefs.size() > 1) {
       final String messageFormat = "Multiple encryption keys found of type %s that are valid at %s";
       throw new IllegalStateException(
@@ -161,7 +168,8 @@ public class SecretManagementService {
   }
 
   private DbEncryptionKeyReference getKeyByReference(final String reference) {
-    return this.keyRepository.findByTypeAndReference(this.encryptionProviderType, reference);
+    return this.encryptionKeyReferenceCacheService.getKeyByReference(
+        this.encryptionProviderType, reference);
   }
 
   private EncryptedTypedSecret validateAndReturnNewSecret(final EncryptedTypedSecret secret) {
@@ -212,9 +220,7 @@ public class SecretManagementService {
       final List<SecretType> secretTypes,
       final SecretStatus status) {
     try {
-      return secretTypes.stream()
-          .map(secretType -> this.retrieveSecret(deviceIdentification, secretType, status))
-          .collect(Collectors.toList());
+      return this.retrieveSecrets(deviceIdentification, secretTypes, status);
     } catch (final Exception exc) {
       throw new IllegalStateException(
           String.format(
@@ -224,13 +230,26 @@ public class SecretManagementService {
     }
   }
 
-  private EncryptedTypedSecret retrieveSecret(
-      final String deviceIdentification, final SecretType secretType, final SecretStatus status) {
-    final Optional<DbEncryptedSecret> optional =
-        this.getSingleDbEncryptedSecret(deviceIdentification, secretType, status);
-    if (optional.isPresent()) {
+  private List<EncryptedTypedSecret> retrieveSecrets(
+      final String deviceIdentification,
+      final List<SecretType> secretTypes,
+      final SecretStatus status) {
+
+    final Map<SecretType, Optional<DbEncryptedSecret>> dbEncryptedSecretByType =
+        this.getValidatedDbEncryptedSecretByType(deviceIdentification, secretTypes, status);
+
+    return secretTypes.stream()
+        .map(
+            secretType ->
+                this.mapAsEncryptedTypedSecret(secretType, dbEncryptedSecretByType.get(secretType)))
+        .toList();
+  }
+
+  private EncryptedTypedSecret mapAsEncryptedTypedSecret(
+      final SecretType secretType, final Optional<DbEncryptedSecret> optionalDbEncryptedSecret) {
+    if (optionalDbEncryptedSecret.isPresent()) {
       try {
-        return EncryptedTypedSecret.fromDbEncryptedSecret(optional.get());
+        return EncryptedTypedSecret.fromDbEncryptedSecret(optionalDbEncryptedSecret.get());
       } catch (final FunctionalException e) {
         throw new ExceptionWrapper(e);
       }
@@ -239,31 +258,70 @@ public class SecretManagementService {
     }
   }
 
-  private Optional<DbEncryptedSecret> getSingleDbEncryptedSecret(
+  private EnumMap<SecretType, Optional<DbEncryptedSecret>> getValidatedDbEncryptedSecretByType(
       final String deviceIdentification,
-      final SecretType secretType,
+      final List<SecretType> secretTypes,
       final SecretStatus secretStatus) {
-    final List<DbEncryptedSecret> secretsList =
-        this.secretRepository.findSecrets(deviceIdentification, secretType, secretStatus);
-    final boolean onlySingleSecretAllowed =
-        SecretStatus.NEW.equals(secretStatus) || SecretStatus.ACTIVE.equals(secretStatus);
-    if (secretsList.isEmpty()) {
-      return Optional.empty();
-    } else if (secretsList.size() > 1 && onlySingleSecretAllowed) {
-      final String msgFormat =
-          "Only 1 instance allowed with status %s, but found %s for device %s, secret type %s";
-      throw new IllegalStateException(
-          String.format(
-              msgFormat, secretStatus, secretsList.size(), deviceIdentification, secretType));
+
+    if (secretTypes.isEmpty()) {
+      return new EnumMap<>(SecretType.class);
     }
-    return Optional.of(secretsList.iterator().next());
+
+    final Map<SecretType, List<DbEncryptedSecret>> dbEncryptedSecretByType =
+        this.secretRepository.findSecrets(deviceIdentification, secretTypes, secretStatus).stream()
+            .collect(groupingBy(DbEncryptedSecret::getSecretType));
+
+    validateSecrets(dbEncryptedSecretByType, deviceIdentification, secretTypes, secretStatus);
+
+    final EnumMap<SecretType, Optional<DbEncryptedSecret>> validatedDbEncryptedSecretByType =
+        new EnumMap<>(SecretType.class);
+    secretTypes.forEach(
+        secretType -> {
+          final Optional<DbEncryptedSecret> optionalDbEncryptedSecret =
+              dbEncryptedSecretByType.getOrDefault(secretType, new ArrayList<>()).stream()
+                  .min(
+                      Comparator.comparing(DbEncryptedSecret::getCreationTime, reverseOrder())
+                          .thenComparing(DbEncryptedSecret::getId, reverseOrder()));
+
+          validatedDbEncryptedSecretByType.put(secretType, optionalDbEncryptedSecret);
+        });
+    return validatedDbEncryptedSecretByType;
+  }
+
+  private static void validateSecrets(
+      final Map<SecretType, List<DbEncryptedSecret>> dbEncryptedSecretByType,
+      final String deviceIdentification,
+      final List<SecretType> secretTypes,
+      final SecretStatus secretStatus) {
+
+    final boolean onlySingleSecretByTypeAllowed =
+        SecretStatus.NEW.equals(secretStatus) || SecretStatus.ACTIVE.equals(secretStatus);
+
+    secretTypes.forEach(
+        secretType -> {
+          final List<DbEncryptedSecret> secretsListForType =
+              dbEncryptedSecretByType.getOrDefault(secretType, new ArrayList<>());
+          if (secretsListForType.size() > 1 && onlySingleSecretByTypeAllowed) {
+            final String msgFormat =
+                "Only 1 instance allowed with status %s, but found %s for device %s, secret type %s";
+            throw new IllegalStateException(
+                String.format(
+                    msgFormat,
+                    secretStatus,
+                    secretsListForType.size(),
+                    deviceIdentification,
+                    secretType));
+          }
+        });
   }
 
   public void storeSecrets(
       final String deviceIdentification, final List<TypedSecret> typedSecrets) {
-    for (final TypedSecret typedSecret : typedSecrets) {
-      this.withdrawExistingKeysWithStatusNew(deviceIdentification, typedSecret.getSecretType());
-    }
+
+    final List<SecretType> secretTypeList =
+        typedSecrets.stream().map(TypedSecret::getSecretType).toList();
+    this.withdrawExistingKeysWithStatusNew(deviceIdentification, secretTypeList);
+
     final List<EncryptedTypedSecret> aesSecrets =
         typedSecrets.stream()
             .map(ts -> new EncryptedTypedSecret(ts.getSecret(), ts.getSecretType()))
@@ -272,21 +330,13 @@ public class SecretManagementService {
     this.storeAesSecrets(deviceIdentification, aesSecrets);
   }
 
-  private void withdrawExistingKeysWithStatusNew(
-      final String deviceIdentification, final SecretType secretType) {
-    // All NEW keys of the device and type are set to status WITHDRAWN.
-    final List<DbEncryptedSecret> foundSecrets =
-        this.secretRepository.findSecrets(deviceIdentification, secretType, SecretStatus.NEW);
-
-    for (final DbEncryptedSecret foundSecret : foundSecrets) {
-      foundSecret.setSecretStatus(SecretStatus.WITHDRAWN);
-      this.secretRepository.save(foundSecret);
-      log.warn(
-          String.format(
-              "During (GenerateOr)Replace Key Process one or more keys with status NEW of type %s for "
-                  + "device %s have been found. These keys will be withdrawn (status WITHDRAWN)",
-              secretType.name(), deviceIdentification));
+  private int withdrawExistingKeysWithStatusNew(
+      final String deviceIdentification, final List<SecretType> secretTypes) {
+    if (secretTypes.isEmpty()) {
+      return 0;
     }
+    // All NEW keys of the device and type are set to status WITHDRAWN.
+    return this.secretRepository.withdrawSecretsWithStatusNew(deviceIdentification, secretTypes);
   }
 
   private void storeAesSecrets(
@@ -307,21 +357,29 @@ public class SecretManagementService {
 
   public void activateNewSecrets(
       final String deviceIdentification, final List<SecretType> secretTypes) {
+    final Map<SecretType, Optional<DbEncryptedSecret>> dbEncryptedSecretsNew =
+        this.getValidatedDbEncryptedSecretByType(
+            deviceIdentification, secretTypes, SecretStatus.NEW);
+    final Map<SecretType, Optional<DbEncryptedSecret>> dbEncryptedSecretsActive =
+        this.getValidatedDbEncryptedSecretByType(
+            deviceIdentification, secretTypes, SecretStatus.ACTIVE);
+
     secretTypes.stream()
-        .map(t -> this.getUpdatedSecretsForActivation(deviceIdentification, t))
+        .map(
+            t ->
+                this.getUpdatedSecretsForActivation(
+                    dbEncryptedSecretsNew.get(t), dbEncryptedSecretsActive.get(t), t))
         .flatMap(Collection::stream)
         .collect(collectingAndThen(toList(), this.secretRepository::saveAll));
   }
 
   private List<DbEncryptedSecret> getUpdatedSecretsForActivation(
-      final String deviceIdentification, final SecretType secretType) {
+      final Optional<DbEncryptedSecret> newSecretOptional,
+      final Optional<DbEncryptedSecret> activeSecretOptional,
+      final SecretType secretType) {
     final List<DbEncryptedSecret> updatedSecrets = new ArrayList<>();
 
-    final Optional<DbEncryptedSecret> newSecretOptional =
-        this.getSingleDbEncryptedSecret(deviceIdentification, secretType, SecretStatus.NEW);
     if (newSecretOptional.isPresent()) {
-      final Optional<DbEncryptedSecret> activeSecretOptional =
-          this.getSingleDbEncryptedSecret(deviceIdentification, secretType, SecretStatus.ACTIVE);
       if (activeSecretOptional.isPresent()) {
         final DbEncryptedSecret currentSecret = activeSecretOptional.get();
         currentSecret.setSecretStatus(SecretStatus.EXPIRED);
@@ -339,9 +397,7 @@ public class SecretManagementService {
   public List<TypedSecret> generateAndStoreSecrets(
       final String deviceIdentification, final List<SecretType> secretTypes) {
 
-    for (final SecretType secretType : secretTypes) {
-      this.withdrawExistingKeysWithStatusNew(deviceIdentification, secretType);
-    }
+    this.withdrawExistingKeysWithStatusNew(deviceIdentification, secretTypes);
     final List<EncryptedTypedSecret> encryptedTypedSecrets =
         secretTypes.stream().map(this::generateAes128BitsSecret).collect(Collectors.toList());
 
