@@ -29,7 +29,7 @@ public enum SecurityKeyType {
   /** M-Bus optical port key */
   G_METER_OPTICAL_PORT_KEY(SecretType.G_METER_OPTICAL_PORT_KEY),
   /** Password (e.g. used as DLMS Low Level Security secret) */
-  PASSWORD(SecretType.PPP_PASSWORD);
+  LLS_PASSWORD(SecretType.LLS_PASSWORD);
 
   private final SecretType secretType;
 

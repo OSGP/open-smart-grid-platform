@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_AUTHENTICATION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_ENCRYPTION;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.PASSWORD;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.LLS_PASSWORD;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -95,8 +95,8 @@ public class Lls1Connector extends SecureDlmsConnector {
         keyProvider.getKeys(
             messageMetadata,
             device.getDeviceIdentification(),
-            Arrays.asList(PASSWORD, E_METER_ENCRYPTION, E_METER_AUTHENTICATION));
-    final byte[] password = this.getKey(encryptedKeys, PASSWORD, device);
+            Arrays.asList(LLS_PASSWORD, E_METER_ENCRYPTION, E_METER_AUTHENTICATION));
+    final byte[] password = this.getKey(encryptedKeys, LLS_PASSWORD, device);
     final byte[] encryptionKey = this.getKey(encryptedKeys, E_METER_ENCRYPTION, device);
     final byte[] authenticationKey = this.getKey(encryptedKeys, E_METER_AUTHENTICATION, device);
 
@@ -126,7 +126,7 @@ public class Lls1Connector extends SecureDlmsConnector {
           FunctionalExceptionType.KEY_NOT_PRESENT, ComponentType.PROTOCOL_DLMS);
     }
 
-    if (keyType != PASSWORD && key.length * 8 != AES_GCM_128) {
+    if (keyType != LLS_PASSWORD && key.length * 8 != AES_GCM_128) {
       LOGGER.error(
           "The {} key has an invalid length for device {}",
           keyType,
