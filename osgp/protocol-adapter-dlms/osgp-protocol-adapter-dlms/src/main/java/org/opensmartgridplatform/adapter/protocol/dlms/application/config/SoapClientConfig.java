@@ -90,7 +90,9 @@ public class SoapClientConfig {
   }
 
   @Bean
-  public WebServiceTemplate webServiceTemplate() throws Exception {
+  public WebServiceTemplate webServiceTemplate()
+      throws UnrecoverableKeyException, CertificateException, IOException, NoSuchAlgorithmException,
+          KeyStoreException, KeyManagementException {
 
     final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
     webServiceTemplate.setMarshaller(this.soapClientJaxb2Marshaller());

@@ -10,7 +10,6 @@ package org.opensmartgridplatform.simulator.protocol.dlms.cosem;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.openmuc.jdlms.AttributeAccessMode;
 import org.openmuc.jdlms.CosemAttribute;
 import org.openmuc.jdlms.CosemClass;
@@ -68,9 +67,7 @@ public class GsmDiagnostic extends CosemInterfaceObject {
 
   private DataObject createAdjacentCellsDataObject(final List<AdjacentCellInfo> adjacentCellInfos) {
     return DataObject.newArrayData(
-        adjacentCellInfos.stream()
-            .map(AdjacentCellInfo::getDataObject)
-            .collect(Collectors.toList()));
+        adjacentCellInfos.stream().map(AdjacentCellInfo::getDataObject).toList());
   }
 
   public static class CellInfo {

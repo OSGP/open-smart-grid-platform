@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -192,7 +191,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
             .filter(
                 meterRead ->
                     this.validateDateTime(meterRead.getLogTime(), from.toDate(), to.toDate()))
-            .collect(Collectors.toList());
+            .toList();
 
     LOGGER.debug("Resulting periodicMeterReads: {} ", periodicMeterReads);
 
@@ -277,7 +276,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       final List<GetResult> getResultList,
       final List<AttributeAddress> attributeAddresses,
       final AttributeAddressForProfile attributeAddressForProfile,
-      final Integer channel) {
+      final Integer channel)
+      throws ProtocolAdapterException {
 
     final DlmsCaptureObject captureObject =
         attributeAddressForProfile.getCaptureObject(DlmsObjectType.MBUS_MASTER_VALUE);

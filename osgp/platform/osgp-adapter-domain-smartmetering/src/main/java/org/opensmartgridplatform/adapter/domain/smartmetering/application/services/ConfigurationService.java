@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
@@ -1332,7 +1331,7 @@ public class ConfigurationService {
     final List<SecretTypeDto> secretTypes =
         getKeysRequestData.getSecretTypes().stream()
             .map(secretType -> SecretTypeDto.valueOf(secretType.name()))
-            .collect(Collectors.toList());
+            .toList();
     final GetKeysRequestDto requestDto = new GetKeysRequestDto(secretTypes);
 
     this.osgpCoreRequestMessageSender.send(
@@ -1360,7 +1359,7 @@ public class ConfigurationService {
                 key ->
                     new GetKeysResponseData(
                         SecretType.valueOf(key.getSecretType().name()), key.getSecret()))
-            .collect(Collectors.toList());
+            .toList();
 
     final GetKeysResponse getKeysResponse = new GetKeysResponse(getKeysResponseData);
 
