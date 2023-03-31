@@ -51,7 +51,11 @@ class DlmsConnectionHelperTest {
     this.helper =
         new DlmsConnectionHelper(
             this.invocationCounterManager, this.connectionFactory, this.devicePingConfig, 0);
-    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
+    this.messageMetadata =
+        MessageMetadata.newBuilder()
+            .withCorrelationUid("123456")
+            .withIpAddress("192.168.92.56")
+            .build();
     this.task = dlmsConnectionManager -> {};
   }
 
@@ -71,9 +75,11 @@ class DlmsConnectionHelperTest {
   }
 
   @Test
-  void doesNotPingDeviceWithoutIpAddressBeforeCreatingConnectionIfPingingIsEnabled()
+  void setsIpAddressFromMessageMetaDataWhenDeviceDoesNotHaveIpAddressIfPingingIsEnabled()
       throws Exception {
     when(this.devicePingConfig.pingingEnabled()).thenReturn(true);
+    when(this.devicePingConfig.pinger()).thenReturn(this.pinger);
+
     final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).build();
     device.setIpAddress(null);
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
@@ -81,8 +87,7 @@ class DlmsConnectionHelperTest {
     this.helper.createAndHandleConnectionForDevice(
         this.messageMetadata, device, listener, this.task);
 
-    verifyNoInteractions(this.pinger);
-    verifyNoMoreInteractions(this.devicePingConfig);
+    verify(this.pinger).ping(this.messageMetadata.getIpAddress());
   }
 
   @Test
