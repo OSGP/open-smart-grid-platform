@@ -85,12 +85,14 @@ public class DomainHelperService {
   public void setIpAddressFromMessageMetadataOrSessionProvider(
       final DlmsDevice dlmsDevice, final MessageMetadata messageMetadata) throws OsgpException {
 
-    if (dlmsDevice.isIpAddressIsStatic()) {
-      dlmsDevice.setIpAddress(messageMetadata.getIpAddress());
-    } else {
-      final String ipAddressFromSessionProvider =
-          this.getDeviceIpAddressFromSessionProvider(dlmsDevice);
-      dlmsDevice.setIpAddress(ipAddressFromSessionProvider);
+    if (dlmsDevice.getIpAddress() == null) {
+      if (dlmsDevice.isIpAddressIsStatic()) {
+        dlmsDevice.setIpAddress(messageMetadata.getIpAddress());
+      } else {
+        final String ipAddressFromSessionProvider =
+            this.getDeviceIpAddressFromSessionProvider(dlmsDevice);
+        dlmsDevice.setIpAddress(ipAddressFromSessionProvider);
+      }
     }
   }
 
