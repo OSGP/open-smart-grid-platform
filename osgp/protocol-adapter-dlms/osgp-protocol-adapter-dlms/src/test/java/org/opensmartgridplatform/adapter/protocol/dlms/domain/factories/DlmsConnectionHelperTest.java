@@ -24,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -43,6 +44,7 @@ class DlmsConnectionHelperTest {
   @Mock private DlmsConnectionFactory connectionFactory;
 
   @Mock private DevicePingConfig devicePingConfig;
+  @Mock private DomainHelperService domainHelperService;
 
   @Mock private Pinger pinger;
 
@@ -50,7 +52,11 @@ class DlmsConnectionHelperTest {
   void setUp() {
     this.helper =
         new DlmsConnectionHelper(
-            this.invocationCounterManager, this.connectionFactory, this.devicePingConfig, 0);
+            this.invocationCounterManager,
+            this.connectionFactory,
+            this.devicePingConfig,
+            0,
+            this.domainHelperService);
     this.messageMetadata =
         MessageMetadata.newBuilder()
             .withCorrelationUid("123456")
@@ -78,7 +84,6 @@ class DlmsConnectionHelperTest {
   void setsIpAddressFromMessageMetaDataWhenDeviceDoesNotHaveIpAddressIfPingingIsEnabled()
       throws Exception {
     when(this.devicePingConfig.pingingEnabled()).thenReturn(true);
-    when(this.devicePingConfig.pinger()).thenReturn(this.pinger);
 
     final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).build();
     device.setIpAddress(null);
@@ -87,7 +92,8 @@ class DlmsConnectionHelperTest {
     this.helper.createAndHandleConnectionForDevice(
         this.messageMetadata, device, listener, this.task);
 
-    verify(this.pinger).ping(this.messageMetadata.getIpAddress());
+    verify(this.domainHelperService)
+        .setIpAddressFromMessageMetadataOrSessionProvider(device, this.messageMetadata);
   }
 
   @Test

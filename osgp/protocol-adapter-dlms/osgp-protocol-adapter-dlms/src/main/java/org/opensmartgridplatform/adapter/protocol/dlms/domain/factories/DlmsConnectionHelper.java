@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 import java.time.Duration;
 import java.util.function.Consumer;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.ConnectionProperties;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -40,12 +41,15 @@ public class DlmsConnectionHelper {
   private final DevicePingConfig devicePingConfig;
   private final Duration delayBetweenDlmsConnections;
 
+  private final DomainHelperService domainHelperService;
+
   @Autowired
   public DlmsConnectionHelper(
       final InvocationCounterManager invocationCounterManager,
       final DlmsConnectionFactory connectionFactory,
       final DevicePingConfig devicePingConfig,
-      @Value("${dlms.connections.delay.seconds:30}") final int secondsBetweenDlmsConnections) {
+      @Value("${dlms.connections.delay.seconds:30}") final int secondsBetweenDlmsConnections,
+      final DomainHelperService domainHelperService) {
 
     this.invocationCounterManager = invocationCounterManager;
     this.connectionFactory = connectionFactory;
@@ -54,6 +58,7 @@ public class DlmsConnectionHelper {
         secondsBetweenDlmsConnections < 1
             ? NO_DELAY
             : Duration.ofSeconds(secondsBetweenDlmsConnections);
+    this.domainHelperService = domainHelperService;
   }
 
   /**
@@ -85,7 +90,8 @@ public class DlmsConnectionHelper {
       throws OsgpException {
 
     if (device.getIpAddress() == null) {
-      device.setIpAddress(messageMetadata.getIpAddress());
+      this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider(
+          device, messageMetadata);
     }
     final boolean pingDevice =
         this.devicePingConfig.pingingEnabled() && StringUtils.hasText(device.getIpAddress());
