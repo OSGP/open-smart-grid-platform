@@ -89,10 +89,9 @@ public class DlmsConnectionHelper {
       final Consumer<DlmsConnectionManager> taskForConnectionManager)
       throws OsgpException {
 
-    if (device.getIpAddress() == null) {
-      this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider(
-          device, messageMetadata);
-    }
+    this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider(
+        device, messageMetadata);
+
     final boolean pingDevice =
         this.devicePingConfig.pingingEnabled() && StringUtils.hasText(device.getIpAddress());
     final boolean initializeInvocationCounter =
