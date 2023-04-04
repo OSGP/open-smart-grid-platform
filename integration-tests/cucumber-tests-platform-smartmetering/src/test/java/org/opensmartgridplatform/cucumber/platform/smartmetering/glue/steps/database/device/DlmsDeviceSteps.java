@@ -705,6 +705,12 @@ public class DlmsDeviceSteps {
         && "true".equals(inputSettings.get(PlatformSmartmeteringKeys.LLS1_ACTIVE))) {
       secretBuilders.add(
           this.getAppropriateSecretBuilder(PlatformSmartmeteringKeys.PASSWORD, inputSettings));
+      secretBuilders.add(this.getAppropriateSecretBuilder(KEY_DEVICE_ENCRYPTIONKEY, inputSettings));
+      secretBuilders.add(
+          this.getAppropriateSecretBuilder(
+              PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY, inputSettings));
+      secretBuilders.add(
+          this.getAppropriateSecretBuilder(KEY_DEVICE_AUTHENTICATIONKEY, inputSettings));
     } else if (this.isGasSmartMeter(deviceType)) {
       secretBuilders.add(this.getAppropriateSecretBuilder(MBUS_DEFAULT_KEY, inputSettings));
       /*

@@ -58,7 +58,7 @@ public class LogicalDeviceBuilder {
       final SecuritySuite securitySuite =
           SecuritySuite.builder()
               .setAuthenticationKey(auth)
-              .setPassword("12345678".getBytes(StandardCharsets.UTF_8))
+              .setPassword("11111111".getBytes(StandardCharsets.UTF_8))
               .setAuthenticationMechanism(AuthenticationMechanism.LOW)
               .setGlobalUnicastEncryptionKey(enc)
               .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
