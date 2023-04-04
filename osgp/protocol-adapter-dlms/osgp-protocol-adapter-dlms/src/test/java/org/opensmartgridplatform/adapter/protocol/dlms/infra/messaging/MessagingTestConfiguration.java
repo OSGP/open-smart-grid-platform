@@ -176,7 +176,8 @@ public class MessagingTestConfiguration extends AbstractConfig {
         this.invocationCounterManager(deviceRepository, dlmsLogItemRequestMessageSender),
         this.dlmsConnectionFactory(),
         devicePingConfig,
-        0);
+        0,
+        this.domainHelperService());
   }
 
   @Bean

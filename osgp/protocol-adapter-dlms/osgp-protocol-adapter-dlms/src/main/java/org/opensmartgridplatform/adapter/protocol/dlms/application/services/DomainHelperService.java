@@ -85,6 +85,10 @@ public class DomainHelperService {
   public void setIpAddressFromMessageMetadataOrSessionProvider(
       final DlmsDevice dlmsDevice, final MessageMetadata messageMetadata) throws OsgpException {
 
+    if (dlmsDevice.getIpAddress() != null) {
+      return;
+    }
+
     if (dlmsDevice.isIpAddressIsStatic()) {
       dlmsDevice.setIpAddress(messageMetadata.getIpAddress());
     } else {
