@@ -24,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -43,6 +44,7 @@ class DlmsConnectionHelperTest {
   @Mock private DlmsConnectionFactory connectionFactory;
 
   @Mock private DevicePingConfig devicePingConfig;
+  @Mock private DomainHelperService domainHelperService;
 
   @Mock private Pinger pinger;
 
@@ -50,8 +52,16 @@ class DlmsConnectionHelperTest {
   void setUp() {
     this.helper =
         new DlmsConnectionHelper(
-            this.invocationCounterManager, this.connectionFactory, this.devicePingConfig, 0);
-    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
+            this.invocationCounterManager,
+            this.connectionFactory,
+            this.devicePingConfig,
+            0,
+            this.domainHelperService);
+    this.messageMetadata =
+        MessageMetadata.newBuilder()
+            .withCorrelationUid("123456")
+            .withIpAddress("192.168.92.56")
+            .build();
     this.task = dlmsConnectionManager -> {};
   }
 
@@ -71,9 +81,10 @@ class DlmsConnectionHelperTest {
   }
 
   @Test
-  void doesNotPingDeviceWithoutIpAddressBeforeCreatingConnectionIfPingingIsEnabled()
+  void setsIpAddressFromMessageMetaDataWhenDeviceDoesNotHaveIpAddressIfPingingIsEnabled()
       throws Exception {
     when(this.devicePingConfig.pingingEnabled()).thenReturn(true);
+
     final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).build();
     device.setIpAddress(null);
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
@@ -81,8 +92,8 @@ class DlmsConnectionHelperTest {
     this.helper.createAndHandleConnectionForDevice(
         this.messageMetadata, device, listener, this.task);
 
-    verifyNoInteractions(this.pinger);
-    verifyNoMoreInteractions(this.devicePingConfig);
+    verify(this.domainHelperService)
+        .setIpAddressFromMessageMetadataOrSessionProvider(device, this.messageMetadata);
   }
 
   @Test

@@ -169,4 +169,18 @@ class DomainHelperServiceTest {
 
     assertThat(dlmsDevice.getIpAddress()).isEqualTo(ipAddress);
   }
+
+  @Test
+  void doesNotSetIpAddressWhenItIsAlreadySetInDlmsDevice() throws Exception {
+    final String ipAddressInMessageMetaData = "2.2.2.2";
+    final DlmsDevice dlmsDevice =
+        new DlmsDeviceBuilder().withIpAddress(IP_ADDRESS).withIpAddressStatic(true).build();
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newBuilder().withIpAddress(ipAddressInMessageMetaData).build();
+
+    this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider(
+        dlmsDevice, messageMetadata);
+
+    assertThat(dlmsDevice.getIpAddress()).isEqualTo(IP_ADDRESS);
+  }
 }
