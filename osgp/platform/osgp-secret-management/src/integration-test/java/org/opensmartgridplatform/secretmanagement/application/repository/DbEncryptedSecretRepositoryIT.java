@@ -10,6 +10,7 @@ package org.opensmartgridplatform.secretmanagement.application.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import org.apache.tomcat.util.buf.HexUtils;
@@ -70,7 +71,7 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
     final List<DbEncryptedSecret> secretsList =
         this.repository.findSecrets(
             this.dbEncryptedSecret.getDeviceIdentification(),
-            List.of(this.dbEncryptedSecret.getSecretType()),
+            Collections.singletonList(this.dbEncryptedSecret.getSecretType()),
             SecretStatus.ACTIVE);
     assertThat(secretsList).hasSize(1);
     assertThat(secretsList.iterator().next().getId()).isEqualTo(this.dbEncryptedSecret.getId());
@@ -93,7 +94,7 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
     final List<DbEncryptedSecret> secretsList =
         this.repository.findSecrets(
             this.dbEncryptedSecret.getDeviceIdentification(),
-            List.of(this.dbEncryptedSecret.getSecretType()),
+            Collections.singletonList(this.dbEncryptedSecret.getSecretType()),
             SecretStatus.ACTIVE);
     assertThat(secretsList).hasSize(1);
     final DbEncryptedSecret secret = secretsList.get(0);

@@ -51,7 +51,7 @@ public class EncryptionKeyReferenceCacheService {
         .filter(keyReference -> this.isValid(keyReference, date))
         .sorted(
             Comparator.comparing(DbEncryptionKeyReference::getValidFrom, Comparator.reverseOrder()))
-        .toList();
+        .collect(Collectors.toList());
   }
 
   private boolean isValid(final DbEncryptionKeyReference encryptionKeyReference, final Date date) {

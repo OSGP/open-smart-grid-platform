@@ -19,6 +19,7 @@ import static org.opensmartgridplatform.secretmanagement.application.domain.Secr
 import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_MASTER_KEY;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -85,7 +86,7 @@ public class SecretManagementServiceTest {
     final byte[] rsaSecret = "1000000000terces".getBytes();
 
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, List.of(E_METER_MASTER_KEY), SecretStatus.ACTIVE))
+            SOME_DEVICE, Collections.singletonList(E_METER_MASTER_KEY), SecretStatus.ACTIVE))
         .thenReturn(secretList);
     when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(decryptedSecret);
     when(this.encrypterForSecretManagementClient.encrypt(any())).thenReturn(rsaSecret);
@@ -112,7 +113,7 @@ public class SecretManagementServiceTest {
     final List<DbEncryptedSecret> secretPage = Arrays.asList(secret);
 
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, List.of(E_METER_MASTER_KEY), SecretStatus.ACTIVE))
+            SOME_DEVICE, Collections.singletonList(E_METER_MASTER_KEY), SecretStatus.ACTIVE))
         .thenReturn(secretPage);
     when(this.encryptionDelegate.decrypt(any(), any()))
         .thenThrow(new EncrypterException("Decryption error"));
@@ -129,7 +130,7 @@ public class SecretManagementServiceTest {
     final DbEncryptedSecret secret = new DbEncryptedSecret();
     final List<DbEncryptedSecret> secretList = Arrays.asList(secret);
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, List.of(E_METER_MASTER_KEY), SecretStatus.ACTIVE))
+            SOME_DEVICE, Collections.singletonList(E_METER_MASTER_KEY), SecretStatus.ACTIVE))
         .thenReturn(secretList);
     assertThatIllegalStateException()
         .isThrownBy(
@@ -213,7 +214,7 @@ public class SecretManagementServiceTest {
     when(this.encryptionKeyReferenceCacheService.getKeyByReference(ENCRYPTION_PROVIDER_TYPE, "1"))
         .thenReturn(keyReference);
     when(this.secretRepository.withdrawSecretsWithStatusNew(
-            SOME_DEVICE, List.of(SecretType.E_METER_ENCRYPTION_KEY_UNICAST)))
+            SOME_DEVICE, Collections.singletonList(SecretType.E_METER_ENCRYPTION_KEY_UNICAST)))
         .thenAnswer(
             (Answer<Integer>)
                 invocationOnMock -> {
@@ -347,7 +348,7 @@ public class SecretManagementServiceTest {
     newSecret.setSecretStatus(SecretStatus.NEW);
 
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, List.of(E_METER_MASTER_KEY), SecretStatus.NEW))
+            SOME_DEVICE, Collections.singletonList(E_METER_MASTER_KEY), SecretStatus.NEW))
         .thenReturn(Arrays.asList(newSecret));
     when(this.secretRepository.saveAll(Arrays.asList(newSecret)))
         .thenReturn(Arrays.asList(newSecret));
@@ -379,10 +380,10 @@ public class SecretManagementServiceTest {
     activeSecret.setSecretType(E_METER_MASTER_KEY);
 
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, List.of(E_METER_MASTER_KEY), SecretStatus.ACTIVE))
+            SOME_DEVICE, Collections.singletonList(E_METER_MASTER_KEY), SecretStatus.ACTIVE))
         .thenReturn(Arrays.asList(activeSecret));
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, List.of(E_METER_MASTER_KEY), SecretStatus.NEW))
+            SOME_DEVICE, Collections.singletonList(E_METER_MASTER_KEY), SecretStatus.NEW))
         .thenReturn(Arrays.asList(newSecret));
     when(this.secretRepository.saveAll(any())).thenReturn(Arrays.asList(newSecret, activeSecret));
     this.service.activateNewSecrets(SOME_DEVICE, Arrays.asList(E_METER_MASTER_KEY));
@@ -478,7 +479,7 @@ public class SecretManagementServiceTest {
     when(this.encryptionDelegate.generateAes128BitsSecret(ENCRYPTION_PROVIDER_TYPE, reference))
         .thenReturn(aesSecret);
     when(this.secretRepository.withdrawSecretsWithStatusNew(
-            SOME_DEVICE, List.of(SecretType.E_METER_ENCRYPTION_KEY_UNICAST)))
+            SOME_DEVICE, Collections.singletonList(SecretType.E_METER_ENCRYPTION_KEY_UNICAST)))
         .thenAnswer(
             (Answer<Integer>)
                 invocationOnMock -> {
@@ -494,7 +495,7 @@ public class SecretManagementServiceTest {
 
     final int updatedSecrets =
         this.secretRepository.withdrawSecretsWithStatusNew(
-            SOME_DEVICE, List.of(SecretType.E_METER_ENCRYPTION_KEY_UNICAST));
+            SOME_DEVICE, Collections.singletonList(SecretType.E_METER_ENCRYPTION_KEY_UNICAST));
     assertThat(updatedSecrets).isEqualTo(1);
 
     assertThat(dbEncryptedSecret.getCreationTime()).isEqualTo(originalCreationTime);
@@ -530,7 +531,7 @@ public class SecretManagementServiceTest {
     when(this.encryptionDelegate.generateAes128BitsSecret(ENCRYPTION_PROVIDER_TYPE, reference))
         .thenReturn(aesSecret);
     when(this.secretRepository.withdrawSecretsWithStatusNew(
-            SOME_DEVICE, List.of(encryptionSecretType, authenticationSecretType)))
+            SOME_DEVICE, Arrays.asList(encryptionSecretType, authenticationSecretType)))
         .thenAnswer(
             (Answer<Integer>)
                 invocationOnMock -> {

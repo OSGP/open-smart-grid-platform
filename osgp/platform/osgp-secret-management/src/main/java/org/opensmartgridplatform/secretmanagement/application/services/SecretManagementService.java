@@ -11,7 +11,6 @@ package org.opensmartgridplatform.secretmanagement.application.services;
 import static java.util.Collections.reverseOrder;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -242,7 +241,7 @@ public class SecretManagementService {
         .map(
             secretType ->
                 this.mapAsEncryptedTypedSecret(secretType, dbEncryptedSecretByType.get(secretType)))
-        .toList();
+        .collect(Collectors.toList());
   }
 
   private EncryptedTypedSecret mapAsEncryptedTypedSecret(
@@ -319,14 +318,14 @@ public class SecretManagementService {
       final String deviceIdentification, final List<TypedSecret> typedSecrets) {
 
     final List<SecretType> secretTypeList =
-        typedSecrets.stream().map(TypedSecret::getSecretType).toList();
+        typedSecrets.stream().map(TypedSecret::getSecretType).collect(Collectors.toList());
     this.withdrawExistingKeysWithStatusNew(deviceIdentification, secretTypeList);
 
     final List<EncryptedTypedSecret> aesSecrets =
         typedSecrets.stream()
             .map(ts -> new EncryptedTypedSecret(ts.getSecret(), ts.getSecretType()))
             .map(this::reencryptRsa2Aes)
-            .collect(toList());
+            .collect(Collectors.toList());
     this.storeAesSecrets(deviceIdentification, aesSecrets);
   }
 
@@ -347,7 +346,7 @@ public class SecretManagementService {
             ets ->
                 this.createDbEncrypted(
                     deviceIdentification, ets, this.getKeyByReference(ets.encryptionKeyReference)))
-        .collect(collectingAndThen(toList(), this.secretRepository::saveAll));
+        .collect(collectingAndThen(Collectors.toList(), this.secretRepository::saveAll));
   }
 
   public boolean hasNewSecret(final String deviceIdentification, final SecretType secretType) {
@@ -370,7 +369,7 @@ public class SecretManagementService {
                 this.getUpdatedSecretsForActivation(
                     dbEncryptedSecretsNew.get(t), dbEncryptedSecretsActive.get(t), t))
         .flatMap(Collection::stream)
-        .collect(collectingAndThen(toList(), this.secretRepository::saveAll));
+        .collect(collectingAndThen(Collectors.toList(), this.secretRepository::saveAll));
   }
 
   private List<DbEncryptedSecret> getUpdatedSecretsForActivation(

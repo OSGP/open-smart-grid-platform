@@ -14,7 +14,8 @@ import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.shared.security.EncryptionProviderType.HSM;
 import static org.opensmartgridplatform.shared.security.EncryptionProviderType.JRE;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +39,7 @@ class EncryptionKeyReferenceCacheServiceTest {
   @Test
   void getKeyByReference() {
     when(this.keyRepository.findAll())
-        .thenReturn(List.of(this.hsm1, this.hsm2, this.jre1, this.jre2));
+        .thenReturn(Arrays.asList(this.hsm1, this.hsm2, this.jre1, this.jre2));
 
     final DbEncryptionKeyReference dbEncryptionKeyReference =
         this.service.getKeyByReference(HSM, "HSM1");
@@ -48,7 +49,7 @@ class EncryptionKeyReferenceCacheServiceTest {
   @Test
   void getKeyByReferenceNotExist() {
     when(this.keyRepository.findAll())
-        .thenReturn(List.of(this.hsm1, this.hsm2, this.jre1, this.jre2));
+        .thenReturn(Arrays.asList(this.hsm1, this.hsm2, this.jre1, this.jre2));
 
     final DbEncryptionKeyReference dbEncryptionKeyReference =
         this.service.getKeyByReference(HSM, "XXXXX");
@@ -58,37 +59,37 @@ class EncryptionKeyReferenceCacheServiceTest {
   @Test
   void findAllByTypeAndValid() {
     when(this.keyRepository.findAll())
-        .thenReturn(List.of(this.hsm1, this.hsm2, this.jre1, this.jre2));
+        .thenReturn(Arrays.asList(this.hsm1, this.hsm2, this.jre1, this.jre2));
 
     assertThat(
             this.service.findAllByTypeAndValid(
                 HSM, new DateTime(this.hsm1.getValidFrom()).minusMillis(1).toDate()))
-        .isEqualTo(List.of());
+        .isEqualTo(Collections.emptyList());
     assertThat(this.service.findAllByTypeAndValid(HSM, this.hsm1.getValidFrom()))
-        .isEqualTo(List.of(this.hsm1));
+        .isEqualTo(Collections.singletonList(this.hsm1));
     assertThat(this.service.findAllByTypeAndValid(HSM, this.hsm1.getValidTo()))
-        .isEqualTo(List.of(this.hsm2));
+        .isEqualTo(Collections.singletonList(this.hsm2));
     assertThat(this.service.findAllByTypeAndValid(HSM, this.hsm2.getValidFrom()))
-        .isEqualTo(List.of(this.hsm2));
+        .isEqualTo(Collections.singletonList(this.hsm2));
     assertThat(
             this.service.findAllByTypeAndValid(
                 HSM, new DateTime(this.hsm2.getValidTo()).plusSeconds(1).toDate()))
-        .isEqualTo(List.of());
+        .isEqualTo(Collections.emptyList());
 
     assertThat(
             this.service.findAllByTypeAndValid(
                 JRE, new DateTime(this.jre1.getValidFrom()).minusSeconds(1).toDate()))
-        .isEqualTo(List.of());
+        .isEqualTo(Collections.emptyList());
     assertThat(this.service.findAllByTypeAndValid(JRE, this.jre1.getValidFrom()))
-        .isEqualTo(List.of(this.jre1));
+        .isEqualTo(Collections.singletonList(this.jre1));
     assertThat(this.service.findAllByTypeAndValid(JRE, this.jre1.getValidTo()))
-        .isEqualTo(List.of(this.jre2));
+        .isEqualTo(Collections.singletonList(this.jre2));
     assertThat(this.service.findAllByTypeAndValid(JRE, this.jre2.getValidFrom()))
-        .isEqualTo(List.of(this.jre2));
+        .isEqualTo(Collections.singletonList(this.jre2));
     assertThat(
             this.service.findAllByTypeAndValid(
                 JRE, new DateTime(this.jre2.getValidFrom()).plusDays(100).toDate()))
-        .isEqualTo(List.of(this.jre2));
+        .isEqualTo(Collections.singletonList(this.jre2));
   }
 
   private DbEncryptionKeyReference newDbEncryptionKeyReference(
