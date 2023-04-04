@@ -111,8 +111,7 @@ public class DlmsServerConfig implements ApplicationContextAware {
         builder.setClientId(DLMS_PUBLIC_CLIENT_ID);
         break;
       case LLS1:
-        builder.setClientId(DLMS_DATA_COLLECTION_CLIENT);
-        break;
+        // LLS1 needs same keys as HLS5
       case HLS5:
         builder
             .setClientId(DLMS_MANAGEMENT_CLIENT)
