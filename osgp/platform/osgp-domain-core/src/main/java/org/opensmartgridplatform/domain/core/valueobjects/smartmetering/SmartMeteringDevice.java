@@ -36,6 +36,10 @@ public class SmartMeteringDevice implements Serializable {
   private byte[] globalEncryptionUnicastKey;
 
   private byte[] authenticationKey;
+  private byte[] globalEncryptionBroadcastKey;
+  private byte[] mbusUserKey;
+  private byte[] mbusFirmwareUpdateAuthenticationKey;
+  private byte[] mbusP0Key;
 
   private String supplier;
 

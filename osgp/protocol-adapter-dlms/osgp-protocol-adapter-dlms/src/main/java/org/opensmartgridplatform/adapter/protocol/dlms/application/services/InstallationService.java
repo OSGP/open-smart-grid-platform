@@ -11,8 +11,12 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_AUTHENTICATION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_ENCRYPTION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_MASTER;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_ENCRYPTION;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_MASTER;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_OPTICAL_PORT_KEY;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
@@ -110,6 +114,12 @@ public class InstallationService {
         this.getKeyFromDeviceDto(deviceDto, E_METER_ENCRYPTION);
 
     if (this.isKeyPresent(deviceGmeterMasterKey)) {
+      final byte[] deviceGmeterEncryption = this.getKeyFromDeviceDto(deviceDto, G_METER_ENCRYPTION);
+      final byte[] deviceGmeterFirmwareUpdateAuthenticationKey =
+          this.getKeyFromDeviceDto(deviceDto, G_METER_FIRMWARE_UPDATE_AUTHENTICATION);
+      final byte[] deviceGmeterP0Key =
+          this.getKeyFromDeviceDto(deviceDto, G_METER_OPTICAL_PORT_KEY);
+
       if (this.isKeyPresent(deviceEmeterMasterKey)
           || this.isKeyPresent(deviceEmeterAuthenticationKey)
           || this.isKeyPresent(deviceEmeterEncryptionKey)) {
@@ -122,7 +132,19 @@ public class InstallationService {
             ComponentType.PROTOCOL_DLMS,
             new IllegalArgumentException(msg));
       }
-      return Arrays.asList(G_METER_MASTER);
+      final List<SecurityKeyType> securityKeyTypes = new ArrayList<>();
+      securityKeyTypes.add(G_METER_MASTER);
+      if (this.isKeyPresent(deviceGmeterEncryption)) {
+        securityKeyTypes.add(G_METER_ENCRYPTION);
+      }
+      if (this.isKeyPresent(deviceGmeterFirmwareUpdateAuthenticationKey)) {
+        securityKeyTypes.add(G_METER_FIRMWARE_UPDATE_AUTHENTICATION);
+      }
+      if (this.isKeyPresent(deviceGmeterP0Key)) {
+        securityKeyTypes.add(G_METER_OPTICAL_PORT_KEY);
+      }
+
+      return securityKeyTypes;
     } else {
       return Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
     }
@@ -143,6 +165,13 @@ public class InstallationService {
         return deviceDto.getGlobalEncryptionUnicastKey();
       case G_METER_MASTER:
         return deviceDto.getMbusDefaultKey();
+      case G_METER_ENCRYPTION:
+        return deviceDto.getMbusUserKey();
+      case G_METER_FIRMWARE_UPDATE_AUTHENTICATION:
+        return deviceDto.getMbusFirmwareUpdateAuthenticationKey();
+      case G_METER_OPTICAL_PORT_KEY:
+        return deviceDto.getMbusP0Key();
+
       default:
         throw new IllegalArgumentException("Unknown type " + keyType);
     }
