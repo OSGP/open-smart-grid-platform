@@ -4,44 +4,52 @@ Feature: SmartMetering Bundle - GetActualMeterReads
   I want to be able to get actual meter reads from a meter via a bundle request
 
   @DSMR22
-  Scenario Outline : Get actual meter reads of a device (<protocol> <protocolversion>) in a bundle request
+  Scenario Outline: Get actual meter reads of a device (<protocol> <protocolversion>) in a bundle request
     Given a dlms device
       | DeviceIdentification | <deviceIdentification> |
       | DeviceType           | SMART_METER_E          |
       | Protocol             | <protocol>             |
       | ProtocolVersion      | <protocolversion>      |
+      | Lls1active           | <lls1active>           |
+      | Hls5active           | <hls5active>           |
     And a bundle request
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | <deviceIdentification> |
     And the bundle request contains a get actual meter reads action
     When the bundle request is received
     Then the bundle response should contain a get actual meter reads response
 
     Examples:
-      | deviceIdentification | protocol | protocolversion |
-      | TEST1024000000001    | DSMR     | 4.2.2           |
-      | KTEST10220000001     | DSMR     | 2.2             |
-      | ZTEST10220000001     | DSMR     | 2.2             |
+      | deviceIdentification | protocol | protocolversion | lls1active | hls5active |
+      | TEST1024000000001    | DSMR     | 4.2.2           | false      | true       |
+      | KTEST10220000001     | DSMR     | 2.2             | true       | false      |
+      | ZTEST10220000001     | DSMR     | 2.2             | true       | false      |
 
   @DSMR22
   Scenario Outline: Get actual meter reads gas of a device (<protocol> <protocolversion>) in a bundle request
     Given a dlms device
-      | DeviceIdentification        | <deviceIdentification> |
-      | DeviceType                  | SMART_METER_G          |
-      | GatewayDeviceIdentification | TEST1024000000001      |
-      | Protocol                    | <protocol>             |
-      | ProtocolVersion             | <protocolversion>      |
-      | Channel                     |                      1 |
+      | DeviceIdentification | <deviceIdentificationGateway> |
+      | DeviceType           | SMART_METER_E                 |
+      | Protocol             | <protocol>                    |
+      | ProtocolVersion      | <protocolversion>             |
+      | Lls1active           | <lls1active>                  |
+      | Hls5active           | <hls5active>                  |
+    And a dlms device
+      | DeviceIdentification        | <deviceIdentification>        |
+      | DeviceType                  | SMART_METER_G                 |
+      | GatewayDeviceIdentification | <deviceIdentificationGateway> |
+      | Channel                     | 1                             |
     And a bundle request
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | <deviceIdentificationGateway> |
     And the bundle request contains a get actual meter reads gas action
-      | DeviceIdentification | TESTG102400000001 |
+      | DeviceIdentification | <deviceIdentification> |
     When the bundle request is received
     Then the bundle response should contain a get actual meter reads gas response
 
     Examples:
-      | deviceIdentification | protocol | protocolversion |
-      | TESTG102400000001    | DSMR     | 4.2.2           |
-      | 2TEST102400000001    | DSMR     | 2.2             |
+      | deviceIdentificationGateway | deviceIdentification | protocol | protocolversion | lls1active | hls5active |
+      | TEST1024000000001           | TESTG102400000001    | DSMR     | 4.2.2           | false      | true       |
+      # identification for device
+      | TEST102200000001            | 2TEST102200000001    | DSMR     | 2.2             | true       | false      |
 
   Scenario: Get actual meter reads of E and G of a device in a bundle request
     Given a dlms device
