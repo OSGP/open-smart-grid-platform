@@ -48,7 +48,7 @@ Feature: SmartMetering Bundle - GetActualMeterReads
     Examples:
       | deviceIdentificationGateway | deviceIdentification | protocol | protocolversion | lls1active | hls5active |
       | TEST1024000000001           | TESTG102400000001    | DSMR     | 4.2.2           | false      | true       |
-      # identification for device
+      # identification for device with protocol DSMR 2.2 has only 16 positions or start with a number
       | TEST102200000001            | 2TEST102200000001    | DSMR     | 2.2             | true       | false      |
 
   Scenario: Get actual meter reads of E and G of a device in a bundle request
