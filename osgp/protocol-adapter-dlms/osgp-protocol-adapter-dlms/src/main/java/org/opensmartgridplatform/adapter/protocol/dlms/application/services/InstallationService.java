@@ -17,6 +17,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_OPTICAL_PORT_KEY;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -121,7 +122,7 @@ public class InstallationService {
       }
       return gMeterKeyTypes;
     } else {
-      return eMeterKeyTypes;
+      return Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
     }
   }
 
