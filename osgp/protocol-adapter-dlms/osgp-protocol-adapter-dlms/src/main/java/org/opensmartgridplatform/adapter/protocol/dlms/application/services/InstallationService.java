@@ -17,7 +17,6 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_OPTICAL_PORT_KEY;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -106,23 +105,11 @@ public class InstallationService {
 
   private List<SecurityKeyType> determineKeyTypesToStore(final SmartMeteringDeviceDto deviceDto)
       throws FunctionalException {
-    final byte[] deviceGmeterMasterKey = this.getKeyFromDeviceDto(deviceDto, G_METER_MASTER);
-    final byte[] deviceEmeterMasterKey = this.getKeyFromDeviceDto(deviceDto, E_METER_MASTER);
-    final byte[] deviceEmeterAuthenticationKey =
-        this.getKeyFromDeviceDto(deviceDto, E_METER_AUTHENTICATION);
-    final byte[] deviceEmeterEncryptionKey =
-        this.getKeyFromDeviceDto(deviceDto, E_METER_ENCRYPTION);
+    final List<SecurityKeyType> eMeterKeyTypes = this.getEMeterKeyTypes(deviceDto);
+    final List<SecurityKeyType> gMeterKeyTypes = this.getGMeterKeyTypes(deviceDto);
 
-    if (this.isKeyPresent(deviceGmeterMasterKey)) {
-      final byte[] deviceGmeterEncryption = this.getKeyFromDeviceDto(deviceDto, G_METER_ENCRYPTION);
-      final byte[] deviceGmeterFirmwareUpdateAuthenticationKey =
-          this.getKeyFromDeviceDto(deviceDto, G_METER_FIRMWARE_UPDATE_AUTHENTICATION);
-      final byte[] deviceGmeterP0Key =
-          this.getKeyFromDeviceDto(deviceDto, G_METER_OPTICAL_PORT_KEY);
-
-      if (this.isKeyPresent(deviceEmeterMasterKey)
-          || this.isKeyPresent(deviceEmeterAuthenticationKey)
-          || this.isKeyPresent(deviceEmeterEncryptionKey)) {
+    if (gMeterKeyTypes.contains(G_METER_MASTER)) {
+      if (!eMeterKeyTypes.isEmpty()) {
         final String msg =
             "Device "
                 + deviceDto.getDeviceIdentification()
@@ -132,22 +119,53 @@ public class InstallationService {
             ComponentType.PROTOCOL_DLMS,
             new IllegalArgumentException(msg));
       }
-      final List<SecurityKeyType> securityKeyTypes = new ArrayList<>();
-      securityKeyTypes.add(G_METER_MASTER);
-      if (this.isKeyPresent(deviceGmeterEncryption)) {
-        securityKeyTypes.add(G_METER_ENCRYPTION);
-      }
-      if (this.isKeyPresent(deviceGmeterFirmwareUpdateAuthenticationKey)) {
-        securityKeyTypes.add(G_METER_FIRMWARE_UPDATE_AUTHENTICATION);
-      }
-      if (this.isKeyPresent(deviceGmeterP0Key)) {
-        securityKeyTypes.add(G_METER_OPTICAL_PORT_KEY);
-      }
-
-      return securityKeyTypes;
+      return gMeterKeyTypes;
     } else {
-      return Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
+      return eMeterKeyTypes;
     }
+  }
+
+  private List<SecurityKeyType> getEMeterKeyTypes(final SmartMeteringDeviceDto deviceDto) {
+    final byte[] deviceEmeterMasterKey = this.getKeyFromDeviceDto(deviceDto, E_METER_MASTER);
+    final byte[] deviceEmeterAuthenticationKey =
+        this.getKeyFromDeviceDto(deviceDto, E_METER_AUTHENTICATION);
+    final byte[] deviceEmeterEncryptionKey =
+        this.getKeyFromDeviceDto(deviceDto, E_METER_ENCRYPTION);
+
+    final List<SecurityKeyType> securityEmeterKeyTypes = new ArrayList<>();
+    if (this.isKeyPresent(deviceEmeterMasterKey)) {
+      securityEmeterKeyTypes.add(E_METER_MASTER);
+    }
+    if (this.isKeyPresent(deviceEmeterAuthenticationKey)) {
+      securityEmeterKeyTypes.add(E_METER_AUTHENTICATION);
+    }
+    if (this.isKeyPresent(deviceEmeterEncryptionKey)) {
+      securityEmeterKeyTypes.add(E_METER_ENCRYPTION);
+    }
+    return securityEmeterKeyTypes;
+  }
+
+  private List<SecurityKeyType> getGMeterKeyTypes(final SmartMeteringDeviceDto deviceDto) {
+    final byte[] deviceGmeterMasterKey = this.getKeyFromDeviceDto(deviceDto, G_METER_MASTER);
+    final byte[] deviceGmeterEncryption = this.getKeyFromDeviceDto(deviceDto, G_METER_ENCRYPTION);
+    final byte[] deviceGmeterFirmwareUpdateAuthenticationKey =
+        this.getKeyFromDeviceDto(deviceDto, G_METER_FIRMWARE_UPDATE_AUTHENTICATION);
+    final byte[] deviceGmeterP0Key = this.getKeyFromDeviceDto(deviceDto, G_METER_OPTICAL_PORT_KEY);
+
+    final List<SecurityKeyType> securityGmeterKeyTypes = new ArrayList<>();
+    if (this.isKeyPresent(deviceGmeterMasterKey)) {
+      securityGmeterKeyTypes.add(G_METER_MASTER);
+    }
+    if (this.isKeyPresent(deviceGmeterEncryption)) {
+      securityGmeterKeyTypes.add(G_METER_ENCRYPTION);
+    }
+    if (this.isKeyPresent(deviceGmeterFirmwareUpdateAuthenticationKey)) {
+      securityGmeterKeyTypes.add(G_METER_FIRMWARE_UPDATE_AUTHENTICATION);
+    }
+    if (this.isKeyPresent(deviceGmeterP0Key)) {
+      securityGmeterKeyTypes.add(G_METER_OPTICAL_PORT_KEY);
+    }
+    return securityGmeterKeyTypes;
   }
 
   private boolean isKeyPresent(final byte[] deviceKey) {
