@@ -103,6 +103,19 @@ public class DeviceFactory {
         RequestFactoryHelper.hexDecodeDeviceKey(
             getHexDecodeDeviceKey(settings, PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY),
             PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY));
+    device.setMbusUserKey(
+        RequestFactoryHelper.hexDecodeDeviceKey(
+            getHexDecodeDeviceKey(settings, PlatformSmartmeteringKeys.MBUS_USER_KEY),
+            PlatformSmartmeteringKeys.MBUS_USER_KEY));
+    device.setMbusFirmwareUpdateAuthenticationKey(
+        RequestFactoryHelper.hexDecodeDeviceKey(
+            getHexDecodeDeviceKey(
+                settings, PlatformSmartmeteringKeys.MBUS_FIRMWARE_UPDATE_AUTHENTICATION_KEY),
+            PlatformSmartmeteringKeys.MBUS_FIRMWARE_UPDATE_AUTHENTICATION_KEY));
+    device.setMbusP0Key(
+        RequestFactoryHelper.hexDecodeDeviceKey(
+            getHexDecodeDeviceKey(settings, PlatformSmartmeteringKeys.MBUS_P0_KEY),
+            PlatformSmartmeteringKeys.MBUS_P0_KEY));
 
     return device;
   }

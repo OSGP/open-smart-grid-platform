@@ -332,10 +332,6 @@
         type="xsd:hexBinary" minOccurs="0" />
       <xsd:element name="Authentication_key" type="xsd:hexBinary"
         minOccurs="0" />
-      <xsd:element name="Global_encryption_broadcast_key" type="xsd:hexBinary" minOccurs="0" />
-      <xsd:element name="Mbus_user_key" type="xsd:hexBinary" minOccurs="0" />
-      <xsd:element name="Mbus_firmware_update_authentication_key" type="xsd:hexBinary" minOccurs="0" />
-      <xsd:element name="Mbus_p0_key" type="xsd:hexBinary" minOccurs="0" />
 
       <xsd:element name="Delivery_date" type="xsd:dateTime" />
 
@@ -365,6 +361,9 @@
 
       <xsd:element name="Mbus_default_key" type="xsd:hexBinary"
         minOccurs="0" />
+      <xsd:element name="Mbus_user_key" type="xsd:hexBinary" minOccurs="0" />
+      <xsd:element name="Mbus_firmware_update_authentication_key" type="xsd:hexBinary" minOccurs="0" />
+      <xsd:element name="Mbus_p0_key" type="xsd:hexBinary" minOccurs="0" />
 
       <xsd:element name="Polyphase" type="xsd:boolean"
         minOccurs="0" />

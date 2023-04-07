@@ -120,7 +120,11 @@ public class InstallationService {
             ComponentType.PROTOCOL_DLMS,
             new IllegalArgumentException(msg));
       }
-      return gMeterKeyTypes;
+      return Arrays.asList(
+          G_METER_MASTER,
+          G_METER_ENCRYPTION,
+          G_METER_FIRMWARE_UPDATE_AUTHENTICATION,
+          G_METER_OPTICAL_PORT_KEY);
     } else {
       return Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
     }

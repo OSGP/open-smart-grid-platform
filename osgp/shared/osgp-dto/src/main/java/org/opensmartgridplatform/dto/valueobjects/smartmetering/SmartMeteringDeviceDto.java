@@ -36,10 +36,6 @@ public class SmartMeteringDeviceDto implements Serializable {
   private byte[] globalEncryptionUnicastKey;
 
   private byte[] authenticationKey;
-  private byte[] globalEncryptionBroadcastKey;
-  private byte[] mbusUserKey;
-  private byte[] mbusFirmwareUpdateAuthenticationKey;
-  private byte[] mbusP0Key;
 
   private String supplier;
 
@@ -60,6 +56,9 @@ public class SmartMeteringDeviceDto implements Serializable {
   private Short mbusDeviceTypeIdentification;
 
   private byte[] mbusDefaultKey;
+  private byte[] mbusUserKey;
+  private byte[] mbusFirmwareUpdateAuthenticationKey;
+  private byte[] mbusP0Key;
 
   private String timezone;
 
