@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -125,7 +124,9 @@ public class GetGsmDiagnosticCommandExecutor
     final List<GetResult> getResultList =
         this.dlmsHelper.getAndCheck(conn, device, "Get GsmDiagnostic", attributeAddresses);
 
-    LOGGER.debug("GetResultList: {}", describeGetResults(getResultList));
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("GetResultList: {}", describeGetResults(getResultList));
+    }
 
     if (!getResultList.stream()
         .allMatch(result -> result.getResultCode() == AccessResultCode.SUCCESS)) {
@@ -285,7 +286,7 @@ public class GetGsmDiagnosticCommandExecutor
                     SignalQualityDto.fromIndexValue(
                         (short) adjacentCell.get(ADJACENT_CELLS_SIGNAL_QUALITY_INDEX).getValue()));
               })
-          .collect(Collectors.toList());
+          .toList();
     }
   }
 

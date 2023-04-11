@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -198,7 +197,7 @@ public class GetActualPowerQualityCommandExecutor
       final List<CosemObject> pqObjects =
           objectsForProfile.stream()
               .filter(object -> this.objectHasCorrectMeterType(object, device))
-              .collect(Collectors.toList());
+              .toList();
 
       allPQObjects.addAll(pqObjects);
       return allPQObjects;
@@ -208,10 +207,7 @@ public class GetActualPowerQualityCommandExecutor
   }
 
   private List<AttributeAddress> getAttributeAddresses(final List<CosemObject> pqObjects) {
-    return pqObjects.stream()
-        .map(this::getAttributeAddress)
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+    return pqObjects.stream().map(this::getAttributeAddress).filter(Objects::nonNull).toList();
   }
 
   private AttributeAddress getAttributeAddress(final CosemObject object) {

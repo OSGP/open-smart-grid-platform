@@ -9,9 +9,9 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.openmuc.jdlms.AttributeAddress;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsRegister;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 public class AttributeAddressForProfile {
   private final AttributeAddress attributeAddress;
@@ -45,11 +45,17 @@ public class AttributeAddressForProfile {
     return null;
   }
 
-  public DlmsCaptureObject getCaptureObject(final DlmsObjectType dlmsObjectType) {
+  public DlmsCaptureObject getCaptureObject(final DlmsObjectType dlmsObjectType)
+      throws ProtocolAdapterException {
     return this.selectedObjects.stream()
         .filter(c -> c.getRelatedObject().getType() == dlmsObjectType)
-        .collect(Collectors.toList())
-        .get(0);
+        .findFirst()
+        .orElseThrow(
+            () ->
+                new ProtocolAdapterException(
+                    String.format(
+                        "No capture object found for dlms object type %s.",
+                        dlmsObjectType.toString())));
   }
 
   public List<DlmsRegister> getCaptureObjects(
@@ -62,6 +68,6 @@ public class AttributeAddressForProfile {
         .map(DlmsCaptureObject::getRelatedObject)
         .filter(dlmsObjectClass::isInstance)
         .map(DlmsRegister.class::cast)
-        .collect(Collectors.toList());
+        .toList();
   }
 }
