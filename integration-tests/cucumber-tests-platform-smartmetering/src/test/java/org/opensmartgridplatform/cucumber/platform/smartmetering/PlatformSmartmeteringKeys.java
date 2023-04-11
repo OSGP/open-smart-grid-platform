@@ -72,6 +72,9 @@ public class PlatformSmartmeteringKeys
   public static final String KEY_DEVICE_TIMEZONE = "Timezone";
   public static final String MBUS_DEFAULT_KEY = "MbusDefaultKey";
   public static final String MBUS_USER_KEY = "MbusUserKey";
+  public static final String MBUS_FIRMWARE_UPDATE_AUTHENTICATION_KEY =
+      "MbusFirmwareUpdateAuthenticationKey";
+  public static final String MBUS_P0_KEY = "MbusP0Key";
   public static final String PASSWORD = "Password";
 
   public static final String OBIS_CODE_A = "ObisCodeA";

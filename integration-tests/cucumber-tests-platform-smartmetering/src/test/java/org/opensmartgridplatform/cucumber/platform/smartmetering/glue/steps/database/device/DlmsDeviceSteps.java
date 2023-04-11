@@ -24,11 +24,16 @@ import static org.opensmartgridplatform.cucumber.platform.smartmetering.Platform
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_FIRMWARE_UPDATE_KEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_FIRMWARE_UPDATE_AUTHENTICATION_KEY;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_P0_KEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_USER_KEY;
 import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_AUTHENTICATION_KEY;
 import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_ENCRYPTION_KEY_UNICAST;
 import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_MASTER_KEY;
+import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.G_METER_ENCRYPTION_KEY;
+import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION_KEY;
 import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.G_METER_MASTER_KEY;
+import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.G_METER_OPTICAL_PORT_KEY;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -1159,6 +1164,15 @@ public class DlmsDeviceSteps {
         return E_METER_AUTHENTICATION_KEY;
       case KEY_DEVICE_ENCRYPTIONKEY:
         return E_METER_ENCRYPTION_KEY_UNICAST;
+      case MBUS_DEFAULT_KEY:
+        return G_METER_MASTER_KEY;
+      case MBUS_USER_KEY:
+        return G_METER_ENCRYPTION_KEY;
+      case MBUS_FIRMWARE_UPDATE_AUTHENTICATION_KEY:
+        return G_METER_FIRMWARE_UPDATE_AUTHENTICATION_KEY;
+      case MBUS_P0_KEY:
+        return G_METER_OPTICAL_PORT_KEY;
+
       default:
         throw new IllegalArgumentException("Unsupported keyTypeInputName: " + keyTypeInputName);
     }

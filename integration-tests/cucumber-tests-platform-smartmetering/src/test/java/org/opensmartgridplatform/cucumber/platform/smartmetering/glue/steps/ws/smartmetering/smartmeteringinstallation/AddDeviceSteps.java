@@ -59,6 +59,10 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
     this.putKeyInScenarioContext(settings, PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY);
     this.putKeyInScenarioContext(settings, PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY);
     this.putKeyInScenarioContext(settings, PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY);
+    this.putKeyInScenarioContext(settings, PlatformSmartmeteringKeys.MBUS_P0_KEY);
+    this.putKeyInScenarioContext(
+        settings, PlatformSmartmeteringKeys.MBUS_FIRMWARE_UPDATE_AUTHENTICATION_KEY);
+    this.putKeyInScenarioContext(settings, PlatformSmartmeteringKeys.MBUS_USER_KEY);
 
     final AddDeviceRequest request = AddDeviceRequestFactory.fromParameterMap(settings);
     final AddDeviceAsyncResponse asyncResponse =
