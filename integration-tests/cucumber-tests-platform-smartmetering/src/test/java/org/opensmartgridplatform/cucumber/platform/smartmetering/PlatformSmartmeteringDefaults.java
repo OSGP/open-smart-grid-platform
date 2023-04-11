@@ -68,10 +68,10 @@ public class PlatformSmartmeteringDefaults
 
   static {
     PORT_MAPPING.put(
-        1022L, new ProtocolInfo.Builder().withProtocol("DSMR").withProtocolVersion("2.2").build());
-    PORT_MAPPING.put(
         1024L,
         new ProtocolInfo.Builder().withProtocol("DSMR").withProtocolVersion("4.2.2").build());
+    PORT_MAPPING.put(
+        1026L, new ProtocolInfo.Builder().withProtocol("DSMR").withProtocolVersion("2.2").build());
     PORT_MAPPING.put(
         1027L, new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.0.0").build());
     PORT_MAPPING.put(
