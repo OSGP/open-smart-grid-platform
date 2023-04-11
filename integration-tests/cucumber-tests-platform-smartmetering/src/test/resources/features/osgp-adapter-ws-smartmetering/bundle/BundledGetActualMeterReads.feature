@@ -21,8 +21,8 @@ Feature: SmartMetering Bundle - GetActualMeterReads
     Examples:
       | deviceIdentification | protocol | protocolversion | lls1active | hls5active |
       | TEST1024000000001    | DSMR     | 4.2.2           | false      | true       |
-      | KTEST10220000001     | DSMR     | 2.2             | true       | false      |
-      | ZTEST10220000001     | DSMR     | 2.2             | true       | false      |
+      | KTEST10260000001     | DSMR     | 2.2             | true       | false      |
+      | ZTEST10260000001     | DSMR     | 2.2             | true       | false      |
 
   @DSMR22
   Scenario Outline: Get actual meter reads gas of a device (<protocol> <protocolversion>) in a bundle request
@@ -49,7 +49,7 @@ Feature: SmartMetering Bundle - GetActualMeterReads
       | deviceIdentificationGateway | deviceIdentification | protocol | protocolversion | lls1active | hls5active |
       | TEST1024000000001           | TESTG102400000001    | DSMR     | 4.2.2           | false      | true       |
       # identification for device with protocol DSMR 2.2 has only 16 positions (E-meter) or start with a number (G-meter)
-      | TEST102200000001            | 2TEST102200000001    | DSMR     | 2.2             | true       | false      |
+      | TEST102600000001            | 2TEST102600000001    | DSMR     | 2.2             | true       | false      |
 
   Scenario: Get actual meter reads of E and G of a device in a bundle request
     Given a dlms device

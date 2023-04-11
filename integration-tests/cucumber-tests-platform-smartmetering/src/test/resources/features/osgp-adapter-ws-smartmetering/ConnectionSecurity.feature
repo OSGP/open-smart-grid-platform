@@ -7,7 +7,7 @@ Feature: SmartMetering Connection security
   # Needs a DlmsDevice simulator with security level 1 on port 1026
   Scenario: Communicate with LLS1 without sn and hdlc with simulator supporting encrypted communication
     Given a dlms device
-      | DeviceIdentification | TEST1022000000001 |
+      | DeviceIdentification | TEST1026000000001 |
       | DeviceType           | SMART_METER_E     |
       | Hls3active           | false             |
       | Hls4active           | false             |
@@ -17,9 +17,9 @@ Feature: SmartMetering Connection security
       | Lls1active           | true              |
       | Port                 |              1026 |
     When the get actual meter reads request is received
-      | DeviceIdentification | TEST1022000000001 |
+      | DeviceIdentification | TEST1026000000001 |
     Then the actual meter reads result should be returned
-      | DeviceIdentification | TEST1022000000001 |
+      | DeviceIdentification | TEST1026000000001 |
 
   # Needs a DlmsDevice simulator with security level 0 on port 1025
   Scenario: Communicate with LLS0 with simulator supporting unencrypted communication
