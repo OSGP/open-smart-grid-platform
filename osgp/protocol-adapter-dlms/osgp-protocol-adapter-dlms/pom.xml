@@ -102,6 +102,12 @@
       <version>${openmuc.jdlms.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.beanit</groupId>
+      <artifactId>asn1bean</artifactId>
+      <version>${beanit.asn1bean.version}</version>
+    </dependency>
+
     <!-- OSGP -->
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
