@@ -111,7 +111,6 @@
     <netty.version>4.1.80.Final</netty.version>
     <openmuc.jdlms.version>1.7.2.2-SNAPSHOT</openmuc.jdlms.version>
     <openmuc.jdlms-annotation.version>1.7.2</openmuc.jdlms-annotation.version>
-    <beanit.asn1bean.version>1.13.0</beanit.asn1bean.version>
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
     <openmuc.j60870.version>1.4.0</openmuc.j60870.version>
     <javax.inject.version>1</javax.inject.version>
@@ -886,11 +885,6 @@
             <artifactId>bcprov-jdk15on</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.beanit</groupId>
-        <artifactId>asn1bean</artifactId>
-        <version>${beanit.asn1bean.version}</version>
       </dependency>
 
       <!-- Google Protocol Buffers -->
