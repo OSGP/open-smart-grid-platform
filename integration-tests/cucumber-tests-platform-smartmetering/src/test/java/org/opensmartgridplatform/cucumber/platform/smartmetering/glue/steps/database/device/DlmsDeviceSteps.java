@@ -14,7 +14,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_MASTER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_ENCRYPTION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_MASTER;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.PASSWORD;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.LLS_PASSWORD;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_E;
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_G;
@@ -138,8 +138,8 @@ public class DlmsDeviceSteps {
               .withSecurityKeyType(E_METER_MASTER)
               .withKey(SecurityKey.SECURITY_KEY_M.getDatabaseKey()),
           new SecretBuilder()
-              .withSecurityKeyType(PASSWORD)
-              .withKey(SecurityKey.PASSWORD.getDatabaseKey()),
+              .withSecurityKeyType(LLS_PASSWORD)
+              .withKey(SecurityKey.LLS_PASSWORD.getDatabaseKey()),
           new SecretBuilder()
               .withSecurityKeyType(G_METER_ENCRYPTION)
               .withKey(SecurityKey.SECURITY_KEY_G_ENCRYPTION.getDatabaseKey()),
@@ -152,7 +152,7 @@ public class DlmsDeviceSteps {
     this.securityKeyTypesByInputName.put(KEY_DEVICE_ENCRYPTIONKEY, E_METER_ENCRYPTION);
     this.securityKeyTypesByInputName.put(
         PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY, E_METER_MASTER);
-    this.securityKeyTypesByInputName.put(PlatformSmartmeteringKeys.PASSWORD, PASSWORD);
+    this.securityKeyTypesByInputName.put(PlatformSmartmeteringKeys.PASSWORD, LLS_PASSWORD);
     this.securityKeyTypesByInputName.put(MBUS_USER_KEY, G_METER_ENCRYPTION);
     this.securityKeyTypesByInputName.put(
         PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY, G_METER_MASTER);
@@ -710,6 +710,12 @@ public class DlmsDeviceSteps {
         && "true".equals(inputSettings.get(PlatformSmartmeteringKeys.LLS1_ACTIVE))) {
       secretBuilders.add(
           this.getAppropriateSecretBuilder(PlatformSmartmeteringKeys.PASSWORD, inputSettings));
+      secretBuilders.add(this.getAppropriateSecretBuilder(KEY_DEVICE_ENCRYPTIONKEY, inputSettings));
+      secretBuilders.add(
+          this.getAppropriateSecretBuilder(
+              PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY, inputSettings));
+      secretBuilders.add(
+          this.getAppropriateSecretBuilder(KEY_DEVICE_AUTHENTICATIONKEY, inputSettings));
     } else if (this.isGasSmartMeter(deviceType)) {
       secretBuilders.add(this.getAppropriateSecretBuilder(MBUS_DEFAULT_KEY, inputSettings));
       /*

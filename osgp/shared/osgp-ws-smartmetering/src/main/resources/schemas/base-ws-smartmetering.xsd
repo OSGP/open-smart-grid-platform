@@ -305,7 +305,7 @@
 
   <xsd:simpleType name="DeviceIdentification">
     <xsd:restriction base="tns:AlphaNumericType">
-      <xsd:length value="17" />
+      <xsd:minLength value="16" />
     </xsd:restriction>
   </xsd:simpleType>
 
