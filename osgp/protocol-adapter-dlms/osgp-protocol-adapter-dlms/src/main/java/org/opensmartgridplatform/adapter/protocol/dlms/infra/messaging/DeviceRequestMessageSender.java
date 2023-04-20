@@ -12,7 +12,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 import java.io.Serializable;
 import java.time.Duration;
 import javax.jms.ObjectMessage;
-import org.apache.activemq.ScheduledMessage;
+import org.opensmartgridplatform.shared.infra.jms.JmsMessageCreator;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,14 +26,16 @@ public class DeviceRequestMessageSender {
   @Qualifier("protocolDlmsDeviceRequestMessageSenderJmsTemplate")
   private JmsTemplate jmsTemplate;
 
+  @Autowired private JmsMessageCreator jmsMessageCreator;
+
   public void send(
       final Serializable payload, final MessageMetadata messageMetadata, final Duration delay) {
 
     this.jmsTemplate.send(
         session -> {
-          final ObjectMessage objectMessage = session.createObjectMessage(payload);
+          final ObjectMessage objectMessage =
+              this.jmsMessageCreator.createObjectMessage(session, payload, delay.toMillis());
           messageMetadata.applyTo(objectMessage);
-          objectMessage.setLongProperty(ScheduledMessage.AMQ_SCHEDULED_DELAY, delay.toMillis());
           return objectMessage;
         });
   }

@@ -12,8 +12,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
-import org.apache.activemq.ScheduledMessage;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.JmsMessageCreator;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,6 +28,8 @@ public class OsgpCoreRequestMessageSender {
   @Autowired
   @Qualifier("domainCoreOutboundOsgpCoreRequestsJmsTemplate")
   private JmsTemplate jmsTemplate;
+
+  @Autowired private JmsMessageCreator jmsMessageCreator;
 
   public void send(
       final RequestMessage requestMessage,
@@ -71,7 +73,9 @@ public class OsgpCoreRequestMessageSender {
         new MessageCreator() {
           @Override
           public Message createMessage(final Session session) throws JMSException {
-            final ObjectMessage objectMessage = session.createObjectMessage();
+            final ObjectMessage objectMessage =
+                OsgpCoreRequestMessageSender.this.jmsMessageCreator.createObjectMessage(
+                    session, delay);
             objectMessage.setJMSType(messageType);
             objectMessage.setJMSPriority(messagePriority);
             objectMessage.setJMSCorrelationID(correlationUid);
@@ -81,9 +85,6 @@ public class OsgpCoreRequestMessageSender {
             objectMessage.setStringProperty(Constants.IP_ADDRESS, ipAddress);
             if (scheduledTime != null) {
               objectMessage.setLongProperty(Constants.SCHEDULE_TIME, scheduledTime);
-            }
-            if (delay != null) {
-              objectMessage.setLongProperty(ScheduledMessage.AMQ_SCHEDULED_DELAY, delay);
             }
             objectMessage.setObject(requestMessage.getRequest());
             return objectMessage;
