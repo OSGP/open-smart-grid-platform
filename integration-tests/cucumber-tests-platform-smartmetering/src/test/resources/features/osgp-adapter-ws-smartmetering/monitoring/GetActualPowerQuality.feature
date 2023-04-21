@@ -93,6 +93,8 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
     Then the actual power quality result should be returned
       | DeviceIdentification        | <DeviceId>                                         |
       | NumberOfPowerQualityObjects | <ExpectedNumber>                                   |
+      # Only for the expectedNumber of objects is checked if a value is present in the response,
+      # the rest of the list below will be ignored.
       | PowerQualityObject_Name_1   | CLOCK                                              |
       | PowerQualityObject_Name_2   | INSTANTANEOUS_ACTIVE_POWER_IMPORT                  |
       | PowerQualityObject_Unit_2   | W                                                  |
@@ -170,6 +172,8 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
     Then the actual power quality result should be returned
       | DeviceIdentification        | <DeviceId>                                         |
       | NumberOfPowerQualityObjects | <ExpectedNumber>                                   |
+      # Only for the expectedNumber of objects is checked if a value is present in the response,
+      # the rest of the list below will be ignored.
       | PowerQualityObject_Name_1   | CLOCK                                              |
       | PowerQualityObject_Name_2   | INSTANTANEOUS_ACTIVE_POWER_IMPORT                  |
       | PowerQualityObject_Unit_2   | W                                                  |
