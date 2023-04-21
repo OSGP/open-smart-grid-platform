@@ -11,12 +11,13 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | Protocol                  | <Protocol>        |
       | ProtocolVersion           | <ProtocolVersion> |
       | Polyphase                 | true              |
+      | Lls1active                | <Lls1active>      |
+      | Hls5active                | <Hls5active>      |
     When the get actual power quality request is received
       | DeviceIdentification | <DeviceId> |
       | ProfileType          | PUBLIC     |
     Then the actual power quality result should be returned
       | NumberOfPowerQualityObjects |                              15 |
-      | NumberOfPowerQualityValues  |                              15 |
       | DeviceIdentification        | <DeviceId>                      |
       | PowerQualityObject_Name_1   | CLOCK                           |
       | PowerQualityObject_Name_2   | INSTANTANEOUS_VOLTAGE_L1        |
@@ -41,9 +42,10 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | PowerQualityObject_Name_15  | NUMBER_OF_VOLTAGE_SWELLS_FOR_L3 |
 
     Examples:
-      | DeviceId             | Protocol | ProtocolVersion |
-      | TEST1024000000001    | DSMR     | 4.2.2           |
-      | TEST1027000000001    | SMR      | 5.0.0           |
+      | DeviceId             | Protocol | ProtocolVersion | Lls1active | Hls5active |
+      | KTEST10260000001     | DSMR     | 2.2             | true       | false      |
+      | TEST1024000000001    | DSMR     | 4.2.2           | false      | true       |
+      | TEST1027000000001    | SMR      | 5.0.0           | false      | true       |
 
   Scenario Outline: Get the actual power quality public from a device for a single phase <Protocol> <ProtocolVersion> meter
     Given a dlms device
@@ -52,12 +54,13 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | Protocol                  | <Protocol>        |
       | ProtocolVersion           | <ProtocolVersion> |
       | Polyphase                 | false             |
+      | Lls1active                | <Lls1active>      |
+      | Hls5active                | <Hls5active>      |
     When the get actual power quality request is received
       | DeviceIdentification | <DeviceId> |
       | ProfileType          | PUBLIC     |
     Then the actual power quality result should be returned
       | NumberOfPowerQualityObjects |                               7 |
-      | NumberOfPowerQualityValues  |                               7 |
       | DeviceIdentification        | <DeviceId>                      |
       | PowerQualityObject_Name_1   | CLOCK                           |
       | PowerQualityObject_Name_2   | INSTANTANEOUS_VOLTAGE_L1        |
@@ -70,9 +73,10 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | PowerQualityObject_Name_7   | NUMBER_OF_VOLTAGE_SWELLS_FOR_L1 |
 
     Examples:
-      | DeviceId             | Protocol | ProtocolVersion |
-      | TEST1024000000001    | DSMR     | 4.2.2           |
-      | TEST1027000000001    | SMR      | 5.0.0           |
+      | DeviceId             | Protocol | ProtocolVersion | Lls1active | Hls5active |
+      | KTEST10260000001     | DSMR     | 2.2             | true       | false      |
+      | TEST1024000000001    | DSMR     | 4.2.2           | false      | true       |
+      | TEST1027000000001    | SMR      | 5.0.0           | false      | true       |
 
   Scenario Outline: Get the actual power quality private from a device for a polyphase <Protocol> <ProtocolVersion> meter
     Given a dlms device
@@ -81,38 +85,39 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | Protocol                  | <Protocol>        |
       | ProtocolVersion           | <ProtocolVersion> |
       | Polyphase                 | true              |
+      | Lls1active                | <Lls1active>      |
+      | Hls5active                | <Hls5active>      |
     When the get actual power quality request is received
       | DeviceIdentification | <DeviceId> |
       | ProfileType          | PRIVATE    |
     Then the actual power quality result should be returned
       | DeviceIdentification        | <DeviceId>                                         |
-      | NumberOfPowerQualityObjects |                                                 28 |
-      | NumberOfPowerQualityValues  |                                                 28 |
+      | NumberOfPowerQualityObjects | <ExpectedNumber>                                   |
       | PowerQualityObject_Name_1   | CLOCK                                              |
       | PowerQualityObject_Name_2   | INSTANTANEOUS_ACTIVE_POWER_IMPORT                  |
       | PowerQualityObject_Unit_2   | W                                                  |
-      | PowerQualityObject_Name_3   | INSTANTANEOUS_ACTIVE_POWER_EXPORT                  |
-      | PowerQualityObject_Unit_3   | W                                                  |
-      | PowerQualityObject_Name_4   | INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1               |
-      | PowerQualityObject_Unit_4   | W                                                  |
-      | PowerQualityObject_Name_5   | INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2               |
-      | PowerQualityObject_Unit_5   | W                                                  |
-      | PowerQualityObject_Name_6   | INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3               |
-      | PowerQualityObject_Unit_6   | W                                                  |
-      | PowerQualityObject_Name_7   | INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1               |
+      | PowerQualityObject_Name_3   | INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES |
+      | PowerQualityObject_Unit_3   | AMP                                                |
+      | PowerQualityObject_Name_4   | INSTANTANEOUS_CURRENT_L1                           |
+      | PowerQualityObject_Unit_4   | AMP                                                |
+      | PowerQualityObject_Name_5   | INSTANTANEOUS_CURRENT_L2                           |
+      | PowerQualityObject_Unit_5   | AMP                                                |
+      | PowerQualityObject_Name_6   | INSTANTANEOUS_CURRENT_L3                           |
+      | PowerQualityObject_Unit_6   | AMP                                                |
+      | PowerQualityObject_Name_7   | INSTANTANEOUS_ACTIVE_POWER_EXPORT                  |
       | PowerQualityObject_Unit_7   | W                                                  |
-      | PowerQualityObject_Name_8   | INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2               |
+      | PowerQualityObject_Name_8   | INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1               |
       | PowerQualityObject_Unit_8   | W                                                  |
-      | PowerQualityObject_Name_9   | INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3               |
+      | PowerQualityObject_Name_9   | INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2               |
       | PowerQualityObject_Unit_9   | W                                                  |
-      | PowerQualityObject_Name_10  | INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES |
-      | PowerQualityObject_Unit_10  | AMP                                                |
-      | PowerQualityObject_Name_11  | INSTANTANEOUS_CURRENT_L1                           |
-      | PowerQualityObject_Unit_11  | AMP                                                |
-      | PowerQualityObject_Name_12  | INSTANTANEOUS_CURRENT_L2                           |
-      | PowerQualityObject_Unit_12  | AMP                                                |
-      | PowerQualityObject_Name_13  | INSTANTANEOUS_CURRENT_L3                           |
-      | PowerQualityObject_Unit_13  | AMP                                                |
+      | PowerQualityObject_Name_10  | INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3               |
+      | PowerQualityObject_Unit_10  | W                                                  |
+      | PowerQualityObject_Name_11  | INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1               |
+      | PowerQualityObject_Unit_11  | W                                                  |
+      | PowerQualityObject_Name_12  | INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2               |
+      | PowerQualityObject_Unit_12  | W                                                  |
+      | PowerQualityObject_Name_13  | INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3               |
+      | PowerQualityObject_Unit_13  | W                                                  |
       | PowerQualityObject_Name_14  | AVERAGE_ACTIVE_POWER_IMPORT_L1                     |
       | PowerQualityObject_Unit_14  | W                                                  |
       | PowerQualityObject_Name_15  | AVERAGE_ACTIVE_POWER_IMPORT_L2                     |
@@ -145,9 +150,10 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | PowerQualityObject_Unit_28  | AMP                                                |
 
     Examples:
-      | DeviceId             | Protocol | ProtocolVersion |
-      | TEST1024000000001    | DSMR     | 4.2.2           |
-      | TEST1027000000001    | SMR      | 5.0.0           |
+      | DeviceId             | Protocol | ProtocolVersion | Lls1active | Hls5active | ExpectedNumber |
+      | KTEST10260000001     | DSMR     | 2.2             | true       | false      | 6              |
+      | TEST1024000000001    | DSMR     | 4.2.2           | false      | true       | 28             |
+      | TEST1027000000001    | SMR      | 5.0.0           | false      | true       | 28             |
 
   Scenario Outline: Get the actual power quality private from a device for a single phase <Protocol> <ProtocolVersion> meter
     Given a dlms device
@@ -156,26 +162,27 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | Protocol                  | <Protocol>        |
       | ProtocolVersion           | <ProtocolVersion> |
       | Polyphase                 | false             |
+      | Lls1active                | <Lls1active>      |
+      | Hls5active                | <Hls5active>      |
     When the get actual power quality request is received
       | DeviceIdentification | <DeviceId> |
       | ProfileType          | PRIVATE    |
     Then the actual power quality result should be returned
       | DeviceIdentification        | <DeviceId>                                         |
-      | NumberOfPowerQualityObjects |                                                 12 |
-      | NumberOfPowerQualityValues  |                                                 12 |
+      | NumberOfPowerQualityObjects | <ExpectedNumber>                                   |
       | PowerQualityObject_Name_1   | CLOCK                                              |
       | PowerQualityObject_Name_2   | INSTANTANEOUS_ACTIVE_POWER_IMPORT                  |
       | PowerQualityObject_Unit_2   | W                                                  |
-      | PowerQualityObject_Name_3   | INSTANTANEOUS_ACTIVE_POWER_EXPORT                  |
-      | PowerQualityObject_Unit_3   | W                                                  |
-      | PowerQualityObject_Name_4   | INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1               |
-      | PowerQualityObject_Unit_4   | W                                                  |
-      | PowerQualityObject_Name_5   | INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1               |
+      | PowerQualityObject_Name_3   | INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES |
+      | PowerQualityObject_Unit_3   | AMP                                                |
+      | PowerQualityObject_Name_4   | INSTANTANEOUS_CURRENT_L1                           |
+      | PowerQualityObject_Unit_4   | AMP                                                |
+      | PowerQualityObject_Name_5   | INSTANTANEOUS_ACTIVE_POWER_EXPORT                  |
       | PowerQualityObject_Unit_5   | W                                                  |
-      | PowerQualityObject_Name_6   | INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES |
-      | PowerQualityObject_Unit_6   | AMP                                                |
-      | PowerQualityObject_Name_7   | INSTANTANEOUS_CURRENT_L1                           |
-      | PowerQualityObject_Unit_7   | AMP                                                |
+      | PowerQualityObject_Name_6   | INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1               |
+      | PowerQualityObject_Unit_6   | W                                                  |
+      | PowerQualityObject_Name_7   | INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1               |
+      | PowerQualityObject_Unit_7   | W                                                  |
       | PowerQualityObject_Name_8   | AVERAGE_ACTIVE_POWER_IMPORT_L1                     |
       | PowerQualityObject_Unit_8   | W                                                  |
       | PowerQualityObject_Name_9   | AVERAGE_ACTIVE_POWER_EXPORT_L1                     |
@@ -188,9 +195,10 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | PowerQualityObject_Unit_12  | AMP                                                |
 
     Examples:
-      | DeviceId             | Protocol | ProtocolVersion |
-      | TEST1024000000001    | DSMR     | 4.2.2           |
-      | TEST1027000000001    | SMR      | 5.0.0           |
+      | DeviceId             | Protocol | ProtocolVersion | Lls1active | Hls5active | ExpectedNumber |
+      | KTEST10260000001     | DSMR     | 2.2             | true       | false      | 4              |
+      | TEST1024000000001    | DSMR     | 4.2.2           | false      | true       | 12             |
+      | TEST1027000000001    | SMR      | 5.0.0           | false      | true       | 12             |
 
   Scenario: Do not refuse an operation with an inactive device
     Given a dlms device
