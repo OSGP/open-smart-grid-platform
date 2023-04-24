@@ -57,6 +57,8 @@ public class PowerQualityProfile2 extends ProfileGeneric {
   public static final String INSTANTANEOUS_CURRENT_L3_LOGICAL_NAME = "1.0.71.7.0.255";
 
   public static final String INSTANTANEOUS_ACTIVE_POWER_IMPORT_LOGICAL_NAME = "1.0.1.7.0.255";
+  public static final String INSTANTANEOUS_ACTIVE_POWER_IMPORT_LOGICAL_NAME_DSMR22 =
+      "1.0.15.7.0.255";
   public static final String INSTANTANEOUS_ACTIVE_POWER_EXPORT_LOGICAL_NAME = "1.0.2.7.0.255";
 
   public static final String INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1_LOGICAL_NAME = "1.0.22.7.0.255";
@@ -67,7 +69,7 @@ public class PowerQualityProfile2 extends ProfileGeneric {
   public static final String INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2_LOGICAL_NAME = "1.0.41.7.0.255";
   public static final String INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3_LOGICAL_NAME = "1.0.61.7.0.255";
 
-  private CaptureObjectDefinitionCollection captureObjectDefinitionCollection;
+  private final CaptureObjectDefinitionCollection captureObjectDefinitionCollection;
   private static final Map<CaptureObject, DataProcessor> PROCESSORS_BY_CAPTURE_OBJECT =
       new HashMap<>();
   private static final DataProcessor COSEM_DATE_TIME_PROCESSOR = new CosemDateTimeProcessor();

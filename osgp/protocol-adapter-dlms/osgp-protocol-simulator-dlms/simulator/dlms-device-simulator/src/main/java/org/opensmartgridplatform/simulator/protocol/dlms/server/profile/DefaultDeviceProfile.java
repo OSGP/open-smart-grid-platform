@@ -35,6 +35,7 @@ import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQuali
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2_LOGICAL_NAME;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3_LOGICAL_NAME;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_IMPORT_LOGICAL_NAME;
+import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_IMPORT_LOGICAL_NAME_DSMR22;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2.INSTANTANEOUS_CURRENT_L1_LOGICAL_NAME;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2.INSTANTANEOUS_CURRENT_L2_LOGICAL_NAME;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2.INSTANTANEOUS_CURRENT_L3_LOGICAL_NAME;
@@ -1084,6 +1085,12 @@ public class DefaultDeviceProfile {
   public LongUnsignedRegister instantaneousActivePowerImport() {
     return new LongUnsignedRegister(
         INSTANTANEOUS_ACTIVE_POWER_IMPORT_LOGICAL_NAME, 1, 0, UnitType.WATT);
+  }
+
+  @Bean
+  public LongUnsignedRegister instantaneousActivePowerImportDsmr22() {
+    return new LongUnsignedRegister(
+        INSTANTANEOUS_ACTIVE_POWER_IMPORT_LOGICAL_NAME_DSMR22, 1, 0, UnitType.WATT);
   }
 
   @Bean
