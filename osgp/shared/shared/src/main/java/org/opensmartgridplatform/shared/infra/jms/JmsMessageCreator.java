@@ -13,6 +13,7 @@ import static org.apache.activemq.artemis.api.core.Message.HDR_SCHEDULED_DELIVER
 
 import java.io.Serializable;
 import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import org.apache.activemq.ScheduledMessage;
@@ -23,6 +24,12 @@ public class JmsMessageCreator {
 
   public JmsMessageCreator(final JmsBrokerType jmsBrokerType) {
     this.jmsBrokerType = jmsBrokerType;
+  }
+
+  public Message createMessage(final Session session, final Long delay) throws JMSException {
+    final Message message = session.createMessage();
+    this.addDelayProperty(message, delay);
+    return message;
   }
 
   public ObjectMessage createObjectMessage(
@@ -39,18 +46,17 @@ public class JmsMessageCreator {
     return objectMessage;
   }
 
-  private void addDelayProperty(final ObjectMessage objectMessage, final Long delay)
-      throws JMSException {
+  private void addDelayProperty(final Message message, final Long delay) throws JMSException {
     if (delay == null || delay <= 0) {
       return;
     }
 
     if (this.jmsBrokerType == JmsBrokerType.ACTIVE_MQ) {
       // Active MQ requires property AMQ_SCHEDULED_DELAY
-      objectMessage.setLongProperty(ScheduledMessage.AMQ_SCHEDULED_DELAY, delay);
+      message.setLongProperty(ScheduledMessage.AMQ_SCHEDULED_DELAY, delay);
     } else {
       // Artemis requires property _AMQ_SCHED_DELIVERY
-      objectMessage.setLongProperty(
+      message.setLongProperty(
           HDR_SCHEDULED_DELIVERY_TIME.toString(), System.currentTimeMillis() + delay);
     }
   }
