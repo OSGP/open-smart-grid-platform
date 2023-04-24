@@ -21,6 +21,11 @@ import org.slf4j.LoggerFactory;
 public class DlmsPushNotificationDecoder
     extends ReplayingDecoder<DlmsPushNotificationDecoder.DecodingState> {
 
+  private static final byte DATA_NOTIFICATION =
+      0x0F; // data-notification [15], see DLMS Green Book, 9.5 Abstract syntax of COSEM PDUs
+  private static final byte EVENT_NOTIFICATION_REQUEST =
+      0x2C; // event-notification-request [194], see DLMS Green Book, 9.5 Abstract syntax of COSEM
+  // PDUs
   private static final Logger LOGGER = LoggerFactory.getLogger(DlmsPushNotificationDecoder.class);
 
   public enum DecodingState {
@@ -78,7 +83,8 @@ public class DlmsPushNotificationDecoder
     byteBuf.readBytes(byteArray);
 
     // Determine whether the alarm is in DSMR4 or SMR5 format.
-    final boolean smr5alarm = byteArray[8] == 0x0F;
+    final boolean smr5alarm = byteArray[8] == DATA_NOTIFICATION;
+    final boolean mx382alarm = byteArray[8] == EVENT_NOTIFICATION_REQUEST;
 
     final InputStream inputStream = new ByteArrayInputStream(byteArray);
     LOGGER.info("Decoding state: {}, SMR5 alarm: {}", this.state(), smr5alarm);
@@ -86,6 +92,9 @@ public class DlmsPushNotificationDecoder
     if (smr5alarm) {
       final Smr5AlarmDecoder alarmDecoder = new Smr5AlarmDecoder();
       pushNotification = alarmDecoder.decodeSmr5alarm(inputStream);
+    } else if (mx382alarm) {
+      final Mx382AlarmDecoder alarmDecoder = new Mx382AlarmDecoder();
+      pushNotification = alarmDecoder.decodeMx382alarm(inputStream);
     } else {
       final Dsmr4AlarmDecoder alarmDecoder = new Dsmr4AlarmDecoder();
       pushNotification = alarmDecoder.decodeDsmr4alarm(inputStream);
