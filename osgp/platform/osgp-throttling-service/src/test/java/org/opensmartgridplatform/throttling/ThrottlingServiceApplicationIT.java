@@ -126,7 +126,7 @@ class ThrottlingServiceApplicationIT {
   @Autowired private PermitsByThrottlingConfig permitsByThrottlingConfig;
 
   private short existingThrottlingConfigId;
-  private int registeredClientId = 73;
+  private final int registeredClientId = 73;
 
   @BeforeEach
   void beforeEach() {
@@ -517,6 +517,37 @@ class ThrottlingServiceApplicationIT {
     this.successfullyReleasePermit(throttlingConfigId, clientId, baseTransceiverStationId, cellId);
     this.unsuccessfullyReleasePermit(
         throttlingConfigId, clientId, baseTransceiverStationId, cellId);
+  }
+
+  @Test
+  void releasePermitAlwaysRemoveDbRecord() {
+    final short throttlingConfigId = this.existingThrottlingConfigId;
+    final int clientId = this.registeredClientId;
+    final int baseTransceiverStationId = 59;
+    final int cellId = 1;
+    final int requestId = requestIdCounter.incrementAndGet();
+    final double secondsSinceEpoch = System.currentTimeMillis() / 1000.0;
+
+    // First do one successful request/release, so config exist
+    this.successfullyRequestPermit(throttlingConfigId, clientId, baseTransceiverStationId, cellId);
+    this.successfullyReleasePermit(throttlingConfigId, clientId, baseTransceiverStationId, cellId);
+    assertThat(this.permitRepository.findAll()).isEmpty();
+
+    // Add permit to repository
+    this.permitRepository.storePermit(
+        throttlingConfigId,
+        clientId,
+        baseTransceiverStationId,
+        cellId,
+        requestId,
+        secondsSinceEpoch);
+
+    // The permit should be released with success
+    this.successfullyReleasePermit(
+        throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
+
+    // The permit should be removed successful from database
+    assertThat(this.permitRepository.findByClientIdAndRequestId(clientId, requestId)).isEmpty();
   }
 
   @Test

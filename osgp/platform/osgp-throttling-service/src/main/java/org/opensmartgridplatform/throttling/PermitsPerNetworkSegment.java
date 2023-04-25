@@ -109,7 +109,6 @@ public class PermitsPerNetworkSegment {
     final int numberOfPermitsIfReleased = permitCounter.decrementAndGet();
     if (numberOfPermitsIfReleased < 0) {
       permitCounter.incrementAndGet();
-      return false;
     }
 
     final int numberOfReleasedPermits =
