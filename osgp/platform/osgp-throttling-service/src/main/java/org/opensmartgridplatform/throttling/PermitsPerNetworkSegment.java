@@ -51,7 +51,10 @@ public class PermitsPerNetworkSegment {
                         countByNetworkSegment.getCellId(),
                         new AtomicInteger(countByNetworkSegment.getNumberOfPermits())));
     stopWatch.stop();
-    LOGGER.info("Init took {}ms", stopWatch.getLastTaskTimeMillis());
+    LOGGER.info(
+        "Initialize of permitsPerSegment for config: {} took {}ms",
+        throttlingConfigId,
+        stopWatch.getLastTaskTimeMillis());
   }
 
   public Map<Integer, Map<Integer, Integer>> permitsPerNetworkSegment() {

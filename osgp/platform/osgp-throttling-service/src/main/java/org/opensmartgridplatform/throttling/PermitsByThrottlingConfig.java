@@ -57,7 +57,7 @@ public class PermitsByThrottlingConfig {
   }
 
   /** Clears all cached permit counts and initializes the cached information from the database. */
-  void reset() {
+  public void reset() {
     this.permitsPerSegmentByConfig.clear();
     this.initialize();
   }
