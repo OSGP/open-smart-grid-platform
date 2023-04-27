@@ -62,23 +62,13 @@ class PermitsPerNetworkSegmentTest {
   }
 
   @Test
-  void testReset() {
+  void testInitializeUpdate() {
     final int btsId = 1;
     final int cellId = 2;
     final int numberOfPermits = 3;
+    final short throttlingConfigId = Integer.valueOf(1).shortValue();
 
-    final short throttlingConfigId = Short.parseShort("1");
-
-    final PermitCountByNetworkSegment permitCountByNetworkSegment =
-        this.newPermitCountByNetworkSegment(btsId, cellId, numberOfPermits);
-    when(this.permitRepository.permitsByNetworkSegment(throttlingConfigId))
-        .thenReturn(List.of(permitCountByNetworkSegment));
-
-    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
-
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).hasSize(1);
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment().get(btsId).get(cellId))
-        .isEqualTo(numberOfPermits);
+    this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
 
     // Update number of permits in database
     final int newNumberOfPermits = 4;
@@ -93,6 +83,67 @@ class PermitsPerNetworkSegmentTest {
     assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).hasSize(1);
     assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment().get(btsId).get(cellId))
         .isEqualTo(newNumberOfPermits);
+  }
+
+  @Test
+  void testInitializeAdd() {
+    final int btsId = 1;
+    final int cellId = 2;
+    final int numberOfPermits = 3;
+    final short throttlingConfigId = Integer.valueOf(1).shortValue();
+
+    this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
+
+    // Update number of permits in database
+    final int newBtsId = 4;
+
+    final PermitCountByNetworkSegment permitCountByNetworkSegmentUpdate =
+        this.newPermitCountByNetworkSegment(newBtsId, cellId, numberOfPermits);
+    when(this.permitRepository.permitsByNetworkSegment(throttlingConfigId))
+        .thenReturn(List.of(permitCountByNetworkSegmentUpdate));
+
+    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
+
+    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).hasSize(1);
+    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment().containsKey(btsId))
+        .isFalse();
+    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment().get(newBtsId).get(cellId))
+        .isEqualTo(numberOfPermits);
+  }
+
+  @Test
+  void testInitializeDelete() {
+    final int btsId = 1;
+    final int cellId = 2;
+    final int numberOfPermits = 3;
+    final short throttlingConfigId = Integer.valueOf(1).shortValue();
+
+    this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
+
+    // No permits in database
+    when(this.permitRepository.permitsByNetworkSegment(throttlingConfigId))
+        .thenReturn(Lists.emptyList());
+
+    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
+
+    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).isEmpty();
+  }
+
+  private void preparePermits(
+      final int btsId,
+      final int cellId,
+      final int numberOfPermits,
+      final short throttlingConfigId) {
+    final PermitCountByNetworkSegment permitCountByNetworkSegment =
+        this.newPermitCountByNetworkSegment(btsId, cellId, numberOfPermits);
+    when(this.permitRepository.permitsByNetworkSegment(throttlingConfigId))
+        .thenReturn(List.of(permitCountByNetworkSegment));
+
+    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
+
+    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).hasSize(1);
+    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment().get(btsId).get(cellId))
+        .isEqualTo(numberOfPermits);
   }
 
   private PermitCountByNetworkSegment newPermitCountByNetworkSegment(

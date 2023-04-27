@@ -9,11 +9,13 @@
  */
 package org.opensmartgridplatform.throttling;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.PostConstruct;
+import org.opensmartgridplatform.throttling.entities.ThrottlingConfig;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
 import org.opensmartgridplatform.throttling.repositories.ThrottlingConfigRepository;
 import org.slf4j.Logger;
@@ -39,27 +41,34 @@ public class PermitsByThrottlingConfig {
     this.permitRepository = permitRepository;
   }
 
+  /** Clears all cached permit counts and initializes the cached information from the database. */
   @PostConstruct
-  private void initialize() {
+  public void initialize() {
     final StopWatch stopWatch = new StopWatch(this.getClass().getSimpleName());
     stopWatch.start();
-    this.throttlingConfigRepository
-        .findAll()
-        .forEach(
-            throttlingConfig ->
-                this.permitsPerSegmentByConfig.putIfAbsent(
-                    throttlingConfig.getId(), new PermitsPerNetworkSegment(this.permitRepository)));
 
+    final List<Short> throttlingConfigIdsInDb =
+        this.throttlingConfigRepository.findAll().stream().map(ThrottlingConfig::getId).toList();
+
+    /* Create new config */
+    throttlingConfigIdsInDb.forEach(
+        throttlingConfigId ->
+            this.permitsPerSegmentByConfig.putIfAbsent(
+                throttlingConfigId, new PermitsPerNetworkSegment(this.permitRepository)));
+
+    /* Update config */
     this.permitsPerSegmentByConfig.entrySet().parallelStream()
         .forEach(entry -> entry.getValue().initialize(entry.getKey()));
-    stopWatch.stop();
-    LOGGER.info("Init took {}ms", stopWatch.getLastTaskTimeMillis());
-  }
 
-  /** Clears all cached permit counts and initializes the cached information from the database. */
-  public void reset() {
-    this.permitsPerSegmentByConfig.clear();
-    this.initialize();
+    /* Remove config not in database */
+    final List<Short> throttlingConfigIdsToBeRemoved =
+        this.permitsPerSegmentByConfig.keySet().stream()
+            .filter(configId -> !throttlingConfigIdsInDb.contains(configId))
+            .toList();
+    throttlingConfigIdsToBeRemoved.forEach(this.permitsPerSegmentByConfig::remove);
+
+    stopWatch.stop();
+    LOGGER.info("Initialize of all configs took {}ms", stopWatch.getLastTaskTimeMillis());
   }
 
   public Map<Short, PermitsPerNetworkSegment> permitsPerNetworkSegmentByConfig() {

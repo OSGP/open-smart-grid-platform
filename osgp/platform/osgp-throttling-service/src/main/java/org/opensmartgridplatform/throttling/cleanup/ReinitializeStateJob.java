@@ -21,16 +21,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 @DisallowConcurrentExecution
-public class ResetDbStateJob implements Job {
+public class ReinitializeStateJob implements Job {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ResetDbStateJob.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ReinitializeStateJob.class);
 
   @Autowired private PermitsByThrottlingConfig permitsByThrottlingConfig;
 
   @Override
   public void execute(final JobExecutionContext jobExecutionContext) {
-    LOGGER.info("Start executing ResetDbStateJob");
-    this.permitsByThrottlingConfig.reset();
-    LOGGER.info("Finished executing ResetDbStateJob");
+    LOGGER.info("Start executing ReinitializeStateJob");
+    this.permitsByThrottlingConfig.initialize();
+    LOGGER.info("Finished executing ReinitializeStateJob");
   }
 }
