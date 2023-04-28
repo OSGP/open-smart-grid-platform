@@ -13,12 +13,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 
-@Slf4j
 public class Mx382AlarmDecoder extends AlarmDecoder {
 
   private static final byte EVENT_NOTIFICATION_REQUEST = (byte) 0xC2;
@@ -52,10 +50,10 @@ public class Mx382AlarmDecoder extends AlarmDecoder {
   private void skipDateTime(final InputStream inputStream) throws UnrecognizedMessageDataException {
     // The first byte of the datetime is the length byte
     final byte dateTimeLength = this.readByte(inputStream);
-    log.info(toHexString(dateTimeLength));
+    this.builder.appendByte(dateTimeLength);
     // Skip the rest of the datetime bytes
-    this.skip(inputStream, dateTimeLength);
-    log.debug("skipped {} bytes", dateTimeLength);
+    final byte[] dateTimeBytes = this.readBytes(inputStream, dateTimeLength);
+    this.builder.appendBytes(dateTimeBytes);
   }
 
   private void decodeEquipmentIdentifier(final InputStream inputStream)
@@ -84,7 +82,6 @@ public class Mx382AlarmDecoder extends AlarmDecoder {
       throws UnrecognizedMessageDataException {
     final byte readByte = this.readByte(inputStream);
     this.builder.appendByte(readByte);
-    log.info(toHexString(readByte) + " == " + toHexString(expectedByte));
     if (readByte != expectedByte) {
       throw new UnrecognizedMessageDataException(
           String.format(
@@ -98,7 +95,6 @@ public class Mx382AlarmDecoder extends AlarmDecoder {
       throws UnrecognizedMessageDataException {
     final byte[] readBytes = this.readBytes(inputStream, expectedBytes.length);
     this.builder.appendBytes(readBytes);
-    log.info(toHexString(readBytes) + " == " + toHexString(expectedBytes));
     if (!Arrays.equals(readBytes, expectedBytes)) {
       throw new UnrecognizedMessageDataException(
           String.format(
