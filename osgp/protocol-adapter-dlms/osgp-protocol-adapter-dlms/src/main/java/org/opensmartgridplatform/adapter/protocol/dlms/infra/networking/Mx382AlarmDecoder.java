@@ -23,10 +23,11 @@ public class Mx382AlarmDecoder extends AlarmDecoder {
 
   private static final int NUMBER_OF_BYTES_FOR_ADDRESSING = 8;
   private static final byte EVENT_NOTIFICATION_REQUEST = (byte) 0xC2;
+
+  private static final byte[] WPDU_HEADER =
+      new byte[] {0x00, 0x01, 0x00, 0x67, 0x00, 0x66, 0x00, 0x1b};
   private static final byte[] AMM_FORWARDED_ALARM_VERSION_0 =
-      new byte[] {
-        (byte) 0x128, (byte) 0x128, (byte) 0x128, (byte) 0x128, (byte) 0x128, (byte) 0x00
-      };
+      new byte[] {(byte) 0x80, (byte) 0x80, (byte) 0x80, (byte) 0x80, (byte) 0x80, (byte) 0x00};
   private static final byte[] ALARM_REGISTER_3 =
       new byte[] {(byte) 0x00, (byte) 0x00, (byte) 0x61, (byte) 0x62, (byte) 0x02, (byte) 0xFF};
   private static final byte[] DEVICE_ID_2_CLASS_ID = new byte[] {0x00, 0x01};
@@ -46,10 +47,7 @@ public class Mx382AlarmDecoder extends AlarmDecoder {
   public DlmsPushNotification decodeMx382alarm(final InputStream inputStream)
       throws UnrecognizedMessageDataException {
 
-    // Skip addressing
-    this.skip(inputStream, NUMBER_OF_BYTES_FOR_ADDRESSING);
-    log.debug("skipped {} bytes", NUMBER_OF_BYTES_FOR_ADDRESSING);
-
+    this.checkBytes(inputStream, WPDU_HEADER, "WPDU-header");
     this.checkByte(inputStream, EVENT_NOTIFICATION_REQUEST, "event-notification-request");
 
     // Datetime is not used, so can be skipped as well

@@ -1,7 +1,7 @@
 /*
  * Copyright 2023 Alliander N.V.
  *
- * Licensed under the Apache License, (byte)Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -39,9 +39,7 @@ class Mx382AlarmDecoderTest {
   public static final class Mx382AlarmMessage {
     private final String equipmentIdentifier;
     private final byte[] obiscode =
-        new byte[] {
-          (byte) 0x128, (byte) 0x128, (byte) 0x128, (byte) 0x128, (byte) 0x128, (byte) 0x00
-        };
+        new byte[] {(byte) 0x80, (byte) 0x80, (byte) 0x80, (byte) 0x80, (byte) 0x80, (byte) 0x00};
 
     public Mx382AlarmMessage(final String equipmentIdentifier) {
       this.equipmentIdentifier = equipmentIdentifier;
@@ -58,10 +56,10 @@ class Mx382AlarmDecoderTest {
 
     private byte[] createApdu() {
       final ByteBuffer buf = ByteBuffer.allocate(64);
-      buf.put((byte) -62);
-      buf.put((byte) 0);
+      buf.put((byte) 0xC2);
+      buf.put((byte) 0x00);
 
-      final byte[] classId = new byte[] {0, 0x01};
+      final byte[] classId = new byte[] {0x00, 0x01};
       buf.put(classId);
       buf.put(this.obiscode);
       final byte attribute = 0x02;
