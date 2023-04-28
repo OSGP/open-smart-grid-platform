@@ -21,27 +21,14 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 @Slf4j
 public class Mx382AlarmDecoder extends AlarmDecoder {
 
-  private static final int NUMBER_OF_BYTES_FOR_ADDRESSING = 8;
   private static final byte EVENT_NOTIFICATION_REQUEST = (byte) 0xC2;
-
   private static final byte[] WPDU_HEADER =
       new byte[] {0x00, 0x01, 0x00, 0x67, 0x00, 0x66, 0x00, 0x1b};
   private static final byte[] AMM_FORWARDED_ALARM_VERSION_0 =
       new byte[] {(byte) 0x80, (byte) 0x80, (byte) 0x80, (byte) 0x80, (byte) 0x80, (byte) 0x00};
-  private static final byte[] ALARM_REGISTER_3 =
-      new byte[] {(byte) 0x00, (byte) 0x00, (byte) 0x61, (byte) 0x62, (byte) 0x02, (byte) 0xFF};
   private static final byte[] DEVICE_ID_2_CLASS_ID = new byte[] {0x00, 0x01};
   private static final byte VALUE_ATTRIBUTE_ID = 0x02;
   private static final byte DSMR22_EQUIPMENT_IDENTIFIER_LENGTH = 0x10;
-  private static final byte DSMR22_NUMBER_OF_BYTES_FOR_LOGICAL_NAME = 0x06;
-  private static final byte ELEMENTS_IN_STRUCTURE = 0x03;
-
-  /** DLMS data types used in the SMR5 push notification */
-  private static final byte STRUCTURE = 0x02;
-
-  private static final byte OCTET_STRING = 0x09;
-  private static final byte DOUBLE_LONG_UNSIGNED = 0x06;
-
   private final DlmsPushNotification.Builder builder = new DlmsPushNotification.Builder();
 
   public DlmsPushNotification decodeMx382alarm(final InputStream inputStream)
@@ -53,14 +40,10 @@ public class Mx382AlarmDecoder extends AlarmDecoder {
     // Datetime is not used, so can be skipped as well
     this.skipDateTime(inputStream);
 
-    this.builder.appendByte(STRUCTURE);
-    this.builder.appendByte(ELEMENTS_IN_STRUCTURE);
-
     // Get equipment identifier and add it to the new push notification
     this.decodeEquipmentIdentifier(inputStream);
 
-    // Add logical name and alarmbits to the new push notification
-    this.addLogicalName();
+    // Add alarmbits to the new push notification
     this.addAlarm();
 
     return this.builder.build();
@@ -86,37 +69,21 @@ public class Mx382AlarmDecoder extends AlarmDecoder {
     // Read the equipment identifier from incoming mx382 message
     final byte[] equipmentIdentifierBytes =
         this.readBytes(inputStream, DSMR22_EQUIPMENT_IDENTIFIER_LENGTH);
-    // and add it Tag-Length-Value wise to the new push notification
-    this.builder.appendByte(OCTET_STRING);
-    this.builder.appendByte(DSMR22_EQUIPMENT_IDENTIFIER_LENGTH);
     this.builder.withEquipmentIdentifier(
         new String(equipmentIdentifierBytes, StandardCharsets.US_ASCII));
-    this.builder.appendBytes(equipmentIdentifierBytes);
-  }
-
-  private void addLogicalName() {
-    this.builder.appendByte(OCTET_STRING);
-    this.builder.appendByte(DSMR22_NUMBER_OF_BYTES_FOR_LOGICAL_NAME);
-    this.builder.appendBytes(ALARM_REGISTER_3);
   }
 
   private void addAlarm() {
-    // First byte should indicate double-long-unsigned
-    this.builder.appendByte(DOUBLE_LONG_UNSIGNED);
-
     this.builder.withTriggerType(PUSH_ALARM_TRIGGER);
     final Set<AlarmTypeDto> alarmSet = new HashSet<>();
     alarmSet.add(AlarmTypeDto.LAST_GASP);
     this.builder.addAlarms(alarmSet);
-
-    //    LAST_GASP(AlarmRegister 3, bit 0)
-    final byte[] alarmBytes = {0x0, 0x0, 0x0, 0x01};
-    this.builder.appendBytes(alarmBytes);
   }
 
   private void checkByte(final InputStream inputStream, final byte expectedByte, final String name)
       throws UnrecognizedMessageDataException {
     final byte readByte = this.readByte(inputStream);
+    this.builder.appendByte(readByte);
     log.info(toHexString(readByte) + " == " + toHexString(expectedByte));
     if (readByte != expectedByte) {
       throw new UnrecognizedMessageDataException(
@@ -124,13 +91,13 @@ public class Mx382AlarmDecoder extends AlarmDecoder {
               "Expected a %s (%s), but encountered: (%s)",
               name, toHexString(expectedByte), toHexString(readByte)));
     }
-    //    return readByte;
   }
 
   private void checkBytes(
       final InputStream inputStream, final byte[] expectedBytes, final String name)
       throws UnrecognizedMessageDataException {
     final byte[] readBytes = this.readBytes(inputStream, expectedBytes.length);
+    this.builder.appendBytes(readBytes);
     log.info(toHexString(readBytes) + " == " + toHexString(expectedBytes));
     if (!Arrays.equals(readBytes, expectedBytes)) {
       throw new UnrecognizedMessageDataException(
