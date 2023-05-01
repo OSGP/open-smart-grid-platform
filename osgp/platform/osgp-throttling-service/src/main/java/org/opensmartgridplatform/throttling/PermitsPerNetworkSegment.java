@@ -16,9 +16,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
+import org.opensmartgridplatform.throttling.repositories.PermitRepository.PermitCountByNetworkSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StopWatch;
 
 public class PermitsPerNetworkSegment {
   private static final Logger LOGGER = LoggerFactory.getLogger(PermitsPerNetworkSegment.class);
@@ -37,21 +37,45 @@ public class PermitsPerNetworkSegment {
   }
 
   public void initialize(final short throttlingConfigId) {
-    final StopWatch stopWatch = new StopWatch(this.getClass().getSimpleName());
-    stopWatch.start();
+    final ConcurrentMap<Integer, ConcurrentMap<Integer, AtomicInteger>> permitsPerSegmentFromDb =
+        new ConcurrentHashMap<>();
     this.permitRepository
         .permitsByNetworkSegment(throttlingConfigId)
         .forEach(
-            countByNetworkSegment ->
-                this.permitsPerSegment
-                    .computeIfAbsent(
-                        countByNetworkSegment.getBaseTransceiverStationId(),
-                        key -> new ConcurrentHashMap<>())
-                    .put(
-                        countByNetworkSegment.getCellId(),
-                        new AtomicInteger(countByNetworkSegment.getNumberOfPermits())));
-    stopWatch.stop();
-    LOGGER.info("Init took {}ms", stopWatch.getLastTaskTimeMillis());
+            countByNetworkSegment -> {
+              this.logIfUpdated(countByNetworkSegment);
+
+              permitsPerSegmentFromDb
+                  .computeIfAbsent(
+                      countByNetworkSegment.getBaseTransceiverStationId(),
+                      key -> new ConcurrentHashMap<>())
+                  .put(
+                      countByNetworkSegment.getCellId(),
+                      new AtomicInteger(countByNetworkSegment.getNumberOfPermits()));
+            });
+    this.permitsPerSegment.clear();
+    this.permitsPerSegment.putAll(permitsPerSegmentFromDb);
+  }
+
+  private void logIfUpdated(final PermitCountByNetworkSegment countByNetworkSegment) {
+    final int btsId = countByNetworkSegment.getBaseTransceiverStationId();
+    final int cellId = countByNetworkSegment.getCellId();
+    final int numberOfPermitsInDb = countByNetworkSegment.getNumberOfPermits();
+
+    if (!this.permitsPerSegment.containsKey(btsId)
+        || !this.permitsPerSegment.get(btsId).containsKey(cellId)) {
+      return;
+    }
+
+    final int numberOfPermitsInMemory = this.permitsPerSegment.get(btsId).get(cellId).get();
+    if (numberOfPermitsInMemory != numberOfPermitsInDb) {
+      LOGGER.info(
+          "PermitsPerSegment in memory will be updated from {} to {} for bts/cell ({}, {})",
+          numberOfPermitsInMemory,
+          numberOfPermitsInDb,
+          btsId,
+          cellId);
+    }
   }
 
   public Map<Integer, Map<Integer, Integer>> permitsPerNetworkSegment() {
