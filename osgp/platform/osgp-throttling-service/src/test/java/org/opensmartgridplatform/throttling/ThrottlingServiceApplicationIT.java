@@ -742,7 +742,7 @@ class ThrottlingServiceApplicationIT {
   @Test
   @Sql(scripts = "/permits-by-throttling-config-initializes-from-database.sql")
   void initializesPermitsByThrottlingConfigFromDatabase() {
-    this.permitsByThrottlingConfig.reset();
+    this.permitsByThrottlingConfig.initialize();
 
     final Map<Short, PermitsPerNetworkSegment> actualPermitsPerNetworkSegmentByConfig =
         this.permitsByThrottlingConfig.permitsPerNetworkSegmentByConfig();
