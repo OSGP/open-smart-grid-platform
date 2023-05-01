@@ -49,24 +49,26 @@ public class SimulatePushedAlarmsHooks {
   private static byte[] createMx382message(final String equipmentIdentifier) {
     final byte[] apdu = createMx382Apdu(equipmentIdentifier);
     final byte[] header = createMx382WpduHeader(apdu.length);
-    final byte[] wnm = new byte[header.length + apdu.length];
-    System.arraycopy(header, 0, wnm, 0, header.length);
-    System.arraycopy(apdu, 0, wnm, header.length, apdu.length);
-    return wnm;
+    final byte[] completeMessage = new byte[header.length + apdu.length];
+    System.arraycopy(header, 0, completeMessage, 0, header.length);
+    System.arraycopy(apdu, 0, completeMessage, header.length, apdu.length);
+    return completeMessage;
   }
 
   private static byte[] createMx382Apdu(final String equipmentIdentifier) {
     final ByteBuffer buf = ByteBuffer.allocate(64);
-    buf.put((byte) 0xC2);
-    buf.put((byte) 0x00);
+    final byte eventNotificationRequest = (byte) 0xC2;
+    buf.put(eventNotificationRequest);
+    final byte noDateTimePresent = (byte) 0x00;
+    buf.put(noDateTimePresent);
 
     final byte[] classId = new byte[] {0x00, 0x01};
     buf.put(classId);
     final byte[] obiscode =
         new byte[] {(byte) 0x80, (byte) 0x80, (byte) 0x80, (byte) 0x80, (byte) 0x80, (byte) 0x00};
     buf.put(obiscode);
-    final byte attribute = 0x02;
-    buf.put((byte) attribute);
+    final byte attributeId = 0x02;
+    buf.put((byte) attributeId);
     buf.put(equipmentIdentifier.getBytes());
     buf.flip();
     final byte[] bytes = new byte[buf.limit()];
@@ -75,6 +77,11 @@ public class SimulatePushedAlarmsHooks {
   }
 
   private static byte[] createMx382WpduHeader(final int apduLength) {
-    return new byte[] {0, 1, 0, 103, 0, 102, 0, (byte) apduLength};
+    final byte version = 0x01;
+    final byte sourceWPort = 0x67;
+    final byte destinationWPort = 0x66; // pre-established client
+    return new byte[] {
+      0x00, version, 0x00, sourceWPort, 0x00, destinationWPort, 0x00, (byte) apduLength
+    };
   }
 }

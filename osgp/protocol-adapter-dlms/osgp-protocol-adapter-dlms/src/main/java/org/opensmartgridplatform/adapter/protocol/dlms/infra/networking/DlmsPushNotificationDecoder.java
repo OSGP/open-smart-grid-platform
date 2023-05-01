@@ -68,29 +68,36 @@ public class DlmsPushNotificationDecoder
      *
      * <p>DSMR4 alarm examples (in HEX bytes):
      *
-     * <p>45 58 58 58 58 31 32 33 34 35 36 37 38 39 30 31 32 // Equipment id EXXXX123456789012 2C //
-     * Comma 00 00 0F 00 04 FF // Logical name 0.0.15.0.4.255
+     * <p>45 58 58 58 58 31 32 33 34 35 36 37 38 39 30 31 32 // Equipment id EXXXX123456789012<br>
+     * 2C // Comma 00 00 0F 00 04 FF<br>
+     * // Logical name 0.0.15.0.4.255<br>
      *
-     * <p>45 58 58 58 58 31 32 33 34 35 36 37 38 39 30 31 32 // Equipment id EXXXX123456789012 2C //
-     * Comma 00 00 00 02 // Alarm register, with Replace battery set
+     * <p>45 58 58 58 58 31 32 33 34 35 36 37 38 39 30 31 32 // Equipment id EXXXX123456789012<br>
+     * 2C // Comma<br>
+     * 00 00 00 02 // Alarm register, with Replace battery set<br>
      *
      * <p>SMR5 alarm examples (in HEX bytes):
      *
-     * <p>0F // Data-notification 00 00 00 01 // Long-invoke-id-and-priority (can be ignored) 00 //
-     * Date-time (empty) 02 02 // Structure with 2 elements 09 11 45 58 58 58 58 31 32 33 34 35 36
-     * 37 38 39 30 31 32 // Equipment id EXXXX123456789012 09 06 00 00 19 09 00 FF // Logical name:
-     * Push setup schedule
+     * <p>0F // Data-notification<br>
+     * 00 00 00 01 // Long-invoke-id-and-priority (can be ignored)<br>
+     * 00 // Date-time (empty)<br>
+     * 02 02 // Structure with 2 elements<br>
+     * 09 11 45 58 58 58 58 31 32 33 34 35 36 37 38 39 30 31 32 // Equipmentid EXXXX123456789012<br>
+     * 09 06 00 00 19 09 00 FF // Logical name: Push setup schedule<br>
      *
-     * <p>0F // Data-notification 00 00 00 01 // Long-invoke-id-and-priority (can be ignored) 00 //
-     * Date-time (empty) 02 03 // Structure with 3 elements 09 11 45 58 58 58 58 31 32 33 34 35 36
-     * 37 38 39 30 31 32 // Equipment id EXXXX123456789012 09 06 00 01 19 09 00 FF // Logical name:
-     * Push setup alarms 06 00 00 00 02 // Alarm register, with Replace battery set
+     * <p>0F // Data-notification<br>
+     * 00 00 00 01 // Long-invoke-id-and-priority (can be ignored)<br>
+     * 00 // Date-time (empty)<br>
+     * 02 03 // Structure with 3 elements<br>
+     * 09 11 45 58 58 58 58 31 32 33 34 35 36 37 38 39 30 31 32 // Equipmentid EXXXX123456789012<br>
+     * 09 06 00 01 19 09 00 FF // Logical name: Push setup alarms<br>
+     * 06 00 00 00 02 // Alarm register, with Replace battery set<br>
      *
      * <p>Notes: - For MX382 and SMR5 alarms we get 8 addressing bytes in front of the alarm. These
      * bytes can be ignored here. - To check if the alarm is in MX382, DSMR4 or SMR5 format, check
-     * the 9th byte (at index 8). If it is 0F, then it is SMR5, if it is C2 then it is MX382,
-     * otherwise it is DSMR4, because the 9th byte in DSMR4 is in the identifier and this should be
-     * a number or a character, so it can't be ASCII code 0F or C2.
+     * the 9th byte (at index 8). If it is 0F, then it is SMR5, if it is C2 then it is MX382
+     * otherwise it is DSMR4 because the 9th byte in DSMR4 is in the identifier and this should be a
+     * number or a character, so it can't be ASCII code 0F or C2.
      */
     final DlmsPushNotification pushNotification;
 

@@ -126,7 +126,6 @@ public class ReceivedAlarmNotificationsSteps {
             PlatformKeys.KEY_DEVICE_IDENTIFICATION,
             PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
 
-    //    final int numberOfMatchingLogs = 2;
     final Predicate<DeviceLogItem> filter =
         dli -> Pattern.matches(PATTERN, dli.getDecodedMessage());
 
