@@ -98,9 +98,27 @@ public class ReceivedAlarmNotificationsSteps {
     }
   }
 
-  @Then("^the alarm should be pushed to the osgp_logging database device_log_item table$")
-  public void theAlarmShouldBePushedToTheOsgpLoggingDatabaseTable(
+  @When("^a forwarded mx382 alarm notification is received from a known device$")
+  public void aForwardedMx382AlarmNotificationIsReceivedFromAKnownDevice(
       final Map<String, String> settings) throws Throwable {
+    try {
+      final String deviceIdentification =
+          getString(
+              settings,
+              PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+              PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
+      SimulatePushedAlarmsHooks.simulateForwardedMx382Alarm(
+          deviceIdentification,
+          this.serviceEndpoint.getAlarmNotificationsHost(),
+          this.serviceEndpoint.getAlarmNotificationsPort());
+    } catch (final Exception e) {
+      LOGGER.error("Error occured simulateForwardedMx382Alarm: ", e);
+    }
+  }
+
+  @Then("^^(\\d++) alarm should be pushed to the osgp_logging database device_log_item table$")
+  public void theAlarmShouldBePushedToTheOsgpLoggingDatabaseTable(
+      final int numberOfMatchingLogs, final Map<String, String> settings) throws Throwable {
 
     final String deviceIdentification =
         getString(
@@ -108,7 +126,6 @@ public class ReceivedAlarmNotificationsSteps {
             PlatformKeys.KEY_DEVICE_IDENTIFICATION,
             PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
 
-    final int numberOfMatchingLogs = 2;
     final Predicate<DeviceLogItem> filter =
         dli -> Pattern.matches(PATTERN, dli.getDecodedMessage());
 
