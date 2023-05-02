@@ -331,6 +331,11 @@ public class DlmsHelper {
         DlmsUnitTypeDto.getUnitType(
             this.readLongNotNull(dataObjects.get(1), description).intValue());
 
+    if (unit == DlmsUnitTypeDto.UNDEFINED) {
+      throw new ProtocolAdapterException(
+          "expected a unit instead of unit UNDEFINED." + this.getDebugInfo(scalerUnitObject));
+    }
+
     return this.createDlmsMeterValueBasedOnValueAndScalerAndUnit(value, scaler, unit, description);
   }
 
