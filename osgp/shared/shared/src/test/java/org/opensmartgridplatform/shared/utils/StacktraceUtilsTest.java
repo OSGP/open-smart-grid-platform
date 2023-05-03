@@ -28,32 +28,20 @@ class StacktraceUtilsTest {
 
   @Test
   void shouldOnlyReturnMessageAndCauses() {
-    try {
-      this.throwsNestedException();
-    } catch (final RuntimeException e) {
-      final String s = messageAndCauses(e);
-      LOGGER.error("Example logging, this is what happened:{}", s);
+    // Arrange
+    final var firstException = new RuntimeException("This is the original error");
+    final var secondException = new RuntimeException("Something went wrong over there", firstException);
 
-      final List<String> causeLines = s.lines().toList();
-      assertThat(causeLines).hasSize(3);
-      assertThat(causeLines.get(0)).as("Newline after exception message").isBlank();
-      assertThat(causeLines.get(1)).contains("over there");
-      assertThat(causeLines.get(2)).contains("original error");
-      assertThat(s)
-          .as("Doesn't contain Java filenames and line numbers")
-          .doesNotContainPattern("(.*.java:[0-9]*)");
-    }
-  }
+    final var expected =
+        """
 
-  private void throwsNestedException() {
-    try {
-      this.throwsFirstException();
-    } catch (final RuntimeException e) {
-      throw new RuntimeException("Something went wrong over there", e);
-    }
-  }
+            Caused by org.opensmartgridplatform.shared.utils.StacktraceUtilsTest: Something went wrong over there
+            Caused by org.opensmartgridplatform.shared.utils.StacktraceUtilsTest: This is the original error""";
 
-  private void throwsFirstException() {
-    throw new RuntimeException("This is the original error");
+    // Act
+    final var actual = messageAndCauses(secondException);
+
+    // Assert
+    assertThat(actual).isEqualTo(expected);
   }
 }
