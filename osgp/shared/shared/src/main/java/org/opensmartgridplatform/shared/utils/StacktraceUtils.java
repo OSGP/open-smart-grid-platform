@@ -23,4 +23,18 @@ public class StacktraceUtils {
         .map(StackTraceElement::toString)
         .collect(Collectors.joining("\n  at "));
   }
+
+  public static String messageAndCauses(final Throwable t) {
+    final String className;
+    if (t.getStackTrace().length > 0) {
+      className = t.getStackTrace()[0].getClassName();
+    } else {
+      className = "<Unknown class>";
+    }
+    String result = "%nCaused by %s: %s".formatted(className, t.getMessage());
+    if (t.getCause() != null) {
+      result += messageAndCauses(t.getCause());
+    }
+    return result;
+  }
 }
