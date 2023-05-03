@@ -65,6 +65,7 @@ public class DlmsHelperTest {
 
   public static final int DLMS_UNIT_VAR = 29;
   public static final int DLMS_UNIT_WH = 30;
+  public static final int DLMS_UNIT_UNDEFINED = 0;
 
   private final DlmsHelper dlmsHelper = new DlmsHelper();
 
@@ -238,6 +239,24 @@ public class DlmsHelperTest {
 
     assertThat(meterValueDto.getValue()).isEqualTo(BigDecimal.valueOf(2.1));
     assertThat(meterValueDto.getDlmsUnit()).isEqualTo(DlmsUnitTypeDto.KWH);
+  }
+
+  @Test
+  void testGetScaledMeterValueWithUndefinedUnit() {
+    final GetResultImpl getResultValue = new GetResultImpl(DataObject.newUInteger16Data(21));
+    final GetResultImpl getResultScalerUnit =
+        new GetResultImpl(
+            DataObject.newStructureData(
+                DataObject.newInteger8Data((byte) -1),
+                DataObject.newEnumerateData(DLMS_UNIT_UNDEFINED)));
+
+    final Exception exception =
+        assertThrows(
+            ProtocolAdapterException.class,
+            () -> {
+              this.dlmsHelper.getScaledMeterValue(
+                  getResultValue, getResultScalerUnit, "getScaledMeterValueTest");
+            });
   }
 
   @Test
