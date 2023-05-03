@@ -12,7 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.shared.utils.StacktraceUtils.currentStacktrace;
 import static org.opensmartgridplatform.shared.utils.StacktraceUtils.messageAndCauses;
 
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +27,8 @@ class StacktraceUtilsTest {
 
   @Test
   void shouldOnlyReturnMessageAndCauses() {
-    // Arrange
-    final var firstException = new RuntimeException("This is the original error");
-    final var secondException = new RuntimeException("Something went wrong over there", firstException);
+    final var nestedException = new RuntimeException("This is the original error");
+    final var exception = new RuntimeException("Something went wrong over there", nestedException);
 
     final var expected =
         """
@@ -38,10 +36,7 @@ class StacktraceUtilsTest {
             Caused by org.opensmartgridplatform.shared.utils.StacktraceUtilsTest: Something went wrong over there
             Caused by org.opensmartgridplatform.shared.utils.StacktraceUtilsTest: This is the original error""";
 
-    // Act
-    final var actual = messageAndCauses(secondException);
-
-    // Assert
+    final var actual = messageAndCauses(exception);
     assertThat(actual).isEqualTo(expected);
   }
 }
