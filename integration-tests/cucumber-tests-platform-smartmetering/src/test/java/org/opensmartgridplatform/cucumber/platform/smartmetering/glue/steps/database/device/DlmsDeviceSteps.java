@@ -596,7 +596,7 @@ public class DlmsDeviceSteps {
       final DlmsDevice dlmsDevice, final SecretType secretType, final String keyDescription) {
     final List<DbEncryptedSecret> validSecrets =
         this.encryptedSecretRepository.findSecrets(
-            dlmsDevice.getDeviceIdentification(), List.of(secretType), SecretStatus.ACTIVE);
+            dlmsDevice.getDeviceIdentification(), Collections.singletonList(secretType), SecretStatus.ACTIVE);
     assertThat(validSecrets)
         .as(
             "Device %s should have 1 active secret of type %s, but found %s",
@@ -837,7 +837,7 @@ public class DlmsDeviceSteps {
       final String key = SecurityKey.valueOf(securityTypeInputName).getDatabaseKey();
 
       final List<DbEncryptedSecret> currentlyActiveKeys =
-          this.encryptedSecretRepository.findSecrets(id, List.of(secretType), SecretStatus.ACTIVE);
+          this.encryptedSecretRepository.findSecrets(id, Collections.singletonList(secretType), SecretStatus.ACTIVE);
       for (final DbEncryptedSecret currentlyActiveKey : currentlyActiveKeys) {
         currentlyActiveKey.setSecretStatus(SecretStatus.NEW);
         this.encryptedSecretRepository.save(currentlyActiveKey);
@@ -941,7 +941,7 @@ public class DlmsDeviceSteps {
       final String dbEncryptedSecretValue = SecurityKey.valueOf(keyName).getDatabaseKey();
       final List<DbEncryptedSecret> dbEncryptedSecret =
           this.encryptedSecretRepository.findSecrets(
-              deviceIdentification, List.of(secretType), SecretStatus.valueOf(secretStatus));
+              deviceIdentification, Collections.singletonList(secretType), SecretStatus.valueOf(secretStatus));
 
       assertThat(dbEncryptedSecret)
           .withFailMessage(
@@ -1009,7 +1009,7 @@ public class DlmsDeviceSteps {
 
     final List<DbEncryptedSecret> keys =
         this.encryptedSecretRepository.findSecrets(
-            deviceIdentification, List.of(secretType), secretStatus);
+            deviceIdentification, Collections.singletonList(secretType), secretStatus);
     assertThat(keys).hasSize(expectedNumberOfKeys);
   }
 
@@ -1025,7 +1025,7 @@ public class DlmsDeviceSteps {
         this.encryptedSecretRepository
             .findSecrets(
                 deviceIdentification,
-                List.of(SecretType.E_METER_AUTHENTICATION_KEY),
+                Collections.singletonList(SecretType.E_METER_AUTHENTICATION_KEY),
                 SecretStatus.ACTIVE)
             .stream()
             .map(DbEncryptedSecret::getEncodedSecret)
@@ -1035,7 +1035,7 @@ public class DlmsDeviceSteps {
         this.encryptedSecretRepository
             .findSecrets(
                 deviceIdentification,
-                List.of(SecretType.E_METER_AUTHENTICATION_KEY),
+                Collections.singletonList(SecretType.E_METER_AUTHENTICATION_KEY),
                 SecretStatus.EXPIRED)
             .stream()
             .map(DbEncryptedSecret::getEncodedSecret)
@@ -1045,7 +1045,7 @@ public class DlmsDeviceSteps {
         this.encryptedSecretRepository
             .findSecrets(
                 deviceIdentification,
-                List.of(SecretType.E_METER_ENCRYPTION_KEY_UNICAST),
+                Collections.singletonList(SecretType.E_METER_ENCRYPTION_KEY_UNICAST),
                 SecretStatus.ACTIVE)
             .stream()
             .map(DbEncryptedSecret::getEncodedSecret)
@@ -1055,7 +1055,7 @@ public class DlmsDeviceSteps {
         this.encryptedSecretRepository
             .findSecrets(
                 deviceIdentification,
-                List.of(SecretType.E_METER_ENCRYPTION_KEY_UNICAST),
+                Collections.singletonList(SecretType.E_METER_ENCRYPTION_KEY_UNICAST),
                 SecretStatus.EXPIRED)
             .stream()
             .map(DbEncryptedSecret::getEncodedSecret)
@@ -1127,7 +1127,7 @@ public class DlmsDeviceSteps {
               }
               final List<DbEncryptedSecret> activeSecretList =
                   this.encryptedSecretRepository.findSecrets(
-                      deviceIdentification, List.of(secretType), SecretStatus.ACTIVE);
+                      deviceIdentification, Collections.singletonList(secretType), SecretStatus.ACTIVE);
               final String expectedKeyName = inputSettings.get(keyInputName);
               final String expectedDbEncryptedSecret =
                   SecurityKey.valueOf(expectedKeyName).getDatabaseKey();
