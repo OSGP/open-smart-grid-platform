@@ -99,9 +99,11 @@ class EncryptionKeyReferenceCacheServiceTest {
     final DbEncryptionKeyReference dbEncryptionKeyReference = new DbEncryptionKeyReference();
     dbEncryptionKeyReference.setReference(reference);
     dbEncryptionKeyReference.setEncryptionProviderType(encryptionProviderType);
-    dbEncryptionKeyReference.setValidFrom(new DateTime().plusDays(validFromDaysOffset).toDate());
+    dbEncryptionKeyReference.setValidFrom(
+        new DateTime().withTimeAtStartOfDay().plusDays(validFromDaysOffset).toDate());
     if (validToDaysOffset != null) {
-      dbEncryptionKeyReference.setValidTo(new DateTime().plusDays(validToDaysOffset).toDate());
+      dbEncryptionKeyReference.setValidTo(
+          new DateTime().withTimeAtStartOfDay().plusDays(validToDaysOffset).toDate());
     }
     return dbEncryptionKeyReference;
   }
