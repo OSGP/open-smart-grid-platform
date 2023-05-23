@@ -106,7 +106,7 @@ public class ActualPowerQualitySteps {
         SettingsHelper.getStringValue(settings, "PowerQualityObject_Name", 1);
     // Only check the received objects if there are expected objects defined in the settings
     if (expectedName != null) {
-      IntStream.range(1, expectedNumberOfPowerQualityObjects)
+      IntStream.range(1, expectedNumberOfPowerQualityObjects + 1) // +1 because end is exclusive
           .forEach(
               i -> this.objectShouldBePresentInResponse(i, settings, actualPowerQualityObjects));
     }
