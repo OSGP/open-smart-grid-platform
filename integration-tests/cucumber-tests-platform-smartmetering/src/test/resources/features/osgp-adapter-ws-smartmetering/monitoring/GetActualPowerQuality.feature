@@ -177,9 +177,9 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | PowerQualityObject_Name_1   | CLOCK                                              |
       | PowerQualityObject_Name_2   | INSTANTANEOUS_ACTIVE_POWER_IMPORT                  |
       | PowerQualityObject_Unit_2   | W                                                  |
-      | PowerQualityObject_Name_3   | INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES |
+      | PowerQualityObject_Name_3   | INSTANTANEOUS_CURRENT_L1                           |
       | PowerQualityObject_Unit_3   | AMP                                                |
-      | PowerQualityObject_Name_4   | INSTANTANEOUS_CURRENT_L1                           |
+      | PowerQualityObject_Name_4   | INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES |
       | PowerQualityObject_Unit_4   | AMP                                                |
       | PowerQualityObject_Name_5   | INSTANTANEOUS_ACTIVE_POWER_EXPORT                  |
       | PowerQualityObject_Unit_5   | W                                                  |
@@ -200,7 +200,7 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
 
     Examples:
       | DeviceId             | Protocol | ProtocolVersion | Lls1active | Hls5active | ExpectedNumber |
-      | KTEST10260000001     | DSMR     | 2.2             | true       | false      | 4              |
+      | KTEST10260000001     | DSMR     | 2.2             | true       | false      | 3              |
       | TEST1024000000001    | DSMR     | 4.2.2           | false      | true       | 12             |
       | TEST1027000000001    | SMR      | 5.0.0           | false      | true       | 12             |
 
