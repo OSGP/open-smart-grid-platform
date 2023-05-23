@@ -26,7 +26,7 @@ public class PushNotificationAlarm {
 
   @Autowired private ServiceEndpoint serviceEndpoint;
 
-  @When("^an alarm is received from a known device$")
+  @When("^an alarm is received from a device$")
   public void anAlarmIsReceivedFromAKnownDevice(final Map<String, String> settings)
       throws Throwable {
     this.simulateAlarm(settings, new byte[] {0x2C, 0x00, 0x00, 0x01, 0x02});
@@ -36,6 +36,12 @@ public class PushNotificationAlarm {
   public void anPowerUpAlarmIsReceivedFromADevice(final Map<String, String> settings)
       throws Throwable {
     this.simulateAlarm(settings, new byte[] {0x2C, 0x00, 0x00, 0x00, 0x04});
+  }
+
+  @When("^an Phase Outage Detected L1 alarm is received from a device$")
+  public void anPhaseOutageDetectedL1IsReceivedFromADevice(final Map<String, String> settings)
+      throws Throwable {
+    this.simulateAlarm(settings, new byte[] {0x2C, 0x10, 0x00, 0x00, 0x00});
   }
 
   @When("^a New M-Bus device discovered channel (\\d) alarm is received from a device$")
