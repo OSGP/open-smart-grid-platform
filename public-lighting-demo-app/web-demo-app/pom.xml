@@ -15,7 +15,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-os-webapps</artifactId>
-    <version>5.41.0-SNAPSHOT</version>
+    <version>5.41.1-SNAPSHOT-SNAPSHOT</version>
     <relativePath>../parent-os-webapps/pom.xml</relativePath>
   </parent>
 
