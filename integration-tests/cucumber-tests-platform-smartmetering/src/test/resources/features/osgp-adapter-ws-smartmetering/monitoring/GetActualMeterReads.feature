@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform @SmartMeteringMonitoring
 Feature: SmartMetering Monitoring - Get Actual Meter Reads
   As a grid operator

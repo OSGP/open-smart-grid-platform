@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @PublicLighting @Platform @FirmwareManagement @PendingFirmwareUpdate
 Feature: FirmwareManagement pending firmware update
   As grid operator

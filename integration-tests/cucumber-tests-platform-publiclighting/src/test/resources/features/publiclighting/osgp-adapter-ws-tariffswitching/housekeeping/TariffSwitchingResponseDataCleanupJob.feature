@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @Skip @TariffSwitching @Platform @NightlyBuildOnly @Housekeeping
 Feature: TariffSwitching Housekeeping - Response Data Cleanup Job
   As open smart grid platform

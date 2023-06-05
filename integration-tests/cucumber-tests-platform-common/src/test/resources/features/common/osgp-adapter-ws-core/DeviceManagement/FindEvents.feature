@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @Common @Platform @CoreDeviceManagement
 Feature: CoreDeviceManagement Find Events
   As a Grid Operator, my smart devices send events to OSGP which will be stored in the database

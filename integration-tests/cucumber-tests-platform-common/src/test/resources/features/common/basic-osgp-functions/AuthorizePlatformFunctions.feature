@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @Common @Platform @BasicOsgpFunctions
 Feature: BasicOsgpFunctions Authorizing Platform Functions
   As a ...
