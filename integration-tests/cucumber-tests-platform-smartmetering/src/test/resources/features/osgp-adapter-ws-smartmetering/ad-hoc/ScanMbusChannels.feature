@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform @SmartMeteringAdHoc
 Feature: SmartMetering Scan M-Bus Channels
   As a grid operator

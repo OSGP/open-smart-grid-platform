@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @Skip @DistributionAutomation @Platform @MeasurementReports
 Feature: DistributionAutomation Receive measurement reports
   As a grid operator

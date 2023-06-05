@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @Microgrids @Platform @Iec61850MockServer @Iec61850MockServerPampus
 Feature: Microgrids Enable Reporting
   In order to be able to receive data from a RTU

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform @NightlyBuildOnly @DSMR22
 Feature: SmartMetering Connection security
   As a grid operator

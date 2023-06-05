@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @Microgrids @Platform @Iec61850MockServer @Iec61850MockServerPampus
 Feature: Microgrids Get PhotoVoltaic System Data
   In order to be able to know data of a photovoltaic system with a remote terminal unit

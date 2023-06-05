@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @Microgrids @Platform
 Feature: Microgrids Get Boiler Data
   As an OSGP client
