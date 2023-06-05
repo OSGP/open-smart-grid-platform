@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: Contributors to the GXF project
+--
+-- SPDX-License-Identifier: Apache-2.0
+
 -- Script for migration legacy relay status.
 
 CREATE OR REPLACE FUNCTION migration_for_relay_status() RETURNS SETOF relay_status AS

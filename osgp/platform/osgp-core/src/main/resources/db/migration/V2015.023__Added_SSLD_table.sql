@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: Contributors to the GXF project
+--
+-- SPDX-License-Identifier: Apache-2.0
+
 CREATE TABLE ssld (
     id bigserial NOT NULL,
     creation_time timestamp without time zone NOT NULL,

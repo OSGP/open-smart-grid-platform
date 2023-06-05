@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: Contributors to the GXF project
+--
+-- SPDX-License-Identifier: Apache-2.0
+
 INSERT INTO protocol_info(id, creation_time, modification_time, version, 
                           protocol, protocol_version, 
                           outgoing_protocol_requests_queue, incoming_protocol_responses_queue, 

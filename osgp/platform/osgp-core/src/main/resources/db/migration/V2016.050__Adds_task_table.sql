@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: Contributors to the GXF project
+--
+-- SPDX-License-Identifier: Apache-2.0
+
 -- Creates the table for task along with the proper permissions
 CREATE TABLE task (
     id BIGINT NOT NULL,

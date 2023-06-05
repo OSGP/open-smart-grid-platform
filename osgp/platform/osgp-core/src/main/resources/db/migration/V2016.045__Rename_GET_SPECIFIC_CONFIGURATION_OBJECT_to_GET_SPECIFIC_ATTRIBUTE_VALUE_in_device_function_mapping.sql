@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: Contributors to the GXF project
+--
+-- SPDX-License-Identifier: Apache-2.0
+
 --
 -- Rename GET_SPECIFIC_CONFIGURATION_OBJECT to GET_SPECIFIC_ATTRIBUTE_VALUE in device_function_mapping table
 -- SLIM-675
