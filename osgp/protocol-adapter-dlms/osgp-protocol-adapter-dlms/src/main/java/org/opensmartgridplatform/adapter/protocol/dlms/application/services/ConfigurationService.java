@@ -29,6 +29,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetA
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupAlarmCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupLastGaspCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupSmsCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupUdpCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.GenerateAndReplaceKeyCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.ReplaceKeyCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.SetKeyOnGMeterCommandExecutor;
@@ -61,6 +62,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfiguration
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupUdpRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDayDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
@@ -97,6 +99,8 @@ public class ConfigurationService {
   @Autowired private SetPushSetupLastGaspCommandExecutor setPushSetupLastGaspCommandExecutor;
 
   @Autowired private SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor;
+
+  @Autowired private SetPushSetupUdpCommandExecutor setPushSetupUdpCommandExecutor;
 
   @Autowired private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
 
@@ -378,6 +382,25 @@ public class ConfigurationService {
     if (AccessResultCode.SUCCESS != accessResultCode) {
       throw new ProtocolAdapterException(
           "AccessResultCode for set push setup sms was not SUCCESS: " + accessResultCode);
+    }
+  }
+
+  public void setPushSetupUdp(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final SetPushSetupUdpRequestDto pushSetupUdpRequest,
+      final MessageMetadata messageMetadata)
+      throws ProtocolAdapterException {
+
+    LOGGER.info("Push Setup UDP to set on the device: {}", pushSetupUdpRequest);
+
+    final AccessResultCode accessResultCode =
+        this.setPushSetupUdpCommandExecutor.execute(
+            conn, device, pushSetupUdpRequest, messageMetadata);
+
+    if (AccessResultCode.SUCCESS != accessResultCode) {
+      throw new ProtocolAdapterException(
+          "AccessResultCode for set push setup udp was not SUCCESS: " + accessResultCode);
     }
   }
 

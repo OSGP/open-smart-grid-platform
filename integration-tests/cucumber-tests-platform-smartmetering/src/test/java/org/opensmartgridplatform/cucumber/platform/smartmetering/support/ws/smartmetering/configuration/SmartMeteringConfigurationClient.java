@@ -82,6 +82,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupUdpAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupUdpAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupUdpRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupUdpResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomisationSettingsAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomisationSettingsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomisationSettingsRequest;
@@ -418,6 +422,20 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     this.waitForNotification(correlationUid);
 
     return (SetPushSetupSmsResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
+  }
+
+  public SetPushSetupUdpAsyncResponse setPushSetupUdp(final SetPushSetupUdpRequest request)
+      throws WebServiceSecurityException {
+    return (SetPushSetupUdpAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+  }
+
+  public SetPushSetupUdpResponse getSetPushSetupUdpResponse(
+      final SetPushSetupUdpAsyncRequest asyncRequest) throws WebServiceSecurityException {
+
+    final String correlationUid = asyncRequest.getCorrelationUid();
+    this.waitForNotification(correlationUid);
+
+    return (SetPushSetupUdpResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
   }
 
   private WebServiceTemplate getTemplate() throws WebServiceSecurityException {

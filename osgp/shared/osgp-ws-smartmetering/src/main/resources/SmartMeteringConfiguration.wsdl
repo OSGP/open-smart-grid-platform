@@ -326,6 +326,26 @@
     </wsdl:part>
   </wsdl:message>
 
+
+  <wsdl:message name="SetPushSetupUdpRequest">
+    <wsdl:part element="smconf:SetPushSetupUdpRequest" name="SetPushSetupUdpRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetPushSetupUdpAsyncResponse">
+    <wsdl:part element="smconf:SetPushSetupUdpAsyncResponse"
+      name="SetPushSetupUdpAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetPushSetupUdpAsyncRequest">
+    <wsdl:part element="smconf:SetPushSetupUdpAsyncRequest"
+      name="SetPushSetupUdpAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetPushSetupUdpResponse">
+    <wsdl:part element="smconf:SetPushSetupUdpResponse" name="SetPushSetupUdpResponse">
+    </wsdl:part>
+  </wsdl:message>
+
   <wsdl:message name="SetAdministrativeStatusRequest">
     <wsdl:part element="smconf:SetAdministrativeStatusRequest"
                name="SetAdministrativieStatusRequest">
@@ -623,6 +643,22 @@
       </wsdl:input>
       <wsdl:output message="tns:SetPushSetupSmsResponse"
                    name="SetPushSetupSmsResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetPushSetupUdp">
+      <wsdl:input message="tns:SetPushSetupUdpRequest" name="SetPushSetupUdpRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetPushSetupUdpAsyncResponse"
+        name="SetPushSetupUdpAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetPushSetupUdpResponse">
+      <wsdl:input message="tns:SetPushSetupUdpAsyncRequest"
+        name="SetPushSetupUdpAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetPushSetupUdpResponse"
+        name="SetPushSetupUdpResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -1128,6 +1164,38 @@
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetPushSetupSmsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetPushSetupUdp">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="SetPushSetupUdpRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SetPushSetupUdpAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetSetPushSetupUdpResponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="SetPushSetupUdpAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SetPushSetupUdpResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
