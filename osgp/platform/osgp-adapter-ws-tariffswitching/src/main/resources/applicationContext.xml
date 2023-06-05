@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
   xmlns:jpa="http://www.springframework.org/schema/data/jpa"

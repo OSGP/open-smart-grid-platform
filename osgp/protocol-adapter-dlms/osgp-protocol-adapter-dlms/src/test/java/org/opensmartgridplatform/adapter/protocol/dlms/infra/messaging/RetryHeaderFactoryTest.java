@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;

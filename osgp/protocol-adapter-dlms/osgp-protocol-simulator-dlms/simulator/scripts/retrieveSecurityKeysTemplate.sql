@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+--
+-- SPDX-License-Identifier: Apache-2.0
+
 COPY(
 SELECT security_key FROM security_key INNER JOIN dlms_device ON security_key.dlms_device_id = dlms_device.id
 WHERE device_identification = 'DEVICE_IDENTIFICATION' AND valid_to is null AND security_key_type like '%_AUTH%') 

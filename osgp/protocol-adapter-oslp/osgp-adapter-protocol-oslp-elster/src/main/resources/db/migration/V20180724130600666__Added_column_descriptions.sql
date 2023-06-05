@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+--
+-- SPDX-License-Identifier: Apache-2.0
+
 COMMENT ON COLUMN oslp_device.device_identification IS 'Business key; identification of this OSLP device.';
 COMMENT ON COLUMN oslp_device.device_type IS 'The type [PSLD, SSLD] of this OSLP device.';
 COMMENT ON COLUMN oslp_device.device_uid IS 'The unique ID of this OSLP device.';

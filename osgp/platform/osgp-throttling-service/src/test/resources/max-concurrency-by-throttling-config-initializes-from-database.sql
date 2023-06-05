@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+--
+-- SPDX-License-Identifier: Apache-2.0
+
 -- Insert database content expected to be present executing test methods annotated with
 -- @Sql(scripts = "/max-concurrency-by-throttling-config-initializes-from-database.sql")
 INSERT INTO throttling_config (id, name, max_concurrency) VALUES

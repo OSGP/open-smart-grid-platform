@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 There are two ways to start simulators:
 - **Stand-alone simulator**: for a single configuration provided by command-line arguments. 
 I.e. for every configuration a separate process is started.

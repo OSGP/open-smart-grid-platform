@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 JARTOSTART=dlms-device-simulator/target/dlms-device-simulator-standalone.jar
 PORT=1026
 

@@ -1,5 +1,8 @@
-//  SPDX-FileCopyrightText: Copyright Contributors to the GXF project
-//  SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.ws.publiclighting.housekeeping;
 
 import io.cucumber.java.en.Then;

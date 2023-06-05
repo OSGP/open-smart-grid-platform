@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Protocol Adapter for IEC61850 Protocol
 
 ## Grid eXchange Fabric information and news

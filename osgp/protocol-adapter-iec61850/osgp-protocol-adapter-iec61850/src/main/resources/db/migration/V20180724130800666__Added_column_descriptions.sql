@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+--
+-- SPDX-License-Identifier: Apache-2.0
+
 COMMENT ON COLUMN iec61850_device.device_identification IS 'Business key; identification of this IEC61850 device.';
 COMMENT ON COLUMN iec61850_device.icd_filename IS 'The name of the ICD file / server model of this IEC61850 device.';
 COMMENT ON COLUMN iec61850_device.port IS 'The port of this IEC61850 device.';

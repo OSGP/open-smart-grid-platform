@@ -11735,14 +11735,13 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
+
 <!--
-  ~ Copyright 2014 Jasper Wireless, Inc. All rights reserved.
-  ~
-  ~ This software code is the confidential and proprietary information of
-  ~ Jasper Systems, Inc. ("Confidential Information"). Any unauthorized
-  ~ review, use, copy, disclosure or distribution of such Confidential
-  ~ Information is strictly prohibited.
-  -->
+Copyright 2014 Jasper Wireless, Inc. All rights reserved.
+SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+
+SPDX-License-Identifier: Apache-2.0
+-->
 
 <!-- ========= Msisdn Callback Request ============-->
 <xs:element name="VIVOMsisdnCallbackRequest">

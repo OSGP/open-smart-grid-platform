@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 PSQL_USER=osp_admin
 PSQL_DB=osgp_adapter_protocol_dlms
 TMP_DIR=/tmp/keys

@@ -1,8 +1,12 @@
 <?xml version="1.1" encoding="UTF-8"?>
+
 <!--
-        SPDX-FileCopyrightText: Copyright Contributors to the GXF project
-        SPDX-License-Identifier: Apache-2.0
+SPDX-FileCopyrightText: 2023 Contributors to the GXF project
+SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+
+SPDX-License-Identifier: Apache-2.0
 -->
+
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
     xmlns:da="http://www.opensmartgridplatform.org/schemas/distributionautomation/defs/2017/04"
