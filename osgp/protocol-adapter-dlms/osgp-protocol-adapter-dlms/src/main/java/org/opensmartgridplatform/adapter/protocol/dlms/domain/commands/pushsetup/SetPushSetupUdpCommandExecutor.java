@@ -69,13 +69,12 @@ public class SetPushSetupUdpCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(device);
+    final SetParameter setParameterCommunicationWindow =
+        this.getSetParameterCommunicationWindow(device);
 
     final AccessResultCode resultCode =
         this.doSetRequest(
-            "PushSetupSms, Send destination and method",
-            conn,
-            setParameterSendDestinationAndMethod);
+            "PushSetupUdp, communication window", conn, setParameterCommunicationWindow);
 
     if (resultCode != null) {
       return resultCode;
@@ -84,7 +83,8 @@ public class SetPushSetupUdpCommandExecutor
     }
   }
 
-  private SetParameter getSetParameter(final DlmsDevice device) throws ProtocolAdapterException {
+  private SetParameter getSetParameterCommunicationWindow(final DlmsDevice device)
+      throws ProtocolAdapterException {
 
     try {
       final CosemObject pushSetupUdp =

@@ -21,7 +21,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/** Class for processing set push setup sms request messages */
+/** Class for processing set push setup udp request messages */
 @Component
 public class SetPushSetupUdpRequestMessageProcessor extends DeviceRequestMessageProcessor {
 

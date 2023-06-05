@@ -1,7 +1,7 @@
 @SmartMetering @Platform
-Feature: SmartMetering Bundle - SetPushSetupAlarm
+Feature: SmartMetering Bundle - Set Push Setup UDP
   As a grid operator 
-  I want to be able to set push setup alarm on a meter via a bundle request
+  I want to be able to set push setup udp on a meter via a bundle request
 
   Scenario: Set push setup udp on an SMR5.5 device in a bundle request
     Given a bundle request
