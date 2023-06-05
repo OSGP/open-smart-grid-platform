@@ -1,4 +1,7 @@
-<!-- Copyright 2015 Smart Society Services B.V. -->
+<!--
+        SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+        SPDX-License-Identifier: Apache-2.0
+-->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
   xmlns:smman="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
