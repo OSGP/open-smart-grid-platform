@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: Contributors to the GXF project
+--
+-- SPDX-License-Identifier: Apache-2.0
+
 -- First, rename the queue names.
 UPDATE domain_info SET requests_queue='osgp.domain.core.1_0.out.requests' WHERE id=1;
 UPDATE domain_info SET responses_queue='osgp.domain.core.1_0.out.responses' WHERE id=1;

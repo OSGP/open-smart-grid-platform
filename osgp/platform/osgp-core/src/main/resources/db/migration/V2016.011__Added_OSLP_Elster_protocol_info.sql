@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: Contributors to the GXF project
+--
+-- SPDX-License-Identifier: Apache-2.0
+
 --New queues for Elster protocol
 
 INSERT INTO protocol_info(id

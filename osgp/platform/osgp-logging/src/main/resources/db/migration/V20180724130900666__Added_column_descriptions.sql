@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: Contributors to the GXF project
+--
+-- SPDX-License-Identifier: Apache-2.0
+
 COMMENT ON COLUMN device_log_item.decoded_message IS 'The decoded message of this device log item.';
 COMMENT ON COLUMN device_log_item.device_identification IS 'The identification of a device for this device log item.';
 COMMENT ON COLUMN device_log_item.device_uid IS 'The unique ID of a device for this device log item.';

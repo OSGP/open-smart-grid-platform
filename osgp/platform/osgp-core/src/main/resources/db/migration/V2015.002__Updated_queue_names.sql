@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: Contributors to the GXF project
+--
+-- SPDX-License-Identifier: Apache-2.0
 
 -- RENAME DOMAIN INFO QUEUE COLUMNS
 ALTER TABLE domain_info RENAME COLUMN requests_queue_out TO incoming_domain_requests_queue;

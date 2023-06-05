@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: Contributors to the GXF project
+--
+-- SPDX-License-Identifier: Apache-2.0
+
 ALTER TABLE periodic_meter_data RENAME TO periodic_meter_reads;
 
 ALTER TABLE meter_data RENAME TO meter_reads;

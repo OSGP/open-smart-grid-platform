@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: Contributors to the GXF project
+--
+-- SPDX-License-Identifier: Apache-2.0
+
 ALTER TABLE security_key
    ALTER COLUMN valid_from DROP NOT NULL;
 
