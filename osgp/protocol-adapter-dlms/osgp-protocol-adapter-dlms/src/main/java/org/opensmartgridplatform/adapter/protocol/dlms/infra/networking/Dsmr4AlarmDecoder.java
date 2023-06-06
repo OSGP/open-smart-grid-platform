@@ -1,5 +1,7 @@
-//  SPDX-FileCopyrightText: Copyright Contributors to the GXF project
-//  SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.networking;
 
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.EXTERNAL_TRIGGER_CSD;

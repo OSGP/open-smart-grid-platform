@@ -1,5 +1,7 @@
-//  SPDX-FileCopyrightText: Copyright Contributors to the GXF project
-//  SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.core.messageprocessors;
 
 import javax.jms.JMSException;
