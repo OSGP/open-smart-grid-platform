@@ -99,4 +99,20 @@ public interface DeviceRepository
       String deviceType,
       boolean inMaintenance,
       DeviceLifecycleStatus deviceLifecycleStatus);
+
+  @Transactional
+  @Modifying
+  @Query(
+      value =
+          "UPDATE Device d SET d.lastSuccessfulConnectionTimestamp = now(), d.failedConnectionCount = 0"
+              + " WHERE d.deviceIdentification = ?1")
+  int updateConnectionDetailsToSuccess(String deviceIdentification);
+
+  @Transactional
+  @Modifying
+  @Query(
+      value =
+          "UPDATE Device d SET d.lastFailedConnectionTimestamp = now(), d.failedConnectionCount = d.failedConnectionCount+1"
+              + " WHERE d.deviceIdentification = ?1")
+  int updateConnectionDetailsToFailure(String deviceIdentification);
 }
