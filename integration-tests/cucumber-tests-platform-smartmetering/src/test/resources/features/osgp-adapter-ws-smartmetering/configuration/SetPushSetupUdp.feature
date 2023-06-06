@@ -4,7 +4,7 @@ Feature: SmartMetering Configuration - Set Push Setup UDP
   I want to be able to set the Push setup UDP on a device
   So the device will push its related messages to the correct endpoint
 
-  Scenario: Set push setup udp on an SMR5.5 device
+  Scenario: Set push setup udp on a SMR5.5 device
     Given a dlms device
       | DeviceIdentification | TEST1030000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -20,7 +20,7 @@ Feature: SmartMetering Configuration - Set Push Setup UDP
     Then the PushSetupUdp should be set on the device
       | DeviceIdentification | TEST1030000000001 |
 
-  Scenario: Set push setup udp on an SMR5.2 device
+  Scenario: Set push setup udp on a SMR5.2 device
     Given a dlms device
       | DeviceIdentification | TEST1029000000001 |
       | DeviceType           | SMART_METER_E     |

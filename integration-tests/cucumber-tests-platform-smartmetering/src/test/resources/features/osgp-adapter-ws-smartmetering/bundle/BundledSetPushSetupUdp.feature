@@ -3,7 +3,7 @@ Feature: SmartMetering Bundle - Set Push Setup UDP
   As a grid operator 
   I want to be able to set push setup udp on a meter via a bundle request
 
-  Scenario: Set push setup udp on an SMR5.5 device in a bundle request
+  Scenario: Set push setup udp on a SMR5.5 device in a bundle request
     Given a bundle request
       | DeviceIdentification | TEST1030000000001 |
     And a dlms device
@@ -19,7 +19,7 @@ Feature: SmartMetering Bundle - Set Push Setup UDP
     And the PushSetupUdp should be set on the device
       | DeviceIdentification | TEST1030000000001 |
 
-  Scenario: Set push setup udp on an SMR5.2 device in a bundle request
+  Scenario: Set push setup udp on a SMR5.2 device in a bundle request
     Given a bundle request
       | DeviceIdentification | TEST1029000000001 |
     And a dlms device
