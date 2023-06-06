@@ -1,7 +1,3 @@
--- SPDX-FileCopyrightText: Contributors to the GXF project
---
--- SPDX-License-Identifier: Apache-2.0
-
 COMMENT ON COLUMN response_data.organisation_identification IS 'Identification of the organisation behind the request this response is for.';
 COMMENT ON COLUMN response_data.device_identification IS 'Identification of the device the response data belongs with.';
 COMMENT ON COLUMN response_data.message_type IS 'Indicates which device function was executed that lead to this response.';

@@ -1,7 +1,3 @@
--- SPDX-FileCopyrightText: Contributors to the GXF project
---
--- SPDX-License-Identifier: Apache-2.0
-
 ALTER TABLE manufacturer ALTER COLUMN code TYPE character varying(4);
 ALTER TABLE manufacturer ALTER COLUMN name TYPE character varying(50);
 

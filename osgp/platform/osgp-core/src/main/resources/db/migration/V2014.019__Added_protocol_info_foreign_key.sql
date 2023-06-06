@@ -1,7 +1,3 @@
--- SPDX-FileCopyrightText: Contributors to the GXF project
---
--- SPDX-License-Identifier: Apache-2.0
-
 ALTER TABLE device_protocol_info RENAME TO protocol_info;
 
 ALTER INDEX device_protocol_info_pkey RENAME TO protocol_info_pkey;

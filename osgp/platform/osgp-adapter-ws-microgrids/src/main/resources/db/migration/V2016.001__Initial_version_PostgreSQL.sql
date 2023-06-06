@@ -1,7 +1,3 @@
--- SPDX-FileCopyrightText: Contributors to the GXF project
---
--- SPDX-License-Identifier: Apache-2.0
-
 CREATE TABLE rtu_response_data (
     id bigint NOT NULL,
     creation_time timestamp without time zone NOT NULL,

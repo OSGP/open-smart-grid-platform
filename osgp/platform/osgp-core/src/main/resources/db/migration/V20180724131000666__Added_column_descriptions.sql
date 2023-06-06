@@ -1,7 +1,3 @@
--- SPDX-FileCopyrightText: Contributors to the GXF project
---
--- SPDX-License-Identifier: Apache-2.0
-
 COMMENT ON COLUMN device.device_identification IS 'Business key; identification of this device.';
 COMMENT ON COLUMN device.device_type IS 'The type [SSLD, PSLD] of this device.';
 COMMENT ON COLUMN device.is_activated IS 'Indicates whether or not this device is activated.';

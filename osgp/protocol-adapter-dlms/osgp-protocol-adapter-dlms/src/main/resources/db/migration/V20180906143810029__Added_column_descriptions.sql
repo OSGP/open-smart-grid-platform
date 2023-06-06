@@ -1,7 +1,3 @@
--- SPDX-FileCopyrightText: Contributors to the GXF project
---
--- SPDX-License-Identifier: Apache-2.0
-
 COMMENT ON COLUMN dlms_device.device_identification IS 'Business key; identification of this device.';
 COMMENT ON COLUMN dlms_device.icc_id IS 'International integrated circuit card identifier of the SIM chip of this device.';
 COMMENT ON COLUMN dlms_device.communication_provider IS 'Communication provider for this device.';

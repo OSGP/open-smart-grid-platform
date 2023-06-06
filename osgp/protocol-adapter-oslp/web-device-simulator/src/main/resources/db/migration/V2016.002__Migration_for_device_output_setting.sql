@@ -1,7 +1,3 @@
--- SPDX-FileCopyrightText: Contributors to the GXF project
---
--- SPDX-License-Identifier: Apache-2.0
-
 -- Script for migration legacy device_output_setting.
 
 CREATE OR REPLACE FUNCTION migration_for_device_output_setting_device_simulator() 

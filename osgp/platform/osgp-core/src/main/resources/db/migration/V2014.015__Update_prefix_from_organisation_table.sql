@@ -1,6 +1,3 @@
--- SPDX-FileCopyrightText: Contributors to the GXF project
---
--- SPDX-License-Identifier: Apache-2.0
 
 UPDATE organisation SET organisation_identification = 'LianderNetManagement' WHERE organisation_identification = 'Alliander';
 

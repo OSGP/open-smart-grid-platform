@@ -1,7 +1,3 @@
--- SPDX-FileCopyrightText: Contributors to the GXF project
---
--- SPDX-License-Identifier: Apache-2.0
-
 CREATE OR REPLACE FUNCTION migration_for_events() RETURNS SETOF event AS
 $BODY$
 DECLARE

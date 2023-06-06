@@ -1,7 +1,3 @@
--- SPDX-FileCopyrightText: Contributors to the GXF project
---
--- SPDX-License-Identifier: Apache-2.0
-
 -- new privileges for firmware, device_model and manufacturer
  
 GRANT ALL ON public.firmware TO osp_admin;

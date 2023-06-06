@@ -1,7 +1,3 @@
--- SPDX-FileCopyrightText: Contributors to the GXF project
---
--- SPDX-License-Identifier: Apache-2.0
-
 ALTER TABLE dlms_device ADD COLUMN icc_id character varying(20) NOT NULL;
 
 ALTER TABLE dlms_device ADD COLUMN communication_provider character varying(10) NOT NULL;

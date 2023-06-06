@@ -1,7 +1,3 @@
--- SPDX-FileCopyrightText: Contributors to the GXF project
---
--- SPDX-License-Identifier: Apache-2.0
-
 DROP TABLE firmware_history;
 
 ALTER TABLE firmware DROP COLUMN device_model;
