@@ -8,7 +8,7 @@
  */
 package org.opensmartgridplatform.core.application.services;
 
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -41,7 +41,7 @@ public class DeviceCommunicationInformationService {
       LOGGER.info(
           "Updated connection information for device: {}, last successful connection timestamp: {} based on result type: {} (updated {} records)",
           deviceIdentification,
-          DateTime.now(),
+          ZonedDateTime.now(),
           result.name(),
           updatedRecords);
     } else if (ResponseMessageResultType.NOT_OK == result) {
@@ -50,7 +50,7 @@ public class DeviceCommunicationInformationService {
       LOGGER.info(
           "Updated connection information for device: {}, last failed connection timestamp: {} based on result type: {} (updated {} records)",
           deviceIdentification,
-          DateTime.now(),
+          ZonedDateTime.now(),
           result.name(),
           updatedRecords);
     } else {
