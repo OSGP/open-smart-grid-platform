@@ -502,11 +502,6 @@ public class Device extends AbstractEntity {
     this.lastSuccessfulConnectionTimestamp = new Date();
   }
 
-  public void updateConnectionDetailsToFailure() {
-    this.failedConnectionCount++;
-    this.lastFailedConnectionTimestamp = new Date();
-  }
-
   public boolean hasConnectionFailures() {
     return this.failedConnectionCount != 0;
   }

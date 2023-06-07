@@ -11,7 +11,6 @@ package org.opensmartgridplatform.core.application.services;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
-import javax.persistence.OptimisticLockException;
 import org.opensmartgridplatform.core.domain.model.domain.DomainResponseService;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
@@ -60,13 +59,7 @@ public class DeviceResponseMessageService {
         "Processing protocol response message with correlation uid [{}]",
         message.getCorrelationUid());
 
-    try {
-      synchronized (this) {
-        this.deviceCommunicationInformationService.updateDeviceConnectionInformation(message);
-      }
-    } catch (final OptimisticLockException ex) {
-      LOGGER.warn("Last communication time not updated due to optimistic lock exception", ex);
-    }
+    this.deviceCommunicationInformationService.updateDeviceConnectionInformation(message);
 
     try {
       if (message.isScheduled() && !message.bypassRetry()) {
