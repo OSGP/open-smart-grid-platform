@@ -1,9 +1,3 @@
-<!--
-SPDX-FileCopyrightText: Copyright Contributors to the GXF project
-
-SPDX-License-Identifier: Apache-2.0
--->
-
 <xsd:schema xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
   xmlns:tns="http://www.opensmartgridplatform.org/schemas/common/2014/10"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified"

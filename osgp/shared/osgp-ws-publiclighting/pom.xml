@@ -65,6 +65,13 @@ SPDX-License-Identifier: Apache-2.0
               <xjbSources>
                 <xjbSource>src/main/resources/bindings</xjbSource>
               </xjbSources>
+              <xjcSourceExcludeFilters>
+                <filter implementation="org.codehaus.mojo.jaxb2.shared.filters.pattern.PatternFileFilter">
+                  <patterns>
+                    <pattern>\.license</pattern>
+                  </patterns>
+                </filter>
+              </xjcSourceExcludeFilters>
             </configuration>
           </execution>
         </executions>
