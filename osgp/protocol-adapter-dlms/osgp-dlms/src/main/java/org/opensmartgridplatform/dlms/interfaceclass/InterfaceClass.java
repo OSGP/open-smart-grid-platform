@@ -50,6 +50,7 @@ public enum InterfaceClass {
   AUTO_CONNECT(29, 1),
   IEC_HDLC_SETUP_CLASS(23, 1),
   IEC_TWISTED_PAIR(24, 0),
+  PUSH_SETUP(40, 0),
   TCP_UDP_SETUP(41, 0),
   IP_V4_SETUP(42, 0),
   ETHERNET_SETUP(43, 0),

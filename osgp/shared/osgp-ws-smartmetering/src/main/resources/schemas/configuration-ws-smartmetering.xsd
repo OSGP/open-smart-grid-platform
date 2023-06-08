@@ -416,6 +416,37 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="SetPushSetupUdpRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetPushSetupUdpAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetPushSetupUdpAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetPushSetupUdpResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType" />
+        <xsd:element name="Description" type="xsd:string"
+          minOccurs="0" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="SetAlarmNotificationsRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -979,6 +1010,15 @@
       <xsd:extension base="common:Command">
         <xsd:sequence>
           <xsd:element name="PushSetupSms" type="tns:PushSetupSms" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="SetPushSetupUdpRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

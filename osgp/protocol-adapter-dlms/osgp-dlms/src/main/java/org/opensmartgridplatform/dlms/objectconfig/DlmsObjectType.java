@@ -61,7 +61,8 @@ public enum DlmsObjectType {
   GPRS_DIAGNOSTIC,
   LTE_DIAGNOSTIC,
   MBUS_CLIENT_SETUP,
-  MBUS_DIAGNOSTIC;
+  MBUS_DIAGNOSTIC,
+  PUSH_SETUP_UDP;
 
   public String value() {
     return this.name();
