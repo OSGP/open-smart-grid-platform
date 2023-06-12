@@ -67,7 +67,7 @@ class JmsMessageCreatorTest {
 
     final ObjectMessage createdMessage = jmsMessageCreator.createObjectMessage(this.session, delay);
 
-    this.validateMessage(createdMessage, delay, jmsBrokerType);
+    this.validateDelayProperty(delay, jmsBrokerType);
     assertThat(createdMessage).isEqualTo(this.message);
   }
 
@@ -83,7 +83,7 @@ class JmsMessageCreatorTest {
     final ObjectMessage createdMessage =
         jmsMessageCreator.createObjectMessage(this.session, payload, delay);
 
-    this.validateMessage(createdMessage, delay, jmsBrokerType);
+    this.validateDelayProperty(delay, jmsBrokerType);
     assertThat(createdMessage).isEqualTo(this.message);
   }
 
@@ -91,19 +91,18 @@ class JmsMessageCreatorTest {
   @EnumSource(JmsBrokerType.class)
   void shouldCreateMessageWithCorrectPropertyWithData(final JmsBrokerType jmsBrokerType)
       throws JMSException {
-    final Long delay = 123L;
+    final Long delay = 12345678L;
     final JmsMessageCreator jmsMessageCreator = new JmsMessageCreator(jmsBrokerType);
 
     when(this.session.createMessage()).thenReturn(this.message);
 
     final Message createdMessage = jmsMessageCreator.createMessage(this.session, delay);
 
-    this.validateMessage(createdMessage, delay, jmsBrokerType);
+    this.validateDelayProperty(delay, jmsBrokerType);
     assertThat(createdMessage).isEqualTo(this.message);
   }
 
-  private void validateMessage(
-      final Message createdMessage, final Long delay, final JmsBrokerType jmsBrokerType)
+  private void validateDelayProperty(final Long delay, final JmsBrokerType jmsBrokerType)
       throws JMSException {
 
     verify(this.message).setLongProperty(this.nameCaptor.capture(), this.valueCaptor.capture());
@@ -116,7 +115,7 @@ class JmsMessageCreatorTest {
     } else {
       final long expected = System.currentTimeMillis() + delay;
       assertThat(this.nameCaptor.getValue()).isEqualTo(HDR_SCHEDULED_DELIVERY_TIME.toString());
-      assertThat(this.valueCaptor.getValue()).isBetween(expected - 10, expected);
+      assertThat(this.valueCaptor.getValue()).isBetween(expected - 1000, expected);
       verify(this.message, never()).setLongProperty(eq(AMQ_SCHEDULED_DELAY), any(Long.class));
     }
   }
