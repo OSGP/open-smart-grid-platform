@@ -36,6 +36,8 @@ import org.springframework.core.io.ClassPathResource;
 @Slf4j
 class ObjectConfigServiceTest {
 
+  final ObjectMapper objectMapper = new ObjectMapper();
+
   private ObjectConfigService objectConfigService;
 
   @BeforeEach
@@ -171,20 +173,17 @@ class ObjectConfigServiceTest {
   }
 
   private List<DlmsProfile> getDlmsProfileList() throws IOException {
-    final ObjectMapper objectMapper = new ObjectMapper();
     final List<DlmsProfile> DlmsProfileList = new ArrayList<>();
-    final DlmsProfile dlmsProfile50 =
-        objectMapper.readValue(
-            new ClassPathResource("/dlmsprofile-smr50.json").getFile(), DlmsProfile.class);
-    final DlmsProfile dlmsProfile51 =
-        objectMapper.readValue(
-            new ClassPathResource("/dlmsprofile-smr51.json").getFile(), DlmsProfile.class);
-    final DlmsProfile dlmsProfile52 =
-        objectMapper.readValue(
-            new ClassPathResource("/dlmsprofile-smr52.json").getFile(), DlmsProfile.class);
-    DlmsProfileList.add(dlmsProfile50);
-    DlmsProfileList.add(dlmsProfile51);
-    DlmsProfileList.add(dlmsProfile52);
+
+    DlmsProfileList.add(this.loadProfile("/dlmsprofile-smr50.json"));
+    DlmsProfileList.add(this.loadProfile("/dlmsprofile-smr51.json"));
+    DlmsProfileList.add(this.loadProfile("/dlmsprofile-smr52.json"));
     return DlmsProfileList;
+  }
+
+  private DlmsProfile loadProfile(final String profileJsonFile) throws IOException {
+
+    return this.objectMapper.readValue(
+        new ClassPathResource(profileJsonFile).getFile(), DlmsProfile.class);
   }
 }
