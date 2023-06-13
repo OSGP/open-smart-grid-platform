@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 if [ "$#" -eq 0 ]
 then
   echo "Usage: $0 <servername> <project> <user> [<ssh key file>] [<additional java parameters>] [<additional cucumber options>]"

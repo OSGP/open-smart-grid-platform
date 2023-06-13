@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform
 Feature: SmartMetering Bundle - Decouple M-Bus Device By Channel
   As a grid operator

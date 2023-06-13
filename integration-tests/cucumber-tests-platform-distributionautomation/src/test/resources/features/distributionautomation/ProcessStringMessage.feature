@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 # Skipped due to NotLeaderForPartitionException issues with kafka
 @Skip @DistributionAutomation @Platform @StringMessage
 Feature: DistributionAutomation String message processing

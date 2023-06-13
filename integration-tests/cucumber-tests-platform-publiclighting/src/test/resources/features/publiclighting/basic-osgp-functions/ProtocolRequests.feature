@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @PublicLighting @Platform @BasicOsgpFunctions @ProtocolFunctions
 Feature: BasicOsgpFunctions Protocol functions
   I want to check the protocol version and variant

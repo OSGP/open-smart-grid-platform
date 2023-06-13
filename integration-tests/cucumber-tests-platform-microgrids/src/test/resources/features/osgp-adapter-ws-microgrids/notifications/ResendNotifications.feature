@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @Microgrids @Platform @ResendNotifications
 Feature: Microgrids notifications - Resend notifications
   As an OSGP user

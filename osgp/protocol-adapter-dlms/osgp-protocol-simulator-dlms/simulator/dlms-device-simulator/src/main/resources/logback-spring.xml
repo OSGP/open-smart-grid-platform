@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+SPDX-FileCopyrightText: Contributors to the GXF project
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 <configuration>
   <include resource="org/springframework/boot/logging/logback/base.xml"/>
   <logger name="org.opensmartgridplatform.simulator" level="DEBUG"/>

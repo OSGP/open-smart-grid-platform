@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform @SmartMeteringManagement @NightlyBuildOnly
 Feature: SmartMetering Management - Clear M-Bus alarm status on all channels of a E meter
   As a grid operator

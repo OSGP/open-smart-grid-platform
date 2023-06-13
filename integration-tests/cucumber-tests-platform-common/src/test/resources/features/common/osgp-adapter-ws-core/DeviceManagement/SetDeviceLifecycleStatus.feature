@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @Common @Platform @CoreDeviceManagement @SetDeviceLifecycleStatus
 Feature: CoreDeviceManagement Set Device Lifecycle Status
   As a client of OSGP

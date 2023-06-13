@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform @SmartMeteringMonitoring
 Feature: SmartMetering Monitoring - Alarm Register
   As a grid operator

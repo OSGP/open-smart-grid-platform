@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform @SmartMeteringConfiguration @GetKeys
 Feature: SmartMetering - Configuration - Get Keys
   As a product owner
