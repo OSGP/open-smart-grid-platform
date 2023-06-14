@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: Contributors to the GXF project
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 <constraint-mappings
     xmlns="http://jboss.org/xml/ns/javax/validation/mapping"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

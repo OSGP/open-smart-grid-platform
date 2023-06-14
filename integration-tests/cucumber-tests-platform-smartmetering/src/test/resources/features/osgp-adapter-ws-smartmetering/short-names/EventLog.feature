@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 # Needs a DlmsDevice simulator with e650 profile on port 1026
 
 # This test is broken, needs fixing later when support for L+G E650 devices is needed.

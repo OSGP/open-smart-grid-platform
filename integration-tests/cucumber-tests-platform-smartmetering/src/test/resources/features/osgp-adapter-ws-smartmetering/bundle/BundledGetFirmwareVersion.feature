@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform @SmartMeteringBundle @SmartMeteringFirmware
 Feature: SmartMetering Bundle - GetFirmwareVersion
   As a grid operator

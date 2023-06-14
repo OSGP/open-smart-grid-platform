@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @Microgrids @Platform @Iec61850MockServerSchoteroog
 Feature: Microgrids Get Gas Furnace Data
   In order to be able to know data of a gas furnace with a remote terminal unit

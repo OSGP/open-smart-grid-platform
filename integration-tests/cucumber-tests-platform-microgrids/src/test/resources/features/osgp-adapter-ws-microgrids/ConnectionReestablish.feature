@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @NightlyBuildOnly @Microgrids @Platform @Iec61850MockServerPampus
 Feature: Microgrids Re-establish Connection
   As MSP
