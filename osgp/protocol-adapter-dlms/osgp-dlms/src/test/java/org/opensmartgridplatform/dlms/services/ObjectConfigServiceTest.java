@@ -40,54 +40,61 @@ class ObjectConfigServiceTest {
   }
 
   @Test
-  void testGetCosemObjects() throws ObjectConfigException {
+  void getCosemObjectIsNull() throws ObjectConfigException {
     final String protocolName = "SMR";
-    final String protocolVersion50 = "5.0.0";
-    final String protocolVersion51 = "5.1";
-    final String protocolVersion52 = "5.2";
+    final String protocolVersion50 = "4.3";
 
-    final Map<DlmsObjectType, CosemObject> cosemObjects50 =
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
         this.objectConfigService.getCosemObjects(protocolName, protocolVersion50);
 
-    assertNotNull(cosemObjects50);
-    assertThat(cosemObjects50).hasSize(13);
-    assertNull(cosemObjects50.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(28);
+    assertNull(cosemObjects.get(DlmsObjectType.MBUS_DIAGNOSTIC));
+  }
+
+  @Test
+  void testGetCosemObjects() throws ObjectConfigException {
+    final String protocolName = "SMR";
+    final String protocolVersion51 = "5.1";
+    final String protocolVersion52 = "5.2";
 
     final Map<DlmsObjectType, CosemObject> cosemObjects51 =
         this.objectConfigService.getCosemObjects(protocolName, protocolVersion51);
 
     assertNotNull(cosemObjects51);
-    assertThat(cosemObjects51).hasSize(14);
+    assertThat(cosemObjects51).hasSize(48);
     assertNotNull(cosemObjects51.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
 
     final Map<DlmsObjectType, CosemObject> cosemObjects52 =
         this.objectConfigService.getCosemObjects(protocolName, protocolVersion52);
 
     assertNotNull(cosemObjects52);
-    assertThat(cosemObjects52).hasSize(15);
+    assertThat(cosemObjects52).hasSize(48);
     assertNotNull(cosemObjects52.get(DlmsObjectType.NUMBER_OF_LONG_POWER_FAILURES));
   }
 
   @Test
   void testDlmsProfileNotFound() {
     assertThrows(
-        ObjectConfigException.class,
-        () -> {
-          this.objectConfigService.getCosemObjects("ABC", "12");
-        });
+        ObjectConfigException.class, () -> this.objectConfigService.getCosemObjects("ABC", "12"));
   }
 
   @Test
-  void testGetCosemObject() throws ObjectConfigException {
-    final String protocolVersion50 = "5.0.0";
+  void getCosemObjectNotFoundShouldThrowIllegalArgumentException() {
+    final String protocolVersion50 = "4.3";
     final String protocolName = "SMR";
 
     assertThrows(
         IllegalArgumentException.class,
-        () -> {
-          this.objectConfigService.getCosemObject(
-              protocolName, protocolVersion50, DlmsObjectType.AVERAGE_CURRENT_L1);
-        });
+        () ->
+            this.objectConfigService.getCosemObject(
+                protocolName, protocolVersion50, DlmsObjectType.MBUS_DIAGNOSTIC));
+  }
+
+  @Test
+  void getCosemObjectShouldFindObject() throws ObjectConfigException {
+    final String protocolVersion50 = "4.3";
+    final String protocolName = "SMR";
 
     final CosemObject cosemObject =
         this.objectConfigService.getCosemObject(
@@ -100,7 +107,7 @@ class ObjectConfigServiceTest {
   @Test
   void testGetCosemObjectsWithProperty() throws ObjectConfigException {
     final String protocolName = "SMR";
-    final String protocolVersion50 = "5.0.0";
+    final String protocolVersion50 = "5.0";
 
     final List<CosemObject> cosemObjectsWithSelectableObjects =
         this.objectConfigService.getCosemObjectsWithProperty(
@@ -114,7 +121,7 @@ class ObjectConfigServiceTest {
             protocolName, protocolVersion50, ObjectProperty.PQ_PROFILE, null);
 
     assertNotNull(cosemObjectsWithPqProfile);
-    assertThat(cosemObjectsWithPqProfile).hasSize(9);
+    assertThat(cosemObjectsWithPqProfile).hasSize(44);
 
     final List<CosemObject> cosemObjectsWithPqProfileWithWrongValue =
         this.objectConfigService.getCosemObjectsWithProperty(
@@ -130,7 +137,7 @@ class ObjectConfigServiceTest {
   @Test
   void testGetCosemObjectsWithPropertiesWithMultipleAllowedValues() throws ObjectConfigException {
     final String protocolName = "SMR";
-    final String protocolVersion50 = "5.0.0";
+    final String protocolVersion50 = "5.0";
 
     final Map<ObjectProperty, List<Object>> requestMap = new HashMap<>();
     final List<Object> wantedValues = new ArrayList<>();
@@ -142,13 +149,13 @@ class ObjectConfigServiceTest {
             protocolName, protocolVersion50, requestMap);
 
     assertNotNull(cosemObjectsWithSelectableObjects);
-    assertThat(cosemObjectsWithSelectableObjects).hasSize(9);
+    assertThat(cosemObjectsWithSelectableObjects).hasSize(44);
   }
 
   @Test
   void testGetCosemObjectsWithPropertiesWithMultipleProperties() throws ObjectConfigException {
     final String protocolName = "SMR";
-    final String protocolVersion50 = "5.0.0";
+    final String protocolVersion50 = "5.0";
 
     final Map<ObjectProperty, List<Object>> requestMap = new HashMap<>();
     final List<Object> wantedValuesPqProfile = new ArrayList<>();
@@ -162,15 +169,18 @@ class ObjectConfigServiceTest {
             protocolName, protocolVersion50, requestMap);
 
     assertNotNull(cosemObjectsWithSelectableObjects);
-    assertThat(cosemObjectsWithSelectableObjects).hasSize(3);
+    assertThat(cosemObjectsWithSelectableObjects).hasSize(4);
   }
 
   private List<DlmsProfile> getDlmsProfileList() throws IOException {
     final List<DlmsProfile> DlmsProfileList = new ArrayList<>();
 
-    DlmsProfileList.add(this.loadProfile("/dlmsprofile-smr50.json"));
-    DlmsProfileList.add(this.loadProfile("/dlmsprofile-smr51.json"));
-    DlmsProfileList.add(this.loadProfile("/dlmsprofile-smr52.json"));
+    DlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-dsmr422.json"));
+    DlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr43.json"));
+    DlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr50.json"));
+    DlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr51.json"));
+    DlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr52.json"));
+    DlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr55.json"));
     return DlmsProfileList;
   }
 
