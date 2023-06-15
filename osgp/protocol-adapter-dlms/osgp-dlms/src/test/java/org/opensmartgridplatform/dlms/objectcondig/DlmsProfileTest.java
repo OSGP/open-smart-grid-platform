@@ -30,9 +30,10 @@ class DlmsProfileTest {
 
     final DlmsProfile dlmsProfile =
         this.objectMapper.readValue(
-            new ClassPathResource("/dlmsprofile-smr50.json").getFile(), DlmsProfile.class);
+            new ClassPathResource("/dlmsprofiles/dlmsprofile-smr50.json").getFile(),
+            DlmsProfile.class);
 
     assertNotNull(dlmsProfile);
-    assertThat(dlmsProfile.getObjects()).hasSize(13);
+    assertThat(dlmsProfile.getObjects()).hasSize(48);
   }
 }
