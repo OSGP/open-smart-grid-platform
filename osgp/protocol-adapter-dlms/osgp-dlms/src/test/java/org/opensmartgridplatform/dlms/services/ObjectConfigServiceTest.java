@@ -42,10 +42,10 @@ class ObjectConfigServiceTest {
   @Test
   void getCosemObjectIsNull() throws ObjectConfigException {
     final String protocolName = "SMR";
-    final String protocolVersion50 = "4.3";
+    final String protocolVersion43 = "4.3";
 
     final Map<DlmsObjectType, CosemObject> cosemObjects =
-        this.objectConfigService.getCosemObjects(protocolName, protocolVersion50);
+        this.objectConfigService.getCosemObjects(protocolName, protocolVersion43);
 
     assertNotNull(cosemObjects);
     assertThat(cosemObjects).hasSize(28);
@@ -81,24 +81,24 @@ class ObjectConfigServiceTest {
 
   @Test
   void getCosemObjectNotFoundShouldThrowIllegalArgumentException() {
-    final String protocolVersion50 = "4.3";
+    final String protocolVersion43 = "4.3";
     final String protocolName = "SMR";
 
     assertThrows(
         IllegalArgumentException.class,
         () ->
             this.objectConfigService.getCosemObject(
-                protocolName, protocolVersion50, DlmsObjectType.MBUS_DIAGNOSTIC));
+                protocolName, protocolVersion43, DlmsObjectType.MBUS_DIAGNOSTIC));
   }
 
   @Test
   void getCosemObjectShouldFindObject() throws ObjectConfigException {
-    final String protocolVersion50 = "4.3";
+    final String protocolVersion43 = "4.3";
     final String protocolName = "SMR";
 
     final CosemObject cosemObject =
         this.objectConfigService.getCosemObject(
-            protocolName, protocolVersion50, DlmsObjectType.AVERAGE_VOLTAGE_L1);
+            protocolName, protocolVersion43, DlmsObjectType.AVERAGE_VOLTAGE_L1);
 
     assertNotNull(cosemObject);
     assertThat(cosemObject.getTag()).isEqualTo(DlmsObjectType.AVERAGE_VOLTAGE_L1.value());
