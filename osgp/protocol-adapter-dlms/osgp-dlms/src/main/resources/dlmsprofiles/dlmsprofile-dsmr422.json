@@ -50,10 +50,9 @@
       "properties": {
         "SELECTABLE_OBJECTS": [
           "CLOCK",
-          "CDMA_DIAGNOSTIC",
           "GPRS_DIAGNOSTIC",
-          "NUMBER_OF_VOLTAGE_SWELLS_L1",
-          "NUMBER_OF_VOLTAGE_SAGS_L1",
+          "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
+          "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
           "NUMBER_OF_POWER_FAILURES",
           "INSTANTANEOUS_VOLTAGE_L1",
           "INSTANTANEOUS_VOLTAGE_L2",
@@ -63,7 +62,7 @@
           "AVERAGE_VOLTAGE_L3",
           "INSTANTANEOUS_CURRENT_L1",
           "AVERAGE_CURRENT_L1",
-          "INSTANTANEOUS_CURRENT_TOTAL",
+          "INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES",
           "AVERAGE_ACTIVE_POWER_IMPORT_L1",
           "AVERAGE_ACTIVE_POWER_IMPORT_L2",
           "AVERAGE_ACTIVE_POWER_IMPORT_L3",
@@ -209,7 +208,7 @@
       ]
     },
     {
-      "tag": "NUMBER_OF_VOLTAGE_SWELLS_L1",
+      "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
       "description": "Number of voltage swells in phase L1",
       "class-id": 1,
       "version": 0,
@@ -232,7 +231,7 @@
       ]
     },
     {
-      "tag": "NUMBER_OF_VOLTAGE_SAGS_L1",
+      "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
       "description": "Number of voltage sags in phase L1",
       "class-id": 1,
       "version": 0,
@@ -526,7 +525,7 @@
       ]
     },
     {
-      "tag": "INSTANTANEOUS_CURRENT_TOTAL",
+      "tag": "INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES",
       "description": "Instantaneous current total",
       "class-id": 3,
       "version": 0,

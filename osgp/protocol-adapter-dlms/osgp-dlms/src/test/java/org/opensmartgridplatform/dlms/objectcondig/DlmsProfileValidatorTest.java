@@ -26,10 +26,12 @@ class DlmsProfileValidatorTest {
     final ObjectMapper objectMapper = new ObjectMapper();
     final DlmsProfile dlmsProfile50 =
         objectMapper.readValue(
-            new ClassPathResource("/dlmsprofile-smr50.json").getFile(), DlmsProfile.class);
+            new ClassPathResource("/dlmsprofiles/dlmsprofile-smr50.json").getFile(),
+            DlmsProfile.class);
     final DlmsProfile dlmsProfile51 =
         objectMapper.readValue(
-            new ClassPathResource("/dlmsprofile-smr51.json").getFile(), DlmsProfile.class);
+            new ClassPathResource("/dlmsprofiles/dlmsprofile-smr51.json").getFile(),
+            DlmsProfile.class);
 
     DlmsProfileValidator.validate(Arrays.asList(dlmsProfile50, dlmsProfile51));
   }

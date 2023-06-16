@@ -39,8 +39,8 @@ public class ObjectConfigService {
       this.dlmsProfiles = dlmsProfiles;
     }
 
-    DlmsProfileValidator.validate(this.dlmsProfiles);
     this.handleInheritance();
+    DlmsProfileValidator.validate(this.dlmsProfiles);
     this.dlmsProfiles.forEach(DlmsProfile::createMap);
   }
 
@@ -123,7 +123,7 @@ public class ObjectConfigService {
             .filter(profile -> protocolVersion.equalsIgnoreCase(profile.getVersion()))
             .filter(profile -> protocolName.equalsIgnoreCase(profile.getProfile()))
             .findAny();
-    if (!dlmsProfile.isPresent()) {
+    if (dlmsProfile.isEmpty()) {
       throw new ObjectConfigException(
           "DLMS Profile for " + protocolName + " " + protocolVersion + " is not available");
     }
