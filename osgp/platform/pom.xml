@@ -13,7 +13,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>platform</artifactId>
-  <version>5.43.0</version>
+  <version>5.43.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
