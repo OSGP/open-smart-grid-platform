@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @PublicLighting @Platform @PublicLightingAdhocManagement @SetTransition
 Feature: PublicLightingAdhocManagement Set Transition
   As OSGP 

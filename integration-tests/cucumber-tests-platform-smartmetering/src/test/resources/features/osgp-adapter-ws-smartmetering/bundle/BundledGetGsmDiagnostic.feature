@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform @GetGsmDiagnostic
 Feature: SmartMetering Bundle - Get Gsm Diagnostic
   As a grid operator

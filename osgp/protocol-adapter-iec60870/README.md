@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: Contributors to the GXF project
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Protocol Adapter for IEC60870-5-104 Protocol
 
 ## Grid eXchange Fabric information and news

@@ -1,13 +1,6 @@
-/*
- * Copyright 2022 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
 
 package org.opensmartgridplatform.dlms.objectcondig;
 
@@ -37,9 +30,10 @@ class DlmsProfileTest {
 
     final DlmsProfile dlmsProfile =
         this.objectMapper.readValue(
-            new ClassPathResource("/dlmsprofile-smr50.json").getFile(), DlmsProfile.class);
+            new ClassPathResource("/dlmsprofiles/dlmsprofile-smr50.json").getFile(),
+            DlmsProfile.class);
 
     assertNotNull(dlmsProfile);
-    assertThat(dlmsProfile.getObjects()).hasSize(13);
+    assertThat(dlmsProfile.getObjects()).hasSize(48);
   }
 }

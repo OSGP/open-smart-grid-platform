@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: Contributors to the GXF project
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 The following certificates and keys are used within the cucumber-tests-platform project:
 
 - LianderNetManagement.pfx, test-org.pfx and unknown-organization.pfx

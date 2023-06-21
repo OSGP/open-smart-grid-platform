@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform
 Feature: SmartMetering functional exceptions max schedule time exceeded
   As a grid operator

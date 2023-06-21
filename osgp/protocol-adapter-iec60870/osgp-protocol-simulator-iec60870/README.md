@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: Contributors to the GXF project
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # IEC60870-5-104 Simulator
 
 This simulator can be used for testing GXF against devices using the IEC60870-5-104 protocol.

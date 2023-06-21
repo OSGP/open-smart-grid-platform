@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @Microgrids @Platform @Iec61850MockServerPampus
 Feature: Microgrids Get PQ Data
   As an OSGP client

@@ -1,13 +1,6 @@
-/*
- * Copyright 2022 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
 
 package org.opensmartgridplatform.dlms.services;
 
@@ -46,8 +39,8 @@ public class ObjectConfigService {
       this.dlmsProfiles = dlmsProfiles;
     }
 
-    DlmsProfileValidator.validate(this.dlmsProfiles);
     this.handleInheritance();
+    DlmsProfileValidator.validate(this.dlmsProfiles);
     this.dlmsProfiles.forEach(DlmsProfile::createMap);
   }
 
@@ -130,7 +123,7 @@ public class ObjectConfigService {
             .filter(profile -> protocolVersion.equalsIgnoreCase(profile.getVersion()))
             .filter(profile -> protocolName.equalsIgnoreCase(profile.getProfile()))
             .findAny();
-    if (!dlmsProfile.isPresent()) {
+    if (dlmsProfile.isEmpty()) {
       throw new ObjectConfigException(
           "DLMS Profile for " + protocolName + " " + protocolVersion + " is not available");
     }
