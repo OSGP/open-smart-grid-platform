@@ -219,5 +219,10 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.xml.soap</groupId>
+      <artifactId>javax.xml.soap-api</artifactId>
+      <version>1.4.0</version>
+    </dependency>
   </dependencies>
 </project>
