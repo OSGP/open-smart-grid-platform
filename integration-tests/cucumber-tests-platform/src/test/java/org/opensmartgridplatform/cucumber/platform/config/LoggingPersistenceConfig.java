@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -46,7 +45,6 @@ public class LoggingPersistenceConfig extends ApplicationPersistenceConfiguratio
    *
    * @return DataSource
    */
-  @Primary
   @Bean(name = "dsLogging")
   public DataSource dataSource() {
     return this.makeDataSource();
@@ -58,7 +56,6 @@ public class LoggingPersistenceConfig extends ApplicationPersistenceConfiguratio
    * @return LocalContainerEntityManagerFactoryBean
    * @throws ClassNotFoundException when class not found
    */
-  @Primary
   @Bean(name = "entityMgrLogging")
   public LocalContainerEntityManagerFactoryBean entityMgrCore(
       @Qualifier("dsLogging") final DataSource dataSource) throws ClassNotFoundException {
@@ -72,7 +69,6 @@ public class LoggingPersistenceConfig extends ApplicationPersistenceConfiguratio
    * @return JpaTransactionManager
    * @throws ClassNotFoundException when class not found
    */
-  @Primary
   @Bean(name = "txMgrLogging")
   public JpaTransactionManager txMgrCore(
       @Qualifier("entityMgrLogging") final EntityManagerFactory entityMgrCore)
