@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class maps all possible Dlms units with the corrresponding string that are available as an
+ * This class maps all possible Dlms units with the corresponding string that are available as an
  * enum in @see OsgpUnitType. The index property corresponds with the 'unit' in the Blue book. The
  * 'unit' string property corresponds with the enum in OsgpUnitType.
  */

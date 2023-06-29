@@ -4,6 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
+import static org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsUnitTypeDto.UNDEFINED;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -327,7 +329,7 @@ public class DlmsHelper {
         DlmsUnitTypeDto.getUnitType(
             this.readLongNotNull(dataObjects.get(1), description).intValue());
 
-    if (unit == DlmsUnitTypeDto.UNDEFINED) {
+    if (UNDEFINED.equals(unit)) {
       throw new ProtocolAdapterException(
           "expected a unit instead of unit UNDEFINED." + this.getDebugInfo(scalerUnitObject));
     }
