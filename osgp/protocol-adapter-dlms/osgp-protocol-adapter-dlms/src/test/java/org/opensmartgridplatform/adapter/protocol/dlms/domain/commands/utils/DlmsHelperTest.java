@@ -20,6 +20,7 @@ import java.util.Arrays;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
@@ -66,7 +67,7 @@ public class DlmsHelperTest {
   private final DlmsHelper dlmsHelper = new DlmsHelper();
 
   @Test
-  public void testGetWithListSupported() throws ProtocolAdapterException, IOException {
+  void testGetWithListSupported() throws ProtocolAdapterException, IOException {
     final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
     final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
@@ -82,7 +83,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testGetWithListWorkaround() throws ProtocolAdapterException, IOException {
+  void testGetWithListWorkaround() throws ProtocolAdapterException, IOException {
     final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
     final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
@@ -103,14 +104,14 @@ public class DlmsHelperTest {
    * NonFatalJDlmsException and JDlmsException).
    */
   @Test
-  public void testGetWithListException() throws IOException {
+  void testGetWithListException() throws IOException {
     this.assertGetWithListException(IOException.class, ConnectionException.class);
     this.assertGetWithListException(NullPointerException.class, ConnectionException.class);
     this.assertGetWithListException(RuntimeException.class, ProtocolAdapterException.class);
   }
 
   @Test
-  public void testDateTimeSummerTime() {
+  void testDateTimeSummerTime() {
     final DataObject dateInSummerTimeDataObject =
         this.dlmsHelper.asDataObject(this.dateTimeSummerTime());
 
@@ -123,7 +124,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testDateTimeSummerTimeWithZonedTime() {
+  void testDateTimeSummerTimeWithZonedTime() {
     final DataObject dateInSummerTimeDataObject =
         this.dlmsHelper.asDataObject(this.convertToZonedDateTime(this.dateTimeSummerTime()));
 
@@ -136,7 +137,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testDateTimeWinterTime() {
+  void testDateTimeWinterTime() {
     final DataObject dateInWinterTimeDataObject =
         this.dlmsHelper.asDataObject(this.dateTimeWinterTime());
 
@@ -149,7 +150,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testDateTimeWinterTimeWithZonedTime() {
+  void testDateTimeWinterTimeWithZonedTime() {
     final DateTime dateTime = this.dateTimeWinterTime();
     final ZonedDateTime zonedDateTime = this.convertToZonedDateTime(dateTime);
 
@@ -164,7 +165,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testFromByteArraySummerTime() {
+  void testFromByteArraySummerTime() {
     final CosemDateTimeDto cosemDateTime =
         this.dlmsHelper.fromDateTimeValue(this.byteArraySummerTime());
 
@@ -177,7 +178,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testFromByteArrayWinterTime() {
+  void testFromByteArrayWinterTime() {
     final CosemDateTimeDto cosemDateTime =
         this.dlmsHelper.fromDateTimeValue(this.byteArrayWinterTime());
 
@@ -190,7 +191,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testFromByteArrayUnspecifiedTime() {
+  void testFromByteArrayUnspecifiedTime() {
     final CosemDateTimeDto cosemDateTime =
         this.dlmsHelper.fromDateTimeValue(this.byteArrayUnspecifiedTime());
 
@@ -204,7 +205,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testCorrectLogMessageForBitStringObject() {
+  void testCorrectLogMessageForBitStringObject() {
     final String expected = "number of bytes=2, value=37440, bits=10010010 01000000 ";
     final String logMessage = this.dlmsHelper.getDebugInfoBitStringBytes(new byte[] {-110, 64});
 
@@ -212,13 +213,34 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testByteArrayToHexString() throws ProtocolAdapterException {
+  void testByteArrayToHexString() throws ProtocolAdapterException {
     final byte[] bytes = new byte[] {25, 24, 7, 118};
     final DataObject dataObject = DataObject.newOctetStringData(bytes);
     final String hexString =
         this.dlmsHelper.readHexString(dataObject, "reading a Hexadecimal String");
 
     assertThat(hexString).isEqualTo("19180776");
+  }
+
+  @Test
+  void getScaledMeterValue_throws_protocoladapterException_on_undefined_unit() {
+    final GetResultImpl getResultValue = new GetResultImpl(DataObject.newUInteger16Data(123));
+    final GetResultImpl getResultScalerUnit =
+        new GetResultImpl(
+            DataObject.newStructureData(
+                DataObject.newInteger8Data((byte) -1), DataObject.newEnumerateData(0)));
+
+    final ProtocolAdapterException protocolAdapterException =
+        Assertions.assertThrows(
+            ProtocolAdapterException.class,
+            () -> {
+              final DlmsMeterValueDto meterValueDto =
+                  this.dlmsHelper.getScaledMeterValue(
+                      getResultValue, getResultScalerUnit, "getScaledMeterValueTest");
+            });
+
+    assertThat(protocolAdapterException.getMessage())
+        .contains("expected a unit instead of unit UNDEFINED.DataObject");
   }
 
   @Test
