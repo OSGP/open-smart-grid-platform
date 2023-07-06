@@ -24,7 +24,6 @@ SPDX-License-Identifier: Apache-2.0
 
   <xsd:simpleType name="Email">
     <xsd:restriction base="xsd:string">
-      <xsd:pattern value="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*"/>
       <xsd:maxLength value="320"/>
     </xsd:restriction>
   </xsd:simpleType>
