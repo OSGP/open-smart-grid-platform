@@ -10,6 +10,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelAsyncRequest;
@@ -96,6 +97,7 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
     final CoupleMbusDeviceResponse response =
         this.smartMeteringInstallationClient.getCoupleMbusDeviceResponse(asyncRequest);
 
+    assertThat(response.getResult()).isEqualTo(OsgpResultType.OK);
     if (values.containsKey(PlatformKeys.KEY_MBUS_DEVICE_IDENTIFICATION)) {
       final String mbusDeviceIdentification =
           values.get(PlatformKeys.KEY_MBUS_DEVICE_IDENTIFICATION);

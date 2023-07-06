@@ -235,6 +235,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
       response =
           this.installationMapper.map(
               responseData.getMessageData(), CoupleMbusDeviceResponse.class);
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
     } catch (final Exception e) {
       this.handleException(e);
     }
