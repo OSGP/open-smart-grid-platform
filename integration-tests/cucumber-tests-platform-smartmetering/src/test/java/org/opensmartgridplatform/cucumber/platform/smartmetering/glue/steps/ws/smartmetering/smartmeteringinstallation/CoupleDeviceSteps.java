@@ -88,20 +88,27 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
     }
   }
 
-  @Then(
-      "^the Couple response has \"([^\"]*)\", channel \"([^\"]*)\" and PrimaryAddress \"([^\"]*)\"$")
-  public void theCoupleResponseIs(
-      final String mbusDeviceIdentification, final short channel, final short primaryAddress)
+  @Then("^the Couple response has the following values$")
+  public void theCoupleResponseIs(final Map<String, String> values)
       throws WebServiceSecurityException {
-
     final CoupleMbusDeviceAsyncRequest asyncRequest =
         CoupleMbusDeviceRequestFactory.fromScenarioContext();
     final CoupleMbusDeviceResponse response =
         this.smartMeteringInstallationClient.getCoupleMbusDeviceResponse(asyncRequest);
 
-    assertThat(response.getMbusDeviceIdentification()).isEqualTo(mbusDeviceIdentification);
-    assertThat(response.getChannelElementValues().getChannel()).isEqualTo(channel);
-    assertThat(response.getChannelElementValues().getPrimaryAddress()).isEqualTo(primaryAddress);
+    if (values.containsKey(PlatformKeys.KEY_MBUS_DEVICE_IDENTIFICATION)) {
+      final String mbusDeviceIdentification =
+          values.get(PlatformKeys.KEY_MBUS_DEVICE_IDENTIFICATION);
+      assertThat(response.getMbusDeviceIdentification()).isEqualTo(mbusDeviceIdentification);
+    }
+    if (values.containsKey(PlatformKeys.KEY_CHANNEL)) {
+      final short channel = Short.parseShort(values.get(PlatformKeys.KEY_CHANNEL));
+      assertThat(response.getChannelElementValues().getChannel()).isEqualTo(channel);
+    }
+    if (values.containsKey(PlatformKeys.KEY_PRIMARY_ADDRESS)) {
+      final short primaryAddress = Short.parseShort(values.get(PlatformKeys.KEY_PRIMARY_ADDRESS));
+      assertThat(response.getChannelElementValues().getPrimaryAddress()).isEqualTo(primaryAddress);
+    }
   }
 
   @Then("^retrieving the Couple response results in an exception$")
