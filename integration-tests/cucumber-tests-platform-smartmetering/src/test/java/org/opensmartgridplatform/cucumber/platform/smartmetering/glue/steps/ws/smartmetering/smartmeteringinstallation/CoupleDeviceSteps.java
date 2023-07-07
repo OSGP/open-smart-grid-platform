@@ -8,9 +8,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelAsyncRequest;
@@ -89,33 +89,28 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
     }
   }
 
-  @Then("^the Couple response is \"([^\"]*)\"$")
-  public void theCoupleResponseIs(final String status) throws WebServiceSecurityException {
-
+  @Then("^the Couple response has the following values$")
+  public void theCoupleResponseIs(final Map<String, String> values)
+      throws WebServiceSecurityException {
     final CoupleMbusDeviceAsyncRequest asyncRequest =
         CoupleMbusDeviceRequestFactory.fromScenarioContext();
     final CoupleMbusDeviceResponse response =
         this.smartMeteringInstallationClient.getCoupleMbusDeviceResponse(asyncRequest);
 
-    assertThat(response.getResult()).as("Result").isNotNull();
-    assertThat(response.getResult().name()).as("Result").isEqualTo(status);
-  }
-
-  @Then("^the Couple response is \"([^\"]*)\" and contains$")
-  public void theCoupleResponseIsAndContains(final String status, final List<String> resultList)
-      throws WebServiceSecurityException {
-
-    final CoupleMbusDeviceAsyncRequest coupleMbusDeviceAsyncRequest =
-        CoupleMbusDeviceRequestFactory.fromScenarioContext();
-    final CoupleMbusDeviceResponse response =
-        this.smartMeteringInstallationClient.getCoupleMbusDeviceResponse(
-            coupleMbusDeviceAsyncRequest);
-
-    assertThat(response.getResult()).as("Result").isNotNull();
-    assertThat(response.getResult().name()).as("Result").isEqualTo(status);
-    assertThat(this.checkDescription(response.getDescription(), resultList))
-        .as("Description should contain all of " + resultList)
-        .isTrue();
+    assertThat(response.getResult()).isEqualTo(OsgpResultType.OK);
+    if (values.containsKey(PlatformKeys.KEY_MBUS_DEVICE_IDENTIFICATION)) {
+      final String mbusDeviceIdentification =
+          values.get(PlatformKeys.KEY_MBUS_DEVICE_IDENTIFICATION);
+      assertThat(response.getMbusDeviceIdentification()).isEqualTo(mbusDeviceIdentification);
+    }
+    if (values.containsKey(PlatformKeys.KEY_CHANNEL)) {
+      final short channel = Short.parseShort(values.get(PlatformKeys.KEY_CHANNEL));
+      assertThat(response.getChannelElementValues().getChannel()).isEqualTo(channel);
+    }
+    if (values.containsKey(PlatformKeys.KEY_PRIMARY_ADDRESS)) {
+      final short primaryAddress = Short.parseShort(values.get(PlatformKeys.KEY_PRIMARY_ADDRESS));
+      assertThat(response.getChannelElementValues().getPrimaryAddress()).isEqualTo(primaryAddress);
+    }
   }
 
   @Then("^retrieving the Couple response results in an exception$")
