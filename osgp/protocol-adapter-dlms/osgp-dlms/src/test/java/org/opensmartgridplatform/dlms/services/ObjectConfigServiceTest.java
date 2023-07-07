@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.dlms.services;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.AssertionsForClassTypes;
-import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
@@ -49,7 +49,7 @@ class ObjectConfigServiceTest {
         this.objectConfigService.getCosemObjects(protocolName, protocolVersion43);
 
     assertNotNull(cosemObjects);
-    AssertionsForInterfaceTypes.assertThat(cosemObjects).hasSize(28);
+    assertThat(cosemObjects).hasSize(28);
     assertNull(cosemObjects.get(DlmsObjectType.MBUS_DIAGNOSTIC));
   }
 
@@ -63,14 +63,14 @@ class ObjectConfigServiceTest {
         this.objectConfigService.getCosemObjects(protocolName, protocolVersion51);
 
     assertNotNull(cosemObjects51);
-    AssertionsForInterfaceTypes.assertThat(cosemObjects51).hasSize(48);
+    assertThat(cosemObjects51).hasSize(48);
     assertNotNull(cosemObjects51.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
 
     final Map<DlmsObjectType, CosemObject> cosemObjects52 =
         this.objectConfigService.getCosemObjects(protocolName, protocolVersion52);
 
     assertNotNull(cosemObjects52);
-    AssertionsForInterfaceTypes.assertThat(cosemObjects52).hasSize(48);
+    assertThat(cosemObjects52).hasSize(48);
     assertNotNull(cosemObjects52.get(DlmsObjectType.NUMBER_OF_LONG_POWER_FAILURES));
   }
 
@@ -116,14 +116,14 @@ class ObjectConfigServiceTest {
             protocolName, protocolVersion50, ObjectProperty.SELECTABLE_OBJECTS, null);
 
     assertNotNull(cosemObjectsWithSelectableObjects);
-    AssertionsForInterfaceTypes.assertThat(cosemObjectsWithSelectableObjects).hasSize(3);
+    assertThat(cosemObjectsWithSelectableObjects).hasSize(3);
 
     final List<CosemObject> cosemObjectsWithPqProfile =
         this.objectConfigService.getCosemObjectsWithProperty(
             protocolName, protocolVersion50, ObjectProperty.PQ_PROFILE, null);
 
     assertNotNull(cosemObjectsWithPqProfile);
-    AssertionsForInterfaceTypes.assertThat(cosemObjectsWithPqProfile).hasSize(44);
+    assertThat(cosemObjectsWithPqProfile).hasSize(44);
 
     final List<CosemObject> cosemObjectsWithPqProfileWithWrongValue =
         this.objectConfigService.getCosemObjectsWithProperty(
@@ -133,7 +133,7 @@ class ObjectConfigServiceTest {
             Collections.singletonList("INVALID"));
 
     assertNotNull(cosemObjectsWithPqProfileWithWrongValue);
-    AssertionsForInterfaceTypes.assertThat(cosemObjectsWithPqProfileWithWrongValue).isEmpty();
+    assertThat(cosemObjectsWithPqProfileWithWrongValue).isEmpty();
   }
 
   @Test
@@ -151,7 +151,7 @@ class ObjectConfigServiceTest {
             protocolName, protocolVersion50, requestMap);
 
     assertNotNull(cosemObjectsWithSelectableObjects);
-    AssertionsForInterfaceTypes.assertThat(cosemObjectsWithSelectableObjects).hasSize(44);
+    assertThat(cosemObjectsWithSelectableObjects).hasSize(44);
   }
 
   @Test
@@ -171,7 +171,7 @@ class ObjectConfigServiceTest {
             protocolName, protocolVersion50, requestMap);
 
     assertNotNull(cosemObjectsWithSelectableObjects);
-    AssertionsForInterfaceTypes.assertThat(cosemObjectsWithSelectableObjects).hasSize(4);
+    assertThat(cosemObjectsWithSelectableObjects).hasSize(4);
   }
 
   @Test
