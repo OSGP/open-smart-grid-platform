@@ -29,9 +29,10 @@ public class ObjectConfigService {
 
   private final List<DlmsProfile> dlmsProfiles = new ArrayList<>();
 
+  ObjectConfigService() {}
+
   /*
-   * Create an ObjectConfigService.
-   * Provide a list of DlmsProfile as constructor of add a null value and profiles are loaded from the classpath resource /dlmsprofiles.
+   * Provide a list of DlmsProfile to the constructor or add a null value and profiles are loaded from the classpath resource '/dlmsprofiles'.
    */
   public ObjectConfigService(final List<DlmsProfile> dlmsProfiles)
       throws ObjectConfigException, IOException {

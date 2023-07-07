@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
@@ -102,8 +101,7 @@ class ObjectConfigServiceTest {
             protocolName, protocolVersion43, DlmsObjectType.AVERAGE_VOLTAGE_L1);
 
     assertNotNull(cosemObject);
-    AssertionsForClassTypes.assertThat(cosemObject.getTag())
-        .isEqualTo(DlmsObjectType.AVERAGE_VOLTAGE_L1.value());
+    assertThat(cosemObject.getTag()).isEqualTo(DlmsObjectType.AVERAGE_VOLTAGE_L1.value());
   }
 
   @Test
