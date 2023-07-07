@@ -27,16 +27,18 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ObjectConfigService {
 
-  private List<DlmsProfile> dlmsProfiles;
+  private final List<DlmsProfile> dlmsProfiles = new ArrayList<>();
 
-  public ObjectConfigService() {}
-
+  /*
+   * Create an ObjectConfigService.
+   * Provide a list of DlmsProfile as constructor of add a null value and profiles are loaded from the classpath resource /dlmsprofiles.
+   */
   public ObjectConfigService(final List<DlmsProfile> dlmsProfiles)
       throws ObjectConfigException, IOException {
     if (dlmsProfiles == null) {
-      this.dlmsProfiles = this.getDlmsProfileListFromResources();
+      this.dlmsProfiles.addAll(this.getDlmsProfileListFromResources());
     } else {
-      this.dlmsProfiles = dlmsProfiles;
+      this.dlmsProfiles.addAll(dlmsProfiles);
     }
 
     this.handleInheritance();
@@ -114,7 +116,7 @@ public class ObjectConfigService {
   public Map<DlmsObjectType, CosemObject> getCosemObjects(
       final String protocolName, final String protocolVersion) throws ObjectConfigException {
 
-    if (this.dlmsProfiles == null || this.dlmsProfiles.isEmpty()) {
+    if (this.dlmsProfiles.isEmpty()) {
       throw new ObjectConfigException("No DLMS Profile available");
     }
 
@@ -205,5 +207,12 @@ public class ObjectConfigService {
                 + " not found.");
       }
     }
+  }
+
+  /*
+   * Get a list of configured DlmsProfile.
+   */
+  public List<DlmsProfile> getConfiguredDlmsProfiles() {
+    return this.dlmsProfiles;
   }
 }
