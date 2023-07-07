@@ -13,6 +13,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmart
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceAdministrativeRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceAdministrativeResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelRequestData;
@@ -20,8 +21,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Decouple
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -151,14 +152,24 @@ public class InstallationService {
   @Transactional(value = "transactionManager")
   public void handleCoupleMbusDeviceResponse(
       final MessageMetadata messageMetadata,
-      final ResponseMessageResultType result,
-      final OsgpException exception,
-      final MbusChannelElementsResponseDto dataObject)
+      final ResponseMessageResultType responseMessageResultType,
+      final OsgpException osgpException,
+      final CoupleMbusDeviceResponseDto dataObject)
       throws FunctionalException {
-    if (exception == null) {
+
+    if (osgpException == null) {
       this.mBusGatewayService.handleCoupleMbusDeviceResponse(messageMetadata, dataObject);
     }
-    this.handleResponse("coupleMbusDevice", messageMetadata, result, exception);
+
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withMessageMetadata(messageMetadata)
+            .withResult(responseMessageResultType)
+            .withOsgpException(osgpException)
+            .withDataObject(this.commonMapper.map(dataObject, CoupleMbusDeviceResponse.class))
+            .build();
+
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
   @Transactional(value = "transactionManager")

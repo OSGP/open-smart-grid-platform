@@ -405,15 +405,4 @@ public class DeviceChannelsHelper {
         || "00000000".equals(channelElementValues.getIdentificationNumber())
             && (channelElementValues.getPrimaryAddress() == 0));
   }
-
-  /*
-   * @param channelElementValues
-   *
-   * @return 0-based offset for the channel as opposed to the channels in
-   * ChannelElementValues, where the channels are incremented from
-   * FIRST_CHANNEL.
-   */
-  protected short correctFirstChannelOffset(final ChannelElementValuesDto channelElementValues) {
-    return (short) (channelElementValues.getChannel() - FIRST_CHANNEL);
-  }
 }

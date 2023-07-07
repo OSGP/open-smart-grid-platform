@@ -22,10 +22,11 @@ import org.opensmartgridplatform.domain.smartmetering.exceptions.MbusChannelNotF
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -86,7 +87,8 @@ public class MBusGatewayService {
     }
 
     this.checkAndHandleIfAllMBusChannelsAreAlreadyOccupied(gatewayDevice);
-    final MbusChannelElementsDto requestDto = this.makeMbusChannelElementsDto(mbusDevice);
+    final CoupleMbusDeviceRequestDataDto requestDto =
+        this.makeCoupleMbusDeviceRequestDataDto(requestData, mbusDevice);
 
     this.osgpCoreRequestMessageSender.send(
         requestDto,
@@ -202,14 +204,15 @@ public class MBusGatewayService {
 
   public void handleCoupleMbusDeviceResponse(
       final MessageMetadata messageMetadata,
-      final MbusChannelElementsResponseDto mbusChannelElementsResponseDto)
+      final CoupleMbusDeviceResponseDto coupleMbusDeviceResponseDto)
       throws FunctionalException {
 
     final String deviceIdentification = messageMetadata.getDeviceIdentification();
     final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
-
-    this.checkAndHandleIfChannelNotFound(mbusChannelElementsResponseDto);
-    this.doCoupleMBusDevice(gatewayDevice, mbusChannelElementsResponseDto);
+    final ChannelElementValuesDto channelElementValues =
+        coupleMbusDeviceResponseDto.getChannelElementValues();
+    this.checkAndHandleIfChannelNotFound(channelElementValues);
+    this.doCoupleMBusDevice(gatewayDevice, coupleMbusDeviceResponseDto);
   }
 
   public void coupleMbusDeviceByChannel(
@@ -269,21 +272,20 @@ public class MBusGatewayService {
   }
 
   /**
-   * Updates the M-Bus device identified in the input part of the {@code
-   * mbusChannelElementsResponseDto} with respect to persisted attributes related to the coupling
-   * with the given {@code gatewayDevice}.
+   * Updates the M-Bus device identified in the input part of the {@code channelElementValuesDto}
+   * with respect to persisted attributes related to the coupling with the given {@code
+   * gatewayDevice}.
    *
    * @param gatewayDevice
-   * @param mbusChannelElementsResponseDto
+   * @param coupleMbusDeviceResponseDto
    * @throws FunctionalException
    */
   private void doCoupleMBusDevice(
-      final SmartMeter gatewayDevice,
-      final MbusChannelElementsResponseDto mbusChannelElementsResponseDto)
+      final SmartMeter gatewayDevice, final CoupleMbusDeviceResponseDto coupleMbusDeviceResponseDto)
       throws FunctionalException {
 
     final String mbusDeviceIdentification =
-        mbusChannelElementsResponseDto.getMbusChannelElementsDto().getMbusDeviceIdentification();
+        coupleMbusDeviceResponseDto.getMbusDeviceIdentification();
     final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
     /*
@@ -291,10 +293,10 @@ public class MBusGatewayService {
      * has already been confirmed not be null, so the following should be
      * safe with regards to NullPointerExceptions.
      */
-    final short channel = mbusChannelElementsResponseDto.getChannel();
-    mbusDevice.setChannel(channel);
-    mbusDevice.setMbusPrimaryAddress(
-        this.getPrimaryAddress(mbusChannelElementsResponseDto, channel));
+    final ChannelElementValuesDto channelElementValuesDto =
+        coupleMbusDeviceResponseDto.getChannelElementValues();
+    mbusDevice.setChannel(channelElementValuesDto.getChannel());
+    mbusDevice.setMbusPrimaryAddress(channelElementValuesDto.getPrimaryAddress());
 
     mbusDevice.updateGatewayDevice(gatewayDevice);
     this.smartMeteringDeviceRepository.save(mbusDevice);
@@ -343,6 +345,13 @@ public class MBusGatewayService {
     }
   }
 
+  private CoupleMbusDeviceRequestDataDto makeCoupleMbusDeviceRequestDataDto(
+      final CoupleMbusDeviceRequestData requestData, final SmartMeter mbusDevice) {
+    final MbusChannelElementsDto mbusChannelElements = this.makeMbusChannelElementsDto(mbusDevice);
+    return new CoupleMbusDeviceRequestDataDto(
+        requestData.getMbusDeviceIdentification(), requestData.isForce(), mbusChannelElements);
+  }
+
   private MbusChannelElementsDto makeMbusChannelElementsDto(final SmartMeter mbusDevice) {
 
     final String mbusDeviceIdentification = mbusDevice.getDeviceIdentification();
@@ -369,14 +378,12 @@ public class MBusGatewayService {
    * FunctionalException with the NO_MBUS_DEVICE_CHANNEL_FOUND type.
    */
   private void checkAndHandleIfChannelNotFound(
-      final MbusChannelElementsResponseDto mbusChannelElementsResponseDto)
-      throws FunctionalException {
-    if (!mbusChannelElementsResponseDto.isChannelFound()) {
+      final ChannelElementValuesDto channelElementValuesDto) throws FunctionalException {
+    if (channelElementValuesDto == null || !channelElementValuesDto.hasChannel()) {
       throw new FunctionalException(
           FunctionalExceptionType.NO_MBUS_DEVICE_CHANNEL_FOUND,
           ComponentType.DOMAIN_SMART_METERING,
-          new MbusChannelNotFoundException(
-              String.valueOf(mbusChannelElementsResponseDto.getRetrievedChannelElements())));
+          new MbusChannelNotFoundException(String.valueOf(channelElementValuesDto)));
     }
   }
 
@@ -494,15 +501,5 @@ public class MBusGatewayService {
           ComponentType.DOMAIN_SMART_METERING,
           new InactiveDeviceException(mbusDevice.getDeviceIdentification()));
     }
-  }
-
-  private Short getPrimaryAddress(
-      final MbusChannelElementsResponseDto mbusChannelElementsResponseDto, final short channel) {
-    // because the List is 0-based, it is needed to subtract 1 to get the
-    // ChannelElements for the desired channel.
-    return mbusChannelElementsResponseDto
-        .getRetrievedChannelElements()
-        .get(channel - 1)
-        .getPrimaryAddress();
   }
 }
