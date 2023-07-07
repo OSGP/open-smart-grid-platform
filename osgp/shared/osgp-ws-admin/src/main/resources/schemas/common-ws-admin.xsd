@@ -4,7 +4,7 @@
   targetNamespace="http://www.opensmartgridplatform.org/schemas/common/2014/10">
 
   <xsd:element name="OrganisationIdentification" type="tns:Identification" />
-  <xsd:element name="UserName" type="tns:Email" />
+  <xsd:element name="UserName" type="tns:UserName" />
   <xsd:element name="ApplicationName" type="tns:Identification" />
 
   <xsd:simpleType name="Identification">
@@ -15,7 +15,7 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-  <xsd:simpleType name="Email">
+  <xsd:simpleType name="UserName">
     <xsd:restriction base="xsd:string">
       <xsd:maxLength value="320"/>
     </xsd:restriction>
