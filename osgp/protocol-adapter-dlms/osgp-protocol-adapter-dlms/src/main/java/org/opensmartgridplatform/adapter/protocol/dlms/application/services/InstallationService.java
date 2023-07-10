@@ -30,10 +30,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsD
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -196,14 +196,14 @@ public class InstallationService {
     }
   }
 
-  public MbusChannelElementsResponseDto coupleMbusDevice(
+  public CoupleMbusDeviceResponseDto coupleMbusDevice(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final MbusChannelElementsDto mbusChannelElements,
+      final CoupleMbusDeviceRequestDataDto requestDataDto,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
     return this.coupleMBusDeviceCommandExecutor.execute(
-        conn, device, mbusChannelElements, messageMetadata);
+        conn, device, requestDataDto, messageMetadata);
   }
 
   public CoupleMbusDeviceByChannelResponseDto coupleMbusDeviceByChannel(
