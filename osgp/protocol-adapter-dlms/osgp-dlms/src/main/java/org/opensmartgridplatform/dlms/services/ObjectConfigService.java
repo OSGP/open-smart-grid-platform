@@ -27,9 +27,11 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ObjectConfigService {
 
-  private final List<DlmsProfile> dlmsProfiles = new ArrayList<>();
+  private final List<DlmsProfile> dlmsProfiles;
 
-  ObjectConfigService() {}
+  ObjectConfigService() throws IOException {
+    this.dlmsProfiles = this.getDlmsProfileListFromResources();
+  }
 
   /*
    * Provide a list of DlmsProfile to the constructor or add a null value and profiles are loaded from the classpath resource '/dlmsprofiles'.
@@ -37,9 +39,9 @@ public class ObjectConfigService {
   public ObjectConfigService(final List<DlmsProfile> dlmsProfiles)
       throws ObjectConfigException, IOException {
     if (dlmsProfiles == null) {
-      this.dlmsProfiles.addAll(this.getDlmsProfileListFromResources());
+      this.dlmsProfiles = this.getDlmsProfileListFromResources();
     } else {
-      this.dlmsProfiles.addAll(dlmsProfiles);
+      this.dlmsProfiles = dlmsProfiles;
     }
 
     this.handleInheritance();
