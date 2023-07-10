@@ -343,6 +343,9 @@
   </xsd:element>
 
   <xsd:element name="ChangeFirmwareRequest">
+    <xsd:annotation>
+      <xsd:documentation>DeviceModels can be provided in the Firmware object. They will be ignored.</xsd:documentation>
+    </xsd:annotation>
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Firmware" type="tns:Firmware" />

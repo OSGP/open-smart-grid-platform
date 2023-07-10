@@ -921,18 +921,11 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
         this.firmwareManagementMapper.map(
             request.getFirmware().getFirmwareModuleData(), FirmwareModuleData.class);
 
-    // The ChangeFirmwareRequest accepts multiple DeviceModels to be related to a Firmware.
-    // This FirmwareManagementService only accepts ONE for now
-    final String manufacturer = this.getManufacturerFromFirmware(request.getFirmware());
-    final String modelCode = this.getModelCodeFromFirmware(request.getFirmware());
-
     try {
       this.firmwareManagementService.changeFirmware(
           organisationIdentification,
           request.getId(),
           this.firmwareFileRequestFor(request.getFirmware()),
-          manufacturer,
-          modelCode,
           firmwareModuleData);
     } catch (final ConstraintViolationException e) {
       LOGGER.error("Exception Changing firmware", e);
