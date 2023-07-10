@@ -102,6 +102,9 @@ public class PlatformKeys extends Keys {
   public static final String KEY_DEVICE_ICCID = "ICC_id";
 
   public static final String KEY_DEVICE_IDENTIFICATION = "DeviceIdentification";
+  public static final String KEY_MBUS_DEVICE_IDENTIFICATION = "MbusDeviceIdentification";
+  public static final String KEY_PRIMARY_ADDRESS = "PrimaryAddress";
+
   public static final String ALIAS = "Alias";
   public static final String CONTAINER_STREET = "ContainerStreet";
   public static final String CONTAINER_NUMBER = "ContainerNumber";
