@@ -14,7 +14,6 @@ import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeableFirmware;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
