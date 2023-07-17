@@ -13,7 +13,7 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-mqtt</artifactId>
-    <version>5.44.0</version>
+    <version>5.44.1-SNAPSHOT</version>
     <relativePath>../parent-pa-mqtt/pom.xml</relativePath>
   </parent>
 
