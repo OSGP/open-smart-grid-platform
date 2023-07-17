@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeableFirmware;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceFirmwareFileRepository;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
@@ -795,7 +796,7 @@ public class FirmwareManagementService {
   public void changeFirmware(
       @Identification final String organisationIdentification,
       final int id,
-      final FirmwareFileRequest firmwareFileRequest,
+      final ChangeableFirmware firmwareFileRequest,
       final FirmwareModuleData firmwareModuleData)
       throws FunctionalException {
 
@@ -806,16 +807,19 @@ public class FirmwareManagementService {
     FirmwareFile changedFirmwareFile =
         this.firmwareFileRepository
             .findById((long) id)
-            .orElseThrow(
-                supplyFirmwareFileNotFoundException(id, firmwareFileRequest.getFileName()));
+            .orElseThrow(supplyFirmwareFileNotFoundException(id));
 
-    changedFirmwareFile.setDescription(firmwareFileRequest.getDescription());
-
-    changedFirmwareFile.setFilename(firmwareFileRequest.getFileName());
     changedFirmwareFile.updateFirmwareModuleData(
         firmwareModuleData.getVersionsByModule(this.firmwareModuleRepository, false));
-    changedFirmwareFile.setPushToNewDevices(firmwareFileRequest.isPushToNewDevices());
-    changedFirmwareFile.setActive(firmwareFileRequest.isActive());
+    if (!firmwareFileRequest.getDescription().isEmpty()) {
+      changedFirmwareFile.setDescription(firmwareFileRequest.getDescription());
+    }
+    if (firmwareFileRequest.isPushToNewDevices() != null) {
+      changedFirmwareFile.setPushToNewDevices(firmwareFileRequest.isPushToNewDevices());
+    }
+    if (firmwareFileRequest.isActive() != null) {
+      changedFirmwareFile.setActive(firmwareFileRequest.isActive());
+    }
 
     // Save the changed firmware entity
     changedFirmwareFile = this.firmwareFileRepository.save(changedFirmwareFile);

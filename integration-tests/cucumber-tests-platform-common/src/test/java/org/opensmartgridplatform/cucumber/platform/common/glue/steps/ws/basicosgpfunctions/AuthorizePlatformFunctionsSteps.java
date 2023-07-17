@@ -31,21 +31,7 @@ import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Update
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindDevicesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindScheduledTasksRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddManufacturerRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Manufacturer;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveDeviceModelRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.*;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
@@ -335,12 +321,11 @@ public class AuthorizePlatformFunctionsSteps {
       throws WebServiceSecurityException, GeneralSecurityException, IOException {
     final ChangeFirmwareRequest request = new ChangeFirmwareRequest();
     request.setId(PlatformCommonDefaults.FIRMWARE_ID);
-    final Firmware firmware = new Firmware();
+    final ChangeableFirmware firmware = new ChangeableFirmware();
     firmware.setDescription(PlatformCommonDefaults.FIRMWARE_DESCRIPTION);
     final DeviceModel deviceModel = new DeviceModel();
     deviceModel.setModelCode(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
     deviceModel.setManufacturer(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
-    firmware.getDeviceModels().add(deviceModel);
     firmware.setPushToNewDevices(PlatformCommonDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE);
     request.setFirmware(firmware);
     ScenarioContext.current()

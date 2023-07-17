@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
+
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeableFirmware;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleData;
@@ -113,6 +115,58 @@ public class FirmwareSteps {
       firmware.getDeviceModels().add(deviceModel);
     }
 
+    return firmware;
+  }
+
+  protected ChangeableFirmware createAndGetChangeableFirmware(final Map<String, String> requestParameters) {
+    final ChangeableFirmware firmware = new ChangeableFirmware();
+    firmware.setDescription(getString(requestParameters, PlatformKeys.FIRMWARE_DESCRIPTION, null));
+    firmware.setPushToNewDevices(
+            getBoolean(
+                    requestParameters,
+                    PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
+                    PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE));
+
+    firmware.setFirmwareModuleData(new FirmwareModuleData());
+    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM)) {
+      firmware
+              .getFirmwareModuleData()
+              .setModuleVersionComm(
+                      getString(requestParameters, PlatformKeys.FIRMWARE_MODULE_VERSION_COMM, null));
+    }
+    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC)) {
+      firmware
+              .getFirmwareModuleData()
+              .setModuleVersionFunc(
+                      getString(requestParameters, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC, null));
+    }
+    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_MA)) {
+      firmware
+              .getFirmwareModuleData()
+              .setModuleVersionMa(
+                      getString(requestParameters, PlatformKeys.FIRMWARE_MODULE_VERSION_MA, null));
+    }
+    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS)) {
+      firmware
+              .getFirmwareModuleData()
+              .setModuleVersionMbus(
+                      getString(requestParameters, PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS, null));
+    }
+    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_SEC)) {
+      firmware
+              .getFirmwareModuleData()
+              .setModuleVersionSec(
+                      getString(requestParameters, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC, null));
+    }
+    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_M_BUS_DRIVER_ACTIVE)) {
+      firmware
+              .getFirmwareModuleData()
+              .setModuleVersionMBusDriverActive(
+                      getString(
+                              requestParameters,
+                              PlatformKeys.FIRMWARE_MODULE_VERSION_M_BUS_DRIVER_ACTIVE,
+                              null));
+    }
     return firmware;
   }
 
