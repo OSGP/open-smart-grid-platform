@@ -31,10 +31,10 @@ public abstract class AbstractEntity implements Serializable {
   protected Long id;
 
   @Column(nullable = false)
-  private Date creationTime = new Date();
+  protected Date creationTime = new Date();
 
   @Column(nullable = false)
-  private Date modificationTime = new Date();
+  protected Date modificationTime = new Date();
 
   @Version private Long version = -1L;
 
