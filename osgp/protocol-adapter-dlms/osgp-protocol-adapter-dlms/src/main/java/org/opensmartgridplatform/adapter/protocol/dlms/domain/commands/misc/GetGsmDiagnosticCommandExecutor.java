@@ -204,7 +204,7 @@ public class GetGsmDiagnosticCommandExecutor
     final GetResult result = getResultList.get(RESULT_OPERATOR_INDEX);
     if (this.isResultSuccess(result)) {
       final byte[] bytes = result.getResultData().getValue();
-      return new String(bytes, StandardCharsets.US_ASCII);
+      return new String(bytes, StandardCharsets.UTF_8);
     } else {
       return null;
     }
