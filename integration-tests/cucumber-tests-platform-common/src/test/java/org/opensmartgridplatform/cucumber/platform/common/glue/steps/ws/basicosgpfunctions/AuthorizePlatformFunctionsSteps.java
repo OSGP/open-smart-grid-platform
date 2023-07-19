@@ -31,7 +31,22 @@ import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Update
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindDevicesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindScheduledTasksRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.*;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddFirmwareRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddManufacturerRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeableFirmware;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindFirmwareRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Manufacturer;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveDeviceModelRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveFirmwareRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerRequest;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
@@ -63,7 +78,9 @@ public class AuthorizePlatformFunctionsSteps {
 
   @When("receiving a platform function request")
   public void receivingADeviceFunctionRequest(final Map<String, String> requestParameters)
-      throws OperationNotSupportedException, WebServiceSecurityException, GeneralSecurityException,
+      throws OperationNotSupportedException,
+          WebServiceSecurityException,
+          GeneralSecurityException,
           IOException {
     this.platformFunction =
         getEnum(requestParameters, PlatformKeys.KEY_PLATFORM_FUNCTION, PlatformFunction.class);
