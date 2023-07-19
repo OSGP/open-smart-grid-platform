@@ -172,6 +172,12 @@ class ObjectConfigServiceTest {
     assertThat(cosemObjectsWithSelectableObjects).hasSize(4);
   }
 
+  @Test
+  void getListOfDlmsProfiles() {
+
+    assertNotNull(this.objectConfigService.getConfiguredDlmsProfiles());
+  }
+
   private List<DlmsProfile> getDlmsProfileList() throws IOException {
     final List<DlmsProfile> DlmsProfileList = new ArrayList<>();
 

@@ -69,13 +69,23 @@
 
   <xsd:element name="CoupleMbusDeviceResponse">
     <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType" />
-        <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
-      </xsd:sequence>
+      <xsd:complexContent>
+        <xsd:extension base="tns:CoupleMbusDeviceResponseData">
+        </xsd:extension>
+      </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+
+  <xsd:complexType name="CoupleMbusDeviceResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="MbusDeviceIdentification" type="common:DeviceIdentification" />
+          <xsd:element name="ChannelElementValues" type="tns:ChannelElementValues" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
 
   <xsd:element name="DecoupleMbusDeviceRequest">
     <xsd:complexType>
