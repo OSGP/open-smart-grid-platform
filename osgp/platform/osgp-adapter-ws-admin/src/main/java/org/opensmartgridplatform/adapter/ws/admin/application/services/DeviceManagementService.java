@@ -4,6 +4,8 @@
 
 package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
@@ -669,7 +671,15 @@ public class DeviceManagementService {
     this.isAllowed(organisation, device, DeviceFunction.SET_COMMUNICATION_NETWORK_INFORMATION);
 
     if (ipAddress != null) {
-      device.setNetworkAddress(ipAddress);
+      try {
+        // Check if ip is valid format
+        final InetAddress inetAddress = InetAddress.getByName(ipAddress);
+        device.setNetworkAddress(inetAddress.getHostAddress());
+      } catch (final UnknownHostException e) {
+        LOGGER.error("Invalid ip address found {} for device {}", ipAddress, deviceIdentification);
+        throw new FunctionalException(
+            FunctionalExceptionType.INVALID_IP_ADDRESS, ComponentType.DOMAIN_SMART_METERING);
+      }
     }
 
     if (btsId != null) {
