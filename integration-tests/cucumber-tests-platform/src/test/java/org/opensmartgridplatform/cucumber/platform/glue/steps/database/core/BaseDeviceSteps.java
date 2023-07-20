@@ -117,7 +117,7 @@ public abstract class BaseDeviceSteps {
     device.setCellId(getInteger(settings, PlatformKeys.CELL_ID, null));
 
     device.updateRegistrationData(
-        inetAddress,
+        inetAddress.getHostAddress(),
         getString(settings, PlatformKeys.KEY_DEVICE_TYPE, PlatformDefaults.DEFAULT_DEVICE_TYPE));
 
     device.updateInMaintenance(

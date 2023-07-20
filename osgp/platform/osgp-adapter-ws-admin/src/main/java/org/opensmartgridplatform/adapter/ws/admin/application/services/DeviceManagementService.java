@@ -4,8 +4,6 @@
 
 package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
@@ -368,7 +366,7 @@ public class DeviceManagementService {
     final Organisation organisation = this.findOrganisation(organisationIdentification);
     this.isAllowed(organisation, PlatformFunction.GET_MESSAGES);
 
-    PageRequest pageRequest;
+    final PageRequest pageRequest;
     if (!StringUtils.isBlank(filter.getSortDirection())
         && !StringUtils.isBlank(filter.getSortBy())) {
       pageRequest =
@@ -671,13 +669,7 @@ public class DeviceManagementService {
     this.isAllowed(organisation, device, DeviceFunction.SET_COMMUNICATION_NETWORK_INFORMATION);
 
     if (ipAddress != null) {
-      try {
-        device.setNetworkAddress(InetAddress.getByName(ipAddress));
-      } catch (final UnknownHostException e) {
-        LOGGER.error("Invalid ip address found {} for device {}", ipAddress, deviceIdentification);
-        throw new FunctionalException(
-            FunctionalExceptionType.INVALID_IP_ADDRESS, ComponentType.DOMAIN_SMART_METERING);
-      }
+      device.setNetworkAddress(ipAddress);
     }
 
     if (btsId != null) {
@@ -719,7 +711,7 @@ public class DeviceManagementService {
 
   private Organisation findOrganisation(final String organisationIdentification)
       throws FunctionalException {
-    Organisation organisation;
+    final Organisation organisation;
     try {
       organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
     } catch (final UnknownEntityException e) {

@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -50,7 +49,7 @@ public class DeviceConverterTest {
             new Address("city", "postal", "street", 42, "nr", "munic"),
             new GpsCoordinates(12f, 13f),
             null);
-    device.updateRegistrationData(InetAddress.getByName("localhost"), "type");
+    device.updateRegistrationData("localhost", "type");
 
     final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device jaxbDevice =
         this.deviceManagementMapper.map(
@@ -95,7 +94,7 @@ public class DeviceConverterTest {
             "alias",
             new Address("city", "postal", "street", 42, "nr", "munic"),
             new GpsCoordinates(12f, 13f));
-    device.updateRegistrationData(InetAddress.getByName("localhost"), "type");
+    device.updateRegistrationData("localhost", "type");
 
     final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device jaxbDevice =
         this.deviceManagementMapper.map(
@@ -147,7 +146,7 @@ public class DeviceConverterTest {
             new Address("city", "postal", "street", 42, "nr", "munic"),
             new GpsCoordinates(12f, 13f),
             null);
-    device.updateRegistrationData(InetAddress.getByName("localhost"), Ssld.SSLD_TYPE);
+    device.updateRegistrationData("localhost", Ssld.SSLD_TYPE);
     device.getOutputSettings();
     device.setTechnicalInstallationDate(instant);
 

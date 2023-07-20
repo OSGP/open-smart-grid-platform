@@ -4,7 +4,6 @@
 
 package org.opensmartgridplatform.domain.core.repositories;
 
-import java.net.InetAddress;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
@@ -44,7 +43,7 @@ public interface DeviceRepository
   Device findByDeviceIdentificationWithFirmwareModules(
       @Param("deviceIdentification") String deviceIdentification);
 
-  List<Device> findByNetworkAddress(InetAddress address);
+  List<Device> findByNetworkAddress(String address);
 
   @Query(
       "SELECT d "

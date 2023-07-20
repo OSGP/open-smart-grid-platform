@@ -10,8 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -78,14 +76,10 @@ class ConfigurationServiceTest {
   private static final Integer CELL_ID;
 
   static {
-    try {
-      device.setNetworkAddress(InetAddress.getByAddress(new byte[] {127, 0, 0, 1}));
-      IP_ADDRESS = device.getIpAddress();
-      BASE_TRANSCEIVER_STATION_ID = device.getBtsId();
-      CELL_ID = device.getCellId();
-    } catch (final UnknownHostException e) {
-      throw new AssertionError(e);
-    }
+    device.setNetworkAddress("127.0.0.1");
+    IP_ADDRESS = device.getIpAddress();
+    BASE_TRANSCEIVER_STATION_ID = device.getBtsId();
+    CELL_ID = device.getCellId();
   }
 
   @InjectMocks private ConfigurationService instance;

@@ -77,7 +77,7 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
             new GpsCoordinates(this.gpsLatitude, this.gpsLongitude));
 
     device.setActivated(this.isActivated);
-    device.updateRegistrationData(this.networkAddress, this.deviceType);
+    device.updateRegistrationData(this.networkAddress.getHostAddress(), this.deviceType);
     device.setBtsId(this.baseTransceiverStationId);
     device.setCellId(this.cellId);
 

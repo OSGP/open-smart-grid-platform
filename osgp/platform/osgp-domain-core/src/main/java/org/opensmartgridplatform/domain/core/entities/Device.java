@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.domain.core.entities;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +34,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import org.hibernate.annotations.SortNatural;
-import org.hibernate.annotations.Type;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
@@ -89,8 +89,7 @@ public class Device extends AbstractEntity {
 
   /** IP address of a device. */
   @Column(length = 50)
-  @Type(type = "org.opensmartgridplatform.shared.hibernate.InetAddressUserType")
-  protected InetAddress networkAddress;
+  protected String networkAddress;
 
   /** Cell ID on a Base Transceiver Station. */
   @Column private Integer cellId;
@@ -262,14 +261,21 @@ public class Device extends AbstractEntity {
   }
 
   public String getIpAddress() {
-    return this.networkAddress == null ? null : this.networkAddress.getHostAddress();
+    if (this.networkAddress == null) {
+      return null;
+    }
+    try {
+      return InetAddress.getByName(this.networkAddress).getHostAddress();
+    } catch (final UnknownHostException e) {
+      return null;
+    }
   }
 
-  public InetAddress getNetworkAddress() {
+  public String getNetworkAddress() {
     return this.networkAddress;
   }
 
-  public void setNetworkAddress(final InetAddress networkAddress) {
+  public void setNetworkAddress(final String networkAddress) {
     this.networkAddress = networkAddress;
   }
 
@@ -372,7 +378,7 @@ public class Device extends AbstractEntity {
     this.protocolInfo = protocolInfo;
   }
 
-  public void updateRegistrationData(final InetAddress networkAddress, final String deviceType) {
+  public void updateRegistrationData(final String networkAddress, final String deviceType) {
     this.networkAddress = networkAddress;
     this.deviceType = deviceType;
     this.isActivated = true;

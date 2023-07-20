@@ -4,7 +4,6 @@
 
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.tasks;
 
-import java.net.InetAddress;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -261,7 +260,7 @@ public class BaseTask {
           deviceIdentification);
       return;
     } else {
-      ipAddress = device.getNetworkAddress().getHostAddress();
+      ipAddress = device.getNetworkAddress();
     }
 
     final RequestMessage requestMessage =
@@ -466,20 +465,13 @@ public class BaseTask {
     if (gatewayIpAddress != null) {
       return gatewayIpAddress;
     }
-    return getHostAddress(lightMeasurementDevice.getNetworkAddress());
+    return lightMeasurementDevice.getNetworkAddress();
   }
 
   private static String getGatewayIpAddress(final Device lightMeasurementDevice) {
     if (lightMeasurementDevice.getGatewayDevice() == null) {
       return null;
     }
-    return getHostAddress(lightMeasurementDevice.getGatewayDevice().getNetworkAddress());
-  }
-
-  private static String getHostAddress(final InetAddress inetAddress) {
-    if (inetAddress == null) {
-      return null;
-    }
-    return inetAddress.getHostAddress();
+    return lightMeasurementDevice.getGatewayDevice().getNetworkAddress();
   }
 }

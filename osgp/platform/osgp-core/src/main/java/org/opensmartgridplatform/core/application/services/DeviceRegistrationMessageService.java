@@ -4,7 +4,6 @@
 
 package org.opensmartgridplatform.core.application.services;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -70,15 +69,14 @@ public class DeviceRegistrationMessageService {
       device = this.createNewDevice(deviceIdentification, deviceType);
     }
 
-    final InetAddress inetAddress = InetAddress.getByName(ipAddress);
-    device.updateRegistrationData(inetAddress, deviceType);
+    device.updateRegistrationData(ipAddress, deviceType);
     device.updateConnectionDetailsToSuccess();
 
     return this.deviceRepository.save(device);
   }
 
   private Device createNewDevice(final String deviceIdentification, final String deviceType) {
-    Device device;
+    final Device device;
     if (Ssld.SSLD_TYPE.equalsIgnoreCase(deviceType)
         || Ssld.PSLD_TYPE.equalsIgnoreCase(deviceType)) {
       device = new Ssld(deviceIdentification);

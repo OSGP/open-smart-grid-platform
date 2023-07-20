@@ -94,7 +94,7 @@ public class RtuDeviceService {
           ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION,
           e);
     }
-    rtuDeviceEntity.updateRegistrationData(inetAddress, RtuDevice.PSD_TYPE);
+    rtuDeviceEntity.updateRegistrationData(inetAddress.getHostAddress(), RtuDevice.PSD_TYPE);
   }
 
   private void addDeviceModel(

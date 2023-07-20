@@ -9,10 +9,10 @@ import java.util.Objects;
 
 public class CdmaDevice {
 
-  private String deviceIdentification;
-  private InetAddress networkAddress;
-  private String mastSegmentName;
-  private Short batchNumber;
+  private final String deviceIdentification;
+  private final InetAddress networkAddress;
+  private final String mastSegmentName;
+  private final Short batchNumber;
 
   public CdmaDevice(
       final String deviceIdentification,
