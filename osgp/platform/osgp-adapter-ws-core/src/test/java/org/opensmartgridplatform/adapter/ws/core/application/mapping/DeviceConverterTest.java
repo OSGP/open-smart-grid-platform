@@ -65,7 +65,7 @@ public class DeviceConverterTest {
     assertThat(jaxbDevice.getContainerAddress().getMunicipality()).isEqualTo("munic");
     assertThat(jaxbDevice.getGpsLatitude()).isEqualTo("12.0");
     assertThat(jaxbDevice.getGpsLongitude()).isEqualTo("13.0");
-    assertThat(jaxbDevice.getNetworkAddress()).isEqualTo("localhost/127.0.0.1");
+    assertThat(jaxbDevice.getNetworkAddress()).isEqualTo("localhost");
     assertThat(jaxbDevice.getDeviceType()).isEqualTo("type");
 
     final Device mappedBack = this.deviceManagementMapper.map(jaxbDevice, Device.class);
@@ -110,7 +110,7 @@ public class DeviceConverterTest {
     assertThat(jaxbDevice.getContainerAddress().getMunicipality()).isEqualTo("munic");
     assertThat(jaxbDevice.getGpsLatitude()).isEqualTo("12.0");
     assertThat(jaxbDevice.getGpsLongitude()).isEqualTo("13.0");
-    assertThat(jaxbDevice.getNetworkAddress()).isEqualTo("localhost/127.0.0.1");
+    assertThat(jaxbDevice.getNetworkAddress()).isEqualTo("localhost");
     assertThat(jaxbDevice.getDeviceType()).isEqualTo("type");
 
     final SmartMeter mappedBack = this.deviceManagementMapper.map(jaxbDevice, SmartMeter.class);
@@ -166,7 +166,7 @@ public class DeviceConverterTest {
     assertThat(jaxbDevice.getContainerAddress().getMunicipality()).isEqualTo("munic");
     assertThat(jaxbDevice.getGpsLatitude()).isEqualTo("12.0");
     assertThat(jaxbDevice.getGpsLongitude()).isEqualTo("13.0");
-    assertThat(jaxbDevice.getNetworkAddress()).isEqualTo("localhost/127.0.0.1");
+    assertThat(jaxbDevice.getNetworkAddress()).isEqualTo("localhost");
     assertThat(jaxbDevice.getDeviceType()).isEqualTo(Ssld.SSLD_TYPE);
     assertThat(jaxbDevice.getOutputSettings().size()).isEqualTo(3);
     for (int i = 0; i < 3; i++) {
