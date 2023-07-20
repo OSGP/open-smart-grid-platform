@@ -29,10 +29,10 @@ public class CdmaBatchTest {
   public void newCdmaBatch() {
     final CdmaBatch batch = new CdmaBatch((short) 1);
 
-    final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress);
+    final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress.getHostAddress());
     batch.addCdmaBatchDevice(cd1);
 
-    final CdmaBatchDevice cd2 = new CdmaBatchDevice("cd2", this.loopbackAddress);
+    final CdmaBatchDevice cd2 = new CdmaBatchDevice("cd2", this.loopbackAddress.getHostAddress());
     batch.addCdmaBatchDevice(cd2);
 
     assertThat(batch.getBatchNumber()).isEqualTo(Short.valueOf((short) 1));

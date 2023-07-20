@@ -30,7 +30,7 @@ public class CdmaMastSegmentTest {
   public void newBatchNumberNull() {
     final CdmaMastSegment mastSegment = new CdmaMastSegment("200/1");
 
-    final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress);
+    final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress.getHostAddress());
     mastSegment.addCdmaBatchDevice(null, cd1);
     final CdmaBatch cdmaBatch = mastSegment.popCdmaBatch();
     assertThat(cdmaBatch.getBatchNumber())
@@ -42,7 +42,7 @@ public class CdmaMastSegmentTest {
   public void newCdmaMastSegment() {
     final CdmaMastSegment mastSegment = new CdmaMastSegment("200/1");
 
-    final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress);
+    final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress.getHostAddress());
     mastSegment.addCdmaBatchDevice((short) 1, cd1);
 
     assertThat(mastSegment.getMastSegment()).isEqualTo("200/1");
@@ -55,10 +55,10 @@ public class CdmaMastSegmentTest {
   public void popCdmaBatch() {
     final CdmaMastSegment mastSegment = new CdmaMastSegment("200/1");
 
-    final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress);
+    final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress.getHostAddress());
     mastSegment.addCdmaBatchDevice((short) 1, cd1);
 
-    final CdmaBatchDevice cd2 = new CdmaBatchDevice("cd2", this.loopbackAddress);
+    final CdmaBatchDevice cd2 = new CdmaBatchDevice("cd2", this.loopbackAddress.getHostAddress());
     mastSegment.addCdmaBatchDevice((short) 1, cd2);
 
     final CdmaBatch batch = mastSegment.popCdmaBatch();
@@ -96,7 +96,8 @@ public class CdmaMastSegmentTest {
     final CdmaMastSegment mastSegment = new CdmaMastSegment("200/55");
     for (short i = 0; i < 10; i++) {
       // Each device has a different batch
-      mastSegment.addCdmaBatchDevice(i, new CdmaBatchDevice("cd" + i, this.loopbackAddress));
+      mastSegment.addCdmaBatchDevice(
+          i, new CdmaBatchDevice("cd" + i, this.loopbackAddress.getHostAddress()));
     }
 
     for (int batchNo = 0; batchNo < 10; batchNo++) {

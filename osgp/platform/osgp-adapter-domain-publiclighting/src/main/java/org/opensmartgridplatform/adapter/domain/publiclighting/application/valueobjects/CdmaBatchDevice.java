@@ -5,14 +5,15 @@
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
 
 public class CdmaBatchDevice {
 
-  private String deviceIdentification;
-  private InetAddress networkAddress;
+  private final String deviceIdentification;
+  private final String networkAddress;
 
-  public CdmaBatchDevice(final String deviceIdentification, final InetAddress networkAddress) {
+  public CdmaBatchDevice(final String deviceIdentification, final String networkAddress) {
     this.deviceIdentification = deviceIdentification;
     this.networkAddress = networkAddress;
   }
@@ -27,7 +28,11 @@ public class CdmaBatchDevice {
   }
 
   public InetAddress getInetAddress() {
-    return this.networkAddress;
+    try {
+      return InetAddress.getByName(this.networkAddress);
+    } catch (final UnknownHostException e) {
+      return null;
+    }
   }
 
   @Override

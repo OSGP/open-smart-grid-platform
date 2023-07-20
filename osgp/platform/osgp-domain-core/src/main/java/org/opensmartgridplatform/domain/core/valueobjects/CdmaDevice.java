@@ -4,19 +4,18 @@
 
 package org.opensmartgridplatform.domain.core.valueobjects;
 
-import java.net.InetAddress;
 import java.util.Objects;
 
 public class CdmaDevice {
 
   private final String deviceIdentification;
-  private final InetAddress networkAddress;
+  private final String networkAddress;
   private final String mastSegmentName;
   private final Short batchNumber;
 
   public CdmaDevice(
       final String deviceIdentification,
-      final InetAddress networkAddress,
+      final String networkAddress,
       final String mastSegmentName,
       final Short batchNumber) {
     this.deviceIdentification = deviceIdentification;
@@ -29,7 +28,7 @@ public class CdmaDevice {
     return this.deviceIdentification;
   }
 
-  public InetAddress getNetworkAddress() {
+  public String getNetworkAddress() {
     return this.networkAddress;
   }
 
