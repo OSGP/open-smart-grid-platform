@@ -65,6 +65,8 @@ public class SimulatePushedAlarmsHooks {
     buf.put(obiscode);
     final byte attributeId = 0x02;
     buf.put((byte) attributeId);
+    buf.put((byte) 0x09); // octet-string
+    buf.put((byte) equipmentIdentifier.length());
     buf.put(equipmentIdentifier.getBytes());
     buf.flip();
     final byte[] bytes = new byte[buf.limit()];
