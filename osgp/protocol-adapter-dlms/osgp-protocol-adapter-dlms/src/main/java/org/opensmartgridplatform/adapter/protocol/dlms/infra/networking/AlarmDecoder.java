@@ -69,7 +69,8 @@ public class AlarmDecoder {
     }
   }
 
-  byte[] readAllBytes(final InputStream inputStream) throws UnrecognizedMessageDataException {
+  byte[] resetAndReadAllBytes(final InputStream inputStream)
+      throws UnrecognizedMessageDataException {
     try {
       return inputStream.readAllBytes();
     } catch (final IOException io) {

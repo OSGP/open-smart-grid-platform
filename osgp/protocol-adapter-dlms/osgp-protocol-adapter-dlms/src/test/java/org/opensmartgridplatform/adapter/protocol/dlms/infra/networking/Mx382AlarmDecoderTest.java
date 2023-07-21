@@ -46,7 +46,7 @@ class Mx382AlarmDecoderTest {
   }
 
   /*
-   * Decode with an alarm message that contains a date time stamp, this has an alternative length withing the WDPU header (2a on index 7, 8th byte).
+   * Decode with an alarm message that contains a date time stamp, this has an alternative length within the WDPU header (2a on index 7, 8th byte).
    * Build an alarm message with an exact message from the log with spaces removed.
    * +----------------------------------------------------------|----------------+
    * |        | 0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |                |
