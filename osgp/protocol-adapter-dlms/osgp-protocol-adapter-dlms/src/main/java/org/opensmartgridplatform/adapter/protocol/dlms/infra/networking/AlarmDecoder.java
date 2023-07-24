@@ -69,6 +69,15 @@ public class AlarmDecoder {
     }
   }
 
+  byte[] resetAndReadAllBytes(final InputStream inputStream)
+      throws UnrecognizedMessageDataException {
+    try {
+      return inputStream.readAllBytes();
+    } catch (final IOException io) {
+      throw new UnrecognizedMessageDataException(io.getMessage(), io);
+    }
+  }
+
   void skip(final InputStream inputStream, final int length)
       throws UnrecognizedMessageDataException {
     try {
