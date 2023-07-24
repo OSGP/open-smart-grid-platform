@@ -7,8 +7,12 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.application.valu
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CdmaBatchDevice {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(CdmaBatchDevice.class);
 
   private final String deviceIdentification;
   private final String networkAddress;
@@ -31,6 +35,7 @@ public class CdmaBatchDevice {
     try {
       return InetAddress.getByName(this.networkAddress);
     } catch (final UnknownHostException e) {
+      LOGGER.info("Cannot convert network address: {} to Inetaddress", this.networkAddress);
       return null;
     }
   }

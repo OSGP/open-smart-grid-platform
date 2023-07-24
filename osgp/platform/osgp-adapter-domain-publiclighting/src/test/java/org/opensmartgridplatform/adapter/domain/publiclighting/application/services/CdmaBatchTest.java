@@ -14,7 +14,7 @@ import org.opensmartgridplatform.adapter.domain.publiclighting.application.value
 
 public class CdmaBatchTest {
 
-  private final InetAddress loopbackAddress = InetAddress.getLoopbackAddress();
+  private final String loopbackAddress = InetAddress.getLoopbackAddress().getHostAddress();
 
   @Test
   public void newBatchNumberNull() {
@@ -29,10 +29,10 @@ public class CdmaBatchTest {
   public void newCdmaBatch() {
     final CdmaBatch batch = new CdmaBatch((short) 1);
 
-    final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress.getHostAddress());
+    final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress);
     batch.addCdmaBatchDevice(cd1);
 
-    final CdmaBatchDevice cd2 = new CdmaBatchDevice("cd2", this.loopbackAddress.getHostAddress());
+    final CdmaBatchDevice cd2 = new CdmaBatchDevice("cd2", this.loopbackAddress);
     batch.addCdmaBatchDevice(cd2);
 
     assertThat(batch.getBatchNumber()).isEqualTo(Short.valueOf((short) 1));
