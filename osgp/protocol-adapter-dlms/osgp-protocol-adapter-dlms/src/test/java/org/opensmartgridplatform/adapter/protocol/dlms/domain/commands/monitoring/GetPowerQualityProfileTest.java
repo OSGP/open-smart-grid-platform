@@ -78,7 +78,7 @@ public abstract class GetPowerQualityProfileTest {
     return object;
   }
 
-  protected CosemObject createProfile(
+  protected Optional<CosemObject> createProfile(
       final String obis, final String tag, final int intervalInMinutes) {
 
     final CosemObject object =
@@ -103,7 +103,7 @@ public abstract class GetPowerQualityProfileTest {
     attributeList.add(attributeInterval);
     object.setAttributes(attributeList);
 
-    return object;
+    return Optional.of(object);
   }
 
   protected List<CosemObject> getObjects(final boolean polyphase, final String publicOrPrivate) {
