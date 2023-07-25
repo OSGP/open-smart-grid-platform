@@ -152,7 +152,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
 
     final DeviceConnectionParameters deviceConnectionParameters =
         DeviceConnectionParameters.newBuilder()
-            .ipAddress(deviceRequest.getIpAddress())
+            .ipAddress(deviceRequest.getNetworkAddress())
             .deviceIdentification(deviceRequest.getDeviceIdentification())
             .ied(IED.ZOWN_RTU)
             .serverName(serverName)

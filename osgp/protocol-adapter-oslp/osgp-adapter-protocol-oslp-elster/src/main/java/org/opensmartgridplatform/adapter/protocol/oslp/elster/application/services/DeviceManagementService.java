@@ -16,7 +16,6 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceReque
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.SetScheduleDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.PendingSetScheduleRequest;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ConnectionFailureException;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OsgpRequestMessageSender;
@@ -244,8 +243,7 @@ public class DeviceManagementService {
     responseMessageSender.send(responseMessage);
   }
 
-  public void handleSetSchedule(final String deviceUid)
-      throws TechnicalException, ConnectionFailureException {
+  public void handleSetSchedule(final String deviceUid) throws TechnicalException {
     final List<PendingSetScheduleRequest> pendingSetScheduleRequestList =
         this.pendingSetScheduleRequestService.getAllByDeviceUidNotExpired(deviceUid);
     if (pendingSetScheduleRequestList.isEmpty()) {
@@ -285,8 +283,7 @@ public class DeviceManagementService {
     this.pendingSetScheduleRequestService.remove(pendingSetScheduleRequest);
   }
 
-  private MessageMetadata getMessageMetadataFromDeviceRequest(final DeviceRequest deviceRequest)
-      throws ConnectionFailureException {
+  private MessageMetadata getMessageMetadataFromDeviceRequest(final DeviceRequest deviceRequest) {
     return MessageMetadata.newBuilder()
         .withCorrelationUid(deviceRequest.getCorrelationUid())
         .withOrganisationIdentification(deviceRequest.getOrganisationIdentification())
@@ -294,7 +291,7 @@ public class DeviceManagementService {
         .withMessageType(deviceRequest.getMessageType())
         .withDomain(deviceRequest.getDomain())
         .withDomainVersion(deviceRequest.getDomainVersion())
-        .withIpAddress(deviceRequest.getIpAddress())
+        .withIpAddress(deviceRequest.getNetworkAddress())
         .withMessagePriority(deviceRequest.getMessagePriority())
         .withScheduled(deviceRequest.isScheduled())
         .withRetryCount(deviceRequest.getRetryCount())

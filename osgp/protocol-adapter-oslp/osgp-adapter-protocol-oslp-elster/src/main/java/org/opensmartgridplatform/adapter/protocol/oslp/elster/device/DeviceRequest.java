@@ -6,9 +6,6 @@ package org.opensmartgridplatform.adapter.protocol.oslp.elster.device;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ConnectionFailureException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
@@ -162,14 +159,6 @@ public class DeviceRequest implements Serializable {
 
   public int getMessagePriority() {
     return this.messagePriority;
-  }
-
-  public String getIpAddress() throws ConnectionFailureException {
-    try {
-      return InetAddress.getByName(this.networkAddress).getHostAddress();
-    } catch (final UnknownHostException e) {
-      throw new ConnectionFailureException("Cannot resolve IP address", e);
-    }
   }
 
   public String getNetworkAddress() {

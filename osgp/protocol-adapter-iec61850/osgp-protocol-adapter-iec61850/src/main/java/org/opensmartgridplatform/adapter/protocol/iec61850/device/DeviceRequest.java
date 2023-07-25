@@ -4,9 +4,6 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.device;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
@@ -19,6 +16,11 @@ public class DeviceRequest {
   private final String domainVersion;
   private final String messageType;
   private final int messagePriority;
+
+  public String getNetworkAddress() {
+    return this.networkAddress;
+  }
+
   private final String networkAddress;
   private final int retryCount;
   private final boolean isScheduled;
@@ -147,14 +149,6 @@ public class DeviceRequest {
 
   public int getMessagePriority() {
     return this.messagePriority;
-  }
-
-  public String getIpAddress() throws ConnectionFailureException {
-    try {
-      return InetAddress.getByName(this.networkAddress).getHostAddress();
-    } catch (final UnknownHostException e) {
-      throw new ConnectionFailureException("Cannot resolve IP address", e);
-    }
   }
 
   public int getRetryCount() {

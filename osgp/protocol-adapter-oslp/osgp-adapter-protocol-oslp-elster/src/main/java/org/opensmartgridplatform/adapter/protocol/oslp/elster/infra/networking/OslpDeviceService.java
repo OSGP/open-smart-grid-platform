@@ -43,7 +43,6 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.responses.G
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.responses.GetStatusDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.valueobjects.Pager;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpLogItemRequestMessage;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpLogItemRequestMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.ConfigurationDto;
@@ -2337,15 +2336,7 @@ public class OslpDeviceService implements DeviceService {
     final String organisationIdentification = deviceRequest.getOrganisationIdentification();
     final String correlationUid = deviceRequest.getCorrelationUid();
     final String ipAddress;
-    try {
-      ipAddress = deviceRequest.getIpAddress();
-    } catch (final ProtocolAdapterException e) {
-      LOGGER.error(
-          "Unable to resolve IP address for {}, device: {}",
-          deviceRequest.getNetworkAddress(),
-          deviceIdentification);
-      return;
-    }
+    ipAddress = deviceRequest.getNetworkAddress();
     final String domain = deviceRequest.getDomain();
     final String domainVersion = deviceRequest.getDomainVersion();
     final String messageType = deviceRequest.getMessageType();
