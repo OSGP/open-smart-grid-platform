@@ -21,6 +21,7 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.servic
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpDeviceSettingsService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpSigningService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ConnectionFailureException;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.core.db.api.application.services.DeviceDataService;
 import org.opensmartgridplatform.dto.valueobjects.GpsCoordinatesDto;
@@ -199,6 +200,8 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         this.handleSetSchedule(response.getDeviceId());
       } catch (final TechnicalException e) {
         LOGGER.error("Caught TechnicalException", e);
+      } catch (final ConnectionFailureException e) {
+        LOGGER.error("Cannot resolve IP address for device {}", response.getDeviceId());
       }
     }
   }
@@ -313,7 +316,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         .build();
   }
 
-  private void handleSetSchedule(final byte[] deviceUid) throws TechnicalException {
+  private void handleSetSchedule(final byte[] deviceUid) throws TechnicalException, ConnectionFailureException {
 
     final String deviceUidBase64Encoded = Base64.encodeBase64String(deviceUid);
     this.deviceManagementService.handleSetSchedule(deviceUidBase64Encoded);
