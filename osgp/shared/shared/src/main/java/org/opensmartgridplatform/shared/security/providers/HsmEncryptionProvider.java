@@ -80,9 +80,10 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider {
   @Override
   public byte[] generateAes128BitsSecret(final String keyReference) {
     try {
-      return this.encrypt(KeyGenerator.getInstance("AES").generateKey().getEncoded(), keyReference)
-          .getSecret();
-    } catch (final NoSuchAlgorithmException exc) {
+      final byte[] encryptedKey =
+          KeyGenerator.getInstance(ALGORITHM, PROVIDER).generateKey().getEncoded();
+      return this.encrypt(encryptedKey, keyReference).getSecret();
+    } catch (final NoSuchAlgorithmException | NoSuchProviderException exc) {
       throw new EncrypterException("Could not generate secret", exc);
     }
   }
