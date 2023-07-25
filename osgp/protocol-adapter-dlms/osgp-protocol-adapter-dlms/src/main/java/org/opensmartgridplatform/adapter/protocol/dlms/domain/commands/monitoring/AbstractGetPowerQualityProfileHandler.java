@@ -192,8 +192,13 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     final String version = device.getProtocolVersion();
 
     try {
-      final CosemObject profileObject =
-          this.objectConfigService.getCosemObject(protocol, version, profileType);
+      final Optional<CosemObject> optionalCosemObject =
+          this.objectConfigService.getOptionalCosemObject(protocol, version, profileType);
+      if (optionalCosemObject.isEmpty()) {
+        // Cosem object is not in profile, then skip it
+        return;
+      }
+      final CosemObject profileObject = optionalCosemObject.get();
 
       // Get all selectable objects for this profile
       final List<CosemObject> selectableObjectsFromConfig =

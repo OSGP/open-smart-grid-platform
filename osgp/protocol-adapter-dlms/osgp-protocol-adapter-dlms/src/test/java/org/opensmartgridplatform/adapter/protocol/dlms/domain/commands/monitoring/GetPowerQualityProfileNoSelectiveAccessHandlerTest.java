@@ -18,6 +18,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -76,15 +77,15 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends GetPowerQuality
         .thenCallRealMethod();
     when(this.dlmsHelper.convertDataObjectToDateTime(any(DataObject.class))).thenCallRealMethod();
     when(this.dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
-    when(this.objectConfigService.getCosemObject(
+    when(this.objectConfigService.getOptionalCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_2))
         .thenReturn(
             this.createProfile(PQ_PROFILE_2, "POWER_QUALITY_PROFILE_2", PQ_PROFILE_2_INTERVAL));
-    when(this.objectConfigService.getCosemObject(
+    when(this.objectConfigService.getOptionalCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_1))
         .thenReturn(
             this.createProfile(PQ_DEFINABLE, "DEFINABLE_LOAD_PROFILE", PQ_DEFINABLE_INTERVAL));
-    when(this.objectConfigService.getCosemObject(
+    when(this.objectConfigService.getOptionalCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, DEFINABLE_LOAD_PROFILE))
         .thenReturn(
             this.createProfile(PQ_PROFILE_1, "POWER_QUALITY_PROFILE_1", PQ_PROFILE_1_INTERVAL));
@@ -135,15 +136,15 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends GetPowerQuality
             new ArrayList<>());
     when(this.dlmsHelper.readObjectDefinition(any(DataObject.class), any(String.class)))
         .thenCallRealMethod();
-    when(this.objectConfigService.getCosemObject(
+    when(this.objectConfigService.getOptionalCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_2))
         .thenReturn(
             this.createProfile(PQ_PROFILE_2, "POWER_QUALITY_PROFILE_2", PQ_PROFILE_2_INTERVAL));
-    when(this.objectConfigService.getCosemObject(
+    when(this.objectConfigService.getOptionalCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_1))
         .thenReturn(
             this.createProfile(PQ_DEFINABLE, "DEFINABLE_LOAD_PROFILE", PQ_DEFINABLE_INTERVAL));
-    when(this.objectConfigService.getCosemObject(
+    when(this.objectConfigService.getOptionalCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, DEFINABLE_LOAD_PROFILE))
         .thenReturn(
             this.createProfile(PQ_PROFILE_1, "POWER_QUALITY_PROFILE_1", PQ_PROFILE_1_INTERVAL));
@@ -176,7 +177,7 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends GetPowerQuality
             Date.from(Instant.now().minus(2, ChronoUnit.DAYS)),
             new Date(),
             new ArrayList<>());
-    when(this.objectConfigService.getCosemObject(
+    when(this.objectConfigService.getOptionalCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, DEFINABLE_LOAD_PROFILE))
         .thenThrow(new IllegalArgumentException("IllegalArgumentException"));
 
@@ -199,7 +200,7 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends GetPowerQuality
             Date.from(Instant.now().minus(2, ChronoUnit.DAYS)),
             new Date(),
             new ArrayList<>());
-    when(this.objectConfigService.getCosemObject(
+    when(this.objectConfigService.getOptionalCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, DEFINABLE_LOAD_PROFILE))
         .thenThrow(new ObjectConfigException("exception"));
 
@@ -210,6 +211,35 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends GetPowerQuality
     assertThrows(
         ProtocolAdapterException.class,
         () -> handler.handle(this.conn, this.dlmsDevice, requestDto));
+  }
+
+  @ParameterizedTest
+  @EnumSource(PowerQualityProfile.class)
+  void testSkipIfProfileDoesNotContainObject(final PowerQualityProfile profile)
+      throws ObjectConfigException, ProtocolAdapterException {
+    final GetPowerQualityProfileRequestDataDto requestDto =
+        new GetPowerQualityProfileRequestDataDto(
+            profile.name(),
+            Date.from(Instant.now().minus(2, ChronoUnit.DAYS)),
+            new Date(),
+            new ArrayList<>());
+    when(this.objectConfigService.getOptionalCosemObject(
+            PROTOCOL_NAME, PROTOCOL_VERSION, DEFINABLE_LOAD_PROFILE))
+        .thenReturn(Optional.empty());
+    when(this.objectConfigService.getOptionalCosemObject(
+            PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_1))
+        .thenReturn(Optional.empty());
+    when(this.objectConfigService.getOptionalCosemObject(
+            PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_2))
+        .thenReturn(Optional.empty());
+
+    final GetPowerQualityProfileNoSelectiveAccessHandler handler =
+        new GetPowerQualityProfileNoSelectiveAccessHandler(
+            this.dlmsHelper, this.objectConfigService);
+
+    final GetPowerQualityProfileResponseDto responseDto =
+        handler.handle(this.conn, this.dlmsDevice, requestDto);
+    assertThat(responseDto.getPowerQualityProfileResponseDatas()).hasSize(0);
   }
 
   private List<GetResult> createInvalidCaptureObjects() {

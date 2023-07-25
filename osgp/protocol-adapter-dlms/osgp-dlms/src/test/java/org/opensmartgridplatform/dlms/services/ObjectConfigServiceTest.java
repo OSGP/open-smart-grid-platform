@@ -105,6 +105,19 @@ class ObjectConfigServiceTest {
   }
 
   @Test
+  void getOptionalCosemObject() throws ObjectConfigException {
+    assertThat(
+            this.objectConfigService.getOptionalCosemObject(
+                "DSMR", "4.2.2", DlmsObjectType.POWER_QUALITY_PROFILE_1))
+        .isEmpty();
+
+    assertThat(
+            this.objectConfigService.getOptionalCosemObject(
+                "SMR", "5.0", DlmsObjectType.POWER_QUALITY_PROFILE_1))
+        .isPresent();
+  }
+
+  @Test
   void testGetCosemObjectsWithProperty() throws ObjectConfigException {
     final String protocolName = "SMR";
     final String protocolVersion50 = "5.0";
