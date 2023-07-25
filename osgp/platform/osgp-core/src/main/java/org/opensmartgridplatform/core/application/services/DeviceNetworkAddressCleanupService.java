@@ -229,7 +229,7 @@ public class DeviceNetworkAddressCleanupService {
   private void clearNetworkAddress(final Device device) {
     LOGGER.info(
         "Clearing duplicate network address {} with device {}",
-        device.getIpAddress(),
+        device.getNetworkAddress(),
         device.getDeviceIdentification());
     device.clearNetworkAddress();
     this.deviceRepository.save(device);

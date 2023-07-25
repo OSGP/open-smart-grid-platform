@@ -83,7 +83,7 @@ public class AdhocService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withIpAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -110,7 +110,7 @@ public class AdhocService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withIpAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -145,7 +145,7 @@ public class AdhocService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withIpAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -183,7 +183,7 @@ public class AdhocService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withIpAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -227,7 +227,7 @@ public class AdhocService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withIpAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -264,7 +264,7 @@ public class AdhocService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withIpAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }

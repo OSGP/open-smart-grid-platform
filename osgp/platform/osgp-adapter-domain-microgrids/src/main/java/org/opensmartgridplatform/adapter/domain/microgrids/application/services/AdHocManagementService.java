@@ -76,7 +76,7 @@ public class AdHocManagementService extends BaseService {
     this.osgpCoreRequestMessageSender.send(
         new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto),
         messageType,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   public void handleInternalDataResponse(
@@ -166,7 +166,7 @@ public class AdHocManagementService extends BaseService {
     this.osgpCoreRequestMessageSender.send(
         new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto),
         messageType,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   public void handleSetDataResponse(

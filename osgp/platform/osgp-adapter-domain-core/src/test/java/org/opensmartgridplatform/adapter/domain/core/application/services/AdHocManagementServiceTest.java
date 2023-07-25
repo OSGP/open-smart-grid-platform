@@ -51,7 +51,7 @@ public class AdHocManagementServiceTest {
 
   @BeforeEach
   public void setup() throws Exception {
-    when(this.device.getIpAddress()).thenReturn("127.0.0.1");
+    when(this.device.getNetworkAddress()).thenReturn("127.0.0.1");
     when(this.deviceDomainService.searchActiveDevice(any(String.class), any(ComponentType.class)))
         .thenReturn(this.device);
   }

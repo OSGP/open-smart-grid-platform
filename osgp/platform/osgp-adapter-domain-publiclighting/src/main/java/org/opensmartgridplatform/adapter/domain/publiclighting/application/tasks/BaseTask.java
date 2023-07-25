@@ -251,7 +251,7 @@ public class BaseTask {
     final String deviceFunctionString = deviceFunction.name();
     final DomainTypeDto domain = DomainTypeDto.PUBLIC_LIGHTING;
 
-    String ipAddress = null;
+    String networkAddress = null;
     if (device.getNetworkAddress() == null) {
       // In case the device does not have a known IP address, don't send
       // a request message.
@@ -260,14 +260,17 @@ public class BaseTask {
           deviceIdentification);
       return;
     } else {
-      ipAddress = device.getNetworkAddress();
+      networkAddress = device.getNetworkAddress();
     }
 
     final RequestMessage requestMessage =
         new RequestMessage(correlationUid, organisation, deviceIdentification, domain);
 
     this.osgpCoreRequestMessageSender.send(
-        requestMessage, deviceFunctionString, MessagePriorityEnum.LOW.getPriority(), ipAddress);
+        requestMessage,
+        deviceFunctionString,
+        MessagePriorityEnum.LOW.getPriority(),
+        networkAddress);
   }
 
   /**
@@ -461,9 +464,9 @@ public class BaseTask {
   }
 
   private static String getNetworkAddress(final Device lightMeasurementDevice) {
-    final String gatewayIpAddress = getGatewayNetworkAddress(lightMeasurementDevice);
-    if (gatewayIpAddress != null) {
-      return gatewayIpAddress;
+    final String gatewayNetworkAddress = getGatewayNetworkAddress(lightMeasurementDevice);
+    if (gatewayNetworkAddress != null) {
+      return gatewayNetworkAddress;
     }
     return lightMeasurementDevice.getNetworkAddress();
   }

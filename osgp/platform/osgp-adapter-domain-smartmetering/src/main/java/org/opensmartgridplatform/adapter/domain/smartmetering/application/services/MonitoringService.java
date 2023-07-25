@@ -128,7 +128,7 @@ public class MonitoringService {
           messageMetadata
               .builder()
               .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
-              .withIpAddress(gatewayDevice.getIpAddress())
+              .withIpAddress(gatewayDevice.getNetworkAddress())
               .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
               .build());
     } else {
@@ -140,7 +140,7 @@ public class MonitoringService {
           requestDto,
           messageMetadata
               .builder()
-              .withIpAddress(smartMeter.getIpAddress())
+              .withIpAddress(smartMeter.getNetworkAddress())
               .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
               .build());
     }
@@ -247,7 +247,7 @@ public class MonitoringService {
           messageMetadata
               .builder()
               .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
-              .withIpAddress(gatewayDevice.getIpAddress())
+              .withIpAddress(gatewayDevice.getNetworkAddress())
               .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
               .build());
     } else {
@@ -255,7 +255,7 @@ public class MonitoringService {
           new ActualMeterReadsQueryDto(),
           messageMetadata
               .builder()
-              .withIpAddress(smartMeter.getIpAddress())
+              .withIpAddress(smartMeter.getNetworkAddress())
               .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
               .build());
     }
@@ -330,7 +330,7 @@ public class MonitoringService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withIpAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -385,7 +385,7 @@ public class MonitoringService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withIpAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -437,7 +437,7 @@ public class MonitoringService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withIpAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -492,7 +492,7 @@ public class MonitoringService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withIpAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }

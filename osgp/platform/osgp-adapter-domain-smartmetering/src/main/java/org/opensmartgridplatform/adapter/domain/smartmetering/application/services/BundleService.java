@@ -90,7 +90,7 @@ public class BundleService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withIpAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }

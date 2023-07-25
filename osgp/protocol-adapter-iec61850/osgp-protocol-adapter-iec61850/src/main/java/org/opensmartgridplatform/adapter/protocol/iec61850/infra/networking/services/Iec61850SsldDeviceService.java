@@ -556,7 +556,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
 
     final DeviceConnectionParameters deviceConnectionParameters =
         DeviceConnectionParameters.newBuilder()
-            .ipAddress(deviceRequest.getNetworkAddress())
+            .networkAddress(deviceRequest.getNetworkAddress())
             .deviceIdentification(deviceRequest.getDeviceIdentification())
             .ied(IED.FLEX_OVL)
             .serverName(IED.FLEX_OVL.getDescription())

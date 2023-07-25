@@ -684,7 +684,7 @@ public class DeviceManagementService {
     LOGGER.info(
         "CommunicationNetworkInformation for Device {} updated to : ipAddress={}, btsId={}, cellId={} ",
         deviceIdentification,
-        updatedDevice.getIpAddress(),
+        updatedDevice.getNetworkAddress(),
         updatedDevice.getBtsId(),
         updatedDevice.getCellId());
 

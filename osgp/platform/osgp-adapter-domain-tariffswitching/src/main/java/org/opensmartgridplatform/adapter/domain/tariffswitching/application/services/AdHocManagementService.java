@@ -78,7 +78,7 @@ public class AdHocManagementService extends AbstractService {
             correlationUid, organisationIdentification, deviceIdentification, allowedDomainTypeDto),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   public void handleGetStatusResponse(

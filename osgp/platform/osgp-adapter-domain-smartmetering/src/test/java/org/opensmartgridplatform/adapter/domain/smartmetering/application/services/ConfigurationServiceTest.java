@@ -77,7 +77,7 @@ class ConfigurationServiceTest {
 
   static {
     device.setNetworkAddress("127.0.0.1");
-    IP_ADDRESS = device.getIpAddress();
+    IP_ADDRESS = device.getNetworkAddress();
     BASE_TRANSCEIVER_STATION_ID = device.getBtsId();
     CELL_ID = device.getCellId();
   }

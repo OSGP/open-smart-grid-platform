@@ -88,7 +88,7 @@ public class ConfigurationManagementService extends AbstractService {
         new RequestMessage(ids, configurationDto),
         messageType,
         messagePriority,
-        device.getIpAddress(),
+        device.getNetworkAddress(),
         scheduleTime);
   }
 
@@ -139,7 +139,7 @@ public class ConfigurationManagementService extends AbstractService {
         new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   public void handleGetConfigurationResponse(
@@ -220,7 +220,7 @@ public class ConfigurationManagementService extends AbstractService {
             correlationUid, organisationIdentification, deviceIdentification, configurationBank),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   private void replaceEmptyOutputSettings(

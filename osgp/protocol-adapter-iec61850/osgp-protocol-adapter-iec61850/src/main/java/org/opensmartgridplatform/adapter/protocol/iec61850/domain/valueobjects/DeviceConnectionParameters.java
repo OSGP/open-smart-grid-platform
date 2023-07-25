@@ -8,14 +8,14 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 
 public class DeviceConnectionParameters {
 
-  final String ipAddress;
+  final String networkAddress;
   final String deviceIdentification;
   final IED ied;
   final String serverName;
   final String logicalDevice;
 
   public DeviceConnectionParameters(final Builder builder) {
-    this.ipAddress = builder.ipAddress;
+    this.networkAddress = builder.ipAddress;
     this.deviceIdentification = builder.deviceIdentification;
     this.ied = builder.ied;
     this.serverName = builder.serverName;
@@ -29,7 +29,7 @@ public class DeviceConnectionParameters {
     private String serverName = null;
     private String logicalDevice = null;
 
-    public Builder ipAddress(final String ipAddress) {
+    public Builder networkAddress(final String ipAddress) {
       this.ipAddress = ipAddress;
       return this;
     }
@@ -63,8 +63,8 @@ public class DeviceConnectionParameters {
     return new Builder();
   }
 
-  public String getIpAddress() {
-    return this.ipAddress;
+  public String getNetworkAddress() {
+    return this.networkAddress;
   }
 
   public String getDeviceIdentification() {

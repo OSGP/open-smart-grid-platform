@@ -38,7 +38,7 @@ public class DeviceRegistrationMessageService {
    * doesn't exist.
    *
    * @param deviceIdentification The device identification.
-   * @param ipAddress The IP address of the device.
+   * @param networkAddress The IP address of the device.
    * @param deviceType The type of the device, SSLD or PSLD.
    * @param hasSchedule In case the device has a schedule, this will be true.
    * @return Device with updated data
@@ -47,21 +47,21 @@ public class DeviceRegistrationMessageService {
   @Transactional(value = "transactionManager")
   public Device updateRegistrationData(
       final String deviceIdentification,
-      final String ipAddress,
+      final String networkAddress,
       final String deviceType,
       final boolean hasSchedule)
       throws UnknownHostException {
 
     LOGGER.info(
-        "updateRegistrationData called for device: {} ipAddress: {}, deviceType: {} hasSchedule: {}.",
+        "updateRegistrationData called for device: {} network address: {}, deviceType: {} hasSchedule: {}.",
         deviceIdentification,
-        ipAddress,
+        networkAddress,
         deviceType,
         hasSchedule);
 
     // Check for existing IP addresses
     this.deviceNetworkAddressCleanupService.clearDuplicateAddresses(
-        deviceIdentification, ipAddress);
+        deviceIdentification, networkAddress);
 
     Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
     if (device == null) {
@@ -69,7 +69,7 @@ public class DeviceRegistrationMessageService {
       device = this.createNewDevice(deviceIdentification, deviceType);
     }
 
-    device.updateRegistrationData(ipAddress, deviceType);
+    device.updateRegistrationData(networkAddress, deviceType);
     device.updateConnectionDetailsToSuccess();
 
     return this.deviceRepository.save(device);

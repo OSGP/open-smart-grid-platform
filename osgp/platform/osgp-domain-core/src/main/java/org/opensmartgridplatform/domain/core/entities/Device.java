@@ -4,8 +4,6 @@
 
 package org.opensmartgridplatform.domain.core.entities;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -258,17 +256,6 @@ public class Device extends AbstractEntity {
 
   public void setDeviceType(final String deviceType) {
     this.deviceType = deviceType;
-  }
-
-  public String getIpAddress() {
-    if (this.networkAddress == null) {
-      return null;
-    }
-    try {
-      return InetAddress.getByName(this.networkAddress).getHostAddress();
-    } catch (final UnknownHostException e) {
-      return null;
-    }
   }
 
   public String getNetworkAddress() {

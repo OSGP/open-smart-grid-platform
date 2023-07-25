@@ -182,9 +182,9 @@ public class ScheduledTaskExecutorService {
   }
 
   private static String getIpAddress(final Device device) {
-    if (device.getIpAddress() == null && device.getGatewayDevice() != null) {
-      return device.getGatewayDevice().getIpAddress();
+    if (device.getNetworkAddress() == null && device.getGatewayDevice() != null) {
+      return device.getGatewayDevice().getNetworkAddress();
     }
-    return device.getIpAddress();
+    return device.getNetworkAddress();
   }
 }
