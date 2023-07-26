@@ -28,7 +28,8 @@ public class SetCommunicationNetworkInformationSteps {
   public void receivingASetCommunicationNetworkInformationRequest(
       final Map<String, String> inputSettings) throws WebServiceSecurityException {
 
-    final SetCommunicationNetworkInformationRequest request = this.createRequestFromInput(inputSettings);
+    final SetCommunicationNetworkInformationRequest request =
+        this.createRequestFromInput(inputSettings);
 
     final SetCommunicationNetworkInformationResponse response =
         this.client.setCommunicationNetworkInformation(request);
@@ -78,7 +79,8 @@ public class SetCommunicationNetworkInformationSteps {
   public void receivingASetCommunicationNetworkInformationRequestWithAnInvalidIp(
       final Map<String, String> inputSettings) throws WebServiceSecurityException {
 
-    final SetCommunicationNetworkInformationRequest request = this.createRequestFromInput(inputSettings);
+    final SetCommunicationNetworkInformationRequest request =
+        this.createRequestFromInput(inputSettings);
 
     try {
       this.client.setCommunicationNetworkInformation(request);
