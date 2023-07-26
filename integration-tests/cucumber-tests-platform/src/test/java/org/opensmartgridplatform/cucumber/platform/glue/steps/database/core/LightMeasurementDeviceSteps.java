@@ -145,7 +145,7 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
             InetAddress.getByName(
                 getString(
                     settings,
-                    PlatformKeys.IP_ADDRESS,
+                    PlatformKeys.NETWORK_ADDRESS,
                     this.configuration.getDeviceNetworkAddress()));
       } catch (final UnknownHostException e) {
         inetAddress = InetAddress.getLoopbackAddress();

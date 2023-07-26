@@ -358,7 +358,7 @@ public class DeviceSteps extends BaseDeviceSteps {
 
           assertThat(device.getNetworkAddress())
               .as("IP address does not match")
-              .isEqualTo(getString(expectedEntity, PlatformKeys.IP_ADDRESS));
+              .isEqualTo(getString(expectedEntity, PlatformKeys.NETWORK_ADDRESS));
         });
   }
 }

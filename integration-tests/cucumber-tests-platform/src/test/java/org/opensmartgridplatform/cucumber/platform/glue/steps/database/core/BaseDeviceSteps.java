@@ -108,7 +108,9 @@ public abstract class BaseDeviceSteps {
       inetAddress =
           InetAddress.getByName(
               getString(
-                  settings, PlatformKeys.IP_ADDRESS, this.configuration.getDeviceNetworkAddress()));
+                  settings,
+                  PlatformKeys.NETWORK_ADDRESS,
+                  this.configuration.getDeviceNetworkAddress()));
     } catch (final UnknownHostException e) {
       inetAddress = InetAddress.getLoopbackAddress();
     }
