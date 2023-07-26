@@ -77,7 +77,7 @@ public class MessageMetadata implements Serializable {
         metadata.getStringProperty(message, Constants.DOMAIN_VERSION, StringUtils.EMPTY);
 
     metadata.ipAddress =
-        metadata.getStringProperty(message, Constants.IP_ADDRESS, StringUtils.EMPTY);
+        metadata.getStringProperty(message, Constants.NETWORK_ADDRESS, StringUtils.EMPTY);
 
     metadata.baseTransceiverStationId =
         metadata.getIntProperty(message, Constants.BASE_TRANSCEIVER_STATION_ID, null);
@@ -118,7 +118,7 @@ public class MessageMetadata implements Serializable {
     }
 
     if (StringUtils.isNotBlank(this.ipAddress)) {
-      message.setStringProperty(Constants.IP_ADDRESS, this.ipAddress);
+      message.setStringProperty(Constants.NETWORK_ADDRESS, this.ipAddress);
     }
 
     if (this.baseTransceiverStationId != null) {

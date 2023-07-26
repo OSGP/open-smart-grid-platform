@@ -52,7 +52,8 @@ public class Iec61850DeviceConnectionService {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(Iec61850DeviceConnectionService.class);
 
-  private static final ConcurrentHashMap<String, Iec61850Connection> cache = new ConcurrentHashMap<>();
+  private static final ConcurrentHashMap<String, Iec61850Connection> cache =
+      new ConcurrentHashMap<>();
 
   @Autowired private Iec61850DeviceRepository iec61850DeviceRepository;
 
