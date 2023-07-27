@@ -48,29 +48,64 @@ class ObjectConfigServiceTest {
         this.objectConfigService.getCosemObjects(protocolName, protocolVersion43);
 
     assertNotNull(cosemObjects);
-    assertThat(cosemObjects).hasSize(28);
+    assertThat(cosemObjects).hasSize(45);
     assertNull(cosemObjects.get(DlmsObjectType.MBUS_DIAGNOSTIC));
   }
 
   @Test
   void testGetCosemObjects() throws ObjectConfigException {
-    final String protocolName = "SMR";
-    final String protocolVersion51 = "5.1";
-    final String protocolVersion52 = "5.2";
+    Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.objectConfigService.getCosemObjects("DSMR", "2.2");
 
-    final Map<DlmsObjectType, CosemObject> cosemObjects51 =
-        this.objectConfigService.getCosemObjects(protocolName, protocolVersion51);
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(20);
+    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_VOLTAGE_SWELLS_FOR_L1));
 
-    assertNotNull(cosemObjects51);
-    assertThat(cosemObjects51).hasSize(48);
-    assertNotNull(cosemObjects51.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
+    cosemObjects = this.objectConfigService.getCosemObjects("DSMR", "4.2.2");
 
-    final Map<DlmsObjectType, CosemObject> cosemObjects52 =
-        this.objectConfigService.getCosemObjects(protocolName, protocolVersion52);
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(44);
+    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_VOLTAGE_SWELLS_FOR_L1));
+    assertNull(cosemObjects.get(DlmsObjectType.CDMA_DIAGNOSTIC));
 
-    assertNotNull(cosemObjects52);
-    assertThat(cosemObjects52).hasSize(48);
-    assertNotNull(cosemObjects52.get(DlmsObjectType.NUMBER_OF_LONG_POWER_FAILURES));
+    cosemObjects = this.objectConfigService.getCosemObjects("SMR", "4.3");
+
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(45);
+    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_VOLTAGE_SWELLS_FOR_L1));
+    assertNotNull(cosemObjects.get(DlmsObjectType.CDMA_DIAGNOSTIC));
+
+    cosemObjects = this.objectConfigService.getCosemObjects("SMR", "5.0.0");
+
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(49);
+    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
+    assertNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
+    assertNull(cosemObjects.get(DlmsObjectType.PUSH_SETUP_UDP));
+
+    cosemObjects = this.objectConfigService.getCosemObjects("SMR", "5.1");
+
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(49);
+    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
+    assertNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
+    assertNull(cosemObjects.get(DlmsObjectType.PUSH_SETUP_UDP));
+
+    cosemObjects = this.objectConfigService.getCosemObjects("SMR", "5.2");
+
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(50);
+    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
+    assertNotNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
+    assertNull(cosemObjects.get(DlmsObjectType.PUSH_SETUP_UDP));
+
+    cosemObjects = this.objectConfigService.getCosemObjects("SMR", "5.5");
+
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(51);
+    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
+    assertNotNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
+    assertNotNull(cosemObjects.get(DlmsObjectType.PUSH_SETUP_UDP));
   }
 
   @Test
@@ -113,14 +148,14 @@ class ObjectConfigServiceTest {
 
     assertThat(
             this.objectConfigService.getOptionalCosemObject(
-                "SMR", "5.0", DlmsObjectType.POWER_QUALITY_PROFILE_1))
+                "SMR", "5.0.0", DlmsObjectType.POWER_QUALITY_PROFILE_1))
         .isPresent();
   }
 
   @Test
   void testGetCosemObjectsWithProperty() throws ObjectConfigException {
     final String protocolName = "SMR";
-    final String protocolVersion50 = "5.0";
+    final String protocolVersion50 = "5.0.0";
 
     final List<CosemObject> cosemObjectsWithSelectableObjects =
         this.objectConfigService.getCosemObjectsWithProperty(
@@ -134,7 +169,7 @@ class ObjectConfigServiceTest {
             protocolName, protocolVersion50, ObjectProperty.PQ_PROFILE, null);
 
     assertNotNull(cosemObjectsWithPqProfile);
-    assertThat(cosemObjectsWithPqProfile).hasSize(44);
+    assertThat(cosemObjectsWithPqProfile).hasSize(45);
 
     final List<CosemObject> cosemObjectsWithPqProfileWithWrongValue =
         this.objectConfigService.getCosemObjectsWithProperty(
@@ -150,7 +185,7 @@ class ObjectConfigServiceTest {
   @Test
   void testGetCosemObjectsWithPropertiesWithMultipleAllowedValues() throws ObjectConfigException {
     final String protocolName = "SMR";
-    final String protocolVersion50 = "5.0";
+    final String protocolVersion50 = "5.0.0";
 
     final Map<ObjectProperty, List<Object>> requestMap = new HashMap<>();
     final List<Object> wantedValues = new ArrayList<>();
@@ -162,13 +197,13 @@ class ObjectConfigServiceTest {
             protocolName, protocolVersion50, requestMap);
 
     assertNotNull(cosemObjectsWithSelectableObjects);
-    assertThat(cosemObjectsWithSelectableObjects).hasSize(44);
+    assertThat(cosemObjectsWithSelectableObjects).hasSize(45);
   }
 
   @Test
   void testGetCosemObjectsWithPropertiesWithMultipleProperties() throws ObjectConfigException {
     final String protocolName = "SMR";
-    final String protocolVersion50 = "5.0";
+    final String protocolVersion50 = "5.0.0";
 
     final Map<ObjectProperty, List<Object>> requestMap = new HashMap<>();
     final List<Object> wantedValuesPqProfile = new ArrayList<>();
@@ -194,6 +229,7 @@ class ObjectConfigServiceTest {
   private List<DlmsProfile> getDlmsProfileList() throws IOException {
     final List<DlmsProfile> DlmsProfileList = new ArrayList<>();
 
+    DlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-dsmr22.json"));
     DlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-dsmr422.json"));
     DlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr43.json"));
     DlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr50.json"));

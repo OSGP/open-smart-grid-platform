@@ -34,6 +34,6 @@ class DlmsProfileTest {
             DlmsProfile.class);
 
     assertNotNull(dlmsProfile);
-    assertThat(dlmsProfile.getObjects()).hasSize(48);
+    assertThat(dlmsProfile.getObjects()).hasSize(49);
   }
 }
