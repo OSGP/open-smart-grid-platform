@@ -6,6 +6,5 @@ package org.opensmartgridplatform.dlms.objectconfig;
 
 public enum PowerQualityRequest {
   ONDEMAND,
-  PERIODIC,
-  BOTH
+  PERIODIC
 }

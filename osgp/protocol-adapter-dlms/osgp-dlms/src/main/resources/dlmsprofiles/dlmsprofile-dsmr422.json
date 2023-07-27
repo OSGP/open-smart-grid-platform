@@ -50,7 +50,6 @@
       "properties": {
         "SELECTABLE_OBJECTS": [
           "CLOCK",
-          "GPRS_DIAGNOSTIC",
           "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
           "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
           "NUMBER_OF_POWER_FAILURES",
@@ -137,77 +136,6 @@
       ]
     },
     {
-      "tag": "GPRS_DIAGNOSTIC",
-      "description": "GPRS Diagnostic",
-      "class-id": 47,
-      "version": 0,
-      "obis": "0.0.25.6.0.255",
-      "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
-      "properties": {
-        "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "PERIODIC"
-      },
-      "attributes": [
-        {
-          "id": 2,
-          "description": "operator",
-          "datatype": "visible-string",
-          "valuetype": "DYNAMIC",
-          "value": "EMPTY",
-          "access": "R"
-        },
-        {
-          "id": 3,
-          "description": "status",
-          "datatype": "enum",
-          "valuetype": "DYNAMIC",
-          "value": "0",
-          "access": "R"
-        },
-        {
-          "id": 4,
-          "description": "cs attachment",
-          "datatype": "enum",
-          "valuetype": "DYNAMIC",
-          "value": "0",
-          "access": "R"
-        },
-        {
-          "id": 5,
-          "description": "ps status",
-          "datatype": "enum",
-          "valuetype": "DYNAMIC",
-          "value": "0",
-          "access": "R"
-        },
-        {
-          "id": 6,
-          "description": "cell info",
-          "datatype": "cell_info_type",
-          "valuetype": "DYNAMIC",
-          "value": "EMPTY",
-          "access": "R"
-        },
-        {
-          "id": 7,
-          "description": "adjacent cells",
-          "datatype": "array",
-          "valuetype": "DYNAMIC",
-          "value": "EMPTY",
-          "access": "R"
-        },
-        {
-          "id": 8,
-          "description": "capture time",
-          "datatype": "date-time",
-          "valuetype": "DYNAMIC",
-          "value": "EMPTY",
-          "access": "R"
-        }
-      ]
-    },
-    {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
       "description": "Number of voltage swells in phase L1",
       "class-id": 1,
@@ -217,7 +145,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -240,7 +168,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -263,7 +191,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -286,7 +214,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -309,7 +237,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -332,7 +260,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -355,7 +283,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -378,7 +306,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -401,7 +329,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -432,7 +360,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -463,7 +391,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -494,7 +422,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -525,7 +453,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -556,7 +484,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -587,7 +515,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -618,7 +546,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -649,7 +577,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -680,7 +608,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -711,7 +639,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -742,7 +670,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -773,7 +701,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -804,7 +732,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -835,7 +763,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -866,7 +794,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -897,7 +825,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -928,7 +856,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -959,7 +887,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -990,7 +918,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -1021,7 +949,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -1052,7 +980,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1083,7 +1011,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1114,7 +1042,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1145,7 +1073,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1176,7 +1104,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1207,7 +1135,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1238,7 +1166,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1269,7 +1197,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1300,7 +1228,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1331,7 +1259,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1362,7 +1290,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1393,7 +1321,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {

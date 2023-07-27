@@ -49,7 +49,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -72,7 +72,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -95,7 +95,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -118,7 +118,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -141,7 +141,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -164,7 +164,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -187,7 +187,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -210,7 +210,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -233,7 +233,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -264,7 +264,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -295,7 +295,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -326,7 +326,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -357,7 +357,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -388,7 +388,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -419,7 +419,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -450,7 +450,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -481,7 +481,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -512,7 +512,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {
@@ -543,7 +543,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "ONDEMAND"
+        "PQ_REQUEST": ["ONDEMAND"]
       },
       "attributes": [
         {

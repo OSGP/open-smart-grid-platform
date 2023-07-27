@@ -40,6 +40,7 @@ import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
+import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
@@ -184,7 +185,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
   private void addToMapIfNeeded(
       final DlmsObjectType profileType,
-      final String privateOrPublic,
+      final String pqProfile,
       final DlmsDevice device,
       final Map<CosemObject, List<CosemObject>> profilesWithSelectableObjects)
       throws ProtocolAdapterException {
@@ -210,7 +211,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
               .filter(
                   object ->
                       object.getClassId() == InterfaceClass.CLOCK.id()
-                          || this.hasPqProfile(object, privateOrPublic))
+                          || this.hasPeriodicPqProfile(object, pqProfile))
               .toList();
 
       // Use this profile when at least the clock object and one other object should be read
@@ -222,8 +223,13 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     }
   }
 
-  private boolean hasPqProfile(final CosemObject object, final String privateOrPublic) {
-    return ((String) object.getProperty(ObjectProperty.PQ_PROFILE)).equals(privateOrPublic);
+  private boolean hasPeriodicPqProfile(final CosemObject object, final String privateOrPublic) {
+    if (PowerQualityRequest.PERIODIC
+        .name()
+        .equals((String) object.getProperty(ObjectProperty.PQ_REQUEST))) {
+      return ((String) object.getProperty(ObjectProperty.PQ_PROFILE)).equals(privateOrPublic);
+    }
+    return false;
   }
 
   private List<GetResult> retrieveCaptureObjects(

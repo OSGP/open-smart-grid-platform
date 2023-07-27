@@ -18,7 +18,7 @@
     "meterTypes": ["SP","PP"],
     "properties": {
       "PQ_PROFILE": "PUBLIC",
-      "PQ_REQUEST": "PERIODIC"
+      "PQ_REQUEST": ["PERIODIC"]
     },
     "attributes": [
       {

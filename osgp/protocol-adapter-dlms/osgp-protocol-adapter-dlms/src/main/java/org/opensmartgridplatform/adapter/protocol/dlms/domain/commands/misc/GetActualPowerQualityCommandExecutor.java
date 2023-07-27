@@ -6,7 +6,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -177,12 +176,10 @@ public class GetActualPowerQualityCommandExecutor
       allPQObjects.add(clockObject);
 
       // Create map with the required properties and values for the power quality objects
-      final EnumMap<ObjectProperty, List<Object>> pqProperties =
+      final EnumMap<ObjectProperty, List<String>> pqProperties =
           new EnumMap<>(ObjectProperty.class);
       pqProperties.put(ObjectProperty.PQ_PROFILE, Collections.singletonList(profile.name()));
-      pqProperties.put(
-          ObjectProperty.PQ_REQUEST,
-          Arrays.asList(PowerQualityRequest.ONDEMAND.name(), PowerQualityRequest.BOTH.name()));
+      pqProperties.put(ObjectProperty.PQ_REQUEST, List.of(PowerQualityRequest.ONDEMAND.name()));
 
       // Get matching power quality objects from config
       final List<CosemObject> objectsForProfile =

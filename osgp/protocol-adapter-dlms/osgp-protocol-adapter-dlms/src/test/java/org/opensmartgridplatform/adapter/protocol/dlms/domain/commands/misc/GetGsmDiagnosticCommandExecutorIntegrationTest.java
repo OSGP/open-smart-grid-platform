@@ -53,10 +53,10 @@ class GetGsmDiagnosticCommandExecutorIntegrationTest {
   @ParameterizedTest
   @CsvSource({
     "DSMR_4_2_2,CDMA,false",
-    "DSMR_4_2_2,GPRS,true",
+    "DSMR_4_2_2,GPRS,false",
     "DSMR_4_2_2,LTE,false",
     "SMR_4_3,CDMA,true",
-    "SMR_4_3,GPRS,true",
+    "SMR_4_3,GPRS,false",
     "SMR_4_3,LTE,false",
     "SMR_5_0_0,CDMA,true",
     "SMR_5_0_0,GPRS,true",

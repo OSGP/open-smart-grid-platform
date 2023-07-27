@@ -360,13 +360,11 @@ class GetActualPowerQualityCommandExecutorTest {
     return results;
   }
 
-  private EnumMap<ObjectProperty, List<Object>> getObjectProperties(final String profile) {
+  private EnumMap<ObjectProperty, List<String>> getObjectProperties(final String profile) {
     // Create map with the required properties and values for the power quality objects
-    final EnumMap<ObjectProperty, List<Object>> pqProperties = new EnumMap<>(ObjectProperty.class);
+    final EnumMap<ObjectProperty, List<String>> pqProperties = new EnumMap<>(ObjectProperty.class);
     pqProperties.put(ObjectProperty.PQ_PROFILE, Collections.singletonList(profile));
-    pqProperties.put(
-        ObjectProperty.PQ_REQUEST,
-        Arrays.asList(PowerQualityRequest.ONDEMAND.name(), PowerQualityRequest.BOTH.name()));
+    pqProperties.put(ObjectProperty.PQ_REQUEST, List.of(PowerQualityRequest.ONDEMAND.name()));
 
     return pqProperties;
   }

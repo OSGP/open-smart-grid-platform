@@ -296,7 +296,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -327,7 +327,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -358,7 +358,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -389,7 +389,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -420,7 +420,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -451,7 +451,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -482,7 +482,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -513,7 +513,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -544,7 +544,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -575,7 +575,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -606,7 +606,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -637,7 +637,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -668,7 +668,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -699,7 +699,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -730,7 +730,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -761,7 +761,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -792,7 +792,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -823,7 +823,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -854,7 +854,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -885,7 +885,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -916,7 +916,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -947,7 +947,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -978,7 +978,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1009,7 +1009,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1040,7 +1040,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1071,7 +1071,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1102,7 +1102,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1133,7 +1133,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1164,7 +1164,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1195,7 +1195,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1226,7 +1226,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1257,7 +1257,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1288,7 +1288,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1319,7 +1319,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1342,7 +1342,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1365,7 +1365,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1388,7 +1388,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1411,7 +1411,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1434,7 +1434,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1457,7 +1457,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1480,7 +1480,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ONDEMAND","PERIODIC"]
       },
       "attributes": [
         {
@@ -1503,7 +1503,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "PERIODIC"
+        "PQ_REQUEST": ["PERIODIC"]
       },
       "attributes": [
         {
@@ -1574,7 +1574,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "PERIODIC"
+        "PQ_REQUEST": ["PERIODIC"]
       },
       "attributes": [
         {
@@ -1645,7 +1645,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "PERIODIC"
+        "PQ_REQUEST": ["PERIODIC"]
       },
       "attributes": [
         {
@@ -1764,7 +1764,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "PERIODIC"
+        "PQ_REQUEST": ["PERIODIC"]
       },
       "attributes": [
         {
