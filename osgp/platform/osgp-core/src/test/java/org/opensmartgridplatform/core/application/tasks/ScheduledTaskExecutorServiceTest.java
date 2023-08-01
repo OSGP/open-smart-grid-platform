@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,7 +49,7 @@ public class ScheduledTaskExecutorServiceTest {
 
   private static final String DATA_OBJECT = "data object";
 
-  private static final Timestamp SCHEDULED_TIME = new Timestamp(System.currentTimeMillis());
+  private static final Timestamp INITIAL_SCHEDULED_TIME = new Timestamp(System.currentTimeMillis());
 
   @Mock private DeviceRequestMessageService deviceRequestMessageService;
 
@@ -59,7 +58,7 @@ public class ScheduledTaskExecutorServiceTest {
   @InjectMocks private ScheduledTaskExecutorService scheduledTaskExecutorService;
   @Mock private ScheduledTaskExecutorJobConfig scheduledTaskExecutorJobConfig;
 
-  @Captor private ArgumentCaptor<ScheduledTask> scheduledTaskCaptor;
+  @Captor private ArgumentCaptor<List<ScheduledTask>> scheduledTaskCaptor;
 
   /**
    * Test the scheduled task runner for the case when the deviceRequestMessageService gives a
@@ -112,17 +111,19 @@ public class ScheduledTaskExecutorServiceTest {
         .thenReturn(-1L);
     when(this.scheduledTaskExecutorJobConfig.scheduledTaskPageSize()).thenReturn(30);
     this.whenFindByStatusAndScheduledTime(
-        expiredPendingTasks, new ArrayList<ScheduledTask>(), new ArrayList<ScheduledTask>());
+        expiredPendingTasks, new ArrayList<>(), new ArrayList<>());
 
     this.scheduledTaskExecutorService.processScheduledTasks();
 
-    verify(this.scheduledTaskRepository, times(4)).save(this.scheduledTaskCaptor.capture());
-    final List<ScheduledTask> savedScheduledTasks = this.scheduledTaskCaptor.getAllValues();
+    verify(this.scheduledTaskRepository).saveAll(this.scheduledTaskCaptor.capture());
+    final List<ScheduledTask> retryScheduledTasks = this.scheduledTaskCaptor.getValue();
+    assertThat(retryScheduledTasks).hasSize(1);
+    assertThat(retryScheduledTasks.get(0).getStatus()).isEqualTo(ScheduledTaskStatusType.RETRY);
+    assertThat(retryScheduledTasks.get(0).getScheduledTime()).isAfter(INITIAL_SCHEDULED_TIME);
 
-    assertThat(savedScheduledTasks.get(0).getStatus()).isEqualTo(ScheduledTaskStatusType.FAILED);
-    assertThat(savedScheduledTasks.get(1).getStatus()).isEqualTo(ScheduledTaskStatusType.RETRY);
-    assertThat(savedScheduledTasks.get(2).getStatus()).isEqualTo(ScheduledTaskStatusType.FAILED);
-    assertThat(savedScheduledTasks.get(3).getStatus()).isEqualTo(ScheduledTaskStatusType.FAILED);
+    verify(this.scheduledTaskRepository).deleteAll(this.scheduledTaskCaptor.capture());
+    final List<ScheduledTask> deleteScheduledTasks = this.scheduledTaskCaptor.getValue();
+    assertThat(deleteScheduledTasks).hasSize(3);
   }
 
   private void whenFindByStatusAndScheduledTime(
@@ -152,20 +153,20 @@ public class ScheduledTaskExecutorServiceTest {
 
   private ScheduledTask createScheduledTask(
       final boolean exceededMaxRetry, final boolean expiredTask) {
-    MessageMetadata messageMetadata;
+    final MessageMetadata messageMetadata;
     if (expiredTask) {
       messageMetadata = this.createExpiredMessageMetadata();
     } else {
       messageMetadata = this.createMessageMetadata();
     }
     final ScheduledTask expiredScheduledTask =
-        new ScheduledTask(messageMetadata, DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
+        new ScheduledTask(messageMetadata, DOMAIN, DOMAIN, DATA_OBJECT, INITIAL_SCHEDULED_TIME);
     // retryOn() will raise the number of retries. The retry time will not change since it is the
     // same as the retry time in the message metadata. State will be set RETRY and will be reset to
     // PENDING by the setPending method. This is the only way to raise the number of retry above the
     // maxRetries (0)
     if (exceededMaxRetry) {
-      expiredScheduledTask.retryOn(SCHEDULED_TIME);
+      expiredScheduledTask.retryOn(INITIAL_SCHEDULED_TIME);
     }
     expiredScheduledTask.setPending();
     return expiredScheduledTask;

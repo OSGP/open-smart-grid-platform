@@ -7,10 +7,10 @@ package org.opensmartgridplatform.core.application.tasks;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.core.application.config.ScheduledTaskExecutorJobConfig;
 import org.opensmartgridplatform.core.application.services.DeviceRequestMessageService;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -63,16 +63,31 @@ public class ScheduledTaskExecutorService {
         st -> st.getModificationTimeInstant().isBefore(ultimatePendingTime);
 
     final List<ScheduledTask> strandedScheduledTasks =
-        scheduledTasks.stream().filter(pendingExceeded).collect(Collectors.toList());
+        scheduledTasks.stream().filter(pendingExceeded).toList();
+
+    final List<ScheduledTask> retryScheduledTasks = new ArrayList<>();
+    final List<ScheduledTask> deleteScheduledTasks = new ArrayList<>();
+
     strandedScheduledTasks.forEach(
         strandedScheduledTask -> {
           if (this.shouldBeRetried(strandedScheduledTask)) {
             strandedScheduledTask.retryOn(new Date());
+            retryScheduledTasks.add(strandedScheduledTask);
+            LOGGER.info(
+                "Scheduled task for device {} with correlationUid {} will be retried",
+                strandedScheduledTask.getDeviceIdentification(),
+                strandedScheduledTask.getCorrelationId());
           } else {
-            strandedScheduledTask.setFailed("No response received for scheduled task");
+            LOGGER.info(
+                "Scheduled task for device {} with correlationUid {} will be removed",
+                strandedScheduledTask.getDeviceIdentification(),
+                strandedScheduledTask.getCorrelationId());
+            deleteScheduledTasks.add(strandedScheduledTask);
           }
-          this.scheduledTaskRepository.save(strandedScheduledTask);
         });
+
+    this.scheduledTaskRepository.saveAll(retryScheduledTasks);
+    this.scheduledTaskRepository.deleteAll(deleteScheduledTasks);
   }
 
   private boolean shouldBeRetried(final ScheduledTask scheduledTask) {
