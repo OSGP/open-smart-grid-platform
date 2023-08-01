@@ -73,7 +73,15 @@ public class ScheduledTaskExecutorService {
           if (this.shouldBeRetried(strandedScheduledTask)) {
             strandedScheduledTask.retryOn(new Date());
             retryScheduledTasks.add(strandedScheduledTask);
+            LOGGER.info(
+                "Scheduled task for device {} with correlationUid {} will be retried",
+                strandedScheduledTask.getDeviceIdentification(),
+                strandedScheduledTask.getCorrelationId());
           } else {
+            LOGGER.info(
+                "Scheduled task for device {} with correlationUid {} will be removed",
+                strandedScheduledTask.getDeviceIdentification(),
+                strandedScheduledTask.getCorrelationId());
             deleteScheduledTasks.add(strandedScheduledTask);
           }
         });
