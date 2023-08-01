@@ -17,7 +17,7 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-oslp</artifactId>
-    <version>5.44.1</version>
+    <version>5.44.2-SNAPSHOT</version>
     <relativePath>../parent-pa-oslp/pom.xml</relativePath>
   </parent>
 

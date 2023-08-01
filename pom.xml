@@ -10,7 +10,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>open-smart-grid-platform</artifactId>
-  <version>5.44.1</version>
+  <version>5.44.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <!-- Description, Organization, Licenses, URL and Distribution Management
