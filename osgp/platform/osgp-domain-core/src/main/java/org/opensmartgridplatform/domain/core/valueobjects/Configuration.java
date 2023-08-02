@@ -5,9 +5,9 @@
 package org.opensmartgridplatform.domain.core.valueobjects;
 
 import java.io.Serializable;
+import java.time.OffsetDateTime;
 import java.util.List;
 import javax.validation.Valid;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.domain.core.validation.LightTypeAndConfiguration;
 import org.opensmartgridplatform.domain.core.validation.TlsConfiguration;
 
@@ -26,51 +26,51 @@ public class Configuration implements Serializable {
 
   private final LinkType preferredLinkType;
 
-  private Integer timeSyncFrequency;
+  private final Integer timeSyncFrequency;
 
-  private DeviceFixedIp deviceFixedIp;
+  private final DeviceFixedIp deviceFixedIp;
 
-  private Boolean dhcpEnabled;
+  private final Boolean dhcpEnabled;
 
-  private Boolean tlsEnabled;
+  private final Boolean tlsEnabled;
 
-  private Integer tlsPortNumber;
+  private final Integer tlsPortNumber;
 
-  private String commonNameString;
+  private final String commonNameString;
 
-  private Integer communicationTimeout;
+  private final Integer communicationTimeout;
 
-  private Integer communicationNumberOfRetries;
+  private final Integer communicationNumberOfRetries;
 
-  private Integer communicationPauseTimeBetweenConnectionTrials;
+  private final Integer communicationPauseTimeBetweenConnectionTrials;
 
-  private String osgpIpAddress;
+  private final String osgpIpAddress;
 
-  private Integer osgpPortNumber;
+  private final Integer osgpPortNumber;
 
-  private String ntpHost;
+  private final String ntpHost;
 
-  private Boolean ntpEnabled;
+  private final Boolean ntpEnabled;
 
-  private Integer ntpSyncInterval;
+  private final Integer ntpSyncInterval;
 
-  private Boolean testButtonEnabled;
+  private final Boolean testButtonEnabled;
 
-  private Boolean automaticSummerTimingEnabled;
+  private final Boolean automaticSummerTimingEnabled;
 
-  private Integer astroGateSunRiseOffset;
+  private final Integer astroGateSunRiseOffset;
 
-  private Integer astroGateSunSetOffset;
+  private final Integer astroGateSunSetOffset;
 
-  private List<Integer> switchingDelays;
+  private final List<Integer> switchingDelays;
 
-  private List<RelayMatrix> relayLinking;
+  private final List<RelayMatrix> relayLinking;
 
-  private Boolean relayRefreshing;
+  private final Boolean relayRefreshing;
 
-  private DateTime summerTimeDetails;
+  private final OffsetDateTime summerTimeDetails;
 
-  private DateTime winterTimeDetails;
+  private final OffsetDateTime winterTimeDetails;
 
   private Configuration(final Configuration.Builder builder) {
     this.lightType = builder.lightType;
@@ -203,11 +203,11 @@ public class Configuration implements Serializable {
     return this.relayLinking;
   }
 
-  public DateTime getSummerTimeDetails() {
+  public OffsetDateTime getSummerTimeDetails() {
     return this.summerTimeDetails;
   }
 
-  public DateTime getWinterTimeDetails() {
+  public OffsetDateTime getWinterTimeDetails() {
     return this.winterTimeDetails;
   }
 
@@ -237,8 +237,8 @@ public class Configuration implements Serializable {
     private List<Integer> switchingDelays;
     private List<RelayMatrix> relayLinking;
     private Boolean relayRefreshing;
-    private DateTime summerTimeDetails;
-    private DateTime winterTimeDetails;
+    private OffsetDateTime summerTimeDetails;
+    private OffsetDateTime winterTimeDetails;
 
     public Builder withLightType(final LightType lightType) {
       this.lightType = lightType;
@@ -367,12 +367,12 @@ public class Configuration implements Serializable {
       return this;
     }
 
-    public Builder withSummerTimeDetails(final DateTime summerTimeDetails) {
+    public Builder withSummerTimeDetails(final OffsetDateTime summerTimeDetails) {
       this.summerTimeDetails = summerTimeDetails;
       return this;
     }
 
-    public Builder withWinterTimeDetails(final DateTime winterTimeDetails) {
+    public Builder withWinterTimeDetails(final OffsetDateTime winterTimeDetails) {
       this.winterTimeDetails = winterTimeDetails;
       return this;
     }
