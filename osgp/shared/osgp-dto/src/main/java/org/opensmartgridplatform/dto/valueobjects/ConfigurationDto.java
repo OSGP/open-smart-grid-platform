@@ -5,8 +5,8 @@
 package org.opensmartgridplatform.dto.valueobjects;
 
 import java.io.Serializable;
-import java.time.OffsetDateTime;
 import java.util.List;
+import org.joda.time.DateTime;
 
 public class ConfigurationDto implements Serializable {
 
@@ -63,9 +63,9 @@ public class ConfigurationDto implements Serializable {
 
   private Boolean relayRefreshing;
 
-  private OffsetDateTime summerTimeDetails;
+  private DateTime summerTimeDetails;
 
-  private OffsetDateTime winterTimeDetails;
+  private DateTime winterTimeDetails;
 
   private ConfigurationDto(final Builder builder) {
     this.lightType = builder.lightType;
@@ -300,19 +300,19 @@ public class ConfigurationDto implements Serializable {
     return this.relayLinking;
   }
 
-  public OffsetDateTime getSummerTimeDetails() {
+  public DateTime getSummerTimeDetails() {
     return this.summerTimeDetails;
   }
 
-  public void setSummerTimeDetails(final OffsetDateTime summerTimeDetails) {
+  public void setSummerTimeDetails(final DateTime summerTimeDetails) {
     this.summerTimeDetails = summerTimeDetails;
   }
 
-  public OffsetDateTime getWinterTimeDetails() {
+  public DateTime getWinterTimeDetails() {
     return this.winterTimeDetails;
   }
 
-  public void setWinterTimeDetails(final OffsetDateTime winterTimeDetails) {
+  public void setWinterTimeDetails(final DateTime winterTimeDetails) {
     this.winterTimeDetails = winterTimeDetails;
   }
 }

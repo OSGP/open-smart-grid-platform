@@ -5,10 +5,10 @@
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands;
 
 import com.beanit.openiec61850.Fc;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.mapping.Iec61850Mapper;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DaylightSavingTimeTransition;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
@@ -42,9 +42,9 @@ public class Iec61850GetConfigurationCommand {
 
   private static final int SWITCH_TYPE_TARIFF = 0;
   private static final int SWITCH_TYPE_LIGHT = 1;
-  private static final ZoneId TIME_ZONE_AMSTERDAM = ZoneId.of("Europe/Amsterdam");
+  private static final DateTimeZone TIME_ZONE_AMSTERDAM = DateTimeZone.forID("Europe/Amsterdam");
 
-  private final DeviceMessageLoggingService loggingService;
+  private DeviceMessageLoggingService loggingService;
 
   public Iec61850GetConfigurationCommand(final DeviceMessageLoggingService loggingService) {
     this.loggingService = loggingService;
@@ -251,10 +251,12 @@ public class Iec61850GetConfigurationCommand {
             configuration.setAutomaticSummerTimingEnabled(automaticSummerTimingEnabled);
             configuration.setSummerTimeDetails(
                 new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, summerTimeDetails)
-                    .getDateTimeForNextTransition());
+                    .getDateTimeForNextTransition()
+                    .toDateTime(DateTimeZone.UTC));
             configuration.setWinterTimeDetails(
                 new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, winterTimeDetails)
-                    .getDateTimeForNextTransition());
+                    .getDateTimeForNextTransition()
+                    .toDateTime(DateTimeZone.UTC));
             configuration.setNtpHost(ntpHost);
             configuration.setNtpEnabled(ntpEnabled);
             configuration.setNtpSyncInterval(ntpSyncInterval);

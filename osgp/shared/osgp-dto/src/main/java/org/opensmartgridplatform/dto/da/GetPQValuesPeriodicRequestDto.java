@@ -5,24 +5,24 @@
 package org.opensmartgridplatform.dto.da;
 
 import java.io.Serializable;
-import java.time.OffsetDateTime;
+import org.joda.time.DateTime;
 
 public class GetPQValuesPeriodicRequestDto implements Serializable {
   private static final long serialVersionUID = 4776483459295815846L;
 
-  private final OffsetDateTime from;
-  private final OffsetDateTime to;
+  private final DateTime from;
+  private final DateTime to;
 
-  public GetPQValuesPeriodicRequestDto(final OffsetDateTime from, final OffsetDateTime to) {
+  public GetPQValuesPeriodicRequestDto(final DateTime from, final DateTime to) {
     this.from = from;
     this.to = to;
   }
 
-  public OffsetDateTime getFrom() {
+  public DateTime getFrom() {
     return this.from;
   }
 
-  public OffsetDateTime getTo() {
+  public DateTime getTo() {
     return this.to;
   }
 }
