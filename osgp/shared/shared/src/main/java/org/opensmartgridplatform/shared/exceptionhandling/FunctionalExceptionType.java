@@ -63,6 +63,8 @@ public enum FunctionalExceptionType {
       416, "OPERATION_NOT_SUPPORTED_BY_PLATFORM_FOR_PROTOCOL"),
   MAX_SCHEDULE_TIME_EXCEEDED(417, "MAX_SCHEDULE_TIME_EXCEEDED"),
   SESSION_PROVIDER_ERROR(419, "SESSION_PROVIDER_ERROR"),
+  MANDATORY_USER_ID_NOT_PROVIDED(
+      420, "Mandatory username of ExternalInterfaceRequestMessage is not provided"),
 
   // Manufacturer exceptions
   UNKNOWN_MANUFACTURER(501, "UNKNOWN_MANUFACTURER"),

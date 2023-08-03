@@ -15,7 +15,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 @Getter
 public class MessageMetadata implements Serializable {
   /** Generated serial version uid */
-  private static final long serialVersionUID = 5481771135195782979L;
+  private static final long serialVersionUID = -6227939624241520469L;
 
   private String deviceIdentification;
   private String organisationIdentification;
@@ -34,6 +34,7 @@ public class MessageMetadata implements Serializable {
   private int retryCount;
   private int jmsxDeliveryCount;
   private String topic;
+  private String username;
 
   private MessageMetadata() {
     // Default private constructor.
@@ -57,6 +58,7 @@ public class MessageMetadata implements Serializable {
     this.retryCount = builder.retryCount;
     this.jmsxDeliveryCount = builder.jmsxDeliveryCount;
     this.topic = builder.topic;
+    this.username = builder.username;
   }
 
   public static MessageMetadata fromMessage(final Message message) throws JMSException {
@@ -71,6 +73,8 @@ public class MessageMetadata implements Serializable {
     metadata.organisationIdentification =
         metadata.getStringProperty(
             message, Constants.ORGANISATION_IDENTIFICATION, StringUtils.EMPTY);
+
+    metadata.username = metadata.getStringProperty(message, Constants.USER_NAME, StringUtils.EMPTY);
 
     metadata.domain = metadata.getStringProperty(message, Constants.DOMAIN, StringUtils.EMPTY);
     metadata.domainVersion =
@@ -211,6 +215,8 @@ public class MessageMetadata implements Serializable {
     private int jmsxDeliveryCount = 0;
     private String topic = StringUtils.EMPTY;
 
+    private String username;
+
     public Builder(final MessageMetadata otherMetadata) {
       this.correlationUid = otherMetadata.getCorrelationUid();
       this.organisationIdentification = otherMetadata.getOrganisationIdentification();
@@ -229,6 +235,7 @@ public class MessageMetadata implements Serializable {
       this.retryCount = otherMetadata.getRetryCount();
       this.jmsxDeliveryCount = otherMetadata.getJmsxDeliveryCount();
       this.topic = otherMetadata.getTopic();
+      this.username = otherMetadata.getUsername();
     }
 
     public Builder(
@@ -324,6 +331,11 @@ public class MessageMetadata implements Serializable {
 
     public Builder withTopic(final String topic) {
       this.topic = topic;
+      return this;
+    }
+
+    public Builder withUserName(final String username) {
+      this.username = username;
       return this;
     }
 
