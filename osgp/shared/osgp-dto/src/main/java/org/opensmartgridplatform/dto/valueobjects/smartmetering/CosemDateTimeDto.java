@@ -5,14 +5,14 @@
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
 
 public class CosemDateTimeDto implements Serializable, Comparable<CosemDateTimeDto> {
 
@@ -85,7 +85,7 @@ public class CosemDateTimeDto implements Serializable, Comparable<CosemDateTimeD
     this(dateTime.toLocalDate(), dateTime.toLocalTime(), deviation);
   }
 
-  public CosemDateTimeDto(final DateTime dateTime) {
+  public CosemDateTimeDto(final ZonedDateTime dateTime) {
     this(
         dateTime.toLocalDate(),
         dateTime.toLocalTime(),
@@ -94,7 +94,7 @@ public class CosemDateTimeDto implements Serializable, Comparable<CosemDateTimeD
   }
 
   public CosemDateTimeDto() {
-    this(DateTime.now());
+    this(ZonedDateTime.now());
   }
 
   private void checkDeviation(final int deviation) {
@@ -120,13 +120,16 @@ public class CosemDateTimeDto implements Serializable, Comparable<CosemDateTimeD
     return DEVIATION_NOT_SPECIFIED == deviation || -DEVIATION_NOT_SPECIFIED == deviation;
   }
 
-  private static int determineDeviation(final DateTime dateTime) {
-    return -(dateTime.getZone().getOffset(dateTime.getMillis()) / MILLISECONDS_PER_MINUTE);
+  private static int determineDeviation(final ZonedDateTime dateTime) {
+    // Convert seconds from offset to milliseconds
+    return -(dateTime.getZone().getRules().getOffset(dateTime.toInstant()).getTotalSeconds()
+        * 1000
+        / MILLISECONDS_PER_MINUTE);
   }
 
-  private static ClockStatusDto determineClockStatus(final DateTime dateTime) {
+  private static ClockStatusDto determineClockStatus(final ZonedDateTime dateTime) {
     final Set<ClockStatusBitDto> statusBits = EnumSet.noneOf(ClockStatusBitDto.class);
-    if (!dateTime.getZone().isStandardOffset(dateTime.getMillis())) {
+    if (!dateTime.getZone().getRules().isDaylightSavings(dateTime.toInstant())) {
       statusBits.add(ClockStatusBitDto.DAYLIGHT_SAVING_ACTIVE);
     }
     return new ClockStatusDto(statusBits);
@@ -175,21 +178,20 @@ public class CosemDateTimeDto implements Serializable, Comparable<CosemDateTimeD
   }
 
   /**
-   * Returns this {@link CosemDateTimeDto} as {@link DateTime} if the date, time and deviation are
-   * specified.
+   * Returns this {@link CosemDateTimeDto} as {@link ZonedDateTime} if the date, time and deviation
+   * are specified.
    *
-   * @return this {@link CosemDateTimeDto} as {@link DateTime}, or {@code null} if not {@link
+   * @return this {@link CosemDateTimeDto} as {@link ZonedDateTime}, or {@code null} if not {@link
    *     #isDateTimeSpecified()}.
    * @see #isDateTimeSpecified()
    */
-  public DateTime asDateTime() {
+  public ZonedDateTime asDateTime() {
     if (!this.isDateTimeSpecified()) {
       return null;
     }
     final LocalDateTime localDateTime = this.asLocalDateTime();
-    final DateTimeZone zone =
-        DateTimeZone.forOffsetMillis(-this.deviation * MILLISECONDS_PER_MINUTE);
-    return localDateTime.toDateTime(zone);
+    final ZoneOffset zone = ZoneOffset.ofTotalSeconds(-this.deviation * MILLISECONDS_PER_MINUTE);
+    return localDateTime.atZone(zone);
   }
 
   /**
@@ -214,7 +216,7 @@ public class CosemDateTimeDto implements Serializable, Comparable<CosemDateTimeD
       return null;
     }
     if (this.time.isSecondNotSpecified()) {
-      return new LocalDateTime(
+      return LocalDateTime.of(
           this.date.getYear(),
           this.date.getMonth(),
           this.date.getDayOfMonth(),
@@ -222,7 +224,7 @@ public class CosemDateTimeDto implements Serializable, Comparable<CosemDateTimeD
           this.time.getMinute());
     }
     if (this.time.isHundredthsNotSpecified()) {
-      return new LocalDateTime(
+      return LocalDateTime.of(
           this.date.getYear(),
           this.date.getMonth(),
           this.date.getDayOfMonth(),
@@ -230,7 +232,7 @@ public class CosemDateTimeDto implements Serializable, Comparable<CosemDateTimeD
           this.time.getMinute(),
           this.time.getSecond());
     }
-    return new LocalDateTime(
+    return LocalDateTime.of(
         this.date.getYear(),
         this.date.getMonth(),
         this.date.getDayOfMonth(),

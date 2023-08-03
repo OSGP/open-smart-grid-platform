@@ -5,17 +5,17 @@
 package org.opensmartgridplatform.dto.valueobjects.microgrids;
 
 import java.io.Serializable;
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 
 public class ProfileEntryDto implements Serializable {
 
   private static final long serialVersionUID = 5633230544785706777L;
 
-  private int id;
-  private DateTime time;
-  private double value;
+  private final int id;
+  private final ZonedDateTime time;
+  private final double value;
 
-  public ProfileEntryDto(final int id, final DateTime time, final double value) {
+  public ProfileEntryDto(final int id, final ZonedDateTime time, final double value) {
     this.id = id;
     this.time = time;
     this.value = value;
@@ -25,7 +25,7 @@ public class ProfileEntryDto implements Serializable {
     return this.id;
   }
 
-  public DateTime getTime() {
+  public ZonedDateTime getTime() {
     return this.time;
   }
 

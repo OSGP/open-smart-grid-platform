@@ -5,6 +5,8 @@
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands;
 
 import com.beanit.openiec61850.Fc;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,8 +40,8 @@ public class Iec61850ScheduleAbsTimeCommand
   private static final Date DEFAULT_TIME =
       new DateTime(1970, 1, 1, 0, 0, 0, DateTimeZone.UTC).toDate();
 
-  private LogicalNode logicalNode;
-  private int index;
+  private final LogicalNode logicalNode;
+  private final int index;
 
   public Iec61850ScheduleAbsTimeCommand(final int index) {
     this.index = index;
@@ -114,7 +116,7 @@ public class Iec61850ScheduleAbsTimeCommand
     for (final ProfileEntryDto pe : profileEntries) {
       final int i = pe.getId() - 1;
       values[i] = (float) pe.getValue();
-      times[i] = pe.getTime().toDate();
+      times[i] = Date.from(pe.getTime().toInstant());
     }
 
     // Fill rest of array with default values
@@ -145,7 +147,9 @@ public class Iec61850ScheduleAbsTimeCommand
       }
 
       if (!time.equals(DEFAULT_TIME)) {
-        profileEntries.add(new ProfileEntryDto(i + 1, new DateTime(time), value));
+        profileEntries.add(
+            new ProfileEntryDto(
+                i + 1, ZonedDateTime.ofInstant(time.toInstant(), ZoneId.systemDefault()), value));
       }
     }
 
