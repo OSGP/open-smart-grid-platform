@@ -4,9 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import org.joda.time.DateTimeConstants;
 
@@ -63,7 +62,7 @@ public class DaylightSavingTimeTransition {
 
       @Override
       public DaylightSavingTimeTransition getDaylightSavingTimeTransition(
-          final OffsetDateTime dateTime) {
+          final ZonedDateTime dateTime) {
         final int dayOfYear = dateTime.getDayOfYear();
         final int n;
         if (dateTime.getMonth().getValue() < DateTimeConstants.MARCH
@@ -83,11 +82,11 @@ public class DaylightSavingTimeTransition {
         } else {
           transition = "J" + n + "/" + hours;
         }
-        return new DaylightSavingTimeTransition(dateTime.toZonedDateTime().getZone(), transition);
+        return new DaylightSavingTimeTransition(dateTime.getZone(), transition);
       }
 
       @Override
-      public OffsetDateTime getDateTime(
+      public ZonedDateTime getDateTime(
           final ZoneId dateTimeZone, final String transition, final int year) {
         final int timeSeparatorPos = transition.indexOf('/');
         final int n;
@@ -97,21 +96,8 @@ public class DaylightSavingTimeTransition {
           n = Integer.parseInt(transition.substring(1, timeSeparatorPos));
         }
 
-        final var a = LocalDateTime.of(year, 1, 1, 0, 0, 0, 0).plusDays(n);
-
-        final OffsetDateTime candidate =
-            OffsetDateTime.of(
-                    year,
-                    1,
-                    1,
-                    0,
-                    0,
-                    0,
-                    0,
-                    dateTimeZone
-                        .getRules()
-                        .getOffset(LocalDateTime.of(year, 1, 1, 0, 0, 0, 0).plusDays(n - 1)))
-                .plusDays(n);
+        final ZonedDateTime candidate =
+            ZonedDateTime.of(year, 1, 1, 0, 0, 0, 0, dateTimeZone).plusDays(n);
 
         final boolean subtractOne =
             !candidate.toLocalDate().isLeapYear()
@@ -161,7 +147,7 @@ public class DaylightSavingTimeTransition {
 
       @Override
       public DaylightSavingTimeTransition getDaylightSavingTimeTransition(
-          final OffsetDateTime dateTime) {
+          final ZonedDateTime dateTime) {
         final int n = dateTime.getDayOfYear() - 1;
         final int hours = dateTime.getHour();
         final String transition;
@@ -170,11 +156,11 @@ public class DaylightSavingTimeTransition {
         } else {
           transition = n + "/" + hours;
         }
-        return new DaylightSavingTimeTransition(dateTime.toZonedDateTime().getZone(), transition);
+        return new DaylightSavingTimeTransition(dateTime.getZone(), transition);
       }
 
       @Override
-      public OffsetDateTime getDateTime(
+      public ZonedDateTime getDateTime(
           final ZoneId dateTimeZone, final String transition, final int year) {
         final int timeSeparatorPos = transition.indexOf('/');
         final int n;
@@ -183,17 +169,8 @@ public class DaylightSavingTimeTransition {
         } else {
           n = Integer.parseInt(transition.substring(0, timeSeparatorPos));
         }
-        return OffsetDateTime.of(
-                year,
-                1,
-                1,
-                0,
-                0,
-                0,
-                0,
-                dateTimeZone
-                    .getRules()
-                    .getOffset(LocalDateTime.of(year, 1, 1, 0, 0, 0, 0).plusDays(n - 1)))
+
+        return ZonedDateTime.of(year, 1, 1, 0, 0, 0, 0, dateTimeZone)
             .plusDays(n)
             .plusHours(this.getTime(transition));
       }
@@ -262,18 +239,18 @@ public class DaylightSavingTimeTransition {
 
       @Override
       public DaylightSavingTimeTransition getDaylightSavingTimeTransition(
-          final OffsetDateTime dateTime) {
+          final ZonedDateTime dateTime) {
         final int m = dateTime.getMonth().getValue();
         final boolean lastDayOfWeekForTheMonth = dateTime.plusDays(7).getMonth().getValue() > m;
         final int w = lastDayOfWeekForTheMonth ? 5 : 1 + ((dateTime.getDayOfMonth() - 1) / 7);
         final int d = dateTime.getDayOfWeek().getValue() % 7;
         final int time = dateTime.getHour();
         final String transition = "M" + m + "." + w + "." + d + (time == 0 ? "" : "/" + time);
-        return new DaylightSavingTimeTransition(dateTime.toZonedDateTime().getZone(), transition);
+        return new DaylightSavingTimeTransition(dateTime.getZone(), transition);
       }
 
       @Override
-      public OffsetDateTime getDateTime(
+      public ZonedDateTime getDateTime(
           final ZoneId dateTimeZone, final String transition, final int year) {
         final int dotAfterM = transition.indexOf('.', 1);
         final int m = Integer.parseInt(transition.substring(1, dotAfterM));
@@ -289,20 +266,10 @@ public class DaylightSavingTimeTransition {
         final int dayOfWeek = d == 0 ? DateTimeConstants.SUNDAY : d;
         final int startAtDate = w == 5 ? 22 : (w - 1) * 7 + 1;
 
-        final OffsetDateTime firstAttempt =
-            OffsetDateTime.of(
-                year,
-                m,
-                startAtDate,
-                0,
-                0,
-                0,
-                0,
-                dateTimeZone
-                    .getRules()
-                    .getOffset(LocalDateTime.of(year, m, startAtDate, 0, 0, 0, 0)));
+        final ZonedDateTime firstAttempt =
+            ZonedDateTime.of(year, m, startAtDate, 0, 0, 0, 0, dateTimeZone);
         final int dayDiff = dayOfWeek - firstAttempt.getDayOfWeek().getValue();
-        final OffsetDateTime secondAttempt;
+        final ZonedDateTime secondAttempt;
         if (dayDiff == 0) {
           secondAttempt = firstAttempt;
         } else {
@@ -311,7 +278,7 @@ public class DaylightSavingTimeTransition {
         if (w < 5) {
           return secondAttempt.plusHours(this.getTime(transition));
         }
-        final OffsetDateTime thirdAttempt = secondAttempt.plusDays(7);
+        final ZonedDateTime thirdAttempt = secondAttempt.plusDays(7);
         if (thirdAttempt.getMonth().getValue() > secondAttempt.getMonth().getValue()) {
           return secondAttempt.plusHours(this.getTime(transition));
         }
@@ -322,9 +289,9 @@ public class DaylightSavingTimeTransition {
     public abstract boolean isValid(String transition);
 
     public abstract DaylightSavingTimeTransition getDaylightSavingTimeTransition(
-        OffsetDateTime dateTime);
+        ZonedDateTime dateTime);
 
-    public abstract OffsetDateTime getDateTime(ZoneId dateTimeZone, String transition, int year);
+    public abstract ZonedDateTime getDateTime(ZoneId dateTimeZone, String transition, int year);
 
     public boolean isValidTime(final String time) {
       if (time == null) {
@@ -373,7 +340,7 @@ public class DaylightSavingTimeTransition {
   private final ZoneId dateTimeZone;
 
   public static DaylightSavingTimeTransition forDateTimeAccordingToFormat(
-      final OffsetDateTime dateTime, final DstTransitionFormat format) {
+      final ZonedDateTime dateTime, final DstTransitionFormat format) {
     Objects.requireNonNull(dateTime, "dateTime must not be null");
     Objects.requireNonNull(format, "format must not be null");
 
@@ -413,16 +380,16 @@ public class DaylightSavingTimeTransition {
     this(TIME_ZONE_AMSTERDAM, transition);
   }
 
-  public OffsetDateTime getDateTimeForYear(final int year) {
+  public ZonedDateTime getDateTimeForYear(final int year) {
     return this.format.getDateTime(this.dateTimeZone, this.transition, year);
   }
 
-  public OffsetDateTime getDateTimeForNextTransition() {
-    return this.getDateTimeForNextTransition(OffsetDateTime.now(this.dateTimeZone));
+  public ZonedDateTime getDateTimeForNextTransition() {
+    return this.getDateTimeForNextTransition(ZonedDateTime.now(this.dateTimeZone));
   }
 
-  public OffsetDateTime getDateTimeForNextTransition(final OffsetDateTime dateTime) {
-    final OffsetDateTime thisYearsTransition = this.getDateTimeForYear(dateTime.getYear());
+  public ZonedDateTime getDateTimeForNextTransition(final ZonedDateTime dateTime) {
+    final ZonedDateTime thisYearsTransition = this.getDateTimeForYear(dateTime.getYear());
     if (dateTime.isAfter(thisYearsTransition)) {
       return this.getDateTimeForYear(dateTime.getYear() + 1);
     }

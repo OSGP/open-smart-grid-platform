@@ -6,7 +6,7 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.hel
 
 import com.beanit.openiec61850.BdaInt8;
 import com.beanit.openiec61850.Fc;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DaylightSavingTimeTransition;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
@@ -319,8 +319,8 @@ public class Iec61850SetConfigurationFunction implements Function<Void> {
      */
     final DaylightSavingTimeTransition.DstTransitionFormat dstFormatMwd =
         DaylightSavingTimeTransition.DstTransitionFormat.DAY_OF_WEEK_OF_MONTH;
-    final OffsetDateTime summerTimeDetails = configuration.getSummerTimeDetails();
-    final OffsetDateTime winterTimeDetails = configuration.getWinterTimeDetails();
+    final ZonedDateTime summerTimeDetails = configuration.getSummerTimeDetails();
+    final ZonedDateTime winterTimeDetails = configuration.getWinterTimeDetails();
     if (summerTimeDetails != null) {
 
       final String mwdValueForBeginOfDst =

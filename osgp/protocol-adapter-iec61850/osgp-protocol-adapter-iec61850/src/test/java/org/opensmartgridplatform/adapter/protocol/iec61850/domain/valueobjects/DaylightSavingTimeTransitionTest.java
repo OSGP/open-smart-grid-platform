@@ -7,8 +7,8 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import org.junit.jupiter.api.Test;
 
 public class DaylightSavingTimeTransitionTest {
@@ -29,14 +29,14 @@ public class DaylightSavingTimeTransitionTest {
   public static final String DST_START_J_IGNORING_FEB29_AMSTERDAM_2016 = "J86/2";
   public static final String DST_END_J_IGNORING_FEB29_AMSTERDAM_2016 = "J303/3";
 
-  public static final OffsetDateTime DST_START_DATE_TIME_AMSTERDAM_2015 =
-      OffsetDateTime.parse("2015-03-29T02:00:00.000+01:00");
-  public static final OffsetDateTime DST_END_DATE_TIME_AMSTERDAM_2015 =
-      OffsetDateTime.parse("2015-10-25T03:00:00.000+02:00");
-  public static final OffsetDateTime DST_START_DATE_TIME_AMSTERDAM_2016 =
-      OffsetDateTime.parse("2016-03-27T02:00:00.000+01:00");
-  public static final OffsetDateTime DST_END_DATE_TIME_AMSTERDAM_2016 =
-      OffsetDateTime.parse("2016-10-30T03:00:00.000+02:00");
+  public static final ZonedDateTime DST_START_DATE_TIME_AMSTERDAM_2015 =
+      ZonedDateTime.parse("2015-03-29T02:00:00.000+01:00");
+  public static final ZonedDateTime DST_END_DATE_TIME_AMSTERDAM_2015 =
+      ZonedDateTime.parse("2015-10-25T03:00:00.000+02:00");
+  public static final ZonedDateTime DST_START_DATE_TIME_AMSTERDAM_2016 =
+      ZonedDateTime.parse("2016-03-27T02:00:00.000+01:00");
+  public static final ZonedDateTime DST_END_DATE_TIME_AMSTERDAM_2016 =
+      ZonedDateTime.parse("2016-10-30T03:00:00.000+02:00");
 
   @Test
   public void testDaylightSavingTimeStartAmsterdam2015DayOfWeekOfMonth() {
@@ -445,25 +445,25 @@ public class DaylightSavingTimeTransitionTest {
     assertThat(
             DaylightSavingTimeTransition.DstTransitionFormat.JULIAN_DAY_IGNORING_FEBRUARY_29
                 .getDateTime(amsterdamDTZ, "J327", 2015))
-        .isEqualTo(OffsetDateTime.parse("2015-11-23T00:00:00.000+01:00"));
+        .isEqualTo(ZonedDateTime.parse("2015-11-23T00:00:00.000+01:00"));
     assertThat(
             DaylightSavingTimeTransition.DstTransitionFormat.JULIAN_DAY_COUNTING_FEBRUARY_29
                 .getDateTime(amsterdamDTZ, "326", 2015))
-        .isEqualTo(OffsetDateTime.parse("2015-11-23T00:00:00.000+01:00"));
+        .isEqualTo(ZonedDateTime.parse("2015-11-23T00:00:00.000+01:00"));
     assertThat(
             DaylightSavingTimeTransition.DstTransitionFormat.DAY_OF_WEEK_OF_MONTH.getDateTime(
                 amsterdamDTZ, "M11.4.1", 2015))
-        .isEqualTo(OffsetDateTime.parse("2015-11-23T00:00:00.000+01:00"));
+        .isEqualTo(ZonedDateTime.parse("2015-11-23T00:00:00.000+01:00"));
 
     assertThat(
             DaylightSavingTimeTransition.DstTransitionFormat.JULIAN_DAY_IGNORING_FEBRUARY_29
                 .getDateTime(amsterdamDTZ, "J1", 2016))
-        .isEqualTo(OffsetDateTime.parse("2016-01-01T00:00:00.000+01:00"));
+        .isEqualTo(ZonedDateTime.parse("2016-01-01T00:00:00.000+01:00"));
   }
 
   @Test
   public void testGetDaylightSavingTimeTransition() {
-    final OffsetDateTime midNight = OffsetDateTime.parse("2015-01-01T00:00:00.000+01:00");
+    final ZonedDateTime midNight = ZonedDateTime.parse("2015-01-01T00:00:00.000+01:00");
     assertThat(
             DaylightSavingTimeTransition.DstTransitionFormat.JULIAN_DAY_IGNORING_FEBRUARY_29
                 .getDaylightSavingTimeTransition(midNight)
@@ -535,13 +535,12 @@ public class DaylightSavingTimeTransitionTest {
 
   @Test
   public void testGetDateTimeForNextTransition() {
-    final OffsetDateTime dateTimeBeforeDay30 =
-        OffsetDateTime.parse("2015-01-01T00:00:00.000+01:00");
-    final OffsetDateTime dateTimeAfterDay30 = OffsetDateTime.parse("2015-06-01T00:00:00.000+01:00");
-    final OffsetDateTime dateTimeOfDay30ThisYear =
-        OffsetDateTime.parse("2015-01-31T00:00:00.000+01:00");
-    final OffsetDateTime dateTimeOfDay30NextYear =
-        OffsetDateTime.parse("2016-01-31T00:00:00.000+01:00");
+    final ZonedDateTime dateTimeBeforeDay30 = ZonedDateTime.parse("2015-01-01T00:00:00.000+01:00");
+    final ZonedDateTime dateTimeAfterDay30 = ZonedDateTime.parse("2015-06-01T00:00:00.000+01:00");
+    final ZonedDateTime dateTimeOfDay30ThisYear =
+        ZonedDateTime.parse("2015-01-31T00:00:00.000+01:00");
+    final ZonedDateTime dateTimeOfDay30NextYear =
+        ZonedDateTime.parse("2016-01-31T00:00:00.000+01:00");
 
     assertThat(
             (new DaylightSavingTimeTransition("30"))
