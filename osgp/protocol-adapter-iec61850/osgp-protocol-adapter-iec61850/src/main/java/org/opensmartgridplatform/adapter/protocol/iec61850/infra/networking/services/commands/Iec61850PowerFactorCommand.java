@@ -5,8 +5,8 @@
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands;
 
 import com.beanit.openiec61850.Fc;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -52,7 +52,8 @@ public class Iec61850PowerFactorCommand implements RtuReadCommand<MeasurementDto
         this.index,
         this.dataAttribute.getDescription(),
         QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
-        new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
+        ZonedDateTime.ofInstant(
+            containingNode.getDate(SubDataAttribute.TIME).toInstant(), ZoneId.of("UTC")),
         containingNode
             .getChild(SubDataAttribute.C_VALUES)
             .getChild(SubDataAttribute.MAGNITUDE)
