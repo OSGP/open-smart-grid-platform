@@ -4,10 +4,12 @@
 
 package org.opensmartgridplatform.adapter.ws.publiclighting.endpoints;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.ConstraintViolationException;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.AdHocManagementMapper;
@@ -407,9 +409,12 @@ public class PublicLightingAdHocManagementEndpoint {
                 request.getTransitionType(),
                 org.opensmartgridplatform.domain.core.valueobjects.TransitionType.class));
       }
-      DateTime dateTime = null;
+      ZonedDateTime dateTime = null;
       if (request.getTime() != null) {
-        dateTime = new DateTime(request.getTime().toGregorianCalendar().getTime());
+        dateTime =
+            ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(request.getTime().toGregorianCalendar().getTime().getTime()),
+                ZoneId.systemDefault());
       }
       transitionMessageDataContainer.setDateTime(dateTime);
 

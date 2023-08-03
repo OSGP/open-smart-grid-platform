@@ -5,18 +5,18 @@
 package org.opensmartgridplatform.dto.valueobjects;
 
 import java.io.Serializable;
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 
 public class TransitionMessageDataContainerDto implements Serializable {
 
   /** Serial Version UID. */
   private static final long serialVersionUID = 5491018613060059335L;
 
-  private TransitionTypeDto transitionType;
-  private DateTime dateTime;
+  private final TransitionTypeDto transitionType;
+  private final ZonedDateTime dateTime;
 
   public TransitionMessageDataContainerDto(
-      final TransitionTypeDto transitionType, final DateTime dateTime) {
+      final TransitionTypeDto transitionType, final ZonedDateTime dateTime) {
     this.transitionType = transitionType;
     this.dateTime = dateTime;
   }
@@ -25,7 +25,7 @@ public class TransitionMessageDataContainerDto implements Serializable {
     return this.transitionType;
   }
 
-  public DateTime getDateTime() {
+  public ZonedDateTime getDateTime() {
     return this.dateTime;
   }
 }
