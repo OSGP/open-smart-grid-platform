@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects;
 
+import java.time.ZonedDateTime;
 import org.joda.time.DateTime;
 
 /** Value object, containing all data that is written to a relay schedule */
@@ -72,11 +73,11 @@ public class ScheduleEntry {
      *
      * @return this builder.
      */
-    public Builder specialDay(final DateTime specialDate) {
+    public Builder specialDay(final ZonedDateTime specialDate) {
       // make weekday the int value corresponding with yyyyMMdd
       this.day =
           specialDate.getDayOfMonth()
-              + 100 * specialDate.getMonthOfYear()
+              + 100 * specialDate.getMonthValue()
               + 10000 * specialDate.getYear();
       return this;
     }

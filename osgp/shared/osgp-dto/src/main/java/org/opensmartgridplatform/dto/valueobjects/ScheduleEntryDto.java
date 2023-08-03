@@ -5,8 +5,8 @@
 package org.opensmartgridplatform.dto.valueobjects;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.List;
-import org.joda.time.DateTime;
 
 public class ScheduleEntryDto implements Serializable {
 
@@ -15,9 +15,9 @@ public class ScheduleEntryDto implements Serializable {
 
   private WeekDayTypeDto weekDay;
 
-  private DateTime startDay;
+  private ZonedDateTime startDay;
 
-  private DateTime endDay;
+  private ZonedDateTime endDay;
 
   private ActionTimeTypeDto actionTime;
 
@@ -43,19 +43,19 @@ public class ScheduleEntryDto implements Serializable {
     this.weekDay = value;
   }
 
-  public void setStartDay(final DateTime value) {
+  public void setStartDay(final ZonedDateTime value) {
     this.startDay = value;
   }
 
-  public DateTime getStartDay() {
+  public ZonedDateTime getStartDay() {
     return this.startDay;
   }
 
-  public void setEndDay(final DateTime value) {
+  public void setEndDay(final ZonedDateTime value) {
     this.endDay = value;
   }
 
-  public DateTime getEndDay() {
+  public ZonedDateTime getEndDay() {
     return this.endDay;
   }
 

@@ -4,12 +4,12 @@
 
 package org.opensmartgridplatform.adapter.ws.tariffswitching.application.mapping.ws;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.schedulemanagement.TariffSchedule;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.schedulemanagement.TariffValue;
 import org.opensmartgridplatform.domain.core.valueobjects.ActionTimeType;
@@ -29,8 +29,8 @@ public class TariffScheduleToScheduleConverter
 
     // Copy values
     schedule.setWeekDay(this.mapperFacade.map(source.getWeekDay(), WeekDayType.class));
-    schedule.setStartDay(this.mapperFacade.map(source.getStartDay(), DateTime.class));
-    schedule.setEndDay(this.mapperFacade.map(source.getEndDay(), DateTime.class));
+    schedule.setStartDay(this.mapperFacade.map(source.getStartDay(), ZonedDateTime.class));
+    schedule.setEndDay(this.mapperFacade.map(source.getEndDay(), ZonedDateTime.class));
     schedule.setTime(source.getTime());
     schedule.setIndex(source.getIndex());
     schedule.setIsEnabled(source.isIsEnabled());
