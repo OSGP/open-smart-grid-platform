@@ -22,6 +22,8 @@ public class CosemDateTimeDto implements Serializable, Comparable<CosemDateTimeD
 
   public static final int DEVIATION_NOT_SPECIFIED = 0x8000;
 
+  public static final int NANO_TO_HUNDREDTHS = 10000000;
+
   private final CosemDateDto date;
   private final CosemTimeDto time;
 
@@ -240,7 +242,7 @@ public class CosemDateTimeDto implements Serializable, Comparable<CosemDateTimeD
         this.time.getHour(),
         this.time.getMinute(),
         this.time.getSecond(),
-        this.time.getHundredths() * 10);
+        this.time.getHundredths() * NANO_TO_HUNDREDTHS);
   }
 
   /**
