@@ -5,11 +5,11 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -69,7 +69,7 @@ public class DataObjectToEventListConverter {
     }
 
     // extract values from List<DataObject> eventData.
-    final DateTime dateTime = this.extractDateTime(eventData);
+    final ZonedDateTime dateTime = this.extractDateTime(eventData);
     final Integer code = this.extractCode(eventData);
     final Integer eventCounter = this.extractEventCounter(eventLogCategory, eventData);
     final String eventLogCategoryName = eventLogCategory.name();
@@ -90,10 +90,10 @@ public class DataObjectToEventListConverter {
     return event;
   }
 
-  private DateTime extractDateTime(final List<DataObject> eventData)
+  private ZonedDateTime extractDateTime(final List<DataObject> eventData)
       throws ProtocolAdapterException {
 
-    final DateTime dateTime =
+    final ZonedDateTime dateTime =
         this.dlmsHelper.convertDataObjectToDateTime(eventData.get(0)).asDateTime();
     if (dateTime == null) {
       throw new ProtocolAdapterException("eventData time is null/unspecified");

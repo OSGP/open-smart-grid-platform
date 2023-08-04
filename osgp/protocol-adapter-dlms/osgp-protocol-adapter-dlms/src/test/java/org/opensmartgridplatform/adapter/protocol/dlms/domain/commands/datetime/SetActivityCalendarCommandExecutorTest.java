@@ -15,13 +15,13 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -78,7 +78,7 @@ class SetActivityCalendarCommandExecutorTest {
   private static final String CALENDAR_NAME = "Calendar";
 
   private static final CosemDateTimeDto ACTIVATE_PASSIVE_CALENDAR_TIME =
-      new CosemDateTimeDto(DateTime.now());
+      new CosemDateTimeDto(ZonedDateTime.now());
 
   @Captor ArgumentCaptor<SetParameter> setParameterArgumentCaptor;
 

@@ -190,7 +190,8 @@ public class CosemDateTimeDto implements Serializable, Comparable<CosemDateTimeD
       return null;
     }
     final LocalDateTime localDateTime = this.asLocalDateTime();
-    final ZoneOffset zone = ZoneOffset.ofTotalSeconds(-this.deviation * MILLISECONDS_PER_MINUTE);
+    final ZoneOffset zone =
+        ZoneOffset.ofTotalSeconds((-this.deviation * MILLISECONDS_PER_MINUTE) / 1000);
     return localDateTime.atZone(zone);
   }
 

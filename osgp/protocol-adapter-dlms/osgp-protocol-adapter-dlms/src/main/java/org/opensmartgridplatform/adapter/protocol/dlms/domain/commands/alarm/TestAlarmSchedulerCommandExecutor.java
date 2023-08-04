@@ -6,10 +6,10 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.SetParameter;
@@ -81,7 +81,7 @@ public class TestAlarmSchedulerCommandExecutor
 
     final DlmsObject dlmsObject =
         this.dlmsObjectConfigService.getDlmsObject(device, alarmObjectType);
-    final DateTime convertedDateTime =
+    final ZonedDateTime convertedDateTime =
         DlmsDateTimeConverter.toDateTime(scheduleDate, device.getTimezone());
 
     final AttributeAddress attributeAddress =
@@ -112,20 +112,20 @@ public class TestAlarmSchedulerCommandExecutor
         : DlmsObjectType.LAST_GASP_TEST;
   }
 
-  private static DataObject getDataObjectDate(final DateTime scheduledDateTime) {
+  private static DataObject getDataObjectDate(final ZonedDateTime scheduledDateTime) {
     return DataObject.newDateData(
         new CosemDate(
             scheduledDateTime.getYear(),
-            scheduledDateTime.getMonthOfYear(),
+            scheduledDateTime.getMonthValue(),
             scheduledDateTime.getDayOfMonth()));
   }
 
-  private static DataObject getDataObjectTime(final DateTime scheduledDateTime) {
+  private static DataObject getDataObjectTime(final ZonedDateTime scheduledDateTime) {
     return DataObject.newTimeData(
         new CosemTime(
-            scheduledDateTime.getHourOfDay(),
-            scheduledDateTime.getMinuteOfHour(),
-            scheduledDateTime.getSecondOfMinute(),
+            scheduledDateTime.getHour(),
+            scheduledDateTime.getMinute(),
+            scheduledDateTime.getSecond(),
             0));
   }
 

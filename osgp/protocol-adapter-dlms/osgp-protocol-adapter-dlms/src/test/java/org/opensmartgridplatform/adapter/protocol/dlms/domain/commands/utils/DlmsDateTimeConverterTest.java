@@ -83,7 +83,8 @@ class DlmsDateTimeConverterTest {
 
     final DateTime dateTimeUtc = toDateTime(toDateTimeString, inputDeviceTimeZone);
 
-    final DateTime dateTime = DlmsDateTimeConverter.toDateTime(date, this.dlmsDevice.getTimezone());
+    final ZonedDateTime dateTime =
+        DlmsDateTimeConverter.toDateTime(date, this.dlmsDevice.getTimezone());
 
     Assertions.assertThat(dateTime).as(description).isEqualTo(dateTimeUtc);
   }

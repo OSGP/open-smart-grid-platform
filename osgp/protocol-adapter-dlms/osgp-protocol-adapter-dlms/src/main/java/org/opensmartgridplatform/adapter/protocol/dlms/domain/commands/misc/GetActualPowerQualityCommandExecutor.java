@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Objects;
@@ -116,7 +117,8 @@ public class GetActualPowerQualityCommandExecutor
       if (pqObject.getClassId() == CLASS_ID_CLOCK) {
         final CosemDateTimeDto cosemDateTime =
             this.dlmsHelper.readDateTime(resultValue, "Actual Power Quality - Time");
-        powerQualityValue = new PowerQualityValueDto(cosemDateTime.asDateTime().toDate());
+        powerQualityValue =
+            new PowerQualityValueDto(Date.from(cosemDateTime.asDateTime().toInstant()));
         powerQualityObject = new PowerQualityObjectDto(pqObject.getTag(), null);
 
       } else if (pqObject.getClassId() == CLASS_ID_REGISTER) {

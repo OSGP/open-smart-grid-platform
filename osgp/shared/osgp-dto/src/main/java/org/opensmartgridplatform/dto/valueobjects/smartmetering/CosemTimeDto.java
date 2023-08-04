@@ -16,6 +16,8 @@ public class CosemTimeDto implements Serializable, Comparable<CosemTimeDto> {
   public static final int SECOND_NOT_SPECIFIED = 0xFF;
   public static final int HUNDREDTHS_NOT_SPECIFIED = 0xFF;
 
+  public static final int NANO_TO_HUNDREDTHS = 10000000;
+
   private final int hour;
   private final int minute;
   private final int second;
@@ -38,7 +40,7 @@ public class CosemTimeDto implements Serializable, Comparable<CosemTimeDto> {
   }
 
   public CosemTimeDto(final LocalTime time) {
-    this(time.getHour(), time.getMinute(), time.getSecond(), time.getSecond() / 10);
+    this(time.getHour(), time.getMinute(), time.getSecond(), time.getNano() / NANO_TO_HUNDREDTHS);
   }
 
   public CosemTimeDto(final CosemTimeDto time) {
@@ -190,7 +192,7 @@ public class CosemTimeDto implements Serializable, Comparable<CosemTimeDto> {
     if (HUNDREDTHS_NOT_SPECIFIED == this.hundredths) {
       return LocalTime.of(this.hour, this.minute, this.second);
     }
-    return LocalTime.of(this.hour, this.minute, this.second, this.hundredths * 10);
+    return LocalTime.of(this.hour, this.minute, this.second, this.hundredths * NANO_TO_HUNDREDTHS);
   }
 
   public boolean isHourNotSpecified() {

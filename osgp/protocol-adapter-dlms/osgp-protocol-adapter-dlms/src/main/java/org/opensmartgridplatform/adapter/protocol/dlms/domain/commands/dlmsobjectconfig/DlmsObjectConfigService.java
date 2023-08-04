@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
@@ -65,8 +65,8 @@ public class DlmsObjectConfigService {
       final DlmsDevice device,
       final DlmsObjectType type,
       final Integer channel,
-      final DateTime from,
-      final DateTime to,
+      final ZonedDateTime from,
+      final ZonedDateTime to,
       final Medium filterMedium) {
     return this.findDlmsObject(Protocol.forDevice(device), type, filterMedium)
         .map(
@@ -169,8 +169,8 @@ public class DlmsObjectConfigService {
       final AddressRequest addressRequest, final List<DlmsCaptureObject> selectedObjects) {
 
     final DlmsObject object = addressRequest.getDlmsObject();
-    final DateTime from = addressRequest.getFrom();
-    final DateTime to = addressRequest.getTo();
+    final ZonedDateTime from = addressRequest.getFrom();
+    final ZonedDateTime to = addressRequest.getTo();
 
     if (!(object instanceof DlmsProfile) || from == null || to == null) {
       return null;

@@ -4,19 +4,19 @@
 
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.joda.time.DateTime;
 
 /** Helper class to create ActionDto objects. */
 public class ActionDtoBuilder {
 
   public FindEventsRequestDto makeFindEventsQueryDto() {
     return new FindEventsRequestDto(
-        EventLogCategoryDto.STANDARD_EVENT_LOG, new DateTime(), new DateTime());
+        EventLogCategoryDto.STANDARD_EVENT_LOG, ZonedDateTime.now(), ZonedDateTime.now());
   }
 
   public ActualMeterReadsDataDto makeActualMeterReadsDataDtoAction() {
@@ -159,6 +159,6 @@ public class ActionDtoBuilder {
   }
 
   public CosemDateTimeDto makeCosemDateTimeDto() {
-    return new CosemDateTimeDto(new DateTime());
+    return new CosemDateTimeDto(ZonedDateTime.now());
   }
 }

@@ -5,9 +5,9 @@
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import lombok.Getter;
 import lombok.ToString;
-import org.joda.time.DateTime;
 
 @ToString
 @Getter
@@ -15,10 +15,10 @@ public class OutageDto implements Serializable {
 
   private static final long serialVersionUID = 3450617767283546874L;
 
-  private final DateTime timestamp;
+  private final ZonedDateTime timestamp;
   private final Long duration;
 
-  public OutageDto(final DateTime timestamp, final Long duration) {
+  public OutageDto(final ZonedDateTime timestamp, final Long duration) {
     this.timestamp = timestamp;
     this.duration = duration;
   }

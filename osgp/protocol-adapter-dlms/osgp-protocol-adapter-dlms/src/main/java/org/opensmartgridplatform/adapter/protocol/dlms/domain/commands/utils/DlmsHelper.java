@@ -239,7 +239,7 @@ public class DlmsHelper {
   }
 
   public DataObject getAccessSelectionTimeRangeParameter(
-      final DateTime from, final DateTime to, final DataObject selectedValues) {
+      final ZonedDateTime from, final ZonedDateTime to, final DataObject selectedValues) {
 
     /*
      * Define the clock object {8,0-0:1.0.0.255,2,0} to be used as
