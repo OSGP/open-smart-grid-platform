@@ -8,6 +8,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
+import java.util.Objects;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -66,5 +67,17 @@ public class XMLGregorianCalendarToDateTimeConverter
       return null;
     }
     return ZoneOffset.ofHoursMinutes(offsetMinutes / 60, offsetMinutes % 60);
+  }
+
+  @Override
+  public boolean canConvert(final Type<?> sourceType, final Type<?> destinationType) {
+    // The check 'this.sourceType.isAssignableFrom(sourceType)' fails for
+    // GregorianCalendar.
+    // Use custom check instead.
+    return Objects.equals(sourceType.getRawType().getName(), ZonedDateTime.class.getName())
+            && Objects.equals(
+                destinationType.getRawType().getName(), XMLGregorianCalendar.class.getName())
+        || this.sourceType.isAssignableFrom(sourceType)
+            && this.destinationType.equals(destinationType);
   }
 }
