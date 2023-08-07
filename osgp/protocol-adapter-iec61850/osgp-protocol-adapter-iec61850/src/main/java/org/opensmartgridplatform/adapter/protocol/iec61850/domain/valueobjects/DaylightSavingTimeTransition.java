@@ -102,8 +102,7 @@ public class DaylightSavingTimeTransition {
             ZonedDateTime.of(year, 1, 1, 0, 0, 0, 0, dateTimeZone).plusDays(n);
 
         final boolean subtractOne =
-            !candidate.toLocalDate().isLeapYear()
-                || candidate.getMonth().getValue() < DateTimeConstants.MARCH;
+            !candidate.toLocalDate().isLeapYear() || candidate.getMonth().getValue() < MARCH;
 
         if (subtractOne) {
           return candidate.minusDays(1).plusHours(this.getTime(transition));

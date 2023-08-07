@@ -12,10 +12,10 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.ZonedDateTime;
 import java.util.Map;
 import javax.naming.OperationNotSupportedException;
 import javax.xml.datatype.DatatypeConfigurationException;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightValue;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleRequest;
@@ -65,7 +65,9 @@ public class AuthorizeDeviceFunctionsSteps {
   @When("receiving a publiclighting device function request")
   public void receivingAPublicLightingDeviceFunctionRequest(
       final Map<String, String> requestParameters)
-      throws OperationNotSupportedException, WebServiceSecurityException, GeneralSecurityException,
+      throws OperationNotSupportedException,
+          WebServiceSecurityException,
+          GeneralSecurityException,
           IOException {
     this.deviceFunction =
         getEnum(
@@ -162,7 +164,7 @@ public class AuthorizeDeviceFunctionsSteps {
     schedule.setActionTime(ActionTimeType.SUNRISE);
     schedule.setIndex(0);
     schedule.setWeekDay(WeekDayType.ALL);
-    schedule.setTime(DateTime.now().toString());
+    schedule.setTime(ZonedDateTime.now().toString());
     schedule.setIsEnabled(true);
     schedule.setMinimumLightsOn(10);
     final org.opensmartgridplatform.adapter.ws.schema.publiclighting.schedulemanagement.LightValue
@@ -207,7 +209,7 @@ public class AuthorizeDeviceFunctionsSteps {
     schedule.setWeekDay(
         org.opensmartgridplatform.adapter.ws.schema.tariffswitching.schedulemanagement.WeekDayType
             .ALL);
-    schedule.setTime(DateTime.now().toString());
+    schedule.setTime(ZonedDateTime.now().toString());
     schedule.setIsEnabled(true);
     schedule.setMinimumLightsOn(10);
     request.getSchedules().add(schedule);
@@ -233,7 +235,9 @@ public class AuthorizeDeviceFunctionsSteps {
   }
 
   private void setTransition(final Map<String, String> requestParameters)
-      throws WebServiceSecurityException, GeneralSecurityException, IOException,
+      throws WebServiceSecurityException,
+          GeneralSecurityException,
+          IOException,
           DatatypeConfigurationException {
     final SetTransitionRequest request = new SetTransitionRequest();
     request.setDeviceIdentification(

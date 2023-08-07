@@ -10,11 +10,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import org.apache.commons.codec.binary.Base64;
-import org.joda.time.Instant;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.DeviceRegistrationService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.LoggingService;
@@ -42,7 +41,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OslpChannelHandlerServer.class);
 
-  private static final DateTimeFormatter format = DateTimeFormat.forPattern("yyyyMMddHHmmss");
+  private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
   @Autowired private ChannelCache channelCache;
 
@@ -233,7 +232,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     final Oslp.RegisterDeviceResponse.Builder responseBuilder =
         Oslp.RegisterDeviceResponse.newBuilder()
             .setStatus(Oslp.Status.OK)
-            .setCurrentTime(Instant.now().toString(format))
+            .setCurrentTime(format.format(Instant.now()))
             .setRandomDevice(registerRequest.getRandomDevice())
             .setRandomPlatform(oslpDevice.getRandomPlatform());
 
