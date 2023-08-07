@@ -6,7 +6,7 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking;
 
 import com.beanit.openiec61850.ClientAssociation;
 import com.beanit.openiec61850.ServerModel;
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.IED;
 
 public class Iec61850Connection {
@@ -15,7 +15,7 @@ public class Iec61850Connection {
 
   private final ServerModel serverModel;
 
-  private final DateTime connectionStartTime;
+  private final ZonedDateTime connectionStartTime;
 
   private IED ied;
 
@@ -29,7 +29,7 @@ public class Iec61850Connection {
   public Iec61850Connection(
       final Iec61850ClientAssociation clientAssociation,
       final ServerModel serverModel,
-      final DateTime connectionStartTime,
+      final ZonedDateTime connectionStartTime,
       final IED ied) {
     this.clientAssociation = clientAssociation;
     this.serverModel = serverModel;
@@ -49,7 +49,7 @@ public class Iec61850Connection {
     return this.serverModel;
   }
 
-  public DateTime getConnectionStartTime() {
+  public ZonedDateTime getConnectionStartTime() {
     return this.connectionStartTime;
   }
 

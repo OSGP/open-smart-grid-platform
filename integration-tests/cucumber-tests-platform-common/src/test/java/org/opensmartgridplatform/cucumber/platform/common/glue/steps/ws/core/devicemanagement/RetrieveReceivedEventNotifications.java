@@ -15,10 +15,12 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.joda.time.DateTime;
+import java.util.Objects;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindEventsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindEventsResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -56,7 +58,7 @@ public class RetrieveReceivedEventNotifications {
       final Event event =
           new Event(
               deviceIdentification,
-              getDateTime(PlatformDefaults.TIMESTAMP).toDate(),
+              Date.from(Objects.requireNonNull(getDateTime(PlatformDefaults.TIMESTAMP)).toInstant()),
               eventType,
               PlatformDefaults.DEFAULT_EVENT_DESCRIPTION,
               PlatformDefaults.DEFAULT_INDEX);
@@ -72,8 +74,8 @@ public class RetrieveReceivedEventNotifications {
       final Event event =
           new Event(
               deviceIdentification,
-              getDateTime(getString(data, PlatformKeys.TIMESTAMP, PlatformDefaults.TIMESTAMP))
-                  .toDate(),
+              Date.from(Objects.requireNonNull(
+                  getDateTime(getString(data, PlatformKeys.TIMESTAMP, PlatformDefaults.TIMESTAMP))).toInstant()),
               getEnum(data, PlatformKeys.EVENT_TYPE, EventType.class, EventType.ALARM_NOTIFICATION),
               getString(
                   data, PlatformKeys.KEY_DESCRIPTION, PlatformDefaults.DEFAULT_EVENT_DESCRIPTION),
@@ -212,13 +214,13 @@ public class RetrieveReceivedEventNotifications {
       throws Throwable {
     final List<Event> events = new ArrayList<>();
     final List<Event> eventIterator = this.retrieveStoredEvents(deviceIdentification);
-    final DateTime
+    final ZonedDateTime
         fromTimestamp = getDateTime(getString(expectedResponse, PlatformKeys.FROM_TIMESTAMP)),
         toTimestamp = getDateTime(getString(expectedResponse, PlatformKeys.TO_TIMESTAMP));
 
     for (final Event e : eventIterator) {
-      if (fromTimestamp.isBefore(e.getDateTime().getTime())
-          && toTimestamp.isAfter(e.getDateTime().getTime())) {
+      if (Date.from(fromTimestamp.toInstant()).before(e.getDateTime())
+          && Date.from(fromTimestamp.toInstant()).after(e.getDateTime())) {
         events.add(e);
       }
     }
@@ -259,7 +261,7 @@ public class RetrieveReceivedEventNotifications {
   @Then("^the stored events are filtered and retrieved$")
   public void theStoredEventsAreFilteredAndRetrieved(final Map<String, String> expectedResponse)
       throws Throwable {
-    List<Event> events;
+    final List<Event> events;
 
     if (getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION).isEmpty()) {
       events = this.retrieveStoredEvents();

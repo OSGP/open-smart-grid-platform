@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.application.mapping;
 
+import java.time.ZonedDateTime;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
 import ma.glasnost.orika.impl.ConfigurableMapper;
-import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,6 +16,6 @@ public class Iec61850Mapper extends ConfigurableMapper {
   @Override
   protected void configure(final MapperFactory factory) {
     factory.getConverterFactory().registerConverter(new DeviceOutputSettingToRelayMapConverter());
-    factory.getConverterFactory().registerConverter(new PassThroughConverter(DateTime.class));
+    factory.getConverterFactory().registerConverter(new PassThroughConverter(ZonedDateTime.class));
   }
 }

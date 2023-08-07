@@ -23,7 +23,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.EventType;
@@ -423,7 +422,8 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
     if (trgTimeNode == null || trgTimeNode.getDate() == null) {
       sb.append("null");
     } else {
-      final DateTime trgTime = new DateTime(trgTimeNode.getDate());
+      final ZonedDateTime trgTime =
+          ZonedDateTime.ofInstant(trgTimeNode.getDate().toInstant(), ZoneId.systemDefault());
       sb.append(trgTime);
     }
     sb.append(System.lineSeparator());

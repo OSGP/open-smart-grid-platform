@@ -5,24 +5,24 @@
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.Getter;
 import lombok.ToString;
-import org.joda.time.DateTime;
 
 @Getter
 @ToString
 public class Event implements Serializable {
 
   private static final long serialVersionUID = 4482313912422705642L;
-  private final DateTime timestamp;
+  private final ZonedDateTime timestamp;
   private final EventType eventType;
   private final Integer eventCounter;
   private final EventLogCategory eventLogCategory;
   private final List<EventDetail> eventDetails;
 
   public Event(
-      final DateTime timestamp,
+      final ZonedDateTime timestamp,
       final EventType eventType,
       final Integer eventCounter,
       final EventLogCategory eventLogCategory,

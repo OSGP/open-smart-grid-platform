@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.adapter.domain.da.application.mapping;
 
+import java.time.ZonedDateTime;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
 import ma.glasnost.orika.impl.ConfigurableMapper;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.domain.da.measurements.Measurement;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementGroup;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementReport;
@@ -37,7 +37,7 @@ public class DomainDistributionAutomationMapper extends ConfigurableMapper {
 
   @Override
   protected void configure(final MapperFactory factory) {
-    factory.getConverterFactory().registerConverter(new PassThroughConverter(DateTime.class));
+    factory.getConverterFactory().registerConverter(new PassThroughConverter(ZonedDateTime.class));
     factory
         .classMap(GetDeviceModelRequest.class, GetDeviceModelRequestDto.class)
         .byDefault()

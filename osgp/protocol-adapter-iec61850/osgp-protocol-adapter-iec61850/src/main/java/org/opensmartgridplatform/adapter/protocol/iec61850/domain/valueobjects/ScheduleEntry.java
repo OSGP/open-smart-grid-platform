@@ -5,7 +5,6 @@
 package org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects;
 
 import java.time.ZonedDateTime;
-import org.joda.time.DateTime;
 
 /** Value object, containing all data that is written to a relay schedule */
 public class ScheduleEntry {
@@ -57,7 +56,7 @@ public class ScheduleEntry {
 
     /**
      * Makes this {@link ScheduleEntry} work on the {@link ScheduleWeekday} provided. To create an
-     * entry for special days, use {@link #specialDay(DateTime)}.
+     * entry for special days, use {@link #specialDay(ZonedDateTime)}.
      *
      * @return this builder.
      */
@@ -67,9 +66,9 @@ public class ScheduleEntry {
     }
 
     /**
-     * Makes this {@link ScheduleEntry} work on the {@link DateTime} provided as a special day. To
-     * create an entry for a certain day of the week, for weekdays, or for weekend days use {@link
-     * #weekday(ScheduleWeekday)}.
+     * Makes this {@link ScheduleEntry} work on the {@link ZonedDateTime} provided as a special day.
+     * To create an entry for a certain day of the week, for weekdays, or for weekend days use
+     * {@link #weekday(ScheduleWeekday)}.
      *
      * @return this builder.
      */

@@ -7,17 +7,17 @@ package org.opensmartgridplatform.domain.microgrids.valueobjects;
 import java.io.Serializable;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 
 public class ProfileEntry implements Serializable {
 
   private static final long serialVersionUID = -6843459709647885422L;
 
   private final int id;
-  private final DateTime time;
+  private final ZonedDateTime time;
   private final double value;
 
-  public ProfileEntry(final int id, final DateTime time, final double value) {
+  public ProfileEntry(final int id, final ZonedDateTime time, final double value) {
     this.id = id;
     this.time = time;
     this.value = this.roundValue(value);
@@ -27,7 +27,7 @@ public class ProfileEntry implements Serializable {
     return this.id;
   }
 
-  public DateTime getTime() {
+  public ZonedDateTime getTime() {
     return this.time;
   }
 

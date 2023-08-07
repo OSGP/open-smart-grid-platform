@@ -6,8 +6,9 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.ser
 
 import com.beanit.openiec61850.Fc;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
@@ -221,8 +222,10 @@ public class Iec61850UpdateFirmwareCommand {
     iec61850Client.readNodeDataValues(
         deviceConnection.getConnection().getClientAssociation(), clock.getFcmodelNode());
 
-    final DateTime deviceTime = new DateTime(clock.getDate(SubDataAttribute.CURRENT_TIME));
+    final ZonedDateTime deviceTime =
+        ZonedDateTime.ofInstant(
+            clock.getDate(SubDataAttribute.CURRENT_TIME).toInstant(), ZoneId.systemDefault());
     // Creating a DateTime one minute from now.
-    return deviceTime.plusMinutes(1).toDate();
+    return Date.from(deviceTime.plusMinutes(1).toInstant());
   }
 }

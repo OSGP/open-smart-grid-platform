@@ -10,8 +10,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.RtuWriteCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.ProfilePair;
@@ -38,7 +36,7 @@ public class Iec61850ScheduleAbsTimeCommand
 
   private static final float DEFAULT_VALUE = 0F;
   private static final Date DEFAULT_TIME =
-      new DateTime(1970, 1, 1, 0, 0, 0, DateTimeZone.UTC).toDate();
+      Date.from(ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC")).toInstant());
 
   private final LogicalNode logicalNode;
   private final int index;

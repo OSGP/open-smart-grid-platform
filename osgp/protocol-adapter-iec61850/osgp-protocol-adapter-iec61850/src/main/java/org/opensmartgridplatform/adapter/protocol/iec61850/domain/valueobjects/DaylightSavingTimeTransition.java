@@ -7,7 +7,6 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Objects;
-import org.joda.time.DateTimeConstants;
 
 /**
  * Class for handling representations of the start (when DST goes into effect) or end time (when
@@ -23,6 +22,10 @@ import org.joda.time.DateTimeConstants;
  * @see http://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html
  */
 public class DaylightSavingTimeTransition {
+
+  public static final int MARCH = 3;
+
+  public static final int SUNDAY = 7;
 
   public enum DstTransitionFormat {
     /**
@@ -65,8 +68,7 @@ public class DaylightSavingTimeTransition {
           final ZonedDateTime dateTime) {
         final int dayOfYear = dateTime.getDayOfYear();
         final int n;
-        if (dateTime.getMonth().getValue() < DateTimeConstants.MARCH
-            || !dateTime.toLocalDate().isLeapYear()) {
+        if (dateTime.getMonth().getValue() < MARCH || !dateTime.toLocalDate().isLeapYear()) {
           n = dayOfYear;
         } else {
           /*
@@ -263,7 +265,7 @@ public class DaylightSavingTimeTransition {
         } else {
           d = Integer.parseInt(transition.substring(dotAfterW + 1, timeSeparatorPos));
         }
-        final int dayOfWeek = d == 0 ? DateTimeConstants.SUNDAY : d;
+        final int dayOfWeek = d == 0 ? SUNDAY : d;
         final int startAtDate = w == 5 ? 22 : (w - 1) * 7 + 1;
 
         final ZonedDateTime firstAttempt =

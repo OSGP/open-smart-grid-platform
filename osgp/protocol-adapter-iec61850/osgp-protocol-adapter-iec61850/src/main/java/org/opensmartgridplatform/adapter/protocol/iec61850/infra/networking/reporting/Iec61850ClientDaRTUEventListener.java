@@ -14,9 +14,11 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.da.GetPQValuesResponseDto;
@@ -35,10 +37,12 @@ public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventLis
 
   @Override
   public void newReport(final Report report) {
-    final DateTime timeOfEntry =
+    final ZonedDateTime timeOfEntry =
         report.getTimeOfEntry() == null
             ? null
-            : new DateTime(report.getTimeOfEntry().getTimestampValue());
+            : ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(report.getTimeOfEntry().getTimestampValue()),
+                ZoneId.systemDefault());
 
     final String reportDescription = this.getReportDescription(report, timeOfEntry);
 
@@ -198,8 +202,8 @@ public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventLis
   }
 
   private class LogicalNode {
-    private String name;
-    private List<DataSampleDto> dataSamples = new ArrayList<>();
+    private final String name;
+    private final List<DataSampleDto> dataSamples = new ArrayList<>();
 
     public LogicalNode(final String name) {
       this.name = name;
@@ -215,8 +219,8 @@ public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventLis
   }
 
   private class LogicalDevice {
-    private String name;
-    private List<LogicalNode> logicalNodes = new ArrayList<>();
+    private final String name;
+    private final List<LogicalNode> logicalNodes = new ArrayList<>();
 
     public LogicalDevice(final String name) {
       this.name = name;
@@ -231,7 +235,7 @@ public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventLis
     }
   }
 
-  private String getReportDescription(final Report report, final DateTime timeOfEntry) {
+  private String getReportDescription(final Report report, final ZonedDateTime timeOfEntry) {
     return String.format(
         "device: %s, reportId: %s, timeOfEntry: %s, sqNum: %s%s%s",
         this.deviceIdentification,
