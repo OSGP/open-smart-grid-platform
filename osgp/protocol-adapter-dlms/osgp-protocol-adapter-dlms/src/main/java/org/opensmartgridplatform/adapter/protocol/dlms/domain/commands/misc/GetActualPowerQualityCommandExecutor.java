@@ -179,18 +179,17 @@ public class GetActualPowerQualityCommandExecutor
       final EnumMap<ObjectProperty, List<String>> pqProperties =
           new EnumMap<>(ObjectProperty.class);
       pqProperties.put(ObjectProperty.PQ_PROFILE, Collections.singletonList(profile.name()));
-      pqProperties.put(ObjectProperty.PQ_REQUEST, List.of(PowerQualityRequest.ONDEMAND.name()));
+      pqProperties.put(
+          ObjectProperty.PQ_REQUEST,
+          List.of(
+              device.isPolyphase()
+                  ? PowerQualityRequest.ACTUAL_PP.name()
+                  : PowerQualityRequest.ACTUAL_SP.name()));
 
       // Get matching power quality objects from config
-      final List<CosemObject> objectsForProfile =
+      final List<CosemObject> pqObjects =
           this.objectConfigService.getCosemObjectsWithProperties(
               device.getProtocolName(), device.getProtocolVersion(), pqProperties);
-
-      // Filter for single phase / poly phase
-      final List<CosemObject> pqObjects =
-          objectsForProfile.stream()
-              .filter(object -> this.objectHasCorrectMeterType(object, device))
-              .toList();
 
       allPQObjects.addAll(pqObjects);
       return allPQObjects;

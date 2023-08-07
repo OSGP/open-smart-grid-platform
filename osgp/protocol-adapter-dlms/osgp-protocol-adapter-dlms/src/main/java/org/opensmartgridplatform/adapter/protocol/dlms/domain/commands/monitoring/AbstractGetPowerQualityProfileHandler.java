@@ -185,7 +185,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
   private void addToMapIfNeeded(
       final DlmsObjectType profileType,
-      final String pqProfile,
+      final String privateOrPublic,
       final DlmsDevice device,
       final Map<CosemObject, List<CosemObject>> profilesWithSelectableObjects)
       throws ProtocolAdapterException {
@@ -211,7 +211,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
               .filter(
                   object ->
                       object.getClassId() == InterfaceClass.CLOCK.id()
-                          || this.hasPeriodicPqProfile(object, pqProfile))
+                          || this.hasPeriodicPqProfile(device, object, privateOrPublic))
               .toList();
 
       // Use this profile when at least the clock object and one other object should be read
@@ -223,10 +223,15 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     }
   }
 
-  private boolean hasPeriodicPqProfile(final CosemObject object, final String privateOrPublic) {
-    if (PowerQualityRequest.PERIODIC
-        .name()
-        .equals((String) object.getProperty(ObjectProperty.PQ_REQUEST))) {
+  private boolean hasPeriodicPqProfile(
+      final DlmsDevice device, final CosemObject object, final String privateOrPublic) {
+    if (object.getListProperty(ObjectProperty.PQ_REQUEST) != null
+        && object
+            .getListProperty(ObjectProperty.PQ_REQUEST)
+            .contains(
+                device.isPolyphase()
+                    ? PowerQualityRequest.PERIODIC_PP.name()
+                    : PowerQualityRequest.PERIODIC_SP.name())) {
       return ((String) object.getProperty(ObjectProperty.PQ_PROFILE)).equals(privateOrPublic);
     }
     return false;

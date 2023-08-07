@@ -5,7 +5,6 @@
 package org.opensmartgridplatform.simulator.protocol.dlms.cosem;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -35,13 +34,11 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteg
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @CosemClass(id = 7)
 public class DefinableLoadProfile extends ProfileGeneric {
   private static final Logger LOGGER = LoggerFactory.getLogger(DefinableLoadProfile.class);
 
-  private static final int MAX_CAPTURE_OBJECTS = 20;
   private static final int MAX_PROFILE_ENTRIES = 960;
 
   private static final DataProcessor COSEM_DATE_TIME_PROCESSOR = new CosemDateTimeProcessor();
@@ -51,274 +48,274 @@ public class DefinableLoadProfile extends ProfileGeneric {
   private static final Map<CaptureObject, DataProcessor> PROCESSORS_BY_CAPTURE_OBJECT =
       new HashMap<>();
 
-  private static final CaptureObject CLOCK_TIME =
+  public static final CaptureObject CLOCK_TIME =
       new CaptureObject(
           InterfaceClass.CLOCK.id(), "0.0.1.0.0.255", (byte) ClockAttribute.TIME.attributeId(), 0);
 
-  private static final CaptureObject NUMBER_OF_POWER_FAILURES_IN_ANY_PHASE_VALUE =
+  public static final CaptureObject NUMBER_OF_POWER_FAILURES_IN_ANY_PHASE_VALUE =
       new CaptureObject(
           InterfaceClass.DATA.id(), "0.0.96.7.21.255", (byte) DataAttribute.VALUE.attributeId(), 0);
-  private static final CaptureObject NUMBER_OF_LONG_POWER_FAILURES_IN_ANY_PHASE_VALUE =
+  public static final CaptureObject NUMBER_OF_LONG_POWER_FAILURES_IN_ANY_PHASE_VALUE =
       new CaptureObject(
           InterfaceClass.DATA.id(), "0.0.96.7.9.255", (byte) DataAttribute.VALUE.attributeId(), 0);
-  private static final CaptureObject TIME_THRESHOLD_FOR_LONG_POWER_FAILURE_VALUE =
+  public static final CaptureObject TIME_THRESHOLD_FOR_LONG_POWER_FAILURE_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "0.0.96.7.20.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject DURATION_OF_LONG_POWER_FAILURES_IN_ANY_PHASE_VALUE =
+  public static final CaptureObject DURATION_OF_LONG_POWER_FAILURES_IN_ANY_PHASE_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "0.0.96.7.19.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
 
-  private static final CaptureObject INSTANTANEOUS_VOLTAGE_L1_VALUE =
+  public static final CaptureObject INSTANTANEOUS_VOLTAGE_L1_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.32.7.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_VOLTAGE_L1_VALUE =
+  public static final CaptureObject AVERAGE_VOLTAGE_L1_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.32.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject INSTANTANEOUS_CURRENT_L1_VALUE =
+  public static final CaptureObject INSTANTANEOUS_CURRENT_L1_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.31.7.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_ACTIVE_POWER_IMPORT_L1_VALUE =
+  public static final CaptureObject AVERAGE_ACTIVE_POWER_IMPORT_L1_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.21.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_ACTIVE_POWER_EXPORT_L1_VALUE =
+  public static final CaptureObject AVERAGE_ACTIVE_POWER_EXPORT_L1_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.22.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1_VALUE =
+  public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.21.7.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1_VALUE =
+  public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.22.7.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_REACTIVE_POWER_IMPORT_L1_VALUE =
+  public static final CaptureObject AVERAGE_REACTIVE_POWER_IMPORT_L1_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.23.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_REACTIVE_POWER_EXPORT_L1_VALUE =
+  public static final CaptureObject AVERAGE_REACTIVE_POWER_EXPORT_L1_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.24.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_CURRENT_L1_VALUE =
+  public static final CaptureObject AVERAGE_CURRENT_L1_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.31.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject INSTANTANEOUS_VOLTAGE_L2_VALUE =
+  public static final CaptureObject INSTANTANEOUS_VOLTAGE_L2_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.52.7.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_VOLTAGE_L2_VALUE =
+  public static final CaptureObject AVERAGE_VOLTAGE_L2_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.52.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject INSTANTANEOUS_CURRENT_L2_VALUE =
+  public static final CaptureObject INSTANTANEOUS_CURRENT_L2_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.51.7.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_ACTIVE_POWER_IMPORT_L2_VALUE =
+  public static final CaptureObject AVERAGE_ACTIVE_POWER_IMPORT_L2_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.41.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_ACTIVE_POWER_EXPORT_L2_VALUE =
+  public static final CaptureObject AVERAGE_ACTIVE_POWER_EXPORT_L2_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.42.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2_VALUE =
+  public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.41.7.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2_VALUE =
+  public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.42.7.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_REACTIVE_POWER_IMPORT_L2_VALUE =
+  public static final CaptureObject AVERAGE_REACTIVE_POWER_IMPORT_L2_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.43.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_REACTIVE_POWER_EXPORT_L2_VALUE =
+  public static final CaptureObject AVERAGE_REACTIVE_POWER_EXPORT_L2_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.44.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_CURRENT_L2_VALUE =
+  public static final CaptureObject AVERAGE_CURRENT_L2_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.51.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject INSTANTANEOUS_VOLTAGE_L3_VALUE =
+  public static final CaptureObject INSTANTANEOUS_VOLTAGE_L3_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.72.7.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_VOLTAGE_L3_VALUE =
+  public static final CaptureObject AVERAGE_VOLTAGE_L3_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.72.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject INSTANTANEOUS_CURRENT_L3_VALUE =
+  public static final CaptureObject INSTANTANEOUS_CURRENT_L3_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.71.7.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_ACTIVE_POWER_IMPORT_L3_VALUE =
+  public static final CaptureObject AVERAGE_ACTIVE_POWER_IMPORT_L3_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.61.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_ACTIVE_POWER_EXPORT_L3_VALUE =
+  public static final CaptureObject AVERAGE_ACTIVE_POWER_EXPORT_L3_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.62.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3_VALUE =
+  public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.61.7.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3_VALUE =
+  public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.62.7.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_REACTIVE_POWER_IMPORT_L3_VALUE =
+  public static final CaptureObject AVERAGE_REACTIVE_POWER_IMPORT_L3_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.63.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_REACTIVE_POWER_EXPORT_L3_VALUE =
+  public static final CaptureObject AVERAGE_REACTIVE_POWER_EXPORT_L3_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.64.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject AVERAGE_CURRENT_L3_VALUE =
+  public static final CaptureObject AVERAGE_CURRENT_L3_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.71.24.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_IMPORT_VALUE =
+  public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_IMPORT_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.1.7.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_EXPORT_VALUE =
+  public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_EXPORT_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.2.7.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_VALUE =
+  public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.16.7.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject INSTANTANEOUS_CURRENT_VALUE =
+  public static final CaptureObject INSTANTANEOUS_CURRENT_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.90.7.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
 
-  private static final CaptureObject THRESHOLD_FOR_VOLTAGE_SAG_VALUE =
+  public static final CaptureObject THRESHOLD_FOR_VOLTAGE_SAG_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.12.31.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject TIME_THRESHOLD_FOR_VOLTAGE_SAG_VALUE =
+  public static final CaptureObject TIME_THRESHOLD_FOR_VOLTAGE_SAG_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.12.43.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L1_VALUE =
+  public static final CaptureObject NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L1_VALUE =
       new CaptureObject(
           InterfaceClass.DATA.id(), "1.0.32.32.0.255", (byte) DataAttribute.VALUE.attributeId(), 0);
-  private static final CaptureObject NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L2_VALUE =
+  public static final CaptureObject NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L2_VALUE =
       new CaptureObject(
           InterfaceClass.DATA.id(), "1.0.52.32.0.255", (byte) DataAttribute.VALUE.attributeId(), 0);
-  private static final CaptureObject NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L3_VALUE =
+  public static final CaptureObject NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L3_VALUE =
       new CaptureObject(
           InterfaceClass.DATA.id(), "1.0.72.32.0.255", (byte) DataAttribute.VALUE.attributeId(), 0);
-  private static final CaptureObject THRESHOLD_FOR_VOLTAGE_SWELL_VALUE =
+  public static final CaptureObject THRESHOLD_FOR_VOLTAGE_SWELL_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.12.35.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject TIME_THRESHOLD_FOR_VOLTAGE_SWELL_VALUE =
+  public static final CaptureObject TIME_THRESHOLD_FOR_VOLTAGE_SWELL_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
           "1.0.12.44.0.255",
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
-  private static final CaptureObject NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L1_VALUE =
+  public static final CaptureObject NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L1_VALUE =
       new CaptureObject(
           InterfaceClass.DATA.id(), "1.0.32.36.0.255", (byte) DataAttribute.VALUE.attributeId(), 0);
-  private static final CaptureObject NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L2_VALUE =
+  public static final CaptureObject NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L2_VALUE =
       new CaptureObject(
           InterfaceClass.DATA.id(), "1.0.52.36.0.255", (byte) DataAttribute.VALUE.attributeId(), 0);
-  private static final CaptureObject NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L3_VALUE =
+  public static final CaptureObject NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L3_VALUE =
       new CaptureObject(
           InterfaceClass.DATA.id(), "1.0.72.36.0.255", (byte) DataAttribute.VALUE.attributeId(), 0);
 
@@ -402,42 +399,6 @@ public class DefinableLoadProfile extends ProfileGeneric {
         NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L3_VALUE, LONG_UNSIGNED_PROCESSOR);
   }
 
-  private static final List<CaptureObject> DEFAULT_CAPTURE_OBJECTS =
-      Arrays.asList(
-          CLOCK_TIME,
-          INSTANTANEOUS_VOLTAGE_L1_VALUE,
-          INSTANTANEOUS_VOLTAGE_L2_VALUE,
-          INSTANTANEOUS_VOLTAGE_L3_VALUE,
-          AVERAGE_VOLTAGE_L1_VALUE,
-          AVERAGE_VOLTAGE_L2_VALUE,
-          AVERAGE_VOLTAGE_L3_VALUE,
-          INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1_VALUE,
-          INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1_VALUE,
-          AVERAGE_CURRENT_L1_VALUE,
-          AVERAGE_ACTIVE_POWER_IMPORT_L1_VALUE,
-          AVERAGE_ACTIVE_POWER_IMPORT_L2_VALUE,
-          AVERAGE_ACTIVE_POWER_IMPORT_L3_VALUE,
-          AVERAGE_ACTIVE_POWER_EXPORT_L1_VALUE,
-          AVERAGE_ACTIVE_POWER_EXPORT_L2_VALUE,
-          AVERAGE_ACTIVE_POWER_EXPORT_L3_VALUE,
-          AVERAGE_REACTIVE_POWER_IMPORT_L1_VALUE,
-          AVERAGE_REACTIVE_POWER_IMPORT_L2_VALUE,
-          AVERAGE_REACTIVE_POWER_IMPORT_L3_VALUE,
-          AVERAGE_REACTIVE_POWER_EXPORT_L1_VALUE,
-          AVERAGE_REACTIVE_POWER_EXPORT_L2_VALUE,
-          AVERAGE_REACTIVE_POWER_EXPORT_L3_VALUE,
-          NUMBER_OF_LONG_POWER_FAILURES_IN_ANY_PHASE_VALUE,
-          NUMBER_OF_POWER_FAILURES_IN_ANY_PHASE_VALUE,
-          NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L1_VALUE,
-          NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L1_VALUE,
-          NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L2_VALUE,
-          NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L2_VALUE,
-          NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L3_VALUE,
-          NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L3_VALUE,
-          INSTANTANEOUS_CURRENT_VALUE);
-
-  @Autowired private DynamicValues dynamicValues;
-
   /**
    * Only for cosem attribute definition, data remains untouched. Attribute data is gathered from
    * {@link #bufferData}.
@@ -492,42 +453,35 @@ public class DefinableLoadProfile extends ProfileGeneric {
       snOffset = 0x38)
   private DataObject profileEntries;
 
+  private final DynamicValues dynamicValues;
   private final Calendar time;
-
-  private CaptureObjectDefinitionCollection captureObjectDefinitionCollection;
+  private final Integer maxNumberOfCaptureObjects;
 
   private final Random random = new Random();
 
-  public DefinableLoadProfile(final Calendar time) {
+  public DefinableLoadProfile(
+      final DynamicValues dynamicValues,
+      final Calendar time,
+      final Integer maxNumberOfCaptureObjects,
+      final List<CaptureObject> captureObjectList) {
     super("0.1.94.31.6.255");
+    this.dynamicValues = dynamicValues;
+    this.maxNumberOfCaptureObjects = maxNumberOfCaptureObjects;
     this.time = time;
 
     this.buffer = DataObject.newNullData();
-    this.captureObjects = this.defaultCaptureObjects();
-    this.captureObjectDefinitionCollection =
-        DefinableLoadProfile.initCaptureObjects(DEFAULT_CAPTURE_OBJECTS);
+    this.captureObjects = this.newCaptureObjectsData(captureObjectList);
     this.sortMethod = DataObject.newEnumerateData(SortMethod.FIFO.value());
     this.sortObject = DataObject.newNullData();
     this.entriesInUse = DataObject.newNullData();
   }
 
-  private static CaptureObjectDefinitionCollection initCaptureObjects(
-      final List<CaptureObject> captureObjects) {
-    final CaptureObjectDefinitionCollection definitions = new CaptureObjectDefinitionCollection();
-    for (final CaptureObject captureObject : captureObjects) {
-      definitions.add(
-          new CaptureObjectDefinition(
-              captureObject, PROCESSORS_BY_CAPTURE_OBJECT.get(captureObject)));
+  private DataObject newCaptureObjectsData(final List<CaptureObject> captureObjectList) {
+    final List<DataObject> dataObjectList = new ArrayList<>();
+    for (final CaptureObject captureObject : captureObjectList) {
+      dataObjectList.add(captureObject.asDataObject());
     }
-    return definitions;
-  }
-
-  private DataObject defaultCaptureObjects() {
-    final List<DataObject> captureObjectList = new ArrayList<>();
-    for (final CaptureObject captureObject : DEFAULT_CAPTURE_OBJECTS) {
-      captureObjectList.add(captureObject.asDataObject());
-    }
-    return DataObject.newArrayData(captureObjectList);
+    return DataObject.newArrayData(dataObjectList);
   }
 
   /** Initializes buffer with some data. */
@@ -603,7 +557,15 @@ public class DefinableLoadProfile extends ProfileGeneric {
 
   @Override
   protected CaptureObjectDefinitionCollection getCaptureObjectDefinitionCollection() {
-    return this.captureObjectDefinitionCollection;
+    final List<DataObject> dataObjectList = this.captureObjects.getValue();
+    final CaptureObjectDefinitionCollection definitions = new CaptureObjectDefinitionCollection();
+    for (final DataObject dataObject : dataObjectList) {
+      final CaptureObject captureObject = CaptureObject.newCaptureObject(dataObject);
+      definitions.add(
+          new CaptureObjectDefinition(
+              captureObject, PROCESSORS_BY_CAPTURE_OBJECT.get(captureObject)));
+    }
+    return definitions;
   }
 
   @Override
@@ -623,16 +585,17 @@ public class DefinableLoadProfile extends ProfileGeneric {
       throws IllegalAttributeAccessException {
     final List<DataObject> captureObjectList = captureObjects.getValue();
     final int numberOfCaptureObjects = captureObjectList.size();
-    if (numberOfCaptureObjects > MAX_CAPTURE_OBJECTS) {
+    if (this.maxNumberOfCaptureObjects != null
+        && numberOfCaptureObjects > this.maxNumberOfCaptureObjects) {
       LOGGER.error(
           "Number of capture objects larger than supported (max {}): {}",
-          MAX_CAPTURE_OBJECTS,
+          this.maxNumberOfCaptureObjects,
           numberOfCaptureObjects);
       throw new IllegalAttributeAccessException(
           AccessResultCode.OTHER_REASON,
           new IllegalArgumentException(
               "Number of capture objects larger than supported (max "
-                  + MAX_CAPTURE_OBJECTS
+                  + this.maxNumberOfCaptureObjects
                   + "): "
                   + numberOfCaptureObjects));
     }
@@ -647,7 +610,6 @@ public class DefinableLoadProfile extends ProfileGeneric {
 
   private void reinitializeCaptureObjects(final List<DataObject> captureObjectList)
       throws IllegalAttributeAccessException {
-    final List<CaptureObject> captureObjectInitList = new ArrayList<>();
     for (final DataObject captureObject : captureObjectList) {
       final CaptureObject initCaptureObject;
       try {
@@ -664,10 +626,7 @@ public class DefinableLoadProfile extends ProfileGeneric {
             AccessResultCode.OTHER_REASON,
             new IllegalArgumentException("No data processor configured for " + initCaptureObject));
       }
-      captureObjectInitList.add(initCaptureObject);
     }
-    this.captureObjectDefinitionCollection =
-        DefinableLoadProfile.initCaptureObjects(captureObjectInitList);
   }
 
   public DataObject getCapturePeriod() {

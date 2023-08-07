@@ -199,7 +199,20 @@ public class ObjectConfigService {
               .findAny();
 
       if (parentDlmsProfile.isPresent()) {
-        dlmsProfile.getObjects().addAll(parentDlmsProfile.get().getObjects());
+        parentDlmsProfile
+            .get()
+            .getObjects()
+            .forEach(
+                parentCosemObject -> {
+                  final boolean objectAlreadyDefined =
+                      dlmsProfile.getObjects().stream()
+                          .anyMatch(
+                              cosemObject ->
+                                  cosemObject.getTag().equals(parentCosemObject.getTag()));
+                  if (!objectAlreadyDefined) {
+                    dlmsProfile.getObjects().add(parentCosemObject);
+                  }
+                });
       } else {
         throw new ObjectConfigException(
             "Parent profile "

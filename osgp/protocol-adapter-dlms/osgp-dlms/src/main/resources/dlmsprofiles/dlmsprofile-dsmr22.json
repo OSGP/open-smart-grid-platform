@@ -49,7 +49,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -72,7 +72,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -95,7 +95,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -118,7 +118,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -141,7 +141,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -164,7 +164,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -187,7 +187,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -210,7 +210,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -233,7 +233,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -264,7 +264,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -295,7 +295,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -326,7 +326,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -357,7 +357,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -388,7 +388,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -419,7 +419,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -450,7 +450,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -481,7 +481,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -512,7 +512,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ONDEMAND"]
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -529,37 +529,6 @@
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
           "value": "0, A",
-          "access": "R"
-        }
-      ]
-    },
-    {
-      "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT",
-      "description": "Instantaneous active power (+P)",
-      "class-id": 3,
-      "version": 0,
-      "obis": "1.0.15.7.0.255",
-      "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
-      "properties": {
-        "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ONDEMAND"]
-      },
-      "attributes": [
-        {
-          "id": 2,
-          "description": "value",
-          "datatype": "long-unsigned",
-          "valuetype": "DYNAMIC",
-          "value": "0",
-          "access": "R"
-        },
-        {
-          "id": 3,
-          "description": "scaler_unit",
-          "datatype": "scal_unit_type",
-          "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, W",
           "access": "R"
         }
       ]

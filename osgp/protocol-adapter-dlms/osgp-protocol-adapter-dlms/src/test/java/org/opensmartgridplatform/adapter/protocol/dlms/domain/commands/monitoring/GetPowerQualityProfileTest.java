@@ -32,6 +32,7 @@ import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
+import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityProfileDataDto;
@@ -73,6 +74,9 @@ public abstract class GetPowerQualityProfileTest {
 
     final Map<ObjectProperty, Object> properties = new HashMap<>();
     properties.put(ObjectProperty.PQ_PROFILE, publicOrPrivate);
+    properties.put(
+        ObjectProperty.PQ_REQUEST,
+        List.of(PowerQualityRequest.PERIODIC_SP.name(), PowerQualityRequest.PERIODIC_PP.name()));
     object.setProperties(properties);
 
     return object;

@@ -103,8 +103,7 @@
         "access": "RW"
       }
     ]
-  },
-    {
+  },{
       "tag": "CDMA_DIAGNOSTIC",
       "description": "CDMA Diagnostic",
       "class-id": 47,
@@ -114,7 +113,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["PERIODIC"]
+        "PQ_REQUEST": ["PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
