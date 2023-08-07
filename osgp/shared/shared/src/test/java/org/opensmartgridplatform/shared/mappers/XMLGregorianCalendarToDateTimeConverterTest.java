@@ -77,10 +77,9 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
     final XMLGregorianCalendar xmlGregorianCalendar =
         DatatypeFactory.newInstance().newXMLGregorianCalendar(withTimeZone);
 
-    // Try to map to Joda version.
-    final ZonedDateTime mappedJodaDateTime =
+    final ZonedDateTime mappedZonedDateTime =
         this.mapper.map(xmlGregorianCalendar, ZonedDateTime.class);
-    assertThat(mappedJodaDateTime).isEqualTo(dateTime);
+    assertThat(mappedZonedDateTime).isEqualTo(dateTime);
   }
 
   @Test
@@ -92,10 +91,9 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
     final XMLGregorianCalendar xmlGregorianCalendar =
         DatatypeFactory.newInstance().newXMLGregorianCalendar(withoutTimeZone);
 
-    // Try to map to Joda version.
-    final ZonedDateTime mappedJodaDateTime =
+    final ZonedDateTime mappedZonedDateTime =
         this.mapper.map(xmlGregorianCalendar, ZonedDateTime.class);
-    assertThat(mappedJodaDateTime).isEqualTo(dateTimeWithDefaultZone);
+    assertThat(mappedZonedDateTime).isEqualTo(dateTimeWithDefaultZone);
   }
 
   @Test
@@ -118,9 +116,8 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
   public void mapStringToDateTime() {
     final String stringTime = ZonedDateTime.now().toString();
 
-    // Try to map to Joda version.
-    final ZonedDateTime mappedJodaTime = this.mapper.map(stringTime, ZonedDateTime.class);
-    assertThat(mappedJodaTime)
+    final ZonedDateTime mappedZonedDateTime = this.mapper.map(stringTime, ZonedDateTime.class);
+    assertThat(mappedZonedDateTime)
         .withFailMessage("Not expecting NULL but a DateTime instance.")
         .isNotNull();
   }
