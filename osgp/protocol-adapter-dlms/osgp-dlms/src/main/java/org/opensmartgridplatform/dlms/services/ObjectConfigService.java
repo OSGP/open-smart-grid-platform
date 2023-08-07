@@ -132,14 +132,14 @@ public class ObjectConfigService {
       final CosemObject object,
       final ObjectProperty wantedProperty,
       final List<String> wantedPropertyValues) {
-    final Object objectProperyValue = object.getProperty(wantedProperty);
+    final Object objectPropertyValue = object.getProperty(wantedProperty);
 
-    if (objectProperyValue == null) {
+    if (objectPropertyValue == null) {
       return false;
     } else if (wantedPropertyValues != null && !wantedPropertyValues.isEmpty()) {
-      if (objectProperyValue instanceof String) {
-        return wantedPropertyValues.contains(objectProperyValue);
-      } else if (objectProperyValue instanceof List<?>) {
+      if (objectPropertyValue instanceof String) {
+        return wantedPropertyValues.contains(objectPropertyValue);
+      } else if (objectPropertyValue instanceof List<?>) {
         final List<String> objectProperyValues = object.getListProperty(wantedProperty);
         return new HashSet<>(objectProperyValues).containsAll(wantedPropertyValues);
       }
