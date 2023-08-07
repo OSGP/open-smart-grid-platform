@@ -8,7 +8,6 @@ import static org.quartz.DateBuilder.futureDate;
 
 import com.google.common.collect.Sets;
 import java.util.TimeZone;
-import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.shared.application.config.AbstractOsgpSchedulerConfig;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.DateBuilder.IntervalUnit;
@@ -166,7 +165,7 @@ public class OsgpScheduler {
    */
   public Trigger createJobTrigger(final JobDetail jobDetail, final String cronExpression) {
     return this.createJobTrigger(
-        jobDetail, cronExpression, DateTimeZone.UTC.toTimeZone(), new JobDataMap());
+        jobDetail, cronExpression, TimeZone.getTimeZone("UTC"), new JobDataMap());
   }
 
   /**
@@ -267,7 +266,7 @@ public class OsgpScheduler {
    */
   public void createAndScheduleJob(final Class<? extends Job> jobClass, final String cronExpression)
       throws SchedulerException {
-    this.createAndScheduleJob(jobClass, cronExpression, DateTimeZone.UTC.toTimeZone());
+    this.createAndScheduleJob(jobClass, cronExpression, TimeZone.getTimeZone("UTC"));
   }
 
   public void deleteScheduledJob(final Class<? extends Job> jobClass) throws SchedulerException {

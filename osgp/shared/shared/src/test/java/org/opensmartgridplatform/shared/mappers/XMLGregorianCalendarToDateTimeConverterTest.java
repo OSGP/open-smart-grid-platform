@@ -7,6 +7,10 @@ package org.opensmartgridplatform.shared.mappers;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -16,18 +20,17 @@ import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import ma.glasnost.orika.metadata.Type;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class XMLGregorianCalendarToDateTimeConverterTest {
 
   /** Simple converter implementation used to test mapping strategies. */
-  private class DateTimeToStringConverter extends BidirectionalConverter<DateTime, String> {
+  private class DateTimeToStringConverter extends BidirectionalConverter<ZonedDateTime, String> {
 
     @Override
     public String convertTo(
-        final DateTime source,
+        final ZonedDateTime source,
         final Type<String> destinationType,
         final MappingContext mappingContext) {
       if (source == null) {
@@ -37,14 +40,14 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
     }
 
     @Override
-    public DateTime convertFrom(
+    public ZonedDateTime convertFrom(
         final String source,
-        final Type<DateTime> destinationType,
+        final Type<ZonedDateTime> destinationType,
         final MappingContext mappingContext) {
       if (source == null) {
         return null;
       }
-      return DateTime.parse(source);
+      return ZonedDateTime.parse(source);
     }
   }
 
@@ -70,12 +73,13 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
   public void mapXMLGregorianCalenderWithTimeZoneToDateTime()
       throws DatatypeConfigurationException {
     final String withTimeZone = "2010-06-30T01:20:30+02:00";
-    final DateTime dateTime = DateTime.parse(withTimeZone);
+    final ZonedDateTime dateTime = ZonedDateTime.parse(withTimeZone);
     final XMLGregorianCalendar xmlGregorianCalendar =
         DatatypeFactory.newInstance().newXMLGregorianCalendar(withTimeZone);
 
     // Try to map to Joda version.
-    final DateTime mappedJodaDateTime = this.mapper.map(xmlGregorianCalendar, DateTime.class);
+    final ZonedDateTime mappedJodaDateTime =
+        this.mapper.map(xmlGregorianCalendar, ZonedDateTime.class);
     assertThat(mappedJodaDateTime).isEqualTo(dateTime);
   }
 
@@ -83,21 +87,23 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
   public void mapXMLGregorianWithoutTimeZoneCalenderToDateTime()
       throws DatatypeConfigurationException {
     final String withoutTimeZone = "2010-06-30T01:20:30";
-    final DateTime dateTime = DateTime.parse(withoutTimeZone);
+    final LocalDateTime dateTimeLocal = LocalDateTime.parse(withoutTimeZone);
+    final ZonedDateTime dateTimeWithDefaultZone = dateTimeLocal.atZone(ZoneId.systemDefault());
     final XMLGregorianCalendar xmlGregorianCalendar =
         DatatypeFactory.newInstance().newXMLGregorianCalendar(withoutTimeZone);
 
     // Try to map to Joda version.
-    final DateTime mappedJodaDateTime = this.mapper.map(xmlGregorianCalendar, DateTime.class);
-    assertThat(mappedJodaDateTime).isEqualTo(dateTime);
+    final ZonedDateTime mappedJodaDateTime =
+        this.mapper.map(xmlGregorianCalendar, ZonedDateTime.class);
+    assertThat(mappedJodaDateTime).isEqualTo(dateTimeWithDefaultZone);
   }
 
   @Test
   public void mapDateTimeToXMLGregorianCalender() {
     try {
-      final DateTime dateTime = DateTime.now();
+      final ZonedDateTime dateTime = ZonedDateTime.now();
       final XMLGregorianCalendar xmlGregorianCalendar =
-          DatatypeFactory.newInstance().newXMLGregorianCalendar(dateTime.toGregorianCalendar());
+          DatatypeFactory.newInstance().newXMLGregorianCalendar(GregorianCalendar.from(dateTime));
 
       // Try to map to XML version.
       final XMLGregorianCalendar mappedXMLGregorianCalendar =
@@ -110,10 +116,10 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
 
   @Test
   public void mapStringToDateTime() {
-    final String stringTime = DateTime.now().toString();
+    final String stringTime = ZonedDateTime.now().toString();
 
     // Try to map to Joda version.
-    final DateTime mappedJodaTime = this.mapper.map(stringTime, DateTime.class);
+    final ZonedDateTime mappedJodaTime = this.mapper.map(stringTime, ZonedDateTime.class);
     assertThat(mappedJodaTime)
         .withFailMessage("Not expecting NULL but a DateTime instance.")
         .isNotNull();
@@ -121,7 +127,7 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
 
   @Test
   public void mapDateTimeToString() {
-    final DateTime dateTime = DateTime.now();
+    final ZonedDateTime dateTime = ZonedDateTime.now();
 
     // Try to map to String version.
     final String mappedStringTime = this.mapper.map(dateTime, String.class);

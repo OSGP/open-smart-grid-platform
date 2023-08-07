@@ -9,10 +9,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import java.sql.Date;
+import java.time.ZonedDateTime;
 import java.util.Set;
 import java.util.TimeZone;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -63,7 +63,7 @@ class OsgpSchedulerTest {
     this.osgpScheduler.createAndScheduleJob(TestJob.class, CRON_EXPRESSION);
 
     final CronTrigger cronTrigger = (CronTrigger) this.assertJobDetail(TestJob.class);
-    this.assertCronTrigger(cronTrigger, CRON_EXPRESSION, DateTimeZone.UTC.toTimeZone());
+    this.assertCronTrigger(cronTrigger, CRON_EXPRESSION, TimeZone.getTimeZone("UTC"));
   }
 
   @Test
@@ -98,7 +98,7 @@ class OsgpSchedulerTest {
     final SimpleTrigger simpleTrigger = (SimpleTrigger) this.assertJobDetail(TestJob.class);
 
     assertThat(simpleTrigger.getStartTime())
-        .isCloseTo(new DateTime().plusSeconds(40).toDate(), 100l);
+        .isCloseTo(Date.from(ZonedDateTime.now().plusSeconds(40).toInstant()), 100l);
     assertThat(simpleTrigger.getJobDataMap().size()).isOne();
     assertThat(simpleTrigger.getJobDataMap().get("A")).isEqualTo(1L);
   }
