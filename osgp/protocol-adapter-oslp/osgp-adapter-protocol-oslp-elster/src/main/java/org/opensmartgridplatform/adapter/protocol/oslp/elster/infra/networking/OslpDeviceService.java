@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -1109,11 +1110,15 @@ public class OslpDeviceService implements DeviceService {
             .setActionTime(Oslp.ActionTime.valueOf(schedule.getActionTime().ordinal() + 1));
 
     if (schedule.getStartDay() != null) {
-      scheduleBuilder = scheduleBuilder.setStartDay(schedule.getStartDay().toString(DATE_FORMAT));
+      scheduleBuilder =
+          scheduleBuilder.setStartDay(
+              schedule.getStartDay().format(DateTimeFormatter.ofPattern(DATE_FORMAT)));
     }
 
     if (schedule.getEndDay() != null) {
-      scheduleBuilder = scheduleBuilder.setEndDay(schedule.getEndDay().toString(DATE_FORMAT));
+      scheduleBuilder =
+          scheduleBuilder.setEndDay(
+              schedule.getEndDay().format(DateTimeFormatter.ofPattern(DATE_FORMAT)));
     }
 
     if (StringUtils.isNotBlank(schedule.getTime())) {
@@ -1646,7 +1651,10 @@ public class OslpDeviceService implements DeviceService {
                     org.opensmartgridplatform.oslp.Oslp.TransitionType.class));
     if (deviceRequest.getTransitionTypeContainer().getDateTime() != null) {
       setTransitionBuilder.setTime(
-          deviceRequest.getTransitionTypeContainer().getDateTime().toString(TIME_FORMAT));
+          deviceRequest
+              .getTransitionTypeContainer()
+              .getDateTime()
+              .format(DateTimeFormatter.ofPattern(DATE_FORMAT)));
     }
 
     this.buildAndSignEnvelope(

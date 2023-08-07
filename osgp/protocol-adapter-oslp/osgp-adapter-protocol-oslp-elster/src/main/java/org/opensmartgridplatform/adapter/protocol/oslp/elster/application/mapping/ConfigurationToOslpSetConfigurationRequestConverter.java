@@ -7,7 +7,7 @@ package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.mappi
 import com.google.protobuf.ByteString;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
@@ -273,7 +273,7 @@ public class ConfigurationToOslpSetConfigurationRequestConverter
    * Default value for summer time: 0360100 Default value for summer time:
    * 1060200
    */
-  private String convertSummerTimeWinterTimeDetails(final OffsetDateTime dateTime) {
+  private String convertSummerTimeWinterTimeDetails(final ZonedDateTime dateTime) {
     LOGGER.info("dateTime: {}", dateTime);
 
     final String formattedTimeDetails =

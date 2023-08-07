@@ -5,7 +5,7 @@
 package org.opensmartgridplatform.domain.core.valueobjects;
 
 import java.io.Serializable;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import javax.validation.Valid;
 import org.opensmartgridplatform.domain.core.validation.LightTypeAndConfiguration;
@@ -68,9 +68,9 @@ public class Configuration implements Serializable {
 
   private final Boolean relayRefreshing;
 
-  private final OffsetDateTime summerTimeDetails;
+  private final ZonedDateTime summerTimeDetails;
 
-  private final OffsetDateTime winterTimeDetails;
+  private final ZonedDateTime winterTimeDetails;
 
   private Configuration(final Configuration.Builder builder) {
     this.lightType = builder.lightType;
@@ -203,11 +203,11 @@ public class Configuration implements Serializable {
     return this.relayLinking;
   }
 
-  public OffsetDateTime getSummerTimeDetails() {
+  public ZonedDateTime getSummerTimeDetails() {
     return this.summerTimeDetails;
   }
 
-  public OffsetDateTime getWinterTimeDetails() {
+  public ZonedDateTime getWinterTimeDetails() {
     return this.winterTimeDetails;
   }
 
@@ -237,8 +237,8 @@ public class Configuration implements Serializable {
     private List<Integer> switchingDelays;
     private List<RelayMatrix> relayLinking;
     private Boolean relayRefreshing;
-    private OffsetDateTime summerTimeDetails;
-    private OffsetDateTime winterTimeDetails;
+    private ZonedDateTime summerTimeDetails;
+    private ZonedDateTime winterTimeDetails;
 
     public Builder withLightType(final LightType lightType) {
       this.lightType = lightType;
@@ -367,12 +367,12 @@ public class Configuration implements Serializable {
       return this;
     }
 
-    public Builder withSummerTimeDetails(final OffsetDateTime summerTimeDetails) {
+    public Builder withSummerTimeDetails(final ZonedDateTime summerTimeDetails) {
       this.summerTimeDetails = summerTimeDetails;
       return this;
     }
 
-    public Builder withWinterTimeDetails(final OffsetDateTime winterTimeDetails) {
+    public Builder withWinterTimeDetails(final ZonedDateTime winterTimeDetails) {
       this.winterTimeDetails = winterTimeDetails;
       return this;
     }
