@@ -6,8 +6,8 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventMessagesResponse;
@@ -52,7 +52,7 @@ public class EventMessageDataContainerMappingTest {
   public void testWithFilledList() {
     // build test data
     final EventDto event =
-        new EventDto(new DateTime(), new Integer(1), new Integer(2), "STANDARD_EVENT_LOG");
+        new EventDto(ZonedDateTime.now(), new Integer(1), new Integer(2), "STANDARD_EVENT_LOG");
     event.setEventTypeDto(EventTypeDto.POWER_FAILURE);
 
     final ArrayList<EventDto> events = new ArrayList<>();
