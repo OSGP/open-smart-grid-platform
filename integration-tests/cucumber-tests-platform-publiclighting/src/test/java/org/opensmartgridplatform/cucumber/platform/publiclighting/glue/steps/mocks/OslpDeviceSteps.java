@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.text.ParseException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
@@ -640,16 +640,14 @@ public class OslpDeviceSteps {
           expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_STARTDAY))) {
         final String startDay =
             getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_STARTDAY)
-                .toDateTime(DateTimeZone.UTC)
-                .toString("yyyyMMdd");
+                .format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
         assertThat(schedule.getStartDay()).isEqualTo(startDay);
       }
       if (StringUtils.isNotBlank(expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_ENDDAY))) {
         final String endDay =
             getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_ENDDAY)
-                .toDateTime(DateTimeZone.UTC)
-                .toString("yyyyMMdd");
+                .format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
         assertThat(schedule.getEndDay()).isEqualTo(endDay);
       }

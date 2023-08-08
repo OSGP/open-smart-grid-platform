@@ -51,10 +51,6 @@ SPDX-License-Identifier: Apache-2.0
       <artifactId>junit-jupiter-engine</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
 
     <!-- Cucumber Framework -->
     <dependency>
