@@ -58,7 +58,8 @@ public class RetrieveReceivedEventNotifications {
       final Event event =
           new Event(
               deviceIdentification,
-              Date.from(Objects.requireNonNull(getDateTime(PlatformDefaults.TIMESTAMP)).toInstant()),
+              Date.from(
+                  Objects.requireNonNull(getDateTime(PlatformDefaults.TIMESTAMP)).toInstant()),
               eventType,
               PlatformDefaults.DEFAULT_EVENT_DESCRIPTION,
               PlatformDefaults.DEFAULT_INDEX);
@@ -74,8 +75,11 @@ public class RetrieveReceivedEventNotifications {
       final Event event =
           new Event(
               deviceIdentification,
-              Date.from(Objects.requireNonNull(
-                  getDateTime(getString(data, PlatformKeys.TIMESTAMP, PlatformDefaults.TIMESTAMP))).toInstant()),
+              Date.from(
+                  Objects.requireNonNull(
+                          getDateTime(
+                              getString(data, PlatformKeys.TIMESTAMP, PlatformDefaults.TIMESTAMP)))
+                      .toInstant()),
               getEnum(data, PlatformKeys.EVENT_TYPE, EventType.class, EventType.ALARM_NOTIFICATION),
               getString(
                   data, PlatformKeys.KEY_DESCRIPTION, PlatformDefaults.DEFAULT_EVENT_DESCRIPTION),

@@ -56,7 +56,8 @@ public class Iec61850LoadActualPowerCommand implements RtuReadCommand<Measuremen
         this.index,
         DataAttribute.ACTUAL_POWER.getDescription(),
         QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
-        ZonedDateTime.ofInstant(containingNode.getDate(SubDataAttribute.TIME).toInstant(), ZoneId.of("UTC")),
+        ZonedDateTime.ofInstant(
+            containingNode.getDate(SubDataAttribute.TIME).toInstant(), ZoneId.of("UTC")),
         containingNode
             .getChild(SubDataAttribute.MAGNITUDE)
             .getFloat(SubDataAttribute.FLOAT)

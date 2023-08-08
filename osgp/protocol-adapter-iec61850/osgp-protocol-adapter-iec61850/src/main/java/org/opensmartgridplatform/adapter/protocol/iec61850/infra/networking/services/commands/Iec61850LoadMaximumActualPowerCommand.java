@@ -60,7 +60,8 @@ public class Iec61850LoadMaximumActualPowerCommand implements RtuReadCommand<Mea
         this.index,
         DataAttribute.MAX_ACTUAL_POWER.getDescription(),
         QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
-        ZonedDateTime.ofInstant(containingNode.getDate(SubDataAttribute.TIME).toInstant(), ZoneId.of("UTC")),
+        ZonedDateTime.ofInstant(
+            containingNode.getDate(SubDataAttribute.TIME).toInstant(), ZoneId.of("UTC")),
         containingNode
             .getChild(SubDataAttribute.MAGNITUDE)
             .getFloat(SubDataAttribute.FLOAT)

@@ -69,7 +69,8 @@ public class Iec61850AlarmCommand implements RtuReadCommand<MeasurementDto> {
         1,
         map.get(this.alarmIndex).getDescription(),
         QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
-        ZonedDateTime.ofInstant(containingNode.getDate(SubDataAttribute.TIME).toInstant(), ZoneId.of("UTC")),
+        ZonedDateTime.ofInstant(
+            containingNode.getDate(SubDataAttribute.TIME).toInstant(), ZoneId.of("UTC")),
         this.translateStateValue(containingNode));
   }
 
