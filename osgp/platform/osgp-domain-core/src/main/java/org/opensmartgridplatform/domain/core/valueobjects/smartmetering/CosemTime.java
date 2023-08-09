@@ -5,7 +5,7 @@
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import org.joda.time.LocalTime;
+import java.time.LocalTime;
 
 public class CosemTime implements Serializable, Comparable<CosemTime> {
 
@@ -15,6 +15,8 @@ public class CosemTime implements Serializable, Comparable<CosemTime> {
   public static final int MINUTE_NOT_SPECIFIED = 0xFF;
   public static final int SECOND_NOT_SPECIFIED = 0xFF;
   public static final int HUNDREDTHS_NOT_SPECIFIED = 0xFF;
+
+  public static final int NANO_TO_HUNDREDTHS = 10000000;
 
   private final int hour;
   private final int minute;
@@ -38,11 +40,7 @@ public class CosemTime implements Serializable, Comparable<CosemTime> {
   }
 
   public CosemTime(final LocalTime time) {
-    this(
-        time.getHourOfDay(),
-        time.getMinuteOfHour(),
-        time.getSecondOfMinute(),
-        time.getMillisOfSecond() / 10);
+    this(time.getHour(), time.getMinute(), time.getSecond(), time.getNano() / NANO_TO_HUNDREDTHS);
   }
 
   public CosemTime(final CosemTime cosemTime) {
@@ -193,12 +191,12 @@ public class CosemTime implements Serializable, Comparable<CosemTime> {
       return null;
     }
     if (SECOND_NOT_SPECIFIED == this.second) {
-      return new LocalTime(this.hour, this.minute);
+      return LocalTime.of(this.hour, this.minute);
     }
     if (HUNDREDTHS_NOT_SPECIFIED == this.hundredths) {
-      return new LocalTime(this.hour, this.minute, this.second);
+      return LocalTime.of(this.hour, this.minute, this.second);
     }
-    return new LocalTime(this.hour, this.minute, this.second, this.hundredths * 10);
+    return LocalTime.of(this.hour, this.minute, this.second, this.hundredths * NANO_TO_HUNDREDTHS);
   }
 
   public boolean isHourNotSpecified() {

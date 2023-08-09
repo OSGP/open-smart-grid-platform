@@ -5,10 +5,12 @@
 package org.opensmartgridplatform.adapter.domain.core.application.tasks;
 
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.core.application.services.TransactionalDeviceLogItemService;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.opensmartgridplatform.shared.utils.FileZipper;
@@ -61,7 +63,7 @@ public class DeviceMessageCleanupJob implements Job {
     }
 
     LOGGER.info("Quartz triggered cleanup of database - device message records.");
-    final DateTime start = DateTime.now();
+    final ZonedDateTime start = ZonedDateTime.now();
 
     try {
       final Date retention = this.calculateRetentionDate();
@@ -79,17 +81,18 @@ public class DeviceMessageCleanupJob implements Job {
           "Exception during CSV file creation, compression or device message deletion.", e);
     }
 
-    final DateTime end = DateTime.now();
+    final ZonedDateTime end = ZonedDateTime.now();
     LOGGER.info(
         "Start: {}, end: {}, duration: {} milliseconds.",
         start,
         end,
-        end.getMillis() - start.getMillis());
+        end.toInstant().toEpochMilli() - start.toInstant().toEpochMilli());
   }
 
   private Date calculateRetentionDate() {
     final Date date =
-        DateTime.now().minusMonths(this.deviceMessageRetentionPeriodInMonths).toDate();
+        Date.from(
+            ZonedDateTime.now().minusMonths(this.deviceMessageRetentionPeriodInMonths).toInstant());
     LOGGER.info(
         "Determined date: {} based on device message retention period in months: {}.",
         date,
@@ -186,7 +189,8 @@ public class DeviceMessageCleanupJob implements Job {
     }
 
     private static String formatDate(final Date date) {
-      return new DateTime(date).toString(DATE_TIME_FORMAT);
+      return ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
+          .format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
     }
   }
 }

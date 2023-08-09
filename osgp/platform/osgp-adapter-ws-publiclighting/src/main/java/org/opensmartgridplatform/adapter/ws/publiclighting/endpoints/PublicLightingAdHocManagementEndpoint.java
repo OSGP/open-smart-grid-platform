@@ -4,7 +4,6 @@
 
 package org.opensmartgridplatform.adapter.ws.publiclighting.endpoints;
 
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -413,8 +412,7 @@ public class PublicLightingAdHocManagementEndpoint {
       if (request.getTime() != null) {
         dateTime =
             ZonedDateTime.ofInstant(
-                Instant.ofEpochMilli(request.getTime().toGregorianCalendar().getTime().getTime()),
-                ZoneId.systemDefault());
+                request.getTime().toGregorianCalendar().toInstant(), ZoneId.systemDefault());
       }
       transitionMessageDataContainer.setDateTime(dateTime);
 

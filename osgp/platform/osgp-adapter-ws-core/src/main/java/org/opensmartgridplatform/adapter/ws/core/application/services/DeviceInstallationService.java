@@ -4,11 +4,12 @@
 
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateMidnight;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
@@ -319,7 +320,13 @@ public class DeviceInstallationService {
     final Organisation organisation =
         this.domainHelperService.findOrganisation(organisationIdentification);
 
-    final Date fromDate = new DateMidnight().minusDays(this.recentDevicesPeriod).toDate();
+    final Date fromDate =
+        Date.from(
+            ZonedDateTime.now()
+                .toLocalDate()
+                .atStartOfDay(ZoneId.systemDefault())
+                .minusDays(this.recentDevicesPeriod)
+                .toInstant());
     return this.deviceRepository.findRecentDevices(organisation, fromDate);
   }
 

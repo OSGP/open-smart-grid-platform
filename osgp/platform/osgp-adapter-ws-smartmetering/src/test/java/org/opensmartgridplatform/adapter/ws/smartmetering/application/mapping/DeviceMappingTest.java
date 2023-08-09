@@ -6,12 +6,13 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.Device;
@@ -63,12 +64,9 @@ class DeviceMappingTest {
     assertThat(smartMeteringDevice.isWithListSupported()).isEqualTo(IS_ACTIVE);
     assertThat(smartMeteringDevice.getChallengeLength()).isEqualTo(CHALLENGE_LENGTH);
 
-    // convert a Date object to a joda DateTime object, because the
-    // getYear/getMonth and getDay methods in Date are deprecated and give
-    // wrong results
-    final DateTime dateTime = this.createDateTime(this.deliveryDateSmartMeteringDevice);
+    final ZonedDateTime dateTime = this.createDateTime(this.deliveryDateSmartMeteringDevice);
     assertThat(dateTime.getYear()).isEqualTo(this.deliveryDateDevice.getYear());
-    assertThat(dateTime.getMonthOfYear()).isEqualTo(this.deliveryDateDevice.getMonth());
+    assertThat(dateTime.getMonthValue()).isEqualTo(this.deliveryDateDevice.getMonth());
     assertThat(dateTime.getDayOfMonth()).isEqualTo(this.deliveryDateDevice.getDay());
   }
 
@@ -92,20 +90,17 @@ class DeviceMappingTest {
     assertThat(device.getGlobalEncryptionUnicastKey()).isEqualTo(KEY);
     assertThat(device.getAuthenticationKey()).isEqualTo(KEY);
 
-    // convert a Date object to a joda DateTime object, because the
-    // getYear/getMonth and getDay methods in Date are deprecated and give
-    // wrong results
-    final DateTime dateTime = this.createDateTime(this.deliveryDateSmartMeteringDevice);
+    final ZonedDateTime dateTime = this.createDateTime(this.deliveryDateSmartMeteringDevice);
     assertThat(device.getDeliveryDate().getYear()).isEqualTo(dateTime.getYear());
-    assertThat(device.getDeliveryDate().getMonth()).isEqualTo(dateTime.getMonthOfYear());
+    assertThat(device.getDeliveryDate().getMonth()).isEqualTo(dateTime.getMonthValue());
     assertThat(device.getDeliveryDate().getDay()).isEqualTo(dateTime.getDayOfMonth());
   }
 
   /**
    * Method to convert a Date to a DateTime object so it can be used for assertEquals statements.
    */
-  private DateTime createDateTime(final Date date) {
-    return new DateTime(date);
+  private ZonedDateTime createDateTime(final Date date) {
+    return ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
   }
 
   /** Method to create an instance of Device. */

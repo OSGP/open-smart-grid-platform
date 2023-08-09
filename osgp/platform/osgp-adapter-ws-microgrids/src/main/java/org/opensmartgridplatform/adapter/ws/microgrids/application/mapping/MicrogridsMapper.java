@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.adapter.ws.microgrids.application.mapping;
 
+import java.time.ZonedDateTime;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
 import ma.glasnost.orika.impl.ConfigurableMapper;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.GetDataRequest;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.GetDataResponse;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.GetDataSystemIdentifier;
@@ -29,7 +29,9 @@ public class MicrogridsMapper extends ConfigurableMapper {
 
   @Override
   public void configure(final MapperFactory mapperFactory) {
-    mapperFactory.getConverterFactory().registerConverter(new PassThroughConverter(DateTime.class));
+    mapperFactory
+        .getConverterFactory()
+        .registerConverter(new PassThroughConverter(ZonedDateTime.class));
     mapperFactory
         .getConverterFactory()
         .registerConverter(new XMLGregorianCalendarToDateTimeConverter());

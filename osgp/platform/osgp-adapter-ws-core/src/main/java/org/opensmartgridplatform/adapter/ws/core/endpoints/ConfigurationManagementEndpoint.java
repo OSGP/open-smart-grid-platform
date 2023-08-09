@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.ws.core.endpoints;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import javax.validation.ConstraintViolationException;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.ConfigurationManagementMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.ConfigurationManagementService;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
@@ -87,11 +87,11 @@ public class ConfigurationManagementEndpoint extends CoreEndpoint {
       // Get the request parameters, make sure that they are in UTC.
       // Maybe add an adapter to the service, so that all date-time are
       // converted to UTC automatically.
-      final DateTime scheduleTime =
+      final ZonedDateTime scheduleTime =
           request.getScheduledTime() == null
               ? null
-              : new DateTime(request.getScheduledTime().toGregorianCalendar())
-                  .toDateTime(DateTimeZone.UTC);
+              : ZonedDateTime.ofInstant(
+                  request.getScheduledTime().toGregorianCalendar().toInstant(), ZoneId.of("UTC"));
 
       final Configuration configuration =
           this.configurationManagementMapper.map(request.getConfiguration(), Configuration.class);
