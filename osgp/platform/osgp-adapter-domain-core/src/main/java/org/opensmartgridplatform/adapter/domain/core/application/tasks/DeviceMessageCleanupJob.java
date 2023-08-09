@@ -5,9 +5,8 @@
 package org.opensmartgridplatform.adapter.domain.core.application.tasks;
 
 import java.io.IOException;
-import java.time.Instant;
+import java.time.Period;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -67,10 +66,10 @@ public class DeviceMessageCleanupJob implements Job {
     final ZonedDateTime start = ZonedDateTime.now();
 
     try {
-      final Instant retention = this.calculateRetentionDate();
+      final ZonedDateTime retention = this.calculateRetentionDate();
       final List<DeviceLogItem> oldDeviceMessages =
           this.transactionalDeviceLogItemService.findDeviceLogItemsBeforeDate(
-              Date.from(retention), this.deviceMessagePageSize);
+              Date.from(retention.toInstant()), this.deviceMessagePageSize);
       if (!oldDeviceMessages.isEmpty()) {
         this.saveDeviceMessagesToCsvFile(oldDeviceMessages);
 
@@ -90,9 +89,9 @@ public class DeviceMessageCleanupJob implements Job {
         JavaTimeHelpers.getMillisFrom(end) - JavaTimeHelpers.getMillisFrom(start));
   }
 
-  private Instant calculateRetentionDate() {
-    final Instant date =
-        Instant.now().minus(this.deviceMessageRetentionPeriodInMonths, ChronoUnit.MONTHS);
+  private ZonedDateTime calculateRetentionDate() {
+    final ZonedDateTime date =
+        ZonedDateTime.now().minus(Period.of(0, this.deviceMessageRetentionPeriodInMonths, 0));
     LOGGER.info(
         "Determined date: {} based on device message retention period in months: {}.",
         date,
