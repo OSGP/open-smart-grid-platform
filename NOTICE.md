@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # NOTICES AND INFORMATION
 
-This software makes use of material from third parties.
+This software incorporates third-party libraries. Special attention is required for the following third-party libraries:
 
 ## Notice for OpenMUC jDLMS Library
 When you wish to use GXF to communicate with Smart Meters that are compatible with DLMS/COSEM, you will need the [DLMS Protocol Adapter](https://github.com/OSGP/open-smart-grid-platform/tree/development/osgp/protocol-adapter-dlms). This adapter relies on the OpenMUC jDLMS Library to function properly.  
