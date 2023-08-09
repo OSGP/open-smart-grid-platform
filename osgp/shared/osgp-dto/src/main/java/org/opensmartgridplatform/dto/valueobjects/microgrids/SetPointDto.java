@@ -5,24 +5,24 @@
 package org.opensmartgridplatform.dto.valueobjects.microgrids;
 
 import java.io.Serializable;
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 
 public class SetPointDto implements Serializable {
 
   private static final long serialVersionUID = -8242555524743018337L;
 
-  private int id;
-  private String node;
-  private double value;
-  private DateTime startTime;
-  private DateTime endTime;
+  private final int id;
+  private final String node;
+  private final double value;
+  private final ZonedDateTime startTime;
+  private final ZonedDateTime endTime;
 
   public SetPointDto(
       final int id,
       final String node,
       final double value,
-      final DateTime startTime,
-      final DateTime endTime) {
+      final ZonedDateTime startTime,
+      final ZonedDateTime endTime) {
     this.id = id;
     this.node = node;
     this.value = value;
@@ -42,11 +42,11 @@ public class SetPointDto implements Serializable {
     return this.value;
   }
 
-  public DateTime getStartTime() {
+  public ZonedDateTime getStartTime() {
     return this.startTime;
   }
 
-  public DateTime getEndTime() {
+  public ZonedDateTime getEndTime() {
     return this.endTime;
   }
 }

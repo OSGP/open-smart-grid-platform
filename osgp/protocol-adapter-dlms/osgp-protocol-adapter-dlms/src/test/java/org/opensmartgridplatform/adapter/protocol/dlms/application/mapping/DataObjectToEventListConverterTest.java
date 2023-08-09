@@ -7,11 +7,11 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
@@ -72,8 +72,8 @@ class DataObjectToEventListConverterTest {
   void testEventsWithCodeAndTimeStamp() throws ProtocolAdapterException {
 
     // GIVEN
-    final DateTime dateTime1 = new DateTime(2021, 9, 16, 10, 35, 10, DateTimeZone.UTC);
-    final DateTime dateTime2 = new DateTime(2021, 9, 17, 11, 22, 45, DateTimeZone.UTC);
+    final ZonedDateTime dateTime1 = ZonedDateTime.of(2021, 9, 16, 10, 35, 10, 0, ZoneId.of("UTC"));
+    final ZonedDateTime dateTime2 = ZonedDateTime.of(2021, 9, 17, 11, 22, 45, 0, ZoneId.of("UTC"));
 
     final DataObject eventDataObject1 = this.createEventDataObject(dateTime1, 1);
     final DataObject eventDataObject2 = this.createEventDataObject(dateTime2, 2);
@@ -99,8 +99,8 @@ class DataObjectToEventListConverterTest {
   void testEventsWithCodeTimeStampAndCounter() throws ProtocolAdapterException {
 
     // GIVEN
-    final DateTime dateTime1 = new DateTime(2021, 9, 16, 10, 35, 10, DateTimeZone.UTC);
-    final DateTime dateTime2 = new DateTime(2021, 9, 17, 11, 22, 45, DateTimeZone.UTC);
+    final ZonedDateTime dateTime1 = ZonedDateTime.of(2021, 9, 16, 10, 35, 10, 0, ZoneId.of("UTC"));
+    final ZonedDateTime dateTime2 = ZonedDateTime.of(2021, 9, 17, 11, 22, 45, 0, ZoneId.of("UTC"));
     final DataObject eventDataObject1 = this.createEventDataObject(dateTime1, 1, 11);
     final DataObject eventDataObject2 = this.createEventDataObject(dateTime2, 2, 12);
 
@@ -125,8 +125,8 @@ class DataObjectToEventListConverterTest {
   void testEventsWithEventDetails() throws ProtocolAdapterException {
 
     // GIVEN
-    final DateTime dateTime1 = new DateTime(2021, 9, 16, 10, 35, 10, DateTimeZone.UTC);
-    final DateTime dateTime2 = new DateTime(2021, 9, 17, 11, 22, 45, DateTimeZone.UTC);
+    final ZonedDateTime dateTime1 = ZonedDateTime.of(2021, 9, 16, 10, 35, 10, 0, ZoneId.of("UTC"));
+    final ZonedDateTime dateTime2 = ZonedDateTime.of(2021, 9, 17, 11, 22, 45, 0, ZoneId.of("UTC"));
     final DataObject eventDataObject1 = this.createEventDataObject(dateTime1, 1, 11, 21);
     final DataObject eventDataObject2 = this.createEventDataObject(dateTime2, 2, 12, 22);
     final String MAGNITUDE = "magnitude";
@@ -155,14 +155,14 @@ class DataObjectToEventListConverterTest {
         .containsExactly(expectedEvent1, expectedEvent2);
   }
 
-  private DataObject createEventDataObject(final DateTime dateTime, final int number) {
+  private DataObject createEventDataObject(final ZonedDateTime dateTime, final int number) {
     final DataObject eventCode = this.getDataObject(number);
     final DataObject timeStamp = this.dlmsHelper.asDataObject(dateTime);
     return DataObject.newStructureData(Arrays.asList(timeStamp, eventCode));
   }
 
   private DataObject createEventDataObject(
-      final DateTime dateTime, final int number, final int intCounter) {
+      final ZonedDateTime dateTime, final int number, final int intCounter) {
     final DataObject eventCode = this.getDataObject(number);
     final DataObject timeStamp = this.dlmsHelper.asDataObject(dateTime);
     final DataObject counter = this.getDataObject(intCounter);
@@ -170,7 +170,10 @@ class DataObjectToEventListConverterTest {
   }
 
   private DataObject createEventDataObject(
-      final DateTime dateTime, final int number, final int intMagnitude, final int intDuration) {
+      final ZonedDateTime dateTime,
+      final int number,
+      final int intMagnitude,
+      final int intDuration) {
     final DataObject eventCode = this.getDataObject(number);
     final DataObject timeStamp = this.dlmsHelper.asDataObject(dateTime);
     final DataObject magnitude = this.getDataObject(intMagnitude);

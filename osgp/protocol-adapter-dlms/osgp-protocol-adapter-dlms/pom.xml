@@ -219,12 +219,6 @@ SPDX-License-Identifier: Apache-2.0
       <artifactId>wss4j</artifactId>
     </dependency>
 
-    <!-- Joda Time (Date/Time util) -->
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
-
     <!-- Hibernate -->
     <dependency>
       <groupId>org.hibernate</groupId>

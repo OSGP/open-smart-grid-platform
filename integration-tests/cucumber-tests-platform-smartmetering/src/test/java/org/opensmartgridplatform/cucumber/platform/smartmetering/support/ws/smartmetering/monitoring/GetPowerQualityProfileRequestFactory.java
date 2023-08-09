@@ -7,8 +7,9 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.sma
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getDate;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.Map;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObjectDefinitions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest;
@@ -26,8 +27,10 @@ public class GetPowerQualityProfileRequestFactory {
       final Map<String, String> requestParameters) {
     final GetPowerQualityProfileRequest getPowerQualityProfileRequestData =
         new GetPowerQualityProfileRequest();
-    final DateTime beginDate = dateFromParameterMap(requestParameters, PlatformKeys.KEY_BEGIN_DATE);
-    final DateTime endDate = dateFromParameterMap(requestParameters, PlatformKeys.KEY_END_DATE);
+    final ZonedDateTime beginDate =
+        dateFromParameterMap(requestParameters, PlatformKeys.KEY_BEGIN_DATE);
+    final ZonedDateTime endDate =
+        dateFromParameterMap(requestParameters, PlatformKeys.KEY_END_DATE);
     final String profileType =
         getString(requestParameters, PlatformKeys.KEY_POWER_QUALITY_PROFILE_TYPE);
     final CaptureObjectDefinitions captureObjecDefinitions =
@@ -36,18 +39,18 @@ public class GetPowerQualityProfileRequestFactory {
     getPowerQualityProfileRequestData.setDeviceIdentification(
         requestParameters.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
     getPowerQualityProfileRequestData.setBeginDate(
-        DateConverter.createXMLGregorianCalendar(beginDate.toDate()));
+        DateConverter.createXMLGregorianCalendar(Date.from(beginDate.toInstant())));
     getPowerQualityProfileRequestData.setEndDate(
-        DateConverter.createXMLGregorianCalendar(endDate.toDate()));
+        DateConverter.createXMLGregorianCalendar(Date.from(endDate.toInstant())));
     getPowerQualityProfileRequestData.setProfileType(profileType);
     getPowerQualityProfileRequestData.setSelectedValues(captureObjecDefinitions);
 
     return getPowerQualityProfileRequestData;
   }
 
-  private static DateTime dateFromParameterMap(
+  private static ZonedDateTime dateFromParameterMap(
       final Map<String, String> requestParameters, final String key) {
-    return getDate(requestParameters, key, new DateTime());
+    return getDate(requestParameters, key, ZonedDateTime.now());
   }
 
   public static GetPowerQualityProfileAsyncRequest fromScenarioContext() {

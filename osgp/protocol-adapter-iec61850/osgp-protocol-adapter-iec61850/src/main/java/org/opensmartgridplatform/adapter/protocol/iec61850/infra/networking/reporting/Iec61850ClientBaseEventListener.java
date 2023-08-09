@@ -9,9 +9,11 @@ import com.beanit.openiec61850.ClientEventListener;
 import com.beanit.openiec61850.HexConverter;
 import com.beanit.openiec61850.Report;
 import java.nio.charset.Charset;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +95,10 @@ public abstract class Iec61850ClientBaseEventListener implements ClientEventList
         .append(System.lineSeparator());
     if (report.getTimeOfEntry() != null) {
       sb.append("\t                   \t(")
-          .append(new DateTime(report.getTimeOfEntry().getTimestampValue()))
+          .append(
+              ZonedDateTime.ofInstant(
+                  Instant.ofEpochMilli(report.getTimeOfEntry().getTimestampValue()),
+                  ZoneId.systemDefault()))
           .append(')')
           .append(System.lineSeparator());
     }

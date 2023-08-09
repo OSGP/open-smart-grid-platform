@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
+import java.time.ZonedDateTime;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.Configuration;
 import org.opensmartgridplatform.domain.core.valueobjects.DaliConfiguration;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFixedIp;
@@ -51,8 +51,10 @@ public class ConfigurationConverter
         .withSwitchingDelays(source.getSwitchingDelays())
         .withRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinking(), RelayMatrix.class))
         .withRelayRefreshing(source.isRelayRefreshing())
-        .withSummerTimeDetails(this.mapperFacade.map(source.getSummerTimeDetails(), DateTime.class))
-        .withWinterTimeDetails(this.mapperFacade.map(source.getWinterTimeDetails(), DateTime.class))
+        .withSummerTimeDetails(
+            this.mapperFacade.map(source.getSummerTimeDetails(), ZonedDateTime.class))
+        .withWinterTimeDetails(
+            this.mapperFacade.map(source.getWinterTimeDetails(), ZonedDateTime.class))
         .build();
   }
 }

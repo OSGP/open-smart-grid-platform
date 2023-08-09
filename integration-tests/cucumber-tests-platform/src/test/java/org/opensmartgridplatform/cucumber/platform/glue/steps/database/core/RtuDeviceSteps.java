@@ -8,8 +8,8 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_LAST_COMMUNICATION_TIME;
 
 import io.cucumber.java.en.Given;
+import java.time.ZonedDateTime;
 import java.util.Map;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -40,7 +40,7 @@ public class RtuDeviceSteps extends BaseDeviceSteps {
         this.domainInfoRepository.findByDomainAndDomainVersion(
             getString(settings, PlatformKeys.KEY_DOMAIN, PlatformDefaults.DOMAIN),
             getString(settings, PlatformKeys.KEY_DOMAIN_VERSION, PlatformDefaults.DOMAIN_VERSION)));
-    rtuDevice.messageReceived(this.getLastCommunicationTime(settings).toDate().toInstant());
+    rtuDevice.messageReceived(this.getLastCommunicationTime(settings).toInstant());
     return this.rtuDeviceRepository.save(rtuDevice);
   }
 
@@ -52,10 +52,10 @@ public class RtuDeviceSteps extends BaseDeviceSteps {
         settings);
   }
 
-  private DateTime getLastCommunicationTime(final Map<String, String> settings) {
+  private ZonedDateTime getLastCommunicationTime(final Map<String, String> settings) {
     if (settings.containsKey(KEY_LAST_COMMUNICATION_TIME)) {
       return DateTimeHelper.getDateTime(settings.get(KEY_LAST_COMMUNICATION_TIME));
     }
-    return DateTime.now();
+    return ZonedDateTime.now();
   }
 }

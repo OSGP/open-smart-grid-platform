@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.ws.tariffswitching.endpoints;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import javax.validation.ConstraintViolationException;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -83,11 +83,11 @@ public class TariffSwitchingScheduleManagementEndpoint {
     // Get the request parameters, make sure that they are in UTC.
     // Maybe add an adapter to the service, so that all datetime are
     // converted to utc automatically.
-    final DateTime scheduleTime =
+    final ZonedDateTime scheduleTime =
         request.getScheduledTime() == null
             ? null
-            : new DateTime(request.getScheduledTime().toGregorianCalendar())
-                .toDateTime(DateTimeZone.UTC);
+            : ZonedDateTime.ofInstant(
+                request.getScheduledTime().toGregorianCalendar().toInstant(), ZoneId.of("UTC"));
 
     final SetScheduleAsyncResponse response = new SetScheduleAsyncResponse();
 

@@ -6,8 +6,9 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.ser
 
 import com.beanit.openiec61850.Fc;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -92,8 +93,11 @@ public class Iec61850UpdateSslCertificateCommand {
             iec61850Client.readNodeDataValues(
                 deviceConnection.getConnection().getClientAssociation(), clock.getFcmodelNode());
 
-            final DateTime deviceTime = new DateTime(clock.getDate(SubDataAttribute.CURRENT_TIME));
-            final Date oneMinuteFromNow = deviceTime.plusMinutes(1).toDate();
+            final ZonedDateTime deviceTime =
+                ZonedDateTime.ofInstant(
+                    clock.getDate(SubDataAttribute.CURRENT_TIME).toInstant(),
+                    ZoneId.systemDefault());
+            final Date oneMinuteFromNow = Date.from(deviceTime.plusMinutes(1).toInstant());
 
             LOGGER.info("Updating the certificate download start time to: {}", oneMinuteFromNow);
             sslConfiguration.writeDate(SubDataAttribute.START_TIME, oneMinuteFromNow);

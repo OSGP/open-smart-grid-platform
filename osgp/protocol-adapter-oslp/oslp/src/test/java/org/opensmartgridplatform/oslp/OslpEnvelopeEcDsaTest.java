@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.spec.InvalidKeySpecException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import org.apache.commons.lang3.ArrayUtils;
-import org.joda.time.Instant;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.opensmartgridplatform.oslp.Oslp.RegisterDeviceResponse;
@@ -46,7 +46,8 @@ public class OslpEnvelopeEcDsaTest {
   private static final String SIGNATURE = "SHA256withECDSA";
   private static final String PROVIDER = "SunEC";
 
-  private static final DateTimeFormatter FORMAT = DateTimeFormat.forPattern("yyyyMMddHHmmss");
+  private static final DateTimeFormatter FORMAT =
+      DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneId.of("UTC"));
 
   /**
    * Valid must pass when decryption succeeds using correct keys
@@ -289,12 +290,13 @@ public class OslpEnvelopeEcDsaTest {
     // Both random numbers should be between 0 and 65535 (16 bit value).
     final int randomDevice = 53568;
     final int randomPlatform = 17643;
-
+    final String s = FORMAT.format(Instant.now());
+    System.out.println(s);
     return Message.newBuilder()
         .setRegisterDeviceResponse(
             RegisterDeviceResponse.newBuilder()
                 .setStatus(Oslp.Status.OK)
-                .setCurrentTime(Instant.now().toString(FORMAT))
+                .setCurrentTime(FORMAT.format(Instant.now()))
                 .setRandomDevice(randomDevice)
                 .setRandomPlatform(randomPlatform))
         .build();

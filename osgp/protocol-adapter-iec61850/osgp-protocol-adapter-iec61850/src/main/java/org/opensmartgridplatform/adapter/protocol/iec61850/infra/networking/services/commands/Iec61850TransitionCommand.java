@@ -6,7 +6,7 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.ser
 
 import com.beanit.openiec61850.BdaBoolean;
 import com.beanit.openiec61850.Fc;
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -27,7 +27,7 @@ public class Iec61850TransitionCommand {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850TransitionCommand.class);
 
-  private DeviceMessageLoggingService loggingService;
+  private final DeviceMessageLoggingService loggingService;
 
   public Iec61850TransitionCommand(final DeviceMessageLoggingService loggingService) {
     this.loggingService = loggingService;
@@ -43,7 +43,7 @@ public class Iec61850TransitionCommand {
         "device: {}, transition: {}", deviceConnection.getDeviceIdentification(), transitionType);
     final boolean controlValueForTransition = transitionType.equals(TransitionTypeDto.DAY_NIGHT);
 
-    final DateTime dateTime = transitionMessageDataContainer.getDateTime();
+    final ZonedDateTime dateTime = transitionMessageDataContainer.getDateTime();
     if (dateTime != null) {
       LOGGER.warn(
           "device: {}, setting date/time {} for transition {} not supported",

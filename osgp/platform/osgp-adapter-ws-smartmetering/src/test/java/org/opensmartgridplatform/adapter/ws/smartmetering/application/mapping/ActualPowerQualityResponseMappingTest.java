@@ -8,13 +8,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.xml.datatype.XMLGregorianCalendar;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityData;
@@ -152,7 +152,7 @@ public class ActualPowerQualityResponseMappingTest {
 
   private List<PowerQualityValue> makePowerQualityValues() {
     return this.makePowerQualityValue(
-        new DateTime(2017, 1, 1, 1, 0, 0, DateTimeZone.UTC).toDate(),
+        Date.from(ZonedDateTime.of(2017, 1, 1, 1, 0, 0, 0, ZoneId.of("UTC")).toInstant()),
         "test1",
         new BigDecimal(1.1d),
         111L);

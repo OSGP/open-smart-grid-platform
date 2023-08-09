@@ -7,11 +7,11 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodic
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -81,10 +81,11 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
               ctx.bufferedObjects.get(clockIndex), "Clock from " + queryPeriodType + " buffer");
     }
 
-    final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
+    final ZonedDateTime bufferedDateTime =
+        cosemDateTime == null ? null : cosemDateTime.asDateTime();
 
     if (bufferedDateTime != null) {
-      logTime = bufferedDateTime.toDate();
+      logTime = Date.from(bufferedDateTime.toInstant());
     } else {
       logTime =
           this.calculateIntervalTimeBasedOnPreviousValue(

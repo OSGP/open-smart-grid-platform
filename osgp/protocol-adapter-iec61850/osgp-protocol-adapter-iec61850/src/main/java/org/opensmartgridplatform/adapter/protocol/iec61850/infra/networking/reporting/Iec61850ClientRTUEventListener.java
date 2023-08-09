@@ -9,13 +9,15 @@ import com.beanit.openiec61850.Report;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.config.BeanUtil;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.ReportingService;
@@ -41,7 +43,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
   private static final Map<String, Class<? extends Iec61850ReportHandler>> REPORT_HANDLERS_MAP =
       new HashMap<>();
 
-  private ReportingService reportingService;
+  private final ReportingService reportingService;
 
   static {
     REPORT_HANDLERS_MAP.put("RTU", Iec61850RtuReportHandler.class);
@@ -81,7 +83,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
       try {
         final Constructor<?> ctor = clazz.getConstructor(int.class);
         return (Iec61850ReportHandler) ctor.newInstance(systemId);
-      } catch (InstantiationException
+      } catch (final InstantiationException
           | IllegalAccessException
           | IllegalArgumentException
           | InvocationTargetException
@@ -104,10 +106,12 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
   @Override
   public void newReport(final Report report) {
 
-    final DateTime timeOfEntry =
+    final ZonedDateTime timeOfEntry =
         report.getTimeOfEntry() == null
             ? null
-            : new DateTime(report.getTimeOfEntry().getTimestampValue());
+            : ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(report.getTimeOfEntry().getTimestampValue()),
+                ZoneId.systemDefault());
 
     final String reportDescription = this.getReportDescription(report, timeOfEntry);
 
@@ -136,7 +140,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     }
   }
 
-  private String getReportDescription(final Report report, final DateTime timeOfEntry) {
+  private String getReportDescription(final Report report, final ZonedDateTime timeOfEntry) {
     return String.format(
         "device: %s, reportId: %s, timeOfEntry: %s, sqNum: %s%s%s",
         this.deviceIdentification,
@@ -168,7 +172,9 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     final ReportDto reportDto =
         new ReportDto(
             report.getSqNum(),
-            new DateTime(report.getTimeOfEntry().getTimestampValue()),
+            ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(report.getTimeOfEntry().getTimestampValue()),
+                ZoneId.systemDefault()),
             report.getRptId());
 
     this.deviceManagementService.sendMeasurements(

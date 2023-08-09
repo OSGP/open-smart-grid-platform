@@ -5,7 +5,7 @@
 package org.opensmartgridplatform.domain.microgrids.valueobjects;
 
 import java.io.Serializable;
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 
 public class SetPoint implements Serializable {
 
@@ -14,15 +14,15 @@ public class SetPoint implements Serializable {
   private final int id;
   private final String node;
   private final double value;
-  private final DateTime startTime;
-  private final DateTime endTime;
+  private final ZonedDateTime startTime;
+  private final ZonedDateTime endTime;
 
   public SetPoint(
       final int id,
       final String node,
       final double value,
-      final DateTime startTime,
-      final DateTime endTime) {
+      final ZonedDateTime startTime,
+      final ZonedDateTime endTime) {
     super();
     this.id = id;
     this.node = node;
@@ -43,11 +43,11 @@ public class SetPoint implements Serializable {
     return this.value;
   }
 
-  public DateTime getStartTime() {
+  public ZonedDateTime getStartTime() {
     return this.startTime;
   }
 
-  public DateTime getEndTime() {
+  public ZonedDateTime getEndTime() {
     return this.endTime;
   }
 }

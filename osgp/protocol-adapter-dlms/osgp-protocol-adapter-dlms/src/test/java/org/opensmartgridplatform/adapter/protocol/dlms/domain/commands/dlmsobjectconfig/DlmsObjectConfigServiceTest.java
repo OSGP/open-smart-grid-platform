@@ -9,12 +9,12 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Mockito.when;
 
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,8 +47,8 @@ class DlmsObjectConfigServiceTest {
 
   private DlmsObjectConfigService service;
 
-  private final DateTime from = DateTime.now().minusDays(1);
-  private final DateTime to = DateTime.now();
+  private final ZonedDateTime from = ZonedDateTime.now().minusDays(1);
+  private final ZonedDateTime to = ZonedDateTime.now();
 
   private final DlmsDevice device422 = new DlmsDevice();
   private final DlmsDevice device422_noSelectiveAccess = new DlmsDevice();
@@ -429,7 +429,7 @@ class DlmsObjectConfigServiceTest {
             DataObject.newUInteger16Data(0)));
   }
 
-  private DataObject getDataObject(final DateTime dateTime) {
+  private DataObject getDataObject(final ZonedDateTime dateTime) {
     return this.dlmsHelper.asDataObject(dateTime);
   }
 

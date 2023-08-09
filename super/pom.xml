@@ -68,7 +68,6 @@ SPDX-License-Identifier: Apache-2.0
     <junit.version>5.7.0</junit.version>
     <junit.platform.launcher.version>1.6.2</junit.platform.launcher.version>
     <byte.buddy.version>1.12.17</byte.buddy.version>
-    <joda.version>2.10.6</joda.version>
     <flyway.version>7.3.0</flyway.version>
     <slf4j.version>1.7.30</slf4j.version>
     <apache.commons.lang.version>3.10</apache.commons.lang.version>
@@ -592,13 +591,6 @@ SPDX-License-Identifier: Apache-2.0
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-impl</artifactId>
         <version>${jaxb.core.version}</version>
-      </dependency>
-
-      <!-- Joda Time (Date/Time functions) -->
-      <dependency>
-        <groupId>joda-time</groupId>
-        <artifactId>joda-time</artifactId>
-        <version>${joda.version}</version>
       </dependency>
 
       <!-- Apache CXF RESTfull WS WebClient -->

@@ -4,8 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
@@ -139,7 +140,7 @@ public class GetActualMeterReadsCommandExecutor
 
     final CosemDateTimeDto cosemDateTime =
         this.dlmsHelper.readDateTime(getResultList.get(INDEX_TIME), "Actual Energy Reads Time");
-    final DateTime time = cosemDateTime.asDateTime();
+    final ZonedDateTime time = cosemDateTime.asDateTime();
     if (time == null) {
       throw new ProtocolAdapterException(
           "Unexpected null/unspecified value for Actual Energy Reads Time");
@@ -176,7 +177,7 @@ public class GetActualMeterReadsCommandExecutor
             "Actual Energy Reads -A rate 2");
 
     return new MeterReadsResponseDto(
-        time.toDate(),
+        Date.from(time.toInstant()),
         new ActiveEnergyValuesDto(
             activeEnergyImport,
             activeEnergyExport,

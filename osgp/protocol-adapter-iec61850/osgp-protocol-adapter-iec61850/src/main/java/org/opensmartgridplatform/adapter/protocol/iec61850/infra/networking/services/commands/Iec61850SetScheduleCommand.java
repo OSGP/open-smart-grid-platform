@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.SetScheduleDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.ScheduleEntry;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;
@@ -195,7 +195,7 @@ public class Iec61850SetScheduleCommand {
       builder.enabled(schedule.getIsEnabled() == null || schedule.getIsEnabled());
       final WeekDayTypeDto weekDay = schedule.getWeekDay();
       if (WeekDayTypeDto.ABSOLUTEDAY.equals(weekDay)) {
-        final DateTime specialDay = schedule.getStartDay();
+        final ZonedDateTime specialDay = schedule.getStartDay();
         if (specialDay == null) {
           throw new IllegalArgumentException(
               "Schedule startDay must not be null when weekDay equals ABSOLUTEDAY");

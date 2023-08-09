@@ -58,10 +58,6 @@ SPDX-License-Identifier: Apache-2.0
       <groupId>args4j</groupId>
       <artifactId>args4j</artifactId>
     </dependency>
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
   </dependencies>
 
   <build>

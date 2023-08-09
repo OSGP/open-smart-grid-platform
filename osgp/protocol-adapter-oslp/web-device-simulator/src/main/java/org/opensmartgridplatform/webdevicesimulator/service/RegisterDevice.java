@@ -12,15 +12,14 @@ import java.net.UnknownHostException;
 import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.text.MessageFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
 import javax.annotation.Resource;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.Oslp.DeviceType;
 import org.opensmartgridplatform.oslp.Oslp.EventNotification;
@@ -229,9 +228,9 @@ public class RegisterDevice {
 
   private String getFormattedCurrentTimestamp() {
     final String format = "yyyyMMddHHmmss";
-    final DateTime dateTime = DateTime.now().toDateTime(DateTimeZone.UTC);
-    final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern(format);
-    final String timestamp = dateTimeFormatter.print(dateTime);
+    final ZonedDateTime dateTime = ZonedDateTime.now(ZoneId.of("UTC"));
+    final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(format);
+    final String timestamp = dateTimeFormatter.format(dateTime);
     LOGGER.info(
         "generated timestamp for EventNotificationRequest: {} using format: {}", timestamp, format);
     return timestamp;

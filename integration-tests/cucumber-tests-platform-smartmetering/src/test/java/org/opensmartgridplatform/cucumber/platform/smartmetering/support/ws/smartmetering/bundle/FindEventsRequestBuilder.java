@@ -7,11 +7,12 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.sma
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getDate;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 import javax.xml.datatype.XMLGregorianCalendar;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.FindEventsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventLogCategory;
 import org.opensmartgridplatform.cucumber.platform.helpers.DateConverter;
@@ -21,8 +22,10 @@ public class FindEventsRequestBuilder {
 
   private static final EventLogCategory DEFAULT_EVENT_LOG_CATEGORY =
       EventLogCategory.FRAUD_DETECTION_LOG;
-  private static final DateTime DEFAULT_FROM = new DateTime(2016, 1, 1, 0, 0, 0, DateTimeZone.UTC);
-  private static final DateTime DEFAULT_UNTIL = new DateTime(2017, 1, 1, 0, 0, 0, DateTimeZone.UTC);
+  private static final ZonedDateTime DEFAULT_FROM =
+      ZonedDateTime.of(2016, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
+  private static final ZonedDateTime DEFAULT_UNTIL =
+      ZonedDateTime.of(2017, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
 
   private EventLogCategory eventLogCategory;
   private XMLGregorianCalendar from;
@@ -56,14 +59,14 @@ public class FindEventsRequestBuilder {
   }
 
   private XMLGregorianCalendar getFrom(final Map<String, String> parameters) {
-    final DateTime dateTime =
+    final ZonedDateTime dateTime =
         getDate(parameters, PlatformSmartmeteringKeys.FROM_DATE, DEFAULT_FROM);
-    return DateConverter.createXMLGregorianCalendar(dateTime.toDate());
+    return DateConverter.createXMLGregorianCalendar(Date.from(dateTime.toInstant()));
   }
 
   private XMLGregorianCalendar getUntil(final Map<String, String> parameters) {
-    final DateTime dateTime =
+    final ZonedDateTime dateTime =
         getDate(parameters, PlatformSmartmeteringKeys.UNTIL_DATE, DEFAULT_UNTIL);
-    return DateConverter.createXMLGregorianCalendar(dateTime.toDate());
+    return DateConverter.createXMLGregorianCalendar(Date.from(dateTime.toInstant()));
   }
 }

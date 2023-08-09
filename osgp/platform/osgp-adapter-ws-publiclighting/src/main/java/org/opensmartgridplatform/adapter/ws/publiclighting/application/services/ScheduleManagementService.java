@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.services;
 
+import java.time.ZonedDateTime;
 import javax.validation.Valid;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessage;
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -48,7 +48,7 @@ public class ScheduleManagementService {
       @Identification final String organisationIdentification,
       @Identification final String deviceIdentification,
       @Valid final Schedule schedule,
-      final DateTime scheduledTime,
+      final ZonedDateTime scheduledTime,
       final int messagePriority)
       throws FunctionalException {
 
@@ -75,7 +75,8 @@ public class ScheduleManagementService {
             .withCorrelationUid(correlationUid)
             .withMessageType(MessageType.SET_LIGHT_SCHEDULE.name())
             .withMessagePriority(messagePriority)
-            .withScheduleTime(scheduledTime == null ? null : scheduledTime.getMillis())
+            .withScheduleTime(
+                scheduledTime == null ? null : scheduledTime.toInstant().toEpochMilli())
             .build();
 
     final PublicLightingRequestMessage message =

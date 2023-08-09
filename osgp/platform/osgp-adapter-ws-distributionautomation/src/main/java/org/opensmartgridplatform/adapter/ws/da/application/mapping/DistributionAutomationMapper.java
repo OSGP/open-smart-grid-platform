@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.adapter.ws.da.application.mapping;
 
+import java.time.ZonedDateTime;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
 import ma.glasnost.orika.impl.ConfigurableMapper;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.BitmaskMeasurementElement;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.FloatMeasurementElement;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generic.Measurement;
@@ -30,7 +30,9 @@ public class DistributionAutomationMapper extends ConfigurableMapper {
 
   @Override
   public void configure(final MapperFactory mapperFactory) {
-    mapperFactory.getConverterFactory().registerConverter(new PassThroughConverter(DateTime.class));
+    mapperFactory
+        .getConverterFactory()
+        .registerConverter(new PassThroughConverter(ZonedDateTime.class));
     mapperFactory
         .getConverterFactory()
         .registerConverter(new XMLGregorianCalendarToDateTimeConverter());

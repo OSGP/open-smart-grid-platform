@@ -13,7 +13,6 @@ import java.util.Map;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 
 public class ReadSettingsHelper {
   /**
@@ -58,8 +57,8 @@ public class ReadSettingsHelper {
    * @param key The key in the settings for the date time.
    * @return The date time.
    */
-  public static DateTime getDate(final Map<String, String> settings, final String key) {
-    return getDate(settings, key, DateTime.now());
+  public static ZonedDateTime getDate(final Map<String, String> settings, final String key) {
+    return getDate(settings, key, ZonedDateTime.now());
   }
 
   /**
@@ -70,13 +69,13 @@ public class ReadSettingsHelper {
    * @param defaultDate The default date to return.
    * @return The date time.
    */
-  public static DateTime getDate(
-      final Map<String, String> settings, final String key, final DateTime defaultDate) {
+  public static ZonedDateTime getDate(
+      final Map<String, String> settings, final String key, final ZonedDateTime defaultDate) {
     if (!settings.containsKey(key) || StringUtils.isBlank(settings.get(key))) {
       return defaultDate;
     }
 
-    return DateTime.parse(settings.get(key));
+    return ZonedDateTime.parse(settings.get(key));
   }
 
   /**

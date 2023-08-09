@@ -10,10 +10,10 @@ import static org.mockito.ArgumentMatchers.any;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -92,7 +92,7 @@ public class EventCleanupJobTest {
     final Event event =
         new Event(
             "test",
-            DateTime.now().minusMonths(1).toDate(),
+            Date.from(ZonedDateTime.now().minusMonths(1).toInstant()),
             EventType.DIAG_EVENTS_GENERAL,
             "description",
             1);

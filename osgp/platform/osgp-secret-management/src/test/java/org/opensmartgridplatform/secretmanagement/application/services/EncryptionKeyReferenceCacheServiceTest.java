@@ -9,8 +9,8 @@ import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.shared.security.EncryptionProviderType.HSM;
 import static org.opensmartgridplatform.shared.security.EncryptionProviderType.JRE;
 
+import java.sql.Date;
 import java.util.List;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -57,7 +57,7 @@ class EncryptionKeyReferenceCacheServiceTest {
 
     assertThat(
             this.service.findAllByTypeAndValid(
-                HSM, new DateTime(this.hsm1.getValidFrom()).minusMillis(1).toDate()))
+                HSM, Date.from(this.hsm1.getValidFrom().toInstant().minusMillis(1))))
         .isEqualTo(List.of());
     assertThat(this.service.findAllByTypeAndValid(HSM, this.hsm1.getValidFrom()))
         .isEqualTo(List.of(this.hsm1));
@@ -67,7 +67,7 @@ class EncryptionKeyReferenceCacheServiceTest {
         .isEqualTo(List.of(this.hsm2));
     assertThat(
             this.service.findAllByTypeAndValid(
-                HSM, new DateTime(this.hsm2.getValidTo()).plusSeconds(1).toDate()))
+                HSM, (this.hsm2.getValidTo()).plusSeconds(1).toDate()))
         .isEqualTo(List.of());
 
     assertThat(

@@ -5,6 +5,8 @@
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.mapping;
 
 import com.google.protobuf.ByteString;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
@@ -70,10 +72,10 @@ public class OslpGetConfigurationResponseToConfigurationConverter
     this.setRelayLinking(source, configuration);
     configuration.setRelayRefreshing(source.getRelayRefreshing());
 
-    final DateTime summerTimeDetails =
+    final ZonedDateTime summerTimeDetails =
         this.convertSummerTimeWinterTimeDetails(source.getSummerTimeDetails());
     configuration.setSummerTimeDetails(summerTimeDetails);
-    final DateTime winterTimeDetails =
+    final ZonedDateTime winterTimeDetails =
         this.convertSummerTimeWinterTimeDetails(source.getWinterTimeDetails());
     configuration.setWinterTimeDetails(winterTimeDetails);
 
@@ -166,7 +168,7 @@ public class OslpGetConfigurationResponseToConfigurationConverter
    * Default value for summer time: 0360100 Default value for summer time:
    * 1060200
    */
-  private DateTime convertSummerTimeWinterTimeDetails(final String timeDetails) {
+  private ZonedDateTime convertSummerTimeWinterTimeDetails(final String timeDetails) {
     final int month = Integer.parseInt(timeDetails.substring(0, 2));
     final int day = Integer.parseInt(timeDetails.substring(2, 3));
     final int hour = Integer.parseInt(timeDetails.substring(3, 5));
@@ -176,7 +178,8 @@ public class OslpGetConfigurationResponseToConfigurationConverter
 
     final int year = DateTime.now().getYear();
     final int dayOfMonth = this.getLastDayOfMonth(month, day);
-    final DateTime dateTime = new DateTime(year, month, dayOfMonth, hour, minutes);
+    final ZonedDateTime dateTime =
+        ZonedDateTime.of(year, month, dayOfMonth, hour, minutes, 0, 0, ZoneId.systemDefault());
 
     LOGGER.info("dateTime: {}", dateTime);
 

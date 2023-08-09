@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -13,16 +13,16 @@ public class AddressRequest {
   private final DlmsDevice device;
   private final DlmsObject dlmsObject;
   private final Integer channel;
-  private final DateTime from;
-  private final DateTime to;
+  private final ZonedDateTime from;
+  private final ZonedDateTime to;
   private final Medium filterMedium;
 
   public AddressRequest(
       final DlmsDevice device,
       final DlmsObject dlmsObject,
       final Integer channel,
-      final DateTime from,
-      final DateTime to,
+      final ZonedDateTime from,
+      final ZonedDateTime to,
       final Medium filterMedium) {
     this.device = device;
     this.dlmsObject = dlmsObject;
@@ -44,11 +44,11 @@ public class AddressRequest {
     return this.channel;
   }
 
-  public DateTime getFrom() {
+  public ZonedDateTime getFrom() {
     return this.from;
   }
 
-  public DateTime getTo() {
+  public ZonedDateTime getTo() {
     return this.to;
   }
 

@@ -7,11 +7,12 @@ package org.opensmartgridplatform.shared.utils.csv;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.text.StringEscapeUtils;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -72,7 +73,8 @@ public class CsvWriter {
     if (csvFileStorageLocation.endsWith(File.separator)) {
       slash = "";
     }
-    final String timestamp = DateTime.now().toString(DATE_TIME_FORMAT);
+    final String timestamp =
+        ZonedDateTime.now().format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
 
     return csvFileStorageLocation + slash + csvFilePrefix + timestamp + CSV;
   }
@@ -90,7 +92,7 @@ public class CsvWriter {
       final String csvFilePath, final String[] headerLine, final List<String[]> lines)
       throws IOException {
     final File csvFile = new File(csvFilePath);
-    try (PrintWriter printWriter = new PrintWriter(csvFile)) {
+    try (final PrintWriter printWriter = new PrintWriter(csvFile)) {
       printWriter.println(this.convertToCsv(headerLine));
       lines.stream().map(this::convertToCsv).forEach(printWriter::println);
     }

@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
+import java.time.ZonedDateTime;
 import javax.validation.Valid;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -32,6 +32,8 @@ public class ConfigurationManagementService {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(ConfigurationManagementService.class);
 
+  public static final int NANO_TO_MILLES = 1000000;
+
   @Autowired private DomainHelperService domainHelperService;
 
   @Autowired private CorrelationIdProviderService correlationIdProviderService;
@@ -46,7 +48,7 @@ public class ConfigurationManagementService {
       @Identification final String organisationIdentification,
       @Identification final String deviceIdentification,
       @Valid final Configuration configuration,
-      final DateTime scheduledTime,
+      final ZonedDateTime scheduledTime,
       final int messagePriority)
       throws FunctionalException {
 
@@ -73,7 +75,8 @@ public class ConfigurationManagementService {
             .withCorrelationUid(correlationUid)
             .withMessageType(MessageType.SET_CONFIGURATION.name())
             .withMessagePriority(messagePriority)
-            .withScheduleTime(scheduledTime == null ? null : scheduledTime.getMillis())
+            .withScheduleTime(
+                scheduledTime == null ? null : (long) scheduledTime.getNano() * NANO_TO_MILLES)
             .build();
 
     final CommonRequestMessage message =

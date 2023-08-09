@@ -5,8 +5,8 @@
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands;
 
 import com.beanit.openiec61850.Fc;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -47,7 +47,7 @@ public class Iec61850ActualPowerLimitCommand implements RtuReadCommand<Measureme
         DataAttribute.ACTUAL_POWER_LIMIT.getDescription(),
         QualityConverter.toShort(
             containingNode.getQuality(SubDataAttribute.SUBSTITUDE_QUALITY).getValue()),
-        new DateTime(DateTimeZone.UTC),
+        ZonedDateTime.now(ZoneId.of("UTC")),
         containingNode
             .getChild(SubDataAttribute.SUBSTITUDE_VALUE)
             .getFloat(SubDataAttribute.FLOAT)

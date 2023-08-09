@@ -50,14 +50,15 @@ public class XMLGregorianCalendarToZonedDateTimeConverter
     if (source == null) {
       return null;
     }
-
+    final ZoneId zoneId;
+    // TODO unit tests voor schrijven en in een utilty class zetten
     if (source.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
       // Optional timezone field is empty for source
-      final ZoneId zoneId = ZoneId.of("UTC");
-      return source.toGregorianCalendar().toZonedDateTime().toLocalDateTime().atZone(zoneId);
+      zoneId = ZoneId.of("UTC");
     } else {
-      return source.toGregorianCalendar().toZonedDateTime();
+      zoneId = source.toGregorianCalendar().getTimeZone().toZoneId();
     }
+    return ZonedDateTime.ofInstant(source.toGregorianCalendar().toInstant(), zoneId);
   }
 
   @Override

@@ -85,10 +85,6 @@ SPDX-License-Identifier: Apache-2.0
       <groupId>ma.glasnost.orika</groupId>
       <artifactId>orika-core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
 
     <!-- Apache CXF RESTfull WS WebClient -->
     <dependency>

@@ -6,12 +6,13 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
 
@@ -40,7 +41,8 @@ public class GetPowerQualityProfileRequestMappingTest {
 
     assertThat(target.getDeviceIdentification()).isEqualTo(source.getDeviceIdentification());
     assertThat(target.getProfileType()).isEqualTo(source.getProfileType());
-    final DateTime targetEndDate = new DateTime(target.getEndDate());
+    final ZonedDateTime targetEndDate =
+        ZonedDateTime.ofInstant(target.getEndDate().toInstant(), ZoneId.systemDefault());
     assertThat(targetEndDate.getYear()).isEqualTo(source.getBeginDate().getYear());
   }
 

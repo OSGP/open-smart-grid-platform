@@ -9,7 +9,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatcher;
@@ -41,7 +41,7 @@ public class EventNotificationMessageServiceTest {
   void sendsLightSensorReportsLightEventToDomainTest() throws UnknownEntityException {
     final String deviceUid = "testUid";
     final String deviceIdentification = "testIdentification";
-    final DateTime dateTime = DateTime.now();
+    final ZonedDateTime dateTime = ZonedDateTime.now();
     final EventTypeDto eventTypeDto = EventTypeDto.LIGHT_SENSOR_REPORTS_LIGHT;
     final String description = "Sensor reports light";
     final Integer index = 0;

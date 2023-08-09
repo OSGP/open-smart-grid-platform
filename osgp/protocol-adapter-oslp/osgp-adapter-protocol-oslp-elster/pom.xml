@@ -133,12 +133,6 @@ SPDX-License-Identifier: Apache-2.0
       <artifactId>protobuf-java</artifactId>
     </dependency>
 
-    <!-- Joda Time (Date/Time util) -->
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
-
     <!-- Hikari connection pooling -->
     <dependency>
       <groupId>com.zaxxer</groupId>

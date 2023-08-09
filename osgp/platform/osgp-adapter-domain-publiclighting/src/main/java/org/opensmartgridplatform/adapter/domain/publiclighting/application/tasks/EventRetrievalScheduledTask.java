@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.tasks;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.config.SchedulingConfigForEventRetrievalScheduledTask;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -108,11 +108,11 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
   }
 
   private boolean calculateThresholdForDevice(final Device device) {
-    final DateTime threshold = this.determineMinimalDeviceThreshold(device);
+    final ZonedDateTime threshold = this.determineMinimalDeviceThreshold(device);
 
     final boolean isBefore =
-        new DateTime(device.getLastFailedConnectionTimestamp())
-            .withZone(DateTimeZone.UTC)
+        ZonedDateTime.ofInstant(
+                device.getLastFailedConnectionTimestamp().toInstant(), ZoneId.of("UTC"))
             .isBefore(threshold);
 
     if (isBefore) {
@@ -132,7 +132,7 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
     return isBefore;
   }
 
-  private DateTime determineMinimalDeviceThreshold(final Device device) {
+  private ZonedDateTime determineMinimalDeviceThreshold(final Device device) {
     final int failedConnectionCount = device.getFailedConnectionCount();
 
     final int waitTime =
@@ -140,11 +140,11 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
             this.calculateDeviceBackOff(failedConnectionCount),
             this.eventRetrievalScheduledTaskMaxBackoff);
 
-    final DateTime threshold =
-        DateTime.now(DateTimeZone.UTC)
+    final ZonedDateTime threshold =
+        ZonedDateTime.now(ZoneId.of("UTC"))
             .minusMinutes(waitTime)
             .plusMinutes(this.eventRetrievalScheduledTaskHysteresis)
-            .withMillisOfSecond(0);
+            .withNano(0);
 
     LOGGER.info(
         "Determined threshold: {} for device: {} based on failed connection count: {} and hysteresis: {}",

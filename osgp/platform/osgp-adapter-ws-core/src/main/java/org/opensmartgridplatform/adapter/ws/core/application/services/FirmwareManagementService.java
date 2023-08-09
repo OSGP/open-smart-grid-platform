@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,6 @@ import java.util.function.Supplier;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceFirmwareFileRepository;
@@ -63,9 +63,12 @@ import org.springframework.validation.annotation.Validated;
 @Transactional(value = "transactionManager")
 @Validated
 public class FirmwareManagementService {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareManagementService.class);
 
   private static final String SPACE_REPLACER = "_";
+
+  public static final int NANO_TO_MILLIS = 1000000;
 
   @Autowired private DomainHelperService domainHelperService;
 
@@ -95,7 +98,7 @@ public class FirmwareManagementService {
       @Identification final String organisationIdentification,
       @Identification final String deviceIdentification,
       final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer,
-      final DateTime scheduledTime,
+      final ZonedDateTime scheduledTime,
       final int messagePriority)
       throws FunctionalException {
     LOGGER.debug("Queue update firmware request");
@@ -123,7 +126,8 @@ public class FirmwareManagementService {
             .withCorrelationUid(correlationUid)
             .withMessageType(MessageType.UPDATE_FIRMWARE.name())
             .withMessagePriority(messagePriority)
-            .withScheduleTime(scheduledTime == null ? null : scheduledTime.getMillis())
+            .withScheduleTime(
+                scheduledTime == null ? null : (long) scheduledTime.getNano() * NANO_TO_MILLIS)
             .build();
 
     final CommonRequestMessage message =

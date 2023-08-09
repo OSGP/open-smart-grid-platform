@@ -117,7 +117,7 @@ public class GetActualMeterReadsGasCommandExecutor
         this.dlmsHelper.readDateTime(getResultList.get(1), "captureTime gas");
     final Date captureTime;
     if (cosemDateTime.isDateTimeSpecified()) {
-      captureTime = cosemDateTime.asDateTime().toDate();
+      captureTime = Date.from(cosemDateTime.asDateTime().toInstant());
     } else {
       throw new ProtocolAdapterException(
           "Unexpected null/unspecified value for M-Bus Capture Time");

@@ -5,7 +5,7 @@
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 public class CosemDate implements Serializable, Comparable<CosemDate> {
 
@@ -43,7 +43,7 @@ public class CosemDate implements Serializable, Comparable<CosemDate> {
   }
 
   public CosemDate(final LocalDate date) {
-    this(date.getYear(), date.getMonthOfYear(), date.getDayOfMonth(), DAY_OF_WEEK_NOT_SPECIFIED);
+    this(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), DAY_OF_WEEK_NOT_SPECIFIED);
   }
 
   public CosemDate(final CosemDate cosemDate) {
@@ -259,7 +259,7 @@ public class CosemDate implements Serializable, Comparable<CosemDate> {
    */
   public LocalDate asLocalDate() {
     if (this.isLocalDateSpecified()) {
-      return new LocalDate(this.year, this.month, this.dayOfMonth);
+      return LocalDate.of(this.year, this.month, this.dayOfMonth);
     }
     return null;
   }

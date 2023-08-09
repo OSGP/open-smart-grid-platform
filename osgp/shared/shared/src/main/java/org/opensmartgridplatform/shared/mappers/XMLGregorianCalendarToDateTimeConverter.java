@@ -4,6 +4,10 @@
 
 package org.opensmartgridplatform.shared.mappers;
 
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.GregorianCalendar;
 import java.util.Objects;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
@@ -12,21 +16,18 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.chrono.ISOChronology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class XMLGregorianCalendarToDateTimeConverter
-    extends BidirectionalConverter<XMLGregorianCalendar, DateTime> {
+    extends BidirectionalConverter<XMLGregorianCalendar, ZonedDateTime> {
 
   private static final Logger LOGGER =
       LoggerFactory.getLogger(XMLGregorianCalendarToDateTimeConverter.class);
 
   @Override
   public XMLGregorianCalendar convertFrom(
-      final DateTime source,
+      final ZonedDateTime source,
       final Type<XMLGregorianCalendar> destinationType,
       final MappingContext context) {
     if (source == null) {
@@ -34,7 +35,7 @@ public class XMLGregorianCalendarToDateTimeConverter
     }
 
     try {
-      return DatatypeFactory.newInstance().newXMLGregorianCalendar(source.toGregorianCalendar());
+      return DatatypeFactory.newInstance().newXMLGregorianCalendar(GregorianCalendar.from(source));
     } catch (final DatatypeConfigurationException e) {
       LOGGER.debug("newXMLGregorianCalendar failed", e);
       // Sonar will complain about not rethrowing the exception,
@@ -44,35 +45,36 @@ public class XMLGregorianCalendarToDateTimeConverter
   }
 
   @Override
-  public DateTime convertTo(
+  public ZonedDateTime convertTo(
       final XMLGregorianCalendar source,
-      final Type<DateTime> destinationType,
+      final Type<ZonedDateTime> destinationType,
       final MappingContext context) {
     if (source == null) {
       return null;
     }
 
-    final DateTimeZone timeZone = this.timeZoneOf(source);
+    final ZoneId timeZone = this.timeZoneOf(source);
     if (timeZone == null) {
-      return new DateTime(source.toGregorianCalendar().getTime(), ISOChronology.getInstance());
+      return ZonedDateTime.ofInstant(
+          source.toGregorianCalendar().getTime().toInstant(), ZoneId.systemDefault());
     }
-    return new DateTime(source.toGregorianCalendar().getTime(), timeZone);
+    return ZonedDateTime.ofInstant(source.toGregorianCalendar().getTime().toInstant(), timeZone);
   }
 
-  private DateTimeZone timeZoneOf(final XMLGregorianCalendar source) {
+  private ZoneOffset timeZoneOf(final XMLGregorianCalendar source) {
     final int offsetMinutes = source.getTimezone();
     if (offsetMinutes == DatatypeConstants.FIELD_UNDEFINED) {
       return null;
     }
-    return DateTimeZone.forOffsetHoursMinutes(offsetMinutes / 60, offsetMinutes % 60);
+    return ZoneOffset.ofHoursMinutes(offsetMinutes / 60, offsetMinutes % 60);
   }
 
   @Override
   public boolean canConvert(final Type<?> sourceType, final Type<?> destinationType) {
     // The check 'this.sourceType.isAssignableFrom(sourceType)' fails for
-    // org.joda.DateTime.class.
+    // GregorianCalendar.
     // Use custom check instead.
-    return Objects.equals(sourceType.getRawType().getName(), DateTime.class.getName())
+    return Objects.equals(sourceType.getRawType().getName(), ZonedDateTime.class.getName())
             && Objects.equals(
                 destinationType.getRawType().getName(), XMLGregorianCalendar.class.getName())
         || this.sourceType.isAssignableFrom(sourceType)

@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.core.application.services;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,7 +14,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import org.apache.commons.lang3.NotImplementedException;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
@@ -59,7 +59,7 @@ public class EventNotificationMessageService {
     this.eventNotificationHelperService.saveEvent(
         new Event(
             deviceIdentification,
-            dateTime != null ? dateTime : DateTime.now().toDate(),
+            dateTime != null ? dateTime : Date.from(ZonedDateTime.now().toInstant()),
             eventType,
             description,
             index));
@@ -90,7 +90,9 @@ public class EventNotificationMessageService {
     LOGGER.info("handleEvent() called for device: {} with event: {}", deviceIdentification, event);
 
     final Date dateTime =
-        event.getDateTime() != null ? event.getDateTime().toDate() : DateTime.now().toDate();
+        event.getDateTime() != null
+            ? Date.from(event.getDateTime().toInstant())
+            : Date.from(ZonedDateTime.now().toInstant());
     final EventType eventType = EventType.valueOf(event.getEventType().name());
     final String description = event.getDescription();
     final Integer index = event.getIndex();
@@ -121,12 +123,14 @@ public class EventNotificationMessageService {
     final List<Event> switchDeviceEvents = new ArrayList<>();
 
     for (final EventNotificationDto eventNotification : eventNotifications) {
-      final DateTime eventTime = eventNotification.getDateTime();
+      final ZonedDateTime eventTime = eventNotification.getDateTime();
       final EventType eventType = EventType.valueOf(eventNotification.getEventType().name());
       final Event event =
           new Event(
               deviceIdentification,
-              eventTime != null ? eventTime.toDate() : DateTime.now().toDate(),
+              eventTime != null
+                  ? Date.from(eventTime.toInstant())
+                  : Date.from(ZonedDateTime.now().toInstant()),
               eventType,
               eventNotification.getDescription(),
               eventNotification.getIndex());
@@ -217,7 +221,7 @@ public class EventNotificationMessageService {
 
     this.handleLightMeasurementDeviceEvent(
         deviceIdentification,
-        event.getDateTime().toDate(),
+        Date.from(event.getDateTime().toInstant()),
         eventType,
         event.getDescription(),
         event.getIndex());
@@ -294,7 +298,7 @@ public class EventNotificationMessageService {
     // if the timestamp of the event is after the timestamp of the last
     // switching event in the DB.
     final RelayStatus oldRelayStatus = ssld.getRelayStatusByIndex(index);
-    final Date eventTime = dateTime == null ? DateTime.now().toDate() : dateTime;
+    final Date eventTime = dateTime == null ? Date.from(ZonedDateTime.now().toInstant()) : dateTime;
     if (oldRelayStatus == null || eventTime.after(oldRelayStatus.getLastSwitchingEventTime())) {
       LOGGER.info(
           "Handling new event {} for device {} to update the relay status for index {} with date {}.",
@@ -326,7 +330,7 @@ public class EventNotificationMessageService {
       final Event lightMeasurementDeviceEvent =
           new Event(
               deviceIdentification,
-              dateTime != null ? dateTime : DateTime.now().toDate(),
+              dateTime != null ? dateTime : Date.from(ZonedDateTime.now().toInstant()),
               eventType,
               description,
               index);

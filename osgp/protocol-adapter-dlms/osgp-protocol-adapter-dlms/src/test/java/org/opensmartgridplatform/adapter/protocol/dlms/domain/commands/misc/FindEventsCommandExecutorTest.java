@@ -14,10 +14,11 @@ import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter.toDateTime;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.IntStream;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -81,8 +82,8 @@ class FindEventsCommandExecutorTest {
     this.findEventsRequestDto =
         new FindEventsRequestDto(
             EventLogCategoryDto.POWER_QUALITY_EVENT_LOG,
-            DateTime.now().minusDays(70),
-            DateTime.now());
+            ZonedDateTime.now().minusDays(70),
+            ZonedDateTime.now());
 
     final DataObjectToEventListConverter dataObjectToEventListConverter =
         new DataObjectToEventListConverter(this.dlmsHelper);
@@ -105,11 +106,15 @@ class FindEventsCommandExecutorTest {
 
   @AfterEach
   public void after() throws ProtocolAdapterException {
-    final DateTime toDate =
-        toDateTime(this.findEventsRequestDto.getFrom().toDate(), this.currentDevice.getTimezone());
+    final ZonedDateTime toDate =
+        toDateTime(
+            Date.from(this.findEventsRequestDto.getFrom().toInstant()),
+            this.currentDevice.getTimezone());
 
-    final DateTime endDate =
-        toDateTime(this.findEventsRequestDto.getUntil().toDate(), this.currentDevice.getTimezone());
+    final ZonedDateTime endDate =
+        toDateTime(
+            Date.from(this.findEventsRequestDto.getUntil().toInstant()),
+            this.currentDevice.getTimezone());
 
     verify(this.dlmsHelper).asDataObject(toDate);
     verify(this.dlmsHelper).asDataObject(endDate);
@@ -154,7 +159,9 @@ class FindEventsCommandExecutorTest {
     this.currentDevice = this.createDlmsDevice(protocol, timezoneString);
     this.findEventsRequestDto =
         new FindEventsRequestDto(
-            EventLogCategoryDto.AUXILIARY_EVENT_LOG, DateTime.now().minusDays(70), DateTime.now());
+            EventLogCategoryDto.AUXILIARY_EVENT_LOG,
+            ZonedDateTime.now().minusDays(70),
+            ZonedDateTime.now());
 
     when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
     when(this.getResult.getResultData()).thenReturn(this.resultData);
@@ -188,7 +195,9 @@ class FindEventsCommandExecutorTest {
     // SETUP
     this.findEventsRequestDto =
         new FindEventsRequestDto(
-            EventLogCategoryDto.AUXILIARY_EVENT_LOG, DateTime.now().minusDays(70), DateTime.now());
+            EventLogCategoryDto.AUXILIARY_EVENT_LOG,
+            ZonedDateTime.now().minusDays(70),
+            ZonedDateTime.now());
 
     when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
     when(this.getResult.getResultData()).thenReturn(this.resultData);
@@ -215,8 +224,8 @@ class FindEventsCommandExecutorTest {
     this.findEventsRequestDto =
         new FindEventsRequestDto(
             EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG,
-            DateTime.now().minusDays(70),
-            DateTime.now());
+            ZonedDateTime.now().minusDays(70),
+            ZonedDateTime.now());
 
     when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
     when(this.getResult.getResultData()).thenReturn(this.resultData);
@@ -250,8 +259,8 @@ class FindEventsCommandExecutorTest {
     this.findEventsRequestDto =
         new FindEventsRequestDto(
             EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG,
-            DateTime.now().minusDays(70),
-            DateTime.now());
+            ZonedDateTime.now().minusDays(70),
+            ZonedDateTime.now());
 
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(

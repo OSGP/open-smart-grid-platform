@@ -6,6 +6,8 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.application.task
 
 import java.net.InetAddress;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,8 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.OsgpSystemCorrelationUid;
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -189,7 +189,9 @@ public class BaseTask {
         this.eventRepository.findLatestEventForEveryDevice(devices);
     LOGGER.info("devicesWithEventsList.size(): {}", listOfObjectArrays.size());
 
-    final Date maxAge = DateTime.now(DateTimeZone.UTC).minusHours(maximumAllowedAge).toDate();
+    final Date maxAge =
+        Date.from(
+            LocalDateTime.now().atZone(ZoneId.of("UTC")).minusHours(maximumAllowedAge).toInstant());
     LOGGER.info("maxAge: {}", maxAge);
 
     final Map<Long, Date> map = new HashMap<>();
