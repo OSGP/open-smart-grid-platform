@@ -5,13 +5,14 @@
 package org.opensmartgridplatform.adapter.domain.core.application.tasks;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.core.application.services.TransactionalEventService;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.shared.utils.FileZipper;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 import org.opensmartgridplatform.shared.utils.csv.CsvWriter;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -60,12 +61,13 @@ public class EventCleanupJob implements Job {
     }
 
     LOGGER.info("Quartz triggered cleanup of database - event records.");
-    final DateTime start = DateTime.now();
+    final ZonedDateTime start = ZonedDateTime.now();
 
     try {
-      final Date retention = this.calculateRetentionDate();
+      final ZonedDateTime retention = this.calculateRetentionDate();
       final List<Event> oldEvents =
-          this.transactionalEventService.getEventsBeforeDate(retention, this.eventPageSize);
+          this.transactionalEventService.getEventsBeforeDate(
+              Date.from(retention.toInstant()), this.eventPageSize);
       if (!oldEvents.isEmpty()) {
         this.saveEventsToCsvFile(oldEvents);
 
@@ -76,16 +78,16 @@ public class EventCleanupJob implements Job {
       LOGGER.error("Exception during CSV file creation, compression or event deletion.", e);
     }
 
-    final DateTime end = DateTime.now();
+    final ZonedDateTime end = ZonedDateTime.now();
     LOGGER.info(
         "Start: {}, end: {}, duration: {} milliseconds.",
         start,
         end,
-        end.getMillis() - start.getMillis());
+        JavaTimeHelpers.getMillisFrom(end) - JavaTimeHelpers.getMillisFrom(start));
   }
 
-  private Date calculateRetentionDate() {
-    final Date date = DateTime.now().minusMonths(this.eventRetentionPeriodInMonths).toDate();
+  private ZonedDateTime calculateRetentionDate() {
+    final ZonedDateTime date = ZonedDateTime.now().minusMonths(this.eventRetentionPeriodInMonths);
     LOGGER.info(
         "Determined date: {} based on event retention period in months: {}.",
         date,
@@ -171,7 +173,7 @@ public class EventCleanupJob implements Job {
     }
 
     private static String formatDate(final Date date) {
-      return new DateTime(date).toString(DATE_TIME_FORMAT);
+      return JavaTimeHelpers.formatDate(date, DATE_TIME_FORMAT);
     }
   }
 }
