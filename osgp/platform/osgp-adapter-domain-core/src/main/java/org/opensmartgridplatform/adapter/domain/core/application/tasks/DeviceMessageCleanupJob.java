@@ -91,7 +91,7 @@ public class DeviceMessageCleanupJob implements Job {
 
   private ZonedDateTime calculateRetentionDate() {
     final ZonedDateTime date =
-        ZonedDateTime.now().minus(Period.of(0, this.deviceMessageRetentionPeriodInMonths, 0));
+        ZonedDateTime.now().minus(Period.ofMonths(this.deviceMessageRetentionPeriodInMonths));
     LOGGER.info(
         "Determined date: {} based on device message retention period in months: {}.",
         date,
