@@ -4,11 +4,10 @@
 
 package org.opensmartgridplatform.adapter.ws.core.endpoints;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.ConstraintViolationException;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.core.application.criteria.SearchEventsCriteria;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.DeviceManagementMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.DeviceManagementService;
@@ -71,6 +70,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -263,14 +263,16 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
       // Get the request parameters, make sure that they are in UTC.
       // Maybe add an adapter to the service, so that all datetime are
       // converted to utc automatically.
-      final DateTime from =
+      final ZonedDateTime from =
           request.getFrom() == null
               ? null
-              : new DateTime(request.getFrom().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
-      final DateTime until =
+              : JavaTimeHelpers.gregorianCalendarToZonedDateTimeWithUTCZone(
+                  request.getFrom().toGregorianCalendar());
+      final ZonedDateTime until =
           request.getUntil() == null
               ? null
-              : new DateTime(request.getUntil().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
+              : JavaTimeHelpers.gregorianCalendarToZonedDateTimeWithUTCZone(
+                  request.getUntil().toGregorianCalendar());
 
       // Get all events matching the request.
       final SearchEventsCriteria criteria =
