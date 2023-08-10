@@ -44,7 +44,7 @@ class JavaTimeHelpersTest {
 
     final DateTime joda = new DateTime(gregorianCalendar).toDateTime(DateTimeZone.UTC);
     final ZonedDateTime javaApi =
-        JavaTimeHelpers.gregorianCalendarToZonedDateTimeWithUTCZone(gregorianCalendar);
+        JavaTimeHelpers.gregorianCalendarToZonedDateTime(gregorianCalendar, ZoneId.of("UTC"));
 
     assertThat(javaApi.getYear()).isEqualTo(joda.getYear());
     assertThat(javaApi.getMonthValue()).isEqualTo(joda.getMonthOfYear());

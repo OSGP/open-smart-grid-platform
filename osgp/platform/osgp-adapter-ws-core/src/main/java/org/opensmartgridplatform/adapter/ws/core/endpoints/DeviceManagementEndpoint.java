@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.core.endpoints;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -266,13 +267,13 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
       final ZonedDateTime from =
           request.getFrom() == null
               ? null
-              : JavaTimeHelpers.gregorianCalendarToZonedDateTimeWithUTCZone(
-                  request.getFrom().toGregorianCalendar());
+              : JavaTimeHelpers.gregorianCalendarToZonedDateTime(
+                  request.getFrom().toGregorianCalendar(), ZoneId.of("UTC"));
       final ZonedDateTime until =
           request.getUntil() == null
               ? null
-              : JavaTimeHelpers.gregorianCalendarToZonedDateTimeWithUTCZone(
-                  request.getUntil().toGregorianCalendar());
+              : JavaTimeHelpers.gregorianCalendarToZonedDateTime(
+                  request.getUntil().toGregorianCalendar(), ZoneId.of("UTC"));
 
       // Get all events matching the request.
       final SearchEventsCriteria criteria =

@@ -19,8 +19,8 @@ public class JavaTimeHelpers {
         .format(date.toInstant().atZone(ZoneId.systemDefault()));
   }
 
-  public static ZonedDateTime gregorianCalendarToZonedDateTimeWithUTCZone(
-      final GregorianCalendar gregorianCalendar) {
-    return ZonedDateTime.ofInstant(gregorianCalendar.toInstant(), ZoneId.of("UTC"));
+  public static ZonedDateTime gregorianCalendarToZonedDateTime(
+      final GregorianCalendar gregorianCalendar, final ZoneId zoneId) {
+    return ZonedDateTime.ofInstant(gregorianCalendar.toInstant(), zoneId);
   }
 }
