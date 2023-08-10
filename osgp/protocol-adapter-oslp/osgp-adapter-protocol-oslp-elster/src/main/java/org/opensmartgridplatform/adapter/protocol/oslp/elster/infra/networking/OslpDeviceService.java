@@ -11,12 +11,12 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalTime;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.mapping.OslpMapper;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpDeviceSettingsService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpSigningService;
@@ -62,6 +62,7 @@ import org.opensmartgridplatform.oslp.Oslp.SetScheduleRequest;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1118,7 +1119,8 @@ public class OslpDeviceService implements DeviceService {
 
     if (StringUtils.isNotBlank(schedule.getTime())) {
       scheduleBuilder =
-          scheduleBuilder.setTime(LocalTime.parse(schedule.getTime()).toString(TIME_FORMAT));
+          scheduleBuilder.setTime(
+              JavaTimeHelpers.formatTemporal(LocalTime.parse(schedule.getTime()), TIME_FORMAT));
     }
 
     if (schedule.getTriggerWindow() != null) {

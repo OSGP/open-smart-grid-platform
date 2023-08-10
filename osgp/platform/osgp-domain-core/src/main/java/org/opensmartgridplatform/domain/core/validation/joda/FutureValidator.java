@@ -4,14 +4,16 @@
 
 package org.opensmartgridplatform.domain.core.validation.joda;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.constraints.Future;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.ReadableInstant;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 
-public class FutureValidator implements ConstraintValidator<Future, ReadableInstant> {
+public class FutureValidator implements ConstraintValidator<Future, Instant> {
 
   @Override
   public void initialize(final Future constraintAnnotation) {
@@ -19,13 +21,15 @@ public class FutureValidator implements ConstraintValidator<Future, ReadableInst
   }
 
   @Override
-  public boolean isValid(final ReadableInstant value, final ConstraintValidatorContext context) {
+  public boolean isValid(final Instant value, final ConstraintValidatorContext context) {
     if (value == null) {
       return true;
     }
 
-    final DateTime checkDate = DateTime.now(DateTimeZone.UTC).withTimeAtStartOfDay();
+    final ZonedDateTime checkDate =
+        JavaTimeHelpers.getZonedDateTimeWithStartAtBeginOfDay(
+            LocalDate.now(ZoneId.of("UTC")), ZoneId.of("UTC"));
 
-    return value.isEqual(checkDate) || value.isAfter(checkDate);
+    return value.isAfter(checkDate.toInstant());
   }
 }
