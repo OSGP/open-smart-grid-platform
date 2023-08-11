@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import org.joda.time.DateTime;
@@ -30,8 +31,9 @@ class JavaTimeHelpersTest {
     final Date date = Date.from(instant);
 
     final String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+    final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimeFormat);
     final String formattedJoda = new DateTime(date).toString(dateTimeFormat);
-    final String formattedJava = JavaTimeHelpers.formatDate(date, dateTimeFormat);
+    final String formattedJava = JavaTimeHelpers.formatDate(date, formatter);
 
     assertThat(formattedJoda).isEqualTo(formattedJava);
   }

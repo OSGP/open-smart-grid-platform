@@ -14,9 +14,8 @@ public class JavaTimeHelpers {
     return datetime.get(ChronoField.MILLI_OF_SECOND);
   }
 
-  public static String formatDate(final Date date, final String format) {
-    return DateTimeFormatter.ofPattern(format)
-        .format(date.toInstant().atZone(ZoneId.systemDefault()));
+  public static String formatDate(final Date date, final DateTimeFormatter formatter) {
+    return formatter.format(date.toInstant().atZone(ZoneId.systemDefault()));
   }
 
   public static ZonedDateTime gregorianCalendarToZonedDateTime(

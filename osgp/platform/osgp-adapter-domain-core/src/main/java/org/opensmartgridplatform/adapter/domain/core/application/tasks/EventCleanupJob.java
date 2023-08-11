@@ -6,6 +6,7 @@ package org.opensmartgridplatform.adapter.domain.core.application.tasks;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -115,6 +116,8 @@ public class EventCleanupJob implements Job {
 
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
+    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
+
     private static final int ID = 0;
     private static final int CREATION_TIME = 1;
     private static final int MODIFICATION_TIME = 2;
@@ -173,7 +176,7 @@ public class EventCleanupJob implements Job {
     }
 
     private static String formatDate(final Date date) {
-      return JavaTimeHelpers.formatDate(date, DATE_TIME_FORMAT);
+      return JavaTimeHelpers.formatDate(date, FORMATTER);
     }
   }
 }
