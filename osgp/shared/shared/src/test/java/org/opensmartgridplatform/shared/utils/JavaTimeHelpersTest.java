@@ -48,7 +48,8 @@ class JavaTimeHelpersTest {
     final String jodaFormatted =
         org.joda.time.LocalTime.parse(timeToFormat).toString(formatterString);
     final String formattedJava =
-        JavaTimeHelpers.formatTemporal(LocalTime.parse(timeToFormat), formatterString);
+        JavaTimeHelpers.formatTemporal(
+            LocalTime.parse(timeToFormat), DateTimeFormatter.ofPattern(formatterString));
 
     assertThat(jodaFormatted).isEqualTo(formattedJava);
   }

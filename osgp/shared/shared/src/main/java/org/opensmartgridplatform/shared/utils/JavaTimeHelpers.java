@@ -19,8 +19,8 @@ public class JavaTimeHelpers {
     return formatter.format(date.toInstant().atZone(ZoneId.systemDefault()));
   }
 
-  public static String formatTemporal(final Temporal temporal, final String format) {
-    return DateTimeFormatter.ofPattern(format).format(temporal);
+  public static String formatTemporal(final Temporal temporal, final DateTimeFormatter formatter) {
+    return formatter.format(temporal);
   }
 
   public static ZonedDateTime getZonedDateTimeWithStartAtBeginOfDay(
