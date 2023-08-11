@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.adapter.domain.microgrids.application.services;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataRequestDto;
@@ -64,7 +64,7 @@ public class CommunicationRecoveryService extends BaseService {
                             MEASUREMENT_ID,
                             MEASUREMENT_NODE,
                             0,
-                            new DateTime(DateTimeZone.UTC),
+                            ZonedDateTime.now(ZoneId.of("UTC")),
                             MEASUREMENT_VALUE_ALARM_ON)))),
             null);
 

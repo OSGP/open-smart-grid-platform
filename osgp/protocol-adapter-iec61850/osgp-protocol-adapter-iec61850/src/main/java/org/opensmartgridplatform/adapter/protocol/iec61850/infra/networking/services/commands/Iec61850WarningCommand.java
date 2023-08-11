@@ -5,10 +5,9 @@
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands;
 
 import com.beanit.openiec61850.Fc;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -20,6 +19,7 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.QualityConverter;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.MeasurementDto;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 
 public class Iec61850WarningCommand implements RtuReadCommand<MeasurementDto> {
 
@@ -37,7 +37,7 @@ public class Iec61850WarningCommand implements RtuReadCommand<MeasurementDto> {
     map.put(FOUR, DataAttribute.WARNING_FOUR);
   }
 
-  private int warningIndex;
+  private final int warningIndex;
 
   public Iec61850WarningCommand(final int warningIndex) {
     this.warningIndex = warningIndex;
@@ -68,7 +68,8 @@ public class Iec61850WarningCommand implements RtuReadCommand<MeasurementDto> {
         1,
         map.get(this.warningIndex).getDescription(),
         QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
-        new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
+        JavaTimeHelpers.zonedDateTimeFromDate(
+            containingNode.getDate(SubDataAttribute.TIME), ZoneId.of("UTC")),
         containingNode.getBoolean(SubDataAttribute.STATE).getValue() ? 1 : 0);
   }
 }

@@ -23,6 +23,10 @@ public class JavaTimeHelpers {
     return formatter.format(temporal);
   }
 
+  public static ZonedDateTime zonedDateTimeFromDate(final Date date, final ZoneId zoneId) {
+    return ZonedDateTime.ofInstant(date.toInstant(), zoneId);
+  }
+
   public static ZonedDateTime getZonedDateTimeWithStartAtBeginOfDay(
       final LocalDate localDate, final ZoneId zoneId) {
     return localDate.atStartOfDay(zoneId);

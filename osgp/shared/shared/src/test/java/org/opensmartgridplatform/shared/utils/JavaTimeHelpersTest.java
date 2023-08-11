@@ -92,4 +92,19 @@ class JavaTimeHelpersTest {
     assertThat(javaTime.getSecond()).isEqualTo(jodaTime.getSecondOfMinute());
     assertThat(JavaTimeHelpers.getMillisFrom(javaTime)).isEqualTo(jodaTime.getMillisOfSecond());
   }
+
+  @Test
+  void shouldConvertDateToZonedDateTime() {
+    final Date now = Date.from(ZonedDateTime.now(ZoneId.of("UTC")).toInstant());
+    final DateTime jodaTime = new DateTime(now, DateTimeZone.UTC);
+    final ZonedDateTime javaTime = JavaTimeHelpers.zonedDateTimeFromDate(now, ZoneId.of("UTC"));
+
+    assertThat(javaTime.getYear()).isEqualTo(jodaTime.getYear());
+    assertThat(javaTime.getMonthValue()).isEqualTo(jodaTime.getMonthOfYear());
+    assertThat(javaTime.getDayOfMonth()).isEqualTo(jodaTime.getDayOfMonth());
+    assertThat(javaTime.getHour()).isEqualTo(jodaTime.getHourOfDay());
+    assertThat(javaTime.getMinute()).isEqualTo(jodaTime.getMinuteOfHour());
+    assertThat(javaTime.getSecond()).isEqualTo(jodaTime.getSecondOfMinute());
+    assertThat(JavaTimeHelpers.getMillisFrom(javaTime)).isEqualTo(jodaTime.getMillisOfSecond());
+  }
 }

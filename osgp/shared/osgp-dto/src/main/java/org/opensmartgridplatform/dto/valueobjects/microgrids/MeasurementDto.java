@@ -5,21 +5,21 @@
 package org.opensmartgridplatform.dto.valueobjects.microgrids;
 
 import java.io.Serializable;
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 
 public class MeasurementDto extends MeasurementIdentifierDto implements Serializable {
 
   private static final long serialVersionUID = -6999340558343190220L;
 
-  private int qualifier;
-  private DateTime time;
-  private double value;
+  private final int qualifier;
+  private final ZonedDateTime time;
+  private final double value;
 
   public MeasurementDto(
       final int id,
       final String node,
       final int qualifier,
-      final DateTime time,
+      final ZonedDateTime time,
       final double value) {
     super(id, node);
     this.qualifier = qualifier;
@@ -31,7 +31,7 @@ public class MeasurementDto extends MeasurementIdentifierDto implements Serializ
     return this.qualifier;
   }
 
-  public DateTime getTime() {
+  public ZonedDateTime getTime() {
     return this.time;
   }
 

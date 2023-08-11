@@ -5,8 +5,7 @@
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands;
 
 import com.beanit.openiec61850.Fc;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import java.time.ZoneId;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -18,6 +17,7 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.QualityConverter;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.MeasurementDto;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 
 /**
  * @deprecated the structure of multiple mmxu/mmtr nodes within a single load device is replaced by
@@ -27,8 +27,8 @@ import org.opensmartgridplatform.dto.valueobjects.microgrids.MeasurementDto;
 @Deprecated
 public class Iec61850LoadActualPowerCommand implements RtuReadCommand<MeasurementDto> {
 
-  private LogicalNode logicalNode;
-  private int index;
+  private final LogicalNode logicalNode;
+  private final int index;
 
   public Iec61850LoadActualPowerCommand(final int index) {
     this.logicalNode = LogicalNode.fromString("MMXU" + index);
@@ -56,7 +56,8 @@ public class Iec61850LoadActualPowerCommand implements RtuReadCommand<Measuremen
         this.index,
         DataAttribute.ACTUAL_POWER.getDescription(),
         QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
-        new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
+        JavaTimeHelpers.zonedDateTimeFromDate(
+            containingNode.getDate(SubDataAttribute.TIME), ZoneId.of("UTC")),
         containingNode
             .getChild(SubDataAttribute.MAGNITUDE)
             .getFloat(SubDataAttribute.FLOAT)
