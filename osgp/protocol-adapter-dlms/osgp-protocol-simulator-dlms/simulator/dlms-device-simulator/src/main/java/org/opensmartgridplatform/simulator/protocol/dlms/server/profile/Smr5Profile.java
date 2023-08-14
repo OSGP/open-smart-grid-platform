@@ -4,42 +4,10 @@
 
 package org.opensmartgridplatform.simulator.protocol.dlms.server.profile;
 
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_ACTIVE_POWER_EXPORT_L1_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_ACTIVE_POWER_EXPORT_L2_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_ACTIVE_POWER_EXPORT_L3_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_ACTIVE_POWER_IMPORT_L1_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_ACTIVE_POWER_IMPORT_L2_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_ACTIVE_POWER_IMPORT_L3_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_CURRENT_L1_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_REACTIVE_POWER_EXPORT_L1_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_REACTIVE_POWER_EXPORT_L2_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_REACTIVE_POWER_EXPORT_L3_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_REACTIVE_POWER_IMPORT_L1_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_REACTIVE_POWER_IMPORT_L2_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_REACTIVE_POWER_IMPORT_L3_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_VOLTAGE_L1_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_VOLTAGE_L2_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_VOLTAGE_L3_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.CLOCK_TIME;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.INSTANTANEOUS_CURRENT_L1_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.INSTANTANEOUS_CURRENT_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.INSTANTANEOUS_VOLTAGE_L1_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.INSTANTANEOUS_VOLTAGE_L2_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.INSTANTANEOUS_VOLTAGE_L3_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.NUMBER_OF_LONG_POWER_FAILURES_IN_ANY_PHASE_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.NUMBER_OF_POWER_FAILURES_IN_ANY_PHASE_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L1_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L2_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L3_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L1_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L2_VALUE;
-import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L3_VALUE;
-
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.ObisCode;
@@ -75,41 +43,56 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 @Profile("smr5")
+@Slf4j
 public class Smr5Profile {
-  private static final List<CaptureObject> DEFAULT_CAPTURE_OBJECTS =
+
+  private static final int MAX_NUMBER_OF_CAPTURE_OBJECTS = 14;
+  private static final List<CaptureObject> POWER_QUALITY_1_CAPTURE_OBJECTS =
       Arrays.asList(
-          CLOCK_TIME,
-          INSTANTANEOUS_VOLTAGE_L1_VALUE,
-          INSTANTANEOUS_VOLTAGE_L2_VALUE,
-          INSTANTANEOUS_VOLTAGE_L3_VALUE,
-          AVERAGE_VOLTAGE_L1_VALUE,
-          AVERAGE_VOLTAGE_L2_VALUE,
-          AVERAGE_VOLTAGE_L3_VALUE,
-          INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1_VALUE,
-          INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1_VALUE,
-          AVERAGE_CURRENT_L1_VALUE,
-          AVERAGE_ACTIVE_POWER_IMPORT_L1_VALUE,
-          AVERAGE_ACTIVE_POWER_IMPORT_L2_VALUE,
-          AVERAGE_ACTIVE_POWER_IMPORT_L3_VALUE,
-          AVERAGE_ACTIVE_POWER_EXPORT_L1_VALUE,
-          AVERAGE_ACTIVE_POWER_EXPORT_L2_VALUE,
-          AVERAGE_ACTIVE_POWER_EXPORT_L3_VALUE,
-          AVERAGE_REACTIVE_POWER_IMPORT_L1_VALUE,
-          AVERAGE_REACTIVE_POWER_IMPORT_L2_VALUE,
-          AVERAGE_REACTIVE_POWER_IMPORT_L3_VALUE,
-          AVERAGE_REACTIVE_POWER_EXPORT_L1_VALUE,
-          AVERAGE_REACTIVE_POWER_EXPORT_L2_VALUE,
-          AVERAGE_REACTIVE_POWER_EXPORT_L3_VALUE,
-          NUMBER_OF_LONG_POWER_FAILURES_IN_ANY_PHASE_VALUE,
-          NUMBER_OF_POWER_FAILURES_IN_ANY_PHASE_VALUE,
-          NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L1_VALUE,
-          NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L1_VALUE,
-          NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L2_VALUE,
-          NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L2_VALUE,
-          NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L3_VALUE,
-          NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L3_VALUE,
-          INSTANTANEOUS_CURRENT_L1_VALUE,
-          INSTANTANEOUS_CURRENT_VALUE);
+          PowerQualityProfile1.CLOCK_TIME,
+          PowerQualityProfile1.AVERAGE_ACTIVE_POWER_IMPORT_L1_VALUE,
+          PowerQualityProfile1.AVERAGE_ACTIVE_POWER_IMPORT_L2_VALUE,
+          PowerQualityProfile1.AVERAGE_ACTIVE_POWER_IMPORT_L3_VALUE,
+          PowerQualityProfile1.AVERAGE_ACTIVE_POWER_EXPORT_L1_VALUE,
+          PowerQualityProfile1.AVERAGE_ACTIVE_POWER_EXPORT_L2_VALUE,
+          PowerQualityProfile1.AVERAGE_ACTIVE_POWER_EXPORT_L3_VALUE,
+          PowerQualityProfile1.AVERAGE_REACTIVE_POWER_IMPORT_L1_VALUE,
+          PowerQualityProfile1.AVERAGE_REACTIVE_POWER_IMPORT_L2_VALUE,
+          PowerQualityProfile1.AVERAGE_REACTIVE_POWER_IMPORT_L3_VALUE,
+          PowerQualityProfile1.AVERAGE_REACTIVE_POWER_EXPORT_L1_VALUE,
+          PowerQualityProfile1.AVERAGE_REACTIVE_POWER_EXPORT_L2_VALUE,
+          PowerQualityProfile1.AVERAGE_REACTIVE_POWER_EXPORT_L3_VALUE);
+
+  private static final List<CaptureObject> POWER_QUALITY_2_CAPTURE_OBJECTS =
+      Arrays.asList(
+          PowerQualityProfile2.CLOCK_TIME,
+          PowerQualityProfile2.AVERAGE_VOLTAGE_L1_VALUE,
+          PowerQualityProfile2.AVERAGE_VOLTAGE_L2_VALUE,
+          PowerQualityProfile2.AVERAGE_VOLTAGE_L3_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_VOLTAGE_L1_VALUE,
+          PowerQualityProfile2.AVERAGE_CURRENT_L1_VALUE,
+          PowerQualityProfile2.AVERAGE_CURRENT_L2_VALUE,
+          PowerQualityProfile2.AVERAGE_CURRENT_L3_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_CURRENT_L1_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_IMPORT_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_EXPORT_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3_VALUE);
+
+  private static final List<CaptureObject> DEFINABLE_LOAD_CAPTURE_OBJECTS =
+      Arrays.asList(
+          DefinableLoadProfile.CLOCK_TIME,
+          DefinableLoadProfile.NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L1_VALUE,
+          DefinableLoadProfile.NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L2_VALUE,
+          DefinableLoadProfile.NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L3_VALUE,
+          DefinableLoadProfile.NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L1_VALUE,
+          DefinableLoadProfile.NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L2_VALUE,
+          DefinableLoadProfile.NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L3_VALUE,
+          DefinableLoadProfile.NUMBER_OF_POWER_FAILURES_IN_ANY_PHASE_VALUE);
 
   @Value("${firmware.mbusdriver.active.identifier}")
   private String mBusDriverActiveFirmwareIdentifier;
@@ -227,13 +210,42 @@ public class Smr5Profile {
   }
 
   @Bean
-  public PowerQualityProfile1 powerQualityProfile1(final Calendar cal) {
-    return new PowerQualityProfile1(cal);
+  public PowerQualityProfile1 powerQualityProfile1(
+      final DynamicValues dynamicValues, final Calendar cal) {
+    final Integer classId = InterfaceClass.PROFILE_GENERIC.id();
+    final ObisCode obisCode = new ObisCode(PowerQualityProfile1.LOGICAL_NAME);
+    dynamicValues.setDefaultAttributeValue(
+        classId,
+        obisCode,
+        ProfileGenericAttribute.CAPTURE_PERIOD.attributeId(),
+        DataObject.newUInteger32Data(PowerQualityProfile1.CAPTURE_PERIOD));
+    dynamicValues.setDefaultAttributeValue(
+        classId,
+        obisCode,
+        ProfileGenericAttribute.PROFILE_ENTRIES.attributeId(),
+        DataObject.newUInteger32Data(PowerQualityProfile1.PROFILE_ENTRIES));
+    return new PowerQualityProfile1(
+        dynamicValues, cal, MAX_NUMBER_OF_CAPTURE_OBJECTS, POWER_QUALITY_1_CAPTURE_OBJECTS);
   }
 
   @Bean
-  public PowerQualityProfile2 powerQualityProfile2(final Calendar cal) {
-    return new PowerQualityProfile2(cal);
+  public PowerQualityProfile2 powerQualityProfile2(
+      final DynamicValues dynamicValues, final Calendar cal) {
+    log.info("------------  Create bean powerQualityProfile2");
+    final Integer classId = InterfaceClass.PROFILE_GENERIC.id();
+    final ObisCode obisCode = new ObisCode(PowerQualityProfile2.LOGICAL_NAME);
+    dynamicValues.setDefaultAttributeValue(
+        classId,
+        obisCode,
+        ProfileGenericAttribute.CAPTURE_PERIOD.attributeId(),
+        DataObject.newUInteger32Data(PowerQualityProfile2.CAPTURE_PERIOD));
+    dynamicValues.setDefaultAttributeValue(
+        classId,
+        obisCode,
+        ProfileGenericAttribute.PROFILE_ENTRIES.attributeId(),
+        DataObject.newUInteger32Data(PowerQualityProfile2.PROFILE_ENTRIES));
+    return new PowerQualityProfile2(
+        dynamicValues, cal, MAX_NUMBER_OF_CAPTURE_OBJECTS, POWER_QUALITY_2_CAPTURE_OBJECTS);
   }
 
   @Bean
@@ -454,6 +466,7 @@ public class Smr5Profile {
         ProfileGenericAttribute.PROFILE_ENTRIES.attributeId(),
         DataObject.newUInteger32Data(960));
 
-    return new DefinableLoadProfile(dynamicValues, cal, 20, DEFAULT_CAPTURE_OBJECTS);
+    return new DefinableLoadProfile(
+        dynamicValues, cal, MAX_NUMBER_OF_CAPTURE_OBJECTS, DEFINABLE_LOAD_CAPTURE_OBJECTS);
   }
 }

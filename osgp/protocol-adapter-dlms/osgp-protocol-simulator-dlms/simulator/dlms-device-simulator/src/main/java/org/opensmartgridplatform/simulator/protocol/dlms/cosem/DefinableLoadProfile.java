@@ -4,14 +4,10 @@
 
 package org.opensmartgridplatform.simulator.protocol.dlms.cosem;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import org.apache.commons.collections4.queue.CircularFifoQueue;
-import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAccessMode;
 import org.openmuc.jdlms.CosemAttribute;
 import org.openmuc.jdlms.CosemClass;
@@ -22,29 +18,16 @@ import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CaptureObjectDefinition;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CaptureObjectDefinitionCollection;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CosemDateTimeProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.DataProcessor;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.Integer32DataProcessor;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger16DataProcessor;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger32DataProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @CosemClass(id = 7)
-public class DefinableLoadProfile extends ProfileGeneric {
+public class DefinableLoadProfile extends DynamicProfile {
   private static final Logger LOGGER = LoggerFactory.getLogger(DefinableLoadProfile.class);
-
-  private static final int MAX_PROFILE_ENTRIES = 960;
-
-  private static final DataProcessor COSEM_DATE_TIME_PROCESSOR = new CosemDateTimeProcessor();
-  private static final DataProcessor LONG_UNSIGNED_PROCESSOR = new UInteger16DataProcessor();
-  private static final DataProcessor DOUBLE_LONG_PROCESSOR = new Integer32DataProcessor();
-  private static final DataProcessor DOUBLE_LONG_UNSIGNED_PROCESSOR = new UInteger32DataProcessor();
+  private static final String LOGICAL_NAME_DEFINABLE_LOAD_PROFILE = "0.1.94.31.6.255";
   private static final Map<CaptureObject, DataProcessor> PROCESSORS_BY_CAPTURE_OBJECT =
       new HashMap<>();
 
@@ -453,219 +436,60 @@ public class DefinableLoadProfile extends ProfileGeneric {
       snOffset = 0x38)
   private DataObject profileEntries;
 
-  private final DynamicValues dynamicValues;
-  private final Calendar time;
-  private final Integer maxNumberOfCaptureObjects;
-
-  private final Random random = new Random();
-
   public DefinableLoadProfile(
       final DynamicValues dynamicValues,
       final Calendar time,
       final Integer maxNumberOfCaptureObjects,
       final List<CaptureObject> captureObjectList) {
-    super("0.1.94.31.6.255");
-    this.dynamicValues = dynamicValues;
-    this.maxNumberOfCaptureObjects = maxNumberOfCaptureObjects;
-    this.time = time;
+    super(
+        LOGICAL_NAME_DEFINABLE_LOAD_PROFILE,
+        dynamicValues,
+        time,
+        maxNumberOfCaptureObjects,
+        captureObjectList,
+        PROCESSORS_BY_CAPTURE_OBJECT);
 
     this.buffer = DataObject.newNullData();
-    this.captureObjects = this.newCaptureObjectsData(captureObjectList);
     this.sortMethod = DataObject.newEnumerateData(SortMethod.FIFO.value());
     this.sortObject = DataObject.newNullData();
     this.entriesInUse = DataObject.newNullData();
   }
 
-  private DataObject newCaptureObjectsData(final List<CaptureObject> captureObjectList) {
-    final List<DataObject> dataObjectList = new ArrayList<>();
-    for (final CaptureObject captureObject : captureObjectList) {
-      dataObjectList.add(captureObject.asDataObject());
-    }
-    return DataObject.newArrayData(dataObjectList);
-  }
-
-  /** Initializes buffer with some data. */
-  private void initBufferData() {
-
-    final long numberOfProfileEntries = this.getProfileEntries().getValue();
-
-    this.bufferData = new CircularFifoQueue<>((int) numberOfProfileEntries);
-
-    final List<CaptureObject> captureObjectDefinitions = this.getCaptureObjectDefinitions();
-    final int numberOfCaptureObjects = captureObjectDefinitions.size();
-    final long capturePeriodSeconds = this.getCapturePeriod().getValue();
-
-    for (int i = 0; i < numberOfProfileEntries; i++) {
-      final Calendar cal = this.getNextDateTime((int) capturePeriodSeconds);
-      final List<Object> profileEntryList = new ArrayList<>();
-      profileEntryList.add(cal);
-      for (int j = 1; j < numberOfCaptureObjects; j++) {
-        final CaptureObject captureObject = captureObjectDefinitions.get(j);
-        this.addProfileEntry(profileEntryList, captureObject, cal, this.random);
-      }
-      this.bufferData.add(profileEntryList);
-    }
-  }
-
-  private void addProfileEntry(
-      final List<Object> profileEntryList,
-      final CaptureObject captureObject,
-      final Calendar profileEntryTime,
-      final Random random) {
-
-    final DataProcessor processor = PROCESSORS_BY_CAPTURE_OBJECT.get(captureObject);
-    if (COSEM_DATE_TIME_PROCESSOR == processor) {
-      profileEntryList.add(profileEntryTime);
-    } else if (LONG_UNSIGNED_PROCESSOR == processor) {
-      /*
-       * Random value in the range of valid long-unsigned values [0 ..
-       * 0xFFFF]
-       */
-      profileEntryList.add(random.nextInt(0xFFFF + 1));
-    } else if (DOUBLE_LONG_PROCESSOR == processor) {
-      /*
-       * Random value in the range of valid double-long values (any int)
-       */
-      int next = random.nextInt();
-      if (random.nextBoolean()) {
-        next = -next;
-      }
-      profileEntryList.add(next);
-    } else if (DOUBLE_LONG_UNSIGNED_PROCESSOR == processor) {
-      /*
-       * Random value in the range of valid double-long-unsigned values [0
-       * .. 0xFFFFFFFFL]
-       */
-      profileEntryList.add(Math.max(0xFFFFFFFFL, random.nextLong()));
-    }
-  }
-
-  private List<CaptureObject> getCaptureObjectDefinitions() {
-    final List<DataObject> captureObjectList = this.captureObjects.getValue();
-    final List<CaptureObject> captureObjectDefinitions = new ArrayList<>();
-    for (final DataObject captureObject : captureObjectList) {
-      captureObjectDefinitions.add(CaptureObject.newCaptureObject(captureObject));
-    }
-    return captureObjectDefinitions;
-  }
-
-  private Calendar getNextDateTime(final int capturePeriodSeconds) {
-    final Calendar next = (Calendar) this.time.clone();
-    this.time.add(Calendar.SECOND, capturePeriodSeconds);
-    return next;
-  }
-
-  @Override
-  protected CaptureObjectDefinitionCollection getCaptureObjectDefinitionCollection() {
-    final List<DataObject> dataObjectList = this.captureObjects.getValue();
-    final CaptureObjectDefinitionCollection definitions = new CaptureObjectDefinitionCollection();
-    for (final DataObject dataObject : dataObjectList) {
-      final CaptureObject captureObject = CaptureObject.newCaptureObject(dataObject);
-      definitions.add(
-          new CaptureObjectDefinition(
-              captureObject, PROCESSORS_BY_CAPTURE_OBJECT.get(captureObject)));
-    }
-    return definitions;
-  }
-
   @Override
   public DataObject getBuffer(final SelectiveAccessDescription selectiveAccessDescription) {
-    if (this.bufferData == null) {
-      this.initBufferData();
-    }
+    LOGGER.info("-DLP- getBuffer");
     return super.getBuffer(selectiveAccessDescription);
   }
 
   @Override
   public DataObject getCaptureObjects() {
-    return this.captureObjects;
+    return super.getCaptureObjects();
   }
 
+  @Override
   public void setCaptureObjects(final DataObject captureObjects)
       throws IllegalAttributeAccessException {
-    final List<DataObject> captureObjectList = captureObjects.getValue();
-    final int numberOfCaptureObjects = captureObjectList.size();
-    if (this.maxNumberOfCaptureObjects != null
-        && numberOfCaptureObjects > this.maxNumberOfCaptureObjects) {
-      LOGGER.error(
-          "Number of capture objects larger than supported (max {}): {}",
-          this.maxNumberOfCaptureObjects,
-          numberOfCaptureObjects);
-      throw new IllegalAttributeAccessException(
-          AccessResultCode.OTHER_REASON,
-          new IllegalArgumentException(
-              "Number of capture objects larger than supported (max "
-                  + this.maxNumberOfCaptureObjects
-                  + "): "
-                  + numberOfCaptureObjects));
-    }
-    this.reinitializeCaptureObjects(captureObjectList);
-    this.captureObjects = captureObjects;
-    /*
-     * Setting the capture objects has an effect on the buffer. Make sure
-     * the buffer will be reinitialized when getBuffer is called.
-     */
-    this.bufferData = null;
+    super.setCaptureObjects(captureObjects);
   }
 
-  private void reinitializeCaptureObjects(final List<DataObject> captureObjectList)
-      throws IllegalAttributeAccessException {
-    for (final DataObject captureObject : captureObjectList) {
-      final CaptureObject initCaptureObject;
-      try {
-        initCaptureObject = CaptureObject.newCaptureObject(captureObject);
-      } catch (final RuntimeException e) {
-        throw new IllegalAttributeAccessException(
-            AccessResultCode.OTHER_REASON,
-            new IllegalArgumentException(
-                "Unable to create capture object from: " + captureObject, e));
-      }
-      if (!PROCESSORS_BY_CAPTURE_OBJECT.containsKey(initCaptureObject)) {
-        LOGGER.error("No data processor configured for {}", initCaptureObject);
-        throw new IllegalAttributeAccessException(
-            AccessResultCode.OTHER_REASON,
-            new IllegalArgumentException("No data processor configured for " + initCaptureObject));
-      }
-    }
-  }
-
+  @Override
   public DataObject getCapturePeriod() {
-    return this.dynamicValues.getDlmsAttributeValue(
-        this, ProfileGenericAttribute.CAPTURE_PERIOD.attributeId());
+    return super.getCapturePeriod();
   }
 
+  @Override
   public void setCapturePeriod(final DataObject capturePeriod) {
-    this.dynamicValues.setDlmsAttributeValue(
-        this, ProfileGenericAttribute.CAPTURE_PERIOD.attributeId(), capturePeriod);
+    super.setCapturePeriod(capturePeriod);
   }
 
+  @Override
   public DataObject getProfileEntries() {
-    return this.dynamicValues.getDlmsAttributeValue(
-        this, ProfileGenericAttribute.PROFILE_ENTRIES.attributeId());
+    return super.getProfileEntries();
   }
 
+  @Override
   public void setProfileEntries(final DataObject profileEntries)
       throws IllegalAttributeAccessException {
-    final long numberOfProfileEntries = profileEntries.getValue();
-    if (numberOfProfileEntries > MAX_PROFILE_ENTRIES) {
-      LOGGER.error(
-          "Number of profile entries larger than supported (max {}): {}",
-          MAX_PROFILE_ENTRIES,
-          numberOfProfileEntries);
-      throw new IllegalAttributeAccessException(
-          AccessResultCode.OTHER_REASON,
-          new IllegalArgumentException(
-              "Number of profile entries larger than supported (max "
-                  + MAX_PROFILE_ENTRIES
-                  + "): "
-                  + numberOfProfileEntries));
-    }
-    this.dynamicValues.setDlmsAttributeValue(
-        this, ProfileGenericAttribute.PROFILE_ENTRIES.attributeId(), profileEntries);
-    /*
-     * Setting the number of profile entries has an effect on the buffer.
-     * Make sure the buffer will be reinitialized when getBuffer is called.
-     */
-    this.bufferData = null;
+    super.setProfileEntries(profileEntries);
   }
 }
