@@ -21,12 +21,9 @@ import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.DataProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @CosemClass(id = 7)
 public class DefinableLoadProfile extends DynamicProfile {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefinableLoadProfile.class);
   private static final String LOGICAL_NAME_DEFINABLE_LOAD_PROFILE = "0.1.94.31.6.255";
   private static final Map<CaptureObject, DataProcessor> PROCESSORS_BY_CAPTURE_OBJECT =
       new HashMap<>();
@@ -457,7 +454,6 @@ public class DefinableLoadProfile extends DynamicProfile {
 
   @Override
   public DataObject getBuffer(final SelectiveAccessDescription selectiveAccessDescription) {
-    LOGGER.info("-DLP- getBuffer");
     return super.getBuffer(selectiveAccessDescription);
   }
 

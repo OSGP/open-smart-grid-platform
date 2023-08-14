@@ -14,12 +14,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObject;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityProfileData;
+import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.GetPowerQualityProfileRequestBuilder;
 
 @Slf4j
@@ -35,6 +38,8 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
 
   public static final String UNIT = "unit";
 
+  private static final String LAST_RESPONSE = "last_response";
+
   @Given("^the bundle request contains a get power quality profile request with parameters$")
   public void theBundleRequestContainsAGetPowerQualityProfileRequestAction(
       final Map<String, String> parameters) throws Throwable {
@@ -45,18 +50,41 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
     this.addActionToBundleRequest(action);
   }
 
-  @Then("^the bundle response should contain a power quality profile response with (\\d++) values$")
+  @Then(
+      "^the same bundle response should contain a power quality profile response with (\\d++) values for profile \"([^\"]*)\"$")
+  public void theSameBundleResponseShouldContainAGetPowerQualityProfileResponse(
+      final int nrOfValues, final String profileLogicalName, final DataTable valuesDataTable)
+      throws Throwable {
+
+    final Response response = (Response)ScenarioContext.current().get(LAST_RESPONSE);
+    this.theBundleResponseShouldContainAGetPowerQualityProfileResponse(nrOfValues, profileLogicalName, response, valuesDataTable);
+  }
+
+  @Then(
+      "^the bundle response should contain a power quality profile response with (\\d++) values for profile \"([^\"]*)\"$")
   public void theBundleResponseShouldContainAGetPowerQualityProfileResponse(
-      final int nrOfValues, final DataTable valuesDataTable) throws Throwable {
+      final int nrOfValues, final String profileLogicalName, final DataTable valuesDataTable)
+      throws Throwable {
 
     final Response response = this.getNextBundleResponse();
+    ScenarioContext.current().put(LAST_RESPONSE, response);
+
+    this.theBundleResponseShouldContainAGetPowerQualityProfileResponse(nrOfValues, profileLogicalName, response, valuesDataTable);
+  }
+  public void theBundleResponseShouldContainAGetPowerQualityProfileResponse(
+      final int nrOfValues, final String profileLogicalName, final Response response, final DataTable valuesDataTable) {
 
     assertThat(response).isInstanceOf(GetPowerQualityProfileResponse.class);
 
     final GetPowerQualityProfileResponse getPowerQualityProfileResponse =
         (GetPowerQualityProfileResponse) response;
-    final PowerQualityProfileData powerQualityProfileData =
-        getPowerQualityProfileResponse.getPowerQualityProfileDatas().get(0);
+    final Optional<PowerQualityProfileData> optionalPowerQualityProfileData =
+        getPowerQualityProfileResponse.getPowerQualityProfileDatas().stream()
+            .filter(data -> this.matches(new ObisCode(profileLogicalName), data.getLogicalName()))
+            .findFirst();
+
+    assertThat(optionalPowerQualityProfileData).isPresent();
+    final PowerQualityProfileData powerQualityProfileData = optionalPowerQualityProfileData.get();
 
     this.logData(powerQualityProfileData);
 
@@ -80,6 +108,19 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
 
     assertThat(powerQualityProfileData.getProfileEntryList().getProfileEntries())
         .hasSize(nrOfValues);
+  }
+
+  private boolean matches(final ObisCode obisCode, final ObisCodeValues logicalName) {
+    final String obisCodeValue =
+        String.format(
+            "%d.%d.%d.%d.%d.%d",
+            logicalName.getA(),
+            logicalName.getB(),
+            logicalName.getC(),
+            logicalName.getD(),
+            logicalName.getE(),
+            logicalName.getF());
+    return (obisCodeValue).equals(obisCode.asDecimalString());
   }
 
   private void assertCaptureObjectIsExpected(

@@ -21,12 +21,9 @@ import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.DataProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @CosemClass(id = 7)
 public class PowerQualityProfile2 extends DynamicProfile {
-  private static final Logger LOGGER = LoggerFactory.getLogger(PowerQualityProfile2.class);
   /** Every 10 minutes. */
   public static final int CAPTURE_PERIOD = 600;
 
@@ -138,50 +135,50 @@ public class PowerQualityProfile2 extends DynamicProfile {
   public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_IMPORT_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
-          "1.0.1.7.0.255",
+          INSTANTANEOUS_ACTIVE_POWER_IMPORT_LOGICAL_NAME,
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
   public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_EXPORT_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
-          "1.0.2.7.0.255",
+          INSTANTANEOUS_ACTIVE_POWER_EXPORT_LOGICAL_NAME,
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
 
   public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
-          "1.0.21.7.0.255",
+          INSTANTANEOUS_ACTIVE_POWER_IMPORT_LOGICAL_NAME,
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
   public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
-          "1.0.41.7.0.255",
+          INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2_LOGICAL_NAME,
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
   public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
-          "1.0.61.7.0.255",
+          INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3_LOGICAL_NAME,
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
   public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
-          "1.0.22.7.0.255",
+          INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1_LOGICAL_NAME,
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
   public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
-          "1.0.42.7.0.255",
+          INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2_LOGICAL_NAME,
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
   public static final CaptureObject INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3_VALUE =
       new CaptureObject(
           InterfaceClass.REGISTER.id(),
-          "1.0.62.7.0.255",
+          INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3_LOGICAL_NAME,
           (byte) RegisterAttribute.VALUE.attributeId(),
           0);
 
@@ -289,7 +286,6 @@ public class PowerQualityProfile2 extends DynamicProfile {
         maxNumberOfCaptureObjects,
         captureObjectList,
         PROCESSORS_BY_CAPTURE_OBJECT);
-    LOGGER.info("---------------------PowerQualityProfile2");
 
     this.buffer = DataObject.newNullData();
     this.sortMethod = DataObject.newEnumerateData(SortMethod.FIFO.value());
@@ -299,7 +295,6 @@ public class PowerQualityProfile2 extends DynamicProfile {
 
   @Override
   public DataObject getBuffer(final SelectiveAccessDescription selectiveAccessDescription) {
-    LOGGER.info("-PQ2- getBuffer");
     return super.getBuffer(selectiveAccessDescription);
   }
 

@@ -19,9 +19,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CosemDateTimeProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.DataProcessor;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger16DataProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
 
 @CosemClass(id = 7)
@@ -47,8 +45,6 @@ public class PowerQualityProfile1 extends DynamicProfile {
 
   private static final Map<CaptureObject, DataProcessor> PROCESSORS_BY_CAPTURE_OBJECT =
       new HashMap<>();
-  private static final DataProcessor COSEM_DATE_TIME_PROCESSOR = new CosemDateTimeProcessor();
-  private static final DataProcessor LONG_UNSIGNED_PROCESSOR = new UInteger16DataProcessor();
 
   public static final CaptureObject CLOCK_TIME =
       new CaptureObject(

@@ -99,15 +99,15 @@ public abstract class DynamicProfile extends ProfileGeneric {
       final Random random) {
 
     final DataProcessor processor = this.dataProcessorByCaptureObject.get(captureObject);
-    if (COSEM_DATE_TIME_PROCESSOR == processor) {
+    if (processor instanceof CosemDateTimeProcessor) {
       profileEntryList.add(profileEntryTime);
-    } else if (LONG_UNSIGNED_PROCESSOR == processor) {
+    } else if (processor instanceof UInteger16DataProcessor) {
       /*
        * Random value in the range of valid long-unsigned values [0 ..
        * 0xFFFF]
        */
       profileEntryList.add(random.nextInt(0xFFFF + 1));
-    } else if (DOUBLE_LONG_PROCESSOR == processor) {
+    } else if (processor instanceof Integer32DataProcessor) {
       /*
        * Random value in the range of valid double-long values (any int)
        */
@@ -116,13 +116,21 @@ public abstract class DynamicProfile extends ProfileGeneric {
         next = -next;
       }
       profileEntryList.add(next);
-    } else if (DOUBLE_LONG_UNSIGNED_PROCESSOR == processor) {
+    } else if (processor instanceof UInteger32DataProcessor) {
       /*
        * Random value in the range of valid double-long-unsigned values [0
        * .. 0xFFFFFFFFL]
        */
-      profileEntryList.add(Math.max(0xFFFFFFFFL, random.nextLong()));
+      profileEntryList.add(this.randomDoubleLongUnsigned());
+    } else {
+      throw new IllegalArgumentException("Unknown data processor class: " + processor.getClass());
     }
+  }
+
+  private long randomDoubleLongUnsigned() {
+    final long minValue = 0;
+    final long maxValue = 0xFFFFFFFFL;
+    return minValue + (long) (Math.random() * (maxValue - minValue));
   }
 
   private List<CaptureObject> getCaptureObjectDefinitions() {
@@ -155,13 +163,10 @@ public abstract class DynamicProfile extends ProfileGeneric {
 
   @Override
   public DataObject getBuffer(final SelectiveAccessDescription selectiveAccessDescription) {
-    LOGGER.info("-DP-getBuffer");
     if (this.bufferData == null) {
-      LOGGER.info("-DP-initBufferData");
       this.initBufferData();
-      LOGGER.info("-DP-initBufferData2");
     }
-    LOGGER.info("-DP-super.getBuffer(selectiveAccessDescription)");
+    this.initBufferData();
     return super.getBuffer(selectiveAccessDescription);
   }
 
