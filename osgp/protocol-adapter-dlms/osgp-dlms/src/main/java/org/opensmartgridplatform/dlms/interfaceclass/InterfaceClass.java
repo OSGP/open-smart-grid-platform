@@ -30,6 +30,7 @@ public enum InterfaceClass {
   STATUS_MAPPING(63, 0),
   DISCONNECT_CONTROL(70, 0),
   MBUS_CLIENT(72, 1),
+  MBUS_DIAGNOSTIC(77, 0),
 
   // Protocol related interface classes
   IEC_LOCAL_PORT_SETUP(19, 1),

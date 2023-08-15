@@ -37,6 +37,7 @@ public abstract class DynamicProfile extends ProfileGeneric {
   protected static final DataProcessor COSEM_DATE_TIME_PROCESSOR = new CosemDateTimeProcessor();
   protected static final DataProcessor GSM_DIAGNOSTIC_CELL_INFO_PROCESSOR =
       new GsmDiagnosticCellInfoProcessor();
+  protected static final DataProcessor UNSIGNED_PROCESSOR = new UInteger8DataProcessor();
   protected static final DataProcessor LONG_UNSIGNED_PROCESSOR = new UInteger16DataProcessor();
   protected static final DataProcessor DOUBLE_LONG_PROCESSOR = new Integer32DataProcessor();
   protected static final DataProcessor DOUBLE_LONG_UNSIGNED_PROCESSOR =
@@ -104,7 +105,9 @@ public abstract class DynamicProfile extends ProfileGeneric {
       final Random random) {
 
     final DataProcessor processor = this.dataProcessorByCaptureObject.get(captureObject);
-    if (processor instanceof GsmDiagnosticCellInfoProcessor) {
+    if (processor instanceof CosemDateTimeProcessor) {
+      profileEntryList.add(profileEntryTime);
+    } else if (processor instanceof GsmDiagnosticCellInfoProcessor) {
       /*
        * Signal quality: 0-31 or 99
        * ber: 0-7 or 99
@@ -112,14 +115,12 @@ public abstract class DynamicProfile extends ProfileGeneric {
       final CellInfo cellInfo =
           new CellInfo(1L, 1, (short) random.nextInt(31), (short) random.nextInt(7), 1, 1, 1);
       profileEntryList.add(cellInfo);
-    } else if (processor instanceof CosemDateTimeProcessor) {
-      profileEntryList.add(profileEntryTime);
     } else if (processor instanceof UInteger8DataProcessor) {
       /*
        * Random value in the range of valid unsigned values [0 ..
        * 0xFF]
        */
-      profileEntryList.add(random.nextInt(0xFF + 1));
+      profileEntryList.add((short) random.nextInt(0xFF + 1));
     } else if (processor instanceof UInteger16DataProcessor) {
       /*
        * Random value in the range of valid long-unsigned values [0 ..

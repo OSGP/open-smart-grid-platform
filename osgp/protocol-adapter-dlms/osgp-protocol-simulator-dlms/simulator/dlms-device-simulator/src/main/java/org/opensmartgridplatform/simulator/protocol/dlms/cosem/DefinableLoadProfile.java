@@ -19,6 +19,8 @@ import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.MbusClientAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.MbusDiagnosticAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.DataProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
@@ -38,32 +40,70 @@ public class DefinableLoadProfile extends DynamicProfile {
           InterfaceClass.GSM_DIAGNOSTIC.id(),
           "0.1.25.6.0.255",
           (byte) GsmDiagnosticAttribute.CELL_INFO.attributeId(),
-          2);
+          3);
 
   public static final CaptureObject GPRS_DIAGNOSTIC_SIGNAL_QUALITY =
       new CaptureObject(
           InterfaceClass.GSM_DIAGNOSTIC.id(),
           "0.0.25.6.0.255",
           (byte) GsmDiagnosticAttribute.CELL_INFO.attributeId(),
-          2);
+          3);
 
   public static final CaptureObject CDMA_DIAGNOSTIC_BER =
       new CaptureObject(
           InterfaceClass.GSM_DIAGNOSTIC.id(),
           "0.1.25.6.0.255",
           (byte) GsmDiagnosticAttribute.CELL_INFO.attributeId(),
-          3);
+          4);
 
   public static final CaptureObject GPRS_DIAGNOSTIC_BER =
       new CaptureObject(
           InterfaceClass.GSM_DIAGNOSTIC.id(),
           "0.0.25.6.0.255",
           (byte) GsmDiagnosticAttribute.CELL_INFO.attributeId(),
-          3);
+          4);
 
+  public static final CaptureObject MBUS_CLIENT_SETUP_CHN1_VALUE =
+      new CaptureObject(
+          InterfaceClass.MBUS_CLIENT.id(),
+          "0.1.24.1.0.255",
+          (byte) MbusClientAttribute.STATUS.attributeId(),
+          0);
+  public static final CaptureObject MBUS_CLIENT_SETUP_CHN2_VALUE =
+      new CaptureObject(
+          InterfaceClass.MBUS_CLIENT.id(),
+          "0.2.24.1.0.255",
+          (byte) MbusClientAttribute.STATUS.attributeId(),
+          0);
+
+  public static final CaptureObject MBUS_DIAGNOSTIC_RSSI_CHN1_VALUE =
+      new CaptureObject(
+          InterfaceClass.MBUS_DIAGNOSTIC.id(),
+          "0.1.24.9.0.255",
+          (byte) MbusDiagnosticAttribute.RECEIVED_SIGNAL_STRENGTH.attributeId(),
+          0);
+  public static final CaptureObject MBUS_DIAGNOSTIC_RSSI_CHN2_VALUE =
+      new CaptureObject(
+          InterfaceClass.MBUS_DIAGNOSTIC.id(),
+          "0.2.24.9.0.255",
+          (byte) MbusDiagnosticAttribute.RECEIVED_SIGNAL_STRENGTH.attributeId(),
+          0);
+  public static final CaptureObject MBUS_DIAGNOSTIC_FCS_NOK_CHN1_VALUE =
+      new CaptureObject(
+          InterfaceClass.MBUS_DIAGNOSTIC.id(),
+          "0.1.24.9.0.255",
+          (byte) MbusDiagnosticAttribute.FCS_NOK_FRAMES_COUNTER.attributeId(),
+          0);
+  public static final CaptureObject MBUS_DIAGNOSTIC_FCS_NOK_CHN2_VALUE =
+      new CaptureObject(
+          InterfaceClass.MBUS_DIAGNOSTIC.id(),
+          "0.2.24.9.0.255",
+          (byte) MbusDiagnosticAttribute.FCS_NOK_FRAMES_COUNTER.attributeId(),
+          0);
   public static final CaptureObject NUMBER_OF_POWER_FAILURES_IN_ANY_PHASE_VALUE =
       new CaptureObject(
           InterfaceClass.DATA.id(), "0.0.96.7.21.255", (byte) DataAttribute.VALUE.attributeId(), 0);
+
   public static final CaptureObject NUMBER_OF_LONG_POWER_FAILURES_IN_ANY_PHASE_VALUE =
       new CaptureObject(
           InterfaceClass.DATA.id(), "0.0.96.7.9.255", (byte) DataAttribute.VALUE.attributeId(), 0);
@@ -337,6 +377,13 @@ public class DefinableLoadProfile extends DynamicProfile {
         GPRS_DIAGNOSTIC_SIGNAL_QUALITY, GSM_DIAGNOSTIC_CELL_INFO_PROCESSOR);
     PROCESSORS_BY_CAPTURE_OBJECT.put(CDMA_DIAGNOSTIC_BER, GSM_DIAGNOSTIC_CELL_INFO_PROCESSOR);
     PROCESSORS_BY_CAPTURE_OBJECT.put(GPRS_DIAGNOSTIC_BER, GSM_DIAGNOSTIC_CELL_INFO_PROCESSOR);
+    PROCESSORS_BY_CAPTURE_OBJECT.put(MBUS_CLIENT_SETUP_CHN1_VALUE, UNSIGNED_PROCESSOR);
+    PROCESSORS_BY_CAPTURE_OBJECT.put(MBUS_CLIENT_SETUP_CHN2_VALUE, UNSIGNED_PROCESSOR);
+    PROCESSORS_BY_CAPTURE_OBJECT.put(MBUS_DIAGNOSTIC_RSSI_CHN1_VALUE, UNSIGNED_PROCESSOR);
+    PROCESSORS_BY_CAPTURE_OBJECT.put(MBUS_DIAGNOSTIC_RSSI_CHN2_VALUE, UNSIGNED_PROCESSOR);
+    PROCESSORS_BY_CAPTURE_OBJECT.put(MBUS_DIAGNOSTIC_FCS_NOK_CHN1_VALUE, UNSIGNED_PROCESSOR);
+    PROCESSORS_BY_CAPTURE_OBJECT.put(MBUS_DIAGNOSTIC_FCS_NOK_CHN2_VALUE, UNSIGNED_PROCESSOR);
+
     PROCESSORS_BY_CAPTURE_OBJECT.put(
         NUMBER_OF_POWER_FAILURES_IN_ANY_PHASE_VALUE, LONG_UNSIGNED_PROCESSOR);
     PROCESSORS_BY_CAPTURE_OBJECT.put(

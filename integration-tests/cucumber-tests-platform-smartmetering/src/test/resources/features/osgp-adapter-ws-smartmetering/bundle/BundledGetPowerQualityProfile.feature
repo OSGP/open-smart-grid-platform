@@ -58,8 +58,7 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
       | Number of Powerfailures           |       1 | 0.0.96.7.21.255 |              2 |         0 | UNDEFINED |
       | Instantaneous voltage L1          |       3 | 1.0.32.7.0.255  |              2 |         0 | V         |
       | Average voltage L1	              |       3 | 1.0.32.24.0.255 |              2 |         0 | V         |
-      | CDMA Diagnostics (Signal quality) |      47 | 0.1.25.6.0.255  |              6 |         2 | dBm       |
-# TODO: unit dBm ipv UNDEFINED voor Signal quality
+      | CDMA Diagnostics (Signal quality) |      47 | 0.1.25.6.0.255  |              6 |         3 | UNDEFINED |
 
     Examples:
       | deviceIdentification | port | protocol | version |
@@ -118,8 +117,7 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
       | Average voltage L2	              |       3 | 1.0.52.24.0.255 |              2 |         0 | V         |
       | Instantaneous voltage L3          |       3 | 1.0.72.7.0.255  |              2 |         0 | V         |
       | Average voltage L3	              |       3 | 1.0.72.24.0.255 |              2 |         0 | V         |
-      | CDMA Diagnostics (Signal quality) |      47 | 0.1.25.6.0.255  |              6 |         2 | dBm       |
-# TODO: unit dBm ipv UNDEFINED voor Signal quality
+      | CDMA Diagnostics (Signal quality) |      47 | 0.1.25.6.0.255  |              6 |         3 | UNDEFINED |
 
     Examples:
       | deviceIdentification | port | protocol | version |
@@ -217,16 +215,16 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
       | Number of voltage sags in phase L1    |       1 | 1.0.32.32.0.255 |              2 |         0 | UNDEFINED |
       | Number of voltage swells in phase L1  |       1 | 1.0.32.36.0.255 |              2 |         0 | UNDEFINED |
       | Number of power failures in any phase |       1 | 0.0.96.7.21.255 |              2 |         0 | UNDEFINED |
-      | CDMA Diagnostics (Signal quality)     |      47 | 0.1.25.6.0.255  |              6 |         2 | UNDEFINED |
-      | GPRS Diagnostics (Signal quality)     |      47 | 0.0.25.6.0.255  |              6 |         2 | UNDEFINED |
-      | CDMA Diagnostics (BER)                |      47 | 0.1.25.6.0.255  |              6 |         3 | UNDEFINED |
-      | GPRS Diagnostics (BER)                |      47 | 0.0.25.6.0.255  |              6 |         3 | UNDEFINED |
-  # M-Bus Client Setup CHn1
-  # M-Bus Client Setup CHn2
-  # M-Bus diagnostics RSSi CHn1
-  # M-Bus diagnostics RSSi CHn2
-  # M-Bus diagnostics FCS-NOK CHn1
-  # M-Bus diagnostics FCS-NOK CHn2
+      | CDMA Diagnostics (Signal quality)     |      47 | 0.1.25.6.0.255  |              6 |         3 | UNDEFINED |
+      | GPRS Diagnostics (Signal quality)     |      47 | 0.0.25.6.0.255  |              6 |         3 | UNDEFINED |
+      | CDMA Diagnostics (BER)                |      47 | 0.1.25.6.0.255  |              6 |         4 | UNDEFINED |
+      | GPRS Diagnostics (BER)                |      47 | 0.0.25.6.0.255  |              6 |         4 | UNDEFINED |
+      | M-Bus Client Setup CHn1               |      72 | 0.1.24.1.0.255  |             11 |         0 | UNDEFINED |
+      | M-Bus Client Setup CHn2               |      72 | 0.2.24.1.0.255  |             11 |         0 | UNDEFINED |
+      | M-Bus diagnostics RSSi CHn1           |      77 | 0.1.24.9.0.255  |              2 |         0 | UNDEFINED                                                        |
+      | M-Bus diagnostics RSSi CHn2           |      77 | 0.2.24.9.0.255  |              2 |         0 | UNDEFINED |
+      | M-Bus diagnostics FCS-NOK CHn1        |      77 | 0.1.24.9.0.255  |              8 |         0 | UNDEFINED |
+      | M-Bus diagnostics FCS-NOK CHn2        |      77 | 0.2.24.9.0.255  |              8 |         0 | UNDEFINED |
     Then the same bundle response should contain a power quality profile response with 1440 values for profile "1.0.99.1.2.255"
       | description              | classId | logicalName     | attributeIndex | dataIndex | unit      |
       | Clock  	  	             |       8 | 0.0.1.0.0.255   |              2 |         0 | UNDEFINED |
@@ -265,16 +263,16 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
       | Number of voltage swells in phase L2  |       1 | 1.0.52.36.0.255 |              2 |         0 | UNDEFINED |
       | Number of voltage swells in phase L3  |       1 | 1.0.72.36.0.255 |              2 |         0 | UNDEFINED |
       | Number of power failures in any phase |       1 | 0.0.96.7.21.255 |              2 |         0 | UNDEFINED |
-  # CDMA Diagnostics (signal quality)
-  # GPRS Diagnostics (signal quality)
-  # CDMA Diagnostics (BER)
-  # GPRS Diagnostics (BER)
-  # M-Bus Client Setup CHn1
-  # M-Bus Client Setup CHn2
-  # M-Bus diagnostics RSSi CHn1
-  # M-Bus diagnostics RSSi CHn2
-  # M-Bus diagnostics FCS-NOK CHn1
-  # M-Bus diagnostics FCS-NOK CHn2
+      | CDMA Diagnostics (Signal quality)     |      47 | 0.1.25.6.0.255  |              6 |         3 | UNDEFINED |
+      | GPRS Diagnostics (Signal quality)     |      47 | 0.0.25.6.0.255  |              6 |         3 | UNDEFINED |
+      | CDMA Diagnostics (BER)                |      47 | 0.1.25.6.0.255  |              6 |         4 | UNDEFINED |
+      | GPRS Diagnostics (BER)                |      47 | 0.0.25.6.0.255  |              6 |         4 | UNDEFINED |
+      | M-Bus Client Setup CHn1               |      72 | 0.1.24.1.0.255  |             11 |         0 | UNDEFINED |
+      | M-Bus Client Setup CHn2               |      72 | 0.2.24.1.0.255  |             11 |         0 | UNDEFINED |
+      | M-Bus diagnostics RSSi CHn1           |      77 | 0.1.24.9.0.255  |              2 |         0 | UNDEFINED                                                        |
+      | M-Bus diagnostics RSSi CHn2           |      77 | 0.2.24.9.0.255  |              2 |         0 | UNDEFINED |
+      | M-Bus diagnostics FCS-NOK CHn1        |      77 | 0.1.24.9.0.255  |              8 |         0 | UNDEFINED |
+      | M-Bus diagnostics FCS-NOK CHn2        |      77 | 0.2.24.9.0.255  |              8 |         0 | UNDEFINED |
     Then the same bundle response should contain a power quality profile response with 1440 values for profile "1.0.99.1.2.255"
       | description              | classId | logicalName     | attributeIndex | dataIndex | unit      |
       | Clock  	  	             |       8 | 0.0.1.0.0.255   |              2 |         0 | UNDEFINED |
