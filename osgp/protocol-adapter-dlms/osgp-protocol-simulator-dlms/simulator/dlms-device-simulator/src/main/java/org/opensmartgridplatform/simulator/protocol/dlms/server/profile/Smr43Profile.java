@@ -20,6 +20,7 @@ import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableL
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_VOLTAGE_L1_VALUE;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_VOLTAGE_L2_VALUE;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.AVERAGE_VOLTAGE_L3_VALUE;
+import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.CDMA_DIAGNOSTIC_SIGNAL_QUALITY;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.CLOCK_TIME;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1_VALUE;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1_VALUE;
@@ -68,6 +69,7 @@ public class Smr43Profile {
   private static final List<CaptureObject> DEFAULT_CAPTURE_OBJECTS =
       Arrays.asList(
           CLOCK_TIME,
+          CDMA_DIAGNOSTIC_SIGNAL_QUALITY,
           INSTANTANEOUS_VOLTAGE_L1_VALUE,
           INSTANTANEOUS_VOLTAGE_L2_VALUE,
           INSTANTANEOUS_VOLTAGE_L3_VALUE,

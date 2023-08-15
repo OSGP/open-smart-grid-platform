@@ -15,13 +15,16 @@ import org.openmuc.jdlms.IllegalAttributeAccessException;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic.CellInfo;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CaptureObjectDefinition;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CaptureObjectDefinitionCollection;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CosemDateTimeProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.DataProcessor;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.GsmDiagnosticCellInfoProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.Integer32DataProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger16DataProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger32DataProcessor;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger8DataProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +35,8 @@ public abstract class DynamicProfile extends ProfileGeneric {
   private static final int MAX_PROFILE_ENTRIES = 960;
 
   protected static final DataProcessor COSEM_DATE_TIME_PROCESSOR = new CosemDateTimeProcessor();
+  protected static final DataProcessor GSM_DIAGNOSTIC_CELL_INFO_PROCESSOR =
+      new GsmDiagnosticCellInfoProcessor();
   protected static final DataProcessor LONG_UNSIGNED_PROCESSOR = new UInteger16DataProcessor();
   protected static final DataProcessor DOUBLE_LONG_PROCESSOR = new Integer32DataProcessor();
   protected static final DataProcessor DOUBLE_LONG_UNSIGNED_PROCESSOR =
@@ -99,8 +104,22 @@ public abstract class DynamicProfile extends ProfileGeneric {
       final Random random) {
 
     final DataProcessor processor = this.dataProcessorByCaptureObject.get(captureObject);
-    if (processor instanceof CosemDateTimeProcessor) {
+    if (processor instanceof GsmDiagnosticCellInfoProcessor) {
+      /*
+       * Signal quality: 0-31 or 99
+       * ber: 0-7 or 99
+       */
+      final CellInfo cellInfo =
+          new CellInfo(1L, 1, (short) random.nextInt(31), (short) random.nextInt(7), 1, 1, 1);
+      profileEntryList.add(cellInfo);
+    } else if (processor instanceof CosemDateTimeProcessor) {
       profileEntryList.add(profileEntryTime);
+    } else if (processor instanceof UInteger8DataProcessor) {
+      /*
+       * Random value in the range of valid unsigned values [0 ..
+       * 0xFF]
+       */
+      profileEntryList.add(random.nextInt(0xFF + 1));
     } else if (processor instanceof UInteger16DataProcessor) {
       /*
        * Random value in the range of valid long-unsigned values [0 ..

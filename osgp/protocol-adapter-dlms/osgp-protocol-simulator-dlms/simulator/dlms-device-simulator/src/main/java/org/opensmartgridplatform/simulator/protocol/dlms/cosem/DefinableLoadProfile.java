@@ -18,6 +18,7 @@ import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.DataProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
@@ -31,6 +32,13 @@ public class DefinableLoadProfile extends DynamicProfile {
   public static final CaptureObject CLOCK_TIME =
       new CaptureObject(
           InterfaceClass.CLOCK.id(), "0.0.1.0.0.255", (byte) ClockAttribute.TIME.attributeId(), 0);
+
+  public static final CaptureObject CDMA_DIAGNOSTIC_SIGNAL_QUALITY =
+      new CaptureObject(
+          InterfaceClass.GSM_DIAGNOSTIC.id(),
+          "0.1.25.6.0.255",
+          (byte) GsmDiagnosticAttribute.CELL_INFO.attributeId(),
+          2);
 
   public static final CaptureObject NUMBER_OF_POWER_FAILURES_IN_ANY_PHASE_VALUE =
       new CaptureObject(
@@ -302,6 +310,8 @@ public class DefinableLoadProfile extends DynamicProfile {
   static {
     PROCESSORS_BY_CAPTURE_OBJECT.put(CLOCK_TIME, COSEM_DATE_TIME_PROCESSOR);
 
+    PROCESSORS_BY_CAPTURE_OBJECT.put(
+        CDMA_DIAGNOSTIC_SIGNAL_QUALITY, GSM_DIAGNOSTIC_CELL_INFO_PROCESSOR);
     PROCESSORS_BY_CAPTURE_OBJECT.put(
         NUMBER_OF_POWER_FAILURES_IN_ANY_PHASE_VALUE, LONG_UNSIGNED_PROCESSOR);
     PROCESSORS_BY_CAPTURE_OBJECT.put(

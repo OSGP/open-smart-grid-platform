@@ -23,18 +23,46 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
       | EndDate              | 2017-01-10 00:00:00 |
     When the bundle request is received
     Then the bundle response should contain a power quality profile response with 960 values for profile "0.1.94.31.6.255"
-      | description              | classId | logicalName     | attributeIndex | dataIndex | unit      |
-      | Clock  	  	             |       8 | 0.0.1.0.0.255   |              2 |         0 | UNDEFINED |
-      | Voltage swells L1	     |       1 | 1.0.32.36.0.255 |              2 |         0 | UNDEFINED |
-      | Voltage sags L1  	     |       1 | 1.0.32.32.0.255 |              2 |         0 | UNDEFINED |
-      | Number of Powerfailures  |       1 | 0.0.96.7.21.255 |              2 |         0 | UNDEFINED |
-      | Instantaneous voltage L1 |       3 | 1.0.32.7.0.255  |              2 |         0 | V         |
-      | Average voltage L1	     |       3 | 1.0.32.24.0.255 |              2 |         0 | V         |
-  # 4.3 CDMA Diagnostics
+      | description                       | classId | logicalName     | attributeIndex | dataIndex | unit      |
+      | Clock  	  	                      |       8 | 0.0.1.0.0.255   |              2 |         0 | UNDEFINED |
+      | Voltage swells L1	              |       1 | 1.0.32.36.0.255 |              2 |         0 | UNDEFINED |
+      | Voltage sags L1  	              |       1 | 1.0.32.32.0.255 |              2 |         0 | UNDEFINED |
+      | Number of Powerfailures           |       1 | 0.0.96.7.21.255 |              2 |         0 | UNDEFINED |
+      | Instantaneous voltage L1          |       3 | 1.0.32.7.0.255  |              2 |         0 | V         |
+      | Average voltage L1	              |       3 | 1.0.32.24.0.255 |              2 |         0 | V         |
 
     Examples:
       | deviceIdentification | port | protocol | version |
       | TEST1024000011100    | 1024 | DSMR     |   4.2.2 |
+
+  Scenario Outline: Retrieve power quality profile data as part of a bundled request for - public - single phase - (D)SMR - (<protocol> - <version>)
+    Given a dlms device
+      | DeviceIdentification      | <deviceIdentification> |
+      | DeviceType                | SMART_METER_E          |
+      | Protocol                  | <protocol>             |
+      | ProtocolVersion           | <version>              |
+      | Port                      | <port>                 |
+      | Polyphase                 | false                  |
+    And a bundle request
+      | DeviceIdentification | <deviceIdentification> |
+    And the bundle request contains a get power quality profile request with parameters
+      | ProfileType          |              PUBLIC |
+      | BeginDate            | 2015-01-01 00:00:00 |
+      | EndDate              | 2017-01-10 00:00:00 |
+    When the bundle request is received
+    Then the bundle response should contain a power quality profile response with 960 values for profile "0.1.94.31.6.255"
+      | description                       | classId | logicalName     | attributeIndex | dataIndex | unit      |
+      | Clock  	  	                      |       8 | 0.0.1.0.0.255   |              2 |         0 | UNDEFINED |
+      | Voltage swells L1	              |       1 | 1.0.32.36.0.255 |              2 |         0 | UNDEFINED |
+      | Voltage sags L1  	              |       1 | 1.0.32.32.0.255 |              2 |         0 | UNDEFINED |
+      | Number of Powerfailures           |       1 | 0.0.96.7.21.255 |              2 |         0 | UNDEFINED |
+      | Instantaneous voltage L1          |       3 | 1.0.32.7.0.255  |              2 |         0 | V         |
+      | Average voltage L1	              |       3 | 1.0.32.24.0.255 |              2 |         0 | V         |
+      | CDMA Diagnostics (Signal quality) |      47 | 0.1.25.6.0.255  |              6 |         2 | dBm       |
+# TODO: unit dBm ipv UNDEFINED voor Signal quality
+
+    Examples:
+      | deviceIdentification | port | protocol | version |
       | TEST1031000011101    | 1031 | SMR      |     4.3 |
 
   Scenario Outline: Retrieve power quality profile data as part of a bundled request for - public - poly phase - (D)SMR - (<protocol> - <version>)
@@ -65,6 +93,36 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
     Examples:
       | deviceIdentification | port | protocol | version |
       | TEST1024000011100    | 1024 | DSMR     |   4.2.2 |
+
+  Scenario Outline: Retrieve power quality profile data as part of a bundled request for - public - poly phase - (D)SMR - (<protocol> - <version>)
+    Given a dlms device
+      | DeviceIdentification      | <deviceIdentification> |
+      | DeviceType                | SMART_METER_E          |
+      | Protocol                  | <protocol>             |
+      | ProtocolVersion           | <version>              |
+      | Port                      | <port>                 |
+      | Polyphase                 | true                  |
+    And a bundle request
+      | DeviceIdentification | <deviceIdentification> |
+    And the bundle request contains a get power quality profile request with parameters
+      | ProfileType          |              PUBLIC |
+      | BeginDate            | 2015-01-01 00:00:00 |
+      | EndDate              | 2017-01-10 00:00:00 |
+    When the bundle request is received
+    Then the bundle response should contain a power quality profile response with 960 values for profile "0.1.94.31.6.255"
+      | description                       | classId | logicalName     | attributeIndex | dataIndex | unit      |
+      | Clock  	  	                      |       8 | 0.0.1.0.0.255   |              2 |         0 | UNDEFINED |
+      | Instantaneous voltage L1          |       3 | 1.0.32.7.0.255  |              2 |         0 | V         |
+      | Average voltage L1	              |       3 | 1.0.32.24.0.255 |              2 |         0 | V         |
+      | Instantaneous voltage L2          |       3 | 1.0.52.7.0.255  |              2 |         0 | V         |
+      | Average voltage L2	              |       3 | 1.0.52.24.0.255 |              2 |         0 | V         |
+      | Instantaneous voltage L3          |       3 | 1.0.72.7.0.255  |              2 |         0 | V         |
+      | Average voltage L3	              |       3 | 1.0.72.24.0.255 |              2 |         0 | V         |
+      | CDMA Diagnostics (Signal quality) |      47 | 0.1.25.6.0.255  |              6 |         2 | dBm       |
+# TODO: unit dBm ipv UNDEFINED voor Signal quality
+
+    Examples:
+      | deviceIdentification | port | protocol | version |
       | TEST1031000011101    | 1031 | SMR      |     4.3 |
 
   Scenario Outline: Retrieve power quality profile data as part of a bundled request for - private - (D)SMR - single phase (<protocol> - <version>)
