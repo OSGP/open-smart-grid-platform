@@ -309,3 +309,29 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
       | TEST1028000011102    | 1028 | SMR      |     5.1 |
       | TEST1029000011103    | 1029 | SMR      |     5.2 |
       | TEST1030000011104    | 1030 | SMR      |     5.5 |
+
+  Scenario Outline: Retrieve power quality profile data as part of a bundled request for - [profileType: <profileType> - polyphase: <polyphase>] (DSMR - 2.2)
+    Given a dlms device
+      | DeviceIdentification      | <deviceIdentification> |
+      | DeviceType                | SMART_METER_E          |
+      | Protocol                  | DSMR                   |
+      | ProtocolVersion           | 2.2                    |
+      | Port                      | <port>                 |
+      | Polyphase                 | <polyphase>            |
+      | Lls1active                | true                   |
+      | Hls5active                | false                  |
+    And a bundle request
+      | DeviceIdentification | <deviceIdentification> |
+    And the bundle request contains a get power quality profile request with parameters
+      | ProfileType          |       <profileType> |
+      | BeginDate            | 2015-01-01 00:00:00 |
+      | EndDate              | 2017-01-10 00:00:00 |
+    When the bundle request is received
+    Then the bundle response should contain an empty power quality profile response
+
+    Examples:
+      | deviceIdentification | port | polyphase | profileType |
+      | TEST1026000011100    | 1026 | false      |     PUBLIC |
+      | TEST1026000011101    | 1026 | true       |     PUBLIC |
+      | TEST1026000011100    | 1026 | false      |    PRIVATE |
+      | TEST1026000011101    | 1026 | true       |    PRIVATE |

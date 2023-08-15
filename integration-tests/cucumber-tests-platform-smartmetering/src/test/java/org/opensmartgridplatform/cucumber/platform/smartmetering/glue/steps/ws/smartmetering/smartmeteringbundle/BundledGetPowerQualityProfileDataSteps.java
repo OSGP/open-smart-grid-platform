@@ -9,7 +9,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,6 +26,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityProfileData;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.GetPowerQualityProfileRequestBuilder;
+import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 
 @Slf4j
 public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
@@ -72,6 +75,21 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
 
     this.theBundleResponseShouldContainAGetPowerQualityProfileResponse(
         nrOfValues, profileLogicalName, response, valuesDataTable);
+  }
+
+  @Then("^the bundle response should contain an empty power quality profile response$")
+  public void theBundleResponseShouldContainAnEmptyGetPowerQualityProfileResponse()
+      throws GeneralSecurityException, IOException, WebServiceSecurityException {
+
+    final Response response = this.getNextBundleResponse();
+    ScenarioContext.current().put(LAST_RESPONSE, response);
+
+    assertThat(response).isInstanceOf(GetPowerQualityProfileResponse.class);
+
+    final GetPowerQualityProfileResponse getPowerQualityProfileResponse =
+        (GetPowerQualityProfileResponse) response;
+
+    assertThat(getPowerQualityProfileResponse.getPowerQualityProfileDatas()).isEmpty();
   }
 
   public void theBundleResponseShouldContainAGetPowerQualityProfileResponse(
