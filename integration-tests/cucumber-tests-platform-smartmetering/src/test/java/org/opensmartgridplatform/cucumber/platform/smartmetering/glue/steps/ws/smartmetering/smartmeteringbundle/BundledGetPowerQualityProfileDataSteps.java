@@ -56,8 +56,9 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
       final int nrOfValues, final String profileLogicalName, final DataTable valuesDataTable)
       throws Throwable {
 
-    final Response response = (Response)ScenarioContext.current().get(LAST_RESPONSE);
-    this.theBundleResponseShouldContainAGetPowerQualityProfileResponse(nrOfValues, profileLogicalName, response, valuesDataTable);
+    final Response response = (Response) ScenarioContext.current().get(LAST_RESPONSE);
+    this.theBundleResponseShouldContainAGetPowerQualityProfileResponse(
+        nrOfValues, profileLogicalName, response, valuesDataTable);
   }
 
   @Then(
@@ -69,10 +70,15 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
     final Response response = this.getNextBundleResponse();
     ScenarioContext.current().put(LAST_RESPONSE, response);
 
-    this.theBundleResponseShouldContainAGetPowerQualityProfileResponse(nrOfValues, profileLogicalName, response, valuesDataTable);
+    this.theBundleResponseShouldContainAGetPowerQualityProfileResponse(
+        nrOfValues, profileLogicalName, response, valuesDataTable);
   }
+
   public void theBundleResponseShouldContainAGetPowerQualityProfileResponse(
-      final int nrOfValues, final String profileLogicalName, final Response response, final DataTable valuesDataTable) {
+      final int nrOfValues,
+      final String profileLogicalName,
+      final Response response,
+      final DataTable valuesDataTable) {
 
     assertThat(response).isInstanceOf(GetPowerQualityProfileResponse.class);
 
