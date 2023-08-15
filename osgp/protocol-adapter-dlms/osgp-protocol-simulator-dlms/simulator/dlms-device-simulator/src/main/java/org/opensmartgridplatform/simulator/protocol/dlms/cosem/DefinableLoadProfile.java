@@ -40,6 +40,27 @@ public class DefinableLoadProfile extends DynamicProfile {
           (byte) GsmDiagnosticAttribute.CELL_INFO.attributeId(),
           2);
 
+  public static final CaptureObject GPRS_DIAGNOSTIC_SIGNAL_QUALITY =
+      new CaptureObject(
+          InterfaceClass.GSM_DIAGNOSTIC.id(),
+          "0.0.25.6.0.255",
+          (byte) GsmDiagnosticAttribute.CELL_INFO.attributeId(),
+          2);
+
+  public static final CaptureObject CDMA_DIAGNOSTIC_BER =
+      new CaptureObject(
+          InterfaceClass.GSM_DIAGNOSTIC.id(),
+          "0.1.25.6.0.255",
+          (byte) GsmDiagnosticAttribute.CELL_INFO.attributeId(),
+          3);
+
+  public static final CaptureObject GPRS_DIAGNOSTIC_BER =
+      new CaptureObject(
+          InterfaceClass.GSM_DIAGNOSTIC.id(),
+          "0.0.25.6.0.255",
+          (byte) GsmDiagnosticAttribute.CELL_INFO.attributeId(),
+          3);
+
   public static final CaptureObject NUMBER_OF_POWER_FAILURES_IN_ANY_PHASE_VALUE =
       new CaptureObject(
           InterfaceClass.DATA.id(), "0.0.96.7.21.255", (byte) DataAttribute.VALUE.attributeId(), 0);
@@ -312,6 +333,10 @@ public class DefinableLoadProfile extends DynamicProfile {
 
     PROCESSORS_BY_CAPTURE_OBJECT.put(
         CDMA_DIAGNOSTIC_SIGNAL_QUALITY, GSM_DIAGNOSTIC_CELL_INFO_PROCESSOR);
+    PROCESSORS_BY_CAPTURE_OBJECT.put(
+        GPRS_DIAGNOSTIC_SIGNAL_QUALITY, GSM_DIAGNOSTIC_CELL_INFO_PROCESSOR);
+    PROCESSORS_BY_CAPTURE_OBJECT.put(CDMA_DIAGNOSTIC_BER, GSM_DIAGNOSTIC_CELL_INFO_PROCESSOR);
+    PROCESSORS_BY_CAPTURE_OBJECT.put(GPRS_DIAGNOSTIC_BER, GSM_DIAGNOSTIC_CELL_INFO_PROCESSOR);
     PROCESSORS_BY_CAPTURE_OBJECT.put(
         NUMBER_OF_POWER_FAILURES_IN_ANY_PHASE_VALUE, LONG_UNSIGNED_PROCESSOR);
     PROCESSORS_BY_CAPTURE_OBJECT.put(

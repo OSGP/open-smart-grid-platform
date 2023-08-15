@@ -217,10 +217,10 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
       | Number of voltage sags in phase L1    |       1 | 1.0.32.32.0.255 |              2 |         0 | UNDEFINED |
       | Number of voltage swells in phase L1  |       1 | 1.0.32.36.0.255 |              2 |         0 | UNDEFINED |
       | Number of power failures in any phase |       1 | 0.0.96.7.21.255 |              2 |         0 | UNDEFINED |
-  # CDMA Diagnostics (signal quality)
-  # GPRS Diagnostics (signal quality)
-  # CDMA Diagnostics (BER)
-  # GPRS Diagnostics (BER)
+      | CDMA Diagnostics (Signal quality)     |      47 | 0.1.25.6.0.255  |              6 |         2 | UNDEFINED |
+      | GPRS Diagnostics (Signal quality)     |      47 | 0.0.25.6.0.255  |              6 |         2 | UNDEFINED |
+      | CDMA Diagnostics (BER)                |      47 | 0.1.25.6.0.255  |              6 |         3 | UNDEFINED |
+      | GPRS Diagnostics (BER)                |      47 | 0.0.25.6.0.255  |              6 |         3 | UNDEFINED |
   # M-Bus Client Setup CHn1
   # M-Bus Client Setup CHn2
   # M-Bus diagnostics RSSi CHn1

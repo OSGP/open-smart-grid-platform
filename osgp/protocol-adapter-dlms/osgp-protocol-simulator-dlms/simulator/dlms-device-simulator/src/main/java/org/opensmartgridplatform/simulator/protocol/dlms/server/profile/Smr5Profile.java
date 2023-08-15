@@ -86,6 +86,10 @@ public class Smr5Profile {
   private static final List<CaptureObject> DEFINABLE_LOAD_CAPTURE_OBJECTS =
       Arrays.asList(
           DefinableLoadProfile.CLOCK_TIME,
+          DefinableLoadProfile.CDMA_DIAGNOSTIC_SIGNAL_QUALITY,
+          DefinableLoadProfile.GPRS_DIAGNOSTIC_SIGNAL_QUALITY,
+          DefinableLoadProfile.CDMA_DIAGNOSTIC_BER,
+          DefinableLoadProfile.GPRS_DIAGNOSTIC_BER,
           DefinableLoadProfile.NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L1_VALUE,
           DefinableLoadProfile.NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L2_VALUE,
           DefinableLoadProfile.NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L3_VALUE,

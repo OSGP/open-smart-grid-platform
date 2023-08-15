@@ -155,7 +155,8 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
                 d ->
                     d.get(LOGICAL_NAME).equals(captureObject.getLogicalName())
                         && new BigInteger(d.get(ATTRIBUTE_INDEX))
-                            .equals(captureObject.getAttributeIndex()))
+                            .equals(captureObject.getAttributeIndex())
+                        && Long.parseLong(d.get(DATA_INDEX)) == captureObject.getDataIndex())
             .findFirst();
     assertThat(optExpectedCaptureObject).isPresent();
     final Map<String, String> expectedCaptureObject = optExpectedCaptureObject.get();
