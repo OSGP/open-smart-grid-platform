@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.simulator.protocol.dlms.cosem;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -49,7 +50,7 @@ public abstract class DynamicProfile extends ProfileGeneric {
   private final Calendar time;
   private final Integer maxNumberOfCaptureObjects;
 
-  private final Random random = new Random();
+  private final SecureRandom random = new SecureRandom();
 
   public DynamicProfile(
       final String instanceId,
@@ -150,7 +151,7 @@ public abstract class DynamicProfile extends ProfileGeneric {
   private long randomDoubleLongUnsigned() {
     final long minValue = 0;
     final long maxValue = 0xFFFFFFFFL;
-    return minValue + (long) (Math.random() * (maxValue - minValue));
+    return minValue + (long) (this.random.nextDouble() * (maxValue - minValue));
   }
 
   private List<CaptureObject> getCaptureObjectDefinitions() {
