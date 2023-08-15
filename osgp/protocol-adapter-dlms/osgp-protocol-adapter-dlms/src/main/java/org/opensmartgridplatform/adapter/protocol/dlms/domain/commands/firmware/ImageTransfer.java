@@ -84,6 +84,10 @@ public class ImageTransfer {
     return this.isImageTransferStatusIn(ImageTransferStatus.INITIATED);
   }
 
+  public boolean isInitiated() throws OsgpException {
+    return this.getImageTransferStatus() == ImageTransferStatus.INITIATED.getValue();
+  }
+
   public boolean imageIsVerified() throws OsgpException {
     return this.isImageTransferStatusIn(
         ImageTransferStatus.VERIFICATION_SUCCESSFUL,
@@ -158,13 +162,13 @@ public class ImageTransfer {
    * <p>ImageBlocks are accepted only by those COSEM servers, in which the Image transfer process
    * has been successfully initiated. Other servers silently discard any ImageBlocks received.
    */
-  public void transferImageBlocks() throws OsgpException {
+  public void transferImageBlocks(final int firstBlock) throws OsgpException {
     if (!this.shouldTransferImage()) {
       throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_TRANSFER_NOT_INITIATED);
     }
 
     final int blocks = this.numberOfBlocks();
-    for (int i = 0; i < blocks; i++) {
+    for (int i = firstBlock; i < blocks; i++) {
       this.logUploadPercentage(i, blocks);
       this.imageBlockTransfer(i);
     }
@@ -389,7 +393,7 @@ public class ImageTransfer {
     return this.imageBlockSize;
   }
 
-  private int getImageFirstNotTransferredBlockNumber() throws ProtocolAdapterException {
+  public int getImageFirstNotTransferredBlockNumber() throws ProtocolAdapterException {
     this.connector
         .getDlmsMessageListener()
         .setDescription(
