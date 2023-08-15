@@ -187,7 +187,6 @@ public abstract class DynamicProfile extends ProfileGeneric {
     if (this.bufferData == null) {
       this.initBufferData();
     }
-    this.initBufferData();
     return super.getBuffer(selectiveAccessDescription);
   }
 
