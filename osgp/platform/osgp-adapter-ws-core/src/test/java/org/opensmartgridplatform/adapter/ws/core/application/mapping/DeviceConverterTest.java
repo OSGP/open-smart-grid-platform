@@ -60,7 +60,7 @@ public class DeviceConverterTest {
     assertThat(jaxbDevice.getContainerAddress().getCity()).isEqualTo("city");
     assertThat(jaxbDevice.getContainerAddress().getPostalCode()).isEqualTo("postal");
     assertThat(jaxbDevice.getContainerAddress().getStreet()).isEqualTo("street");
-    assertThat(jaxbDevice.getContainerAddress().getNumber()).isEqualTo(new Integer(42));
+    assertThat(jaxbDevice.getContainerAddress().getNumber()).isEqualTo(42);
     assertThat(jaxbDevice.getContainerAddress().getNumberAddition()).isEqualTo("nr");
     assertThat(jaxbDevice.getContainerAddress().getMunicipality()).isEqualTo("munic");
     assertThat(jaxbDevice.getGpsLatitude()).isEqualTo("12.0");
@@ -75,14 +75,12 @@ public class DeviceConverterTest {
     assertThat(mappedBack.getContainerAddress().getCity()).isEqualTo("city");
     assertThat(mappedBack.getContainerAddress().getPostalCode()).isEqualTo("postal");
     assertThat(mappedBack.getContainerAddress().getStreet()).isEqualTo("street");
-    assertThat(mappedBack.getContainerAddress().getNumber()).isEqualTo(new Integer(42));
+    assertThat(mappedBack.getContainerAddress().getNumber()).isEqualTo(42);
     assertThat(mappedBack.getContainerAddress().getNumberAddition()).isEqualTo("nr");
     assertThat(mappedBack.getContainerAddress().getMunicipality()).isEqualTo("munic");
     assertThat(mappedBack.getGpsCoordinates().getLatitude()).isEqualTo(12);
     assertThat(mappedBack.getGpsCoordinates().getLongitude()).isEqualTo(13);
-    // alas networkaddress in jaxb device is just a string, need parsing to
-    // convert that to InetAddress
-    assertThat(mappedBack.getNetworkAddress()).isEqualTo(null);
+    assertThat(mappedBack.getNetworkAddress()).isEqualTo("localhost");
     assertThat(mappedBack.getDeviceType()).isEqualTo("type");
   }
 
