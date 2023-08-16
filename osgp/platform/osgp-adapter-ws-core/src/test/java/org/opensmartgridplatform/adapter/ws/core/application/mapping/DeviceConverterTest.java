@@ -31,6 +31,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 @ExtendWith(MockitoExtension.class)
 public class DeviceConverterTest {
 
+  public static final String TEST_HOST = "localhost";
+
   @Mock private SsldRepository ssldRepository;
 
   @InjectMocks private DeviceManagementMapper deviceManagementMapper;
@@ -41,7 +43,7 @@ public class DeviceConverterTest {
   }
 
   @Test
-  public void testDeviceConversion() throws UnknownHostException {
+  void testDeviceConversion() throws UnknownHostException {
     final Device device =
         new Device(
             "id",
@@ -49,7 +51,7 @@ public class DeviceConverterTest {
             new Address("city", "postal", "street", 42, "nr", "munic"),
             new GpsCoordinates(12f, 13f),
             null);
-    device.updateRegistrationData("localhost", "type");
+    device.updateRegistrationData(TEST_HOST, "type");
 
     final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device jaxbDevice =
         this.deviceManagementMapper.map(
@@ -65,7 +67,7 @@ public class DeviceConverterTest {
     assertThat(jaxbDevice.getContainerAddress().getMunicipality()).isEqualTo("munic");
     assertThat(jaxbDevice.getGpsLatitude()).isEqualTo("12.0");
     assertThat(jaxbDevice.getGpsLongitude()).isEqualTo("13.0");
-    assertThat(jaxbDevice.getNetworkAddress()).isEqualTo("localhost");
+    assertThat(jaxbDevice.getNetworkAddress()).isEqualTo(TEST_HOST);
     assertThat(jaxbDevice.getDeviceType()).isEqualTo("type");
 
     final Device mappedBack = this.deviceManagementMapper.map(jaxbDevice, Device.class);
@@ -80,19 +82,19 @@ public class DeviceConverterTest {
     assertThat(mappedBack.getContainerAddress().getMunicipality()).isEqualTo("munic");
     assertThat(mappedBack.getGpsCoordinates().getLatitude()).isEqualTo(12);
     assertThat(mappedBack.getGpsCoordinates().getLongitude()).isEqualTo(13);
-    assertThat(mappedBack.getNetworkAddress()).isEqualTo("localhost");
+    assertThat(mappedBack.getNetworkAddress()).isEqualTo(TEST_HOST);
     assertThat(mappedBack.getDeviceType()).isEqualTo("type");
   }
 
   @Test
-  public void testSmartMeterConversion() throws UnknownHostException {
+  void testSmartMeterConversion() throws UnknownHostException {
     final Device device =
         new SmartMeter(
             "id",
             "alias",
             new Address("city", "postal", "street", 42, "nr", "munic"),
             new GpsCoordinates(12f, 13f));
-    device.updateRegistrationData("localhost", "type");
+    device.updateRegistrationData(TEST_HOST, "type");
 
     final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device jaxbDevice =
         this.deviceManagementMapper.map(
@@ -108,7 +110,7 @@ public class DeviceConverterTest {
     assertThat(jaxbDevice.getContainerAddress().getMunicipality()).isEqualTo("munic");
     assertThat(jaxbDevice.getGpsLatitude()).isEqualTo("12.0");
     assertThat(jaxbDevice.getGpsLongitude()).isEqualTo("13.0");
-    assertThat(jaxbDevice.getNetworkAddress()).isEqualTo("localhost");
+    assertThat(jaxbDevice.getNetworkAddress()).isEqualTo(TEST_HOST);
     assertThat(jaxbDevice.getDeviceType()).isEqualTo("type");
 
     final SmartMeter mappedBack = this.deviceManagementMapper.map(jaxbDevice, SmartMeter.class);
@@ -123,14 +125,12 @@ public class DeviceConverterTest {
     assertThat(mappedBack.getContainerAddress().getMunicipality()).isEqualTo("munic");
     assertThat(mappedBack.getGpsCoordinates().getLatitude()).isEqualTo(12);
     assertThat(mappedBack.getGpsCoordinates().getLongitude()).isEqualTo(13);
-    // alas networkaddress in jaxb device is just a string, need parsing to
-    // convert that to InetAddress
-    assertThat(mappedBack.getNetworkAddress()).isEqualTo(null);
+    assertThat(mappedBack.getNetworkAddress()).isEqualTo(TEST_HOST);
     assertThat(mappedBack.getDeviceType()).isEqualTo("type");
   }
 
   @Test
-  public void testSsldConversion() throws Exception {
+  void testSsldConversion() throws Exception {
     final Instant instant = ZonedDateTime.of(2020, 1, 1, 14, 0, 0, 0, ZoneOffset.UTC).toInstant();
     final GregorianCalendar gregorianCalendar =
         GregorianCalendar.from(instant.atZone(ZoneOffset.UTC));
@@ -144,7 +144,7 @@ public class DeviceConverterTest {
             new Address("city", "postal", "street", 42, "nr", "munic"),
             new GpsCoordinates(12f, 13f),
             null);
-    device.updateRegistrationData("localhost", Ssld.SSLD_TYPE);
+    device.updateRegistrationData(TEST_HOST, Ssld.SSLD_TYPE);
     device.getOutputSettings();
     device.setTechnicalInstallationDate(instant);
 
@@ -164,9 +164,9 @@ public class DeviceConverterTest {
     assertThat(jaxbDevice.getContainerAddress().getMunicipality()).isEqualTo("munic");
     assertThat(jaxbDevice.getGpsLatitude()).isEqualTo("12.0");
     assertThat(jaxbDevice.getGpsLongitude()).isEqualTo("13.0");
-    assertThat(jaxbDevice.getNetworkAddress()).isEqualTo("localhost");
+    assertThat(jaxbDevice.getNetworkAddress()).isEqualTo(TEST_HOST);
     assertThat(jaxbDevice.getDeviceType()).isEqualTo(Ssld.SSLD_TYPE);
-    assertThat(jaxbDevice.getOutputSettings().size()).isEqualTo(3);
+    assertThat(jaxbDevice.getOutputSettings()).hasSize(3);
     for (int i = 0; i < 3; i++) {
       assertThat(device.getOutputSettings().get(i).getAlias())
           .isEqualTo(jaxbDevice.getOutputSettings().get(i).getAlias());
@@ -185,11 +185,9 @@ public class DeviceConverterTest {
     assertThat(mappedBack.getContainerAddress().getMunicipality()).isEqualTo("munic");
     assertThat(mappedBack.getGpsCoordinates().getLatitude()).isEqualTo(12.0f);
     assertThat(mappedBack.getGpsCoordinates().getLongitude()).isEqualTo(13.0f);
-    // alas networkaddress in jaxb device is just a string, need parsing to
-    // convert that to InetAddress
-    assertThat(mappedBack.getNetworkAddress()).isEqualTo(null);
+    assertThat(mappedBack.getNetworkAddress()).isEqualTo(TEST_HOST);
     assertThat(mappedBack.getDeviceType()).isEqualTo(Ssld.SSLD_TYPE);
-    assertThat(mappedBack.getOutputSettings().size()).isEqualTo(3);
+    assertThat(mappedBack.getOutputSettings()).hasSize(3);
     for (int i = 0; i < 3; i++) {
       assertThat(device.getOutputSettings().get(i).getAlias())
           .isEqualTo(mappedBack.getOutputSettings().get(i).getAlias());
