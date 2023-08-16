@@ -23,7 +23,7 @@ public class MessageMetadata implements Serializable {
   private String messageType;
   private String domain;
   private String domainVersion;
-  private String ipAddress;
+  private String networkAddress;
   private Integer baseTransceiverStationId;
   private Integer cellId;
   private int messagePriority;
@@ -46,7 +46,7 @@ public class MessageMetadata implements Serializable {
     this.messageType = builder.messageType;
     this.domain = builder.domain;
     this.domainVersion = builder.domainVersion;
-    this.ipAddress = builder.ipAddress;
+    this.networkAddress = builder.networkAddress;
     this.baseTransceiverStationId = builder.baseTransceiverStationId;
     this.cellId = builder.cellId;
     this.messagePriority = builder.messagePriority;
@@ -76,7 +76,7 @@ public class MessageMetadata implements Serializable {
     metadata.domainVersion =
         metadata.getStringProperty(message, Constants.DOMAIN_VERSION, StringUtils.EMPTY);
 
-    metadata.ipAddress =
+    metadata.networkAddress =
         metadata.getStringProperty(message, Constants.NETWORK_ADDRESS, StringUtils.EMPTY);
 
     metadata.baseTransceiverStationId =
@@ -117,8 +117,8 @@ public class MessageMetadata implements Serializable {
       message.setStringProperty(Constants.DOMAIN_VERSION, this.domainVersion);
     }
 
-    if (StringUtils.isNotBlank(this.ipAddress)) {
-      message.setStringProperty(Constants.NETWORK_ADDRESS, this.ipAddress);
+    if (StringUtils.isNotBlank(this.networkAddress)) {
+      message.setStringProperty(Constants.NETWORK_ADDRESS, this.networkAddress);
     }
 
     if (this.baseTransceiverStationId != null) {
@@ -199,7 +199,7 @@ public class MessageMetadata implements Serializable {
 
     private String domain = StringUtils.EMPTY;
     private String domainVersion = StringUtils.EMPTY;
-    private String ipAddress = StringUtils.EMPTY;
+    private String networkAddress = StringUtils.EMPTY;
     private Integer baseTransceiverStationId = null;
     private Integer cellId = null;
     private int messagePriority = 0;
@@ -218,7 +218,7 @@ public class MessageMetadata implements Serializable {
       this.messageType = otherMetadata.getMessageType();
       this.domain = otherMetadata.getDomain();
       this.domainVersion = otherMetadata.getDomainVersion();
-      this.ipAddress = otherMetadata.getIpAddress();
+      this.networkAddress = otherMetadata.getNetworkAddress();
       this.baseTransceiverStationId = otherMetadata.getBaseTransceiverStationId();
       this.cellId = otherMetadata.getCellId();
       this.messagePriority = otherMetadata.getMessagePriority();
@@ -274,8 +274,8 @@ public class MessageMetadata implements Serializable {
       return this;
     }
 
-    public Builder withIpAddress(final String ipAddress) {
-      this.ipAddress = ipAddress;
+    public Builder withNetworkAddress(final String networkAddress) {
+      this.networkAddress = networkAddress;
       return this;
     }
 

@@ -94,7 +94,7 @@ public class MBusGatewayService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(gatewayDevice.getNetworkAddress())
+            .withNetworkAddress(gatewayDevice.getNetworkAddress())
             .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
             .build());
   }
@@ -128,7 +128,7 @@ public class MBusGatewayService {
           requestDto,
           messageMetadata
               .builder()
-              .withIpAddress(gatewayDevice.getNetworkAddress())
+              .withNetworkAddress(gatewayDevice.getNetworkAddress())
               .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
               .build());
     }
@@ -175,7 +175,7 @@ public class MBusGatewayService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(gatewayDevice.getNetworkAddress())
+            .withNetworkAddress(gatewayDevice.getNetworkAddress())
             .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
             .build());
   }
@@ -235,7 +235,7 @@ public class MBusGatewayService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(gatewayDevice.getNetworkAddress())
+            .withNetworkAddress(gatewayDevice.getNetworkAddress())
             .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
             .build());
   }

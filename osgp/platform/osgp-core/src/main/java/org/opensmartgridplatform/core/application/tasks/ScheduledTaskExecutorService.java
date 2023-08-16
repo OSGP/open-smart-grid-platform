@@ -169,7 +169,7 @@ public class ScheduledTaskExecutorService {
         .withMessageType(scheduledTask.getMessageType())
         .withDomain(scheduledTask.getDomain())
         .withDomainVersion(scheduledTask.getDomainVersion())
-        .withIpAddress(getIpAddress(device))
+        .withNetworkAddress(getIpAddress(device))
         .withNetworkSegmentIds(device.getBtsId(), device.getCellId())
         .withMessagePriority(scheduledTask.getMessagePriority())
         .withScheduled(true)

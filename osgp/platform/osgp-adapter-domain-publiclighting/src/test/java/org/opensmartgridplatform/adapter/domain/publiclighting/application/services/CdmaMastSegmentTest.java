@@ -13,12 +13,12 @@ import org.opensmartgridplatform.adapter.domain.publiclighting.application.value
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatchDevice;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaMastSegment;
 
-public class CdmaMastSegmentTest {
+class CdmaMastSegmentTest {
 
-  private final InetAddress loopbackAddress = InetAddress.getLoopbackAddress();
+  private final String loopbackAddress = InetAddress.getLoopbackAddress().getHostAddress();
 
   @Test
-  public void newNameNull() {
+  void newNameNull() {
     assertThatExceptionOfType(IllegalArgumentException.class)
         .isThrownBy(
             () -> {
@@ -27,10 +27,10 @@ public class CdmaMastSegmentTest {
   }
 
   @Test
-  public void newBatchNumberNull() {
+  void newBatchNumberNull() {
     final CdmaMastSegment mastSegment = new CdmaMastSegment("200/1");
 
-    final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress.getHostAddress());
+    final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress);
     mastSegment.addCdmaBatchDevice(null, cd1);
     final CdmaBatch cdmaBatch = mastSegment.popCdmaBatch();
     assertThat(cdmaBatch.getBatchNumber())
@@ -39,10 +39,10 @@ public class CdmaMastSegmentTest {
   }
 
   @Test
-  public void newCdmaMastSegment() {
+  void newCdmaMastSegment() {
     final CdmaMastSegment mastSegment = new CdmaMastSegment("200/1");
 
-    final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress.getHostAddress());
+    final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress);
     mastSegment.addCdmaBatchDevice((short) 1, cd1);
 
     assertThat(mastSegment.getMastSegment()).isEqualTo("200/1");
@@ -52,13 +52,13 @@ public class CdmaMastSegmentTest {
   }
 
   @Test
-  public void popCdmaBatch() {
+  void popCdmaBatch() {
     final CdmaMastSegment mastSegment = new CdmaMastSegment("200/1");
 
-    final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress.getHostAddress());
+    final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress);
     mastSegment.addCdmaBatchDevice((short) 1, cd1);
 
-    final CdmaBatchDevice cd2 = new CdmaBatchDevice("cd2", this.loopbackAddress.getHostAddress());
+    final CdmaBatchDevice cd2 = new CdmaBatchDevice("cd2", this.loopbackAddress);
     mastSegment.addCdmaBatchDevice((short) 1, cd2);
 
     final CdmaBatch batch = mastSegment.popCdmaBatch();
@@ -72,7 +72,7 @@ public class CdmaMastSegmentTest {
   }
 
   @Test
-  public void equalsWhenSegmentNameMatch() {
+  void equalsWhenSegmentNameMatch() {
     final CdmaMastSegment mastSegment1 = new CdmaMastSegment("200/1");
     final CdmaMastSegment mastSegment2 = new CdmaMastSegment("200/1");
     assertThat(mastSegment1)
@@ -81,7 +81,7 @@ public class CdmaMastSegmentTest {
   }
 
   @Test
-  public void testSegmentNameDefaultIsLastItem() {
+  void testSegmentNameDefaultIsLastItem() {
     final CdmaMastSegment mastSegmentDefault =
         new CdmaMastSegment(CdmaMastSegment.DEFAULT_MASTSEGMENT);
     final CdmaMastSegment mastSegmentNormal = new CdmaMastSegment("zzzMast");
@@ -92,12 +92,11 @@ public class CdmaMastSegmentTest {
   }
 
   @Test
-  public void testPopBatches() {
+  void testPopBatches() {
     final CdmaMastSegment mastSegment = new CdmaMastSegment("200/55");
     for (short i = 0; i < 10; i++) {
       // Each device has a different batch
-      mastSegment.addCdmaBatchDevice(
-          i, new CdmaBatchDevice("cd" + i, this.loopbackAddress.getHostAddress()));
+      mastSegment.addCdmaBatchDevice(i, new CdmaBatchDevice("cd" + i, this.loopbackAddress));
     }
 
     for (int batchNo = 0; batchNo < 10; batchNo++) {

@@ -166,7 +166,7 @@ public class RecoverKeyProcess implements Runnable {
     }
 
     final DlmsDevice device = this.findDevice();
-    if (device.isIpAddressIsStatic() && StringUtils.isBlank(this.messageMetadata.getIpAddress())) {
+    if (device.isIpAddressIsStatic() && StringUtils.isBlank(this.messageMetadata.getNetworkAddress())) {
       throw new IllegalStateException(
           "IP address not set in message metadata for device \""
               + device.getDeviceIdentification()

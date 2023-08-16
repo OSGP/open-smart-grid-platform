@@ -68,7 +68,7 @@ public class DeviceRequest implements Serializable {
       this.domainVersion = messageMetadata.getDomainVersion();
       this.messageType = messageMetadata.getMessageType();
       this.messagePriority = messageMetadata.getMessagePriority();
-      this.ipAddress = messageMetadata.getIpAddress();
+      this.ipAddress = messageMetadata.getNetworkAddress();
       this.retryCount = messageMetadata.getRetryCount();
       this.isScheduled = messageMetadata.isScheduled();
       return this;

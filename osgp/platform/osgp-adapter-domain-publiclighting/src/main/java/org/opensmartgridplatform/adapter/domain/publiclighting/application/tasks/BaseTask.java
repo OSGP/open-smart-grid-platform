@@ -251,16 +251,14 @@ public class BaseTask {
     final String deviceFunctionString = deviceFunction.name();
     final DomainTypeDto domain = DomainTypeDto.PUBLIC_LIGHTING;
 
-    String networkAddress = null;
-    if (device.getNetworkAddress() == null) {
+    final String networkAddress = device.getNetworkAddress();
+    if (networkAddress == null) {
       // In case the device does not have a known IP address, don't send
       // a request message.
       LOGGER.warn(
-          "Unable to create protocol request message because the IP address is empty for device: {}",
+          "Unable to create protocol request message because the network address is empty for device: {}",
           deviceIdentification);
       return;
-    } else {
-      networkAddress = device.getNetworkAddress();
     }
 
     final RequestMessage requestMessage =

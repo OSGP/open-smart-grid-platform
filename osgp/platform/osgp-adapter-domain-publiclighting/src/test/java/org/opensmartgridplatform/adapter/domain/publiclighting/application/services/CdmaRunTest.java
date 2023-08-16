@@ -34,7 +34,7 @@ public class CdmaRunTest {
 
   @Mock private DomainPublicLightingMapper domainCoreMapper;
 
-  private final InetAddress loopbackAddress = InetAddress.getLoopbackAddress();
+  private final String loopbackAddress = InetAddress.getLoopbackAddress().getHostAddress();
 
   private static final String IP_ADDRESS = "127.0.0.1";
   private static final String SET_TRANSITION = "SET_TRANSITION";
@@ -59,8 +59,7 @@ public class CdmaRunTest {
   public void itemPerMastSegment() {
     final CdmaRun run = new CdmaRun();
     for (int i = 0; i < 5; i++) {
-      run.add(
-          new CdmaDevice("cd" + i, this.loopbackAddress.getHostAddress(), "200/" + i, (short) 1));
+      run.add(new CdmaDevice("cd" + i, this.loopbackAddress, "200/" + i, (short) 1));
     }
 
     final Iterator<CdmaMastSegment> iterator = run.getMastSegmentIterator();
@@ -76,7 +75,7 @@ public class CdmaRunTest {
   @Test
   public void oneDevice() {
     final CdmaRun run = new CdmaRun();
-    run.add(new CdmaDevice("cd1", this.loopbackAddress.getHostAddress(), "200/1", (short) 1));
+    run.add(new CdmaDevice("cd1", this.loopbackAddress, "200/1", (short) 1));
     this.service.setTransitionForCdmaRun(
         run, "LianderNetManagement", "one-device-cdma-run-test", TransitionType.NIGHT_DAY);
     this.verifySentMessages(1);
@@ -86,7 +85,7 @@ public class CdmaRunTest {
   public void tenDevices() {
     final CdmaRun run = new CdmaRun();
     for (int i = 0; i < 10; i++) {
-      run.add(new CdmaDevice("cd" + i, this.loopbackAddress.getHostAddress(), "200/1", (short) 1));
+      run.add(new CdmaDevice("cd" + i, this.loopbackAddress, "200/1", (short) 1));
     }
 
     this.service.setTransitionForCdmaRun(
@@ -100,8 +99,8 @@ public class CdmaRunTest {
     // Within the timeout of 1000 milliseconds, only the send for device cd1
     // should take place.
     final CdmaRun run = new CdmaRun();
-    run.add(new CdmaDevice("cd1", this.loopbackAddress.getHostAddress(), "200/1", (short) 1));
-    run.add(new CdmaDevice("cd2", this.loopbackAddress.getHostAddress(), "200/1", (short) 2));
+    run.add(new CdmaDevice("cd1", this.loopbackAddress, "200/1", (short) 1));
+    run.add(new CdmaDevice("cd2", this.loopbackAddress, "200/1", (short) 2));
 
     this.service.setTransitionForCdmaRun(
         run, "LianderNetManagement", "two-batches-cdma-run-test", TransitionType.NIGHT_DAY);
@@ -116,7 +115,7 @@ public class CdmaRunTest {
 
     final CdmaRun run = new CdmaRun();
     for (short i = 0; i < 3; i++) {
-      run.add(new CdmaDevice("cd" + i, this.loopbackAddress.getHostAddress(), "200/1", i));
+      run.add(new CdmaDevice("cd" + i, this.loopbackAddress, "200/1", i));
     }
 
     this.service.setTransitionForCdmaRun(

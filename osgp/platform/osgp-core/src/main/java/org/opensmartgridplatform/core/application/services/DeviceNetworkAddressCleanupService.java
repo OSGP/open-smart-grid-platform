@@ -91,7 +91,7 @@ public class DeviceNetworkAddressCleanupService {
     }
 
     final List<Predicate<BigInteger>> rangePredicates =
-        configuredRanges.stream().map(this::rangePredicate).collect(Collectors.toList());
+        configuredRanges.stream().map(this::rangePredicate).toList();
 
     return inetAddress -> {
       if (inetAddress == null) {

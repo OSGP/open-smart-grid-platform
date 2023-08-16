@@ -276,7 +276,7 @@ public class DeviceResponseMessageService {
             message
                 .messageMetadata()
                 .builder()
-                .withIpAddress(getIpAddress(device))
+                .withNetworkAddress(getNetworkAddress(device))
                 .withNetworkSegmentIds(device.getBtsId(), device.getCellId())
                 .withRetryCount(message.getRetryCount() + 1)
                 .build())
@@ -284,7 +284,7 @@ public class DeviceResponseMessageService {
         .build();
   }
 
-  private static String getIpAddress(final Device device) {
+  private static String getNetworkAddress(final Device device) {
     if (device.getNetworkAddress() == null && device.getGatewayDevice() != null) {
       return device.getGatewayDevice().getNetworkAddress();
     }

@@ -71,13 +71,13 @@ class ConfigurationServiceTest {
               new KeyDto(SecretTypeDto.E_METER_AUTHENTICATION_KEY, KEY_1),
               new KeyDto(SecretTypeDto.E_METER_MASTER_KEY, KEY_2)));
 
-  private static final String IP_ADDRESS;
+  private static final String NETWORK_ADDRESS;
   private static final Integer BASE_TRANSCEIVER_STATION_ID;
   private static final Integer CELL_ID;
 
   static {
     device.setNetworkAddress("127.0.0.1");
-    IP_ADDRESS = device.getNetworkAddress();
+    NETWORK_ADDRESS = device.getNetworkAddress();
     BASE_TRANSCEIVER_STATION_ID = device.getBtsId();
     CELL_ID = device.getCellId();
   }
@@ -109,7 +109,7 @@ class ConfigurationServiceTest {
     final MessageMetadata expectedMessageMetadata =
         messageMetadata
             .builder()
-            .withIpAddress(IP_ADDRESS)
+            .withNetworkAddress(NETWORK_ADDRESS)
             .withNetworkSegmentIds(BASE_TRANSCEIVER_STATION_ID, CELL_ID)
             .build();
 

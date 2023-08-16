@@ -95,7 +95,7 @@ public class ManagementService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -189,7 +189,7 @@ public class ManagementService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -225,7 +225,7 @@ public class ManagementService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -284,7 +284,7 @@ public class ManagementService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -329,7 +329,7 @@ public class ManagementService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -367,7 +367,7 @@ public class ManagementService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }

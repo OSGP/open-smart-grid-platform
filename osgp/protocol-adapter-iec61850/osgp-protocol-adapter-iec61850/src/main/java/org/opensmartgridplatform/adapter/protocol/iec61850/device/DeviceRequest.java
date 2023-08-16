@@ -16,11 +16,6 @@ public class DeviceRequest {
   private final String domainVersion;
   private final String messageType;
   private final int messagePriority;
-
-  public String getNetworkAddress() {
-    return this.networkAddress;
-  }
-
   private final String networkAddress;
   private final int retryCount;
   private final boolean isScheduled;
@@ -58,7 +53,7 @@ public class DeviceRequest {
       this.domainVersion = messageMetadata.getDomainVersion();
       this.messageType = messageMetadata.getMessageType();
       this.messagePriority = messageMetadata.getMessagePriority();
-      this.networkAddress = messageMetadata.getIpAddress();
+      this.networkAddress = messageMetadata.getNetworkAddress();
       this.retryCount = messageMetadata.getRetryCount();
       this.isScheduled = messageMetadata.isScheduled();
       return this;
@@ -149,6 +144,10 @@ public class DeviceRequest {
 
   public int getMessagePriority() {
     return this.messagePriority;
+  }
+
+  public String getNetworkAddress() {
+    return this.networkAddress;
   }
 
   public int getRetryCount() {

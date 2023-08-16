@@ -130,7 +130,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -156,7 +156,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -180,7 +180,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -204,7 +204,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -228,7 +228,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -253,7 +253,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -299,7 +299,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -326,7 +326,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -378,7 +378,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -432,7 +432,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -637,7 +637,7 @@ public class ConfigurationService {
         messageMetadata
             .builder()
             .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
-            .withIpAddress(gatewayDevice.getNetworkAddress())
+            .withNetworkAddress(gatewayDevice.getNetworkAddress())
             .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
             .build());
   }
@@ -683,7 +683,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(gatewayDevice.getNetworkAddress())
+            .withNetworkAddress(gatewayDevice.getNetworkAddress())
             .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
             .build());
   }
@@ -729,7 +729,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -770,7 +770,7 @@ public class ConfigurationService {
         null,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -862,7 +862,7 @@ public class ConfigurationService {
           messageMetadata
               .builder()
               .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
-              .withIpAddress(gatewayDevice.getNetworkAddress())
+              .withNetworkAddress(gatewayDevice.getNetworkAddress())
               .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
               .build());
 
@@ -873,7 +873,7 @@ public class ConfigurationService {
           requestDto,
           messageMetadata
               .builder()
-              .withIpAddress(smartMeter.getNetworkAddress())
+              .withNetworkAddress(smartMeter.getNetworkAddress())
               .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
               .build());
     }
@@ -1005,7 +1005,7 @@ public class ConfigurationService {
         messageMetadata
             .builder()
             .withDeviceIdentification(deviceIdentification)
-            .withIpAddress(ipAddress)
+            .withNetworkAddress(ipAddress)
             .withNetworkSegmentIds(baseTransceiverStationId, cellId)
             .build());
   }
@@ -1058,7 +1058,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -1108,7 +1108,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -1163,7 +1163,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -1221,7 +1221,7 @@ public class ConfigurationService {
         messageMetadata
             .builder()
             .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
-            .withIpAddress(gatewayDevice.getNetworkAddress())
+            .withNetworkAddress(gatewayDevice.getNetworkAddress())
             .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
             .build());
   }
@@ -1279,7 +1279,7 @@ public class ConfigurationService {
         messageMetadata
             .builder()
             .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
-            .withIpAddress(gatewayDevice.getNetworkAddress())
+            .withNetworkAddress(gatewayDevice.getNetworkAddress())
             .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
             .build());
   }
@@ -1332,7 +1332,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -1383,7 +1383,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getNetworkAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
