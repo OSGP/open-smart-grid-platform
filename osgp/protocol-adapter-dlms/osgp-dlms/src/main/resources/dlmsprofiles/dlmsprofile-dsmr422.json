@@ -701,7 +701,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {

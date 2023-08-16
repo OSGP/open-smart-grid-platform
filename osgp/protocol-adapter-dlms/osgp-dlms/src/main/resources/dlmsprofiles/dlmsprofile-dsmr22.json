@@ -509,10 +509,10 @@
       "version": 0,
       "obis": "1.0.90.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
       },
       "attributes": [
         {
