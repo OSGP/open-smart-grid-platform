@@ -18,6 +18,8 @@ import org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AttributeAddress;
@@ -25,7 +27,6 @@ import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.config.UpdateFirmwareConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.ImageTransfer.ImageTransferProperties;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
@@ -49,16 +50,10 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
   @Mock private FirmwareFileCachingRepository firmwareFileCachingRepository;
   @Mock private FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
   @Mock private MacGenerationService macGenerationService;
-  @Mock private UpdateFirmwareConfig updateFirmwareConfig;
 
   private DlmsConnectionManagerStub connectionManagerStub;
   private DlmsConnectionStub connectionStub;
   private MessageMetadata messageMetadata;
-
-  private final int verificationStatusCheckInterval = 1;
-  private final int verificationStatusCheckTimeout = 2;
-  private final int initiationStatusCheckInterval = 3;
-  private final int initiationStatusCheckTimeout = 4;
 
   final byte[] firmwareFileNotMbus =
       org.bouncycastle.util.encoders.Hex.decode(
@@ -75,15 +70,19 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
   @BeforeEach
   void setUp() {
 
+    final int verificationStatusCheckInterval = 1;
+    final int verificationStatusCheckTimeout = 2;
+    final int initiationStatusCheckInterval = 3;
+    final int initiationStatusCheckTimeout = 4;
+
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
     final ImageTransferProperties imageTransferProperties =
         new ImageTransfer.ImageTransferProperties();
-    imageTransferProperties.setVerificationStatusCheckInterval(
-        this.verificationStatusCheckInterval);
-    imageTransferProperties.setVerificationStatusCheckTimeout(this.verificationStatusCheckTimeout);
-    imageTransferProperties.setInitiationStatusCheckInterval(this.initiationStatusCheckInterval);
-    imageTransferProperties.setInitiationStatusCheckTimeout(this.initiationStatusCheckTimeout);
+    imageTransferProperties.setVerificationStatusCheckInterval(verificationStatusCheckInterval);
+    imageTransferProperties.setVerificationStatusCheckTimeout(verificationStatusCheckTimeout);
+    imageTransferProperties.setInitiationStatusCheckInterval(initiationStatusCheckInterval);
+    imageTransferProperties.setInitiationStatusCheckTimeout(initiationStatusCheckTimeout);
 
     this.commandExecutor =
         new UpdateFirmwareCommandExecutor(
@@ -94,12 +93,19 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
             imageTransferProperties);
   }
 
-  private void initConnectionStubForTransferFromFirstBlock() {
+  private void initConnectionStubForTransfer(
+      final int firstTransferState, final int firstNotTransferredBlockNumber) {
 
     this.connectionStub = new DlmsConnectionStub();
     this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
     this.connectionStub.setDefaultReturnValue(DataObject.newArrayData(Collections.emptyList()));
+
+    if (firstTransferState > -1) {
+      this.connectionStub.addReturnValue(
+          this.createAttributeAddressForImageTransfer(ImageTransferAttribute.IMAGE_TRANSFER_STATUS),
+          DataObject.newInteger32Data(firstTransferState));
+    }
 
     this.connectionStub.addReturnValue(
         this.createAttributeAddressForImageTransfer(ImageTransferAttribute.IMAGE_TRANSFER_ENABLED),
@@ -107,21 +113,32 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     this.connectionStub.addReturnValue(
         this.createAttributeAddressForImageTransfer(ImageTransferAttribute.IMAGE_TRANSFER_STATUS),
         DataObject.newInteger32Data(1),
-        5);
+        4);
 
-    // initConnectionStubForTransferFromFirstBlock
-    this.connectionStub.addReturnValue(
-        this.createAttributeAddressForImageTransfer(ImageTransferAttribute.IMAGE_TRANSFER_STATUS),
-        DataObject.newInteger32Data(6));
+    // configure meter simulator to follow either FromFirstBlock or ResumeOnBlocks flow
+    // If IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER is not the total number of blocks (10)
+    // then the flow goes ResumeOnBlocks
     this.connectionStub.addReturnValue(
         this.createAttributeAddressForImageTransfer(ImageTransferAttribute.IMAGE_BLOCK_SIZE),
         DataObject.newUInteger32Data(10));
     this.connectionStub.addReturnValue(
         this.createAttributeAddressForImageTransfer(
             ImageTransferAttribute.IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER),
+        DataObject.newUInteger32Data(firstNotTransferredBlockNumber));
+
+    // NO MissingImageBlocks after all blocks transferred
+    this.connectionStub.addReturnValue(
+        this.createAttributeAddressForImageTransfer(
+            ImageTransferAttribute.IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER),
         DataObject.newUInteger32Data(10));
 
-    // Transfer state after all blocks transferred: VERIFICATION_SUCCESSFUL(3)
+    // Transfer state after all blocks transferred: VERIFICATION_INITIATED(2)
+    this.connectionStub.addReturnValue(
+        this.createAttributeAddressForImageTransfer(ImageTransferAttribute.IMAGE_TRANSFER_STATUS),
+        DataObject.newInteger32Data(2),
+        4);
+
+    // Transfer state after image verification: VERIFICATION_SUCCESSFUL(3)
     this.connectionStub.addReturnValue(
         this.createAttributeAddressForImageTransfer(ImageTransferAttribute.IMAGE_TRANSFER_STATUS),
         DataObject.newInteger32Data(3));
@@ -132,56 +149,18 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     this.connectionStub.setDefaultMethodResult(methodResult);
   }
 
-  private void initConnectionStubForTransferResumeOnBlocks() {
-
-    this.connectionStub = new DlmsConnectionStub();
-    this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
-
-    this.connectionStub.setDefaultReturnValue(DataObject.newArrayData(Collections.emptyList()));
-
-    this.connectionStub.addReturnValue(
-        this.createAttributeAddressForImageTransfer(ImageTransferAttribute.IMAGE_TRANSFER_ENABLED),
-        DataObject.newBoolData(true));
-    this.connectionStub.addReturnValue(
-        this.createAttributeAddressForImageTransfer(ImageTransferAttribute.IMAGE_TRANSFER_STATUS),
-        DataObject.newInteger32Data(1),
-        5);
-
-    // configure meter simulator to follow ResumeOnBlocks flow
-    // INITIATED(1)
-    this.connectionStub.addReturnValue(
-        this.createAttributeAddressForImageTransfer(ImageTransferAttribute.IMAGE_TRANSFER_STATUS),
-        DataObject.newInteger32Data(1));
-    this.connectionStub.addReturnValue(
-        this.createAttributeAddressForImageTransfer(ImageTransferAttribute.IMAGE_BLOCK_SIZE),
-        DataObject.newUInteger32Data(10));
-    this.connectionStub.addReturnValue(
-        this.createAttributeAddressForImageTransfer(
-            ImageTransferAttribute.IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER),
-        DataObject.newUInteger32Data(3));
-    // configure meter simulator to have NO MissingImageBlocks
-    this.connectionStub.addReturnValue(
-        this.createAttributeAddressForImageTransfer(
-            ImageTransferAttribute.IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER),
-        DataObject.newUInteger32Data(10));
-    // Transfer state after all blocks transferred: VERIFICATION_SUCCESSFUL(3)
-    this.connectionStub.addReturnValue(
-        this.createAttributeAddressForImageTransfer(ImageTransferAttribute.IMAGE_TRANSFER_STATUS),
-        DataObject.newInteger32Data(3));
-
-    final MethodResult methodResult = mock(MethodResult.class);
-    when(methodResult.getResultCode()).thenReturn(MethodResultCode.SUCCESS);
-
-    this.connectionStub.setDefaultMethodResult(methodResult);
-  }
-
-  @Test
-  void testExecute() throws Exception {
+  @ParameterizedTest
+  @CsvSource({"true, false", "false, false", "false, false"})
+  void testExecute(final boolean hasFwHash, final boolean fwHashIsEqual) throws Exception {
 
     final DlmsDevice device = new DlmsDevice();
     final String firmwareIdentification = RandomStringUtils.randomAlphabetic(10);
     final String deviceIdentification = RandomStringUtils.randomAlphabetic(10);
+
     device.setDeviceIdentification(deviceIdentification);
+    if (hasFwHash) {
+      device.setFirmwareHash(fwHashIsEqual ? this.fwFileHash : "hash_of_different_firmware");
+    }
 
     final byte[] firmwareImageIdentifier = Hex.decode("496d6167654964656e746966696572");
 
@@ -190,7 +169,10 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     when(this.firmwareImageIdentifierCachingRepository.retrieve(firmwareIdentification))
         .thenReturn(firmwareImageIdentifier);
 
-    this.initConnectionStubForTransferFromFirstBlock();
+    // For some reason the first call to ImageTransfer.isInitiated() does not result in a
+    // call to the connectionStub to get value for attribute IMAGE_TRANSFER_STATUS
+    // with value -1 for firstTransState no returnValue for this call is defined
+    this.initConnectionStubForTransfer(-1, 10);
 
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
         new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
@@ -206,7 +188,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     verify(this.firmwareImageIdentifierCachingRepository, times(1))
         .retrieve(firmwareIdentification);
 
-    this.assertImageTransferRelatedInteractionWithConnection(1, 10, 1, 1);
+    this.assertImageTransferRelatedInteractionWithConnection(1, 10, 1);
   }
 
   @Test
@@ -225,7 +207,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     when(this.firmwareImageIdentifierCachingRepository.retrieve(firmwareIdentification))
         .thenReturn(firmwareImageIdentifier);
 
-    this.initConnectionStubForTransferResumeOnBlocks();
+    this.initConnectionStubForTransfer(1, 3);
 
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
         new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
@@ -239,7 +221,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     verify(this.firmwareImageIdentifierCachingRepository, times(1))
         .retrieve(firmwareIdentification);
 
-    this.assertImageTransferRelatedInteractionWithConnection(0, 7, 1, 1);
+    this.assertImageTransferRelatedInteractionWithConnection(0, 7, 1);
   }
 
   @Test
@@ -256,7 +238,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
         .thenReturn(this.firmwareFileMbus);
     when(this.macGenerationService.calculateMac(any(), any(), any())).thenReturn(new byte[16]);
 
-    this.initConnectionStubForTransferFromFirstBlock();
+    this.initConnectionStubForTransfer(-1, 10);
 
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
         new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
@@ -272,7 +254,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     verify(this.firmwareImageIdentifierCachingRepository, never()).retrieve(firmwareIdentification);
 
     //    this.assertImageTransferRelatedInteractionWithConnection();
-    this.assertImageTransferRelatedInteractionWithConnection(1, 10, 0, 1);
+    this.assertImageTransferRelatedInteractionWithConnection(1, 10, 0);
   }
 
   @Test
@@ -290,7 +272,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
         .thenReturn(this.firmwareFileMbus);
     when(this.macGenerationService.calculateMac(any(), any(), any())).thenReturn(new byte[16]);
 
-    this.initConnectionStubForTransferResumeOnBlocks();
+    this.initConnectionStubForTransfer(1, 3);
 
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
         new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
@@ -303,24 +285,12 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     verify(this.firmwareFileCachingRepository, times(1)).retrieve(firmwareIdentification);
     verify(this.firmwareImageIdentifierCachingRepository, never()).retrieve(firmwareIdentification);
 
-    this.assertImageTransferRelatedInteractionWithConnection(0, 7, 0, 1);
-  }
-
-  private void assertImageTransferRelatedInteractionWithConnection() {
-    assertThat(
-            this.connectionStub.hasMethodBeenInvoked(ImageTransferMethod.IMAGE_TRANSFER_INITIATE))
-        .isTrue();
-    assertThat(this.connectionStub.hasMethodBeenInvoked(ImageTransferMethod.IMAGE_BLOCK_TRANSFER))
-        .isTrue();
-    assertThat(this.connectionStub.hasMethodBeenInvoked(ImageTransferMethod.IMAGE_ACTIVATE))
-        .isTrue();
-
-    assertThat(this.connectionStub.getSetParameters(ImageTransferAttribute.IMAGE_TRANSFER_ENABLED))
-        .isEmpty();
+    this.assertImageTransferRelatedInteractionWithConnection(0, 7, 0);
   }
 
   private void assertImageTransferRelatedInteractionWithConnection(
-      final long initiate, final long transfer, final long verify, final long activate) {
+      final long initiate, final long transfer, final long verify) {
+    final long activate = 1;
     assertThat(
             this.connectionStub.hasMethodBeenInvokedTimes(
                 ImageTransferMethod.IMAGE_TRANSFER_INITIATE))
