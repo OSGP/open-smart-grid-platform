@@ -52,7 +52,7 @@ public abstract class DynamicProfile extends ProfileGeneric {
 
   private final SecureRandom random = new SecureRandom();
 
-  public DynamicProfile(
+  protected DynamicProfile(
       final String instanceId,
       final DynamicValues dynamicValues,
       final Calendar time,

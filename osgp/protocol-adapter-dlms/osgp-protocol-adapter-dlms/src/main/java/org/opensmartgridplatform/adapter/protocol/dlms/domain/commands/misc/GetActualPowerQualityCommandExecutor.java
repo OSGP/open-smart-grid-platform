@@ -26,7 +26,6 @@ import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
-import org.opensmartgridplatform.dlms.objectconfig.MeterType;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
 import org.opensmartgridplatform.dlms.objectconfig.PowerQualityProfile;
 import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
@@ -215,10 +214,5 @@ public class GetActualPowerQualityCommandExecutor
       log.warn("No attribute addresses returned for interface class of {}", object.getTag());
       return null;
     }
-  }
-
-  private boolean objectHasCorrectMeterType(final CosemObject object, final DlmsDevice device) {
-    return (!device.isPolyphase() && object.getMeterTypes().contains(MeterType.SP))
-        || (device.isPolyphase() && object.getMeterTypes().contains(MeterType.PP));
   }
 }

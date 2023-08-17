@@ -156,53 +156,77 @@ class ObjectConfigServiceTest {
   }
 
   @Test
-  void testGetCosemObjects() throws ObjectConfigException {
-    Map<DlmsObjectType, CosemObject> cosemObjects =
+  void testGetCosemObjectsDsmr22() throws ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
         this.objectConfigService.getCosemObjects("DSMR", "2.2");
 
     assertNotNull(cosemObjects);
     assertThat(cosemObjects).hasSize(19);
     assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_VOLTAGE_SWELLS_FOR_L1));
+  }
 
-    cosemObjects = this.objectConfigService.getCosemObjects("DSMR", "4.2.2");
+  @Test
+  void testGetCosemObjectsDsmr422() throws ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.objectConfigService.getCosemObjects("DSMR", "4.2.2");
 
     assertNotNull(cosemObjects);
     assertThat(cosemObjects).hasSize(43);
     assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_VOLTAGE_SWELLS_FOR_L1));
     assertNull(cosemObjects.get(DlmsObjectType.CDMA_DIAGNOSTIC));
+  }
 
-    cosemObjects = this.objectConfigService.getCosemObjects("SMR", "4.3");
+  @Test
+  void testGetCosemObjectsSmr43() throws ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.objectConfigService.getCosemObjects("SMR", "4.3");
 
     assertNotNull(cosemObjects);
     assertThat(cosemObjects).hasSize(44);
     assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_VOLTAGE_SWELLS_FOR_L1));
     assertNotNull(cosemObjects.get(DlmsObjectType.CDMA_DIAGNOSTIC));
+  }
 
-    cosemObjects = this.objectConfigService.getCosemObjects("SMR", "5.0.0");
-
-    assertNotNull(cosemObjects);
-    assertThat(cosemObjects).hasSize(49);
-    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
-    assertNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
-    assertNull(cosemObjects.get(DlmsObjectType.PUSH_SETUP_UDP));
-
-    cosemObjects = this.objectConfigService.getCosemObjects("SMR", "5.1");
+  @Test
+  void testGetCosemObjectsSmr500() throws ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.objectConfigService.getCosemObjects("SMR", "5.0.0");
 
     assertNotNull(cosemObjects);
     assertThat(cosemObjects).hasSize(49);
     assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
     assertNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
     assertNull(cosemObjects.get(DlmsObjectType.PUSH_SETUP_UDP));
+  }
 
-    cosemObjects = this.objectConfigService.getCosemObjects("SMR", "5.2");
+  @Test
+  void testGetCosemObjectsSmr51() throws ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.objectConfigService.getCosemObjects("SMR", "5.1");
+
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(49);
+    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
+    assertNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
+    assertNull(cosemObjects.get(DlmsObjectType.PUSH_SETUP_UDP));
+  }
+
+  @Test
+  void testGetCosemObjectsSmr52() throws ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.objectConfigService.getCosemObjects("SMR", "5.2");
 
     assertNotNull(cosemObjects);
     assertThat(cosemObjects).hasSize(50);
     assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
     assertNotNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
     assertNull(cosemObjects.get(DlmsObjectType.PUSH_SETUP_UDP));
+  }
 
-    cosemObjects = this.objectConfigService.getCosemObjects("SMR", "5.5");
+  @Test
+  void testGetCosemObjectsSmr55() throws ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.objectConfigService.getCosemObjects("SMR", "5.5");
 
     assertNotNull(cosemObjects);
     assertThat(cosemObjects).hasSize(51);

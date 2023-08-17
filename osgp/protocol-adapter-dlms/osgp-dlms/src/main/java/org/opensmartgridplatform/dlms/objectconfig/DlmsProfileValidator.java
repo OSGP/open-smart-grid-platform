@@ -68,11 +68,7 @@ public class DlmsProfileValidator {
             .collect(Collectors.joining(", "));
 
     if (!validationError.isEmpty()) {
-      validationErrors.add(
-          "DlmsProfile "
-              + dlmsProfile.getProfileWithVersion()
-              + " PQ validation error: "
-              + validationError);
+      validationErrors.add(createErrorMessage(dlmsProfile, validationError));
     }
   }
 
@@ -86,11 +82,7 @@ public class DlmsProfileValidator {
             .collect(Collectors.joining(", "));
 
     if (!validationError.isEmpty()) {
-      validationErrors.add(
-          "DlmsProfile "
-              + dlmsProfile.getProfileWithVersion()
-              + " PQ validation error: "
-              + validationError);
+      validationErrors.add(createErrorMessage(dlmsProfile, validationError));
     }
   }
 
@@ -185,11 +177,7 @@ public class DlmsProfileValidator {
             .collect(Collectors.joining(", "));
 
     if (!validationError.isEmpty()) {
-      validationErrors.add(
-          "DlmsProfile "
-              + dlmsProfile.getProfileWithVersion()
-              + " PQ validation error: "
-              + validationError);
+      validationErrors.add(createErrorMessage(dlmsProfile, validationError));
     }
   }
 
@@ -234,5 +222,13 @@ public class DlmsProfileValidator {
     }
 
     return "";
+  }
+
+  private static String createErrorMessage(
+      final DlmsProfile dlmsProfile, final String validationError) {
+    return "DlmsProfile "
+        + dlmsProfile.getProfileWithVersion()
+        + " PQ validation error: "
+        + validationError;
   }
 }
