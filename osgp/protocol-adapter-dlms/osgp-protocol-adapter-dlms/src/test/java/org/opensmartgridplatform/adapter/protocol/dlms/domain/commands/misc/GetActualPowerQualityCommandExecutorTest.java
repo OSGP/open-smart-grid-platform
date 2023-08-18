@@ -161,10 +161,9 @@ class GetActualPowerQualityCommandExecutorTest {
     allObjectsThatShouldBeRequested.add(this.getClockObject());
     allObjectsThatShouldBeRequested.addAll(allPqObjectsForThisMeter);
     final List<CosemObject> allPqObjects = new ArrayList<>(allPqObjectsForThisMeter);
-    allPqObjects.add(this.getObjectWithWrongMeterType(meterType));
 
     when(this.objectConfigService.getCosemObjectsWithProperties(
-            PROTOCOL_NAME, PROTOCOL_VERSION, this.getObjectProperties(profileType)))
+            PROTOCOL_NAME, PROTOCOL_VERSION, this.getObjectProperties(profileType, meterType)))
         .thenReturn(allPqObjects);
 
     this.actualPowerQualityRequestDto = new ActualPowerQualityRequestDto(profileType);
@@ -360,13 +359,17 @@ class GetActualPowerQualityCommandExecutorTest {
     return results;
   }
 
-  private EnumMap<ObjectProperty, List<Object>> getObjectProperties(final String profile) {
+  private EnumMap<ObjectProperty, List<String>> getObjectProperties(
+      final String profile, final MeterType meterType) {
     // Create map with the required properties and values for the power quality objects
-    final EnumMap<ObjectProperty, List<Object>> pqProperties = new EnumMap<>(ObjectProperty.class);
+    final EnumMap<ObjectProperty, List<String>> pqProperties = new EnumMap<>(ObjectProperty.class);
     pqProperties.put(ObjectProperty.PQ_PROFILE, Collections.singletonList(profile));
     pqProperties.put(
         ObjectProperty.PQ_REQUEST,
-        Arrays.asList(PowerQualityRequest.ONDEMAND.name(), PowerQualityRequest.BOTH.name()));
+        List.of(
+            meterType == MeterType.SP
+                ? PowerQualityRequest.ACTUAL_SP.name()
+                : PowerQualityRequest.ACTUAL_PP.name()));
 
     return pqProperties;
   }

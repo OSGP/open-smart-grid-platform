@@ -100,16 +100,16 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       # Only for the expectedNumber of objects is checked if a value is present in the response,
       # the rest of the list below will be ignored.
       | PowerQualityObject_Name_1   | CLOCK                                              |
-      | PowerQualityObject_Name_2   | INSTANTANEOUS_ACTIVE_POWER_IMPORT                  |
-      | PowerQualityObject_Unit_2   | W                                                  |
-      | PowerQualityObject_Name_3   | INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES |
+      | PowerQualityObject_Name_2   | INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES |
+      | PowerQualityObject_Unit_2   | AMP                                                |
+      | PowerQualityObject_Name_3   | INSTANTANEOUS_CURRENT_L1                           |
       | PowerQualityObject_Unit_3   | AMP                                                |
-      | PowerQualityObject_Name_4   | INSTANTANEOUS_CURRENT_L1                           |
+      | PowerQualityObject_Name_4   | INSTANTANEOUS_CURRENT_L2                           |
       | PowerQualityObject_Unit_4   | AMP                                                |
-      | PowerQualityObject_Name_5   | INSTANTANEOUS_CURRENT_L2                           |
+      | PowerQualityObject_Name_5   | INSTANTANEOUS_CURRENT_L3                           |
       | PowerQualityObject_Unit_5   | AMP                                                |
-      | PowerQualityObject_Name_6   | INSTANTANEOUS_CURRENT_L3                           |
-      | PowerQualityObject_Unit_6   | AMP                                                |
+      | PowerQualityObject_Name_6   | INSTANTANEOUS_ACTIVE_POWER_IMPORT                  |
+      | PowerQualityObject_Unit_6   | W                                                  |
       | PowerQualityObject_Name_7   | INSTANTANEOUS_ACTIVE_POWER_EXPORT                  |
       | PowerQualityObject_Unit_7   | W                                                  |
       | PowerQualityObject_Name_8   | INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1               |
@@ -157,7 +157,7 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
 
     Examples:
       | DeviceId             | Protocol | ProtocolVersion | Lls1active | Hls5active | ExpectedNumber |
-      | KTEST10260000001     | DSMR     | 2.2             | true       | false      | 6              |
+      | KTEST10260000001     | DSMR     | 2.2             | true       | false      | 5              |
       | TEST1024000000001    | DSMR     | 4.2.2           | false      | true       | 28             |
       | TEST1027000000001    | SMR      | 5.0.0           | false      | true       | 28             |
 
@@ -179,12 +179,12 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       # Only for the expectedNumber of objects is checked if a value is present in the response,
       # the rest of the list below will be ignored.
       | PowerQualityObject_Name_1   | CLOCK                                              |
-      | PowerQualityObject_Name_2   | INSTANTANEOUS_ACTIVE_POWER_IMPORT                  |
-      | PowerQualityObject_Unit_2   | W                                                  |
-      | PowerQualityObject_Name_3   | INSTANTANEOUS_CURRENT_L1                           |
+      | PowerQualityObject_Name_2   | INSTANTANEOUS_CURRENT_L1                           |
+      | PowerQualityObject_Unit_2   | AMP                                                |
+      | PowerQualityObject_Name_3   | INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES |
       | PowerQualityObject_Unit_3   | AMP                                                |
-      | PowerQualityObject_Name_4   | INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES |
-      | PowerQualityObject_Unit_4   | AMP                                                |
+      | PowerQualityObject_Name_4   | INSTANTANEOUS_ACTIVE_POWER_IMPORT                  |
+      | PowerQualityObject_Unit_4   | W                                                  |
       | PowerQualityObject_Name_5   | INSTANTANEOUS_ACTIVE_POWER_EXPORT                  |
       | PowerQualityObject_Unit_5   | W                                                  |
       | PowerQualityObject_Name_6   | INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1               |

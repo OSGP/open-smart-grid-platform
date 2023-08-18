@@ -55,7 +55,6 @@ import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ActiveFirmwareIdentifier;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ActiveFirmwareSignature;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ActivityCalendar;
@@ -70,7 +69,6 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.CommunicationModu
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.CommunicationSessionLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ConfigurationObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.CurrentlyActiveTariff;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DoubleLongUnsignedExtendedRegister;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DoubleLongUnsignedRegister;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ErrorObject;
@@ -821,26 +819,6 @@ public class DefaultDeviceProfile {
   @Bean
   public LoadProfileWithPeriod2 loadProfile2(final Calendar cal) {
     return new LoadProfileWithPeriod2(cal);
-  }
-
-  @Bean
-  public DefinableLoadProfile definableLoadProfile(final Calendar cal) {
-    final Integer classId = InterfaceClass.PROFILE_GENERIC.id();
-    final ObisCode obisCode = new ObisCode(0, 1, 94, 31, 6, 255);
-    this.dynamicValues()
-        .setDefaultAttributeValue(
-            classId,
-            obisCode,
-            ProfileGenericAttribute.CAPTURE_PERIOD.attributeId(),
-            DataObject.newUInteger32Data(300));
-    this.dynamicValues()
-        .setDefaultAttributeValue(
-            classId,
-            obisCode,
-            ProfileGenericAttribute.PROFILE_ENTRIES.attributeId(),
-            DataObject.newUInteger32Data(960));
-
-    return new DefinableLoadProfile(cal);
   }
 
   @Bean

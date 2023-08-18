@@ -273,7 +273,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "PQ_PROFILE": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": []
       },
       "attributes": [
         {
@@ -303,7 +304,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "PQ_PROFILE": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": []
       },
       "attributes": [
         {
@@ -325,7 +327,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "PQ_PROFILE": "PRIVATE"
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": []
       },
       "attributes": [
         {
@@ -355,7 +358,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "PQ_PROFILE": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": []
       },
       "attributes": [
         {
@@ -385,7 +389,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "PQ_PROFILE": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": []
       },
       "attributes": [
         {
@@ -415,7 +420,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "PQ_PROFILE": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": []
       },
       "attributes": [
         {
@@ -445,7 +451,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
       "properties": {
-        "PQ_PROFILE": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": []
       },
       "attributes": [
         {
@@ -467,7 +474,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "PQ_PROFILE": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": []
       },
       "attributes": [
         {
@@ -489,7 +497,8 @@
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
       "properties": {
-        "PQ_PROFILE": "PUBLIC"
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": []
       },
       "attributes": [
         {

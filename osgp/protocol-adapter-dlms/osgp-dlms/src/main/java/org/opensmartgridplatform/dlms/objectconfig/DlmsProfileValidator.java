@@ -45,6 +45,8 @@ public class DlmsProfileValidator {
     try {
       allRegistersShouldHaveAUnit(dlmsProfile, validationErrors);
       allPQProfilesShouldHaveSelectableObjects(dlmsProfile, validationErrors);
+      allPqPeriodicShouldBeInAProfileSelectableObjects(dlmsProfile, validationErrors);
+      allPqRequestsShouldMatchType(dlmsProfile, validationErrors);
 
       return validationErrors;
     } catch (final Exception e) {
@@ -56,13 +58,92 @@ public class DlmsProfileValidator {
     }
   }
 
+  private static void allPqRequestsShouldMatchType(
+      final DlmsProfile dlmsProfile, final List<String> validationErrors) {
+    final String validationError =
+        dlmsProfile.getObjects().stream()
+            .filter(DlmsProfileValidator::isPeriodicRequest)
+            .map(DlmsProfileValidator::pqRequestShouldMatchMeterType)
+            .filter(error -> !error.isEmpty())
+            .collect(Collectors.joining(", "));
+
+    if (!validationError.isEmpty()) {
+      validationErrors.add(createErrorMessage(dlmsProfile, validationError));
+    }
+  }
+
+  private static void allPqPeriodicShouldBeInAProfileSelectableObjects(
+      final DlmsProfile dlmsProfile, final List<String> validationErrors) {
+    final String validationError =
+        dlmsProfile.getObjects().stream()
+            .filter(DlmsProfileValidator::isPeriodicRequest)
+            .map(object -> pqObjectShouldBeInAProfileSelectableObjects(object, dlmsProfile))
+            .filter(error -> !error.isEmpty())
+            .collect(Collectors.joining(", "));
+
+    if (!validationError.isEmpty()) {
+      validationErrors.add(createErrorMessage(dlmsProfile, validationError));
+    }
+  }
+
+  private static boolean isPeriodicRequest(final CosemObject object) {
+    return object.getProperty(ObjectProperty.PQ_REQUEST) != null
+        && (object
+                .getListProperty(ObjectProperty.PQ_REQUEST)
+                .contains(PowerQualityRequest.PERIODIC_SP.name())
+            || object
+                .getListProperty(ObjectProperty.PQ_REQUEST)
+                .contains(PowerQualityRequest.PERIODIC_PP.name()));
+  }
+
+  private static String pqObjectShouldBeInAProfileSelectableObjects(
+      final CosemObject pqObject, final DlmsProfile dlmsProfile) {
+    final List<String> selectableObjects =
+        dlmsProfile.getObjects().stream()
+            .filter(
+                object ->
+                    Arrays.asList(
+                            DEFINABLE_LOAD_PROFILE.name(),
+                            POWER_QUALITY_PROFILE_1.name(),
+                            POWER_QUALITY_PROFILE_2.name())
+                        .contains(object.getTag()))
+            .flatMap(object -> object.getListProperty(ObjectProperty.SELECTABLE_OBJECTS).stream())
+            .toList();
+
+    if (!selectableObjects.contains(pqObject.getTag())) {
+      return pqObject.getTag() + " cannot be found in a selectable object list of a PQ Profile";
+    }
+    return "";
+  }
+
+  private static String pqRequestShouldMatchMeterType(final CosemObject pqObject) {
+    final List<String> pqRequests = pqObject.getListProperty(ObjectProperty.PQ_REQUEST);
+    if (pqRequests.contains(PowerQualityRequest.ACTUAL_SP.name())
+        && !pqObject.getMeterTypes().contains(MeterType.SP)) {
+      return pqObject.getTag() + " has request ACTUAL_SP, but meter type does not have SP";
+    }
+    if (pqRequests.contains(PowerQualityRequest.PERIODIC_SP.name())
+        && !pqObject.getMeterTypes().contains(MeterType.SP)) {
+      return pqObject.getTag() + " has request PERIODIC_SP, but meter type does not have SP";
+    }
+    if (pqRequests.contains(PowerQualityRequest.ACTUAL_PP.name())
+        && !pqObject.getMeterTypes().contains(MeterType.PP)) {
+      return pqObject.getTag() + " has request ACTUAL_PP, but meter type does not have PP";
+    }
+    if (pqRequests.contains(PowerQualityRequest.PERIODIC_PP.name())
+        && !pqObject.getMeterTypes().contains(MeterType.PP)) {
+      return pqObject.getTag() + " has request PERIODIC_PP, but meter type does not have PP";
+    }
+    return "";
+  }
+
   private static void allRegistersShouldHaveAUnit(
       final DlmsProfile dlmsProfile, final List<String> validationErrors) {
     final List<CosemObject> registersWithoutUnit =
         dlmsProfile.getObjects().stream()
             .filter(object -> object.getClassId() == InterfaceClass.REGISTER.id())
             .filter(object -> !registerHasScalerUnit(object))
-            .collect(Collectors.toList());
+            .toList();
 
     if (!registersWithoutUnit.isEmpty()) {
       final String tags =
@@ -95,12 +176,8 @@ public class DlmsProfileValidator {
             .filter(error -> !error.isEmpty())
             .collect(Collectors.joining(", "));
 
-    if (!validationError.equals("")) {
-      validationErrors.add(
-          "DlmsProfile "
-              + dlmsProfile.getProfileWithVersion()
-              + " PQ validation error: "
-              + validationError);
+    if (!validationError.isEmpty()) {
+      validationErrors.add(createErrorMessage(dlmsProfile, validationError));
     }
   }
 
@@ -129,7 +206,7 @@ public class DlmsProfileValidator {
             .filter(object -> object.getTag().equals(tagForSelectableObject))
             .findFirst();
 
-    if (!optionalCosemObject.isPresent()) {
+    if (optionalCosemObject.isEmpty()) {
       return "Profile doesn't contain object for " + tagForSelectableObject;
     }
 
@@ -139,7 +216,19 @@ public class DlmsProfileValidator {
     if (pqProfile == null) {
       return tagForSelectableObject + " doesn't contain PQ Profile";
     }
+    final List<String> pqRequest = selectableObject.getListProperty(ObjectProperty.PQ_REQUEST);
+    if (pqRequest == null) {
+      return tagForSelectableObject + " doesn't contain PQ Request";
+    }
 
     return "";
+  }
+
+  private static String createErrorMessage(
+      final DlmsProfile dlmsProfile, final String validationError) {
+    return "DlmsProfile "
+        + dlmsProfile.getProfileWithVersion()
+        + " PQ validation error: "
+        + validationError;
   }
 }

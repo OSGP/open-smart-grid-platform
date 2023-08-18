@@ -50,7 +50,6 @@
       "properties": {
         "SELECTABLE_OBJECTS": [
           "CLOCK",
-          "GPRS_DIAGNOSTIC",
           "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
           "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
           "NUMBER_OF_POWER_FAILURES",
@@ -137,77 +136,6 @@
       ]
     },
     {
-      "tag": "GPRS_DIAGNOSTIC",
-      "description": "GPRS Diagnostic",
-      "class-id": 47,
-      "version": 0,
-      "obis": "0.0.25.6.0.255",
-      "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
-      "properties": {
-        "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "PERIODIC"
-      },
-      "attributes": [
-        {
-          "id": 2,
-          "description": "operator",
-          "datatype": "visible-string",
-          "valuetype": "DYNAMIC",
-          "value": "EMPTY",
-          "access": "R"
-        },
-        {
-          "id": 3,
-          "description": "status",
-          "datatype": "enum",
-          "valuetype": "DYNAMIC",
-          "value": "0",
-          "access": "R"
-        },
-        {
-          "id": 4,
-          "description": "cs attachment",
-          "datatype": "enum",
-          "valuetype": "DYNAMIC",
-          "value": "0",
-          "access": "R"
-        },
-        {
-          "id": 5,
-          "description": "ps status",
-          "datatype": "enum",
-          "valuetype": "DYNAMIC",
-          "value": "0",
-          "access": "R"
-        },
-        {
-          "id": 6,
-          "description": "cell info",
-          "datatype": "cell_info_type",
-          "valuetype": "DYNAMIC",
-          "value": "EMPTY",
-          "access": "R"
-        },
-        {
-          "id": 7,
-          "description": "adjacent cells",
-          "datatype": "array",
-          "valuetype": "DYNAMIC",
-          "value": "EMPTY",
-          "access": "R"
-        },
-        {
-          "id": 8,
-          "description": "capture time",
-          "datatype": "date-time",
-          "valuetype": "DYNAMIC",
-          "value": "EMPTY",
-          "access": "R"
-        }
-      ]
-    },
-    {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
       "description": "Number of voltage swells in phase L1",
       "class-id": 1,
@@ -217,7 +145,53 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L2",
+      "description": "Number of voltage swells in phase L2",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.0.52.36.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": ["ACTUAL_PP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L3",
+      "description": "Number of voltage swells in phase L3",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.0.72.36.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -240,7 +214,76 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L2",
+      "description": "Number of voltage sags in phase L2",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.0.52.32.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": ["ACTUAL_PP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L3",
+      "description": "Number of voltage sags in phase L3",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.0.72.32.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": ["ACTUAL_PP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "NUMBER_OF_LONG_POWER_FAILURES",
+      "description": "Number of long power failures in any phases",
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.96.7.9.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -263,7 +306,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP"]
       },
       "attributes": [
         {
@@ -286,7 +329,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -302,7 +345,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "value": "0, V",
           "access": "RW"
         }
       ]
@@ -317,7 +360,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -333,7 +376,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "value": "0, V",
           "access": "RW"
         }
       ]
@@ -348,7 +391,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -364,7 +407,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "value": "0, V",
           "access": "RW"
         }
       ]
@@ -379,7 +422,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -395,7 +438,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "value": "0, V",
           "access": "R"
         }
       ]
@@ -410,7 +453,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -426,7 +469,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "value": "0, V",
           "access": "R"
         }
       ]
@@ -441,7 +484,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -457,7 +500,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "value": "0, V",
           "access": "R"
         }
       ]
@@ -472,7 +515,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP"]
       },
       "attributes": [
         {
@@ -488,7 +531,69 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-2, A",
+          "value": "0, A",
+          "access": "RW"
+        }
+      ]
+    },
+    {
+      "tag": "INSTANTANEOUS_CURRENT_L2",
+      "description": "Instantaneous current L2",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.51.7.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": ["ACTUAL_PP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, A",
+          "access": "RW"
+        }
+      ]
+    },
+    {
+      "tag": "INSTANTANEOUS_CURRENT_L3",
+      "description": "Instantaneous current L3",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.71.7.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": ["ACTUAL_PP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, A",
           "access": "RW"
         }
       ]
@@ -503,7 +608,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP"]
       },
       "attributes": [
         {
@@ -519,7 +624,69 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-2, A",
+          "value": "0, A",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "AVERAGE_CURRENT_L2",
+      "description": "Average current L2",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.51.24.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": ["ACTUAL_PP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, A",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "AVERAGE_CURRENT_L3",
+      "description": "Average current L3",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.71.24.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": ["ACTUAL_PP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, A",
           "access": "R"
         }
       ]
@@ -534,7 +701,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -550,7 +717,255 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "-2, A",
+          "value": "0, A",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT",
+      "description": "Instantaneous active power (+P)",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.1.7.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, W",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "INSTANTANEOUS_ACTIVE_POWER_EXPORT",
+      "description": "Instantaneous active power (-P)",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.2.7.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, W",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1",
+      "description": "Instantaneous active power L1 (+P)",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.21.7.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, W",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2",
+      "description": "Instantaneous active power L2 (+P)",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.41.7.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": ["ACTUAL_PP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, W",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3",
+      "description": "Instantaneous active power L3 (+P)",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.61.7.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": ["ACTUAL_PP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, W",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1",
+      "description": "Instantaneous active power L1 (-P)",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.22.7.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, W",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2",
+      "description": "Instantaneous active power L2 (-P)",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.42.7.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": ["ACTUAL_PP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, W",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3",
+      "description": "Instantaneous active power L3 (-P)",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.62.7.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": ["ACTUAL_PP"]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, W",
           "access": "R"
         }
       ]
@@ -565,7 +980,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -596,7 +1011,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -627,7 +1042,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -658,7 +1073,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -689,7 +1104,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -720,7 +1135,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -751,7 +1166,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -767,7 +1182,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]
@@ -782,7 +1197,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -798,7 +1213,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]
@@ -813,7 +1228,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -829,7 +1244,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]
@@ -844,7 +1259,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -860,7 +1275,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]
@@ -875,7 +1290,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -891,7 +1306,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]
@@ -906,7 +1321,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -922,7 +1337,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, var",
+          "value": "0, VAR",
           "access": "R"
         }
       ]

@@ -4,8 +4,10 @@
 
 package org.opensmartgridplatform.simulator.protocol.dlms.server.profile;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.ObisCode;
@@ -14,7 +16,10 @@ import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.CaptureObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ConfigurationObject;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DoubleLongUnsignedExtendedRegister;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.EMonthlyBillingValuesPeriod1SMR5;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDailyBillingValuesPeriod1SMR5;
@@ -38,7 +43,67 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 @Profile("smr5")
+@Slf4j
 public class Smr5Profile {
+
+  private static final int MAX_NUMBER_OF_CAPTURE_OBJECTS = 14;
+  private static final List<CaptureObject> POWER_QUALITY_1_CAPTURE_OBJECTS =
+      Arrays.asList(
+          PowerQualityProfile1.CLOCK_TIME,
+          PowerQualityProfile1.AVERAGE_ACTIVE_POWER_IMPORT_L1_VALUE,
+          PowerQualityProfile1.AVERAGE_ACTIVE_POWER_IMPORT_L2_VALUE,
+          PowerQualityProfile1.AVERAGE_ACTIVE_POWER_IMPORT_L3_VALUE,
+          PowerQualityProfile1.AVERAGE_ACTIVE_POWER_EXPORT_L1_VALUE,
+          PowerQualityProfile1.AVERAGE_ACTIVE_POWER_EXPORT_L2_VALUE,
+          PowerQualityProfile1.AVERAGE_ACTIVE_POWER_EXPORT_L3_VALUE,
+          PowerQualityProfile1.AVERAGE_REACTIVE_POWER_IMPORT_L1_VALUE,
+          PowerQualityProfile1.AVERAGE_REACTIVE_POWER_IMPORT_L2_VALUE,
+          PowerQualityProfile1.AVERAGE_REACTIVE_POWER_IMPORT_L3_VALUE,
+          PowerQualityProfile1.AVERAGE_REACTIVE_POWER_EXPORT_L1_VALUE,
+          PowerQualityProfile1.AVERAGE_REACTIVE_POWER_EXPORT_L2_VALUE,
+          PowerQualityProfile1.AVERAGE_REACTIVE_POWER_EXPORT_L3_VALUE);
+
+  private static final List<CaptureObject> POWER_QUALITY_2_CAPTURE_OBJECTS =
+      Arrays.asList(
+          PowerQualityProfile2.CLOCK_TIME,
+          PowerQualityProfile2.AVERAGE_VOLTAGE_L1_VALUE,
+          PowerQualityProfile2.AVERAGE_VOLTAGE_L2_VALUE,
+          PowerQualityProfile2.AVERAGE_VOLTAGE_L3_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_VOLTAGE_L1_VALUE,
+          PowerQualityProfile2.AVERAGE_CURRENT_L1_VALUE,
+          PowerQualityProfile2.AVERAGE_CURRENT_L2_VALUE,
+          PowerQualityProfile2.AVERAGE_CURRENT_L3_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_CURRENT_L1_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_IMPORT_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_EXPORT_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2_VALUE,
+          PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3_VALUE);
+
+  private static final List<CaptureObject> DEFINABLE_LOAD_CAPTURE_OBJECTS =
+      Arrays.asList(
+          DefinableLoadProfile.CLOCK_TIME,
+          DefinableLoadProfile.CDMA_DIAGNOSTIC_SIGNAL_QUALITY,
+          DefinableLoadProfile.GPRS_DIAGNOSTIC_SIGNAL_QUALITY,
+          DefinableLoadProfile.CDMA_DIAGNOSTIC_BER,
+          DefinableLoadProfile.GPRS_DIAGNOSTIC_BER,
+          DefinableLoadProfile.MBUS_CLIENT_SETUP_CHN1_VALUE,
+          DefinableLoadProfile.MBUS_CLIENT_SETUP_CHN2_VALUE,
+          DefinableLoadProfile.MBUS_DIAGNOSTIC_RSSI_CHN1_VALUE,
+          DefinableLoadProfile.MBUS_DIAGNOSTIC_RSSI_CHN2_VALUE,
+          DefinableLoadProfile.MBUS_DIAGNOSTIC_FCS_NOK_CHN1_VALUE,
+          DefinableLoadProfile.MBUS_DIAGNOSTIC_FCS_NOK_CHN2_VALUE,
+          DefinableLoadProfile.NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L1_VALUE,
+          DefinableLoadProfile.NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L2_VALUE,
+          DefinableLoadProfile.NUMBER_OF_VOLTAGE_SAGS_IN_PHASE_L3_VALUE,
+          DefinableLoadProfile.NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L1_VALUE,
+          DefinableLoadProfile.NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L2_VALUE,
+          DefinableLoadProfile.NUMBER_OF_VOLTAGE_SWELLS_IN_PHASE_L3_VALUE,
+          DefinableLoadProfile.NUMBER_OF_POWER_FAILURES_IN_ANY_PHASE_VALUE);
+
   @Value("${firmware.mbusdriver.active.identifier}")
   private String mBusDriverActiveFirmwareIdentifier;
 
@@ -155,13 +220,42 @@ public class Smr5Profile {
   }
 
   @Bean
-  public PowerQualityProfile1 powerQualityProfile1(final Calendar cal) {
-    return new PowerQualityProfile1(cal);
+  public PowerQualityProfile1 powerQualityProfile1(
+      final DynamicValues dynamicValues, final Calendar cal) {
+    final Integer classId = InterfaceClass.PROFILE_GENERIC.id();
+    final ObisCode obisCode = new ObisCode(PowerQualityProfile1.LOGICAL_NAME);
+    dynamicValues.setDefaultAttributeValue(
+        classId,
+        obisCode,
+        ProfileGenericAttribute.CAPTURE_PERIOD.attributeId(),
+        DataObject.newUInteger32Data(PowerQualityProfile1.CAPTURE_PERIOD));
+    dynamicValues.setDefaultAttributeValue(
+        classId,
+        obisCode,
+        ProfileGenericAttribute.PROFILE_ENTRIES.attributeId(),
+        DataObject.newUInteger32Data(PowerQualityProfile1.PROFILE_ENTRIES));
+    return new PowerQualityProfile1(
+        dynamicValues, cal, MAX_NUMBER_OF_CAPTURE_OBJECTS, POWER_QUALITY_1_CAPTURE_OBJECTS);
   }
 
   @Bean
-  public PowerQualityProfile2 powerQualityProfile2(final Calendar cal) {
-    return new PowerQualityProfile2(cal);
+  public PowerQualityProfile2 powerQualityProfile2(
+      final DynamicValues dynamicValues, final Calendar cal) {
+    log.info("------------  Create bean powerQualityProfile2");
+    final Integer classId = InterfaceClass.PROFILE_GENERIC.id();
+    final ObisCode obisCode = new ObisCode(PowerQualityProfile2.LOGICAL_NAME);
+    dynamicValues.setDefaultAttributeValue(
+        classId,
+        obisCode,
+        ProfileGenericAttribute.CAPTURE_PERIOD.attributeId(),
+        DataObject.newUInteger32Data(PowerQualityProfile2.CAPTURE_PERIOD));
+    dynamicValues.setDefaultAttributeValue(
+        classId,
+        obisCode,
+        ProfileGenericAttribute.PROFILE_ENTRIES.attributeId(),
+        DataObject.newUInteger32Data(PowerQualityProfile2.PROFILE_ENTRIES));
+    return new PowerQualityProfile2(
+        dynamicValues, cal, MAX_NUMBER_OF_CAPTURE_OBJECTS, POWER_QUALITY_2_CAPTURE_OBJECTS);
   }
 
   @Bean
@@ -364,5 +458,25 @@ public class Smr5Profile {
   @Bean
   SingleActionScheduler phaseOutageTestScheduler() {
     return new SingleActionScheduler("0.0.15.1.4.255");
+  }
+
+  @Bean
+  public DefinableLoadProfile definableLoadProfile(
+      final Calendar cal, final DynamicValues dynamicValues) {
+    final Integer classId = InterfaceClass.PROFILE_GENERIC.id();
+    final ObisCode obisCode = new ObisCode(0, 1, 94, 31, 6, 255);
+    dynamicValues.setDefaultAttributeValue(
+        classId,
+        obisCode,
+        ProfileGenericAttribute.CAPTURE_PERIOD.attributeId(),
+        DataObject.newUInteger32Data(300));
+    dynamicValues.setDefaultAttributeValue(
+        classId,
+        obisCode,
+        ProfileGenericAttribute.PROFILE_ENTRIES.attributeId(),
+        DataObject.newUInteger32Data(960));
+
+    return new DefinableLoadProfile(
+        dynamicValues, cal, MAX_NUMBER_OF_CAPTURE_OBJECTS, DEFINABLE_LOAD_CAPTURE_OBJECTS);
   }
 }

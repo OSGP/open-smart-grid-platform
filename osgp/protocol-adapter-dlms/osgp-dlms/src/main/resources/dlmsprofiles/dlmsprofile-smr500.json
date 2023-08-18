@@ -57,6 +57,7 @@
           "NUMBER_OF_VOLTAGE_SWELLS_FOR_L2",
           "NUMBER_OF_VOLTAGE_SWELLS_FOR_L3",
           "NUMBER_OF_POWER_FAILURES",
+          "INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES",
           "CDMA_DIAGNOSTIC",
           "GPRS_DIAGNOSTIC",
           "MBUS_CLIENT_SETUP",
@@ -85,7 +86,7 @@
           "description": "capture period in sec",
           "datatype": "double-long-unsigned",
           "valuetype": "SET_BY_CLIENT",
-          "value": "900",
+          "value": "86400",
           "access": "RW"
         },
         {
@@ -224,7 +225,15 @@
           "AVERAGE_CURRENT_L2",
           "AVERAGE_CURRENT_L3",
           "INSTANTANEOUS_CURRENT_L1",
-          "INSTANTANEOUS_VOLTAGE_L1"
+          "INSTANTANEOUS_VOLTAGE_L1",
+          "INSTANTANEOUS_ACTIVE_POWER_IMPORT",
+          "INSTANTANEOUS_ACTIVE_POWER_EXPORT",
+          "INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1",
+          "INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2",
+          "INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3",
+          "INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1",
+          "INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2",
+          "INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3"
         ]
       },
       "attributes": [
@@ -296,7 +305,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -327,7 +336,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -358,7 +367,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -389,7 +398,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -420,7 +429,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -451,7 +460,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -482,7 +491,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -513,7 +522,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -544,7 +553,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -575,7 +584,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP"]
       },
       "attributes": [
         {
@@ -606,7 +615,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -637,7 +646,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -668,7 +677,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP"]
       },
       "attributes": [
         {
@@ -699,7 +708,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -730,7 +739,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -761,7 +770,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -792,7 +801,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -823,7 +832,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -854,7 +863,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -885,7 +894,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -916,7 +925,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -947,7 +956,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -978,7 +987,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1009,7 +1018,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1040,7 +1049,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1071,7 +1080,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1102,7 +1111,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1133,7 +1142,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1164,7 +1173,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1195,7 +1204,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1226,7 +1235,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1257,7 +1266,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1288,7 +1297,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1319,7 +1328,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1342,7 +1351,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
       },
       "attributes": [
         {
@@ -1365,7 +1374,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1388,7 +1397,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1411,7 +1420,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1434,7 +1443,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1457,7 +1466,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1480,7 +1489,7 @@
       "meterTypes": ["PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "BOTH"
+        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1503,7 +1512,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "PERIODIC"
+        "PQ_REQUEST": ["PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1574,7 +1583,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "PERIODIC"
+        "PQ_REQUEST": ["PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1645,7 +1654,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "PERIODIC"
+        "PQ_REQUEST": ["PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {
@@ -1764,7 +1773,7 @@
       "meterTypes": ["SP","PP"],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "PERIODIC"
+        "PQ_REQUEST": ["PERIODIC_SP","PERIODIC_PP"]
       },
       "attributes": [
         {

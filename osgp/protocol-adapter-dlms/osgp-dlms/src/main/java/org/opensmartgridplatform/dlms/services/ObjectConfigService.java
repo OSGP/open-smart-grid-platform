@@ -7,6 +7,7 @@ package org.opensmartgridplatform.dlms.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -98,27 +99,13 @@ public class ObjectConfigService {
   public List<CosemObject> getCosemObjectsWithProperties(
       final String protocolName,
       final String protocolVersion,
-      final Map<ObjectProperty, List<Object>> properties)
+      final Map<ObjectProperty, List<String>> properties)
       throws ObjectConfigException {
     final Map<DlmsObjectType, CosemObject> cosemObjects =
         this.getCosemObjects(protocolName, protocolVersion);
 
     return cosemObjects.values().stream()
         .filter(object -> this.hasProperties(object, properties))
-        .toList();
-  }
-
-  public List<CosemObject> getCosemObjectsWithProperty(
-      final String protocolName,
-      final String protocolVersion,
-      final ObjectProperty wantedProperty,
-      final List<Object> wantedPropertyValues)
-      throws ObjectConfigException {
-    final Map<DlmsObjectType, CosemObject> cosemObjects =
-        this.getCosemObjects(protocolName, protocolVersion);
-
-    return cosemObjects.values().stream()
-        .filter(object -> this.hasProperty(object, wantedProperty, wantedPropertyValues))
         .toList();
   }
 
@@ -144,20 +131,26 @@ public class ObjectConfigService {
   private boolean hasProperty(
       final CosemObject object,
       final ObjectProperty wantedProperty,
-      final List<Object> wantedPropertyValues) {
-    final Object property = object.getProperty(wantedProperty);
+      final List<String> wantedPropertyValues) {
+    final Object objectPropertyValue = object.getProperty(wantedProperty);
 
-    if (property == null) {
+    if (objectPropertyValue == null) {
       return false;
     } else if (wantedPropertyValues != null && !wantedPropertyValues.isEmpty()) {
-      return wantedPropertyValues.contains(property);
+      if (objectPropertyValue instanceof String) {
+        return wantedPropertyValues.contains(objectPropertyValue);
+      } else if (objectPropertyValue instanceof List<?>) {
+        final List<String> objectProperyValues = object.getListProperty(wantedProperty);
+        return new HashSet<>(objectProperyValues).containsAll(wantedPropertyValues);
+      }
+      throw new IllegalArgumentException("Unexpected type");
     }
 
     return true;
   }
 
   private boolean hasProperties(
-      final CosemObject object, final Map<ObjectProperty, List<Object>> properties) {
+      final CosemObject object, final Map<ObjectProperty, List<String>> properties) {
 
     return properties.entrySet().stream()
         .allMatch(entry -> this.hasProperty(object, entry.getKey(), entry.getValue()));
@@ -206,7 +199,20 @@ public class ObjectConfigService {
               .findAny();
 
       if (parentDlmsProfile.isPresent()) {
-        dlmsProfile.getObjects().addAll(parentDlmsProfile.get().getObjects());
+        parentDlmsProfile
+            .get()
+            .getObjects()
+            .forEach(
+                parentCosemObject -> {
+                  final boolean objectAlreadyDefined =
+                      dlmsProfile.getObjects().stream()
+                          .anyMatch(
+                              cosemObject ->
+                                  cosemObject.getTag().equals(parentCosemObject.getTag()));
+                  if (!objectAlreadyDefined) {
+                    dlmsProfile.getObjects().add(parentCosemObject);
+                  }
+                });
       } else {
         throw new ObjectConfigException(
             "Parent profile "
