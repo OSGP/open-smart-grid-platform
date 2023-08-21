@@ -43,6 +43,7 @@ public class UpdateFirmwareCommandExecutor
       "Device %s not available in database.";
   private static final String EXCEPTION_MSG_DEVICE_HAS_NO_MBUS_IDENTIFICATION_NUMBER =
       "Device %s has no M-Bus identification number.";
+  private static final String SHA256 = "SHA-256";
 
   private final DlmsDeviceRepository dlmsDeviceRepository;
 
@@ -50,8 +51,6 @@ public class UpdateFirmwareCommandExecutor
   private final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
   private final MacGenerationService macGenerationService;
   private final ImageTransfer.ImageTransferProperties imageTransferProperties;
-
-  private final String SHA256 = "SHA-256";
 
   public UpdateFirmwareCommandExecutor(
       final DlmsDeviceRepository dlmsDeviceRepository,
@@ -104,8 +103,7 @@ public class UpdateFirmwareCommandExecutor
         this.enable(transfer);
         // do not call method image_transfer_initiate (in this class' prepare method).
         // This method will reset first_not_transferred_block_number to 0 (zero)
-        // TODO assuming that the image_transfer_status attribute is (1) Image transfer initiated.
-        // TODO This needs to be tested
+        // This assumes that the image_transfer_status attribute is (1) Image transfer initiated.
         final int blockNumber = transfer.getImageFirstNotTransferredBlockNumber();
         this.transfer(transfer, blockNumber);
       } else {
