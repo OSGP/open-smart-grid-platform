@@ -5,13 +5,16 @@
 package org.opensmartgridplatform.adapter.domain.core.application.tasks;
 
 import java.io.IOException;
+import java.time.Period;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.core.application.services.TransactionalDeviceLogItemService;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.opensmartgridplatform.shared.utils.FileZipper;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 import org.opensmartgridplatform.shared.utils.csv.CsvWriter;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -61,13 +64,13 @@ public class DeviceMessageCleanupJob implements Job {
     }
 
     LOGGER.info("Quartz triggered cleanup of database - device message records.");
-    final DateTime start = DateTime.now();
+    final ZonedDateTime start = ZonedDateTime.now();
 
     try {
-      final Date retention = this.calculateRetentionDate();
+      final ZonedDateTime retention = this.calculateRetentionDate();
       final List<DeviceLogItem> oldDeviceMessages =
           this.transactionalDeviceLogItemService.findDeviceLogItemsBeforeDate(
-              retention, this.deviceMessagePageSize);
+              Date.from(retention.toInstant()), this.deviceMessagePageSize);
       if (!oldDeviceMessages.isEmpty()) {
         this.saveDeviceMessagesToCsvFile(oldDeviceMessages);
 
@@ -79,17 +82,17 @@ public class DeviceMessageCleanupJob implements Job {
           "Exception during CSV file creation, compression or device message deletion.", e);
     }
 
-    final DateTime end = DateTime.now();
+    final ZonedDateTime end = ZonedDateTime.now();
     LOGGER.info(
         "Start: {}, end: {}, duration: {} milliseconds.",
         start,
         end,
-        end.getMillis() - start.getMillis());
+        JavaTimeHelpers.getMillisFrom(end) - JavaTimeHelpers.getMillisFrom(start));
   }
 
-  private Date calculateRetentionDate() {
-    final Date date =
-        DateTime.now().minusMonths(this.deviceMessageRetentionPeriodInMonths).toDate();
+  private ZonedDateTime calculateRetentionDate() {
+    final ZonedDateTime date =
+        ZonedDateTime.now().minus(Period.ofMonths(this.deviceMessageRetentionPeriodInMonths));
     LOGGER.info(
         "Determined date: {} based on device message retention period in months: {}.",
         date,
@@ -118,6 +121,8 @@ public class DeviceMessageCleanupJob implements Job {
   private static final class DeviceMessageToStringArrayConverter {
 
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
 
     private static final int ID = 0;
     private static final int CREATION_TIME = 1;
@@ -186,7 +191,7 @@ public class DeviceMessageCleanupJob implements Job {
     }
 
     private static String formatDate(final Date date) {
-      return new DateTime(date).toString(DATE_TIME_FORMAT);
+      return JavaTimeHelpers.formatDate(date, FORMATTER);
     }
   }
 }

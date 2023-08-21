@@ -13,17 +13,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
+import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
 import org.springframework.core.io.ClassPathResource;
 
 @Slf4j
@@ -39,6 +44,104 @@ class ObjectConfigServiceTest {
     this.objectConfigService = new ObjectConfigService(dlmsProfileList);
   }
 
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  void testProtocolSpecifics(final Protocol protocol) throws ObjectConfigException {
+
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.objectConfigService.getCosemObjects(protocol.getName(), protocol.getVersion());
+    assertThat(cosemObjects).hasSize(protocol.getNrOfCosemObjectsPq());
+
+    final List<CosemObject> cosemObjectsOnDemandPrivate =
+        this.getCosemObjectsWithProperties(
+            protocol, PowerQualityRequest.ACTUAL_SP, Profile.PRIVATE);
+    assertThat(cosemObjectsOnDemandPrivate)
+        .hasSize(protocol.getNrOfCosemObjects(PowerQualityRequest.ACTUAL_SP, Profile.PRIVATE));
+
+    final List<CosemObject> cosemObjectsOnDemandPublic =
+        this.getCosemObjectsWithProperties(protocol, PowerQualityRequest.ACTUAL_SP, Profile.PUBLIC);
+    assertThat(cosemObjectsOnDemandPublic)
+        .hasSize(protocol.getNrOfCosemObjects(PowerQualityRequest.ACTUAL_SP, Profile.PUBLIC));
+
+    final List<CosemObject> cosemObjectsOnPeriodicSpPrivate =
+        this.getCosemObjectsWithProperties(
+            protocol, PowerQualityRequest.PERIODIC_SP, Profile.PRIVATE);
+    assertThat(cosemObjectsOnPeriodicSpPrivate)
+        .hasSize(protocol.getNrOfCosemObjects(PowerQualityRequest.PERIODIC_SP, Profile.PRIVATE));
+
+    final List<CosemObject> cosemObjectsOnPeriodicPpPrivate =
+        this.getCosemObjectsWithProperties(
+            protocol, PowerQualityRequest.PERIODIC_PP, Profile.PRIVATE);
+    assertThat(cosemObjectsOnPeriodicPpPrivate)
+        .hasSize(protocol.getNrOfCosemObjects(PowerQualityRequest.PERIODIC_PP, Profile.PRIVATE));
+
+    final List<CosemObject> cosemObjectsPeriodicSpPublic =
+        this.getCosemObjectsWithProperties(
+            protocol, PowerQualityRequest.PERIODIC_SP, Profile.PUBLIC);
+    assertThat(cosemObjectsPeriodicSpPublic)
+        .hasSize(protocol.getNrOfCosemObjects(PowerQualityRequest.PERIODIC_SP, Profile.PUBLIC));
+
+    final List<CosemObject> cosemObjectsPeriodicPpPublic =
+        this.getCosemObjectsWithProperties(
+            protocol, PowerQualityRequest.PERIODIC_PP, Profile.PUBLIC);
+    assertThat(cosemObjectsPeriodicPpPublic)
+        .hasSize(protocol.getNrOfCosemObjects(PowerQualityRequest.PERIODIC_PP, Profile.PUBLIC));
+  }
+
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  void testProfilesObjectsContainPqObjects(final Protocol protocol) throws ObjectConfigException {
+    this.assertAllInConfig(
+        protocol, DlmsObjectType.DEFINABLE_LOAD_PROFILE, protocol.hasDefinableLoadProfile());
+    this.assertAllInConfig(
+        protocol, DlmsObjectType.POWER_QUALITY_PROFILE_1, protocol.hasPqProfiles());
+    this.assertAllInConfig(
+        protocol, DlmsObjectType.POWER_QUALITY_PROFILE_2, protocol.hasPqProfiles());
+  }
+
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  void testAllPqObjectMapToProfile(final Protocol protocol) throws ObjectConfigException {
+    final List<DlmsObjectType> dlmsProfiles = new ArrayList<>();
+    if (protocol.hasDefinableLoadProfile()) {
+      assertThat(
+              this.objectConfigService.getCosemObject(
+                  protocol.getName(), protocol.getVersion(), DlmsObjectType.DEFINABLE_LOAD_PROFILE))
+          .isNotNull();
+      dlmsProfiles.add(DlmsObjectType.DEFINABLE_LOAD_PROFILE);
+    }
+    if (protocol.hasPqProfiles()) {
+      assertThat(
+              this.objectConfigService.getCosemObject(
+                  protocol.getName(),
+                  protocol.getVersion(),
+                  DlmsObjectType.POWER_QUALITY_PROFILE_1))
+          .isNotNull();
+      assertThat(
+              this.objectConfigService.getCosemObject(
+                  protocol.getName(),
+                  protocol.getVersion(),
+                  DlmsObjectType.POWER_QUALITY_PROFILE_2))
+          .isNotNull();
+      dlmsProfiles.addAll(
+          List.of(DlmsObjectType.POWER_QUALITY_PROFILE_1, DlmsObjectType.POWER_QUALITY_PROFILE_2));
+    }
+    if (!dlmsProfiles.isEmpty()) {
+      this.assertAllPqPeriodicObjectsInProfiles(protocol, dlmsProfiles);
+    }
+  }
+
+  private List<CosemObject> getCosemObjectsWithProperties(
+      final Protocol protocol, final PowerQualityRequest powerQualityRequest, final Profile profile)
+      throws ObjectConfigException {
+    final EnumMap<ObjectProperty, List<String>> pqProperties = new EnumMap<>(ObjectProperty.class);
+    pqProperties.put(ObjectProperty.PQ_PROFILE, Collections.singletonList(profile.name()));
+    pqProperties.put(ObjectProperty.PQ_REQUEST, List.of(powerQualityRequest.name()));
+
+    return this.objectConfigService.getCosemObjectsWithProperties(
+        protocol.getName(), protocol.getVersion(), pqProperties);
+  }
+
   @Test
   void getCosemObjectIsNull() throws ObjectConfigException {
     final String protocolName = "SMR";
@@ -48,29 +151,88 @@ class ObjectConfigServiceTest {
         this.objectConfigService.getCosemObjects(protocolName, protocolVersion43);
 
     assertNotNull(cosemObjects);
-    assertThat(cosemObjects).hasSize(28);
+    assertThat(cosemObjects).hasSize(44);
     assertNull(cosemObjects.get(DlmsObjectType.MBUS_DIAGNOSTIC));
   }
 
   @Test
-  void testGetCosemObjects() throws ObjectConfigException {
-    final String protocolName = "SMR";
-    final String protocolVersion51 = "5.1";
-    final String protocolVersion52 = "5.2";
+  void testGetCosemObjectsDsmr22() throws ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.objectConfigService.getCosemObjects("DSMR", "2.2");
 
-    final Map<DlmsObjectType, CosemObject> cosemObjects51 =
-        this.objectConfigService.getCosemObjects(protocolName, protocolVersion51);
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(19);
+    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_VOLTAGE_SWELLS_FOR_L1));
+  }
 
-    assertNotNull(cosemObjects51);
-    assertThat(cosemObjects51).hasSize(48);
-    assertNotNull(cosemObjects51.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
+  @Test
+  void testGetCosemObjectsDsmr422() throws ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.objectConfigService.getCosemObjects("DSMR", "4.2.2");
 
-    final Map<DlmsObjectType, CosemObject> cosemObjects52 =
-        this.objectConfigService.getCosemObjects(protocolName, protocolVersion52);
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(43);
+    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_VOLTAGE_SWELLS_FOR_L1));
+    assertNull(cosemObjects.get(DlmsObjectType.CDMA_DIAGNOSTIC));
+  }
 
-    assertNotNull(cosemObjects52);
-    assertThat(cosemObjects52).hasSize(48);
-    assertNotNull(cosemObjects52.get(DlmsObjectType.NUMBER_OF_LONG_POWER_FAILURES));
+  @Test
+  void testGetCosemObjectsSmr43() throws ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.objectConfigService.getCosemObjects("SMR", "4.3");
+
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(44);
+    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_VOLTAGE_SWELLS_FOR_L1));
+    assertNotNull(cosemObjects.get(DlmsObjectType.CDMA_DIAGNOSTIC));
+  }
+
+  @Test
+  void testGetCosemObjectsSmr500() throws ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.objectConfigService.getCosemObjects("SMR", "5.0.0");
+
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(49);
+    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
+    assertNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
+    assertNull(cosemObjects.get(DlmsObjectType.PUSH_SETUP_UDP));
+  }
+
+  @Test
+  void testGetCosemObjectsSmr51() throws ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.objectConfigService.getCosemObjects("SMR", "5.1");
+
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(49);
+    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
+    assertNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
+    assertNull(cosemObjects.get(DlmsObjectType.PUSH_SETUP_UDP));
+  }
+
+  @Test
+  void testGetCosemObjectsSmr52() throws ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.objectConfigService.getCosemObjects("SMR", "5.2");
+
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(50);
+    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
+    assertNotNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
+    assertNull(cosemObjects.get(DlmsObjectType.PUSH_SETUP_UDP));
+  }
+
+  @Test
+  void testGetCosemObjectsSmr55() throws ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.objectConfigService.getCosemObjects("SMR", "5.5");
+
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(51);
+    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
+    assertNotNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
+    assertNotNull(cosemObjects.get(DlmsObjectType.PUSH_SETUP_UDP));
   }
 
   @Test
@@ -113,47 +275,17 @@ class ObjectConfigServiceTest {
 
     assertThat(
             this.objectConfigService.getOptionalCosemObject(
-                "SMR", "5.0", DlmsObjectType.POWER_QUALITY_PROFILE_1))
+                "SMR", "5.0.0", DlmsObjectType.POWER_QUALITY_PROFILE_1))
         .isPresent();
-  }
-
-  @Test
-  void testGetCosemObjectsWithProperty() throws ObjectConfigException {
-    final String protocolName = "SMR";
-    final String protocolVersion50 = "5.0";
-
-    final List<CosemObject> cosemObjectsWithSelectableObjects =
-        this.objectConfigService.getCosemObjectsWithProperty(
-            protocolName, protocolVersion50, ObjectProperty.SELECTABLE_OBJECTS, null);
-
-    assertNotNull(cosemObjectsWithSelectableObjects);
-    assertThat(cosemObjectsWithSelectableObjects).hasSize(3);
-
-    final List<CosemObject> cosemObjectsWithPqProfile =
-        this.objectConfigService.getCosemObjectsWithProperty(
-            protocolName, protocolVersion50, ObjectProperty.PQ_PROFILE, null);
-
-    assertNotNull(cosemObjectsWithPqProfile);
-    assertThat(cosemObjectsWithPqProfile).hasSize(44);
-
-    final List<CosemObject> cosemObjectsWithPqProfileWithWrongValue =
-        this.objectConfigService.getCosemObjectsWithProperty(
-            protocolName,
-            protocolVersion50,
-            ObjectProperty.PQ_PROFILE,
-            Collections.singletonList("INVALID"));
-
-    assertNotNull(cosemObjectsWithPqProfileWithWrongValue);
-    assertThat(cosemObjectsWithPqProfileWithWrongValue).isEmpty();
   }
 
   @Test
   void testGetCosemObjectsWithPropertiesWithMultipleAllowedValues() throws ObjectConfigException {
     final String protocolName = "SMR";
-    final String protocolVersion50 = "5.0";
+    final String protocolVersion50 = "5.0.0";
 
-    final Map<ObjectProperty, List<Object>> requestMap = new HashMap<>();
-    final List<Object> wantedValues = new ArrayList<>();
+    final Map<ObjectProperty, List<String>> requestMap = new HashMap<>();
+    final List<String> wantedValues = new ArrayList<>();
     wantedValues.add("PRIVATE");
     wantedValues.add("PUBLIC");
     requestMap.put(ObjectProperty.PQ_PROFILE, wantedValues);
@@ -162,27 +294,27 @@ class ObjectConfigServiceTest {
             protocolName, protocolVersion50, requestMap);
 
     assertNotNull(cosemObjectsWithSelectableObjects);
-    assertThat(cosemObjectsWithSelectableObjects).hasSize(44);
+    assertThat(cosemObjectsWithSelectableObjects).hasSize(45);
   }
 
   @Test
   void testGetCosemObjectsWithPropertiesWithMultipleProperties() throws ObjectConfigException {
     final String protocolName = "SMR";
-    final String protocolVersion50 = "5.0";
+    final String protocolVersion50 = "5.0.0";
 
-    final Map<ObjectProperty, List<Object>> requestMap = new HashMap<>();
-    final List<Object> wantedValuesPqProfile = new ArrayList<>();
+    final Map<ObjectProperty, List<String>> requestMap = new HashMap<>();
+    final List<String> wantedValuesPqProfile = new ArrayList<>();
     wantedValuesPqProfile.add("PUBLIC");
     requestMap.put(ObjectProperty.PQ_PROFILE, wantedValuesPqProfile);
-    final List<Object> wantedValuesPqRequest = new ArrayList<>();
-    wantedValuesPqRequest.add("PERIODIC");
+    final List<String> wantedValuesPqRequest = new ArrayList<>();
+    wantedValuesPqRequest.add("PERIODIC_SP");
     requestMap.put(ObjectProperty.PQ_REQUEST, wantedValuesPqRequest);
     final List<CosemObject> cosemObjectsWithSelectableObjects =
         this.objectConfigService.getCosemObjectsWithProperties(
             protocolName, protocolVersion50, requestMap);
 
     assertNotNull(cosemObjectsWithSelectableObjects);
-    assertThat(cosemObjectsWithSelectableObjects).hasSize(4);
+    assertThat(cosemObjectsWithSelectableObjects).hasSize(9);
   }
 
   @Test
@@ -192,20 +324,78 @@ class ObjectConfigServiceTest {
   }
 
   private List<DlmsProfile> getDlmsProfileList() throws IOException {
-    final List<DlmsProfile> DlmsProfileList = new ArrayList<>();
+    final List<DlmsProfile> dlmsProfileList = new ArrayList<>();
 
-    DlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-dsmr422.json"));
-    DlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr43.json"));
-    DlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr50.json"));
-    DlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr51.json"));
-    DlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr52.json"));
-    DlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr55.json"));
-    return DlmsProfileList;
+    dlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-dsmr22.json"));
+    dlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-dsmr422.json"));
+    dlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr43.json"));
+    dlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr500.json"));
+    dlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr51.json"));
+    dlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr52.json"));
+    dlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr55.json"));
+    return dlmsProfileList;
   }
 
   private DlmsProfile loadProfile(final String profileJsonFile) throws IOException {
 
     return this.objectMapper.readValue(
         new ClassPathResource(profileJsonFile).getFile(), DlmsProfile.class);
+  }
+
+  private void assertAllInConfig(
+      final Protocol protocol,
+      final DlmsObjectType dlmsObjectType,
+      final boolean shouldHaveObjectType)
+      throws ObjectConfigException {
+
+    final Optional<CosemObject> optionalProfile =
+        this.objectConfigService.getOptionalCosemObject(
+            protocol.getName(), protocol.getVersion(), dlmsObjectType);
+    if (!shouldHaveObjectType) {
+      assertThat(optionalProfile).isEmpty();
+    } else {
+      assertThat(optionalProfile).isPresent();
+
+      final List<String> selectableObjects =
+          optionalProfile.get().getListProperty(ObjectProperty.SELECTABLE_OBJECTS);
+
+      final Map<DlmsObjectType, CosemObject> cosemObjects =
+          this.objectConfigService.getCosemObjects(protocol.getName(), protocol.getVersion());
+
+      // All selectable objects must be in config
+      selectableObjects.forEach(
+          selectableObject -> {
+            assertThat(cosemObjects.get(DlmsObjectType.valueOf(selectableObject))).isNotNull();
+          });
+    }
+  }
+
+  private void assertAllPqPeriodicObjectsInProfiles(
+      final Protocol protocol, final List<DlmsObjectType> pqProfiles) throws ObjectConfigException {
+    final List<String> allSelectableObjects = new ArrayList<>();
+    for (final DlmsObjectType pqProfile : pqProfiles) {
+      final CosemObject cosemObjectProfile =
+          this.objectConfigService.getCosemObject(
+              protocol.getName(), protocol.getVersion(), pqProfile);
+      allSelectableObjects.addAll(
+          cosemObjectProfile.getListProperty(ObjectProperty.SELECTABLE_OBJECTS));
+    }
+
+    final Map<DlmsObjectType, CosemObject> pqObjects =
+        this.objectConfigService.getCosemObjects(protocol.getName(), protocol.getVersion());
+    pqObjects.forEach(
+        (dlmsObjectType, pqObject) -> {
+          if (isPeriodicRequest(pqObject)) {
+            assertThat(allSelectableObjects).contains(pqObject.getTag());
+          }
+        });
+  }
+
+  private static boolean isPeriodicRequest(final CosemObject object) {
+    return object.getProperty(ObjectProperty.PQ_REQUEST) != null
+        && (object.getProperty(ObjectProperty.PQ_REQUEST).equals(PowerQualityRequest.PERIODIC_SP)
+            || object
+                .getProperty(ObjectProperty.PQ_REQUEST)
+                .equals(PowerQualityRequest.PERIODIC_PP));
   }
 }
