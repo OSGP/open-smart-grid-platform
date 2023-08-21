@@ -70,19 +70,14 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
   @BeforeEach
   void setUp() {
 
-    final int verificationStatusCheckInterval = 1;
-    final int verificationStatusCheckTimeout = 2;
-    final int initiationStatusCheckInterval = 3;
-    final int initiationStatusCheckTimeout = 4;
-
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
     final ImageTransferProperties imageTransferProperties =
         new ImageTransfer.ImageTransferProperties();
-    imageTransferProperties.setVerificationStatusCheckInterval(verificationStatusCheckInterval);
-    imageTransferProperties.setVerificationStatusCheckTimeout(verificationStatusCheckTimeout);
-    imageTransferProperties.setInitiationStatusCheckInterval(initiationStatusCheckInterval);
-    imageTransferProperties.setInitiationStatusCheckTimeout(initiationStatusCheckTimeout);
+    imageTransferProperties.setVerificationStatusCheckInterval(1);
+    imageTransferProperties.setVerificationStatusCheckTimeout(2);
+    imageTransferProperties.setInitiationStatusCheckInterval(3);
+    imageTransferProperties.setInitiationStatusCheckTimeout(4);
 
     this.commandExecutor =
         new UpdateFirmwareCommandExecutor(
@@ -115,7 +110,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
         DataObject.newInteger32Data(1),
         4);
 
-    // configure meter simulator to follow either FromFirstBlock or ResumeOnBlocks flow
+    // configure the connection stub to follow either FromFirstBlock or ResumeOnBlocks flow
     // If IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER is not the total number of blocks (10)
     // then the flow goes ResumeOnBlocks
     this.connectionStub.addReturnValue(
@@ -150,7 +145,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"true, false", "false, false", "false, false"})
+  @CsvSource({"true, false", "false, false"})
   void testExecute(final boolean hasFwHash, final boolean fwHashIsEqual) throws Exception {
 
     final DlmsDevice device = new DlmsDevice();
@@ -292,16 +287,16 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
       final long initiate, final long transfer, final long verify) {
     final long activate = 1;
     assertThat(
-            this.connectionStub.hasMethodBeenInvokedTimes(
+            this.connectionStub.getMethodInvocationCount(
                 ImageTransferMethod.IMAGE_TRANSFER_INITIATE))
         .isEqualTo(initiate);
     assertThat(
-            this.connectionStub.hasMethodBeenInvokedTimes(ImageTransferMethod.IMAGE_BLOCK_TRANSFER))
+            this.connectionStub.getMethodInvocationCount(ImageTransferMethod.IMAGE_BLOCK_TRANSFER))
         .isEqualTo(transfer);
 
-    assertThat(this.connectionStub.hasMethodBeenInvokedTimes(ImageTransferMethod.IMAGE_VERIFY))
+    assertThat(this.connectionStub.getMethodInvocationCount(ImageTransferMethod.IMAGE_VERIFY))
         .isEqualTo(verify);
-    assertThat(this.connectionStub.hasMethodBeenInvokedTimes(ImageTransferMethod.IMAGE_ACTIVATE))
+    assertThat(this.connectionStub.getMethodInvocationCount(ImageTransferMethod.IMAGE_ACTIVATE))
         .isEqualTo(activate);
 
     assertThat(this.connectionStub.getSetParameters(ImageTransferAttribute.IMAGE_TRANSFER_ENABLED))

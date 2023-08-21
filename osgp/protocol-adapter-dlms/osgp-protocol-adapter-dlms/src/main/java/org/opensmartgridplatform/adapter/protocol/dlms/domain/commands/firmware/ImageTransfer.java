@@ -157,7 +157,7 @@ public class ImageTransfer {
   }
 
   /**
-   * Transfers all image blocks.
+   * Transfers image blocks starting from the given first block until the last block.
    *
    * <p>ImageBlocks are accepted only by those COSEM servers, in which the Image transfer process
    * has been successfully initiated. Other servers silently discard any ImageBlocks received.

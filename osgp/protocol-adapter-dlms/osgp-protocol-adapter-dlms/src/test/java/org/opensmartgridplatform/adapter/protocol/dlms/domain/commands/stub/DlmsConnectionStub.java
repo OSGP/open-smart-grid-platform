@@ -164,7 +164,7 @@ public class DlmsConnectionStub implements DlmsConnection {
         .anyMatch(parameter -> parameter.getId() == methodClass.getMethodId());
   }
 
-  public long hasMethodBeenInvokedTimes(final MethodClass methodClass) {
+  public long getMethodInvocationCount(final MethodClass methodClass) {
     return this.methodsInvoked.stream()
         .filter(parameter -> parameter.getId() == methodClass.getMethodId())
         .count();
