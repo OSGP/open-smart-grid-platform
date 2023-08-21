@@ -6,7 +6,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -27,7 +26,6 @@ import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
-import org.opensmartgridplatform.dlms.objectconfig.MeterType;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
 import org.opensmartgridplatform.dlms.objectconfig.PowerQualityProfile;
 import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
@@ -177,23 +175,20 @@ public class GetActualPowerQualityCommandExecutor
       allPQObjects.add(clockObject);
 
       // Create map with the required properties and values for the power quality objects
-      final EnumMap<ObjectProperty, List<Object>> pqProperties =
+      final EnumMap<ObjectProperty, List<String>> pqProperties =
           new EnumMap<>(ObjectProperty.class);
       pqProperties.put(ObjectProperty.PQ_PROFILE, Collections.singletonList(profile.name()));
       pqProperties.put(
           ObjectProperty.PQ_REQUEST,
-          Arrays.asList(PowerQualityRequest.ONDEMAND.name(), PowerQualityRequest.BOTH.name()));
+          List.of(
+              device.isPolyphase()
+                  ? PowerQualityRequest.ACTUAL_PP.name()
+                  : PowerQualityRequest.ACTUAL_SP.name()));
 
       // Get matching power quality objects from config
-      final List<CosemObject> objectsForProfile =
+      final List<CosemObject> pqObjects =
           this.objectConfigService.getCosemObjectsWithProperties(
               device.getProtocolName(), device.getProtocolVersion(), pqProperties);
-
-      // Filter for single phase / poly phase
-      final List<CosemObject> pqObjects =
-          objectsForProfile.stream()
-              .filter(object -> this.objectHasCorrectMeterType(object, device))
-              .toList();
 
       allPQObjects.addAll(pqObjects);
       return allPQObjects;
@@ -219,10 +214,5 @@ public class GetActualPowerQualityCommandExecutor
       log.warn("No attribute addresses returned for interface class of {}", object.getTag());
       return null;
     }
-  }
-
-  private boolean objectHasCorrectMeterType(final CosemObject object, final DlmsDevice device) {
-    return (!device.isPolyphase() && object.getMeterTypes().contains(MeterType.SP))
-        || (device.isPolyphase() && object.getMeterTypes().contains(MeterType.PP));
   }
 }

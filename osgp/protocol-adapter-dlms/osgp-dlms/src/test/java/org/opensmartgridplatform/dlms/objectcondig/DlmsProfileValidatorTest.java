@@ -26,7 +26,7 @@ class DlmsProfileValidatorTest {
     final ObjectMapper objectMapper = new ObjectMapper();
     final DlmsProfile dlmsProfile50 =
         objectMapper.readValue(
-            new ClassPathResource("/dlmsprofiles/dlmsprofile-smr50.json").getFile(),
+            new ClassPathResource("/dlmsprofiles/dlmsprofile-smr500.json").getFile(),
             DlmsProfile.class);
     final DlmsProfile dlmsProfile51 =
         objectMapper.readValue(

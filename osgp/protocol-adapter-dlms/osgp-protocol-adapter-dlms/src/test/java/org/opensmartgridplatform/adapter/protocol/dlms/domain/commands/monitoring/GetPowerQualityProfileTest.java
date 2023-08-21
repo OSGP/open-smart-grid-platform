@@ -10,6 +10,7 @@ import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.AVERAGE
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.AVERAGE_REACTIVE_POWER_IMPORT_L1;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.CLOCK;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.INSTANTANEOUS_VOLTAGE_L1;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.LTE_DIAGNOSTIC;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.NUMBER_OF_VOLTAGE_SAGS_FOR_L1;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.NUMBER_OF_VOLTAGE_SAGS_FOR_L2;
 
@@ -32,6 +33,7 @@ import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
+import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityProfileDataDto;
@@ -51,14 +53,17 @@ public abstract class GetPowerQualityProfileTest {
   private static final int CLASS_ID_REGISTER = 3;
   private static final int CLASS_ID_PROFILE = 7;
   private static final int CLASS_ID_CLOCK = 8;
+  private static final int CLASS_ID_GSM_DIAGNOSTIC = 47;
   private static final int PROFILE_CAPTURE_OBJECTS_ATTR_ID = 3;
   private static final int PROFILE_INTERVAL_ATTR_ID = 4;
   private static final int SECONDS_PER_MINUTE = 60;
   private static final String OBIS_INSTANTANEOUS_VOLTAGE_L1 = "1.0.32.7.0.255";
   private static final String OBIS_CLOCK = "0.0.1.0.0.255";
+  private static final String OBIS_LTE_DIAGNOSTIC = "0.2.25.6.0.255";
   private static final String UNIT_VOLT = "V";
   private static final String UNIT_UNDEFINED = "UNDEFINED";
   private static final int[] VALUES = new int[] {8, 7, 6, 5};
+  private static final int[] SIGNAL_STRENGTH_ENUM_VALUES = new int[] {20, 21, 22, 23};
 
   public static CosemObject createObject(
       final int classId,
@@ -73,12 +78,15 @@ public abstract class GetPowerQualityProfileTest {
 
     final Map<ObjectProperty, Object> properties = new HashMap<>();
     properties.put(ObjectProperty.PQ_PROFILE, publicOrPrivate);
+    properties.put(
+        ObjectProperty.PQ_REQUEST,
+        List.of(PowerQualityRequest.PERIODIC_SP.name(), PowerQualityRequest.PERIODIC_PP.name()));
     object.setProperties(properties);
 
     return object;
   }
 
-  protected CosemObject createProfile(
+  protected Optional<CosemObject> createProfile(
       final String obis, final String tag, final int intervalInMinutes) {
 
     final CosemObject object =
@@ -103,7 +111,7 @@ public abstract class GetPowerQualityProfileTest {
     attributeList.add(attributeInterval);
     object.setAttributes(attributeList);
 
-    return object;
+    return Optional.of(object);
   }
 
   protected List<CosemObject> getObjects(final boolean polyphase, final String publicOrPrivate) {
@@ -146,9 +154,23 @@ public abstract class GetPowerQualityProfileTest {
             polyphase,
             publicOrPrivate);
 
+    final CosemObject gsmDiagnosticObject =
+        createObject(
+            CLASS_ID_GSM_DIAGNOSTIC,
+            OBIS_LTE_DIAGNOSTIC,
+            LTE_DIAGNOSTIC.name(),
+            null,
+            polyphase,
+            publicOrPrivate);
+
     return new ArrayList<>(
         Arrays.asList(
-            clockObject, dataObject, registerVoltObject, registerAmpereObject, registerVarObject));
+            clockObject,
+            dataObject,
+            registerVoltObject,
+            registerAmpereObject,
+            registerVarObject,
+            gsmDiagnosticObject));
   }
 
   protected void verifyResponseData(
@@ -161,7 +183,7 @@ public abstract class GetPowerQualityProfileTest {
             .findFirst();
 
     assertTrue(profileData.isPresent());
-    assertThat(profileData.get().getCaptureObjects()).hasSize(2);
+    assertThat(profileData.get().getCaptureObjects()).hasSize(3);
 
     final CaptureObjectDto captureObjectClock = profileData.get().getCaptureObjects().get(0);
     assertThat(captureObjectClock.getLogicalName()).isEqualTo(OBIS_CLOCK);
@@ -170,6 +192,10 @@ public abstract class GetPowerQualityProfileTest {
     final CaptureObjectDto captureObject = profileData.get().getCaptureObjects().get(1);
     assertThat(captureObject.getLogicalName()).isEqualTo(OBIS_INSTANTANEOUS_VOLTAGE_L1);
     assertThat(captureObject.getUnit()).isEqualTo(UNIT_VOLT);
+
+    final CaptureObjectDto captureObjectLte = profileData.get().getCaptureObjects().get(2);
+    assertThat(captureObjectLte.getLogicalName()).isEqualTo(OBIS_LTE_DIAGNOSTIC);
+    assertThat(captureObjectLte.getUnit()).isEqualTo(UNIT_UNDEFINED);
 
     final List<ProfileEntryDto> entries = profileData.get().getProfileEntries();
     assertThat(entries).hasSize(4);
@@ -182,13 +208,15 @@ public abstract class GetPowerQualityProfileTest {
   private void verifyProfileEntry(
       final ProfileEntryDto entry, final int index, final int intervalInMinutes) {
     final List<ProfileEntryValueDto> values = entry.getProfileEntryValues();
-    assertThat(values).hasSize(2);
+    assertThat(values).hasSize(3);
     assertThat((Date) values.get(0).getValue())
         .isEqualTo(
             new DateTime(2023, 1, 12, 0, 0, 0, DateTimeZone.forID("Europe/Amsterdam"))
                 .plusMinutes(index * intervalInMinutes)
                 .toDate());
     assertThat((BigDecimal) values.get(1).getValue()).isEqualTo(BigDecimal.valueOf(VALUES[index]));
+    assertThat(values.get(2).getValue())
+        .isEqualTo("MINUS_" + (113 - SIGNAL_STRENGTH_ENUM_VALUES[index] * 2) + "_DBM");
   }
 
   protected List<DlmsObjectType> getPropertyObjects() {
@@ -220,10 +248,18 @@ public abstract class GetPowerQualityProfileTest {
           (byte) 0x00
         };
 
-    final DataObject entry1 = this.createEntry(timestamp, 2335, VALUES[0], 10, selectiveAccess);
-    final DataObject entry2 = this.createEntry(null, 2336, VALUES[1], 11, selectiveAccess);
-    final DataObject entry3 = this.createEntry(null, 2337, VALUES[2], 12, selectiveAccess);
-    final DataObject entry4 = this.createEntry(null, 2338, VALUES[3], 13, selectiveAccess);
+    final DataObject entry1 =
+        this.createEntry(
+            timestamp, 2335, VALUES[0], SIGNAL_STRENGTH_ENUM_VALUES[0], 10, selectiveAccess);
+    final DataObject entry2 =
+        this.createEntry(
+            null, 2336, VALUES[1], SIGNAL_STRENGTH_ENUM_VALUES[1], 11, selectiveAccess);
+    final DataObject entry3 =
+        this.createEntry(
+            null, 2337, VALUES[2], SIGNAL_STRENGTH_ENUM_VALUES[2], 12, selectiveAccess);
+    final DataObject entry4 =
+        this.createEntry(
+            null, 2338, VALUES[3], SIGNAL_STRENGTH_ENUM_VALUES[3], 13, selectiveAccess);
 
     final GetResult getResult =
         new GetResultImpl(DataObject.newArrayData(List.of(entry1, entry2, entry3, entry4)));
@@ -236,6 +272,7 @@ public abstract class GetPowerQualityProfileTest {
       final int value1,
       final int value2,
       final int value3,
+      final int value4,
       final boolean selectiveAccess) {
     final List<DataObject> values = new ArrayList<>();
 
@@ -251,8 +288,10 @@ public abstract class GetPowerQualityProfileTest {
 
     values.add(DataObject.newUInteger8Data((short) value2));
 
+    values.add(DataObject.newUInteger16Data(value3));
+
     if (!selectiveAccess) {
-      values.add(DataObject.newUInteger16Data(value3));
+      values.add(DataObject.newUInteger16Data(value4));
     }
 
     return DataObject.newStructureData(values);
@@ -272,6 +311,13 @@ public abstract class GetPowerQualityProfileTest {
             DataObject.newOctetStringData(new byte[] {1, 0, 32, 7, 0, (byte) 255}),
             DataObject.newInteger32Data(2),
             DataObject.newUInteger32Data(0));
+
+    final DataObject allowedCaptureObjectGsmDiagnostics =
+        DataObject.newStructureData(
+            DataObject.newUInteger32Data(47),
+            DataObject.newOctetStringData(new byte[] {0, 2, 25, 6, 0, (byte) 255}),
+            DataObject.newInteger32Data(6),
+            DataObject.newUInteger32Data(3)); // Data-index 3: Signal strength
 
     final DataObject nonAllowedCaptureObject1 =
         DataObject.newStructureData(
@@ -293,6 +339,7 @@ public abstract class GetPowerQualityProfileTest {
                     allowedCaptureObjectClock,
                     nonAllowedCaptureObject1,
                     allowedCaptureObjectINSTANTANEOUS_VOLTAGE_L1,
+                    allowedCaptureObjectGsmDiagnostics,
                     nonAllowedCaptureObject2)));
 
     return List.of(getResult);

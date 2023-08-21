@@ -6,21 +6,42 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObject;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntry;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityProfileData;
-import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
+import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.GetPowerQualityProfileRequestBuilder;
+import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 
+@Slf4j
 public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
+
+  public static final String CLASS_ID = "classId";
+
+  public static final String LOGICAL_NAME = "logicalName";
+
+  public static final String ATTRIBUTE_INDEX = "attributeIndex";
+
+  public static final String DATA_INDEX = "dataIndex";
+
+  public static final String UNIT = "unit";
+
+  private static final String LAST_RESPONSE = "last_response";
 
   @Given("^the bundle request contains a get power quality profile request with parameters$")
   public void theBundleRequestContainsAGetPowerQualityProfileRequestAction(
@@ -32,85 +53,137 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
     this.addActionToBundleRequest(action);
   }
 
-  @Then("^the bundle response should contain a power quality profile response with values$")
+  @Then(
+      "^the same bundle response should contain a power quality profile response with (\\d++) values for profile \"([^\"]*)\"$")
+  public void theSameBundleResponseShouldContainAGetPowerQualityProfileResponse(
+      final int nrOfValues, final String profileLogicalName, final DataTable valuesDataTable)
+      throws Throwable {
+
+    final Response response = (Response) ScenarioContext.current().get(LAST_RESPONSE);
+    this.theBundleResponseShouldContainAGetPowerQualityProfileResponse(
+        nrOfValues, profileLogicalName, response, valuesDataTable);
+  }
+
+  @Then(
+      "^the bundle response should contain a power quality profile response with (\\d++) values for profile \"([^\"]*)\"$")
   public void theBundleResponseShouldContainAGetPowerQualityProfileResponse(
-      final Map<String, String> values) throws Throwable {
+      final int nrOfValues, final String profileLogicalName, final DataTable valuesDataTable)
+      throws Throwable {
 
     final Response response = this.getNextBundleResponse();
+    ScenarioContext.current().put(LAST_RESPONSE, response);
+
+    this.theBundleResponseShouldContainAGetPowerQualityProfileResponse(
+        nrOfValues, profileLogicalName, response, valuesDataTable);
+  }
+
+  @Then("^the bundle response should contain an empty power quality profile response$")
+  public void theBundleResponseShouldContainAnEmptyGetPowerQualityProfileResponse()
+      throws GeneralSecurityException, IOException, WebServiceSecurityException {
+
+    final Response response = this.getNextBundleResponse();
+    ScenarioContext.current().put(LAST_RESPONSE, response);
 
     assertThat(response).isInstanceOf(GetPowerQualityProfileResponse.class);
 
     final GetPowerQualityProfileResponse getPowerQualityProfileResponse =
         (GetPowerQualityProfileResponse) response;
-    final PowerQualityProfileData powerQualityProfileData =
-        getPowerQualityProfileResponse.getPowerQualityProfileDatas().get(0);
 
-    this.assertEqualCaptureObjects(
-        powerQualityProfileData.getCaptureObjectList().getCaptureObjects(), values);
-    this.assertEqualProfileEntries(
-        powerQualityProfileData.getProfileEntryList().getProfileEntries(), values);
+    assertThat(getPowerQualityProfileResponse.getPowerQualityProfileDatas()).isEmpty();
   }
 
-  private void assertEqualCaptureObjects(
-      final List<CaptureObject> actualCaptureObjects, final Map<String, String> expectedValues)
-      throws AssertionError {
+  public void theBundleResponseShouldContainAGetPowerQualityProfileResponse(
+      final int nrOfValues,
+      final String profileLogicalName,
+      final Response response,
+      final DataTable valuesDataTable) {
 
-    final int expectedNumberOfCaptureObjects =
-        SettingsHelper.getIntegerValue(expectedValues, "NumberOfCaptureObjects");
+    assertThat(response).isInstanceOf(GetPowerQualityProfileResponse.class);
 
-    assertThat(actualCaptureObjects.size())
-        .as("Number of capture objects")
-        .isEqualTo(expectedNumberOfCaptureObjects);
+    final GetPowerQualityProfileResponse getPowerQualityProfileResponse =
+        (GetPowerQualityProfileResponse) response;
+    final Optional<PowerQualityProfileData> optionalPowerQualityProfileData =
+        getPowerQualityProfileResponse.getPowerQualityProfileDatas().stream()
+            .filter(data -> this.matches(new ObisCode(profileLogicalName), data.getLogicalName()))
+            .findFirst();
 
-    for (int i = 0; i < expectedNumberOfCaptureObjects; i++) {
-      final CaptureObject actualCaptureObject = actualCaptureObjects.get(i);
-      this.assertEqualCaptureObject(actualCaptureObject, expectedValues, i + 1);
+    assertThat(optionalPowerQualityProfileData).isPresent();
+    final PowerQualityProfileData powerQualityProfileData = optionalPowerQualityProfileData.get();
+
+    this.logData(powerQualityProfileData);
+
+    final List<Map<String, String>> expectedCaptureObjects =
+        valuesDataTable.asMaps(String.class, String.class);
+
+    for (final CaptureObject captureObject :
+        powerQualityProfileData.getCaptureObjectList().getCaptureObjects()) {
+      log.info(
+          "Search data in response | {} | {} | {} | {} | {} |",
+          captureObject.getClassId(),
+          captureObject.getLogicalName(),
+          captureObject.getAttributeIndex(),
+          captureObject.getDataIndex(),
+          captureObject.getUnit());
+
+      this.assertCaptureObjectIsExpected(captureObject, expectedCaptureObjects);
     }
+    assertThat(powerQualityProfileData.getCaptureObjectList().getCaptureObjects())
+        .hasSize(expectedCaptureObjects.size());
+
+    assertThat(powerQualityProfileData.getProfileEntryList().getProfileEntries())
+        .hasSize(nrOfValues);
   }
 
-  private void assertEqualCaptureObject(
-      final CaptureObject actualCaptureObject,
-      final Map<String, String> expectedValues,
-      final int index)
-      throws AssertionError {
-    final Long expectedClassId =
-        SettingsHelper.getLongValue(expectedValues, "CaptureObject_ClassId", index);
-    assertThat(Long.valueOf(actualCaptureObject.getClassId()))
-        .as("ClassId of CaptureObject " + index)
-        .isEqualTo(expectedClassId);
-
-    final String expectedLogicalName =
-        SettingsHelper.getStringValue(expectedValues, "CaptureObject_LogicalName", index);
-    assertThat(actualCaptureObject.getLogicalName())
-        .as("LogicalName of CaptureObject " + index)
-        .isEqualTo(expectedLogicalName);
-
-    final BigInteger expectedAttributeIndex =
-        SettingsHelper.getBigIntegerValue(expectedValues, "CaptureObject_AttributeIndex", index);
-    assertThat(actualCaptureObject.getAttributeIndex())
-        .as("AttributeIndex of CaptureObject " + index)
-        .isEqualTo(expectedAttributeIndex);
-
-    final Long expectedDataIndex =
-        SettingsHelper.getLongValue(expectedValues, "CaptureObject_DataIndex", index);
-    assertThat(Long.valueOf(actualCaptureObject.getDataIndex()))
-        .as("DataIndex of CaptureObject " + index)
-        .isEqualTo(expectedDataIndex);
-
-    final String expectedUnit =
-        SettingsHelper.getStringValue(expectedValues, "CaptureObject_Unit", index);
-    assertThat(actualCaptureObject.getUnit().value())
-        .as("Unit of CaptureObject " + index)
-        .isEqualTo(expectedUnit);
+  private boolean matches(final ObisCode obisCode, final ObisCodeValues logicalName) {
+    final String obisCodeValue =
+        String.format(
+            "%d.%d.%d.%d.%d.%d",
+            logicalName.getA(),
+            logicalName.getB(),
+            logicalName.getC(),
+            logicalName.getD(),
+            logicalName.getE(),
+            logicalName.getF());
+    return (obisCodeValue).equals(obisCode.asDecimalString());
   }
 
-  private void assertEqualProfileEntries(
-      final List<ProfileEntry> actualProfileEntries, final Map<String, String> expectedValues) {
-    final int expectedNumberOfProfileEntries =
-        SettingsHelper.getIntegerValue(expectedValues, "NumberOfProfileEntries");
+  private void assertCaptureObjectIsExpected(
+      final CaptureObject captureObject, final List<Map<String, String>> expectedCaptureObjects) {
+    final Optional<Map<String, String>> optExpectedCaptureObject =
+        expectedCaptureObjects.stream()
+            .filter(
+                d ->
+                    d.get(LOGICAL_NAME).equals(captureObject.getLogicalName())
+                        && new BigInteger(d.get(ATTRIBUTE_INDEX))
+                            .equals(captureObject.getAttributeIndex())
+                        && Long.parseLong(d.get(DATA_INDEX)) == captureObject.getDataIndex())
+            .findFirst();
+    assertThat(optExpectedCaptureObject).isPresent();
+    final Map<String, String> expectedCaptureObject = optExpectedCaptureObject.get();
 
-    assertThat(actualProfileEntries.size())
-        .as("Number of profile entries")
-        .isEqualTo(expectedNumberOfProfileEntries);
+    assertThat(captureObject.getClassId())
+        .isEqualTo(Long.valueOf(expectedCaptureObject.get(CLASS_ID)));
+    assertThat(captureObject.getLogicalName()).isEqualTo(expectedCaptureObject.get(LOGICAL_NAME));
+    assertThat(captureObject.getAttributeIndex())
+        .isEqualTo(new BigInteger(expectedCaptureObject.get(ATTRIBUTE_INDEX)));
+
+    assertThat(captureObject.getDataIndex())
+        .isEqualTo(Long.valueOf(expectedCaptureObject.get(DATA_INDEX)));
+    assertThat(captureObject.getUnit())
+        .isEqualTo(OsgpUnitType.valueOf(expectedCaptureObject.get(UNIT)));
+  }
+
+  private void logData(final PowerQualityProfileData powerQualityProfileData) {
+    log.info("| classId | logicalName | attributeIndex | dataIndex | unit |");
+    for (final CaptureObject captureObject :
+        powerQualityProfileData.getCaptureObjectList().getCaptureObjects()) {
+      log.info(
+          "| {} | {} | {} | {} | {} |",
+          captureObject.getClassId(),
+          captureObject.getLogicalName(),
+          captureObject.getAttributeIndex(),
+          captureObject.getDataIndex(),
+          captureObject.getUnit());
+    }
   }
 }
