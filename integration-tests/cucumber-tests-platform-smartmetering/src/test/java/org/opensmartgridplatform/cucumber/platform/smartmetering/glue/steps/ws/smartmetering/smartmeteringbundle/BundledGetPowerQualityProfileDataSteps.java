@@ -169,6 +169,7 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
     final String description = expectedCaptureObject.get(DESCRIPTION);
 
     assertThat(valuesForCaptureObject)
+        .isNotEmpty()
         .allMatch(value -> this.isOfValueOfType(value, valueType, description));
   }
 
