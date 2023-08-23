@@ -30,22 +30,12 @@ public class ObjectConfigService {
 
   private final List<DlmsProfile> dlmsProfiles;
 
-  ObjectConfigService() throws IOException {
-    this.dlmsProfiles = this.getDlmsProfileListFromResources();
-  }
-
   /*
    * Provide a list of DlmsProfile to the constructor or add a null value and profiles are loaded from the classpath resource '/dlmsprofiles'.
    */
-  public ObjectConfigService(final List<DlmsProfile> dlmsProfiles)
-      throws ObjectConfigException, IOException {
-    if (dlmsProfiles == null) {
-      this.dlmsProfiles = this.getDlmsProfileListFromResources();
-    } else {
-      this.dlmsProfiles = dlmsProfiles;
-    }
+  public ObjectConfigService() throws ObjectConfigException, IOException {
+    this.dlmsProfiles = this.getDlmsProfileListFromResources();
 
-    this.handleInheritance();
     DlmsProfileValidator.validate(this.dlmsProfiles);
     this.dlmsProfiles.forEach(DlmsProfile::createMap);
   }
@@ -156,7 +146,8 @@ public class ObjectConfigService {
         .allMatch(entry -> this.hasProperty(object, entry.getKey(), entry.getValue()));
   }
 
-  private List<DlmsProfile> getDlmsProfileListFromResources() throws IOException {
+  private List<DlmsProfile> getDlmsProfileListFromResources()
+      throws IOException, ObjectConfigException {
     final String scannedPackage = "dlmsprofiles/*";
     final PathMatchingResourcePatternResolver scanner = new PathMatchingResourcePatternResolver();
     final Resource[] resources = scanner.getResources(scannedPackage);
@@ -179,49 +170,63 @@ public class ObjectConfigService {
               }
             });
 
+    this.handleInheritance(dlmsProfilesFromResources);
+
     return dlmsProfilesFromResources;
   }
 
-  private void handleInheritance() throws ObjectConfigException {
-    for (final DlmsProfile dlmsProfile : this.dlmsProfiles) {
-      this.getInheritedObjects(dlmsProfile);
+  private void handleInheritance(final List<DlmsProfile> dlmsProfilesFromResources)
+      throws ObjectConfigException {
+    for (final DlmsProfile dlmsProfile : dlmsProfilesFromResources) {
+      final ParentProfile parentProfile = dlmsProfile.getInherit();
+      if (parentProfile != null) {
+        log.info(
+            "Handle inheritance of "
+                + parentProfile.getVersion()
+                + " for profile: "
+                + dlmsProfile.getProfileWithVersion());
+
+        this.addInheritedObjects(parentProfile, dlmsProfilesFromResources, dlmsProfile);
+      }
     }
   }
 
-  private void getInheritedObjects(final DlmsProfile dlmsProfile) throws ObjectConfigException {
-    final ParentProfile parentProfile = dlmsProfile.getInherit();
+  private void addInheritedObjects(
+      final ParentProfile parentProfile,
+      final List<DlmsProfile> dlmsProfilesFromResources,
+      final DlmsProfile dlmsProfile)
+      throws ObjectConfigException {
 
-    if (parentProfile != null) {
-      final Optional<DlmsProfile> parentDlmsProfile =
-          this.dlmsProfiles.stream()
-              .filter(profile -> parentProfile.getVersion().equalsIgnoreCase(profile.getVersion()))
-              .filter(profile -> parentProfile.getProfile().equalsIgnoreCase(profile.getProfile()))
-              .findAny();
+    final DlmsProfile parentDlmsProfile =
+        this.getDlmsProfile(parentProfile, dlmsProfilesFromResources);
 
-      if (parentDlmsProfile.isPresent()) {
-        parentDlmsProfile
-            .get()
-            .getObjects()
-            .forEach(
-                parentCosemObject -> {
-                  final boolean objectAlreadyDefined =
-                      dlmsProfile.getObjects().stream()
-                          .anyMatch(
-                              cosemObject ->
-                                  cosemObject.getTag().equals(parentCosemObject.getTag()));
-                  if (!objectAlreadyDefined) {
-                    dlmsProfile.getObjects().add(parentCosemObject);
-                  }
-                });
-      } else {
-        throw new ObjectConfigException(
-            "Parent profile "
-                + parentProfile
-                + " for profile "
-                + dlmsProfile.getProfileWithVersion()
-                + " not found.");
-      }
+    parentDlmsProfile
+        .getObjects()
+        .forEach(
+            parentCosemObject -> {
+              final boolean objectAlreadyDefined =
+                  dlmsProfile.getObjects().stream()
+                      .anyMatch(
+                          cosemObject -> cosemObject.getTag().equals(parentCosemObject.getTag()));
+              if (!objectAlreadyDefined) {
+                dlmsProfile.getObjects().add(parentCosemObject);
+              }
+            });
+    if (parentDlmsProfile.getInherit() != null) {
+      this.addInheritedObjects(
+          parentDlmsProfile.getInherit(), dlmsProfilesFromResources, dlmsProfile);
     }
+  }
+
+  private DlmsProfile getDlmsProfile(
+      final ParentProfile parentProfile, final List<DlmsProfile> dlmsProfilesFromResources)
+      throws ObjectConfigException {
+    return dlmsProfilesFromResources.stream()
+        .filter(profile -> parentProfile.getVersion().equalsIgnoreCase(profile.getVersion()))
+        .filter(profile -> parentProfile.getProfile().equalsIgnoreCase(profile.getProfile()))
+        .findFirst()
+        .orElseThrow(
+            () -> new ObjectConfigException("Parent profile " + parentProfile + " not found."));
   }
 
   /*

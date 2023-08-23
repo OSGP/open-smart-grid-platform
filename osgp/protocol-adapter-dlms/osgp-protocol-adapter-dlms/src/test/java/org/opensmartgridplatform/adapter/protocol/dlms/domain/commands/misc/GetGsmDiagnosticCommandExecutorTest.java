@@ -66,7 +66,7 @@ class GetGsmDiagnosticCommandExecutorTest {
 
   @BeforeEach
   public void setUp() throws IOException, ObjectConfigException {
-    this.objectConfigService = new ObjectConfigService(null);
+    this.objectConfigService = new ObjectConfigService();
     this.executor = new GetGsmDiagnosticCommandExecutor(this.dlmsHelper, this.objectConfigService);
 
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();

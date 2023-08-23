@@ -199,7 +199,7 @@ public class DlmsConfig extends AbstractConfig {
   @Bean
   public ObjectConfigService objectConfigService() {
     try {
-      return new ObjectConfigService(null);
+      return new ObjectConfigService();
     } catch (final ObjectConfigException | IOException e) {
       throw new IllegalStateException("Could not load object config", e);
     }
