@@ -4,16 +4,16 @@
 
 package org.opensmartgridplatform.dto.valueobjects.microgrids;
 
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 
 public class ReportDto extends ReportIdentifierDto {
 
   private static final long serialVersionUID = 4641800698416651986L;
 
   private final int sequenceNumber;
-  private final DateTime timeOfEntry;
+  private final ZonedDateTime timeOfEntry;
 
-  public ReportDto(final int sequenceNumber, final DateTime timeOfEntry, final String id) {
+  public ReportDto(final int sequenceNumber, final ZonedDateTime timeOfEntry, final String id) {
     super(id);
     this.sequenceNumber = sequenceNumber;
     this.timeOfEntry = timeOfEntry;
@@ -23,7 +23,7 @@ public class ReportDto extends ReportIdentifierDto {
     return this.sequenceNumber;
   }
 
-  public DateTime getTimeOfEntry() {
+  public ZonedDateTime getTimeOfEntry() {
     return this.timeOfEntry;
   }
 }
