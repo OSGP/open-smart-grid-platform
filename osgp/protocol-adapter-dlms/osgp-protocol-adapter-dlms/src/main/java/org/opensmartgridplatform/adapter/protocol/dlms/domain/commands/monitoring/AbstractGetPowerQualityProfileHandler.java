@@ -506,7 +506,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
           return new ProfileEntryValueDto(ber.value());
         }
       }
-    } catch (final ProtocolAdapterException e) {
+    } catch (final ProtocolAdapterException | IllegalArgumentException e) {
       LOGGER.error("Error creating ProfileEntryDto from {}", dataObject, e);
     }
 

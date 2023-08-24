@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,22 +25,17 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
-import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
 import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
-import org.springframework.core.io.ClassPathResource;
 
 @Slf4j
 class ObjectConfigServiceTest {
-
-  final ObjectMapper objectMapper = new ObjectMapper();
 
   private ObjectConfigService objectConfigService;
 
   @BeforeEach
   void setUp() throws IOException, ObjectConfigException {
-    final List<DlmsProfile> dlmsProfileList = this.getDlmsProfileList();
-    this.objectConfigService = new ObjectConfigService(dlmsProfileList);
+    this.objectConfigService = new ObjectConfigService();
   }
 
   @ParameterizedTest
@@ -321,25 +315,6 @@ class ObjectConfigServiceTest {
   void getListOfDlmsProfiles() {
 
     assertNotNull(this.objectConfigService.getConfiguredDlmsProfiles());
-  }
-
-  private List<DlmsProfile> getDlmsProfileList() throws IOException {
-    final List<DlmsProfile> dlmsProfileList = new ArrayList<>();
-
-    dlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-dsmr22.json"));
-    dlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-dsmr422.json"));
-    dlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr43.json"));
-    dlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr500.json"));
-    dlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr51.json"));
-    dlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr52.json"));
-    dlmsProfileList.add(this.loadProfile("/dlmsprofiles/dlmsprofile-smr55.json"));
-    return dlmsProfileList;
-  }
-
-  private DlmsProfile loadProfile(final String profileJsonFile) throws IOException {
-
-    return this.objectMapper.readValue(
-        new ClassPathResource(profileJsonFile).getFile(), DlmsProfile.class);
   }
 
   private void assertAllInConfig(
