@@ -81,7 +81,7 @@ class GetGsmDiagnosticCommandExecutorIntegrationTest {
 
   @BeforeEach
   public void setUp() throws IOException, ObjectConfigException {
-    this.objectConfigService = new ObjectConfigService(null);
+    this.objectConfigService = new ObjectConfigService();
 
     final DlmsHelper dlmsHelper = new DlmsHelper();
 
