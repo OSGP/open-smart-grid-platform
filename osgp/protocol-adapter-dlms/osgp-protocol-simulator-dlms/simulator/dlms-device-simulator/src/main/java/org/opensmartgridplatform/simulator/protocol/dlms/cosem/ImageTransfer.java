@@ -22,35 +22,62 @@ import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
+import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @CosemClass(id = 18)
 public class ImageTransfer extends CosemInterfaceObject {
 
+  public static final int IMAGE_TRANSFER_CLASS_ID = 18;
+
+  public static final int ATTRIBUTE_ID_IMAGE_BLOCK_SIZE = 2;
+  public static final int ATTRIBUTE_ID_IMAGE_TRANSFERRED_BLOCK_STATUS = 3;
+  public static final int ATTRIBUTE_ID_IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER = 4;
+  public static final int ATTRIBUTE_ID_IMAGE_TRANSFER_ENABLED = 5;
+  public static final int ATTRIBUTE_ID_IMAGE_TRANSFER_STATUS = 6;
+  public static final int ATTRIBUTE_ID_IMAGE_TO_ACTIVATE_INFO = 7;
+
+  public static final int METHOD_ID_IMAGE_TRANSFER_INITIATE = 1;
+  public static final int METHOD_ID_IMAGE_BLOCK_TRANSFER = 2;
+  public static final int METHOD_ID_IMAGE_VERIFY = 3;
+  public static final int METHOD_ID_IMAGE_ACTIVATE = 4;
+  @Autowired private DynamicValues dynamicValues;
+
   @CosemAttribute(
-      id = 2,
+      id = ATTRIBUTE_ID_IMAGE_BLOCK_SIZE,
       type = Type.DOUBLE_LONG_UNSIGNED,
       accessMode = AttributeAccessMode.READ_ONLY)
-  private final DataObject imageBlockSize;
-
-  @CosemAttribute(id = 3, type = Type.BIT_STRING, accessMode = AttributeAccessMode.READ_ONLY)
-  private final DataObject imageTransferredBlockStatus;
+  private DataObject imageBlockSize;
 
   @CosemAttribute(
-      id = 4,
+      id = ATTRIBUTE_ID_IMAGE_TRANSFERRED_BLOCK_STATUS,
+      type = Type.BIT_STRING,
+      accessMode = AttributeAccessMode.READ_ONLY)
+  private DataObject imageTransferredBlockStatus;
+
+  @CosemAttribute(
+      id = ATTRIBUTE_ID_IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER,
       type = Type.DOUBLE_LONG_UNSIGNED,
       accessMode = AttributeAccessMode.READ_ONLY)
   private DataObject imageFirstNotTransferredBlockNumber;
 
-  @CosemAttribute(id = 5, type = Type.BOOLEAN, accessMode = AttributeAccessMode.READ_AND_WRITE)
-  private final DataObject imageTransferEnabled;
+  @CosemAttribute(
+      id = ATTRIBUTE_ID_IMAGE_TRANSFER_ENABLED,
+      type = Type.BOOLEAN,
+      accessMode = AttributeAccessMode.READ_AND_WRITE)
+  private DataObject imageTransferEnabled;
 
-  @CosemAttribute(id = 6, type = Type.ENUMERATE, accessMode = AttributeAccessMode.READ_ONLY)
+  @CosemAttribute(
+      id = ATTRIBUTE_ID_IMAGE_TRANSFER_STATUS,
+      type = Type.ENUMERATE,
+      accessMode = AttributeAccessMode.READ_ONLY)
   private DataObject imageTransferStatus;
 
-  @CosemAttribute(id = 7, type = Type.ARRAY, accessMode = AttributeAccessMode.READ_ONLY)
+  @CosemAttribute(
+      id = ATTRIBUTE_ID_IMAGE_TO_ACTIVATE_INFO,
+      type = Type.ARRAY,
+      accessMode = AttributeAccessMode.READ_ONLY)
   private DataObject imageToActivateInfo;
-
-  private final int imageBlockSizeValue;
 
   private final int activationStatusChangeDelay;
 
@@ -69,21 +96,13 @@ public class ImageTransfer extends CosemInterfaceObject {
   private byte[] signature;
 
   public ImageTransfer(
-      final int imageBlockSizeValue,
+      final String logicalName,
       final int activationStatusChangeDelay,
       final double transferFailureChance) {
-    super("0.0.44.0.0.255");
+    super(logicalName);
 
-    this.imageBlockSizeValue = imageBlockSizeValue;
     this.activationStatusChangeDelay = activationStatusChangeDelay;
     this.transferFailureChance = transferFailureChance;
-    this.imageBlockSize = DataObject.newUInteger32Data(this.imageBlockSizeValue);
-    this.imageTransferredBlockStatus = DataObject.newNullData();
-    this.imageFirstNotTransferredBlockNumber = DataObject.newUInteger32Data(0);
-    this.imageTransferEnabled = DataObject.newBoolData(false);
-
-    this.imageTransferStatus =
-        DataObject.newEnumerateData(ImageTransferStatusType.IMAGE_TRANSFER_NOT_INITIATED.value());
   }
 
   private void checkImageTransferEnabled() throws IllegalMethodAccessException {
@@ -95,12 +114,12 @@ public class ImageTransfer extends CosemInterfaceObject {
   private void setImageFirstNotTransferredBlockNumber() {
     for (int i = 0; i < this.blocksExpected; i++) {
       if (!this.blocksReceived.contains((long) i)) {
-        this.imageFirstNotTransferredBlockNumber = DataObject.newUInteger32Data(i);
+        this.setImageFirstNotTransferredBlockNumber(DataObject.newUInteger32Data(i));
         return;
       }
     }
 
-    this.imageFirstNotTransferredBlockNumber = DataObject.newUInteger32Data(this.blocksExpected);
+    this.setImageFirstNotTransferredBlockNumber(DataObject.newUInteger32Data(this.blocksExpected));
   }
 
   private void setImageToActivateInfo() {
@@ -123,12 +142,12 @@ public class ImageTransfer extends CosemInterfaceObject {
 
     this.verified = !corrupt && this.blocksExpected == this.blocksReceived.size();
     if (this.verified) {
-      this.imageTransferStatus =
+      this.setImageTransferStatus(
           DataObject.newEnumerateData(
-              ImageTransferStatusType.IMAGE_VERIFICATION_SUCCESSFUL.value());
+              ImageTransferStatusType.IMAGE_VERIFICATION_SUCCESSFUL.value()));
     } else {
-      this.imageTransferStatus =
-          DataObject.newEnumerateData(ImageTransferStatusType.IMAGE_VERIFICATION_FAILED.value());
+      this.setImageTransferStatus(
+          DataObject.newEnumerateData(ImageTransferStatusType.IMAGE_VERIFICATION_FAILED.value()));
     }
   }
 
@@ -139,7 +158,8 @@ public class ImageTransfer extends CosemInterfaceObject {
 
     final BitSet bitSet = new BitSet();
 
-    final long bitsExpected = this.blocksExpected * (this.imageBlockSizeValue * 8);
+    final int imageBlockSize = (int) this.getImageBlockSize().getValue();
+    final long bitsExpected = this.blocksExpected * (imageBlockSize * 8);
     for (int i = 0; i < bitsExpected; i++) {
       bitSet.set(i, this.blocksReceived.contains((long) i));
     }
@@ -148,7 +168,7 @@ public class ImageTransfer extends CosemInterfaceObject {
     return DataObject.newBitStringData(new BitString(byteData, byteData.length * 8));
   }
 
-  @CosemMethod(id = 1, consumes = Type.STRUCTURE)
+  @CosemMethod(id = METHOD_ID_IMAGE_TRANSFER_INITIATE, consumes = Type.STRUCTURE)
   public void imageTransferInitiate(final DataObject params) throws IllegalMethodAccessException {
     this.checkImageTransferEnabled();
 
@@ -165,19 +185,20 @@ public class ImageTransfer extends CosemInterfaceObject {
 
     this.expectedImageSize = paramList.get(1).getValue();
 
-    this.blocksExpected = this.expectedImageSize / this.imageBlockSizeValue;
-    if ((Long) paramList.get(1).getValue() % this.imageBlockSizeValue != 0) {
+    final int imageBlockSize = (int) this.getImageBlockSize().getValue();
+    this.blocksExpected = this.expectedImageSize / imageBlockSize;
+    if ((Long) paramList.get(1).getValue() % imageBlockSize != 0) {
       this.blocksExpected++;
     }
 
     this.blocksReceived.clear();
     this.setImageFirstNotTransferredBlockNumber();
 
-    this.imageTransferStatus =
-        DataObject.newEnumerateData(ImageTransferStatusType.IMAGE_TRANSFER_INITIATED.value());
+    this.setImageTransferStatus(
+        DataObject.newEnumerateData(ImageTransferStatusType.IMAGE_TRANSFER_INITIATED.value()));
   }
 
-  @CosemMethod(id = 2, consumes = Type.STRUCTURE)
+  @CosemMethod(id = METHOD_ID_IMAGE_BLOCK_TRANSFER, consumes = Type.STRUCTURE)
   public void imageBlockTransfer(final DataObject params) throws IllegalMethodAccessException {
     this.checkImageTransferEnabled();
 
@@ -204,12 +225,12 @@ public class ImageTransfer extends CosemInterfaceObject {
     this.setImageFirstNotTransferredBlockNumber();
   }
 
-  @CosemMethod(id = 3, consumes = Type.INTEGER)
+  @CosemMethod(id = METHOD_ID_IMAGE_VERIFY, consumes = Type.INTEGER)
   public void imageVerify(final DataObject param) throws IllegalMethodAccessException {
     this.setImageToActivateInfo();
 
-    this.imageTransferStatus =
-        DataObject.newEnumerateData(ImageTransferStatusType.IMAGE_VERIFICATION_INITIATED.value());
+    this.setImageTransferStatus(
+        DataObject.newEnumerateData(ImageTransferStatusType.IMAGE_VERIFICATION_INITIATED.value()));
 
     this.verify();
 
@@ -220,15 +241,15 @@ public class ImageTransfer extends CosemInterfaceObject {
     throw new IllegalMethodAccessException(MethodResultCode.OTHER_REASON);
   }
 
-  @CosemMethod(id = 4, consumes = Type.INTEGER)
+  @CosemMethod(id = METHOD_ID_IMAGE_ACTIVATE, consumes = Type.INTEGER)
   public void imageActivate(final DataObject param) throws IllegalMethodAccessException {
     this.verify();
     if (!this.verified) {
       throw new IllegalMethodAccessException(MethodResultCode.OTHER_REASON);
     }
 
-    this.imageTransferStatus =
-        DataObject.newEnumerateData(ImageTransferStatusType.IMAGE_ACTIVATION_INITIATED.value());
+    this.setImageTransferStatus(
+        DataObject.newEnumerateData(ImageTransferStatusType.IMAGE_ACTIVATION_INITIATED.value()));
 
     // Delayed change of image transfer status.
     new Timer()
@@ -236,13 +257,62 @@ public class ImageTransfer extends CosemInterfaceObject {
             new TimerTask() {
               @Override
               public void run() {
-                ImageTransfer.this.imageTransferStatus =
+                ImageTransfer.this.setImageTransferStatus(
                     DataObject.newEnumerateData(
-                        ImageTransferStatusType.IMAGE_ACTIVATION_SUCCESSFUL.value());
+                        ImageTransferStatusType.IMAGE_ACTIVATION_SUCCESSFUL.value()));
               }
             },
             this.activationStatusChangeDelay);
 
     throw new IllegalMethodAccessException(MethodResultCode.TEMPORARY_FAILURE);
+  }
+
+  public DataObject getImageBlockSize() {
+    return this.dynamicValues.getDlmsAttributeValue(this, ATTRIBUTE_ID_IMAGE_BLOCK_SIZE);
+  }
+
+  public void setImageBlockSize(final DataObject attributeValue) {
+    this.dynamicValues.setDlmsAttributeValue(this, ATTRIBUTE_ID_IMAGE_BLOCK_SIZE, attributeValue);
+  }
+
+  public void setImageTransferredBlockStatus(final DataObject attributeValue) {
+    this.dynamicValues.setDlmsAttributeValue(this, ATTRIBUTE_ID_IMAGE_BLOCK_SIZE, attributeValue);
+  }
+
+  public DataObject getImageFirstNotTransferredBlockNumber() {
+    return this.dynamicValues.getDlmsAttributeValue(
+        this, ATTRIBUTE_ID_IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER);
+  }
+
+  public void setImageFirstNotTransferredBlockNumber(final DataObject attributeValue) {
+    this.dynamicValues.setDlmsAttributeValue(
+        this, ATTRIBUTE_ID_IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER, attributeValue);
+  }
+
+  public DataObject getTransferEnabled() {
+    return this.dynamicValues.getDlmsAttributeValue(this, ATTRIBUTE_ID_IMAGE_TRANSFER_ENABLED);
+  }
+
+  public void setTransferEnabled(final DataObject attributeValue) {
+    this.dynamicValues.setDlmsAttributeValue(
+        this, ATTRIBUTE_ID_IMAGE_TRANSFER_ENABLED, attributeValue);
+  }
+
+  public DataObject getImageTransferStatus() {
+    return this.dynamicValues.getDlmsAttributeValue(this, ATTRIBUTE_ID_IMAGE_TRANSFER_STATUS);
+  }
+
+  public void setImageTransferStatus(final DataObject attributeValue) {
+    this.dynamicValues.setDlmsAttributeValue(
+        this, ATTRIBUTE_ID_IMAGE_TRANSFER_STATUS, attributeValue);
+  }
+
+  public DataObject getImageToActiveInfo() {
+    return this.dynamicValues.getDlmsAttributeValue(this, ATTRIBUTE_ID_IMAGE_TO_ACTIVATE_INFO);
+  }
+
+  public void setImageToActiveInfo(final DataObject attributeValue) {
+    this.dynamicValues.setDlmsAttributeValue(
+        this, ATTRIBUTE_ID_IMAGE_TO_ACTIVATE_INFO, attributeValue);
   }
 }
