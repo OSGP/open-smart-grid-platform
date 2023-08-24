@@ -31,6 +31,8 @@ class DeviceMappingTest {
   private static final Long PORT = 3000L;
   private static final int CHALLENGE_LENGTH = 15;
   private static final boolean IS_ACTIVE = true;
+  private static final boolean LLS1_ACTIVE = true;
+
   private static final byte[] KEY = "key".getBytes();
   private final InstallationMapper installationMapper = new InstallationMapper();
   private final Date deliveryDateSmartMeteringDevice = new Date();
@@ -88,6 +90,7 @@ class DeviceMappingTest {
     assertThat(device.isHls3Active()).isEqualTo(IS_ACTIVE);
     assertThat(device.isHls4Active()).isEqualTo(IS_ACTIVE);
     assertThat(device.isHls5Active()).isEqualTo(IS_ACTIVE);
+    assertThat(device.isLls1Active()).isEqualTo(LLS1_ACTIVE);
     assertThat(device.getMasterKey()).isEqualTo(KEY);
     assertThat(device.getGlobalEncryptionUnicastKey()).isEqualTo(KEY);
     assertThat(device.getAuthenticationKey()).isEqualTo(KEY);
@@ -150,6 +153,7 @@ class DeviceMappingTest {
     smartMeteringDevice.setProtocolVersion(PROTOCOL_VERSION);
     smartMeteringDevice.setProtocolVariant(PROTOCOL_VARIANT);
     smartMeteringDevice.setSupplier(SUPPLIER);
+    smartMeteringDevice.setLls1Active(LLS1_ACTIVE);
     smartMeteringDevice.setHls3Active(IS_ACTIVE);
     smartMeteringDevice.setHls4Active(IS_ACTIVE);
     smartMeteringDevice.setHls5Active(IS_ACTIVE);

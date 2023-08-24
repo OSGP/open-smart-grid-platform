@@ -76,6 +76,7 @@ public class InstallationMapperTest {
     smartMeteringDevice.setGlobalEncryptionUnicastKey("globalEncryptionUnicastKey".getBytes());
     smartMeteringDevice.setAuthenticationKey("authenticationKey".getBytes());
     smartMeteringDevice.setSupplier("supplier");
+    smartMeteringDevice.setLls1Active(true);
     smartMeteringDevice.setHls3Active(true);
     smartMeteringDevice.setHls4Active(true);
     smartMeteringDevice.setHls5Active(true);
@@ -93,7 +94,8 @@ public class InstallationMapperTest {
     assertThat(smartMeteringDeviceDto).isNotNull();
     assertThat(smartMeteringDeviceDto)
         .isEqualToIgnoringGivenFields(
-            smartMeteringDevice, "hls3Active", "hls4Active", "hls5Active");
+            smartMeteringDevice, "lls1Active", "hls3Active", "hls4Active", "hls5Active");
+    assertThat(smartMeteringDeviceDto.isLls1Active()).isEqualTo(smartMeteringDevice.isLls1Active());
     assertThat(smartMeteringDeviceDto.isHls3Active()).isEqualTo(smartMeteringDevice.isHls3Active());
     assertThat(smartMeteringDeviceDto.isHls4Active()).isEqualTo(smartMeteringDevice.isHls4Active());
     assertThat(smartMeteringDeviceDto.isHls5Active()).isEqualTo(smartMeteringDevice.isHls5Active());

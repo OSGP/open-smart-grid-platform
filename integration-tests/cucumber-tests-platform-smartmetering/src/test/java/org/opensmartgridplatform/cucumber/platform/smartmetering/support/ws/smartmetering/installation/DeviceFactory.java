@@ -55,6 +55,11 @@ public class DeviceFactory {
     device.setSupplier(settings.get(PlatformKeys.KEY_DEVICE_SUPPLIER));
     device.setTimezone(settings.get(PlatformSmartmeteringKeys.KEY_DEVICE_TIMEZONE));
 
+    device.setLls1Active(
+        getBoolean(
+            settings,
+            PlatformKeys.KEY_DEVICE_LLS1ACTIVE,
+            PlatformDefaults.DLMS_DEFAULT_LLS1_ACTIVE));
     device.setHls3Active(
         getBoolean(
             settings,

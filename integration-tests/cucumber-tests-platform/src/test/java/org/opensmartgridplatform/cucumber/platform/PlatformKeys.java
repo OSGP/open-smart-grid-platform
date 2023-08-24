@@ -92,6 +92,7 @@ public class PlatformKeys extends Keys {
   public static final String KEY_DEVICE_PROTOCOL_VARIANT = "protocolVariant";
   public static final String KEY_DEVICE_EXTERNAL_MANAGED = "DeviceExternalManaged";
   public static final String KEY_DEVICE_FUNCTION_GROUP = "DeviceFunctionGroup";
+  public static final String KEY_DEVICE_LLS1ACTIVE = "LLS1_active";
   public static final String KEY_DEVICE_HLS3ACTIVE = "HLS3_active";
   public static final String KEY_DEVICE_HLS4ACTIVE = "HLS4_active";
   public static final String KEY_DEVICE_HLS5ACTIVE = "HLS5_active";

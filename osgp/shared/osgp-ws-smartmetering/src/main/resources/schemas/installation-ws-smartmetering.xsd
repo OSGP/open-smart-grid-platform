@@ -326,6 +326,8 @@
         </xsd:simpleType>
       </xsd:element>
 
+      <xsd:element name="Lls1_active" type="xsd:boolean"
+        minOccurs="0" />
       <xsd:element name="Hls3_active" type="xsd:boolean"
         minOccurs="0" />
       <xsd:element name="Hls4_active" type="xsd:boolean"
