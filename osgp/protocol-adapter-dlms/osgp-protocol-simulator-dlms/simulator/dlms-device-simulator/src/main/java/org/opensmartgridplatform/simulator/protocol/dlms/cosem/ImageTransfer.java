@@ -289,11 +289,11 @@ public class ImageTransfer extends CosemInterfaceObject {
         this, ATTRIBUTE_ID_IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER, attributeValue);
   }
 
-  public DataObject getTransferEnabled() {
+  public DataObject getImageTransferEnabled() {
     return this.dynamicValues.getDlmsAttributeValue(this, ATTRIBUTE_ID_IMAGE_TRANSFER_ENABLED);
   }
 
-  public void setTransferEnabled(final DataObject attributeValue) {
+  public void setImageTransferEnabled(final DataObject attributeValue) {
     this.dynamicValues.setDlmsAttributeValue(
         this, ATTRIBUTE_ID_IMAGE_TRANSFER_ENABLED, attributeValue);
   }
