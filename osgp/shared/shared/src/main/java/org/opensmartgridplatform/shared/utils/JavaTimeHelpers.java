@@ -22,4 +22,12 @@ public class JavaTimeHelpers {
       final GregorianCalendar gregorianCalendar, final ZoneId zoneId) {
     return ZonedDateTime.ofInstant(gregorianCalendar.toInstant(), zoneId);
   }
+
+  public static int getOffsetForZonedDateTimeInMillis(final ZonedDateTime dateTime) {
+    return dateTime.getOffset().getTotalSeconds() * 1000;
+  }
+
+  public static boolean isDayLightSavingsActive(final ZonedDateTime dateTime) {
+    return dateTime.getZone().getRules().isDaylightSavings(dateTime.toInstant());
+  }
 }
