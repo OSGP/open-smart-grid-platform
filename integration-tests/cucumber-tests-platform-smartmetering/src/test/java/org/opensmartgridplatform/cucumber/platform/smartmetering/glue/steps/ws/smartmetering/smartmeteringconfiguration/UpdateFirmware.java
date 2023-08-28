@@ -118,9 +118,4 @@ public class UpdateFirmware {
                 + " should not have firmware versions from the scenario after an unsuccessful update.")
         .isFalse();
   }
-
-  //  public void resetFirmwareCachingRepository(final String firmwareUIdentification) {
-  //    this.firmwareImageIdentifierCachingRepository.remove(firmwareUIdentification);
-  //    this.firmwareFileCachingRepository.remove(firmwareUIdentification);
-  //  }
 }
