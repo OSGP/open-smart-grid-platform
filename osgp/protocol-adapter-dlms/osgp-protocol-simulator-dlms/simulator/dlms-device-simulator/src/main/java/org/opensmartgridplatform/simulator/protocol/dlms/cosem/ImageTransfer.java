@@ -106,7 +106,7 @@ public class ImageTransfer extends CosemInterfaceObject {
   }
 
   private void checkImageTransferEnabled() throws IllegalMethodAccessException {
-    if (!(boolean) this.imageTransferEnabled.getValue()) {
+    if (!(boolean) this.getImageTransferEnabled().getValue()) {
       throw new IllegalMethodAccessException(MethodResultCode.OTHER_REASON);
     }
   }
@@ -158,8 +158,8 @@ public class ImageTransfer extends CosemInterfaceObject {
 
     final BitSet bitSet = new BitSet();
 
-    final int imageBlockSize = (int) this.getImageBlockSize().getValue();
-    final long bitsExpected = this.blocksExpected * (imageBlockSize * 8);
+    final Long imageBlockSizeValue = this.getImageBlockSize().getValue();
+    final long bitsExpected = this.blocksExpected * (imageBlockSizeValue * 8);
     for (int i = 0; i < bitsExpected; i++) {
       bitSet.set(i, this.blocksReceived.contains((long) i));
     }
@@ -185,9 +185,9 @@ public class ImageTransfer extends CosemInterfaceObject {
 
     this.expectedImageSize = paramList.get(1).getValue();
 
-    final int imageBlockSize = (int) this.getImageBlockSize().getValue();
-    this.blocksExpected = this.expectedImageSize / imageBlockSize;
-    if ((Long) paramList.get(1).getValue() % imageBlockSize != 0) {
+    final Long imageBlockSizeValue = this.getImageBlockSize().getValue();
+    this.blocksExpected = this.expectedImageSize / imageBlockSizeValue;
+    if ((Long) paramList.get(1).getValue() % imageBlockSizeValue != 0) {
       this.blocksExpected++;
     }
 
