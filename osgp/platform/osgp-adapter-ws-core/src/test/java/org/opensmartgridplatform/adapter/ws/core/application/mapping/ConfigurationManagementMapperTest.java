@@ -8,11 +8,12 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.Configuration;
@@ -178,10 +179,17 @@ class ConfigurationManagementMapperTest {
             .withRelayLinking(
                 asList(this.aTargetRelayMatrix(143, true), this.aTargetRelayMatrix(144, false)))
             .withRelayRefreshing(true)
-            .withSummerTimeDetails(DateTime.parse("2010-06-30T01:20:30+02:00"))
-            .withWinterTimeDetails(DateTime.parse("2011-06-30T01:20:30+02:00"))
+            .withSummerTimeDetails(ZonedDateTime.parse("2010-06-30T01:20:30+02:00"))
+            .withWinterTimeDetails(ZonedDateTime.parse("2011-06-30T01:20:30+02:00"))
             .build();
-    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(result)
+        .usingRecursiveComparison()
+        .ignoringFields("summerTimeDetails", "winterTimeDetails")
+        .isEqualTo(expected);
+    assertThat(result.getWinterTimeDetails().withZoneSameInstant(ZoneId.of("UTC")))
+        .isEqualTo(expected.getWinterTimeDetails().withZoneSameInstant(ZoneId.of("UTC")));
+    assertThat(result.getSummerTimeDetails().withZoneSameInstant(ZoneId.of("UTC")))
+        .isEqualTo(expected.getSummerTimeDetails().withZoneSameInstant(ZoneId.of("UTC")));
   }
 
   @BeforeEach
