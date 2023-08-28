@@ -9,6 +9,9 @@ import com.beanit.openiec61850.Report;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +44,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
   private static final Map<String, Class<? extends Iec61850ReportHandler>> REPORT_HANDLERS_MAP =
       new HashMap<>();
 
-  private ReportingService reportingService;
+  private final ReportingService reportingService;
 
   static {
     REPORT_HANDLERS_MAP.put("RTU", Iec61850RtuReportHandler.class);
@@ -81,7 +84,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
       try {
         final Constructor<?> ctor = clazz.getConstructor(int.class);
         return (Iec61850ReportHandler) ctor.newInstance(systemId);
-      } catch (InstantiationException
+      } catch (final InstantiationException
           | IllegalAccessException
           | IllegalArgumentException
           | InvocationTargetException
@@ -168,7 +171,9 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     final ReportDto reportDto =
         new ReportDto(
             report.getSqNum(),
-            new DateTime(report.getTimeOfEntry().getTimestampValue()),
+            ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(report.getTimeOfEntry().getTimestampValue()),
+                ZoneId.systemDefault()),
             report.getRptId());
 
     this.deviceManagementService.sendMeasurements(

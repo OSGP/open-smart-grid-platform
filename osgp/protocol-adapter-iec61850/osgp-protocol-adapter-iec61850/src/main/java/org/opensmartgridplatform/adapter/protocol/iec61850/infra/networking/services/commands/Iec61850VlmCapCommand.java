@@ -5,8 +5,8 @@
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands;
 
 import com.beanit.openiec61850.Fc;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -45,7 +45,7 @@ public class Iec61850VlmCapCommand implements RtuReadCommand<MeasurementDto> {
         1,
         DataAttribute.VLMCAP.getDescription(),
         0,
-        DateTime.now(DateTimeZone.UTC),
+        ZonedDateTime.now(ZoneId.of("UTC")),
         containingNode
             .getChild(SubDataAttribute.MAGNITUDE_SETPOINT)
             .getFloat(SubDataAttribute.FLOAT)

@@ -1,5 +1,6 @@
 package org.opensmartgridplatform.shared.utils;
 
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -16,6 +17,19 @@ public class JavaTimeHelpers {
 
   public static String formatDate(final Date date, final DateTimeFormatter formatter) {
     return formatter.format(date.toInstant().atZone(ZoneId.systemDefault()));
+  }
+
+  public static String formatTemporal(final Temporal temporal, final DateTimeFormatter formatter) {
+    return formatter.format(temporal);
+  }
+
+  public static ZonedDateTime zonedDateTimeFromDate(final Date date, final ZoneId zoneId) {
+    return ZonedDateTime.ofInstant(date.toInstant(), zoneId);
+  }
+
+  public static ZonedDateTime getZonedDateTimeWithStartAtBeginOfDay(
+      final LocalDate localDate, final ZoneId zoneId) {
+    return localDate.atStartOfDay(zoneId);
   }
 
   public static ZonedDateTime gregorianCalendarToZonedDateTime(
