@@ -23,6 +23,8 @@ import java.util.Objects;
  * @see http://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html
  */
 public class DaylightSavingTimeTransition {
+  public static final int SUNDAY = 7;
+  public static final int MARCH = 3;
 
   public enum DstTransitionFormat {
     /**
@@ -283,10 +285,6 @@ public class DaylightSavingTimeTransition {
         return thirdAttempt.plusHours(this.getTime(transition));
       }
     };
-
-    public static final int SUNDAY = 7;
-
-    public static final int MARCH = 3;
 
     public abstract boolean isValid(String transition);
 
