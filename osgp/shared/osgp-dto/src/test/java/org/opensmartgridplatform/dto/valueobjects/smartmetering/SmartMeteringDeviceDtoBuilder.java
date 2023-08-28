@@ -22,6 +22,7 @@ public class SmartMeteringDeviceDtoBuilder {
     dto.setProtocolName("protocolName" + counter);
     dto.setProtocolVersion("protocolVersion" + counter);
     dto.setGlobalEncryptionUnicastKey(("globalEncryptionUnicastKey" + counter).getBytes());
+    dto.setLls1Active(true);
     dto.setHls3Active(true);
     dto.setHls4Active(true);
     dto.setHls5Active(true);
