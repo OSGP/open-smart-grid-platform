@@ -59,4 +59,30 @@ class JavaTimeHelpersTest {
     assertThat(javaApi.getZone().getRules().getOffset(Instant.now()).getTotalSeconds())
         .isEqualTo(joda.getZone().getOffset(new DateTime().getMillis() / MILLIS_TO_SECONDS));
   }
+
+  @Test
+  void shouldDetermineDayLightSavingsCorrectly() {
+    final ZonedDateTime daylightSavingDate =
+        ZonedDateTime.of(2023, 3, 26, 2, 0, 0, 0, ZoneId.of("Europe/Amsterdam"));
+
+    final ZonedDateTime notDaylightSavingDate =
+        ZonedDateTime.of(2023, 3, 25, 2, 0, 0, 0, ZoneId.of("Europe/Amsterdam"));
+
+    assertThat(JavaTimeHelpers.isDayLightSavingsActive(daylightSavingDate)).isTrue();
+    assertThat(JavaTimeHelpers.isDayLightSavingsActive(notDaylightSavingDate)).isFalse();
+  }
+
+  @Test
+  void shouldReturnSameOffsetAsJoda() {
+    final Instant instant = Instant.ofEpochMilli(1000L);
+    final Date date = Date.from(instant);
+
+    final DateTime joda = new DateTime(date);
+    final ZonedDateTime java = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+
+    final int jodaOffset = joda.getZone().getOffset(joda.getMillis());
+    final int javaOffset = JavaTimeHelpers.getOffsetForZonedDateTimeInMillis(java);
+
+    assertThat(jodaOffset).isEqualTo(javaOffset);
+  }
 }

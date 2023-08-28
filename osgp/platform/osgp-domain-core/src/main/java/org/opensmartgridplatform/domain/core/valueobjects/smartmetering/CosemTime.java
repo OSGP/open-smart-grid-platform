@@ -5,7 +5,8 @@
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import org.joda.time.LocalTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoField;
 
 public class CosemTime implements Serializable, Comparable<CosemTime> {
 
@@ -39,10 +40,10 @@ public class CosemTime implements Serializable, Comparable<CosemTime> {
 
   public CosemTime(final LocalTime time) {
     this(
-        time.getHourOfDay(),
-        time.getMinuteOfHour(),
-        time.getSecondOfMinute(),
-        time.getMillisOfSecond() / 10);
+        time.getHour(),
+        time.getMinute(),
+        time.getSecond(),
+        (int) (time.getLong(ChronoField.MILLI_OF_SECOND) / 10));
   }
 
   public CosemTime(final CosemTime cosemTime) {
@@ -193,12 +194,12 @@ public class CosemTime implements Serializable, Comparable<CosemTime> {
       return null;
     }
     if (SECOND_NOT_SPECIFIED == this.second) {
-      return new LocalTime(this.hour, this.minute);
+      return LocalTime.of(this.hour, this.minute);
     }
     if (HUNDREDTHS_NOT_SPECIFIED == this.hundredths) {
-      return new LocalTime(this.hour, this.minute, this.second);
+      return LocalTime.of(this.hour, this.minute, this.second);
     }
-    return new LocalTime(this.hour, this.minute, this.second, this.hundredths * 10);
+    return LocalTime.of(this.hour, this.minute, this.second, this.hundredths * 10);
   }
 
   public boolean isHourNotSpecified() {
