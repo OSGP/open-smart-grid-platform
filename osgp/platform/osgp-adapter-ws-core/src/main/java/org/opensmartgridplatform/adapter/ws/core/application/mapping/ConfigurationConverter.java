@@ -52,13 +52,9 @@ public class ConfigurationConverter
         .withRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinking(), RelayMatrix.class))
         .withRelayRefreshing(source.isRelayRefreshing())
         .withSummerTimeDetails(
-            this.mapperFacade.map(
-                source.getSummerTimeDetails().toGregorianCalendar().toZonedDateTime(),
-                ZonedDateTime.class))
+            this.mapperFacade.map(source.getSummerTimeDetails(), ZonedDateTime.class))
         .withWinterTimeDetails(
-            this.mapperFacade.map(
-                source.getWinterTimeDetails().toGregorianCalendar().toZonedDateTime(),
-                ZonedDateTime.class))
+            this.mapperFacade.map(source.getWinterTimeDetails(), ZonedDateTime.class))
         .build();
   }
 }
