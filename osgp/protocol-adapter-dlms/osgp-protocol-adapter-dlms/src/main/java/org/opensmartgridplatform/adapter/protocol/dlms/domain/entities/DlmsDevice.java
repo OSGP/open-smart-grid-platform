@@ -28,7 +28,7 @@ public class DlmsDevice extends AbstractEntity {
 
   @Column private String iccId;
 
-  @Column private boolean lls1Active = true;
+  @Column private boolean lls1Active;
 
   @Column private boolean hls3Active;
 

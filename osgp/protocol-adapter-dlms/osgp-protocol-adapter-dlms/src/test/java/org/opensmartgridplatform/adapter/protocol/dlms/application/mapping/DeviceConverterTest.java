@@ -43,6 +43,7 @@ class DeviceConverterTest {
     dlmsDevice.setCommunicationMethod(dto.getCommunicationMethod());
     dlmsDevice.setCommunicationProvider(dto.getCommunicationProvider());
     dlmsDevice.setIccId(dto.getIccId());
+    dlmsDevice.setLls1Active(dto.isLls1Active());
     dlmsDevice.setHls3Active(dto.isHls3Active());
     dlmsDevice.setHls4Active(dto.isHls4Active());
     dlmsDevice.setHls5Active(dto.isHls5Active());
