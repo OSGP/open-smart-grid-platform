@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.adapter.ws.tariffswitching.application.services;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.tariffswitching.infra.jms.TariffSwitchingRequestMessage;
 import org.opensmartgridplatform.adapter.ws.tariffswitching.infra.jms.TariffSwitchingRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -49,7 +49,7 @@ public class ScheduleManagementService {
       @Identification final String organisationIdentification,
       @Identification final String deviceIdentification,
       @NotNull @Size(min = 1, max = 50) @Valid final List<ScheduleEntry> mapAsList,
-      final DateTime scheduledTime,
+      final ZonedDateTime scheduledTime,
       final int messagePriority)
       throws FunctionalException {
 
@@ -78,7 +78,8 @@ public class ScheduleManagementService {
             .withCorrelationUid(correlationUid)
             .withMessageType(MessageType.SET_TARIFF_SCHEDULE.name())
             .withMessagePriority(messagePriority)
-            .withScheduleTime(scheduledTime == null ? null : scheduledTime.getMillis())
+            .withScheduleTime(
+                scheduledTime == null ? null : scheduledTime.toInstant().toEpochMilli())
             .build();
 
     final TariffSwitchingRequestMessage message =
