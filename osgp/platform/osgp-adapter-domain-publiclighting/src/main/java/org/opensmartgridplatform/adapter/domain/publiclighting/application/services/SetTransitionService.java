@@ -7,13 +7,13 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.application.serv
 import java.net.InetAddress;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PreDestroy;
 import javax.validation.constraints.NotNull;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatch;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatchDevice;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaMastSegment;
@@ -44,7 +44,7 @@ public class SetTransitionService extends AbstractService {
   public void setTransitionForDevice(
       final MessageMetadata metadata,
       @NotNull final TransitionType transitionType,
-      final DateTime transitionTime)
+      final ZonedDateTime transitionTime)
       throws FunctionalException {
 
     final String organisationIdentification = metadata.getOrganisationIdentification();
@@ -65,7 +65,7 @@ public class SetTransitionService extends AbstractService {
       final MessageMetadata metadata,
       final String ipAddress,
       @NotNull final TransitionType transitionType,
-      final DateTime transitionTime) {
+      final ZonedDateTime transitionTime) {
 
     final String organisationIdentification = metadata.getOrganisationIdentification();
     final String deviceIdentification = metadata.getDeviceIdentification();
@@ -212,13 +212,12 @@ public class SetTransitionService extends AbstractService {
                   DeviceFunction.SET_TRANSITION.name())
               .build();
 
-      final DateTime emptyTransitionTime = null;
       final InetAddress inetAddress = device.getInetAddress();
 
       try {
         if (inetAddress != null) {
           SetTransitionService.this.setTransitionForDevice(
-              metadata, inetAddress.getHostAddress(), transitionType, emptyTransitionTime);
+              metadata, inetAddress.getHostAddress(), transitionType, null);
         } else {
           LOGGER.warn(
               "setTransition not possible, because InetAddress is null for device {}",
