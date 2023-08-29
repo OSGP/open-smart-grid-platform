@@ -11,8 +11,10 @@ import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHel
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
+import java.util.Objects;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncRequest;
@@ -69,7 +71,10 @@ public class UpdateFirmwareSteps {
     if (requestParameters.containsKey(PlatformCommonKeys.SCHEDULED_TIME)) {
       final GregorianCalendar c = new GregorianCalendar();
       c.setTime(
-          getDateTime(getString(requestParameters, PlatformCommonKeys.SCHEDULED_TIME)).toDate());
+          Date.from(
+              Objects.requireNonNull(
+                      getDateTime(getString(requestParameters, PlatformCommonKeys.SCHEDULED_TIME)))
+                  .toInstant()));
       final XMLGregorianCalendar scheduledTime =
           DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
       request.setScheduledTime(scheduledTime);
