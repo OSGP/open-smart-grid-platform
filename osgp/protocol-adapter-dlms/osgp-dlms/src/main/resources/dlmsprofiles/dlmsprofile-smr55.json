@@ -10,6 +10,7 @@
   "objects": [{
     "tag": "PUSH_SETUP_UDP",
     "description": "Push Setup UDP",
+    "note": null,
     "class-id": 40,
     "version": 0,
     "obis": "0.3.25.9.0.255",
@@ -69,6 +70,7 @@
     {
       "tag": "ALARM_REGISTER_3",
       "description": "Alarm register 3",
+      "note": "Specified in addendum for SMR5.5",
       "class-id": 1,
       "version": 0,
       "obis": "0.0.97.98.2.255",

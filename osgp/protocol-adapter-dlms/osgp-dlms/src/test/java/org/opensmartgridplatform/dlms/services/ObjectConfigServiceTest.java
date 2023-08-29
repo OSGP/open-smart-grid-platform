@@ -17,8 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.AssertionsForClassTypes;
-import org.assertj.core.api.AssertionsForInterfaceTypes;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -45,41 +44,41 @@ class ObjectConfigServiceTest {
 
     final Map<DlmsObjectType, CosemObject> cosemObjects =
         this.objectConfigService.getCosemObjects(protocol.getName(), protocol.getVersion());
-    AssertionsForInterfaceTypes.assertThat(cosemObjects).hasSize(protocol.getNrOfCosemObjects());
+    Assertions.assertThat(cosemObjects).hasSize(protocol.getNrOfCosemObjects());
 
     final List<CosemObject> cosemObjectsOnDemandPrivate =
         this.getCosemObjectsWithProperties(
             protocol, PowerQualityRequest.ACTUAL_SP, Profile.PRIVATE);
-    AssertionsForInterfaceTypes.assertThat(cosemObjectsOnDemandPrivate)
+    Assertions.assertThat(cosemObjectsOnDemandPrivate)
         .hasSize(protocol.getNrOfCosemObjects(PowerQualityRequest.ACTUAL_SP, Profile.PRIVATE));
 
     final List<CosemObject> cosemObjectsOnDemandPublic =
         this.getCosemObjectsWithProperties(protocol, PowerQualityRequest.ACTUAL_SP, Profile.PUBLIC);
-    AssertionsForInterfaceTypes.assertThat(cosemObjectsOnDemandPublic)
+    Assertions.assertThat(cosemObjectsOnDemandPublic)
         .hasSize(protocol.getNrOfCosemObjects(PowerQualityRequest.ACTUAL_SP, Profile.PUBLIC));
 
     final List<CosemObject> cosemObjectsOnPeriodicSpPrivate =
         this.getCosemObjectsWithProperties(
             protocol, PowerQualityRequest.PERIODIC_SP, Profile.PRIVATE);
-    AssertionsForInterfaceTypes.assertThat(cosemObjectsOnPeriodicSpPrivate)
+    Assertions.assertThat(cosemObjectsOnPeriodicSpPrivate)
         .hasSize(protocol.getNrOfCosemObjects(PowerQualityRequest.PERIODIC_SP, Profile.PRIVATE));
 
     final List<CosemObject> cosemObjectsOnPeriodicPpPrivate =
         this.getCosemObjectsWithProperties(
             protocol, PowerQualityRequest.PERIODIC_PP, Profile.PRIVATE);
-    AssertionsForInterfaceTypes.assertThat(cosemObjectsOnPeriodicPpPrivate)
+    Assertions.assertThat(cosemObjectsOnPeriodicPpPrivate)
         .hasSize(protocol.getNrOfCosemObjects(PowerQualityRequest.PERIODIC_PP, Profile.PRIVATE));
 
     final List<CosemObject> cosemObjectsPeriodicSpPublic =
         this.getCosemObjectsWithProperties(
             protocol, PowerQualityRequest.PERIODIC_SP, Profile.PUBLIC);
-    AssertionsForInterfaceTypes.assertThat(cosemObjectsPeriodicSpPublic)
+    Assertions.assertThat(cosemObjectsPeriodicSpPublic)
         .hasSize(protocol.getNrOfCosemObjects(PowerQualityRequest.PERIODIC_SP, Profile.PUBLIC));
 
     final List<CosemObject> cosemObjectsPeriodicPpPublic =
         this.getCosemObjectsWithProperties(
             protocol, PowerQualityRequest.PERIODIC_PP, Profile.PUBLIC);
-    AssertionsForInterfaceTypes.assertThat(cosemObjectsPeriodicPpPublic)
+    Assertions.assertThat(cosemObjectsPeriodicPpPublic)
         .hasSize(protocol.getNrOfCosemObjects(PowerQualityRequest.PERIODIC_PP, Profile.PUBLIC));
   }
 
@@ -99,20 +98,20 @@ class ObjectConfigServiceTest {
   void testAllPqObjectMapToProfile(final Protocol protocol) throws ObjectConfigException {
     final List<DlmsObjectType> dlmsProfiles = new ArrayList<>();
     if (protocol.hasDefinableLoadProfile()) {
-      AssertionsForClassTypes.assertThat(
+      Assertions.assertThat(
               this.objectConfigService.getCosemObject(
                   protocol.getName(), protocol.getVersion(), DlmsObjectType.DEFINABLE_LOAD_PROFILE))
           .isNotNull();
       dlmsProfiles.add(DlmsObjectType.DEFINABLE_LOAD_PROFILE);
     }
     if (protocol.hasPqProfiles()) {
-      AssertionsForClassTypes.assertThat(
+      Assertions.assertThat(
               this.objectConfigService.getCosemObject(
                   protocol.getName(),
                   protocol.getVersion(),
                   DlmsObjectType.POWER_QUALITY_PROFILE_1))
           .isNotNull();
-      AssertionsForClassTypes.assertThat(
+      Assertions.assertThat(
               this.objectConfigService.getCosemObject(
                   protocol.getName(),
                   protocol.getVersion(),
@@ -143,8 +142,7 @@ class ObjectConfigServiceTest {
         this.objectConfigService.getCosemObjects("DSMR", "2.2");
 
     assertNotNull(cosemObjects);
-    AssertionsForInterfaceTypes.assertThat(cosemObjects)
-        .hasSize(Protocol.DSMR_2_2.getNrOfCosemObjects());
+    Assertions.assertThat(cosemObjects).hasSize(Protocol.DSMR_2_2.getNrOfCosemObjects());
     assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_1));
     assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_VOLTAGE_SWELLS_FOR_L1));
   }
@@ -155,8 +153,7 @@ class ObjectConfigServiceTest {
         this.objectConfigService.getCosemObjects("DSMR", "4.2.2");
 
     assertNotNull(cosemObjects);
-    AssertionsForInterfaceTypes.assertThat(cosemObjects)
-        .hasSize(Protocol.DSMR_4_2_2.getNrOfCosemObjects());
+    Assertions.assertThat(cosemObjects).hasSize(Protocol.DSMR_4_2_2.getNrOfCosemObjects());
     assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_1));
     assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_VOLTAGE_SWELLS_FOR_L1));
     assertNull(cosemObjects.get(DlmsObjectType.CDMA_DIAGNOSTIC));
@@ -171,23 +168,22 @@ class ObjectConfigServiceTest {
         this.objectConfigService.getCosemObjects(protocolName, protocolVersion43);
 
     assertNotNull(cosemObjects);
-    AssertionsForInterfaceTypes.assertThat(cosemObjects)
+    org.assertj.core.api.Assertions.assertThat(cosemObjects)
         .hasSize(Protocol.SMR_4_3.getNrOfCosemObjects());
     assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_1));
-    assertNull(cosemObjects.get(DlmsObjectType.MBUS_DIAGNOSTIC));
   }
 
   @Test
-  void testGetCosemObjectsSmr43() throws ObjectConfigException {
+  void testGetCosemObjectsSmr43_shouldComplyWithAssertionChecks() throws ObjectConfigException {
     final Map<DlmsObjectType, CosemObject> cosemObjects =
         this.objectConfigService.getCosemObjects("SMR", "4.3");
 
     assertNotNull(cosemObjects);
-    AssertionsForInterfaceTypes.assertThat(cosemObjects)
-        .hasSize(Protocol.SMR_4_3.getNrOfCosemObjects());
+    Assertions.assertThat(cosemObjects).hasSize(Protocol.SMR_4_3.getNrOfCosemObjects());
     assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_1));
     assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_VOLTAGE_SWELLS_FOR_L1));
     assertNotNull(cosemObjects.get(DlmsObjectType.CDMA_DIAGNOSTIC));
+    assertNull(cosemObjects.get(DlmsObjectType.MBUS_DIAGNOSTIC));
   }
 
   @Test
@@ -196,8 +192,7 @@ class ObjectConfigServiceTest {
         this.objectConfigService.getCosemObjects("SMR", "5.0.0");
 
     assertNotNull(cosemObjects);
-    AssertionsForInterfaceTypes.assertThat(cosemObjects)
-        .hasSize(Protocol.SMR_5_0_0.getNrOfCosemObjects());
+    Assertions.assertThat(cosemObjects).hasSize(Protocol.SMR_5_0_0.getNrOfCosemObjects());
     assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_1));
     assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
     assertNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
@@ -210,8 +205,7 @@ class ObjectConfigServiceTest {
         this.objectConfigService.getCosemObjects("SMR", "5.1");
 
     assertNotNull(cosemObjects);
-    AssertionsForInterfaceTypes.assertThat(cosemObjects)
-        .hasSize(Protocol.SMR_5_1.getNrOfCosemObjects());
+    Assertions.assertThat(cosemObjects).hasSize(Protocol.SMR_5_1.getNrOfCosemObjects());
     assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_1));
     assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
     assertNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
@@ -224,8 +218,7 @@ class ObjectConfigServiceTest {
         this.objectConfigService.getCosemObjects("SMR", "5.2");
 
     assertNotNull(cosemObjects);
-    AssertionsForInterfaceTypes.assertThat(cosemObjects)
-        .hasSize(Protocol.SMR_5_2.getNrOfCosemObjects());
+    Assertions.assertThat(cosemObjects).hasSize(Protocol.SMR_5_2.getNrOfCosemObjects());
     assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_1));
     assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_2));
     assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
@@ -239,8 +232,7 @@ class ObjectConfigServiceTest {
         this.objectConfigService.getCosemObjects("SMR", "5.5");
 
     assertNotNull(cosemObjects);
-    AssertionsForInterfaceTypes.assertThat(cosemObjects)
-        .hasSize(Protocol.SMR_5_5.getNrOfCosemObjects());
+    Assertions.assertThat(cosemObjects).hasSize(Protocol.SMR_5_5.getNrOfCosemObjects());
     assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_1));
     assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_2));
     assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_3));
@@ -277,18 +269,18 @@ class ObjectConfigServiceTest {
             protocolName, protocolVersion43, DlmsObjectType.AVERAGE_VOLTAGE_L1);
 
     assertNotNull(cosemObject);
-    AssertionsForClassTypes.assertThat(cosemObject.getTag())
+    Assertions.assertThat(cosemObject.getTag())
         .isEqualTo(DlmsObjectType.AVERAGE_VOLTAGE_L1.value());
   }
 
   @Test
   void getOptionalCosemObject() throws ObjectConfigException {
-    AssertionsForClassTypes.assertThat(
+    Assertions.assertThat(
             this.objectConfigService.getOptionalCosemObject(
                 "DSMR", "4.2.2", DlmsObjectType.POWER_QUALITY_PROFILE_1))
         .isEmpty();
 
-    AssertionsForClassTypes.assertThat(
+    Assertions.assertThat(
             this.objectConfigService.getOptionalCosemObject(
                 "SMR", "5.0.0", DlmsObjectType.POWER_QUALITY_PROFILE_1))
         .isPresent();
@@ -309,7 +301,7 @@ class ObjectConfigServiceTest {
             protocolName, protocolVersion50, requestMap);
 
     assertNotNull(cosemObjectsWithSelectableObjects);
-    AssertionsForInterfaceTypes.assertThat(cosemObjectsWithSelectableObjects).hasSize(45);
+    Assertions.assertThat(cosemObjectsWithSelectableObjects).hasSize(45);
   }
 
   @Test
@@ -329,7 +321,7 @@ class ObjectConfigServiceTest {
             protocolName, protocolVersion50, requestMap);
 
     assertNotNull(cosemObjectsWithSelectableObjects);
-    AssertionsForInterfaceTypes.assertThat(cosemObjectsWithSelectableObjects).hasSize(9);
+    Assertions.assertThat(cosemObjectsWithSelectableObjects).hasSize(9);
   }
 
   @Test
@@ -348,9 +340,9 @@ class ObjectConfigServiceTest {
         this.objectConfigService.getOptionalCosemObject(
             protocol.getName(), protocol.getVersion(), dlmsObjectType);
     if (!shouldHaveObjectType) {
-      AssertionsForClassTypes.assertThat(optionalProfile).isEmpty();
+      Assertions.assertThat(optionalProfile).isEmpty();
     } else {
-      AssertionsForClassTypes.assertThat(optionalProfile).isPresent();
+      Assertions.assertThat(optionalProfile).isPresent();
 
       final List<String> selectableObjects =
           optionalProfile.orElseThrow().getListProperty(ObjectProperty.SELECTABLE_OBJECTS);
@@ -361,8 +353,7 @@ class ObjectConfigServiceTest {
       // All selectable objects must be in config
       selectableObjects.forEach(
           selectableObject ->
-              AssertionsForClassTypes.assertThat(
-                      cosemObjects.get(DlmsObjectType.valueOf(selectableObject)))
+              Assertions.assertThat(cosemObjects.get(DlmsObjectType.valueOf(selectableObject)))
                   .isNotNull());
     }
   }
@@ -383,8 +374,7 @@ class ObjectConfigServiceTest {
     pqObjects.forEach(
         (dlmsObjectType, pqObject) -> {
           if (isPeriodicRequest(pqObject)) {
-            AssertionsForInterfaceTypes.assertThat(allSelectableObjects)
-                .contains(pqObject.getTag());
+            Assertions.assertThat(allSelectableObjects).contains(pqObject.getTag());
           }
         });
   }

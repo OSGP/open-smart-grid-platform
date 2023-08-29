@@ -7,6 +7,7 @@
     {
       "tag": "CLOCK",
       "description": "Clock",
+      "note": null,
       "class-id": 8,
       "version": 0,
       "obis": "0.0.1.0.0.255",
@@ -42,6 +43,7 @@
     {
       "tag": "DEFINABLE_LOAD_PROFILE",
       "description": "Definable load profile",
+      "note": null,
       "class-id": 7,
       "version": 1,
       "obis": "0.1.94.31.6.255",
@@ -126,6 +128,7 @@
     {
       "tag": "POWER_QUALITY_PROFILE_1",
       "description": "Power Quality profile 1, 15 min power quality values",
+      "note": null,
       "class-id": 7,
       "version": 1,
       "obis": "1.0.99.1.1.255",
@@ -298,6 +301,7 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT",
       "description": "Instantaneous active power (+P)",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.1.7.0.255",
@@ -329,6 +333,7 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_EXPORT",
       "description": "Instantaneous active power (-P)",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.2.7.0.255",
@@ -360,6 +365,7 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1",
       "description": "Instantaneous active power L1 (+P)",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.21.7.0.255",
@@ -391,6 +397,7 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2",
       "description": "Instantaneous active power L2 (+P)",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.41.7.0.255",
@@ -422,6 +429,7 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3",
       "description": "Instantaneous active power L3 (+P)",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.61.7.0.255",
@@ -453,6 +461,7 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1",
       "description": "Instantaneous active power L1 (-P)",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.22.7.0.255",
@@ -484,6 +493,7 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2",
       "description": "Instantaneous active power L2 (-P)",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.42.7.0.255",
@@ -515,6 +525,7 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3",
       "description": "Instantaneous active power L3 (-P)",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.62.7.0.255",
@@ -546,6 +557,7 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES",
       "description": "Instantaneous current total",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.90.7.0.255",
@@ -577,6 +589,7 @@
     {
       "tag": "INSTANTANEOUS_CURRENT_L1",
       "description": "Instantaneous current L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.31.7.0.255",
@@ -608,6 +621,7 @@
     {
       "tag": "INSTANTANEOUS_CURRENT_L2",
       "description": "Instantaneous current L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.51.7.0.255",
@@ -639,6 +653,7 @@
     {
       "tag": "INSTANTANEOUS_CURRENT_L3",
       "description": "Instantaneous current L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.71.7.0.255",
@@ -670,6 +685,7 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L1",
       "description": "Instantaneous voltage L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.32.7.0.255",
@@ -701,6 +717,7 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L2",
       "description": "Instantaneous voltage L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.52.7.0.255",
@@ -732,6 +749,7 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L3",
       "description": "Instantaneous voltage L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.72.7.0.255",
@@ -763,6 +781,7 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_EXPORT_L1",
       "description": "Average active power (-P) L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.22.4.0.255",
@@ -794,6 +813,7 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_EXPORT_L2",
       "description": "Average active power (-P) L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.42.4.0.255",
@@ -825,6 +845,7 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_EXPORT_L3",
       "description": "Average active power (-P) L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.62.4.0.255",
@@ -856,6 +877,7 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_IMPORT_L1",
       "description": "Average active power (+P) L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.21.4.0.255",
@@ -887,6 +909,7 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_IMPORT_L2",
       "description": "Average active power (+P) L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.41.4.0.255",
@@ -918,6 +941,7 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_IMPORT_L3",
       "description": "Average active power (+P) L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.61.4.0.255",
@@ -949,6 +973,7 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_IMPORT_L1",
       "description": "Average reactive power (+Q) L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.23.4.0.255",
@@ -980,6 +1005,7 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_IMPORT_L2",
       "description": "Average reactive power (+Q) L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.43.4.0.255",
@@ -1011,6 +1037,7 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_IMPORT_L3",
       "description": "Average reactive power (+Q) L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.63.4.0.255",
@@ -1042,6 +1069,7 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_EXPORT_L1",
       "description": "Average reactive power (-Q) L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.24.4.0.255",
@@ -1073,6 +1101,7 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_EXPORT_L2",
       "description": "Average reactive power (-Q) L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.44.4.0.255",
@@ -1104,6 +1133,7 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_EXPORT_L3",
       "description": "Average reactive power (-Q) L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.64.4.0.255",
@@ -1135,6 +1165,7 @@
     {
       "tag": "AVERAGE_CURRENT_L1",
       "description": "Average current L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.31.24.0.255",
@@ -1166,6 +1197,7 @@
     {
       "tag": "AVERAGE_CURRENT_L2",
       "description": "Average current L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.51.24.0.255",
@@ -1197,6 +1229,7 @@
     {
       "tag": "AVERAGE_CURRENT_L3",
       "description": "Average current L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.71.24.0.255",
@@ -1228,6 +1261,7 @@
     {
       "tag": "AVERAGE_VOLTAGE_L1",
       "description": "Average voltage L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.32.24.0.255",
@@ -1259,6 +1293,7 @@
     {
       "tag": "AVERAGE_VOLTAGE_L2",
       "description": "Average voltage L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.52.24.0.255",
@@ -1290,6 +1325,7 @@
     {
       "tag": "AVERAGE_VOLTAGE_L3",
       "description": "Average voltage L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.72.24.0.255",
@@ -1321,6 +1357,7 @@
     {
       "tag": "NUMBER_OF_POWER_FAILURES",
       "description": "Number of power failures in any phases",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.7.21.255",
@@ -1344,6 +1381,7 @@
     {
       "tag": "NUMBER_OF_LONG_POWER_FAILURES",
       "description": "Number of long power failures in any phases",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.7.9.255",
@@ -1367,6 +1405,7 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
       "description": "Number of voltage sags in phase L1",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.32.32.0.255",
@@ -1390,6 +1429,7 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L2",
       "description": "Number of voltage sags in phase L2",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.52.32.0.255",
@@ -1413,6 +1453,7 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L3",
       "description": "Number of voltage sags in phase L3",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.72.32.0.255",
@@ -1436,6 +1477,7 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
       "description": "Number of voltage swells in phase L1",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.32.36.0.255",
@@ -1459,6 +1501,7 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L2",
       "description": "Number of voltage swells in phase L2",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.52.36.0.255",
@@ -1482,6 +1525,7 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L3",
       "description": "Number of voltage swells in phase L3",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.72.36.0.255",
@@ -1505,6 +1549,7 @@
     {
       "tag": "CDMA_DIAGNOSTIC",
       "description": "CDMA Diagnostic",
+      "note": null,
       "class-id": 47,
       "version": 0,
       "obis": "0.1.25.6.0.255",
@@ -1576,6 +1621,7 @@
     {
       "tag": "GPRS_DIAGNOSTIC",
       "description": "GPRS Diagnostic",
+      "note": null,
       "class-id": 47,
       "version": 0,
       "obis": "0.0.25.6.0.255",
@@ -1647,6 +1693,7 @@
     {
       "tag": "MBUS_CLIENT_SETUP",
       "description": "M-Bus client setup",
+      "note": null,
       "class-id": 72,
       "version": 1,
       "obis": "0.x.24.1.0.255",
@@ -1766,6 +1813,7 @@
     {
       "tag": "MBUS_DIAGNOSTIC",
       "description": "M-Bus diagnostic",
+      "note": null,
       "class-id": 77,
       "version": 0,
       "obis": "0.x.24.9.0.255",
@@ -1845,6 +1893,7 @@
     {
       "tag": "ALARM_REGISTER_1",
       "description": "Alarm register 1",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.97.98.0.255",
