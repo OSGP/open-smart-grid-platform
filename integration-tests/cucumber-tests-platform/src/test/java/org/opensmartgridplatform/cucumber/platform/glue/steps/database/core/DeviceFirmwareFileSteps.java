@@ -55,7 +55,11 @@ public class DeviceFirmwareFileSteps {
         this.getFirmwareFile(getString(settings, PlatformKeys.FIRMWARE_FILE_FILENAME));
 
     final Date installationDate =
-        Date.from(getDateTime2(getString(settings, PlatformKeys.FIRMWARE_INSTALLATION_DATE), ZonedDateTime.now()).toInstant());
+        Date.from(
+            getDateTime2(
+                    getString(settings, PlatformKeys.FIRMWARE_INSTALLATION_DATE),
+                    ZonedDateTime.now())
+                .toInstant());
     final String installedBy =
         getString(
             settings, PlatformKeys.FIRMWARE_INSTALLED_BY, PlatformDefaults.FIRMWARE_INSTALLED_BY);

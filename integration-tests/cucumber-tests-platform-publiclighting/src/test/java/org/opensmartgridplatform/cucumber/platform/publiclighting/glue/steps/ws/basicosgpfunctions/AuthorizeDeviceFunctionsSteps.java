@@ -65,9 +65,7 @@ public class AuthorizeDeviceFunctionsSteps {
   @When("receiving a publiclighting device function request")
   public void receivingAPublicLightingDeviceFunctionRequest(
       final Map<String, String> requestParameters)
-      throws OperationNotSupportedException,
-          WebServiceSecurityException,
-          GeneralSecurityException,
+      throws OperationNotSupportedException, WebServiceSecurityException, GeneralSecurityException,
           IOException {
     this.deviceFunction =
         getEnum(
@@ -235,9 +233,7 @@ public class AuthorizeDeviceFunctionsSteps {
   }
 
   private void setTransition(final Map<String, String> requestParameters)
-      throws WebServiceSecurityException,
-          GeneralSecurityException,
-          IOException,
+      throws WebServiceSecurityException, GeneralSecurityException, IOException,
           DatatypeConfigurationException {
     final SetTransitionRequest request = new SetTransitionRequest();
     request.setDeviceIdentification(
