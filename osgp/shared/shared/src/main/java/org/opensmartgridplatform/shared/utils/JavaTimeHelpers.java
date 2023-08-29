@@ -1,5 +1,6 @@
 package org.opensmartgridplatform.shared.utils;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -33,5 +34,10 @@ public class JavaTimeHelpers {
 
   public static boolean isDayLightSavingsActive(final ZonedDateTime dateTime) {
     return dateTime.getZone().getRules().isDaylightSavings(dateTime.toInstant());
+  }
+
+  public static ZonedDateTime shiftZoneToUTC(final ZonedDateTime dateTime) {
+    final int offset = dateTime.getZone().getRules().getOffset(Instant.now()).getTotalSeconds();
+    return dateTime.plusSeconds(offset).withZoneSameInstant(ZoneId.of("UTC"));
   }
 }

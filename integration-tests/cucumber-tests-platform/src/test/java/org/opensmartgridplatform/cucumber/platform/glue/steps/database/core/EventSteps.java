@@ -12,12 +12,12 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -38,7 +38,9 @@ public class EventSteps {
   @Given("^an event$")
   public void anEvent(final Map<String, String> data) {
     final String deviceIdentification = getString(data, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
-    final Date date = getDateTime2(getString(data, PlatformKeys.DATE), DateTime.now()).toDate();
+    final Date date =
+        Date.from(
+            getDateTime2(getString(data, PlatformKeys.DATE), ZonedDateTime.now()).toInstant());
     final EventType eventType =
         getEnum(data, PlatformKeys.EVENT_TYPE, EventType.class, EventType.DIAG_EVENTS_GENERAL);
     final String description = getString(data, PlatformKeys.KEY_DESCRIPTION, "");

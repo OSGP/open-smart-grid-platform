@@ -85,4 +85,23 @@ class JavaTimeHelpersTest {
 
     assertThat(jodaOffset).isEqualTo(javaOffset);
   }
+
+  @Test
+  void shouldShiftZoneToUTCCorrectly() {
+    final Instant instant = Instant.ofEpochMilli(1000L);
+    final Date date = Date.from(instant);
+
+    final DateTime joda = new DateTime(date);
+    final ZonedDateTime java = ZonedDateTime.ofInstant(instant, ZoneId.of("Europe/Amsterdam"));
+
+    final DateTime jodaTimeShifted =
+        joda.plusSeconds(
+                ZonedDateTime.now(ZoneId.of("Europe/Amsterdam")).getOffset().getTotalSeconds())
+            .withZone(DateTimeZone.UTC);
+
+    final ZonedDateTime javaTimeShifted = JavaTimeHelpers.shiftZoneToUTC(java);
+
+    assertThat(jodaTimeShifted.toInstant().getMillis())
+        .isEqualTo(javaTimeShifted.toInstant().toEpochMilli());
+  }
 }

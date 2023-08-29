@@ -7,16 +7,15 @@ package org.opensmartgridplatform.cucumber.core;
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.Location;
 import java.time.Instant;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
-import java.util.TimeZone;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +28,8 @@ public class DateTimeHelper {
   /**
    * @return CET/CEST time zone based on ID {@value #CET_TIMEZONE}
    */
-  public static DateTimeZone getCentralEuropeanTimeZone() {
-    return DateTimeZone.forID(CET_TIMEZONE);
+  public static ZoneId getCentralEuropeanTimeZone() {
+    return ZoneId.of(CET_TIMEZONE);
   }
 
   /**
@@ -57,12 +56,12 @@ public class DateTimeHelper {
    *   <li>now at midday + 1 week
    * </ul>
    */
-  public static DateTime getDateTime(final String dateString) {
+  public static ZonedDateTime getDateTime(final String dateString) {
     if (dateString.isEmpty()) {
       return null;
     }
 
-    DateTime retval = DateTime.now(getCentralEuropeanTimeZone());
+    ZonedDateTime retval = ZonedDateTime.now(getCentralEuropeanTimeZone());
 
     final String pattern = "([a-z ]*)[ ]*([+-]?)[ ]*([0-9]*)[ ]*([a-z]*)";
     final Pattern r = Pattern.compile(pattern);
@@ -105,18 +104,18 @@ public class DateTimeHelper {
     }
 
     // Normalize the seconds and milliseconds to zero
-    retval = retval.withSecondOfMinute(0);
-    retval = retval.withMillisOfSecond(0);
+    retval = retval.withSecond(0);
+    retval = retval.withNano(0);
 
     if (whenMatcher.groupCount() > 1 && whenMatcher.group(2).equals("at")) {
 
       switch (whenMatcher.group(3)) {
         case "midday":
         case "noon":
-          retval = retval.withHourOfDay(12);
+          retval = retval.withHour(12);
           break;
         case "midnight":
-          retval = retval.withHourOfDay(0);
+          retval = retval.withHour(0);
           break;
         default:
           throw new IllegalArgumentException(
@@ -124,8 +123,8 @@ public class DateTimeHelper {
                   + dateString
                   + "], expected \"midday\", \"noon\" or \"midnight\"");
       }
-      retval = retval.withMinuteOfHour(0);
-      retval = retval.withSecondOfMinute(0);
+      retval = retval.withMinute(0);
+      retval = retval.withSecond(0);
     }
 
     if (op.equals("+")) {
@@ -176,7 +175,7 @@ public class DateTimeHelper {
   }
 
   public static ZonedDateTime getZonedDateTime(final String dateString) {
-    return dateTimeToZonedDateTime(getDateTime(dateString));
+    return getDateTime(dateString);
   }
 
   public static Instant getInstant(final String dateString) {
@@ -184,17 +183,17 @@ public class DateTimeHelper {
     return dateTime.toInstant();
   }
 
-  public static DateTime getDateTime2(final String startDate, final DateTime defaultStartDate) {
+  public static ZonedDateTime getDateTime2(
+      final String startDate, final ZonedDateTime defaultStartDate) {
     if (startDate == null) {
       return defaultStartDate;
     }
-    DateTime dateTime;
+    ZonedDateTime dateTime;
     try {
       dateTime = getDateTime(startDate);
     } catch (final IllegalArgumentException e) {
-      LOGGER.debug(
-          "The string {} could not be parsed by DateTimeHelper.getDateTime, lets org.joda.time.DateTime");
-      dateTime = DateTime.parse(startDate);
+      LOGGER.debug("The string {} could not be parsed by DateTimeHelper.getDateTime");
+      dateTime = ZonedDateTime.parse(startDate);
     }
     if (dateTime == null) {
       return defaultStartDate;
@@ -204,13 +203,12 @@ public class DateTimeHelper {
 
   public static ZonedDateTime getZonedDateTime2(
       final String startDate, final ZonedDateTime defaultStartDate) {
-    return dateTimeToZonedDateTime(
-        getDateTime2(startDate, zonedDateTimeToDateTime(defaultStartDate)));
+    return getDateTime2(startDate, defaultStartDate);
   }
 
   /** Get time of sunrise/sunset */
-  public static DateTime getSunriseSunsetTime(
-      final String actionTimeType, final DateTime date, final Location location) {
+  public static ZonedDateTime getSunriseSunsetTime(
+      final String actionTimeType, final ZonedDateTime date, final Location location) {
     final SunriseSunsetCalculator calculator = new SunriseSunsetCalculator(location, "UTC");
 
     Calendar officialTransition = null;
@@ -218,10 +216,10 @@ public class DateTimeHelper {
     final Calendar calender = Calendar.getInstance();
 
     if (actionTimeType.equalsIgnoreCase("SUNSET")) {
-      calender.setTime(date.toDate());
+      calender.setTime(Date.from(date.toInstant()));
       officialTransition = calculator.getOfficialSunsetCalendarForDate(calender);
     } else if (actionTimeType.equalsIgnoreCase("SUNRISE")) {
-      calender.setTime(date.plusDays(1).toDate());
+      calender.setTime(Date.from(date.plusDays(1).toInstant()));
       officialTransition = calculator.getOfficialSunriseCalendarForDate(calender);
     }
 
@@ -229,13 +227,13 @@ public class DateTimeHelper {
       return null;
     }
 
-    return new DateTime(officialTransition.getTimeInMillis());
+    return ZonedDateTime.ofInstant(
+        Instant.ofEpochMilli(officialTransition.getTimeInMillis()), ZoneId.systemDefault());
   }
 
   public static ZonedDateTime getSunriseSunsetZonedDateTime(
       final String actionTimeType, final ZonedDateTime date, final Location location) {
-    return dateTimeToZonedDateTime(
-        getSunriseSunsetTime(actionTimeType, zonedDateTimeToDateTime(date), location));
+    return getSunriseSunsetTime(actionTimeType, date, location);
   }
 
   /**
@@ -244,10 +242,8 @@ public class DateTimeHelper {
    * @param dateTime The DateTime in local system's timezone.
    * @return shifted DateTime in UTC
    */
-  public static final DateTime shiftSystemZoneToUtc(final DateTime dateTime) {
-    return dateTime
-        .plusSeconds(ZonedDateTime.now().getOffset().getTotalSeconds())
-        .withZone(DateTimeZone.UTC);
+  public static final ZonedDateTime shiftSystemZoneToUtc(final ZonedDateTime dateTime) {
+    return JavaTimeHelpers.shiftZoneToUTC(dateTime);
   }
 
   /**
@@ -281,40 +277,26 @@ public class DateTimeHelper {
    */
   private static String shiftTimeToOtherZone(final String time, final boolean positiveShift) {
     // Extract hours and minutes from the time parameter
-    final DateTimeFormatter timeFormatter = DateTimeFormat.forPattern(TIME_FORMAT);
-    final DateTime parsedTime = timeFormatter.parseDateTime(time);
+    final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(TIME_FORMAT);
+    final LocalTime parsedTime = LocalTime.parse(time, timeFormatter);
 
     // Determine current CET offset in hours for the system timezone.
-    final int UTCOffsetForCET = DateTimeZone.forID(CET_TIMEZONE).getOffset(new DateTime());
-    final int UTCOffsetForSystem = DateTimeZone.getDefault().getOffset(new DateTime());
+    final int UTCOffsetForCET =
+        ZoneId.of(CET_TIMEZONE).getRules().getOffset(Instant.now()).getTotalSeconds();
+    final int UTCOffsetForSystem =
+        ZoneId.systemDefault().getRules().getOffset(Instant.now()).getTotalSeconds();
     final int offsetHours =
-        (UTCOffsetForCET - UTCOffsetForSystem) / (3600 * 1000) * (positiveShift ? 1 : -1);
+        (UTCOffsetForCET - UTCOffsetForSystem) / (3600) * (positiveShift ? 1 : -1);
 
     // Add offset
-    final DateTime shiftedTime =
-        new DateTime()
-            .withTime(parsedTime.getHourOfDay(), parsedTime.getMinuteOfHour(), 0, 0)
+    final ZonedDateTime shiftedTime =
+        ZonedDateTime.now()
+            .withHour(parsedTime.getHour())
+            .withMinute(parsedTime.getMinute())
+            .withSecond(0)
+            .withNano(0)
             .plusHours(offsetHours);
 
-    return timeFormatter.print(shiftedTime);
-  }
-
-  public static ZonedDateTime dateTimeToZonedDateTime(final DateTime dateTime) {
-    if (dateTime == null) {
-      return null;
-    }
-
-    return dateTime.toGregorianCalendar().toZonedDateTime();
-  }
-
-  private static DateTime zonedDateTimeToDateTime(final ZonedDateTime zonedDateTime) {
-    if (zonedDateTime == null) {
-      return null;
-    }
-
-    final long millis = zonedDateTime.toInstant().toEpochMilli();
-    final DateTimeZone dateTimeZone =
-        DateTimeZone.forTimeZone(TimeZone.getTimeZone(zonedDateTime.getZone()));
-    return new DateTime(millis, dateTimeZone);
+    return timeFormatter.format(shiftedTime);
   }
 }

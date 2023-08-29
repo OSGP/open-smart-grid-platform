@@ -11,7 +11,6 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 import junit.runner.Version;
 import org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter;
-import org.joda.time.DateTimeZone;
 import org.junit.runner.Computer;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
@@ -48,7 +47,6 @@ public abstract class AppBase {
   public static int run(final AppBase app, final String[] testClasses, final String... args) {
     // Ensure the tests are executed in UTC time
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    DateTimeZone.setDefault(DateTimeZone.UTC);
 
     final CmdLineParser p = new CmdLineParser(app);
     try {

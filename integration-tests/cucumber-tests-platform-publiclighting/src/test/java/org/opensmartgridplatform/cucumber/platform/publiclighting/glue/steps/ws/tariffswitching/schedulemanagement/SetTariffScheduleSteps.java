@@ -13,11 +13,12 @@ import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHel
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.GregorianCalendar;
 import java.util.Map;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.Page;
@@ -86,14 +87,15 @@ public class SetTariffScheduleSteps {
       request.setScheduledTime(
           DatatypeFactory.newInstance()
               .newXMLGregorianCalendar(
-                  ((requestParameters
+                  GregorianCalendar.from(
+                      (requestParameters
                               .get(PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME)
                               .isEmpty())
-                          ? DateTime.now()
+                          ? ZonedDateTime.now(ZoneId.of("UTC"))
                           : getDate(
-                              requestParameters, PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME))
-                      .toDateTime(DateTimeZone.UTC)
-                      .toGregorianCalendar()));
+                                  requestParameters,
+                                  PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME)
+                              .withZoneSameInstant(ZoneId.of("UTC")))));
     }
 
     for (int i = 0; i < countSchedules; i++) {
@@ -141,13 +143,15 @@ public class SetTariffScheduleSteps {
       schedule.setStartDay(
           DatatypeFactory.newInstance()
               .newXMLGregorianCalendar(
-                  DateTime.parse(startDay).toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
+                  GregorianCalendar.from(
+                      ZonedDateTime.parse(startDay).withZoneSameInstant(ZoneId.of("UTC")))));
     }
     if (!endDay.isEmpty()) {
       schedule.setEndDay(
           DatatypeFactory.newInstance()
               .newXMLGregorianCalendar(
-                  DateTime.parse(endDay).toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
+                  GregorianCalendar.from(
+                      ZonedDateTime.parse(endDay).withZoneSameInstant(ZoneId.of("UTC")))));
     }
     schedule.setTime(time);
 

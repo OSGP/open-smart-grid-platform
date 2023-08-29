@@ -15,11 +15,11 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import javax.xml.datatype.XMLGregorianCalendar;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindScheduledTasksRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindScheduledTasksResponse;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
@@ -102,9 +102,9 @@ public class FindScheduledTasksSteps {
   }
 
   private static final boolean isEqual(final XMLGregorianCalendar actual, final String expected) {
-    final DateTime expectedDateTime =
+    final ZonedDateTime expectedDateTime =
         DateTimeHelper.shiftSystemZoneToUtc(DateTimeHelper.getDateTime(expected));
-    final DateTime actualDateTime = new DateTime(actual.toGregorianCalendar());
+    final ZonedDateTime actualDateTime = actual.toGregorianCalendar().toZonedDateTime();
     return actualDateTime.isEqual(expectedDateTime);
   }
 }
