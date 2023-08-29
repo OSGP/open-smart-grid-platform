@@ -9,6 +9,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
@@ -19,6 +20,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.objectconfig.Attribute;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
@@ -32,11 +37,17 @@ public class ClearAlarmRegisterCommandExecutor
 
   final DlmsObjectConfigService dlmsObjectConfigService;
 
-  private static final int ALARM_CODE = 0;
+  final ObjectConfigService objectConfigService;
 
-  public ClearAlarmRegisterCommandExecutor(final DlmsObjectConfigService dlmsObjectConfigService) {
+  private static final int ALARM_CODE = 0;
+  static final int ALARM_REGISTER_ATTRIBUTE_ID = 2;
+
+  public ClearAlarmRegisterCommandExecutor(
+      final DlmsObjectConfigService dlmsObjectConfigService,
+      final ObjectConfigService objectConfigService) {
     super(ClearAlarmRegisterRequestDto.class);
     this.dlmsObjectConfigService = dlmsObjectConfigService;
+    this.objectConfigService = objectConfigService;
   }
 
   @Override
@@ -68,7 +79,7 @@ public class ClearAlarmRegisterCommandExecutor
     // Clear alarm 1
     final Optional<AccessResultCode> optionalResultCodeAlarm1 =
         this.clearAlarmRegister(conn, device, DlmsObjectType.ALARM_REGISTER_1);
-    if (!optionalResultCodeAlarm1.isPresent()) {
+    if (optionalResultCodeAlarm1.isEmpty()) {
       throw new ProtocolAdapterException("Unable to find alarm register 1.");
     }
     final AccessResultCode resultCodeAlarmRegister1 = optionalResultCodeAlarm1.get();
@@ -79,7 +90,7 @@ public class ClearAlarmRegisterCommandExecutor
     // Clear alarm 2
     final Optional<AccessResultCode> optionalResultCodeAlarm2 =
         this.clearAlarmRegister(conn, device, DlmsObjectType.ALARM_REGISTER_2);
-    if (!optionalResultCodeAlarm2.isPresent()) {
+    if (optionalResultCodeAlarm2.isEmpty()) {
       return resultCodeAlarmRegister1;
     }
     final AccessResultCode resultCodeAlarmRegister2 = optionalResultCodeAlarm2.get();
@@ -96,10 +107,11 @@ public class ClearAlarmRegisterCommandExecutor
   private Optional<AccessResultCode> clearAlarmRegister(
       final DlmsConnectionManager conn, final DlmsDevice device, final DlmsObjectType objectType)
       throws ProtocolAdapterException {
+    log.debug("clearAlarmRegister {}", objectType);
     final Optional<AttributeAddress> optAlarmRegisterAttributeAddress =
-        this.dlmsObjectConfigService.findAttributeAddress(device, objectType, null);
+        this.findAttributeAddress(device, objectType, ALARM_REGISTER_ATTRIBUTE_ID);
 
-    if (!optAlarmRegisterAttributeAddress.isPresent()) {
+    if (optAlarmRegisterAttributeAddress.isEmpty()) {
       return Optional.empty();
     } else {
       final AccessResultCode resultCodeAlarmRegister =
@@ -111,6 +123,24 @@ public class ClearAlarmRegisterCommandExecutor
         throw new ProtocolAdapterException(
             "Error occurred for clear alarm register: ." + objectType.name());
       }
+    }
+  }
+
+  private Optional<CosemObject> getObject(final DlmsDevice device, final DlmsObjectType objectType)
+      throws ProtocolAdapterException {
+    try {
+      return Optional.ofNullable(
+          this.objectConfigService.getCosemObject(
+              device.getProtocolName(),
+              device.getProtocolVersion(),
+              org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.valueOf(
+                  objectType.name())));
+    } catch (final ObjectConfigException e) {
+      final String message =
+          String.format(
+              "Cannot read CosemObject for protocol %s, version %s and DlsmObjectType %s",
+              device.getProtocolName(), device.getProtocolVersion(), objectType.name());
+      throw new ProtocolAdapterException(message, e);
     }
   }
 
@@ -135,5 +165,24 @@ public class ClearAlarmRegisterCommandExecutor
     } catch (final IOException e) {
       throw new ConnectionException(e);
     }
+  }
+
+  public Optional<AttributeAddress> findAttributeAddress(
+      final DlmsDevice device, final DlmsObjectType type, final int attributeId)
+      throws ProtocolAdapterException {
+
+    final Optional<CosemObject> optObject = this.getObject(device, type);
+    if (optObject.isEmpty()) {
+      return Optional.empty();
+    }
+
+    final CosemObject cosemObject = optObject.get();
+    final int classId = cosemObject.getClassId();
+    final ObisCode obisCode = new ObisCode(cosemObject.getObis());
+
+    final Optional<Attribute> attributeOpt =
+        Optional.ofNullable(cosemObject.getAttribute(attributeId));
+
+    return attributeOpt.map(value -> new AttributeAddress(classId, obisCode, value.getId()));
   }
 }
