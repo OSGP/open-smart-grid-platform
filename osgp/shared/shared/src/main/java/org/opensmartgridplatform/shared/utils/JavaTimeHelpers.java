@@ -1,9 +1,12 @@
 package org.opensmartgridplatform.shared.utils;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.Temporal;
 import java.util.Date;
@@ -39,5 +42,19 @@ public class JavaTimeHelpers {
   public static ZonedDateTime shiftZoneToUTC(final ZonedDateTime dateTime) {
     final int offset = dateTime.getZone().getRules().getOffset(Instant.now()).getTotalSeconds();
     return dateTime.plusSeconds(offset).withZoneSameInstant(ZoneId.of("UTC"));
+  }
+
+  public static ZonedDateTime parseToZonedDateTime(final String date) {
+    ZonedDateTime zonedDateTime;
+    try {
+      zonedDateTime = ZonedDateTime.parse(date);
+    } catch (final DateTimeParseException firstAttempt) {
+      try {
+        zonedDateTime = LocalDateTime.parse(date).atZone(ZoneId.systemDefault());
+      } catch (final DateTimeParseException secondAttempt) {
+        zonedDateTime = LocalDate.parse(date).atStartOfDay().atZone(ZoneId.systemDefault());
+      }
+    }
+    return zonedDateTime;
   }
 }

@@ -13,6 +13,7 @@ import java.util.Map;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 
 public class ReadSettingsHelper {
   /**
@@ -74,8 +75,7 @@ public class ReadSettingsHelper {
     if (!settings.containsKey(key) || StringUtils.isBlank(settings.get(key))) {
       return defaultDate;
     }
-
-    return ZonedDateTime.parse(settings.get(key));
+    return JavaTimeHelpers.parseToZonedDateTime(settings.get(key));
   }
 
   /**
