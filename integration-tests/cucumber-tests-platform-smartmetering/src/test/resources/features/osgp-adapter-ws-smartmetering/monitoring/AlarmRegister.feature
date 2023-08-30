@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringMonitoring @SMHE-1690
+@SmartMetering @Platform @SmartMeteringMonitoring
 Feature: SmartMetering Monitoring - Alarm Register
   As a grid operator
   I want to be able to read and clear the alarm register on a device
@@ -24,7 +24,7 @@ Feature: SmartMetering Monitoring - Alarm Register
     Then the alarm register should be returned
       | DeviceIdentification | TEST1024000000001 |
 
-  Scenario Outline: Clear only alarm register 1 for these protocols
+  Scenario Outline: Clear only alarm register 1 for protocol <protocol> <version>
     Given a dlms device
       | DeviceIdentification     | TEST1028000000002 |
       | DeviceType               | SMART_METER_E     |
