@@ -15,6 +15,7 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.ScheduledTaskSteps;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class FindScheduledTasksSteps {
@@ -104,7 +106,9 @@ public class FindScheduledTasksSteps {
   private static final boolean isEqual(final XMLGregorianCalendar actual, final String expected) {
     final ZonedDateTime expectedDateTime =
         DateTimeHelper.shiftSystemZoneToUtc(DateTimeHelper.getDateTime(expected));
-    final ZonedDateTime actualDateTime = actual.toGregorianCalendar().toZonedDateTime();
+    final ZonedDateTime actualDateTime =
+        JavaTimeHelpers.gregorianCalendarToZonedDateTime(
+            actual.toGregorianCalendar(), ZoneId.of("UTC"));
     return actualDateTime.isEqual(expectedDateTime);
   }
 }

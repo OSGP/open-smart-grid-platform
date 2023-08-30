@@ -39,6 +39,7 @@ import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponse
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.publiclighting.PublicLightingScheduleManagementClient;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -192,14 +193,16 @@ public class SetLightScheduleSteps {
           DatatypeFactory.newInstance()
               .newXMLGregorianCalendar(
                   GregorianCalendar.from(
-                      ZonedDateTime.parse(startDay).withZoneSameInstant(ZoneId.of("UTC")))));
+                      JavaTimeHelpers.parseToZonedDateTime(startDay)
+                          .withZoneSameInstant(ZoneId.of("UTC")))));
     }
     if (StringUtils.isNotBlank(endDay)) {
       schedule.setEndDay(
           DatatypeFactory.newInstance()
               .newXMLGregorianCalendar(
                   GregorianCalendar.from(
-                      ZonedDateTime.parse(endDay).withZoneSameInstant(ZoneId.of("UTC")))));
+                      JavaTimeHelpers.parseToZonedDateTime(endDay)
+                          .withZoneSameInstant(ZoneId.of("UTC")))));
     }
     schedule.setActionTime(actionTime);
     schedule.setTime(time);
