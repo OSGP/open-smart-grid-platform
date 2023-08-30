@@ -4,11 +4,13 @@
 
 package org.opensmartgridplatform.adapter.ws.shared.services;
 
+import java.time.Duration;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 import org.apache.commons.lang3.EnumUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Duration;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
@@ -69,7 +71,8 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
         notificationsResent > -1;
         notificationsResent--) {
       final long delay = resendDelays[notificationsResent];
-      final DateTime createdBefore = DateTime.now(DateTimeZone.UTC).minus(delay);
+      final ZonedDateTime createdBefore =
+          ZonedDateTime.now(ZoneId.of("UTC")).minus(delay, ChronoUnit.MILLIS);
       /*
        * Dealing with the response data for each number of resent
        * notifications separately, allows for specification of the
@@ -90,7 +93,8 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
     }
   }
 
-  private void resendNotifications(final short notificationsResent, final DateTime createdBefore) {
+  private void resendNotifications(
+      final short notificationsResent, final ZonedDateTime createdBefore) {
 
     List<ResponseData> responseDataForNotifying =
         this.getResponseDataForNotifying(notificationsResent, createdBefore);
@@ -178,8 +182,7 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
   }
 
   private long calculateDelay(final int earlierResentNotifications) {
-    final long standardDelayInMillis =
-        Duration.standardMinutes(this.resendThresholdInMinutes).getMillis();
+    final long standardDelayInMillis = Duration.ofMinutes(this.resendThresholdInMinutes).toMillis();
     final long factor =
         (long) Math.pow(this.resendNotificationMultiplier, earlierResentNotifications);
     final long delay = standardDelayInMillis * factor;
@@ -240,11 +243,11 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
    * equal to {@code notificationsResent} and a creation time before {@code createdBefore}.
    */
   private List<ResponseData> getResponseDataForNotifying(
-      final short notificationsResent, final DateTime createdBefore) {
+      final short notificationsResent, final ZonedDateTime createdBefore) {
     final Pageable pageable =
         PageRequest.of(0, this.resendPageSize, Sort.by(Direction.ASC, "creationTime"));
 
     return this.responseDataRepository.findByNumberOfNotificationsSentAndCreationTimeBefore(
-        notificationsResent, createdBefore.toDate(), pageable);
+        notificationsResent, Date.from(createdBefore.toInstant()), pageable);
   }
 }

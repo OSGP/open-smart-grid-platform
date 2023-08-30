@@ -35,6 +35,8 @@ public class SmartMeteringDevice implements Serializable {
 
   private String supplier;
 
+  private boolean lls1Active;
+
   private boolean hls3Active;
 
   private boolean hls4Active;

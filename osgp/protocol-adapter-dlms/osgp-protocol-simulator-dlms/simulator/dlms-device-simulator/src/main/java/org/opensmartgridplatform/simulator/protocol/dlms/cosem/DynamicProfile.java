@@ -4,6 +4,11 @@
 
 package org.opensmartgridplatform.simulator.protocol.dlms.cosem;
 
+import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.CDMA_DIAGNOSTIC_BER;
+import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.CDMA_DIAGNOSTIC_SIGNAL_QUALITY;
+import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.GPRS_DIAGNOSTIC_BER;
+import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile.GPRS_DIAGNOSTIC_SIGNAL_QUALITY;
+
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -16,12 +21,10 @@ import org.openmuc.jdlms.IllegalAttributeAccessException;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic.CellInfo;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CaptureObjectDefinition;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CaptureObjectDefinitionCollection;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CosemDateTimeProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.DataProcessor;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.GsmDiagnosticCellInfoProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.Integer32DataProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger16DataProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger32DataProcessor;
@@ -36,8 +39,6 @@ public abstract class DynamicProfile extends ProfileGeneric {
   private static final int MAX_PROFILE_ENTRIES = 960;
 
   protected static final DataProcessor COSEM_DATE_TIME_PROCESSOR = new CosemDateTimeProcessor();
-  protected static final DataProcessor GSM_DIAGNOSTIC_CELL_INFO_PROCESSOR =
-      new GsmDiagnosticCellInfoProcessor();
   protected static final DataProcessor UNSIGNED_PROCESSOR = new UInteger8DataProcessor();
   protected static final DataProcessor LONG_UNSIGNED_PROCESSOR = new UInteger16DataProcessor();
   protected static final DataProcessor DOUBLE_LONG_PROCESSOR = new Integer32DataProcessor();
@@ -108,20 +109,25 @@ public abstract class DynamicProfile extends ProfileGeneric {
     final DataProcessor processor = this.dataProcessorByCaptureObject.get(captureObject);
     if (processor instanceof CosemDateTimeProcessor) {
       profileEntryList.add(profileEntryTime);
-    } else if (processor instanceof GsmDiagnosticCellInfoProcessor) {
-      /*
-       * Signal quality: 0-31 or 99
-       * ber: 0-7 or 99
-       */
-      final CellInfo cellInfo =
-          new CellInfo(1L, 1, (short) random.nextInt(31), (short) random.nextInt(7), 1, 1, 1);
-      profileEntryList.add(cellInfo);
     } else if (processor instanceof UInteger8DataProcessor) {
       /*
        * Random value in the range of valid unsigned values [0 ..
        * 0xFF]
        */
-      profileEntryList.add((short) random.nextInt(0xFF + 1));
+      int maxValue = 0xFF + 1;
+      if (captureObject.equals(GPRS_DIAGNOSTIC_BER) || captureObject.equals(CDMA_DIAGNOSTIC_BER)) {
+        /*
+         * ber: 0-7 or 99
+         */
+        maxValue = 7;
+      } else if (captureObject.equals(GPRS_DIAGNOSTIC_SIGNAL_QUALITY)
+          || captureObject.equals(CDMA_DIAGNOSTIC_SIGNAL_QUALITY)) {
+        /*
+         * Signal quality: 0-31 or 99
+         */
+        maxValue = 31;
+      }
+      profileEntryList.add((short) random.nextInt(maxValue));
     } else if (processor instanceof UInteger16DataProcessor) {
       /*
        * Random value in the range of valid long-unsigned values [0 ..

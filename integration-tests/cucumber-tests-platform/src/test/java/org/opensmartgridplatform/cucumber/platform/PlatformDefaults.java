@@ -136,6 +136,7 @@ public class PlatformDefaults {
   public static final String DLMS_DEFAULT_COMMUNICATION_METHOD = "GPRS";
   public static final String DLMS_DEFAULT_DEVICE_TYPE = "SMART_METER_E";
 
+  public static final Boolean DLMS_DEFAULT_LLS1_ACTIVE = false;
   public static final Boolean DLMS_DEFAULT_HSL3_ACTIVE = false;
   public static final Boolean DLMS_DEFAULT_HSL4_ACTIVE = false;
   public static final Boolean DLMS_DEFAULT_HSL5_ACTIVE = true;

@@ -19,6 +19,7 @@ import static org.opensmartgridplatform.cucumber.platform.smartmetering.Platform
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_FIRMWARE_UPDATE_KEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.LLS1_ACTIVE;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_FIRMWARE_UPDATE_AUTHENTICATION_KEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_P0_KEY;
@@ -241,6 +242,12 @@ public class DlmsDeviceSteps {
     assertThat(device.getTimezone())
         .as(PlatformKeys.DLMS_DEVICE_TIMEZONE)
         .isEqualTo(dlmsDeviceAttributes.get(DLMS_DEVICE_TIMEZONE));
+
+    if (dlmsDeviceAttributes.containsKey(LLS1_ACTIVE)) {
+      assertThat(device.isLls1Active())
+          .as(LLS1_ACTIVE)
+          .isEqualTo(Boolean.valueOf(dlmsDeviceAttributes.get(LLS1_ACTIVE)));
+    }
   }
 
   @Then("^the smart meter is registered in the core database$")
@@ -702,8 +709,7 @@ public class DlmsDeviceSteps {
     final String deviceType =
         inputSettings.getOrDefault(PlatformSmartmeteringKeys.DEVICE_TYPE, SMART_METER_E);
     final List<SecretBuilder> secretBuilders = new ArrayList<>();
-    if (inputSettings.containsKey(PlatformSmartmeteringKeys.LLS1_ACTIVE)
-        && "true".equals(inputSettings.get(PlatformSmartmeteringKeys.LLS1_ACTIVE))) {
+    if (inputSettings.containsKey(LLS1_ACTIVE) && "true".equals(inputSettings.get(LLS1_ACTIVE))) {
       secretBuilders.add(
           this.getAppropriateSecretBuilder(PlatformSmartmeteringKeys.PASSWORD, inputSettings));
       secretBuilders.add(this.getAppropriateSecretBuilder(KEY_DEVICE_ENCRYPTIONKEY, inputSettings));

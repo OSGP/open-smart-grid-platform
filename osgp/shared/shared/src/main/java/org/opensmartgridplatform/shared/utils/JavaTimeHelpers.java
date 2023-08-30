@@ -18,8 +18,20 @@ public class JavaTimeHelpers {
     return formatter.format(date.toInstant().atZone(ZoneId.systemDefault()));
   }
 
+  public static String formatDate(final Temporal date, final DateTimeFormatter formatter) {
+    return formatter.format(date);
+  }
+
   public static ZonedDateTime gregorianCalendarToZonedDateTime(
       final GregorianCalendar gregorianCalendar, final ZoneId zoneId) {
     return ZonedDateTime.ofInstant(gregorianCalendar.toInstant(), zoneId);
+  }
+
+  public static int getOffsetForZonedDateTimeInMillis(final ZonedDateTime dateTime) {
+    return dateTime.getOffset().getTotalSeconds() * 1000;
+  }
+
+  public static boolean isDayLightSavingsActive(final ZonedDateTime dateTime) {
+    return dateTime.getZone().getRules().isDaylightSavings(dateTime.toInstant());
   }
 }
