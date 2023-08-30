@@ -179,8 +179,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void failureRegister1AndResultAlarmRegister2()
-      throws ProtocolAdapterException, IOException, ObjectConfigException {
+  void failureRegister1AndResultAlarmRegister2() throws ProtocolAdapterException, IOException {
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
         .thenReturn(AccessResultCode.OTHER_REASON)
         .thenReturn(AccessResultCode.SUCCESS);
@@ -269,8 +268,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void successRegister1AndResultAlarmRegister3()
-      throws ProtocolAdapterException, IOException, ObjectConfigException {
+  void successRegister1AndResultAlarmRegister3() throws ProtocolAdapterException, IOException {
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
         .thenReturn(AccessResultCode.SUCCESS)
         .thenReturn(AccessResultCode.SUCCESS)
@@ -306,8 +304,7 @@ class ClearAlarmRegisterCommandExecutorTest {
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
   }
 
-  void setupAlarmRegister2(final DlmsDevice dlmsDevice)
-      throws ObjectConfigException, ProtocolAdapterException {
+  void setupAlarmRegister2(final DlmsDevice dlmsDevice) throws ProtocolAdapterException {
 
     this.mockAlarmCosemObject(
         dlmsDevice, OBIS_CODE_ALARM_REGISTER_1, DlmsObjectType.ALARM_REGISTER_1.name());
@@ -330,8 +327,9 @@ class ClearAlarmRegisterCommandExecutorTest {
         .thenReturn(ClearAlarmRegisterCommandExecutor.ALARM_REGISTER_ATTRIBUTE_ID);
     when(attributeAddress.getInstanceId()).thenReturn(newObisCode);
 
-    when(this.objectConfigServiceHelper.findAttributeAddress(
-            dlmsDevice,
+    when(this.objectConfigServiceHelper.findOptionalAttributeAddress(
+            dlmsDevice.getProtocolName(),
+            dlmsDevice.getProtocolVersion(),
             DlmsObjectType.valueOf(dlmsObjectTypeName),
             ClearAlarmRegisterCommandExecutor.ALARM_REGISTER_ATTRIBUTE_ID))
         .thenReturn(Optional.of(attributeAddress));
@@ -358,7 +356,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   void assertForOneRegister(final String protocol, final String protocolVersion)
-      throws ProtocolAdapterException, IOException, ObjectConfigException {
+      throws ProtocolAdapterException, IOException {
     final DlmsDevice dlmsDevice = new DlmsDevice(protocol + " " + protocolVersion + " device");
     dlmsDevice.setProtocol(protocol, protocolVersion);
 
