@@ -16,7 +16,7 @@ import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.springframework.stereotype.Component;
 
 @Component
-/**
+/*
  * Is an intermediate class to get acces from the dlms-protocol-adapter to the ObjectConfigService.
  * It contains helper functions to lookup CosemObjects and Attributes.
  */
@@ -24,11 +24,13 @@ public class ObjectConfigServiceHelper {
 
   private final ObjectConfigService objectConfigService;
 
+  @SuppressWarnings("java:S1144")
+  /* Suppress warning java:S1144 because it's injected with spring autowired. */
   private ObjectConfigServiceHelper(final ObjectConfigService objectConfigService) {
     this.objectConfigService = objectConfigService;
   }
 
-  /**
+  /*
    * Find an Attribute from the ObjectConfigService based on the protocol and protocolVersion and a
    * DlmsObjectType name. When not found the Optional.empty is returned.
    *
