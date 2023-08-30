@@ -48,16 +48,7 @@ class JavaTimeHelpersTest {
     final ZonedDateTime javaApi =
         JavaTimeHelpers.gregorianCalendarToZonedDateTime(gregorianCalendar, ZoneId.of("UTC"));
 
-    assertThat(javaApi.getYear()).isEqualTo(joda.getYear());
-    assertThat(javaApi.getMonthValue()).isEqualTo(joda.getMonthOfYear());
-    assertThat(javaApi.getDayOfMonth()).isEqualTo(joda.getDayOfMonth());
-    assertThat(javaApi.getHour()).isEqualTo(joda.getHourOfDay());
-    assertThat(javaApi.getMinute()).isEqualTo(joda.getMinuteOfHour());
-    assertThat(javaApi.getSecond()).isEqualTo(joda.getSecondOfMinute());
-    assertThat(JavaTimeHelpers.getMillisFrom(javaApi)).isEqualTo(joda.getMillisOfSecond());
-    // Checks if the timezone offset in seconds is the same for joda and java api
-    assertThat(javaApi.getZone().getRules().getOffset(Instant.now()).getTotalSeconds())
-        .isEqualTo(joda.getZone().getOffset(new DateTime().getMillis()) / MILLIS_TO_SECONDS);
+    this.validateJodaDateToJavaDate(javaApi, joda);
   }
 
   @Test
