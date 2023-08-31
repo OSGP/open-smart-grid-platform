@@ -5,7 +5,9 @@
 package org.opensmartgridplatform.adapter.ws.tariffswitching.infra.jms;
 
 import java.io.Serializable;
-import org.joda.time.DateTime;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
@@ -16,7 +18,7 @@ public class TariffSwitchingRequestMessage extends RequestMessage {
   private static final long serialVersionUID = -5747625524754499878L;
 
   private final MessageType messageType;
-  private final DateTime scheduleTime;
+  private final ZonedDateTime scheduleTime;
   private final Integer messagePriority;
 
   private TariffSwitchingRequestMessage(
@@ -34,7 +36,9 @@ public class TariffSwitchingRequestMessage extends RequestMessage {
     if (messageMetadata.getScheduleTime() == null) {
       this.scheduleTime = null;
     } else {
-      this.scheduleTime = new DateTime(messageMetadata.getScheduleTime());
+      this.scheduleTime =
+          ZonedDateTime.ofInstant(
+              Instant.ofEpochMilli(messageMetadata.getScheduleTime()), ZoneId.systemDefault());
     }
   }
 
@@ -42,7 +46,7 @@ public class TariffSwitchingRequestMessage extends RequestMessage {
     return this.messageType;
   }
 
-  public DateTime getScheduleTime() {
+  public ZonedDateTime getScheduleTime() {
     return this.scheduleTime;
   }
 

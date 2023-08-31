@@ -4,15 +4,15 @@
 
 package org.opensmartgridplatform.dlms.objectcondig;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.AssertionsForInterfaceTypes;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
+import org.opensmartgridplatform.dlms.services.Protocol;
 import org.springframework.core.io.ClassPathResource;
 
 @Slf4j
@@ -33,7 +33,8 @@ class DlmsProfileTest {
             new ClassPathResource("/dlmsprofiles/dlmsprofile-smr500.json").getFile(),
             DlmsProfile.class);
 
-    assertNotNull(dlmsProfile);
-    assertThat(dlmsProfile.getObjects()).hasSize(49);
+    Assertions.assertNotNull(dlmsProfile);
+    AssertionsForInterfaceTypes.assertThat(dlmsProfile.getObjects())
+        .hasSize(Protocol.SMR_5_0_0.getNrOfCosemObjects());
   }
 }

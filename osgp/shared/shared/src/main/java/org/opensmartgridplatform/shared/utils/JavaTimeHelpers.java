@@ -18,6 +18,10 @@ public class JavaTimeHelpers {
     return formatter.format(date.toInstant().atZone(ZoneId.systemDefault()));
   }
 
+  public static String formatDate(final Temporal date, final DateTimeFormatter formatter) {
+    return formatter.format(date);
+  }
+
   public static ZonedDateTime gregorianCalendarToZonedDateTime(
       final GregorianCalendar gregorianCalendar, final ZoneId zoneId) {
     return ZonedDateTime.ofInstant(gregorianCalendar.toInstant(), zoneId);
