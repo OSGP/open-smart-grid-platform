@@ -79,33 +79,33 @@ public class FindScheduledTasksSteps {
     }
   }
 
-  private static final Predicate<
+  private static Predicate<
           org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask>
       hasOrganizationIdentification(final String organizationIdentification) {
     return task -> task.getOrganisationIdentification().equals(organizationIdentification);
   }
 
-  private static final Predicate<
+  private static Predicate<
           org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask>
       hasDeviceIdentification(final String deviceIdentification) {
     return task -> task.getDeviceIdentification().equals(deviceIdentification);
   }
 
-  private static final Predicate<
+  private static Predicate<
           org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask>
       hasMessageType(final String messageType) {
     return task -> task.getMessageType().equals(messageType);
   }
 
-  private static final Predicate<
+  private static Predicate<
           org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask>
       hasScheduledTime(final String scheduledTime) {
     return task -> isEqual(task.getScheduledTime(), scheduledTime);
   }
 
-  private static final boolean isEqual(final XMLGregorianCalendar actual, final String expected) {
+  private static boolean isEqual(final XMLGregorianCalendar actual, final String expected) {
     final ZonedDateTime expectedDateTime =
-        DateTimeHelper.shiftSystemZoneToUtc(DateTimeHelper.getDateTime(expected));
+        DateTimeHelper.getDateTime(expected).withZoneSameInstant(ZoneId.of("UTC"));
     final ZonedDateTime actualDateTime =
         JavaTimeHelpers.gregorianCalendarToZonedDateTime(
             actual.toGregorianCalendar(), ZoneId.of("UTC"));
