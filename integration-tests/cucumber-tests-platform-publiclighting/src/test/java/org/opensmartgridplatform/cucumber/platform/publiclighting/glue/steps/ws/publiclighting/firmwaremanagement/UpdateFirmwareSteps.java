@@ -72,8 +72,7 @@ public class UpdateFirmwareSteps {
       final GregorianCalendar c = new GregorianCalendar();
       c.setTime(
           Date.from(
-              Objects.requireNonNull(
-                      getDateTime(getString(requestParameters, PlatformCommonKeys.SCHEDULED_TIME)))
+              getDateTime(getString(requestParameters, PlatformCommonKeys.SCHEDULED_TIME))
                   .toInstant()));
       final XMLGregorianCalendar scheduledTime =
           DatatypeFactory.newInstance().newXMLGregorianCalendar(c);

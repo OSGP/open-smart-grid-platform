@@ -92,7 +92,7 @@ public class EventCleanupJobTest {
     final Event event =
         new Event(
             "test",
-            Date.from(ZonedDateTime.now().minusMonths(1).toInstant()),
+            ZonedDateTime.now().minusMonths(1).toInstant(),
             EventType.DIAG_EVENTS_GENERAL,
             "description",
             1);

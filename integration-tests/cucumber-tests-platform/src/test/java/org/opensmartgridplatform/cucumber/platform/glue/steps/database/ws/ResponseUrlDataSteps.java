@@ -9,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseUrlData;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
@@ -42,8 +41,7 @@ public abstract class ResponseUrlDataSteps {
       fld.set(
           responseUrlData,
           Date.from(
-              Objects.requireNonNull(
-                      DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)))
+              DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME))
                   .toInstant()));
       this.responseUrlDataRepository.saveAndFlush(responseUrlData);
     }

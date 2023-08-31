@@ -131,11 +131,12 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
       if (currentRelayStatus == null) {
         this.relayStatusRepository.save(
             new RelayStatus.Builder(ssld, index)
-                .withLastSwitchingEventState(lastSwitchingEventState, lastSwitchingEventTime)
+                .withLastSwitchingEventState(
+                    lastSwitchingEventState, lastSwitchingEventTime.toInstant())
                 .build());
       } else {
         currentRelayStatus.updateLastSwitchingEventState(
-            lastSwitchingEventState, lastSwitchingEventTime);
+            lastSwitchingEventState, lastSwitchingEventTime.toInstant());
         this.relayStatusRepository.save(currentRelayStatus);
       }
     }

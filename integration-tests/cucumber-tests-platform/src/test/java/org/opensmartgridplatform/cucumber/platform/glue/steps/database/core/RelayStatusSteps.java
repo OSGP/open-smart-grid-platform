@@ -9,9 +9,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.Map;
+import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.core.factories.RelayStatusFactory;
 import org.opensmartgridplatform.domain.core.entities.RelayStatus;
@@ -58,8 +59,8 @@ public class RelayStatusSteps extends BaseDeviceSteps {
 
           // Check if the last known state time is at most 3 minutes in the
           // past
-          final Date startDate = Date.from(ZonedDateTime.now().minusMinutes(3).toInstant());
-          assertThat(actual.getLastKnownStateTime().after(startDate)).isTrue();
+          final Instant startDate = ZonedDateTime.now().minusMinutes(3).toInstant();
+          assertThat(actual.getLastKnownStateTime().isAfter(startDate)).isTrue();
           assertThat(actual.isLastKnownState()).isEqualTo(expected.isLastKnownState());
         });
   }
@@ -69,8 +70,9 @@ public class RelayStatusSteps extends BaseDeviceSteps {
     if (expected != null && expected.getLastSwitchingEventTime() != null) {
       assertThat(actual).isNotNull();
 
-      final Timestamp timestamp = new Timestamp(expected.getLastSwitchingEventTime().getTime());
-      assertThat(actual.getLastSwitchingEventTime()).isEqualTo(timestamp);
+      final Timestamp timestamp =
+          new Timestamp(expected.getLastSwitchingEventTime().toEpochMilli());
+      assertThat(actual.getLastSwitchingEventTime()).isEqualTo(timestamp.toInstant());
       assertThat(actual.isLastSwitchingEventState())
           .isEqualTo(expected.isLastSwitchingEventState());
     }
@@ -80,8 +82,8 @@ public class RelayStatusSteps extends BaseDeviceSteps {
     if (expected != null && expected.getLastKnownStateTime() != null) {
       assertThat(actual).isNotNull();
 
-      final Timestamp timestamp = new Timestamp(expected.getLastKnownStateTime().getTime());
-      assertThat(actual.getLastKnownStateTime()).isEqualTo(timestamp);
+      final Timestamp timestamp = new Timestamp(expected.getLastKnownStateTime().toEpochMilli());
+      assertThat(actual.getLastKnownStateTime()).isEqualTo(timestamp.toInstant());
       assertThat(actual.isLastKnownState()).isEqualTo(expected.isLastKnownState());
     }
   }

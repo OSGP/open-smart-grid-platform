@@ -5,6 +5,8 @@
 package org.opensmartgridplatform.adapter.domain.core.application.tasks;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -116,7 +118,8 @@ public class EventCleanupJob implements Job {
 
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
+    public static final DateTimeFormatter FORMATTER =
+        DateTimeFormatter.ofPattern(DATE_TIME_FORMAT).withZone(ZoneId.systemDefault());
 
     private static final int ID = 0;
     private static final int CREATION_TIME = 1;
@@ -163,8 +166,8 @@ public class EventCleanupJob implements Job {
 
       final String[] array = new String[9];
       array[ID] = String.valueOf(event.getId());
-      array[CREATION_TIME] = formatDate(event.getCreationTime());
-      array[MODIFICATION_TIME] = formatDate(event.getModificationTime());
+      array[CREATION_TIME] = formatDate(event.getCreationTime().toInstant());
+      array[MODIFICATION_TIME] = formatDate(event.getModificationTime().toInstant());
       array[VERSION] = String.valueOf(event.getVersion());
       array[DEVICE_IDENTIFICATION] = event.getDeviceIdentification();
       array[DATE_TIME] = formatDate(event.getDateTime());
@@ -175,7 +178,7 @@ public class EventCleanupJob implements Job {
       return array;
     }
 
-    private static String formatDate(final Date date) {
+    private static String formatDate(final Instant date) {
       return JavaTimeHelpers.formatDate(date, FORMATTER);
     }
   }

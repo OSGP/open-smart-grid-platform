@@ -4,13 +4,12 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpDeviceSettingsService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.PendingSetScheduleRequestService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
@@ -93,13 +92,13 @@ public class DeviceManagementService {
         timestamp);
 
     // Convert timestamp to DateTime.
-    final DateTime dateTime;
+    final ZonedDateTime dateTime;
     if (StringUtils.isEmpty(timestamp)) {
-      dateTime = DateTime.now();
+      dateTime = ZonedDateTime.now();
       LOGGER.info("timestamp is empty, using DateTime.now(): {}", dateTime);
     } else {
-      final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("yyyyMMddHHmmss Z");
-      dateTime = dateTimeFormatter.withOffsetParsed().parseDateTime(timestamp.concat(" +0000"));
+      final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss Z");
+      dateTime = ZonedDateTime.parse(timestamp.concat(" +0000"), dateTimeFormatter);
       LOGGER.info("parsed timestamp from string: {} to DateTime: {}", timestamp, dateTime);
     }
 
@@ -130,8 +129,8 @@ public class DeviceManagementService {
       // Hack for faulty firmware version. RTC_NOT_SET event can contain
       // illegal timestamp value of 20000000xxxxxx.
       if (!StringUtils.isEmpty(timestamp) && timestamp.startsWith("20000000")) {
-        final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("yyyyMMddHHmmss");
-        timestamp = DateTime.now().withZone(DateTimeZone.UTC).toString(dateTimeFormatter);
+        final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        timestamp = dateTimeFormatter.format(ZonedDateTime.now(ZoneId.of("UTC")));
         LOGGER.info("Using DateTime.now() instead of '20000000xxxxxx', value is: {}", timestamp);
       }
       final EventNotificationDto dto =

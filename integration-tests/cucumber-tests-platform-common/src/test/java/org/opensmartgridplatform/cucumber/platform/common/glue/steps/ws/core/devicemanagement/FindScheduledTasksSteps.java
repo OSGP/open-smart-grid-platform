@@ -105,7 +105,7 @@ public class FindScheduledTasksSteps {
 
   private static final boolean isEqual(final XMLGregorianCalendar actual, final String expected) {
     final ZonedDateTime expectedDateTime =
-        DateTimeHelper.shiftSystemZoneToUtc(DateTimeHelper.getDateTime(expected));
+        JavaTimeHelpers.shiftZoneToUTC(DateTimeHelper.getDateTime(expected));
     final ZonedDateTime actualDateTime =
         JavaTimeHelpers.gregorianCalendarToZonedDateTime(
             actual.toGregorianCalendar(), ZoneId.of("UTC"));

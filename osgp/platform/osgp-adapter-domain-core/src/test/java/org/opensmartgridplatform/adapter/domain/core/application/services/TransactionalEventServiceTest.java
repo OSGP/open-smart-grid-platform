@@ -7,6 +7,7 @@ package org.opensmartgridplatform.adapter.domain.core.application.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -72,7 +73,7 @@ public class TransactionalEventServiceTest {
   }
 
   private Slice<Event> mockSliceOfEvents(final int numberOfEvents) {
-    final Date oneMonthAgo = Date.from(ZonedDateTime.now().minusMonths(1).toInstant());
+    final Instant oneMonthAgo = ZonedDateTime.now().minusMonths(1).toInstant();
 
     final List<Event> events = new ArrayList<>();
     for (int i = 0; i < numberOfEvents; i++) {

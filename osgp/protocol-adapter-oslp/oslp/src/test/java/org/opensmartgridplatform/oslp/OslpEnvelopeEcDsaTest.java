@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,8 @@ public class OslpEnvelopeEcDsaTest {
   private static final String SIGNATURE = "SHA256withECDSA";
   private static final String PROVIDER = "SunEC";
 
-  private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+  private static final DateTimeFormatter FORMAT =
+      DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneId.of("UTC"));
 
   /**
    * Valid must pass when decryption succeeds using correct keys
