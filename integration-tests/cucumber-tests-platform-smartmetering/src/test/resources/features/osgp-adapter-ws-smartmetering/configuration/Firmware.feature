@@ -294,7 +294,7 @@ Feature: SmartMetering Configuration - Firmware
     And the database should not be updated with the new device firmware
       | DeviceIdentification        | GTEST102400000002 |
 
-  @NightlyBuildOnly @UpdateFirmware @ResetFirmwareCacheRepository
+  @NightlyBuildOnly @UpdateFirmware @ResetFirmwareCacheRepository @ResumeOnBlocks
   Scenario: successful update of firmware - resumed on block 3
     Given a manufacturer
       | ManufacturerCode | KAI   |
@@ -310,7 +310,7 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareHash         | 951948459d2b7b59883cfc75c2bc2b7e4a0232ae7973a0d99526afd9458b0c86 |
     And a firmware
       | FirmwareFileIdentification  | TEST_FW_FILE_0001                        |
-      | FirmwareFile                | 534d523500230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4ffbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d5fa821c678e71c05c47e1c69c4bfffe1fd |
+      | FirmwareFile                | 0000000000230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4ffbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d5fa821c678e71c05c47e1c69c4bfffe1fd |
       | FirmwareModuleVersionComm   | Telit 10.00.154                          |
       | FirmwareModuleVersionMa     | BL_012 XMX_N42_GprsV09                   |
       | FirmwareModuleVersionFunc   | M57 4836                                 |
@@ -339,5 +339,3 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionComm   |                   |
       | FirmwareModuleVersionMa     |                   |
       | FirmwareModuleVersionFunc   |                   |
-
-
