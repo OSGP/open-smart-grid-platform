@@ -6,7 +6,6 @@ package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.hooks;
 
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
-import io.cucumber.spring.CucumberContextConfiguration;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.database.Database;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.database.OslpDatabase;
@@ -15,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /** Class with all the scenario hooks when each scenario runs. */
-@CucumberContextConfiguration
 public class ScenarioHooks {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ScenarioHooks.class);
