@@ -87,7 +87,7 @@ public class UpdateFirmwareCommandExecutor
 
     // Calculate the hash of the FW file
     final String calculatedHash =
-        this.calculateHash(firmwareFile.getFirmwareImageByteArray(), this.SHA256);
+        this.calculateHash(firmwareFile.getFirmwareImageByteArray(), SHA256);
 
     // Resume on the last not transferred block if
     // a hash of a previously uploaded FW file is stored with this device
