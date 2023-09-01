@@ -415,6 +415,9 @@ public class DefaultDeviceProfile {
   @Value("${firmware.imagetransfer.blocksize}")
   private int imageTransferBlockSize;
 
+  @Value("${firmware.imagetransfer.imagesize:100}")
+  private long expectedImageSize;
+
   @Value("${firmware.imagetransfer.failureChance}")
   private double imageTransferFailureChance;
 
@@ -914,7 +917,10 @@ public class DefaultDeviceProfile {
                 ImageTransferStatusType.IMAGE_TRANSFER_NOT_INITIATED.value()));
 
     return new ImageTransfer(
-        "0.0.44.0.0.255", this.activationStatusChangeDelay, this.imageTransferFailureChance);
+        "0.0.44.0.0.255",
+        this.activationStatusChangeDelay,
+        this.imageTransferFailureChance,
+        this.expectedImageSize);
   }
 
   @Bean

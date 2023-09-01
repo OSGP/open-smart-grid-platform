@@ -89,6 +89,15 @@ public class ImageTransfer extends CosemInterfaceObject {
 
   private boolean verified = false;
 
+  /*
+  The expected image size is set in the constructor. If the ImageTransfer object is used to upload
+  a firmware file from block 0 the upload procedure will be started by calling the Cosem method
+  IMAGE_TRANSFER_INITIATE. This method will overwrite the expected image size with the appropriate
+  value. In case of the 'resume on blocks' flow through the upload procedure the initiate method is not
+  called. To be able to calculate number of expected blocks the expected image size used the value
+  set by the DefaultDeviceProfile. Image used in tests with the Simulator have to correspond with
+  this size.
+  */
   private long expectedImageSize;
 
   private byte[] identification;
@@ -98,11 +107,13 @@ public class ImageTransfer extends CosemInterfaceObject {
   public ImageTransfer(
       final String logicalName,
       final int activationStatusChangeDelay,
-      final double transferFailureChance) {
+      final double transferFailureChance,
+      final long expectedImageSize) {
     super(logicalName);
 
     this.activationStatusChangeDelay = activationStatusChangeDelay;
     this.transferFailureChance = transferFailureChance;
+    this.expectedImageSize = expectedImageSize;
   }
 
   private void checkImageTransferEnabled() throws IllegalMethodAccessException {
@@ -133,7 +144,7 @@ public class ImageTransfer extends CosemInterfaceObject {
                 DataObject.newUInteger32Data(this.expectedImageSize),
                 DataObject.newOctetStringData(this.identification),
                 DataObject.newOctetStringData(this.signature)));
-    this.imageToActivateInfo = DataObject.newArrayData(Arrays.asList(imageInfo));
+    this.setImageToActivateInfo(DataObject.newArrayData(Arrays.asList(imageInfo)));
   }
 
   private void verify() {
@@ -187,7 +198,7 @@ public class ImageTransfer extends CosemInterfaceObject {
 
     final Long imageBlockSizeValue = this.getImageBlockSize().getValue();
     this.blocksExpected = this.expectedImageSize / imageBlockSizeValue;
-    if ((Long) paramList.get(1).getValue() % imageBlockSizeValue != 0) {
+    if (this.expectedImageSize % imageBlockSizeValue != 0) {
       this.blocksExpected++;
     }
 
@@ -307,11 +318,11 @@ public class ImageTransfer extends CosemInterfaceObject {
         this, ATTRIBUTE_ID_IMAGE_TRANSFER_STATUS, attributeValue);
   }
 
-  public DataObject getImageToActiveInfo() {
+  public DataObject getImageToActivateInfo() {
     return this.dynamicValues.getDlmsAttributeValue(this, ATTRIBUTE_ID_IMAGE_TO_ACTIVATE_INFO);
   }
 
-  public void setImageToActiveInfo(final DataObject attributeValue) {
+  public void setImageToActivateInfo(final DataObject attributeValue) {
     this.dynamicValues.setDlmsAttributeValue(
         this, ATTRIBUTE_ID_IMAGE_TO_ACTIVATE_INFO, attributeValue);
   }
