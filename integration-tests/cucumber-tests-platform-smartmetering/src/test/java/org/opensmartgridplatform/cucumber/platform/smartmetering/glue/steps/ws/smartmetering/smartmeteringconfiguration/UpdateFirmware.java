@@ -38,8 +38,7 @@ public class UpdateFirmware {
 
   @Autowired private SmartMeteringConfigurationClient client;
 
-  @Autowired(required = false)
-  private DeviceFirmwareModuleSteps deviceFirmwareModuleSteps;
+  @Autowired private DeviceFirmwareModuleSteps deviceFirmwareModuleSteps;
 
   @When("^the request for a firmware upgrade is received$")
   public void theRequestForAFirmwareUpgradeIsReceived(final Map<String, String> settings)
