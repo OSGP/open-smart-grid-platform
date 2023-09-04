@@ -107,13 +107,11 @@ public class ImageTransfer extends CosemInterfaceObject {
   public ImageTransfer(
       final String logicalName,
       final int activationStatusChangeDelay,
-      final double transferFailureChance,
-      final long expectedImageSize) {
+      final double transferFailureChance) {
     super(logicalName);
 
     this.activationStatusChangeDelay = activationStatusChangeDelay;
     this.transferFailureChance = transferFailureChance;
-    this.expectedImageSize = expectedImageSize;
   }
 
   private void checkImageTransferEnabled() throws IllegalMethodAccessException {

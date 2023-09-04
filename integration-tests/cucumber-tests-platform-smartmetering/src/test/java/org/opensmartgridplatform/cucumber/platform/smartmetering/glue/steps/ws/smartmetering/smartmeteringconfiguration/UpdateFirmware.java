@@ -41,12 +41,6 @@ public class UpdateFirmware {
   @Autowired(required = false)
   private DeviceFirmwareModuleSteps deviceFirmwareModuleSteps;
 
-  //  @Autowired(required = false)
-  //  private FirmwareFileCachingRepository firmwareFileCachingRepository;
-  //
-  //  @Autowired
-  //  private FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
-
   @When("^the request for a firmware upgrade is received$")
   public void theRequestForAFirmwareUpgradeIsReceived(final Map<String, String> settings)
       throws Throwable {
