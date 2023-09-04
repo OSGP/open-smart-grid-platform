@@ -193,7 +193,7 @@ public class DateTimeHelper {
       dateTime = getDateTime(startDate);
     } catch (final IllegalArgumentException e) {
       LOGGER.debug("The string {} could not be parsed by DateTimeHelper.getDateTime");
-      dateTime = ZonedDateTime.parse(startDate);
+      dateTime = JavaTimeHelpers.parseToZonedDateTime(startDate);
     }
     if (dateTime == null) {
       return defaultStartDate;
