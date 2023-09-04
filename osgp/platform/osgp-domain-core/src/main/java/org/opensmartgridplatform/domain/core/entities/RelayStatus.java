@@ -49,7 +49,8 @@ public class RelayStatus extends AbstractEntity {
     this.lastSwitchingEventState = state;
     this.lastSwitchingEventTime = time;
 
-    if (time != null && (this.lastKnownStateTime == null || this.lastKnownStateTime.isBefore(time))) {
+    if (time != null
+        && (this.lastKnownStateTime == null || this.lastKnownStateTime.isBefore(time))) {
       this.updateLastKnownState(state, time);
     }
   }
@@ -139,7 +140,8 @@ public class RelayStatus extends AbstractEntity {
       return this;
     }
 
-    public Builder withLastKnownState(final boolean lastKnownState, final Instant lastKnownStateTime) {
+    public Builder withLastKnownState(
+        final boolean lastKnownState, final Instant lastKnownStateTime) {
       this.lastKnownState = lastKnownState;
       this.lastKnownStateTime = lastKnownStateTime;
       return this;

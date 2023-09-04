@@ -12,7 +12,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Map;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.core.factories.RelayStatusFactory;
 import org.opensmartgridplatform.domain.core.entities.RelayStatus;

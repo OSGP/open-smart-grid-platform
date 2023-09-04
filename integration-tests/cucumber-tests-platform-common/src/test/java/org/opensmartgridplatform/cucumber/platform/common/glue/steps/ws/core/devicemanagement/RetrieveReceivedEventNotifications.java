@@ -19,7 +19,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindEventsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindEventsResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;

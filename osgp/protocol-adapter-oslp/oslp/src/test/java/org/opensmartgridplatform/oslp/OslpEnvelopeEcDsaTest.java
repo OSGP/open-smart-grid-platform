@@ -59,11 +59,8 @@ public class OslpEnvelopeEcDsaTest {
    */
   @Test
   public void buildOslpMessageSuccess()
-      throws IOException,
-          NoSuchAlgorithmException,
-          InvalidKeySpecException,
-          NoSuchProviderException,
-          Exception {
+      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
+          NoSuchProviderException, Exception {
     final OslpEnvelope request = this.buildMessage();
 
     // Validate security key is set in request
@@ -99,11 +96,8 @@ public class OslpEnvelopeEcDsaTest {
    */
   @Test
   public void buildOslpMessageDecryptFailure()
-      throws IOException,
-          NoSuchAlgorithmException,
-          InvalidKeySpecException,
-          NoSuchProviderException,
-          Exception {
+      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
+          NoSuchProviderException, Exception {
     final OslpEnvelope request = this.buildMessage();
 
     // Verify the message using wrong public certificate
@@ -135,9 +129,7 @@ public class OslpEnvelopeEcDsaTest {
    */
   @Test
   public void buildOslpMessageSignatureFailure()
-      throws IOException,
-          NoSuchAlgorithmException,
-          InvalidKeySpecException,
+      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
           NoSuchProviderException {
     final OslpEnvelope request = this.buildMessage();
 
@@ -176,9 +168,7 @@ public class OslpEnvelopeEcDsaTest {
    */
   @Test
   public void buildOslpMessageSignatureCorrupt()
-      throws IOException,
-          NoSuchAlgorithmException,
-          InvalidKeySpecException,
+      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
           NoSuchProviderException {
     final OslpEnvelope request = this.buildMessage();
 
@@ -222,9 +212,7 @@ public class OslpEnvelopeEcDsaTest {
    */
   @Test()
   public void buildOslpMessageIncorrectSignature()
-      throws IOException,
-          NoSuchAlgorithmException,
-          InvalidKeySpecException,
+      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
           NoSuchProviderException {
     final byte[] deviceId = new byte[] {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     final byte[] sequenceNumber = new byte[] {0, 1};
@@ -257,9 +245,7 @@ public class OslpEnvelopeEcDsaTest {
    */
   @Test()
   public void buildOslpMessageIncorrectProvider()
-      throws IOException,
-          NoSuchAlgorithmException,
-          InvalidKeySpecException,
+      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
           NoSuchProviderException {
     final byte[] deviceId = new byte[] {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     final byte[] sequenceNumber = new byte[] {0, 1};
@@ -283,9 +269,7 @@ public class OslpEnvelopeEcDsaTest {
   }
 
   private OslpEnvelope buildMessage()
-      throws NoSuchAlgorithmException,
-          InvalidKeySpecException,
-          IOException,
+      throws NoSuchAlgorithmException, InvalidKeySpecException, IOException,
           NoSuchProviderException {
     final byte[] deviceId = new byte[] {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     final byte[] sequenceNumber = new byte[] {0, 1};
