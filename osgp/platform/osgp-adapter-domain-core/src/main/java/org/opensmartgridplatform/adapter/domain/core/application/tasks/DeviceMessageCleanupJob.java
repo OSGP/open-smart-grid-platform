@@ -7,6 +7,7 @@ package org.opensmartgridplatform.adapter.domain.core.application.tasks;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.Period;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -123,7 +124,8 @@ public class DeviceMessageCleanupJob implements Job {
 
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
+    public static final DateTimeFormatter FORMATTER =
+        DateTimeFormatter.ofPattern(DATE_TIME_FORMAT).withZone(ZoneId.systemDefault());
 
     private static final int ID = 0;
     private static final int CREATION_TIME = 1;
