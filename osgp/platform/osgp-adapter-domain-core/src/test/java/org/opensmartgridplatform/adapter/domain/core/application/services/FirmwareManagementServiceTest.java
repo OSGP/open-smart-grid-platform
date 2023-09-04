@@ -18,13 +18,14 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -137,10 +138,16 @@ class FirmwareManagementServiceTest {
     when(this.deviceRepository.findByDeviceIdentification(anyString())).thenReturn(device);
     final DeviceFirmwareFile deviceFirmwareFile1 =
         new DeviceFirmwareFile(
-            device, this.createFirmwareFile(VERSION_1), DateUtils.addDays(new Date(), -2), "me");
+            device,
+            this.createFirmwareFile(VERSION_1),
+            Instant.now().minus(2, ChronoUnit.DAYS),
+            "me");
     final DeviceFirmwareFile deviceFirmwareFile2 =
         new DeviceFirmwareFile(
-            device, this.createFirmwareFile(VERSION_2), DateUtils.addDays(new Date(), -1), "me");
+            device,
+            this.createFirmwareFile(VERSION_2),
+            Instant.now().minus(1, ChronoUnit.DAYS),
+            "me");
     final List<DeviceFirmwareFile> deviceFirmwareFiles =
         Arrays.asList(deviceFirmwareFile1, deviceFirmwareFile2);
     when(this.deviceFirmwareFileRepository.findByDeviceOrderByInstallationDateAsc(

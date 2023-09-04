@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.adapter.domain.core.application.tasks;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.Period;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -190,7 +191,7 @@ public class DeviceMessageCleanupJob implements Job {
       return array;
     }
 
-    private static String formatDate(final Date date) {
+    private static String formatDate(final Instant date) {
       return JavaTimeHelpers.formatDate(date, FORMATTER);
     }
   }

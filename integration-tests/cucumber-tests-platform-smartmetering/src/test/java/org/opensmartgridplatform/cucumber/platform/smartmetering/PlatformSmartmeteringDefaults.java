@@ -6,6 +6,7 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,7 +90,7 @@ public class PlatformSmartmeteringDefaults
   public static final boolean SELECTIVE_ACCESS_SUPPORTED = false;
   public static final String SMART_METER_E = "SMART_METER_E";
   public static final String SMART_METER_G = "SMART_METER_G";
-  public static final Date TECHNICAL_INSTALLATION_DATE = new Date();
+  public static final Instant TECHNICAL_INSTALLATION_DATE = Instant.now();
   public static final Date VALID_TO = null;
   public static final Long VERSION = 0L;
   public static final boolean WITH_LIST_SUPPORTED = false;

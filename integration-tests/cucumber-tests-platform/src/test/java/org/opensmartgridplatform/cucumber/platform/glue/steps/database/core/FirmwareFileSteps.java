@@ -15,7 +15,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -214,7 +214,7 @@ public class FirmwareFileSteps {
             getString(
                 settings, PlatformKeys.FIRMWARE_FILE_FILENAME, PlatformDefaults.FIRMWARE_FILENAME));
 
-    final Date installationDate = new Date();
+    final Instant installationDate = Instant.now();
 
     final String installedByUser = "installed by test code";
 
@@ -325,7 +325,7 @@ public class FirmwareFileSteps {
   }
 
   private String getFirmwareFilepath(final String filename) {
-    String path;
+    final String path;
     if (StringUtils.endsWith(this.firmwareFilePath, File.separator)) {
       path = this.firmwareFilePath + filename;
     } else {

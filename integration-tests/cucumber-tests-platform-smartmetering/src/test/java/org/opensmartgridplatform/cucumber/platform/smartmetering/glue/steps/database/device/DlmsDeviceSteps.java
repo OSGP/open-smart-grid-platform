@@ -35,6 +35,8 @@ import static org.opensmartgridplatform.secretmanagement.application.domain.Secr
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -868,7 +870,7 @@ public class DlmsDeviceSteps {
               .withKey(key)
               .withSecretStatus(SecretStatus.ACTIVE)
               .withEncryptionKeyReference(encryptionKeyRef)
-              .withCreationTime(new Date())
+              .withCreationTime(Instant.now())
               .build();
       this.encryptedSecretRepository.save(secret);
     }
@@ -916,7 +918,7 @@ public class DlmsDeviceSteps {
                 .withKey(key)
                 .withSecretStatus(SecretStatus.NEW)
                 .withEncryptionKeyReference(encryptionKeyRef)
-                .withCreationTime(new Date(System.currentTimeMillis() - (minutesAgo * 60000L)))
+                .withCreationTime(Instant.now().minus(minutesAgo * 60000L, ChronoUnit.MILLIS))
                 .build();
         this.encryptedSecretRepository.save(secret);
       }

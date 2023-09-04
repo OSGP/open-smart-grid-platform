@@ -132,7 +132,7 @@ public class Device extends AbstractEntity {
   private DeviceModel deviceModel;
 
   /** Installation time of this entity. */
-  @Column() protected Date technicalInstallationDate;
+  @Column() protected Instant technicalInstallationDate;
 
   /** DeviceLifecycleStatus of this entity */
   @Column(nullable = false)
@@ -383,11 +383,11 @@ public class Device extends AbstractEntity {
     this.gatewayDevice = gatewayDevice;
   }
 
-  public Date getTechnicalInstallationDate() {
+  public Instant getTechnicalInstallationDate() {
     return this.technicalInstallationDate;
   }
 
-  public void setTechnicalInstallationDate(final Date technicalInstallationDate) {
+  public void setTechnicalInstallationDate(final Instant technicalInstallationDate) {
     this.technicalInstallationDate = technicalInstallationDate;
   }
 

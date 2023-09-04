@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.secretmanagement.application.services;
 
+import java.time.Instant;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +38,7 @@ public class EncryptionKeyReferenceCacheService {
   }
 
   public List<DbEncryptionKeyReference> findAllByTypeAndValid(
-      final EncryptionProviderType encryptionProviderType, final Date date) {
+      final EncryptionProviderType encryptionProviderType, final Instant date) {
     this.initCache();
 
     return this.encryptionKeyReferenceCache.get(encryptionProviderType).stream()
@@ -48,10 +48,11 @@ public class EncryptionKeyReferenceCacheService {
         .toList();
   }
 
-  private boolean isValid(final DbEncryptionKeyReference encryptionKeyReference, final Date date) {
-    return !encryptionKeyReference.getValidFrom().after(date)
+  private boolean isValid(
+      final DbEncryptionKeyReference encryptionKeyReference, final Instant date) {
+    return !encryptionKeyReference.getValidFrom().isAfter(date)
         && (encryptionKeyReference.getValidTo() == null
-            || encryptionKeyReference.getValidTo().after(date));
+            || encryptionKeyReference.getValidTo().isAfter(date));
   }
 
   private void initCache() {
