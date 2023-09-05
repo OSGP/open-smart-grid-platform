@@ -16,6 +16,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -101,10 +102,7 @@ public class ClearAlarmRegisterCommandExecutor
     log.debug("clearAlarmRegister {}", objectType);
     final Optional<AttributeAddress> optAlarmRegisterAttributeAddress =
         this.objectConfigServiceHelper.findOptionalAttributeAddress(
-            device.getProtocolName(),
-            device.getProtocolVersion(),
-            objectType,
-            ALARM_REGISTER_ATTRIBUTE_ID);
+            Protocol.forDevice(device), objectType, ALARM_REGISTER_ATTRIBUTE_ID);
 
     if (optAlarmRegisterAttributeAddress.isEmpty()) {
       return Optional.empty();
