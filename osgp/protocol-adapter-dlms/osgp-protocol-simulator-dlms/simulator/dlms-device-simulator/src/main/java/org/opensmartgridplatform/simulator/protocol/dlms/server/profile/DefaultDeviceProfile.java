@@ -74,7 +74,6 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DoubleLongUnsigne
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ErrorObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.FraudDetectionLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ImageTransfer;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ImageTransferStatusType;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.LoadProfileWithPeriod1;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.LoadProfileWithPeriod2;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.LongUnsignedData;
@@ -877,44 +876,10 @@ public class DefaultDeviceProfile {
 
   @Bean
   public ImageTransfer imageTransfer() {
-
-    final Integer classId = ImageTransfer.IMAGE_TRANSFER_CLASS_ID;
-    final ObisCode obisCode = new ObisCode(0, 0, 44, 0, 0, 255);
-
-    this.dynamicValues()
-        .setDefaultAttributeValue(
-            classId,
-            obisCode,
-            ImageTransfer.ATTRIBUTE_ID_IMAGE_BLOCK_SIZE,
-            DataObject.newUInteger32Data(this.imageTransferBlockSize));
-    this.dynamicValues()
-        .setDefaultAttributeValue(
-            classId,
-            obisCode,
-            ImageTransfer.ATTRIBUTE_ID_IMAGE_TRANSFERRED_BLOCK_STATUS,
-            DataObject.newNullData());
-    this.dynamicValues()
-        .setDefaultAttributeValue(
-            classId,
-            obisCode,
-            ImageTransfer.ATTRIBUTE_ID_IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER,
-            DataObject.newUInteger32Data(0));
-    this.dynamicValues()
-        .setDefaultAttributeValue(
-            classId,
-            obisCode,
-            ImageTransfer.ATTRIBUTE_ID_IMAGE_TRANSFER_ENABLED,
-            DataObject.newBoolData(false));
-    this.dynamicValues()
-        .setDefaultAttributeValue(
-            classId,
-            obisCode,
-            ImageTransfer.ATTRIBUTE_ID_IMAGE_TRANSFER_STATUS,
-            DataObject.newEnumerateData(
-                ImageTransferStatusType.IMAGE_TRANSFER_NOT_INITIATED.value()));
-
     return new ImageTransfer(
-        "0.0.44.0.0.255", this.activationStatusChangeDelay, this.imageTransferFailureChance);
+        this.imageTransferBlockSize,
+        this.activationStatusChangeDelay,
+        this.imageTransferFailureChance);
   }
 
   @Bean
