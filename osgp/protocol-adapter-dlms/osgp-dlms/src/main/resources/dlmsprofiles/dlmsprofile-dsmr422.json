@@ -7,11 +7,15 @@
     {
       "tag": "CLOCK",
       "description": "Clock",
+      "note": null,
       "class-id": 8,
       "version": 0,
       "obis": "0.0.1.0.0.255",
       "group": "ABSTRACT",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "attributes": [
         {
           "id": 2,
@@ -42,11 +46,15 @@
     {
       "tag": "DEFINABLE_LOAD_PROFILE",
       "description": "Definable load profile",
+      "note": null,
       "class-id": 7,
       "version": 1,
       "obis": "0.1.94.31.6.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "SELECTABLE_OBJECTS": [
           "CLOCK",
@@ -138,14 +146,22 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
       "description": "Number of voltage swells in phase L1",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.32.36.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP"
+        ]
       },
       "attributes": [
         {
@@ -161,14 +177,19 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L2",
       "description": "Number of voltage swells in phase L2",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.52.36.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -184,14 +205,19 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L3",
       "description": "Number of voltage swells in phase L3",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.72.36.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -207,14 +233,22 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
       "description": "Number of voltage sags in phase L1",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.32.32.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP"
+        ]
       },
       "attributes": [
         {
@@ -230,14 +264,19 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L2",
       "description": "Number of voltage sags in phase L2",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.52.32.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -253,14 +292,19 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L3",
       "description": "Number of voltage sags in phase L3",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.72.32.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -276,14 +320,21 @@
     {
       "tag": "NUMBER_OF_LONG_POWER_FAILURES",
       "description": "Number of long power failures in any phases",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.7.9.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -299,14 +350,22 @@
     {
       "tag": "NUMBER_OF_POWER_FAILURES",
       "description": "Number of power failures in any phases",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.7.21.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP"
+        ]
       },
       "attributes": [
         {
@@ -322,14 +381,23 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L1",
       "description": "Instantaneous voltage L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.32.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -353,14 +421,20 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L2",
       "description": "Instantaneous voltage L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.52.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -384,14 +458,20 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L3",
       "description": "Instantaneous voltage L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.72.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -415,14 +495,23 @@
     {
       "tag": "AVERAGE_VOLTAGE_L1",
       "description": "Average voltage L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.32.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -446,14 +535,20 @@
     {
       "tag": "AVERAGE_VOLTAGE_L2",
       "description": "Average voltage L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.52.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -477,14 +572,20 @@
     {
       "tag": "AVERAGE_VOLTAGE_L3",
       "description": "Average voltage L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.72.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -508,14 +609,22 @@
     {
       "tag": "INSTANTANEOUS_CURRENT_L1",
       "description": "Instantaneous current L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.31.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP"
+        ]
       },
       "attributes": [
         {
@@ -539,14 +648,19 @@
     {
       "tag": "INSTANTANEOUS_CURRENT_L2",
       "description": "Instantaneous current L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.51.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -570,14 +684,19 @@
     {
       "tag": "INSTANTANEOUS_CURRENT_L3",
       "description": "Instantaneous current L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.71.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -601,14 +720,22 @@
     {
       "tag": "AVERAGE_CURRENT_L1",
       "description": "Average current L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.31.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP"
+        ]
       },
       "attributes": [
         {
@@ -632,14 +759,19 @@
     {
       "tag": "AVERAGE_CURRENT_L2",
       "description": "Average current L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.51.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -663,14 +795,19 @@
     {
       "tag": "AVERAGE_CURRENT_L3",
       "description": "Average current L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.71.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -694,14 +831,22 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES",
       "description": "Instantaneous current total",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.90.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -725,14 +870,21 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT",
       "description": "Instantaneous active power (+P)",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.1.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -756,14 +908,21 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_EXPORT",
       "description": "Instantaneous active power (-P)",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.2.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -787,14 +946,21 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1",
       "description": "Instantaneous active power L1 (+P)",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.21.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -818,14 +984,19 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2",
       "description": "Instantaneous active power L2 (+P)",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.41.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -849,14 +1020,19 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3",
       "description": "Instantaneous active power L3 (+P)",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.61.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -880,14 +1056,21 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1",
       "description": "Instantaneous active power L1 (-P)",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.22.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -911,14 +1094,19 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2",
       "description": "Instantaneous active power L2 (-P)",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.42.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -942,14 +1130,19 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3",
       "description": "Instantaneous active power L3 (-P)",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.62.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -973,14 +1166,23 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_IMPORT_L1",
       "description": "Average active power (+P) L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.21.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1004,14 +1206,20 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_IMPORT_L2",
       "description": "Average active power (+P) L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.41.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1035,14 +1243,20 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_IMPORT_L3",
       "description": "Average active power (+P) L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.61.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1066,14 +1280,23 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_EXPORT_L1",
       "description": "Average active power (-P) L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.22.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1097,14 +1320,20 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_EXPORT_L2",
       "description": "Average active power (-P) L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.42.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1128,14 +1357,20 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_EXPORT_L3",
       "description": "Average active power (-P) L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.62.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1159,14 +1394,23 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_IMPORT_L1",
       "description": "Average reactive power (+Q) L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.23.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1190,14 +1434,20 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_IMPORT_L2",
       "description": "Average reactive power (+Q) L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.43.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1221,14 +1471,20 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_IMPORT_L3",
       "description": "Average reactive power (+Q) L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.63.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1252,14 +1508,23 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_EXPORT_L1",
       "description": "Average reactive power (-Q) L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.24.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1283,14 +1548,20 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_EXPORT_L2",
       "description": "Average reactive power (-Q) L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.44.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1314,14 +1585,20 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_EXPORT_L3",
       "description": "Average reactive power (-Q) L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.64.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1339,6 +1616,30 @@
           "valuetype": "FIXED_IN_PROFILE",
           "value": "0, VAR",
           "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ALARM_REGISTER_1",
+      "description": "Alarm register 1",
+      "note": null,
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.97.98.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "RW"
         }
       ]
     }
