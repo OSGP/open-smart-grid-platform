@@ -12,7 +12,10 @@
       "version": 0,
       "obis": "0.0.1.0.0.255",
       "group": "ABSTRACT",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "attributes": [
         {
           "id": 2,
@@ -48,7 +51,10 @@
       "version": 1,
       "obis": "0.1.94.31.6.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "SELECTABLE_OBJECTS": [
           "CLOCK",
@@ -133,7 +139,10 @@
       "version": 1,
       "obis": "1.0.99.1.1.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "SELECTABLE_OBJECTS": [
           "CLOCK",
@@ -217,7 +226,10 @@
       "version": 1,
       "obis": "1.0.99.1.2.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "SELECTABLE_OBJECTS": [
           "CLOCK",
@@ -306,10 +318,16 @@
       "version": 0,
       "obis": "1.0.1.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -338,10 +356,16 @@
       "version": 0,
       "obis": "1.0.2.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -370,10 +394,16 @@
       "version": 0,
       "obis": "1.0.21.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -402,10 +432,14 @@
       "version": 0,
       "obis": "1.0.41.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -434,10 +468,14 @@
       "version": 0,
       "obis": "1.0.61.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -466,10 +504,16 @@
       "version": 0,
       "obis": "1.0.22.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -498,10 +542,14 @@
       "version": 0,
       "obis": "1.0.42.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -530,10 +578,14 @@
       "version": 0,
       "obis": "1.0.62.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -562,10 +614,16 @@
       "version": 0,
       "obis": "1.0.90.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -594,10 +652,17 @@
       "version": 0,
       "obis": "1.0.31.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP"
+        ]
       },
       "attributes": [
         {
@@ -626,10 +691,14 @@
       "version": 0,
       "obis": "1.0.51.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -658,10 +727,14 @@
       "version": 0,
       "obis": "1.0.71.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -690,10 +763,17 @@
       "version": 0,
       "obis": "1.0.32.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP"
+        ]
       },
       "attributes": [
         {
@@ -722,10 +802,14 @@
       "version": 0,
       "obis": "1.0.52.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -754,10 +838,14 @@
       "version": 0,
       "obis": "1.0.72.7.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -786,10 +874,18 @@
       "version": 0,
       "obis": "1.0.22.4.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -818,10 +914,15 @@
       "version": 0,
       "obis": "1.0.42.4.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -850,10 +951,15 @@
       "version": 0,
       "obis": "1.0.62.4.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -882,10 +988,18 @@
       "version": 0,
       "obis": "1.0.21.4.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -914,10 +1028,15 @@
       "version": 0,
       "obis": "1.0.41.4.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -946,10 +1065,15 @@
       "version": 0,
       "obis": "1.0.61.4.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -978,10 +1102,18 @@
       "version": 0,
       "obis": "1.0.23.4.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1010,10 +1142,15 @@
       "version": 0,
       "obis": "1.0.43.4.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1042,10 +1179,15 @@
       "version": 0,
       "obis": "1.0.63.4.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1074,10 +1216,18 @@
       "version": 0,
       "obis": "1.0.24.4.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1106,10 +1256,15 @@
       "version": 0,
       "obis": "1.0.44.4.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1138,10 +1293,15 @@
       "version": 0,
       "obis": "1.0.64.4.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1170,10 +1330,18 @@
       "version": 0,
       "obis": "1.0.31.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1202,10 +1370,15 @@
       "version": 0,
       "obis": "1.0.51.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1234,10 +1407,15 @@
       "version": 0,
       "obis": "1.0.71.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PRIVATE",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1266,10 +1444,18 @@
       "version": 0,
       "obis": "1.0.32.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1298,10 +1484,15 @@
       "version": 0,
       "obis": "1.0.52.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1330,10 +1521,15 @@
       "version": 0,
       "obis": "1.0.72.24.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1362,10 +1558,18 @@
       "version": 0,
       "obis": "0.0.96.7.21.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1386,10 +1590,16 @@
       "version": 0,
       "obis": "0.0.96.7.9.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP"
+        ]
       },
       "attributes": [
         {
@@ -1410,10 +1620,18 @@
       "version": 0,
       "obis": "1.0.32.32.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1434,10 +1652,15 @@
       "version": 0,
       "obis": "1.0.52.32.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1458,10 +1681,15 @@
       "version": 0,
       "obis": "1.0.72.32.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1482,10 +1710,18 @@
       "version": 0,
       "obis": "1.0.32.36.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_SP","ACTUAL_PP","PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_SP",
+          "ACTUAL_PP",
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1506,10 +1742,15 @@
       "version": 0,
       "obis": "1.0.52.36.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1530,10 +1771,15 @@
       "version": 0,
       "obis": "1.0.72.36.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["PP"],
+      "meterTypes": [
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["ACTUAL_PP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "ACTUAL_PP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1554,10 +1800,16 @@
       "version": 0,
       "obis": "0.1.25.6.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1626,10 +1878,16 @@
       "version": 0,
       "obis": "0.0.25.6.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1698,10 +1956,16 @@
       "version": 1,
       "obis": "0.x.24.1.0.255",
       "group": "GAS",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1818,10 +2082,16 @@
       "version": 0,
       "obis": "0.x.24.9.0.255",
       "group": "GAS",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": ["PERIODIC_SP","PERIODIC_PP"]
+        "PQ_REQUEST": [
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -1898,7 +2168,10 @@
       "version": 0,
       "obis": "0.0.97.98.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {},
       "attributes": [
         {
@@ -1908,6 +2181,54 @@
           "valuetype": "DYNAMIC",
           "value": "0",
           "access": "RW"
+        }
+      ]
+    },
+    {
+      "tag": "READ_MBUS_STATUS",
+      "description": "Read MBus Status",
+      "note": null,
+      "class-id": 4,
+      "version": 0,
+      "obis": "0.x.24.2.6.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "0, undefined",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "status",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "capture_time",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "value": "EMPTY",
+          "access": "R"
         }
       ]
     }

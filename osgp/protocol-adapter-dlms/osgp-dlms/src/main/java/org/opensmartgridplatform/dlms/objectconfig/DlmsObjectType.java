@@ -58,7 +58,9 @@ public enum DlmsObjectType {
   PUSH_SETUP_UDP,
   ALARM_REGISTER_1,
   ALARM_REGISTER_2,
-  ALARM_REGISTER_3;
+  ALARM_REGISTER_3,
+  READ_MBUS_STATUS,
+  CLEAR_MBUS_STATUS;
 
   public String value() {
     return this.name();
