@@ -7,14 +7,12 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -91,7 +89,7 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
 
   @Test
   void testExecuteObjectNotFound() throws ProtocolAdapterException {
-    when(this.objectConfigServiceHelper.findOptionalAttributeAddress(any(), any(), anyInt(), any()))
+    when(this.objectConfigServiceHelper.findAttributeAddress(any(), any(), any(), any()))
         .thenThrow(new ProtocolAdapterException("Object not found"));
 
     final DlmsDevice dlmsDevice = new DlmsDevice();
@@ -112,33 +110,29 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
     final Protocol protocol = Protocol.forDevice(dlmsDevice_5_1);
 
     for (int channel = 1; channel <= 4; channel++) {
-      when(this.objectConfigServiceHelper.findOptionalAttributeAddress(
-              protocol, DlmsObjectType.READ_MBUS_STATUS, 4, channel))
+      when(this.objectConfigServiceHelper.findAttributeAddress(
+              dlmsDevice_5_1, protocol, DlmsObjectType.READ_MBUS_STATUS, channel))
           .thenReturn(
-              Optional.of(
-                  new AttributeAddress(
-                      InterfaceClass.EXTENDED_REGISTER.id(),
-                      OBIS_CODE_TEMPLATE_READ_STATUS.replaceAll("x", Integer.toString(channel)),
-                      ExtendedRegisterAttribute.VALUE.attributeId())));
+              new AttributeAddress(
+                  InterfaceClass.EXTENDED_REGISTER.id(),
+                  OBIS_CODE_TEMPLATE_READ_STATUS.replaceAll("x", Integer.toString(channel)),
+                  ExtendedRegisterAttribute.VALUE.attributeId()));
 
-      when(this.objectConfigServiceHelper.findOptionalAttributeAddress(
-              protocol, DlmsObjectType.CLEAR_MBUS_STATUS, 2, channel))
+      when(this.objectConfigServiceHelper.findAttributeAddress(
+              dlmsDevice_5_1, protocol, DlmsObjectType.CLEAR_MBUS_STATUS, channel))
           .thenReturn(
-              Optional.of(
-                  new AttributeAddress(
-                      InterfaceClass.DATA.id(),
-                      OBIS_CODE_TEMPLATE_CLEAR_STATUS.replaceAll("x", Integer.toString(channel)),
-                      DataAttribute.VALUE.attributeId())));
+              new AttributeAddress(
+                  InterfaceClass.DATA.id(),
+                  OBIS_CODE_TEMPLATE_CLEAR_STATUS.replaceAll("x", Integer.toString(channel)),
+                  DataAttribute.VALUE.attributeId()));
 
-      when(this.objectConfigServiceHelper.findOptionalAttributeAddress(
-              protocol, DlmsObjectType.CLIENT_SETUP_MBUS, 11, channel))
+      when(this.objectConfigServiceHelper.findAttributeAddress(
+              dlmsDevice_5_1, protocol, DlmsObjectType.MBUS_CLIENT_SETUP, channel))
           .thenReturn(
-              Optional.of(
-                  new AttributeAddress(
-                      InterfaceClass.MBUS_CLIENT.id(),
-                      OBIS_CODE_TEMPLATE_MBUS_CLIENT_SETUP.replaceAll(
-                          "x", Integer.toString(channel)),
-                      DataAttribute.VALUE.attributeId())));
+              new AttributeAddress(
+                  InterfaceClass.MBUS_CLIENT.id(),
+                  OBIS_CODE_TEMPLATE_MBUS_CLIENT_SETUP.replaceAll("x", Integer.toString(channel)),
+                  DataAttribute.VALUE.attributeId()));
     }
 
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
@@ -161,33 +155,29 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
     final Protocol protocol = Protocol.forDevice(dlmsDevice_5_1);
 
     for (int channel = 1; channel <= 4; channel++) {
-      when(this.objectConfigServiceHelper.findOptionalAttributeAddress(
-              protocol, DlmsObjectType.READ_MBUS_STATUS, 4, channel))
+      when(this.objectConfigServiceHelper.findAttributeAddress(
+              dlmsDevice_5_1, protocol, DlmsObjectType.READ_MBUS_STATUS, channel))
           .thenReturn(
-              Optional.of(
-                  new AttributeAddress(
-                      InterfaceClass.EXTENDED_REGISTER.id(),
-                      OBIS_CODE_TEMPLATE_READ_STATUS.replaceAll("x", Integer.toString(channel)),
-                      ExtendedRegisterAttribute.VALUE.attributeId())));
+              new AttributeAddress(
+                  InterfaceClass.EXTENDED_REGISTER.id(),
+                  OBIS_CODE_TEMPLATE_READ_STATUS.replaceAll("x", Integer.toString(channel)),
+                  ExtendedRegisterAttribute.VALUE.attributeId()));
 
-      when(this.objectConfigServiceHelper.findOptionalAttributeAddress(
-              protocol, DlmsObjectType.CLEAR_MBUS_STATUS, 2, channel))
+      when(this.objectConfigServiceHelper.findAttributeAddress(
+              dlmsDevice_5_1, protocol, DlmsObjectType.CLEAR_MBUS_STATUS, channel))
           .thenReturn(
-              Optional.of(
-                  new AttributeAddress(
-                      InterfaceClass.DATA.id(),
-                      OBIS_CODE_TEMPLATE_CLEAR_STATUS.replaceAll("x", Integer.toString(channel)),
-                      DataAttribute.VALUE.attributeId())));
+              new AttributeAddress(
+                  InterfaceClass.DATA.id(),
+                  OBIS_CODE_TEMPLATE_CLEAR_STATUS.replaceAll("x", Integer.toString(channel)),
+                  DataAttribute.VALUE.attributeId()));
 
-      when(this.objectConfigServiceHelper.findOptionalAttributeAddress(
-              protocol, DlmsObjectType.CLIENT_SETUP_MBUS, 11, channel))
+      when(this.objectConfigServiceHelper.findAttributeAddress(
+              dlmsDevice_5_1, protocol, DlmsObjectType.MBUS_CLIENT_SETUP, channel))
           .thenReturn(
-              Optional.of(
-                  new AttributeAddress(
-                      InterfaceClass.MBUS_CLIENT.id(),
-                      OBIS_CODE_TEMPLATE_MBUS_CLIENT_SETUP.replaceAll(
-                          "x", Integer.toString(channel)),
-                      DataAttribute.VALUE.attributeId())));
+              new AttributeAddress(
+                  InterfaceClass.MBUS_CLIENT.id(),
+                  OBIS_CODE_TEMPLATE_MBUS_CLIENT_SETUP.replaceAll("x", Integer.toString(channel)),
+                  DataAttribute.VALUE.attributeId()));
     }
 
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);

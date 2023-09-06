@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
@@ -23,6 +24,8 @@ import org.springframework.stereotype.Component;
  */
 public class ObjectConfigServiceHelper {
 
+  private static final int DEFAULT_ATTRIBUTE_ID = 2;
+
   private final ObjectConfigService objectConfigService;
 
   @SuppressWarnings("java:S1144")
@@ -37,15 +40,14 @@ public class ObjectConfigServiceHelper {
    *
    * @param protocol protocol like DSMR or SMR 5.5
    * @param dlmsObjectType the DlmsObjectType to find
-   * @param attributeId the attributeId to find
    * @return Optional<AttributeAddress> when found it returns a newly created AttributeAddress or
    *     else Optional.empty()
    */
   public Optional<AttributeAddress> findOptionalAttributeAddress(
-      final Protocol protocol, final DlmsObjectType dlmsObjectType, final int attributeId)
+      final Protocol protocol, final DlmsObjectType dlmsObjectType)
       throws ProtocolAdapterException {
 
-    return this.findOptionalAttributeAddress(protocol, dlmsObjectType, attributeId, null);
+    return this.findOptionalAttributeAddress(protocol, dlmsObjectType, null);
   }
 
   /**
@@ -54,16 +56,12 @@ public class ObjectConfigServiceHelper {
    *
    * @param protocol protocol like SMR 5.5
    * @param dlmsObjectType the DlmsObjectType to find
-   * @param attributeId the attributeId to find
    * @param channel the channel of the device
    * @return Optional<AttributeAddress> when found it returns a newly created AttributeAddress or
    *     else Optional.empty()
    */
   public Optional<AttributeAddress> findOptionalAttributeAddress(
-      final Protocol protocol,
-      final DlmsObjectType dlmsObjectType,
-      final int attributeId,
-      final Integer channel)
+      final Protocol protocol, final DlmsObjectType dlmsObjectType, final Integer channel)
       throws ProtocolAdapterException {
 
     final Optional<CosemObject> optObject =
@@ -77,7 +75,7 @@ public class ObjectConfigServiceHelper {
     final ObisCode obisCode = this.replaceChannel(cosemObject.getObis(), channel);
 
     final Optional<Attribute> attributeOpt =
-        Optional.ofNullable(cosemObject.getAttribute(attributeId));
+        Optional.ofNullable(cosemObject.getAttribute(DEFAULT_ATTRIBUTE_ID));
 
     return attributeOpt.map(value -> new AttributeAddress(classId, obisCode, value.getId()));
   }
@@ -98,28 +96,29 @@ public class ObjectConfigServiceHelper {
    * Find an Attribute from the ObjectConfigService based on the protocol and protocolVersion and a
    * DlmsObjectType name. When not found a ProtocolAdapterException is thrown.
    *
+   * @param dlmsDevice The device to find the object for
    * @param protocol protocol like SMR 5.5
    * @param dlmsObjectType the DlmsObjectType to find
-   * @param attributeId the attributeId to find
    * @param channel the channel of the device
    * @return AttributeAddress when found it returns a newly created AttributeAddress or else a
    *     ProtocolAdapterException is thrown
    */
   public AttributeAddress findAttributeAddress(
+      final DlmsDevice dlmsDevice,
       final Protocol protocol,
       final DlmsObjectType dlmsObjectType,
-      final int attributeId,
       final Integer channel)
       throws ProtocolAdapterException {
 
     final Optional<AttributeAddress> attributeAddressOpt =
-        this.findOptionalAttributeAddress(protocol, dlmsObjectType, attributeId, channel);
+        this.findOptionalAttributeAddress(protocol, dlmsObjectType, channel);
 
     return attributeAddressOpt.orElseThrow(
         () -> {
           final String message =
               String.format(
-                  "Cannot find AttributeAddress for %s for type %s", protocol, dlmsObjectType);
+                  "Did not find %s object for device %s for channel %s",
+                  dlmsObjectType, dlmsDevice.getDeviceId(), channel);
           return new ProtocolAdapterException(message);
         });
   }
