@@ -4,11 +4,12 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
@@ -94,12 +95,16 @@ public class GetPeriodicMeterReadsCommandExecutor
     }
 
     final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
-    final DateTime from =
-        DlmsDateTimeConverter.toDateTime(
-            periodicMeterReadsQuery.getBeginDate(), device.getTimezone());
-    final DateTime to =
-        DlmsDateTimeConverter.toDateTime(
-            periodicMeterReadsQuery.getEndDate(), device.getTimezone());
+    final ZonedDateTime from =
+        DlmsDateTimeConverter.toZonedDateTime(
+            ZonedDateTime.ofInstant(
+                periodicMeterReadsQuery.getBeginDate().toInstant(), ZoneId.systemDefault()),
+            device.getTimezone());
+    final ZonedDateTime to =
+        DlmsDateTimeConverter.toZonedDateTime(
+            ZonedDateTime.ofInstant(
+                periodicMeterReadsQuery.getEndDate().toInstant(), ZoneId.systemDefault()),
+            device.getTimezone());
 
     final AttributeAddressForProfile profileBufferAddress =
         this.getProfileBufferAddress(queryPeriodType, from, to, device);
@@ -169,7 +174,10 @@ public class GetPeriodicMeterReadsCommandExecutor
         periodicMeterReads.stream()
             .filter(
                 meterRead ->
-                    this.validateDateTime(meterRead.getLogTime(), from.toDate(), to.toDate()))
+                    this.validateDateTime(
+                        meterRead.getLogTime(),
+                        Date.from(from.toInstant()),
+                        Date.from(to.toInstant())))
             .toList();
 
     return new PeriodicMeterReadsResponseDto(
@@ -338,8 +346,8 @@ public class GetPeriodicMeterReadsCommandExecutor
 
   private AttributeAddressForProfile getProfileBufferAddress(
       final PeriodTypeDto periodType,
-      final DateTime beginDateTime,
-      final DateTime endDateTime,
+      final ZonedDateTime beginDateTime,
+      final ZonedDateTime endDateTime,
       final DlmsDevice device)
       throws ProtocolAdapterException {
 

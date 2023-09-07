@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -16,7 +17,7 @@ public class ActionDtoBuilder {
 
   public FindEventsRequestDto makeFindEventsQueryDto() {
     return new FindEventsRequestDto(
-        EventLogCategoryDto.STANDARD_EVENT_LOG, new DateTime(), new DateTime());
+        EventLogCategoryDto.STANDARD_EVENT_LOG, ZonedDateTime.now(), ZonedDateTime.now());
   }
 
   public ActualMeterReadsDataDto makeActualMeterReadsDataDtoAction() {

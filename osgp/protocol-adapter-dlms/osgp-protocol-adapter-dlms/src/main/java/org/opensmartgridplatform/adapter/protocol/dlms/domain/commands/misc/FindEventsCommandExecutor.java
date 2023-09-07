@@ -4,14 +4,14 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter.toDateTime;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter.toZonedDateTime;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -157,7 +157,7 @@ public class FindEventsCommandExecutor
   }
 
   private SelectiveAccessDescription getSelectiveAccessDescription(
-      final DlmsDevice device, final DateTime beginDateTime, final DateTime endDateTime)
+      final DlmsDevice device, final ZonedDateTime beginDateTime, final ZonedDateTime endDateTime)
       throws ProtocolAdapterException {
 
     /*
@@ -167,8 +167,9 @@ public class FindEventsCommandExecutor
      * retrieved.
      */
 
-    final DateTime convertedBeginDateTime = toDateTime(beginDateTime, device.getTimezone());
-    final DateTime convertedEndDateTime = toDateTime(endDateTime, device.getTimezone());
+    final ZonedDateTime convertedBeginDateTime =
+        toZonedDateTime(beginDateTime, device.getTimezone());
+    final ZonedDateTime convertedEndDateTime = toZonedDateTime(endDateTime, device.getTimezone());
 
     final DlmsObject clockObject =
         this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.CLOCK);
