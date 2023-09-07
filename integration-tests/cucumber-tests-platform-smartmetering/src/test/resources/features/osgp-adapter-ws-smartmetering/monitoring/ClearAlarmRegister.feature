@@ -43,7 +43,7 @@ Feature: SmartMetering Monitoring - Alarm Register
     And alarm register "2" of device "TEST1028000000002" has not been cleared
     Examples:
     | protocol | version |
-    | DSMR     | 2.2     |
+#    | DSMR     | 2.2     | TODO enable simulator for DSMR 2.2
     | DSMR     | 4.2.2   |
     | SMR      | 4.3     |
     | SMR      | 5.0.0   |
