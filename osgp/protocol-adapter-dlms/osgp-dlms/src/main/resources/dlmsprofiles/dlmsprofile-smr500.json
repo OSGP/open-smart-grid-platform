@@ -1918,7 +1918,7 @@
       "class-id": 4,
       "version": 0,
       "obis": "0.x.24.2.6.255",
-      "group": "ELECTRICITY",
+      "group": "MBUS",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [

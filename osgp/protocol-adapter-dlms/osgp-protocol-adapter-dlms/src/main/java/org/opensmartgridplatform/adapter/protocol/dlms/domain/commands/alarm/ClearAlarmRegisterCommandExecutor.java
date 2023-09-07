@@ -34,7 +34,6 @@ public class ClearAlarmRegisterCommandExecutor
   final ObjectConfigServiceHelper objectConfigServiceHelper;
 
   private static final int ALARM_CODE = 0;
-  static final int ALARM_REGISTER_ATTRIBUTE_ID = 2;
 
   public ClearAlarmRegisterCommandExecutor(
       final ObjectConfigServiceHelper objectConfigServiceHelper) {
@@ -102,7 +101,7 @@ public class ClearAlarmRegisterCommandExecutor
     log.debug("clearAlarmRegister {}", objectType);
     final Optional<AttributeAddress> optAlarmRegisterAttributeAddress =
         this.objectConfigServiceHelper.findOptionalAttributeAddress(
-            Protocol.forDevice(device), objectType, ALARM_REGISTER_ATTRIBUTE_ID);
+            Protocol.forDevice(device), objectType);
 
     if (optAlarmRegisterAttributeAddress.isEmpty()) {
       return Optional.empty();
