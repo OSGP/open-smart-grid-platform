@@ -100,7 +100,7 @@ public class ClearAlarmRegisterCommandExecutor
       throws ProtocolAdapterException {
     log.debug("clearAlarmRegister {}", objectType);
     final Optional<AttributeAddress> optAlarmRegisterAttributeAddress =
-        this.objectConfigServiceHelper.findOptionalAttributeAddress(
+        this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
             Protocol.forDevice(device), objectType);
 
     if (optAlarmRegisterAttributeAddress.isEmpty()) {

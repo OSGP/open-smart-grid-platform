@@ -89,7 +89,7 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
 
   @Test
   void testExecuteObjectNotFound() throws ProtocolAdapterException {
-    when(this.objectConfigServiceHelper.findAttributeAddress(any(), any(), any(), any()))
+    when(this.objectConfigServiceHelper.findDefaultAttributeAddress(any(), any(), any(), any()))
         .thenThrow(new ProtocolAdapterException("Object not found"));
 
     final DlmsDevice dlmsDevice = new DlmsDevice();
@@ -97,10 +97,9 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
 
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
-            () -> {
-              this.executor.execute(
-                  this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
-            });
+            () ->
+                this.executor.execute(
+                    this.connectionManager, dlmsDevice, this.dto, this.messageMetadata));
   }
 
   @Test
@@ -110,7 +109,7 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
     final Protocol protocol = Protocol.forDevice(dlmsDevice_5_1);
 
     for (int channel = 1; channel <= 4; channel++) {
-      when(this.objectConfigServiceHelper.findAttributeAddress(
+      when(this.objectConfigServiceHelper.findDefaultAttributeAddress(
               dlmsDevice_5_1, protocol, DlmsObjectType.READ_MBUS_STATUS, channel))
           .thenReturn(
               new AttributeAddress(
@@ -118,7 +117,7 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
                   OBIS_CODE_TEMPLATE_READ_STATUS.replaceAll("x", Integer.toString(channel)),
                   ExtendedRegisterAttribute.VALUE.attributeId()));
 
-      when(this.objectConfigServiceHelper.findAttributeAddress(
+      when(this.objectConfigServiceHelper.findDefaultAttributeAddress(
               dlmsDevice_5_1, protocol, DlmsObjectType.CLEAR_MBUS_STATUS, channel))
           .thenReturn(
               new AttributeAddress(
@@ -126,7 +125,7 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
                   OBIS_CODE_TEMPLATE_CLEAR_STATUS.replaceAll("x", Integer.toString(channel)),
                   DataAttribute.VALUE.attributeId()));
 
-      when(this.objectConfigServiceHelper.findAttributeAddress(
+      when(this.objectConfigServiceHelper.findDefaultAttributeAddress(
               dlmsDevice_5_1, protocol, DlmsObjectType.MBUS_CLIENT_SETUP, channel))
           .thenReturn(
               new AttributeAddress(
@@ -155,7 +154,7 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
     final Protocol protocol = Protocol.forDevice(dlmsDevice_5_1);
 
     for (int channel = 1; channel <= 4; channel++) {
-      when(this.objectConfigServiceHelper.findAttributeAddress(
+      when(this.objectConfigServiceHelper.findDefaultAttributeAddress(
               dlmsDevice_5_1, protocol, DlmsObjectType.READ_MBUS_STATUS, channel))
           .thenReturn(
               new AttributeAddress(
@@ -163,7 +162,7 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
                   OBIS_CODE_TEMPLATE_READ_STATUS.replaceAll("x", Integer.toString(channel)),
                   ExtendedRegisterAttribute.VALUE.attributeId()));
 
-      when(this.objectConfigServiceHelper.findAttributeAddress(
+      when(this.objectConfigServiceHelper.findDefaultAttributeAddress(
               dlmsDevice_5_1, protocol, DlmsObjectType.CLEAR_MBUS_STATUS, channel))
           .thenReturn(
               new AttributeAddress(
@@ -171,7 +170,7 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
                   OBIS_CODE_TEMPLATE_CLEAR_STATUS.replaceAll("x", Integer.toString(channel)),
                   DataAttribute.VALUE.attributeId()));
 
-      when(this.objectConfigServiceHelper.findAttributeAddress(
+      when(this.objectConfigServiceHelper.findDefaultAttributeAddress(
               dlmsDevice_5_1, protocol, DlmsObjectType.MBUS_CLIENT_SETUP, channel))
           .thenReturn(
               new AttributeAddress(

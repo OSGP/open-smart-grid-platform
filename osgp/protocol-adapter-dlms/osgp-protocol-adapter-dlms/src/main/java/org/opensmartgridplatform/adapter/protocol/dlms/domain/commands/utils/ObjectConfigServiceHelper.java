@@ -35,33 +35,57 @@ public class ObjectConfigServiceHelper {
   }
 
   /**
-   * Find an Attribute from the ObjectConfigService based on the protocol and protocolVersion and a
-   * DlmsObjectType name. When not found the Optional.empty is returned.
+   * Find an optional attribute from the ObjectConfigService based on the protocol and
+   * protocolVersion, DlmsObjectType name and channel. When not found the Optional empty is
+   * returned.
+   *
+   * @param protocol protocol like DSMR or SMR 5.5
+   * @param dlmsObjectType the DlmsObjectType to find
+   * @param channel the channel of the device to access
+   * @return Optional<AttributeAddress> when found it returns a newly created AttributeAddress or
+   *     else Optional.empty()
+   */
+  public Optional<AttributeAddress> findOptionalDefaultAttributeAddress(
+      final Protocol protocol, final DlmsObjectType dlmsObjectType, final Integer channel)
+      throws ProtocolAdapterException {
+
+    return this.findOptionalAttributeAddress(
+        protocol, dlmsObjectType, channel, DEFAULT_ATTRIBUTE_ID);
+  }
+
+  /**
+   * Find an optional default attribute from the ObjectConfigService based on the protocol and
+   * protocolVersion and a DlmsObjectType name. When not found the Optional empty is returned.
    *
    * @param protocol protocol like DSMR or SMR 5.5
    * @param dlmsObjectType the DlmsObjectType to find
    * @return Optional<AttributeAddress> when found it returns a newly created AttributeAddress or
    *     else Optional.empty()
    */
-  public Optional<AttributeAddress> findOptionalAttributeAddress(
+  public Optional<AttributeAddress> findOptionalDefaultAttributeAddress(
       final Protocol protocol, final DlmsObjectType dlmsObjectType)
       throws ProtocolAdapterException {
 
-    return this.findOptionalAttributeAddress(protocol, dlmsObjectType, null);
+    return this.findOptionalAttributeAddress(protocol, dlmsObjectType, null, DEFAULT_ATTRIBUTE_ID);
   }
 
   /**
-   * Find an Attribute from the ObjectConfigService based on the protocol and protocolVersion and a
-   * DlmsObjectType name. When not found the Optional.empty is returned.
+   * Find an optional attribute from the ObjectConfigService based on the protocol and
+   * protocolVersion , DlmsObjectType name, channel and attributeId. When not found the Optional
+   * empty is returned.
    *
    * @param protocol protocol like SMR 5.5
    * @param dlmsObjectType the DlmsObjectType to find
-   * @param channel the channel of the device
+   * @param channel the channel of the device to access
+   * @param attributeId the attributeId to find
    * @return Optional<AttributeAddress> when found it returns a newly created AttributeAddress or
    *     else Optional.empty()
    */
   public Optional<AttributeAddress> findOptionalAttributeAddress(
-      final Protocol protocol, final DlmsObjectType dlmsObjectType, final Integer channel)
+      final Protocol protocol,
+      final DlmsObjectType dlmsObjectType,
+      final Integer channel,
+      final int attributeId)
       throws ProtocolAdapterException {
 
     final Optional<CosemObject> optObject =
@@ -75,7 +99,7 @@ public class ObjectConfigServiceHelper {
     final ObisCode obisCode = this.replaceChannel(cosemObject.getObis(), channel);
 
     final Optional<Attribute> attributeOpt =
-        Optional.ofNullable(cosemObject.getAttribute(DEFAULT_ATTRIBUTE_ID));
+        Optional.ofNullable(cosemObject.getAttribute(attributeId));
 
     return attributeOpt.map(value -> new AttributeAddress(classId, obisCode, value.getId()));
   }
@@ -93,13 +117,35 @@ public class ObjectConfigServiceHelper {
   }
 
   /**
-   * Find an Attribute from the ObjectConfigService based on the protocol and protocolVersion and a
-   * DlmsObjectType name. When not found a ProtocolAdapterException is thrown.
+   * Find a required default attribute from the ObjectConfigService based on the protocol and
+   * protocolVersion and a DlmsObjectType name. When not found a ProtocolAdapterException is thrown.
    *
    * @param dlmsDevice The device to find the object for
    * @param protocol protocol like SMR 5.5
    * @param dlmsObjectType the DlmsObjectType to find
-   * @param channel the channel of the device
+   * @param channel the channel of the device to access
+   * @return AttributeAddress when found it returns a newly created AttributeAddress or else a
+   *     ProtocolAdapterException is thrown
+   */
+  public AttributeAddress findDefaultAttributeAddress(
+      final DlmsDevice dlmsDevice,
+      final Protocol protocol,
+      final DlmsObjectType dlmsObjectType,
+      final Integer channel)
+      throws ProtocolAdapterException {
+
+    return this.findAttributeAddress(
+        dlmsDevice, protocol, dlmsObjectType, channel, DEFAULT_ATTRIBUTE_ID);
+  }
+  /**
+   * Find a required attribute from the ObjectConfigService based on the protocol and
+   * protocolVersion and a DlmsObjectType name. When not found a ProtocolAdapterException is thrown.
+   *
+   * @param dlmsDevice The device to find the object for
+   * @param protocol protocol like SMR 5.5
+   * @param dlmsObjectType the DlmsObjectType to find
+   * @param channel the channel of the device to access
+   * @param attributeId the attributeId to find
    * @return AttributeAddress when found it returns a newly created AttributeAddress or else a
    *     ProtocolAdapterException is thrown
    */
@@ -107,11 +153,12 @@ public class ObjectConfigServiceHelper {
       final DlmsDevice dlmsDevice,
       final Protocol protocol,
       final DlmsObjectType dlmsObjectType,
-      final Integer channel)
+      final Integer channel,
+      final int attributeId)
       throws ProtocolAdapterException {
 
     final Optional<AttributeAddress> attributeAddressOpt =
-        this.findOptionalAttributeAddress(protocol, dlmsObjectType, channel);
+        this.findOptionalAttributeAddress(protocol, dlmsObjectType, channel, attributeId);
 
     return attributeAddressOpt.orElseThrow(
         () -> {

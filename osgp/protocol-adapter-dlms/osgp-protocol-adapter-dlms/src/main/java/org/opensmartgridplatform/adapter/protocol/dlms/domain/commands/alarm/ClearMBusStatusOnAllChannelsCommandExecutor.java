@@ -92,15 +92,15 @@ public class ClearMBusStatusOnAllChannelsCommandExecutor
     final Protocol protocol = Protocol.forDevice(device);
 
     final AttributeAddress readMBusStatusAttributeAddress =
-        this.config.findAttributeAddress(
+        this.config.findDefaultAttributeAddress(
             device, protocol, DlmsObjectType.READ_MBUS_STATUS, channel);
 
     final AttributeAddress clearMBusStatusAttributeAddress =
-        this.config.findAttributeAddress(
+        this.config.findDefaultAttributeAddress(
             device, protocol, DlmsObjectType.CLEAR_MBUS_STATUS, channel);
 
     final AttributeAddress clientSetupMbus =
-        this.config.findAttributeAddress(
+        this.config.findDefaultAttributeAddress(
             device, protocol, DlmsObjectType.MBUS_CLIENT_SETUP, channel);
 
     final long statusMask = this.readStatus(conn, channel, readMBusStatusAttributeAddress);

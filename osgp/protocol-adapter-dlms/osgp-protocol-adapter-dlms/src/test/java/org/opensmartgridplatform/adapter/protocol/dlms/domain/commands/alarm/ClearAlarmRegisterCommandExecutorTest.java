@@ -317,7 +317,7 @@ class ClearAlarmRegisterCommandExecutorTest {
     when(attributeAddress.getId()).thenReturn(2);
     when(attributeAddress.getInstanceId()).thenReturn(newObisCode);
 
-    when(this.objectConfigServiceHelper.findOptionalAttributeAddress(
+    when(this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
             Protocol.forDevice(dlmsDevice), DlmsObjectType.valueOf(dlmsObjectTypeName)))
         .thenReturn(Optional.of(attributeAddress));
   }
