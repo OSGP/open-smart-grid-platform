@@ -314,14 +314,11 @@ class ClearAlarmRegisterCommandExecutorTest {
 
     final AttributeAddress attributeAddress = Mockito.mock(AttributeAddress.class);
     when(attributeAddress.getClassId()).thenReturn(1);
-    when(attributeAddress.getId())
-        .thenReturn(ClearAlarmRegisterCommandExecutor.ALARM_REGISTER_ATTRIBUTE_ID);
+    when(attributeAddress.getId()).thenReturn(2);
     when(attributeAddress.getInstanceId()).thenReturn(newObisCode);
 
     when(this.objectConfigServiceHelper.findOptionalAttributeAddress(
-            Protocol.forDevice(dlmsDevice),
-            DlmsObjectType.valueOf(dlmsObjectTypeName),
-            ClearAlarmRegisterCommandExecutor.ALARM_REGISTER_ATTRIBUTE_ID))
+            Protocol.forDevice(dlmsDevice), DlmsObjectType.valueOf(dlmsObjectTypeName)))
         .thenReturn(Optional.of(attributeAddress));
   }
 
