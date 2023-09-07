@@ -89,6 +89,9 @@ public class DlmsDevice extends AbstractEntity {
   // session.
   @Column private Long invocationCounter = 0L;
 
+  @Column(length = 64)
+  private String firmwareHash;
+
   public DlmsDevice() {
     // Default constructor
   }
@@ -402,5 +405,13 @@ public class DlmsDevice extends AbstractEntity {
 
   public void setTimezone(final String timezone) {
     this.timezone = timezone;
+  }
+
+  public String getFirmwareHash() {
+    return this.firmwareHash;
+  }
+
+  public void setFirmwareHash(final String firmwareHash) {
+    this.firmwareHash = firmwareHash;
   }
 }

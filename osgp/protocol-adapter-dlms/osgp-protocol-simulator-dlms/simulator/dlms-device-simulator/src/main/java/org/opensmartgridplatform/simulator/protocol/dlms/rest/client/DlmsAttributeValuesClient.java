@@ -87,6 +87,7 @@ public class DlmsAttributeValuesClient {
         "array", json -> DataObject.newArrayData(asDataObjectList(json)));
     JSON_TO_DATA_OBJECT_CONVERTERS.put(
         "structure", json -> DataObject.newStructureData(asDataObjectList(json)));
+    JSON_TO_DATA_OBJECT_CONVERTERS.put("boolean", json -> DataObject.newBoolData(json.asBoolean()));
   }
 
   private final WebClient webClient;
