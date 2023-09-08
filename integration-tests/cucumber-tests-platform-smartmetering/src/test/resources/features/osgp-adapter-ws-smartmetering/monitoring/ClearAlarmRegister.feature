@@ -24,14 +24,15 @@ Feature: SmartMetering Monitoring - Alarm Register
     Then the alarm register should be returned
       | DeviceIdentification | TEST1024000000001 |
 
-  Scenario Outline: Clear only alarm register 1 for protocol <protocol> <version>
+  Scenario Outline: Clear only alarm register 1 for protocol <protocol> <version> DSMR 2.2 excluded
+
     Given a dlms device
       | DeviceIdentification     | TEST1028000000002 |
       | DeviceType               | SMART_METER_E     |
       | SelectiveAccessSupported | true              |
       | Protocol                 | <protocol>        |
       | ProtocolVersion          | <version>         |
-      | Port                     |              1028 |
+      | Port                     | <port>            |
     And device "TEST1028000000002" has alarm register "1" with some value
     And device "TEST1028000000002" has alarm register "2" with some value
     When the Clear Alarm Code request is received
@@ -42,12 +43,11 @@ Feature: SmartMetering Monitoring - Alarm Register
     And alarm register "1" of device "TEST1028000000002" has been cleared
     And alarm register "2" of device "TEST1028000000002" has not been cleared
     Examples:
-    | protocol | version |
-#    | DSMR     | 2.2     | TODO enable simulator for DSMR 2.2
-    | DSMR     | 4.2.2   |
-    | SMR      | 4.3     |
-    | SMR      | 5.0.0   |
-    | SMR      | 5.1     |
+    | protocol | version | port |
+    | DSMR     | 4.2.2   | 1024 |
+    | SMR      | 4.3     | 1031 |
+    | SMR      | 5.0.0   | 1027 |
+    | SMR      | 5.1     | 1028 |
 
   Scenario: Clear both alarm registers with SMR 5.2
     Given a dlms device

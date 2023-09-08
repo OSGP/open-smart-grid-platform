@@ -7,7 +7,7 @@ Feature: SmartMetering Bundle - ClearAlarmRegister
   As a grid operator 
   I want to be able to clear the alarm register from a meter via a bundle request
 
-  Scenario Outline: Bundled clear alarm only for register 1 for protocol <protocol> <version>
+  Scenario Outline: Bundled clear alarm only for register 1 for protocol <protocol> <version> DSMR 2.2 excluded
     Given a dlms device
       | DeviceIdentification     | TEST1028000000002 |
       | DeviceType               | SMART_METER_E     |
@@ -24,7 +24,6 @@ Feature: SmartMetering Bundle - ClearAlarmRegister
     And alarm register "1" of device "TEST1028000000002" has been cleared
     Examples:
       | protocol | version |
-#      | DSMR     | 2.2     | TODO enable simulator for DSMR 2.2
       | DSMR     | 4.2.2   |
       | SMR      | 4.3     |
       | SMR      | 5.0.0   |
