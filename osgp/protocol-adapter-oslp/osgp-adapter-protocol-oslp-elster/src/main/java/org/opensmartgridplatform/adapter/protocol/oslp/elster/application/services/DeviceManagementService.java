@@ -47,6 +47,8 @@ public class DeviceManagementService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
+  public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss Z");
+
   @Autowired private OslpDeviceSettingsService oslpDeviceSettingsService;
 
   @Autowired private OsgpRequestMessageSender osgpRequestMessageSender;
@@ -97,8 +99,7 @@ public class DeviceManagementService {
       dateTime = ZonedDateTime.now();
       LOGGER.info("timestamp is empty, using DateTime.now(): {}", dateTime);
     } else {
-      final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss Z");
-      dateTime = ZonedDateTime.parse(timestamp.concat(" +0000"), dateTimeFormatter);
+      dateTime = ZonedDateTime.parse(timestamp.concat(" +0000"), FORMATTER);
       LOGGER.info("parsed timestamp from string: {} to DateTime: {}", timestamp, dateTime);
     }
 

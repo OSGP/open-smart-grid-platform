@@ -237,38 +237,6 @@ public class DateTimeHelper {
   }
 
   /**
-   * Shifts a DateTime from the system's timezone to UTC.
-   *
-   * @param dateTime The DateTime in local system's timezone.
-   * @return shifted DateTime in UTC
-   */
-  public static final ZonedDateTime shiftSystemZoneToUtc(final ZonedDateTime dateTime) {
-    return JavaTimeHelpers.shiftZoneToUTC(dateTime);
-  }
-
-  /**
-   * Shifts a time to from the system's timezone to CET. It assumes the time is for the current
-   * date.
-   *
-   * @param time Time in system's timezone, formatted as HH:mm
-   * @return Time in CET, formatted as HH:mm
-   */
-  public static String shiftSystemZoneToCET(final String time) {
-    return DateTimeHelper.shiftTimeToOtherZone(time, true);
-  }
-
-  /**
-   * Shifts a time to from CET to the system's timezone. It assumes the time is for the current
-   * date.
-   *
-   * @param time Time in system's timezone, formatted as HH:mm
-   * @return Time in CET, formatted as HH:mm
-   */
-  public static String shiftCETToSystemZone(final String time) {
-    return DateTimeHelper.shiftTimeToOtherZone(time, false);
-  }
-
-  /**
    * Shifts a time to another timezone. It assumes the time is for the current date.
    *
    * @param time Time in original timezone, formatted as HH:mm

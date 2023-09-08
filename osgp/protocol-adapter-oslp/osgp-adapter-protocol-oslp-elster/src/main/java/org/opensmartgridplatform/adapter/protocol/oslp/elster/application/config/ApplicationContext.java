@@ -49,7 +49,7 @@ public class ApplicationContext extends AbstractConfig {
   private static final String PROPERTY_NAME_DEVICE_PENDINGSETSCHEDULEREQUEST_EXPIRES_IN_MINUTES =
       "device.pendingsetschedulerequest.expires_in_minutes";
 
-  public static final int SECONDS_PER_MINUTE = 60;
+  public static final int AMOUNT_OF_SECONDS_PER_MINUTE = 60;
 
   public ApplicationContext() {
     InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
@@ -105,6 +105,6 @@ public class ApplicationContext extends AbstractConfig {
   @Bean
   public Integer timeZoneOffsetMinutes() {
     return this.localTimeZone().getRules().getStandardOffset(Instant.now()).getTotalSeconds()
-        / SECONDS_PER_MINUTE;
+        / AMOUNT_OF_SECONDS_PER_MINUTE;
   }
 }

@@ -81,6 +81,8 @@ import org.springframework.util.CollectionUtils;
  */
 public class OslpDeviceSteps {
 
+  public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
+
   @Autowired private CoreDeviceConfiguration configuration;
 
   @Autowired private MockOslpServer oslpMockServer;
@@ -644,7 +646,7 @@ public class OslpDeviceSteps {
             JavaTimeHelpers.formatDate(
                 getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_STARTDAY)
                     .withZoneSameInstant(ZoneId.of("UTC")),
-                DateTimeFormatter.ofPattern("yyyyMMdd"));
+                FORMATTER);
 
         assertThat(schedule.getStartDay()).isEqualTo(startDay);
       }

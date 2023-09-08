@@ -1,6 +1,5 @@
 package org.opensmartgridplatform.shared.utils;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -39,11 +38,15 @@ public class JavaTimeHelpers {
     return dateTime.getZone().getRules().isDaylightSavings(dateTime.toInstant());
   }
 
-  public static ZonedDateTime shiftZoneToUTC(final ZonedDateTime dateTime) {
-    final int offset = dateTime.getZone().getRules().getOffset(Instant.now()).getTotalSeconds();
-    return dateTime.plusSeconds(offset).withZoneSameInstant(ZoneId.of("UTC"));
-  }
-
+  /**
+   * Parses different kind of date strings to a ZonedDateTime. This method should not be used in
+   * production code. This code is created because the cucumber tests provides date strings in the
+   * following formats: - yyyy-mm-dd - yyyy-mm-dd:hh:mm:ss - yyyy-mm-dd:hh:mm:ss Z
+   *
+   * @param date the date string to parse
+   * @return ZonedDateTime parsed from the provided string
+   */
+  @Deprecated
   public static ZonedDateTime parseToZonedDateTime(final String date) {
     ZonedDateTime zonedDateTime;
     try {
