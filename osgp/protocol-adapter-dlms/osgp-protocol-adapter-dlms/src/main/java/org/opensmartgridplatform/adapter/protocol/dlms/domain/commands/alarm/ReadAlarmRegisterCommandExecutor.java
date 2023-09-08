@@ -12,9 +12,9 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -37,13 +37,16 @@ public class ReadAlarmRegisterCommandExecutor
   private static final Logger LOGGER =
       LoggerFactory.getLogger(ReadAlarmRegisterCommandExecutor.class);
 
-  final DlmsObjectConfigService dlmsObjectConfigService;
+  final ObjectConfigServiceHelper objectConfigServiceHelper;
+  static final int ALARM_REGISTER_1_ATTRIBUTE_ID = 2;
+  static final int ALARM_REGISTER_2_ATTRIBUTE_ID = 2;
 
   @Autowired private AlarmHelperService alarmHelperService;
 
-  public ReadAlarmRegisterCommandExecutor(final DlmsObjectConfigService dlmsObjectConfigService) {
+  public ReadAlarmRegisterCommandExecutor(
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(ReadAlarmRegisterDataDto.class);
-    this.dlmsObjectConfigService = dlmsObjectConfigService;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
@@ -69,17 +72,23 @@ public class ReadAlarmRegisterCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    final AttributeAddress alarmRegister1AttributeAddress =
-        this.dlmsObjectConfigService.getAttributeAddress(
-            device, DlmsObjectType.ALARM_REGISTER_1, null);
+    final Optional<AttributeAddress> alarmRegister1AttributeAddress =
+        this.objectConfigServiceHelper.findOptionalAttributeAddress(
+            device.getProtocolName(),
+            device.getProtocolVersion(),
+            DlmsObjectType.ALARM_REGISTER_1,
+            ALARM_REGISTER_1_ATTRIBUTE_ID);
 
     final Set<AlarmTypeDto> alarmList =
         this.readAlarmRegister(
-            conn, alarmRegister1AttributeAddress, DlmsObjectType.ALARM_REGISTER_1);
+            conn, alarmRegister1AttributeAddress.get(), DlmsObjectType.ALARM_REGISTER_1);
 
     final Optional<AttributeAddress> alarmRegister2AttributeAddress =
-        this.dlmsObjectConfigService.findAttributeAddress(
-            device, DlmsObjectType.ALARM_REGISTER_2, null);
+        this.objectConfigServiceHelper.findOptionalAttributeAddress(
+            device.getProtocolName(),
+            device.getProtocolVersion(),
+            DlmsObjectType.ALARM_REGISTER_2,
+            ALARM_REGISTER_2_ATTRIBUTE_ID);
 
     if (alarmRegister2AttributeAddress.isPresent()) {
       alarmList.addAll(
