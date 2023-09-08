@@ -9,9 +9,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.core.factories.RelayStatusFactory;
 import org.opensmartgridplatform.domain.core.entities.RelayStatus;
@@ -58,7 +58,7 @@ public class RelayStatusSteps extends BaseDeviceSteps {
 
           // Check if the last known state time is at most 3 minutes in the
           // past
-          final Date startDate = DateTime.now().minusMinutes(3).toDate();
+          final Date startDate = Date.from(ZonedDateTime.now().minusMinutes(3).toInstant());
           assertThat(actual.getLastKnownStateTime().after(startDate)).isTrue();
           assertThat(actual.isLastKnownState()).isEqualTo(expected.isLastKnownState());
         });

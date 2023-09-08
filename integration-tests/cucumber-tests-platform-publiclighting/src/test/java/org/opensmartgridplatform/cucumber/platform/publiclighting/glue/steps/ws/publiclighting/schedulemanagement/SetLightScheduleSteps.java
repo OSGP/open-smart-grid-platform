@@ -13,12 +13,13 @@ import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHel
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.GregorianCalendar;
 import java.util.Map;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.schedulemanagement.ActionTimeType;
@@ -38,6 +39,7 @@ import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponse
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.publiclighting.PublicLightingScheduleManagementClient;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,17 +134,21 @@ public class SetLightScheduleSteps {
             PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
             PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
     if (requestParameters.containsKey(PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME)) {
-      request.setScheduledTime(
-          DatatypeFactory.newInstance()
-              .newXMLGregorianCalendar(
-                  ((requestParameters
-                              .get(PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME)
-                              .isEmpty())
-                          ? DateTime.now()
-                          : getDate(
-                              requestParameters, PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME))
-                      .toDateTime(DateTimeZone.UTC)
-                      .toGregorianCalendar()));
+      if (requestParameters.get(PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME).isEmpty()) {
+        request.setScheduledTime(
+            DatatypeFactory.newInstance()
+                .newXMLGregorianCalendar(
+                    GregorianCalendar.from(ZonedDateTime.now(ZoneId.of("UTC")))));
+      } else {
+        request.setScheduledTime(
+            DatatypeFactory.newDefaultInstance()
+                .newXMLGregorianCalendar(
+                    GregorianCalendar.from(
+                        getDate(
+                                requestParameters,
+                                PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME)
+                            .withZoneSameInstant(ZoneId.of("UTC")))));
+      }
     }
 
     for (int i = 0; i < countSchedules; i++) {
@@ -186,13 +192,17 @@ public class SetLightScheduleSteps {
       schedule.setStartDay(
           DatatypeFactory.newInstance()
               .newXMLGregorianCalendar(
-                  DateTime.parse(startDay).toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
+                  GregorianCalendar.from(
+                      JavaTimeHelpers.parseToZonedDateTime(startDay)
+                          .withZoneSameInstant(ZoneId.of("UTC")))));
     }
     if (StringUtils.isNotBlank(endDay)) {
       schedule.setEndDay(
           DatatypeFactory.newInstance()
               .newXMLGregorianCalendar(
-                  DateTime.parse(endDay).toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
+                  GregorianCalendar.from(
+                      JavaTimeHelpers.parseToZonedDateTime(endDay)
+                          .withZoneSameInstant(ZoneId.of("UTC")))));
     }
     schedule.setActionTime(actionTime);
     schedule.setTime(time);
