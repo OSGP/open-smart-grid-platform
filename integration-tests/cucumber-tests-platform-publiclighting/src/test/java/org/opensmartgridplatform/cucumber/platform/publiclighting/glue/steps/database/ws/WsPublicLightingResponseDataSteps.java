@@ -9,7 +9,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
@@ -53,7 +55,10 @@ public class WsPublicLightingResponseDataSteps {
         fld.setAccessible(true);
         fld.set(
             responseData,
-            DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
+            Date.from(
+                Objects.requireNonNull(
+                        DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)))
+                    .toInstant()));
         responseDataRepository.saveAndFlush(responseData);
       }
     } catch (final Exception e) {
