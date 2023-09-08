@@ -6,15 +6,14 @@
 Feature: SmartMetering Bundle - ClearAlarmRegister
   As a grid operator 
   I want to be able to clear the alarm register from a meter via a bundle request
+  with no support for DSMR 2.2
 
-  Scenario Outline: Bundled clear alarm only for register 1 for protocol <protocol> <version> DSMR 2.2 excluded
+  Scenario Outline: Bundled clear alarm only for register 1 for protocol <protocol> <version>
     Given a dlms device
       | DeviceIdentification     | TEST1028000000002 |
       | DeviceType               | SMART_METER_E     |
-      | SelectiveAccessSupported | true              |
       | Protocol                 | <protocol>        |
       | ProtocolVersion          | <version>         |
-      | Port                     |              1028 |
     And device "TEST1028000000002" has alarm register "1" with some value
     And a bundle request
       | DeviceIdentification | TEST1028000000002 |
@@ -34,10 +33,8 @@ Feature: SmartMetering Bundle - ClearAlarmRegister
     Given a dlms device
       | DeviceIdentification     | TEST1029000000001 |
       | DeviceType               | SMART_METER_E     |
-      | SelectiveAccessSupported | true              |
       | Protocol                 | SMR               |
       | ProtocolVersion          | 5.2               |
-      | Port                     |              1029 |
     And device "TEST1029000000001" has alarm register "1" with some value
     And device "TEST1029000000001" has alarm register "2" with some value
     And a bundle request
@@ -52,10 +49,8 @@ Feature: SmartMetering Bundle - ClearAlarmRegister
     Given a dlms device
       | DeviceIdentification     | TEST1030000000001 |
       | DeviceType               | SMART_METER_E     |
-      | SelectiveAccessSupported | true              |
       | Protocol                 | SMR               |
       | ProtocolVersion          | 5.5               |
-      | Port                     |              1030 |
     And device "TEST1030000000001" has alarm register "1" with some value
     And device "TEST1030000000001" has alarm register "2" with some value
     And device "TEST1030000000001" has alarm register "3" with some value

@@ -16,7 +16,6 @@ Feature: SmartMetering Bundle - Clear M-Bus alarm status on all channels of a E 
       | DeviceType           | SMART_METER_E     |
       | Protocol             | SMR               |
       | ProtocolVersion      |               5.1 |
-      | Port                 |              1028 |
     When the bundle request is received
     Then the bundle response should be OK
 
@@ -29,7 +28,6 @@ Feature: SmartMetering Bundle - Clear M-Bus alarm status on all channels of a E 
       | DeviceType           | SMART_METER_E     |
       | Protocol             | SMR               |
       | ProtocolVersion      |             5.0.0 |
-      | Port                 |              1027 |
     When the bundle request is received
     Then the bundle response should be a FaultResponse with message containing
       | Message | Error handling request with ClearMBusStatusOnAllChannelsCommandExecutor: Did not find CLEAR_MBUS_STATUS object for device 27000000001 for channel 1 |

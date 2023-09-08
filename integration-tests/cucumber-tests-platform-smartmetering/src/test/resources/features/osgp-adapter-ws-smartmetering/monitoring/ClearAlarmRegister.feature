@@ -11,52 +11,49 @@ Feature: SmartMetering Monitoring - Alarm Register
 
   Background:
     Given a dlms device
-      | DeviceIdentification     | TEST1024000000001 |
+      | DeviceIdentification     | TEST1027000000001 |
       | DeviceType               | SMART_METER_E     |
-      | SelectiveAccessSupported | true              |
       | Protocol                 | SMR               |
       | ProtocolVersion          | 5.0.0             |
 
   Scenario: Read the alarm register from a device
-    Given device "TEST1024000000001" has alarm register "1" with some value
+    Given device "TEST1027000000001" has alarm register "1" with some value
     When the get read alarm register request is received
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | TEST1027000000001 |
     Then the alarm register should be returned
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | TEST1027000000001 |
 
-  Scenario Outline: Clear only alarm register 1 for protocol <protocol> <version> DSMR 2.2 excluded
+  Scenario Outline: Clear only alarm register 1 for protocol <protocol> <version> on device <deviceIdentification>
 
     Given a dlms device
-      | DeviceIdentification     | TEST1028000000002 |
+      | DeviceIdentification     | <deviceIdentification> |
       | DeviceType               | SMART_METER_E     |
-      | SelectiveAccessSupported | true              |
       | Protocol                 | <protocol>        |
       | ProtocolVersion          | <version>         |
-      | Port                     | <port>            |
-    And device "TEST1028000000002" has alarm register "1" with some value
-    And device "TEST1028000000002" has alarm register "2" with some value
+    And device "<deviceIdentification>" has alarm register "1" with some value
+    And device "<deviceIdentification>" has alarm register "2" with some value
     When the Clear Alarm Code request is received
-      | DeviceIdentification | TEST1028000000002 |
+      | DeviceIdentification | <deviceIdentification> |
     Then the Clear Alarm Code response should be returned
-      | DeviceIdentification | TEST1028000000002 |
+      | DeviceIdentification | <deviceIdentification> |
       | Result               | OK                |
-    And alarm register "1" of device "TEST1028000000002" has been cleared
-    And alarm register "2" of device "TEST1028000000002" has not been cleared
+    And alarm register "1" of device "<deviceIdentification>" has been cleared
+    And alarm register "2" of device "<deviceIdentification>" has not been cleared
     Examples:
-    | protocol | version | port |
-    | DSMR     | 4.2.2   | 1024 |
-    | SMR      | 4.3     | 1031 |
-    | SMR      | 5.0.0   | 1027 |
-    | SMR      | 5.1     | 1028 |
+
+    | deviceIdentification  | protocol | version |
+    | TEST1024000000002     | DSMR     | 2.2     |
+    | TEST1024000000002     | DSMR     | 4.2.2   |
+    | TEST1031000000002     | SMR      | 4.3     |
+    | TEST1027000000002     | SMR      | 5.0.0   |
+    | TEST1028000000002     | SMR      | 5.1     |
 
   Scenario: Clear both alarm registers with SMR 5.2
     Given a dlms device
       | DeviceIdentification     | TEST1029000000001 |
       | DeviceType               | SMART_METER_E     |
-      | SelectiveAccessSupported | true              |
       | Protocol                 | SMR               |
       | ProtocolVersion          | 5.2               |
-      | Port                     |              1029 |
     And device "TEST1029000000001" has alarm register "1" with some value
     And device "TEST1029000000001" has alarm register "2" with some value
     When the Clear Alarm Code request is received
@@ -71,10 +68,8 @@ Feature: SmartMetering Monitoring - Alarm Register
     Given a dlms device
       | DeviceIdentification     | TEST1030000000001 |
       | DeviceType               | SMART_METER_E     |
-      | SelectiveAccessSupported | true              |
       | Protocol                 | SMR               |
       | ProtocolVersion          | 5.5               |
-      | Port                     |              1030 |
     And device "TEST1030000000001" has alarm register "1" with some value
     And device "TEST1030000000001" has alarm register "2" with some value
     And device "TEST1030000000001" has alarm register "3" with some value

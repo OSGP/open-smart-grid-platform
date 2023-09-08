@@ -313,10 +313,10 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
   }
 
   public Long getPortBasedOnProtocolInfo(final String protocol, final String protocolVersion) {
-    return PlatformSmartmeteringDefaults.PORT_MAPPING.entrySet().stream()
-        .filter(e -> this.protocolsAreEqual(protocol, protocolVersion, e.getValue()))
+    return PlatformSmartmeteringDefaults.PORT_MAPPING.keySet().stream()
+        .filter(protocol1 -> this.protocolsAreEqual(protocol, protocolVersion, protocol1))
         .findFirst()
-        .map(e2 -> e2.getKey())
+        .map(protocol2 -> PlatformSmartmeteringDefaults.PORT_MAPPING.get(protocol2))
         .orElseThrow(
             () ->
                 new IllegalArgumentException(
