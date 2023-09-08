@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.domain.repositories;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
@@ -25,5 +26,5 @@ public interface ResponseDataRepository extends JpaRepository<ResponseData, Long
 
   ResponseData findByCorrelationUid(String correlationUid);
 
-  void removeByCreationTimeBefore(Date date);
+  void removeByCreationTimeBefore(Instant date);
 }

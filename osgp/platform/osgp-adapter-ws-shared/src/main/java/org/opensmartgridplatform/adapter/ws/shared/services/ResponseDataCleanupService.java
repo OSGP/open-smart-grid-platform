@@ -6,7 +6,6 @@ package org.opensmartgridplatform.adapter.ws.shared.services;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,6 @@ public class ResponseDataCleanupService {
 
     final ZonedDateTime removeBeforeDateTime =
         ZonedDateTime.now(ZoneId.of("UTC")).minusDays(this.cleanupJobRetentionTimeInDays);
-    this.responseDataRepository.removeByCreationTimeBefore(
-        Date.from(removeBeforeDateTime.toInstant()));
+    this.responseDataRepository.removeByCreationTimeBefore(removeBeforeDateTime.toInstant());
   }
 }
