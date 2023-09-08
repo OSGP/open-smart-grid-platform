@@ -156,7 +156,8 @@ public class BundleSteps extends BaseBundleSteps {
         (localPartOfName, value) -> {
           if (dateTimeInMillisHeaders.contains(localPartOfName)) {
             extraHeaders.put(
-                localPartOfName, Long.toString(DateTimeHelper.getDateTime(value).getMillis()));
+                localPartOfName,
+                Long.toString(DateTimeHelper.getDateTime(value).toInstant().toEpochMilli()));
           } else {
             extraHeaders.put(localPartOfName, value);
           }

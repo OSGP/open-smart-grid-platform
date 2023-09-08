@@ -15,6 +15,7 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -71,7 +72,7 @@ public abstract class BaseDeviceSteps {
     if (settings.containsKey(PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE)
         && StringUtils.isNotBlank(settings.get(PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE))) {
       device.setTechnicalInstallationDate(
-          getDate(settings, PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE).toDate());
+          Date.from(getDate(settings, PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE).toInstant()));
     }
 
     /*
