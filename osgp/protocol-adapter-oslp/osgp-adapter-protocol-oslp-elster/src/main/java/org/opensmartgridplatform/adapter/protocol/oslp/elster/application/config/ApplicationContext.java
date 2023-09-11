@@ -43,13 +43,10 @@ public class ApplicationContext extends AbstractConfig {
   private static final String PROPERTY_NAME_FIRMWARE_PATH = "firmware.path";
   private static final String PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE = "paging.maximum.pagesize";
   private static final String PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE = "paging.default.pagesize";
-
   private static final String PROPERTY_NAME_LOCAL_TIME_ZONE_IDENTIFIER = "local.time.zone";
-
   private static final String PROPERTY_NAME_DEVICE_PENDINGSETSCHEDULEREQUEST_EXPIRES_IN_MINUTES =
       "device.pendingsetschedulerequest.expires_in_minutes";
-
-  public static final int AMOUNT_OF_SECONDS_PER_MINUTE = 60;
+  public static final int SECONDS_PER_MINUTE = 60;
 
   public ApplicationContext() {
     InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
@@ -105,6 +102,6 @@ public class ApplicationContext extends AbstractConfig {
   @Bean
   public Integer timeZoneOffsetMinutes() {
     return this.localTimeZone().getRules().getStandardOffset(Instant.now()).getTotalSeconds()
-        / AMOUNT_OF_SECONDS_PER_MINUTE;
+        / SECONDS_PER_MINUTE;
   }
 }
