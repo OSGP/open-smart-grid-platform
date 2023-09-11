@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import org.openmuc.jdlms.AccessResultCode;
@@ -71,6 +72,7 @@ public class ReadAlarmRegisterCommandExecutor
       final ReadAlarmRegisterRequestDto object,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
+    Set<AlarmTypeDto> alarmList = new HashSet<>();
 
     final Optional<AttributeAddress> alarmRegister1AttributeAddress =
         this.objectConfigServiceHelper.findOptionalAttributeAddress(
@@ -79,9 +81,11 @@ public class ReadAlarmRegisterCommandExecutor
             DlmsObjectType.ALARM_REGISTER_1,
             ALARM_REGISTER_1_ATTRIBUTE_ID);
 
-    final Set<AlarmTypeDto> alarmList =
-        this.readAlarmRegister(
-            conn, alarmRegister1AttributeAddress.get(), DlmsObjectType.ALARM_REGISTER_1);
+    if (alarmRegister1AttributeAddress.isPresent()) {
+      alarmList =
+          this.readAlarmRegister(
+              conn, alarmRegister1AttributeAddress.get(), DlmsObjectType.ALARM_REGISTER_1);
+    }
 
     final Optional<AttributeAddress> alarmRegister2AttributeAddress =
         this.objectConfigServiceHelper.findOptionalAttributeAddress(
