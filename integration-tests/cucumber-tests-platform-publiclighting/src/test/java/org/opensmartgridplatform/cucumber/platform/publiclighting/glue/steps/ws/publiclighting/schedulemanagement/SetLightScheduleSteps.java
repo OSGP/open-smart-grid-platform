@@ -5,10 +5,7 @@
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.ws.publiclighting.schedulemanagement;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getDate;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.*;
 import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHelper.saveCorrelationUidInScenarioContext;
 
 import io.cucumber.java.en.Then;
@@ -134,21 +131,18 @@ public class SetLightScheduleSteps {
             PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
             PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
     if (requestParameters.containsKey(PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME)) {
-      if (requestParameters.get(PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME).isEmpty()) {
-        request.setScheduledTime(
-            DatatypeFactory.newInstance()
-                .newXMLGregorianCalendar(
-                    GregorianCalendar.from(ZonedDateTime.now(ZoneId.of("UTC")))));
-      } else {
-        request.setScheduledTime(
-            DatatypeFactory.newDefaultInstance()
-                .newXMLGregorianCalendar(
-                    GregorianCalendar.from(
-                        getDate(
-                                requestParameters,
-                                PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME)
-                            .withZoneSameInstant(ZoneId.of("UTC")))));
-      }
+      request.setScheduledTime(
+          DatatypeFactory.newInstance()
+              .newXMLGregorianCalendar(
+                  ((requestParameters
+                          .get(PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME)
+                          .isEmpty())
+                      ? GregorianCalendar.from(ZonedDateTime.now(ZoneId.of("UTC")))
+                      : GregorianCalendar.from(
+                          getDate(
+                                  requestParameters,
+                                  PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME)
+                              .withZoneSameInstant(ZoneId.of("UTC"))))));
     }
 
     for (int i = 0; i < countSchedules; i++) {
