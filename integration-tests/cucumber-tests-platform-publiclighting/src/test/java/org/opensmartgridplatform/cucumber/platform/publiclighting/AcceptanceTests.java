@@ -11,7 +11,9 @@ import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-    features = {"classpath:features/publiclighting"},
+    features = {
+      "classpath:features/publiclighting/osgp-adapter-ws-publiclighting/ScheduleManagement"
+    },
     tags = {"not @Skip", "not @NightlyBuildOnly"},
     glue = {
       "classpath:org.opensmartgridplatform.cucumber.platform.glue",

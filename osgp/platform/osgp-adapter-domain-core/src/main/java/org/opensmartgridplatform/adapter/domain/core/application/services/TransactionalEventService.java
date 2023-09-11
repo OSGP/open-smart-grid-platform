@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.domain.core.application.config.PersistenceDomainCoreConfig;
@@ -30,7 +30,7 @@ public class TransactionalEventService {
 
   @Autowired private EventRepository eventRepository;
 
-  public List<Event> getEventsBeforeDate(final Date date, final int pageSize) {
+  public List<Event> getEventsBeforeDate(final Instant date, final int pageSize) {
     final PageRequest pageRequest = PageRequest.of(0, pageSize, Sort.Direction.ASC, "id");
     final Slice<Event> slice = this.eventRepository.findByDateTimeBefore(date, pageRequest);
     final List<Event> events = slice.getContent();
