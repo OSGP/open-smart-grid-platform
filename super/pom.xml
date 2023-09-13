@@ -48,11 +48,11 @@ SPDX-License-Identifier: Apache-2.0
     <osgp.dlms.version>5.45.0-SNAPSHOT</osgp.dlms.version>
     <osgp.shared.version>5.45.0-SNAPSHOT</osgp.shared.version>
     <osgp.jasper-interface.version>5.45.0-SNAPSHOT</osgp.jasper-interface.version>
-    <spring.version>5.3.27</spring.version>
-    <spring.data.version>2.2.9.RELEASE</spring.data.version>
-    <spring.data.commons.version>2.2.9.RELEASE</spring.data.commons.version>
-    <spring.security.version>5.5.8</spring.security.version>
-    <spring.ws.version>3.0.12.RELEASE</spring.ws.version>
+    <spring.version>5.3.29</spring.version>
+    <spring.data.version>2.7.15</spring.data.version>
+    <spring.data.commons.version>2.7.15</spring.data.commons.version>
+    <spring.security.version>5.8.6</spring.security.version>
+    <spring.ws.version>3.1.6</spring.ws.version>
     <reactor.version>2020.0.22</reactor.version>
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
@@ -121,7 +121,7 @@ SPDX-License-Identifier: Apache-2.0
     <hikaricp.version>3.4.5</hikaricp.version>
     <micrometer.version>1.10.0</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
-    <guava.version>31.1-jre</guava.version>
+    <guava.version>32.1.2-jre</guava.version>
     <spotbugs.version>4.6.0</spotbugs.version>
     <jacoco.version>0.8.8</jacoco.version>
     <selenium.java.version>3.141.59</selenium.java.version>
@@ -131,7 +131,7 @@ SPDX-License-Identifier: Apache-2.0
     <cucumber.version>5.7.0</cucumber.version>
     <testcontainers.version>1.16.2</testcontainers.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
-    <postgresql.version>42.5.0</postgresql.version>
+    <postgresql.version>42.6.0</postgresql.version>
     <javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
     <!-- to avoid conflicts with spring-kafka-test the older kafka version 2.4.1 is used-->
     <kafka.version>2.4.1</kafka.version>
