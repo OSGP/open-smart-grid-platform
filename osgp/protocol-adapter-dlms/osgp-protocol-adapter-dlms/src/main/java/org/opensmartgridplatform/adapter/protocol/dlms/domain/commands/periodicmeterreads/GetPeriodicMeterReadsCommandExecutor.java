@@ -102,7 +102,8 @@ public class GetPeriodicMeterReadsCommandExecutor
             periodicMeterReadsQuery.getEndDate(), device.getTimezone());
 
     final AttributeAddressForProfile profileBufferAddress =
-        this.getProfileBufferAddress(queryPeriodType, from, to, device);
+        this.getProfileBufferAddress(
+            queryPeriodType, from, to, device, this.dlmsObjectConfigService, Medium.ELECTRICITY, 0);
 
     final List<AttributeAddress> scalerUnitAddresses =
         this.getScalerUnitAddresses(profileBufferAddress);
@@ -334,28 +335,6 @@ public class GetPeriodicMeterReadsCommandExecutor
     }
 
     return null;
-  }
-
-  private AttributeAddressForProfile getProfileBufferAddress(
-      final PeriodTypeDto periodType,
-      final DateTime beginDateTime,
-      final DateTime endDateTime,
-      final DlmsDevice device)
-      throws ProtocolAdapterException {
-
-    final DlmsObjectType type = DlmsObjectType.getTypeForPeriodType(periodType);
-
-    // Add the attribute address for the profile
-    final AttributeAddressForProfile attributeAddressProfile =
-        this.dlmsObjectConfigService
-            .findAttributeAddressForProfile(
-                device, type, 0, beginDateTime, endDateTime, Medium.ELECTRICITY)
-            .orElseThrow(() -> new ProtocolAdapterException("No address found for " + type));
-
-    LOGGER.debug(
-        "Dlms object config service returned profile buffer address {} ", attributeAddressProfile);
-
-    return attributeAddressProfile;
   }
 
   private List<AttributeAddress> getScalerUnitAddresses(

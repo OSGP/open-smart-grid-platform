@@ -261,7 +261,8 @@ class DlmsObjectConfigServiceTest {
             channel,
             this.from,
             this.to,
-            filterMedium);
+            filterMedium,
+            true);
 
     // VERIFY
     assertThat(attributeAddressForProfile).isPresent();
@@ -310,7 +311,8 @@ class DlmsObjectConfigServiceTest {
             channel,
             this.from,
             this.to,
-            filterMedium);
+            filterMedium,
+            true);
 
     // VERIFY
     assertThat(attributeAddressForProfile).isPresent();
@@ -347,7 +349,8 @@ class DlmsObjectConfigServiceTest {
             channel,
             this.from,
             this.to,
-            filterMedium);
+            filterMedium,
+            true);
 
     // VERIFY
     assertThat(attributeAddressForProfile).isPresent();
