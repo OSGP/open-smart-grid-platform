@@ -16,8 +16,7 @@ Feature: SmartMetering Bundle - ReadAlarmRegister
       | SelectiveAccessSupported | true              |
       | Protocol                 | <protocol>        |
       | ProtocolVersion          | <version>         |
-      | Port                     |              1028 |
-  And a bundle request
+    And a bundle request
       | DeviceIdentification | TEST1024000000001 |
     And the bundle request contains a read alarm register action
     When the bundle request is received

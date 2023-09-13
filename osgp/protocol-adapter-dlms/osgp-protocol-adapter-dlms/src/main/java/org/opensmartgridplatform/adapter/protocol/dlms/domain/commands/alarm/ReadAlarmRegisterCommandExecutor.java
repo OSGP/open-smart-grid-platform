@@ -20,6 +20,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
@@ -39,8 +40,7 @@ public class ReadAlarmRegisterCommandExecutor
       LoggerFactory.getLogger(ReadAlarmRegisterCommandExecutor.class);
 
   final ObjectConfigServiceHelper objectConfigServiceHelper;
-  static final int ALARM_REGISTER_1_ATTRIBUTE_ID = 2;
-  static final int ALARM_REGISTER_2_ATTRIBUTE_ID = 2;
+  static final int ALARM_REGISTER_ATTRIBUTE_ID = RegisterAttribute.VALUE.attributeId();
 
   @Autowired private AlarmHelperService alarmHelperService;
 
@@ -79,7 +79,7 @@ public class ReadAlarmRegisterCommandExecutor
             device.getProtocolName(),
             device.getProtocolVersion(),
             DlmsObjectType.ALARM_REGISTER_1,
-            ALARM_REGISTER_1_ATTRIBUTE_ID);
+            ALARM_REGISTER_ATTRIBUTE_ID);
 
     if (alarmRegister1AttributeAddress.isPresent()) {
       alarmList =
@@ -92,7 +92,7 @@ public class ReadAlarmRegisterCommandExecutor
             device.getProtocolName(),
             device.getProtocolVersion(),
             DlmsObjectType.ALARM_REGISTER_2,
-            ALARM_REGISTER_2_ATTRIBUTE_ID);
+            ALARM_REGISTER_ATTRIBUTE_ID);
 
     if (alarmRegister2AttributeAddress.isPresent()) {
       alarmList.addAll(

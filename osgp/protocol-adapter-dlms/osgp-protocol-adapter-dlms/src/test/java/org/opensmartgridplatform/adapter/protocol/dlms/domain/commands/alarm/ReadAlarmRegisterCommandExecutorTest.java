@@ -6,7 +6,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,6 +42,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.LoggingDlmsMessageListener;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -53,7 +54,7 @@ class ReadAlarmRegisterCommandExecutorTest {
 
   private static final String OBIS_CODE_ALARM_REGISTER_1 = "0.0.97.98.0.255";
   private static final String OBIS_CODE_ALARM_REGISTER_2 = "0.0.97.98.1.255";
-  private static final int CLASS_ID_READ_ALARM_REGISTER = 1;
+  private static final int CLASS_ID_READ_ALARM_REGISTER = InterfaceClass.REGISTER.id();
 
   @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
 
@@ -192,13 +193,11 @@ class ReadAlarmRegisterCommandExecutorTest {
       final DlmsDevice dlmsDevice, final String obisCode, final String dlmsObjectTypeName)
       throws ProtocolAdapterException {
 
-    final ObisCode newObisCode = new ObisCode(obisCode);
-
-    final AttributeAddress attributeAddress = mock(AttributeAddress.class);
-    when(attributeAddress.getClassId()).thenReturn(1);
-    when(attributeAddress.getId())
-        .thenReturn(ClearAlarmRegisterCommandExecutor.ALARM_REGISTER_ATTRIBUTE_ID);
-    when(attributeAddress.getInstanceId()).thenReturn(newObisCode);
+    final AttributeAddress attributeAddress =
+        new AttributeAddress(
+            InterfaceClass.REGISTER.id(),
+            new ObisCode(obisCode),
+            RegisterAttribute.VALUE.attributeId());
 
     when(this.objectConfigServiceHelper.findOptionalAttributeAddress(
             dlmsDevice.getProtocolName(),
