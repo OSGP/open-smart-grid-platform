@@ -52,6 +52,37 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
     this.amrProfileStatusCodeHelper = amrProfileStatusCodeHelper;
   }
 
+  protected AttributeAddressForProfile getProfileBufferAddress(
+      final PeriodTypeDto periodType,
+      final DateTime beginDateTime,
+      final DateTime endDateTime,
+      final DlmsDevice device,
+      final DlmsObjectConfigService dlmsObjectConfigService,
+      final Medium medium,
+      final int channelNumber)
+      throws ProtocolAdapterException {
+
+    final DlmsObjectType type = DlmsObjectType.getTypeForPeriodType(periodType);
+
+    // Add the attribute address for the profile
+    final AttributeAddressForProfile attributeAddressProfile =
+        dlmsObjectConfigService
+            .findAttributeAddressForProfile(
+                device,
+                type,
+                channelNumber,
+                beginDateTime,
+                endDateTime,
+                medium,
+                device.isSelectiveAccessPeriodicMeterReadsSupported())
+            .orElseThrow(() -> new ProtocolAdapterException("No address found for " + type));
+
+    LOGGER.debug(
+        "Dlms object config service returned profile buffer address {} ", attributeAddressProfile);
+
+    return attributeAddressProfile;
+  }
+
   /**
    * Calculates/derives the date of the read buffered DataObject.
    *

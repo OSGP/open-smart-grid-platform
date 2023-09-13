@@ -108,8 +108,7 @@ class GetPeriodicMeterReadsCommandExecutorTest {
             this.fromDateTime.toDate(),
             this.toDateTime.toDate(),
             ChannelDto.ONE);
-    when(this.dlmsObjectConfigService.findAttributeAddressForProfile(
-            any(), any(), any(), any(), any(), any()))
+    when(this.dlmsObjectConfigService.findAttributeAddressForProfile(any(), any(), any()))
         .thenReturn(Optional.empty());
 
     // CALL
@@ -188,7 +187,8 @@ class GetPeriodicMeterReadsCommandExecutorTest {
             0,
             convertedFromTime,
             convertedToTime,
-            Medium.ELECTRICITY))
+            Medium.ELECTRICITY,
+            true))
         .thenReturn(Optional.of(attributeAddressForProfile));
 
     final DlmsObject intervalTime = mock(DlmsObject.class);
@@ -306,6 +306,7 @@ class GetPeriodicMeterReadsCommandExecutorTest {
   private DlmsDevice createDevice(final Protocol protocol) {
     final DlmsDevice device = new DlmsDevice();
     device.setProtocol(protocol);
+    device.setSelectiveAccessPeriodicMeterReadsSupported(true);
     return device;
   }
 }
