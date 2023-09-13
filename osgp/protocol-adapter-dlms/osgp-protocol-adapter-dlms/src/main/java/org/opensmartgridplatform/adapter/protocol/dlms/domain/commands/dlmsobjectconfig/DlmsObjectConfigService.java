@@ -6,6 +6,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobje
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.joda.time.DateTime;
@@ -43,7 +44,7 @@ public class DlmsObjectConfigService {
       throws ProtocolAdapterException {
     // Note: channel can be null.
     final Optional<AttributeAddress> optionalAttributeAddress =
-        this.findAttributeAddressForProfile(device, type, channel, null, null, null)
+        this.findAttributeAddressForProfile(device, type, channel)
             .map(AttributeAddressForProfile::getAttributeAddress);
 
     return optionalAttributeAddress.orElseThrow(
@@ -57,7 +58,7 @@ public class DlmsObjectConfigService {
   public Optional<AttributeAddress> findAttributeAddress(
       final DlmsDevice device, final DlmsObjectType type, final Integer channel) {
     // Note: channel can be null.
-    return this.findAttributeAddressForProfile(device, type, channel, null, null, null)
+    return this.findAttributeAddressForProfile(device, type, channel)
         .map(AttributeAddressForProfile::getAttributeAddress);
   }
 
@@ -67,12 +68,23 @@ public class DlmsObjectConfigService {
       final Integer channel,
       final DateTime from,
       final DateTime to,
-      final Medium filterMedium) {
+      final Medium filterMedium,
+      final boolean selectiveAccessSupported) {
     return this.findDlmsObject(Protocol.forDevice(device), type, filterMedium)
         .map(
             dlmsObject ->
                 this.getAttributeAddressForProfile(
-                    new AddressRequest(device, dlmsObject, channel, from, to, filterMedium)));
+                    new AddressRequest(device, dlmsObject, channel, from, to, filterMedium),
+                    selectiveAccessSupported));
+  }
+
+  public Optional<AttributeAddressForProfile> findAttributeAddressForProfile(
+      final DlmsDevice device, final DlmsObjectType type, final Integer channel) {
+    return this.findDlmsObject(Protocol.forDevice(device), type, null)
+        .map(
+            dlmsObject ->
+                this.getAttributeAddressForProfile(
+                    new AddressRequest(device, dlmsObject, channel, null, null, null), true));
   }
 
   public Optional<DlmsObject> findDlmsObject(
@@ -140,11 +152,11 @@ public class DlmsObjectConfigService {
   }
 
   private AttributeAddressForProfile getAttributeAddressForProfile(
-      final AddressRequest addressRequest) {
+      final AddressRequest addressRequest, final boolean selectiveAccessSupported) {
     final List<DlmsCaptureObject> selectedObjects = new ArrayList<>();
 
     final SelectiveAccessDescription access =
-        this.getAccessDescription(addressRequest, selectedObjects);
+        this.getAccessDescription(addressRequest, selectedObjects, selectiveAccessSupported);
 
     final DlmsObject dlmsObject = addressRequest.getDlmsObject();
 
@@ -166,7 +178,9 @@ public class DlmsObjectConfigService {
   }
 
   private SelectiveAccessDescription getAccessDescription(
-      final AddressRequest addressRequest, final List<DlmsCaptureObject> selectedObjects) {
+      final AddressRequest addressRequest,
+      final List<DlmsCaptureObject> selectedObjects,
+      final boolean selectiveAccessSupported) {
 
     final DlmsObject object = addressRequest.getDlmsObject();
     final DateTime from = addressRequest.getFrom();
@@ -180,7 +194,12 @@ public class DlmsObjectConfigService {
       final DataObject selectedValues = this.getSelectedValues(addressRequest, selectedObjects);
 
       final DataObject accessParameter =
-          this.dlmsHelper.getAccessSelectionTimeRangeParameter(from, to, selectedValues);
+          this.dlmsHelper.getAccessSelectionTimeRangeParameter(
+              from,
+              to,
+              selectiveAccessSupported
+                  ? selectedValues
+                  : DataObject.newArrayData(Collections.emptyList()));
 
       return new SelectiveAccessDescription(accessSelector, accessParameter);
     }
