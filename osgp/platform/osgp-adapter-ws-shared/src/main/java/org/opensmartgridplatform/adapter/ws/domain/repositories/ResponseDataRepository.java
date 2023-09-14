@@ -5,7 +5,6 @@
 package org.opensmartgridplatform.adapter.ws.domain.repositories;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +21,7 @@ public interface ResponseDataRepository extends JpaRepository<ResponseData, Long
   List<ResponseData> findByDeviceIdentification(String deviceIdentification);
 
   List<ResponseData> findByNumberOfNotificationsSentAndCreationTimeBefore(
-      Short numberOfNotificationsSent, Date createdBefore, Pageable pageable);
+      Short numberOfNotificationsSent, Instant createdBefore, Pageable pageable);
 
   ResponseData findByCorrelationUid(String correlationUid);
 
