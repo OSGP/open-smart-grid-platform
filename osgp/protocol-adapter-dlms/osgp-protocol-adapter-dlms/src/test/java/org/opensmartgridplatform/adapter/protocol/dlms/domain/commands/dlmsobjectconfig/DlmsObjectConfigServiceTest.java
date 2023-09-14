@@ -18,6 +18,8 @@ import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -272,25 +274,30 @@ class DlmsObjectConfigServiceTest {
         .isEqualTo(this.captureObjectsE);
   }
 
-  @Test
-  void testProfileWithMediumCombinedAndFilterMedium() {
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void testProfileWithMediumCombinedAndFilterMedium(final boolean selectedValuesSupported) {
     // SETUP
     final Integer channel = null;
     final Medium filterMedium = Medium.ELECTRICITY;
 
     final List<DlmsCaptureObject> expectedSelectedObjects =
-        this.captureObjectsCombined.stream()
-            .filter(
-                c ->
-                    !(c.getRelatedObject() instanceof DlmsRegister)
-                        || ((DlmsRegister) c.getRelatedObject()).getMedium() == filterMedium)
-            .collect(Collectors.toList());
+        selectedValuesSupported
+            ? this.captureObjectsCombined.stream()
+                .filter(
+                    c ->
+                        !(c.getRelatedObject() instanceof DlmsRegister)
+                            || ((DlmsRegister) c.getRelatedObject()).getMedium() == filterMedium)
+                .collect(Collectors.toList())
+            : this.captureObjectsCombined;
 
     final DataObject selectedValues =
-        DataObject.newArrayData(
-            expectedSelectedObjects.stream()
-                .map(o -> this.getDataObject(o.getRelatedObject()))
-                .collect(Collectors.toList()));
+        selectedValuesSupported
+            ? DataObject.newArrayData(
+                expectedSelectedObjects.stream()
+                    .map(o -> this.getDataObject(o.getRelatedObject()))
+                    .collect(Collectors.toList()))
+            : DataObject.newArrayData(List.of());
 
     final DataObject accessParams = this.getAccessParams(selectedValues);
 
@@ -312,7 +319,7 @@ class DlmsObjectConfigServiceTest {
             this.from,
             this.to,
             filterMedium,
-            true);
+            selectedValuesSupported);
 
     // VERIFY
     assertThat(attributeAddressForProfile).isPresent();

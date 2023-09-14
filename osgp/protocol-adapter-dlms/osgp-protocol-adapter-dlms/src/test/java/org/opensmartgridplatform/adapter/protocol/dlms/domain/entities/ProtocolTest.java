@@ -47,15 +47,6 @@ public class ProtocolTest {
   }
 
   @Test
-  public void testIsSelectingValuesSupported() {
-    assertThat(Protocol.DSMR_4_2_2.isSelectValuesInSelectiveAccessSupported()).isEqualTo(true);
-    assertThat(Protocol.SMR_5_0_0.isSelectValuesInSelectiveAccessSupported()).isEqualTo(true);
-    assertThat(Protocol.SMR_5_1.isSelectValuesInSelectiveAccessSupported()).isEqualTo(true);
-    assertThat(Protocol.SMR_5_2.isSelectValuesInSelectiveAccessSupported()).isEqualTo(true);
-    assertThat(Protocol.OTHER_PROTOCOL.isSelectValuesInSelectiveAccessSupported()).isEqualTo(true);
-  }
-
-  @Test
   public void testIsSMR5() {
     assertThat(Protocol.DSMR_4_2_2.isSmr5()).isEqualTo(false);
     assertThat(Protocol.SMR_5_0_0.isSmr5()).isEqualTo(true);
