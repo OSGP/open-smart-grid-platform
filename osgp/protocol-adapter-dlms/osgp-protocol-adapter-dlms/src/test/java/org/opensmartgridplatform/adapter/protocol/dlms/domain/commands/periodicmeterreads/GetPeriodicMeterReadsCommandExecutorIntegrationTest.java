@@ -70,10 +70,15 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
   private final ObisCode OBIS_ACTIVE_ENERGY_IMPORT_RATE_2 = new ObisCode("1.0.1.8.2.255");
   private final ObisCode OBIS_ACTIVE_ENERGY_EXPORT_RATE_1 = new ObisCode("1.0.2.8.1.255");
   private final ObisCode OBIS_ACTIVE_ENERGY_EXPORT_RATE_2 = new ObisCode("1.0.2.8.2.255");
+  private final ObisCode OBIS_MBUS_CHANNEL_1 = new ObisCode("0.1.24.2.1.255");
+  private final ObisCode OBIS_MBUS_CHANNEL_2 = new ObisCode("0.2.24.2.1.255");
+  private final ObisCode OBIS_MBUS_CHANNEL_3 = new ObisCode("0.3.24.2.1.255");
+  private final ObisCode OBIS_MBUS_CHANNEL_4 = new ObisCode("0.4.24.2.1.255");
 
   private final int CLASS_ID_CLOCK = 8;
   private final int CLASS_ID_DATA = 1;
   private final int CLASS_ID_REGISTER = 3;
+  private final int CLASS_ID_EXTENDED_REGISTER = 4;
   private final int CLASS_ID_PROFILE = 7;
 
   private final byte ATTR_ID_VALUE = 2;
@@ -261,7 +266,7 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     final AttributeAddress expectedAddressProfile =
         this.createAttributeAddress(protocol, type, this.timeFrom, this.timeTo, device);
     final List<AttributeAddress> expectedScalerUnitAddresses =
-        this.getScalerUnitAttributeAddresses(type);
+        this.getScalerUnitAttributeAddresses(type, selectiveAccessPeriodicMeterReadsSupported);
     final int expectedTotalNumberOfAttributeAddresses = expectedScalerUnitAddresses.size() + 1;
 
     // Set response in stub
@@ -295,7 +300,8 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
         requestedAttributeAddresses.stream()
             .filter(
                 a ->
-                    a.getClassId() == this.CLASS_ID_REGISTER
+                    (a.getClassId() == this.CLASS_ID_REGISTER
+                            || a.getClassId() == this.CLASS_ID_EXTENDED_REGISTER)
                         && a.getId() == this.ATTR_ID_SCALER_UNIT)
             .collect(Collectors.toList());
     assertThat(attributeAddressesScalerUnit).hasSize(expectedScalerUnitAddresses.size());
@@ -362,8 +368,8 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
             + protocol.getVersion());
   }
 
-  private List<AttributeAddress> getScalerUnitAttributeAddresses(final PeriodTypeDto type)
-      throws Exception {
+  private List<AttributeAddress> getScalerUnitAttributeAddresses(
+      final PeriodTypeDto type, final boolean selectedValuesSupported) throws Exception {
     final List<AttributeAddress> attributeAddresses = new ArrayList<>();
 
     switch (type) {
@@ -393,6 +399,32 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
                 this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_2,
                 this.ATTR_ID_SCALER_UNIT,
                 null));
+        if (!selectedValuesSupported) {
+          attributeAddresses.add(
+              new AttributeAddress(
+                  this.CLASS_ID_EXTENDED_REGISTER,
+                  this.OBIS_MBUS_CHANNEL_1,
+                  this.ATTR_ID_SCALER_UNIT,
+                  null));
+          attributeAddresses.add(
+              new AttributeAddress(
+                  this.CLASS_ID_EXTENDED_REGISTER,
+                  this.OBIS_MBUS_CHANNEL_2,
+                  this.ATTR_ID_SCALER_UNIT,
+                  null));
+          attributeAddresses.add(
+              new AttributeAddress(
+                  this.CLASS_ID_EXTENDED_REGISTER,
+                  this.OBIS_MBUS_CHANNEL_3,
+                  this.ATTR_ID_SCALER_UNIT,
+                  null));
+          attributeAddresses.add(
+              new AttributeAddress(
+                  this.CLASS_ID_EXTENDED_REGISTER,
+                  this.OBIS_MBUS_CHANNEL_3,
+                  this.ATTR_ID_SCALER_UNIT,
+                  null));
+        }
         break;
       case INTERVAL:
         attributeAddresses.add(
