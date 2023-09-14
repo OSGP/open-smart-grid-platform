@@ -152,11 +152,12 @@ public class DlmsObjectConfigService {
   }
 
   private AttributeAddressForProfile getAttributeAddressForProfile(
-      final AddressRequest addressRequest, final boolean selectiveAccessSupported) {
-    final List<DlmsCaptureObject> selectedObjects = new ArrayList<>();
+      final AddressRequest addressRequest, final boolean selectedValuesSupported) {
+    final List<DlmsCaptureObject> selectedObjects =
+        this.getSelectedCaptureObjects(addressRequest, selectedValuesSupported);
 
     final SelectiveAccessDescription access =
-        this.getAccessDescription(addressRequest, selectedObjects, selectiveAccessSupported);
+        this.getAccessDescription(addressRequest, selectedObjects, selectedValuesSupported);
 
     final DlmsObject dlmsObject = addressRequest.getDlmsObject();
 
@@ -191,7 +192,8 @@ public class DlmsObjectConfigService {
     } else {
       final int accessSelector = 1;
 
-      final DataObject selectedValues = this.getSelectedValues(addressRequest, selectedObjects);
+      final DataObject selectedValues =
+          this.getSelectedValuesObject(addressRequest, selectedObjects);
 
       final DataObject accessParameter =
           this.dlmsHelper.getAccessSelectionTimeRangeParameter(
@@ -205,42 +207,46 @@ public class DlmsObjectConfigService {
     }
   }
 
-  private DataObject getSelectedValues(
-      final AddressRequest addressRequest, final List<DlmsCaptureObject> selectedObjects) {
-    List<DataObject> objectDefinitions = new ArrayList<>();
-
+  private List<DlmsCaptureObject> getSelectedCaptureObjects(
+      final AddressRequest addressRequest, final boolean selectedValuesSupported) {
     final DlmsObject object = addressRequest.getDlmsObject();
-    final Protocol protocol = Protocol.forDevice(addressRequest.getDevice());
 
-    if (object instanceof DlmsProfile && ((DlmsProfile) object).getCaptureObjects() != null) {
-
-      final DlmsProfile profile = (DlmsProfile) object;
-      objectDefinitions =
-          this.getObjectDefinitions(
-              addressRequest.getChannel(),
-              addressRequest.getFilterMedium(),
-              protocol,
-              profile,
-              selectedObjects);
+    if (object instanceof final DlmsProfile profile && profile.getCaptureObjects() != null) {
+      if (selectedValuesSupported) {
+        return profile.getCaptureObjects().stream()
+            .filter(
+                o ->
+                    o.getRelatedObject().mediumMatches(addressRequest.getFilterMedium())
+                        && o.channelMatches(addressRequest.getChannel()))
+            .toList();
+      } else {
+        return profile.getCaptureObjects();
+      }
+    } else {
+      return List.of();
     }
+  }
 
-    return DataObject.newArrayData(objectDefinitions);
+  private DataObject getSelectedValuesObject(
+      final AddressRequest addressRequest, final List<DlmsCaptureObject> selectedObjects) {
+    if (selectedObjects.size()
+        == ((DlmsProfile) addressRequest.getDlmsObject()).getCaptureObjects().size()) {
+      // If all capture objects are selected then return an empty list (which means select all)
+      return DataObject.newArrayData(List.of());
+    } else {
+      final List<DataObject> objectDefinitions =
+          this.getObjectDefinitions(addressRequest.getChannel(), selectedObjects);
+
+      return DataObject.newArrayData(objectDefinitions);
+    }
   }
 
   private List<DataObject> getObjectDefinitions(
-      final Integer channel,
-      final Medium filterMedium,
-      final Protocol protocol,
-      final DlmsProfile profile,
-      final List<DlmsCaptureObject> selectedObjects) {
+      final Integer channel, final List<DlmsCaptureObject> selectedObjects) {
     final List<DataObject> objectDefinitions = new ArrayList<>();
 
-    for (final DlmsCaptureObject captureObject : profile.getCaptureObjects()) {
+    for (final DlmsCaptureObject captureObject : selectedObjects) {
       final DlmsObject relatedObject = captureObject.getRelatedObject();
-
-      if (!relatedObject.mediumMatches(filterMedium) || !captureObject.channelMatches(channel)) {
-        continue;
-      }
 
       // Create and add object definition for this capture object
       final ObisCode obisCode = this.replaceChannel(relatedObject.getObisCodeAsString(), channel);
@@ -251,17 +257,6 @@ public class DlmsObjectConfigService {
                   DataObject.newOctetStringData(obisCode.bytes()),
                   DataObject.newInteger8Data((byte) captureObject.getAttributeId()),
                   DataObject.newUInteger16Data(0))));
-
-      // Add object to selected object list
-      if (selectedObjects != null) {
-        selectedObjects.add(captureObject);
-      }
-    }
-
-    if (profile.getCaptureObjects().size() == objectDefinitions.size()
-        || !protocol.isSelectValuesInSelectiveAccessSupported()) {
-      // If all capture objects are selected then return an empty list (which means select all)
-      objectDefinitions.clear();
     }
 
     return objectDefinitions;
