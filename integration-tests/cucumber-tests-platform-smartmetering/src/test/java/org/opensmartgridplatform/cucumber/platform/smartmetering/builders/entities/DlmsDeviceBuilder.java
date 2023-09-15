@@ -277,7 +277,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     return this;
   }
 
-  private static boolean hasPortDefined(final Map<String, String> inputSettings, final String port) {
+  private static boolean hasPortDefined(
+      final Map<String, String> inputSettings, final String port) {
     return inputSettings.containsKey(PlatformSmartmeteringKeys.PORT) && port != null;
   }
 
