@@ -421,7 +421,7 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
           attributeAddresses.add(
               new AttributeAddress(
                   this.CLASS_ID_EXTENDED_REGISTER,
-                  this.OBIS_MBUS_CHANNEL_3,
+                  this.OBIS_MBUS_CHANNEL_4,
                   this.ATTR_ID_SCALER_UNIT,
                   null));
         }
