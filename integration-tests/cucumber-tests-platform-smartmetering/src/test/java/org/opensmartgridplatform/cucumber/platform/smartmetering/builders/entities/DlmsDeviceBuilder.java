@@ -263,8 +263,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         this.setLogicalId(Long.parseLong(inputSettings.get(PlatformSmartmeteringKeys.LOGICAL_ID)));
       }
     }
-    if (inputSettings.containsKey(PlatformSmartmeteringKeys.PORT)) {
-      if (inputSettings.get(PlatformSmartmeteringKeys.PORT).isEmpty()) {
+    final String port = inputSettings.get(PlatformSmartmeteringKeys.PORT);
+    if (hasPortDefined(inputSettings, port)) {
+      if (port.isEmpty()) {
         this.setPort(null);
       } else {
         this.setPort(Long.parseLong(inputSettings.get(PlatformSmartmeteringKeys.PORT)));
@@ -274,6 +275,10 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     }
 
     return this;
+  }
+
+  private static boolean hasPortDefined(final Map<String, String> inputSettings, final String port) {
+    return inputSettings.containsKey(PlatformSmartmeteringKeys.PORT) && port != null;
   }
 
   private void setTimezone(final String timezone) {

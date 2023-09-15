@@ -63,9 +63,8 @@ public class PlatformSmartmeteringDefaults
   public static final Map<ProtocolInfo, Long> PORT_MAPPING = new HashMap<>();
 
   static {
-    // for DSMR 2.2 we will use the DSMR 4.2.2 simulator port so we can test the config developed
-    // for
-    // DSMR 2.2
+    // for DSMR 2.2 we will use the DSMR 4.2.2 simulator port, so we can test the config developed
+    // for DSMR 2.2
     PORT_MAPPING.put(
         new ProtocolInfo.Builder().withProtocol("DSMR").withProtocolVersion("2.2").build(), 1024L);
     PORT_MAPPING.put(
