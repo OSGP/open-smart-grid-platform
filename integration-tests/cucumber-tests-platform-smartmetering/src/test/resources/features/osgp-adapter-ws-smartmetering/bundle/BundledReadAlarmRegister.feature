@@ -7,24 +7,25 @@ Feature: SmartMetering Bundle - ReadAlarmRegister
   As a grid operator 
   I want to be able to read the alarm register from a meter via a bundle request
 
-  Background: 
-
-  Scenario Outline: Retrieve events of a device in a bundle request
+  Scenario Outline: Retrieve read alarm register response of a device in a bundle request for <protocol> <version>
     Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
+      | DeviceIdentification     | TEST1024000000001 |
+      | DeviceType               | SMART_METER_E     |
       | SelectiveAccessSupported | true              |
       | Protocol                 | <protocol>        |
       | ProtocolVersion          | <version>         |
+      | Port                     | <port>            |
+      | Lls1active               | <lls1active>      |
+      | Hls5active               | <hls5active>      |
     And a bundle request
       | DeviceIdentification | TEST1024000000001 |
     And the bundle request contains a read alarm register action
     When the bundle request is received
     Then the bundle response should contain a read alarm register response
     Examples:
-      | protocol | version |
-      | DSMR     | 2.2     |
-      | DSMR     | 4.2.2   |
-      | SMR      | 4.3     |
-      | SMR      | 5.0.0   |
-      | SMR      | 5.1     |
+      | protocol | version | port | lls1active | hls5active |
+      | DSMR     | 2.2     | 1026 | true       | false      |
+      | DSMR     | 4.2.2   | 1024 | false      | true       |
+      | SMR      | 4.3     | 1031 | false      | true       |
+      | SMR      | 5.0.0   | 1027 | false      | true       |
+      | SMR      | 5.1     | 1028 | false      | true       |
