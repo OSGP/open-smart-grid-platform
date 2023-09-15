@@ -10,13 +10,14 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
 
   Scenario Outline: Get the actual power quality public from a device for a polyphase <Protocol> <ProtocolVersion> meter
     Given a dlms device
-      | DeviceIdentification      | <DeviceId>        |
-      | DeviceType                | SMART_METER_E     |
-      | Protocol                  | <Protocol>        |
-      | ProtocolVersion           | <ProtocolVersion> |
-      | Polyphase                 | true              |
-      | Lls1active                | <Lls1active>      |
-      | Hls5active                | <Hls5active>      |
+      | DeviceIdentification      | <DeviceId>            |
+      | DeviceType                | SMART_METER_E         |
+      | Protocol                  | <Protocol>            |
+      | ProtocolVersion           | <ProtocolVersion>     |
+      | Port                      | <OverrideDefaultPort> |
+      | Polyphase                 | true                  |
+      | Lls1active                | <Lls1active>          |
+      | Hls5active                | <Hls5active>          |
     When the get actual power quality request is received
       | DeviceIdentification | <DeviceId> |
       | ProfileType          | PUBLIC     |
@@ -46,10 +47,10 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | PowerQualityObject_Name_15  | NUMBER_OF_VOLTAGE_SWELLS_FOR_L3 |
 
     Examples:
-      | DeviceId             | Protocol | ProtocolVersion | Lls1active | Hls5active |
-      | KTEST10260000001     | DSMR     | 2.2             | true       | false      |
-      | TEST1024000000001    | DSMR     | 4.2.2           | false      | true       |
-      | TEST1027000000001    | SMR      | 5.0.0           | false      | true       |
+      | DeviceId             | Protocol | ProtocolVersion | OverrideDefaultPort | Lls1active | Hls5active |
+      | KTEST10260000001     | DSMR     | 2.2             | 1026                | true       | false      |
+      | TEST1024000000001    | DSMR     | 4.2.2           |                     | false      | true       |
+      | TEST1027000000001    | SMR      | 5.0.0           |                     | false      | true       |
 
   Scenario Outline: Get the actual power quality public from a device for a single phase <Protocol> <ProtocolVersion> meter
     Given a dlms device
@@ -57,6 +58,7 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | DeviceType                | SMART_METER_E     |
       | Protocol                  | <Protocol>        |
       | ProtocolVersion           | <ProtocolVersion> |
+      | Port                      | <OverrideDefaultPort> |
       | Polyphase                 | false             |
       | Lls1active                | <Lls1active>      |
       | Hls5active                | <Hls5active>      |
@@ -77,10 +79,10 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | PowerQualityObject_Name_7   | NUMBER_OF_VOLTAGE_SWELLS_FOR_L1 |
 
     Examples:
-      | DeviceId             | Protocol | ProtocolVersion | Lls1active | Hls5active |
-      | KTEST10260000001     | DSMR     | 2.2             | true       | false      |
-      | TEST1024000000001    | DSMR     | 4.2.2           | false      | true       |
-      | TEST1027000000001    | SMR      | 5.0.0           | false      | true       |
+      | DeviceId             | Protocol | ProtocolVersion | OverrideDefaultPort | Lls1active | Hls5active |
+      | KTEST10260000001     | DSMR     | 2.2             | 1026                | true       | false      |
+      | TEST1024000000001    | DSMR     | 4.2.2           |                     | false      | true       |
+      | TEST1027000000001    | SMR      | 5.0.0           |                     | false      | true       |
 
   Scenario Outline: Get the actual power quality private from a device for a polyphase <Protocol> <ProtocolVersion> meter
     Given a dlms device
@@ -88,6 +90,7 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | DeviceType                | SMART_METER_E     |
       | Protocol                  | <Protocol>        |
       | ProtocolVersion           | <ProtocolVersion> |
+      | Port                      | <OverrideDefaultPort> |
       | Polyphase                 | true              |
       | Lls1active                | <Lls1active>      |
       | Hls5active                | <Hls5active>      |
@@ -156,20 +159,21 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | PowerQualityObject_Unit_28  | AMP                                                |
 
     Examples:
-      | DeviceId             | Protocol | ProtocolVersion | Lls1active | Hls5active | ExpectedNumber |
-      | KTEST10260000001     | DSMR     | 2.2             | true       | false      | 5              |
-      | TEST1024000000001    | DSMR     | 4.2.2           | false      | true       | 28             |
-      | TEST1027000000001    | SMR      | 5.0.0           | false      | true       | 28             |
+      | DeviceId             | Protocol | ProtocolVersion | OverrideDefaultPort | Lls1active | Hls5active | ExpectedNumber |
+      | KTEST10260000001     | DSMR     | 2.2             | 1026                | true       | false      | 5              |
+      | TEST1024000000001    | DSMR     | 4.2.2           |                     | false      | true       | 28             |
+      | TEST1027000000001    | SMR      | 5.0.0           |                     | false      | true       | 28             |
 
   Scenario Outline: Get the actual power quality private from a device for a single phase <Protocol> <ProtocolVersion> meter
     Given a dlms device
-      | DeviceIdentification      | <DeviceId>        |
-      | DeviceType                | SMART_METER_E     |
-      | Protocol                  | <Protocol>        |
-      | ProtocolVersion           | <ProtocolVersion> |
-      | Polyphase                 | false             |
-      | Lls1active                | <Lls1active>      |
-      | Hls5active                | <Hls5active>      |
+      | DeviceIdentification      | <DeviceId>            |
+      | DeviceType                | SMART_METER_E         |
+      | Protocol                  | <Protocol>            |
+      | ProtocolVersion           | <ProtocolVersion>     |
+      | Port                      | <OverrideDefaultPort> |
+      | Polyphase                 | false                 |
+      | Lls1active                | <Lls1active>          |
+      | Hls5active                | <Hls5active>          |
     When the get actual power quality request is received
       | DeviceIdentification | <DeviceId> |
       | ProfileType          | PRIVATE    |
@@ -203,10 +207,10 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | PowerQualityObject_Unit_12  | AMP                                                |
 
     Examples:
-      | DeviceId             | Protocol | ProtocolVersion | Lls1active | Hls5active | ExpectedNumber |
-      | KTEST10260000001     | DSMR     | 2.2             | true       | false      | 3              |
-      | TEST1024000000001    | DSMR     | 4.2.2           | false      | true       | 12             |
-      | TEST1027000000001    | SMR      | 5.0.0           | false      | true       | 12             |
+      | DeviceId             | Protocol | ProtocolVersion | OverrideDefaultPort | Lls1active | Hls5active | ExpectedNumber |
+      | KTEST10260000001     | DSMR     | 2.2             | 1026                | true       | false      | 3              |
+      | TEST1024000000001    | DSMR     | 4.2.2           |                     | false      | true       | 12             |
+      | TEST1027000000001    | SMR      | 5.0.0           |                     | false      | true       | 12             |
 
   Scenario: Do not refuse an operation with an inactive device
     Given a dlms device
