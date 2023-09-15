@@ -16,23 +16,23 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>5.45.0-SNAPSHOT</version>
+    <version>5.46.0-SNAPSHOT</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
   <properties>
     <java.version>17</java.version>
-    <spring.boot.version>2.7.2</spring.boot.version>
-    <spring.data.commons.version>2.7.2</spring.data.commons.version>
+    <spring.boot.version>2.7.15</spring.boot.version>
+    <spring.data.commons.version>2.7.15</spring.data.commons.version>
     <jaxb.plugin.version>2.5.0</jaxb.plugin.version>
     <build.helper.maven.plugin.version>3.0.0</build.helper.maven.plugin.version>
     <apache.ws.xlmschema.version>2.0.1</apache.ws.xlmschema.version>
     <apache.jms.api.version>2.0.1</apache.jms.api.version>
     <wsdl4j.version>1.6.3</wsdl4j.version>
     <maven.failsafe.plugin.version>3.0.0-M5</maven.failsafe.plugin.version>
-    <spring.boot.maven.plugin.version>2.7.2</spring.boot.maven.plugin.version>
+    <spring.boot.maven.plugin.version>2.7.15</spring.boot.maven.plugin.version>
     <osgp-ws-secret-management-version>${project.parent.version}</osgp-ws-secret-management-version>
-    <h2database.version>2.1.214</h2database.version>
+    <h2database.version>2.2.222</h2database.version>
     <failOnMissingWebXml>false</failOnMissingWebXml>
   </properties>
 

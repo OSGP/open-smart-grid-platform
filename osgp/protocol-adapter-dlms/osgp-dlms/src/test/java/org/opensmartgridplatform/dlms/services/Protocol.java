@@ -11,18 +11,18 @@ import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
 
 @Getter
 public enum Protocol {
-  DSMR_2_2("DSMR", "2.2", 19, 2, 4, 6, 14, 0, 0, 0, 0, false, false),
-  DSMR_4_2_2("DSMR", "4.2.2", 43, 11, 27, 6, 14, 6, 13, 5, 6, true, false),
-  SMR_4_3("SMR", "4.3", 44, 11, 27, 6, 14, 6, 13, 6, 7, true, false),
-  SMR_5_0_0("SMR", "5.0.0", 49, 11, 27, 6, 14, 6, 15, 9, 14, true, true),
+  DSMR_2_2("DSMR", "2.2", 20, 2, 4, 6, 14, 0, 0, 0, 0, false, false),
+  DSMR_4_2_2("DSMR", "4.2.2", 44, 11, 27, 6, 14, 6, 13, 5, 6, true, false),
+  SMR_4_3("SMR", "4.3", 45, 11, 27, 6, 14, 6, 13, 6, 7, true, false),
+  SMR_5_0_0("SMR", "5.0.0", 50, 11, 27, 6, 14, 6, 15, 9, 14, true, true),
 
-  SMR_5_1("SMR", "5.1", 49, 11, 27, 6, 14, 6, 15, 9, 14, true, true),
-  SMR_5_2("SMR", "5.2", 50, 11, 27, 6, 14, 6, 15, 10, 15, true, true),
-  SMR_5_5("SMR", "5.5", 51, 11, 27, 6, 14, 6, 15, 10, 15, true, true);
+  SMR_5_1("SMR", "5.1", 50, 11, 27, 6, 14, 6, 15, 9, 14, true, true),
+  SMR_5_2("SMR", "5.2", 52, 11, 27, 6, 14, 6, 15, 10, 15, true, true),
+  SMR_5_5("SMR", "5.5", 54, 11, 27, 6, 14, 6, 15, 10, 15, true, true);
 
   private final String name;
   private final String version;
-  private final int nrOfCosemObjectsPq;
+  private final int nrOfCosemObjects;
   private final int nrOfCosemObjectsPqOnActualSpPrivate;
   private final int nrOfCosemObjectsPqOnActualPpPrivate;
   private final int nrOfCosemObjectsPqOnActualSpPublic;
@@ -37,7 +37,7 @@ public enum Protocol {
   Protocol(
       final String name,
       final String version,
-      final int nrOfCosemObjectsPq,
+      final int nrOfCosemObjects,
       final int nrOfCosemObjectsPqOnActualSpPrivate,
       final int nrOfCosemObjectsPqOnActualPpPrivate,
       final int nrOfCosemObjectsPqOnActualSpPublic,
@@ -50,7 +50,7 @@ public enum Protocol {
       final boolean hasPqProfiles) {
     this.name = name;
     this.version = version;
-    this.nrOfCosemObjectsPq = nrOfCosemObjectsPq;
+    this.nrOfCosemObjects = nrOfCosemObjects;
     this.nrOfCosemObjectsPqOnActualSpPublic = nrOfCosemObjectsPqOnActualSpPublic;
     this.nrOfCosemObjectsPqOnActualPpPublic = nrOfCosemObjectsPqOnActualPpPublic;
     this.nrOfCosemObjectsPqOnActualSpPrivate = nrOfCosemObjectsPqOnActualSpPrivate;

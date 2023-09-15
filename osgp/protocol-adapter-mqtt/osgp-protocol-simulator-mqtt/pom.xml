@@ -14,13 +14,13 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.7.2</version>
+    <version>2.7.15</version>
     <relativePath />
   </parent>
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-protocol-simulator-mqtt</artifactId>
-  <version>5.45.0-SNAPSHOT</version>
+  <version>5.46.0-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>osgp-protocol-simulator-mqtt</name>
   <description>Simulator for MQTT Protocol.</description>

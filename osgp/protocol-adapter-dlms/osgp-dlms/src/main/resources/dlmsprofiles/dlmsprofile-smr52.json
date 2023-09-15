@@ -11,11 +11,15 @@
     {
       "tag": "DEFINABLE_LOAD_PROFILE",
       "description": "Definable load profile",
+      "note": null,
       "class-id": 7,
       "version": 1,
       "obis": "0.1.94.31.6.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "SELECTABLE_OBJECTS": [
           "CLOCK",
@@ -92,75 +96,108 @@
           "access": "RW"
         }
       ]
-    },{
-    "tag": "LTE_DIAGNOSTIC",
-    "description": "LTE Diagnostic",
-    "class-id": 47,
-    "version": 0,
-    "obis": "0.2.25.6.0.255",
-    "group": "ELECTRICITY",
-    "meterTypes": ["SP","PP"],
-    "properties": {
-      "PQ_PROFILE": "PUBLIC",
-      "PQ_REQUEST": ["PERIODIC_SP","PERIODIC_PP"]
     },
-    "attributes": [
-      {
-        "id": 2,
-        "description": "operator",
-        "datatype": "visible-string",
-        "valuetype": "DYNAMIC",
-        "value": "EMPTY",
-        "access": "R"
+    {
+      "tag": "LTE_DIAGNOSTIC",
+      "description": "LTE Diagnostic",
+      "note": null,
+      "class-id": 47,
+      "version": 0,
+      "obis": "0.2.25.6.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "properties": {
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": [
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
-      {
-        "id": 3,
-        "description": "status",
-        "datatype": "enum",
-        "valuetype": "DYNAMIC",
-        "value": "0",
-        "access": "R"
-      },
-      {
-        "id": 4,
-        "description": "cs attachment",
-        "datatype": "enum",
-        "valuetype": "DYNAMIC",
-        "value": "0",
-        "access": "R"
-      },
-      {
-        "id": 5,
-        "description": "ps status",
-        "datatype": "enum",
-        "valuetype": "DYNAMIC",
-        "value": "0",
-        "access": "R"
-      },
-      {
-        "id": 6,
-        "description": "cell info",
-        "datatype": "cell_info_type",
-        "valuetype": "DYNAMIC",
-        "value": "EMPTY",
-        "access": "R"
-      },
-      {
-        "id": 7,
-        "description": "adjacent cells",
-        "datatype": "array",
-        "valuetype": "DYNAMIC",
-        "value": "EMPTY",
-        "access": "R"
-      },
-      {
-        "id": 8,
-        "description": "capture time",
-        "datatype": "date-time",
-        "valuetype": "DYNAMIC",
-        "value": "EMPTY",
-        "access": "R"
-      }
-    ]
-  }]
+      "attributes": [
+        {
+          "id": 2,
+          "description": "operator",
+          "datatype": "visible-string",
+          "valuetype": "DYNAMIC",
+          "value": "EMPTY",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "status",
+          "datatype": "enum",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "cs attachment",
+          "datatype": "enum",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "ps status",
+          "datatype": "enum",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "cell info",
+          "datatype": "cell_info_type",
+          "valuetype": "DYNAMIC",
+          "value": "EMPTY",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "adjacent cells",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "value": "EMPTY",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "capture time",
+          "datatype": "date-time",
+          "valuetype": "DYNAMIC",
+          "value": "EMPTY",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ALARM_REGISTER_2",
+      "description": "Alarm register 2",
+      "note": "Specified in addendum for SMR5.2",
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.97.98.1.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "RW"
+        }
+      ]
+    }
+  ]
 }

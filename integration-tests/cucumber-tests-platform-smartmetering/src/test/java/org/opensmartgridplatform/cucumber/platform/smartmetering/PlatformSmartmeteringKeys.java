@@ -61,6 +61,7 @@ public class PlatformSmartmeteringKeys
   public static final String MODULE_ACTIVE_FIRMWARE = "module_active_firmware";
   public static final String COMM_MODULE_ACTIVE_FIRMWARE = "communication_module_active_firmware";
   public static final String ACTIVE_FIRMWARE = "active_firmware";
+  public static final String FIRMWARE_HASH = "FirmwareHash";
   public static final String KEY_DEVICE_MASTERKEY = "Master_key";
   public static final String KEY_DEVICE_AUTHENTICATIONKEY = "Authentication_key";
   public static final String KEY_DEVICE_ENCRYPTIONKEY = "Encryption_key";
