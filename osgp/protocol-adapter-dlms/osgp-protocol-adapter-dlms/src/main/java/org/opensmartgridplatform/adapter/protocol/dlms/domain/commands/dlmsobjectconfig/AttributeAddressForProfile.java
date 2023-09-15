@@ -4,8 +4,11 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.openmuc.jdlms.AttributeAddress;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsExtendedRegister;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsRegister;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
@@ -56,14 +59,51 @@ public class AttributeAddressForProfile {
 
   public List<DlmsRegister> getCaptureObjects(
       final Class<? extends DlmsRegister> dlmsObjectClass, final boolean defaultAttributeId) {
-    return this.selectedObjects.stream()
-        .filter(
-            c ->
-                !defaultAttributeId
-                    || c.getAttributeId() == c.getRelatedObject().getDefaultAttributeId())
-        .map(DlmsCaptureObject::getRelatedObject)
-        .filter(dlmsObjectClass::isInstance)
-        .map(DlmsRegister.class::cast)
-        .toList();
+
+    final List<DlmsCaptureObject> captureObjects =
+        this.selectedObjects.stream()
+            .filter(
+                c ->
+                    !defaultAttributeId
+                        || c.getAttributeId() == c.getRelatedObject().getDefaultAttributeId())
+            .toList();
+
+    final List<DlmsRegister> registers = new ArrayList<>();
+
+    for (final DlmsCaptureObject captureObject : captureObjects) {
+      final DlmsObject relatedObject = captureObject.getRelatedObject();
+      if (dlmsObjectClass.isInstance(relatedObject)) {
+        final DlmsRegister originalRegister = (DlmsRegister) relatedObject;
+        final String obisCode = originalRegister.getObisCodeAsString();
+        if (originalRegister instanceof DlmsExtendedRegister) {
+          final Integer channel = captureObject.getChannel();
+          final String obisCodeWithChannel =
+              channel == null
+                  ? obisCode
+                  : obisCode.replace("<c>", String.valueOf(captureObject.getChannel()));
+          final DlmsExtendedRegister register =
+              new DlmsExtendedRegister(
+                  originalRegister.getType(),
+                  obisCodeWithChannel,
+                  originalRegister.getScaler(),
+                  originalRegister.getUnit(),
+                  originalRegister.getMedium());
+
+          registers.add(register);
+        } else {
+          final DlmsRegister register =
+              new DlmsRegister(
+                  originalRegister.getType(),
+                  obisCode,
+                  originalRegister.getScaler(),
+                  originalRegister.getUnit(),
+                  originalRegister.getMedium());
+
+          registers.add(register);
+        }
+      }
+    }
+
+    return registers;
   }
 }

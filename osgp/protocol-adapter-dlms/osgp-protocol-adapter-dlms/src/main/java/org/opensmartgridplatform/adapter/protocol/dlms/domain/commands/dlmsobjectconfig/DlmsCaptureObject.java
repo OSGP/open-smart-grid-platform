@@ -46,6 +46,10 @@ public class DlmsCaptureObject {
     return new DlmsCaptureObject(relatedObject, attributeId, channel);
   }
 
+  public Integer getChannel() {
+    return this.channel;
+  }
+
   public DlmsObject getRelatedObject() {
     return this.relatedObject;
   }
