@@ -211,7 +211,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
     final AmrProfileStatusCodeDto status =
         this.readStatus(ctx.bufferedObjects, ctx.attributeAddressForProfile);
-    final DataObject gasValue = this.readValue(ctx.bufferedObjects, ctx.attributeAddressForProfile);
+    final DataObject gasValue =
+        this.readValue(
+            ctx.bufferedObjects,
+            ctx.attributeAddressForProfile,
+            ctx.periodicMeterReadsQuery.getChannel().getChannelNumber());
     final DataObject scalerUnit =
         this.readScalerUnit(
             ctx.getResultList,
@@ -260,10 +264,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
   private DataObject readValue(
       final List<DataObject> bufferedObjects,
-      final AttributeAddressForProfile attributeAddressForProfile) {
+      final AttributeAddressForProfile attributeAddressForProfile,
+      final int channel) {
 
     final Integer valueIndex =
-        attributeAddressForProfile.getIndex(DlmsObjectType.MBUS_MASTER_VALUE, 2);
+        attributeAddressForProfile.getIndex(DlmsObjectType.MBUS_MASTER_VALUE, 2, channel);
 
     DataObject value = null;
 
