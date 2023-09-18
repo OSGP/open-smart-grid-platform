@@ -164,6 +164,12 @@ public class DlmsConnectionStub implements DlmsConnection {
         .anyMatch(parameter -> parameter.getId() == methodClass.getMethodId());
   }
 
+  public long getMethodInvocationCount(final MethodClass methodClass) {
+    return this.methodsInvoked.stream()
+        .filter(parameter -> parameter.getId() == methodClass.getMethodId())
+        .count();
+  }
+
   public void addReturnValue(
       final AttributeAddress attributeAddress,
       final DataObject dataObject,

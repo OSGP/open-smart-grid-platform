@@ -42,6 +42,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
   private String protocolName = PlatformSmartmeteringDefaults.PROTOCOL;
   private String protocolVersion = PlatformSmartmeteringDefaults.PROTOCOL_VERSION;
   private Long invocationCounter = PlatformSmartmeteringDefaults.INVOCATION_COUNTER;
+  private String firmwareHash = null;
 
   private String timezone;
 
@@ -166,6 +167,11 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     return this;
   }
 
+  public DlmsDeviceBuilder setFirmwareHash(final String firmwareHash) {
+    this.firmwareHash = firmwareHash;
+    return this;
+  }
+
   @Override
   public DlmsDeviceBuilder withSettings(final Map<String, String> inputSettings) {
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION)) {
@@ -251,6 +257,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_TIMEZONE)) {
       this.setTimezone(getString(inputSettings, PlatformSmartmeteringKeys.KEY_DEVICE_TIMEZONE));
     }
+    if (inputSettings.containsKey(PlatformSmartmeteringKeys.FIRMWARE_HASH)) {
+      this.setFirmwareHash(getString(inputSettings, PlatformSmartmeteringKeys.FIRMWARE_HASH));
+    }
 
     /**
      * For port/logical_id we want to be able to override the default value to be null to enable
@@ -314,6 +323,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     dlmsDevice.setProtocol(this.protocolName, this.protocolVersion);
     dlmsDevice.setInvocationCounter(this.invocationCounter);
     dlmsDevice.setTimezone(this.timezone);
+    dlmsDevice.setFirmwareHash(this.firmwareHash);
 
     return dlmsDevice;
   }

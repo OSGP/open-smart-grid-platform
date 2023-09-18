@@ -17,14 +17,13 @@ import io.cucumber.java.en.Then;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -255,7 +254,8 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
 
     final String deviceType = "LMD";
     final InetAddress networkAddress = InetAddress.getLoopbackAddress();
-    final Date technicalInstallationDate = DateTime.now().withZone(DateTimeZone.UTC).toDate();
+    final Date technicalInstallationDate =
+        Date.from(ZonedDateTime.now(ZoneId.of("UTC")).toInstant());
     final ProtocolInfo protocolInfo =
         this.protocolInfoRepository.findByProtocolAndProtocolVersion("IEC61850", "1.0");
 
