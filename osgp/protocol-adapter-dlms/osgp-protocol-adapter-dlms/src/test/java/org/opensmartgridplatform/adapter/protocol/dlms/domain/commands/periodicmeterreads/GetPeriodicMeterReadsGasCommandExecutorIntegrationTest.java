@@ -266,7 +266,8 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         protocol,
         type,
         useNullData,
-        selectiveAccessPeriodicMeterReadsSupported);
+        selectiveAccessPeriodicMeterReadsSupported,
+        channel);
     this.setResponsesForScalerUnit(expectedScalerUnitAddresses);
 
     // CALL
@@ -318,7 +319,7 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     assertThat(periodicMeterReads).hasSize(AMOUNT_OF_PERIODS);
 
     this.checkClockValues(periodicMeterReads, type, useNullData);
-    this.checkValues(periodicMeterReads);
+    this.checkValues(periodicMeterReads, channel);
     this.checkAmrStatus(periodicMeterReads, protocol, type);
   }
 
@@ -443,13 +444,13 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
       final Protocol protocol,
       final PeriodTypeDto type,
       final boolean useNullData,
-      final boolean selectedValuesSupported) {
+      final boolean selectedValuesSupported,
+      final int channel) {
 
     // PERIOD 1
 
     final DataObject period1Clock = this.PERIOD_1_CLOCK;
     final DataObject period1Status = DataObject.newUInteger8Data(this.PERIOD1_AMR_STATUS_VALUE);
-    final DataObject period1Value = DataObject.newUInteger32Data(this.PERIOD_1_LONG_VALUE);
     final DataObject period1CaptureTime = DataObject.newDateTimeData(this.PERIOD_1_CAPTURE_TIME);
     final DataObject period1ValueE = DataObject.newUInteger32Data(this.PERIOD_1_LONG_VALUE_E);
 
@@ -458,7 +459,10 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
       if (selectedValuesSupported) {
         periodItem1 =
             DataObject.newStructureData(
-                Arrays.asList(period1Clock, period1Value, period1CaptureTime));
+                Arrays.asList(
+                    period1Clock,
+                    this.createValue(this.PERIOD_1_LONG_VALUE, channel),
+                    period1CaptureTime));
       } else {
         periodItem1 =
             DataObject.newStructureData(
@@ -468,20 +472,24 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
                     period1ValueE,
                     period1ValueE,
                     period1ValueE,
-                    period1Value,
+                    this.createValue(this.PERIOD_1_LONG_VALUE, 1),
                     period1CaptureTime,
-                    period1Value,
+                    this.createValue(this.PERIOD_1_LONG_VALUE, 2),
                     period1CaptureTime,
-                    period1Value,
+                    this.createValue(this.PERIOD_1_LONG_VALUE, 3),
                     period1CaptureTime,
-                    period1Value,
+                    this.createValue(this.PERIOD_1_LONG_VALUE, 4),
                     period1CaptureTime));
       }
     } else {
       if (selectedValuesSupported || type == PeriodTypeDto.INTERVAL) {
         periodItem1 =
             DataObject.newStructureData(
-                Arrays.asList(period1Clock, period1Status, period1Value, period1CaptureTime));
+                Arrays.asList(
+                    period1Clock,
+                    period1Status,
+                    this.createValue(this.PERIOD_1_LONG_VALUE, channel),
+                    period1CaptureTime));
       } else {
         periodItem1 =
             DataObject.newStructureData(
@@ -492,13 +500,13 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
                     period1ValueE,
                     period1ValueE,
                     period1ValueE,
-                    period1Value,
+                    this.createValue(this.PERIOD_1_LONG_VALUE, 1),
                     period1CaptureTime,
-                    period1Value,
+                    this.createValue(this.PERIOD_1_LONG_VALUE, 2),
                     period1CaptureTime,
-                    period1Value,
+                    this.createValue(this.PERIOD_1_LONG_VALUE, 3),
                     period1CaptureTime,
-                    period1Value,
+                    this.createValue(this.PERIOD_1_LONG_VALUE, 4),
                     period1CaptureTime));
       }
     }
@@ -515,7 +523,6 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
       period2CaptureTime = DataObject.newDateTimeData(this.PERIOD_2_CAPTURE_TIME);
     }
     final DataObject period2Status = DataObject.newUInteger8Data(this.PERIOD2_AMR_STATUS_VALUE);
-    final DataObject period2Value = DataObject.newUInteger32Data(this.PERIOD_2_LONG_VALUE);
     final DataObject period2ValueE = DataObject.newUInteger32Data(this.PERIOD_2_LONG_VALUE_E);
 
     final DataObject periodItem2;
@@ -524,7 +531,10 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
       if (selectedValuesSupported) {
         periodItem2 =
             DataObject.newStructureData(
-                Arrays.asList(period2Clock, period2Value, period2CaptureTime));
+                Arrays.asList(
+                    period2Clock,
+                    this.createValue(this.PERIOD_2_LONG_VALUE, channel),
+                    period2CaptureTime));
       } else {
         periodItem2 =
             DataObject.newStructureData(
@@ -534,20 +544,24 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
                     period2ValueE,
                     period2ValueE,
                     period2ValueE,
-                    period2Value,
-                    period2CaptureTime,
-                    period2Value,
-                    period2CaptureTime,
-                    period2Value,
-                    period2CaptureTime,
-                    period2Value,
-                    period2CaptureTime));
+                    this.createValue(this.PERIOD_2_LONG_VALUE, 1),
+                    period1CaptureTime,
+                    this.createValue(this.PERIOD_2_LONG_VALUE, 2),
+                    period1CaptureTime,
+                    this.createValue(this.PERIOD_2_LONG_VALUE, 3),
+                    period1CaptureTime,
+                    this.createValue(this.PERIOD_2_LONG_VALUE, 4),
+                    period1CaptureTime));
       }
     } else {
       if (selectedValuesSupported || type == PeriodTypeDto.INTERVAL) {
         periodItem2 =
             DataObject.newStructureData(
-                Arrays.asList(period2Clock, period2Status, period2Value, period2CaptureTime));
+                Arrays.asList(
+                    period2Clock,
+                    period2Status,
+                    this.createValue(this.PERIOD_2_LONG_VALUE, channel),
+                    period2CaptureTime));
       } else {
         periodItem2 =
             DataObject.newStructureData(
@@ -558,14 +572,14 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
                     period2ValueE,
                     period2ValueE,
                     period2ValueE,
-                    period2Value,
-                    period2CaptureTime,
-                    period2Value,
-                    period2CaptureTime,
-                    period2Value,
-                    period2CaptureTime,
-                    period2Value,
-                    period2CaptureTime));
+                    this.createValue(this.PERIOD_2_LONG_VALUE, 1),
+                    period1CaptureTime,
+                    this.createValue(this.PERIOD_2_LONG_VALUE, 2),
+                    period1CaptureTime,
+                    this.createValue(this.PERIOD_2_LONG_VALUE, 3),
+                    period1CaptureTime,
+                    this.createValue(this.PERIOD_2_LONG_VALUE, 4),
+                    period1CaptureTime));
       }
     }
 
@@ -621,13 +635,16 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     }
   }
 
-  private void checkValues(final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads) {
+  private void checkValues(
+      final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads, final int channel) {
 
     final PeriodicMeterReadsGasResponseItemDto period1 = periodicMeterReads.get(0);
     final PeriodicMeterReadsGasResponseItemDto period2 = periodicMeterReads.get(1);
 
-    assertThat(period1.getConsumption().getValue().longValue()).isEqualTo(this.PERIOD_1_LONG_VALUE);
-    assertThat(period2.getConsumption().getValue().longValue()).isEqualTo(this.PERIOD_2_LONG_VALUE);
+    assertThat(period1.getConsumption().getValue().longValue())
+        .isEqualTo(this.PERIOD_1_LONG_VALUE + channel);
+    assertThat(period2.getConsumption().getValue().longValue())
+        .isEqualTo(this.PERIOD_2_LONG_VALUE + channel);
   }
 
   private void checkAmrStatus(
@@ -803,5 +820,10 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
                 this.getObisCodeForChannel(this.OBIS_GAS_VALUE_DSMR4, channel).bytes()),
             DataObject.newInteger8Data(attributeId),
             DataObject.newUInteger16Data(0)));
+  }
+
+  private DataObject createValue(final long value, final int channel) {
+    // Add channel to value to make each value different
+    return DataObject.newUInteger32Data(value + channel);
   }
 }
