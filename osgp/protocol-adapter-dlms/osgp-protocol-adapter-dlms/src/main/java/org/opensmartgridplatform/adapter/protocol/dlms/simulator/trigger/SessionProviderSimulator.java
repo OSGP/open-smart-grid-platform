@@ -4,14 +4,15 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.simulator.trigger;
 
+import java.util.Optional;
 import javax.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProvider;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProviderEnum;
+import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProviderMap;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
@@ -33,12 +34,22 @@ import org.springframework.stereotype.Component;
 @PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true)
 public class SessionProviderSimulator extends SessionProvider {
 
-  @Value("${triggered.simulator.ipaddress}")
-  private String ipAddress;
+  private final String ipAddress;
 
-  @Autowired private DomainHelperService domainHelperService;
+  private final DomainHelperService domainHelperService;
 
-  @Autowired private SimulatorTriggerClient simulatorTriggerClient;
+  private final SimulatorTriggerClient simulatorTriggerClient;
+
+  public SessionProviderSimulator(
+      final SessionProviderMap sessionProviderMap,
+      final DomainHelperService dlmsDomainHelperService,
+      final SimulatorTriggerClient simulatorTriggerClient,
+      @Value("${triggered.simulator.ipaddress}") final String ipAddress) {
+    super(sessionProviderMap);
+    this.domainHelperService = dlmsDomainHelperService;
+    this.simulatorTriggerClient = simulatorTriggerClient;
+    this.ipAddress = ipAddress;
+  }
 
   /**
    * Initialization function executed after dependency injection has finished. The SessionProvider
@@ -58,9 +69,9 @@ public class SessionProviderSimulator extends SessionProvider {
    *     given iccId, or the simulator was not successfully started.
    */
   @Override
-  public String getIpAddress(final String iccId) throws SessionProviderException {
+  public Optional<String> getIpAddress(final String iccId) throws SessionProviderException {
 
-    DlmsDevice dlmsDevice;
+    final DlmsDevice dlmsDevice;
     try {
       dlmsDevice = this.domainHelperService.findDlmsDevice(iccId);
       this.simulatorTriggerClient.sendTrigger(dlmsDevice);
@@ -70,6 +81,6 @@ public class SessionProviderSimulator extends SessionProvider {
       throw new SessionProviderException("Unable to successfully start a simulator. ", e);
     }
 
-    return this.ipAddress;
+    return Optional.of(this.ipAddress);
   }
 }

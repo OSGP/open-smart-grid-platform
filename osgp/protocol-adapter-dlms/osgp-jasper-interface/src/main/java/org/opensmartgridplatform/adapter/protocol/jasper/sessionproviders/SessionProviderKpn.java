@@ -4,17 +4,19 @@
 
 package org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders;
 
+import java.util.Optional;
 import javax.annotation.PostConstruct;
+import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessTerminalClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
 import org.opensmartgridplatform.adapter.protocol.jasper.response.GetSessionInfoResponse;
+import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +25,24 @@ public class SessionProviderKpn extends SessionProvider {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SessionProviderKpn.class);
 
-  @Autowired private JasperWirelessTerminalClient jasperWirelessTerminalClient;
+  private final JasperWirelessTerminalClient jasperWirelessTerminalClient;
+  private final JasperWirelessSmsClient jasperWirelessSmsClient;
+  private final int jasperGetSessionRetries;
+
+  private final int jasperGetSessionSleepBetweenRetries;
+
+  public SessionProviderKpn(
+      final SessionProviderMap sessionProviderMap,
+      final JasperWirelessTerminalClient jasperWirelessTerminalClient,
+      final JasperWirelessSmsClient jasperWirelessSmsClient,
+      final int jasperGetSessionRetries,
+      final int jasperGetSessionSleepBetweenRetries) {
+    super(sessionProviderMap);
+    this.jasperWirelessTerminalClient = jasperWirelessTerminalClient;
+    this.jasperWirelessSmsClient = jasperWirelessSmsClient;
+    this.jasperGetSessionRetries = jasperGetSessionRetries;
+    this.jasperGetSessionSleepBetweenRetries = jasperGetSessionSleepBetweenRetries;
+  }
 
   /**
    * Initialization function executed after dependency injection has finished. The SessionProvider
@@ -35,19 +54,68 @@ public class SessionProviderKpn extends SessionProvider {
   }
 
   @Override
-  public String getIpAddress(final String iccId) throws OsgpException {
-    GetSessionInfoResponse response = null;
+  public Optional<String> getIpAddress(final String iccId) throws OsgpException {
+    String deviceIpAddress;
     try {
-      response = this.jasperWirelessTerminalClient.getSession(iccId);
+      deviceIpAddress = this.getIpAddressFromSessionInfo(iccId);
+      if (deviceIpAddress != null) {
+        return Optional.of(deviceIpAddress);
+      }
+
+      // If the result is null then the meter is not in session (not
+      // awake).
+      // So wake up the meter and start polling for the session
+      this.jasperWirelessSmsClient.sendWakeUpSMS(iccId);
+      deviceIpAddress = this.pollForSession(iccId);
+
+    } catch (final OsgpJasperException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.INVALID_ICCID, ComponentType.PROTOCOL_DLMS, e);
+    }
+    return Optional.ofNullable(deviceIpAddress);
+  }
+
+  private String pollForSession(final String iccId) throws OsgpException {
+
+    String deviceIpAddress = null;
+    try {
+      for (int i = 0; i < this.jasperGetSessionRetries; i++) {
+        Thread.sleep(this.jasperGetSessionSleepBetweenRetries);
+        deviceIpAddress = this.getIpAddressFromSessionInfo(iccId);
+        if (deviceIpAddress != null) {
+          return deviceIpAddress;
+        }
+      }
+    } catch (final InterruptedException e) {
+      Thread.currentThread().interrupt();
+      LOGGER.error(
+          "Interrupted while sleeping before calling the sessionProvider.getIpAddress [iccId: "
+              + iccId
+              + "]",
+          e);
+      throw new FunctionalException(
+          FunctionalExceptionType.SESSION_PROVIDER_ERROR, ComponentType.PROTOCOL_DLMS, e);
+    } catch (final SessionProviderException e) {
+      LOGGER.error("SessionProviderException occurred [iccId: " + iccId + "]", e);
+      throw new FunctionalException(
+          FunctionalExceptionType.SESSION_PROVIDER_ERROR, ComponentType.PROTOCOL_DLMS, e);
+    }
+    return deviceIpAddress;
+  }
+
+  private String getIpAddressFromSessionInfo(final String iccId) throws OsgpException {
+    try {
+      final GetSessionInfoResponse response = this.jasperWirelessTerminalClient.getSession(iccId);
+      return response.getIpAddress();
     } catch (final OsgpJasperException e) {
       this.handleException(e);
+      return null;
     }
-    return response.getIpAddress();
   }
 
   private void handleException(final OsgpJasperException e) throws FunctionalException {
     String errorMessage = "";
-    FunctionalExceptionType functionalExceptionType;
+    final FunctionalExceptionType functionalExceptionType;
     if (e.getJasperError() != null) {
       if (e.getJasperError().getHttpStatus() == HttpStatus.NOT_FOUND) {
         functionalExceptionType = FunctionalExceptionType.INVALID_ICCID;
