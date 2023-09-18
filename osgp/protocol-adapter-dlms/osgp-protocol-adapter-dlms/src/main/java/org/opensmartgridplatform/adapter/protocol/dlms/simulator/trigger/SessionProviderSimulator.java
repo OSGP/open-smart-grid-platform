@@ -61,19 +61,16 @@ public class SessionProviderSimulator extends SessionProvider {
   }
 
   /**
-   * This implementation depends on the iccId having the same value as the device identification (in
-   * order to be able to look up some data with the device for calling the simulator starting web
-   * service, like the port number and logicalId of a simulated device).
-   *
    * @throws SessionProviderException when no dlmsDevice can be found with a deviceId equal to the
    *     given iccId, or the simulator was not successfully started.
    */
   @Override
-  public Optional<String> getIpAddress(final String iccId) throws SessionProviderException {
+  public Optional<String> getIpAddress(final String deviceIdentification, final String iccId)
+      throws SessionProviderException {
 
     final DlmsDevice dlmsDevice;
     try {
-      dlmsDevice = this.domainHelperService.findDlmsDevice(iccId);
+      dlmsDevice = this.domainHelperService.findDlmsDevice(deviceIdentification);
       this.simulatorTriggerClient.sendTrigger(dlmsDevice);
     } catch (final FunctionalException e) {
       throw new SessionProviderException("Unable to find dlmsDevice. ", e);

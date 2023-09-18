@@ -15,5 +15,6 @@ public abstract class SessionProvider {
     this.sessionProviderMap = sessionProviderMap;
   }
 
-  public abstract Optional<String> getIpAddress(String iccId) throws OsgpException;
+  public abstract Optional<String> getIpAddress(String deviceIdentification, String iccId)
+      throws OsgpException;
 }

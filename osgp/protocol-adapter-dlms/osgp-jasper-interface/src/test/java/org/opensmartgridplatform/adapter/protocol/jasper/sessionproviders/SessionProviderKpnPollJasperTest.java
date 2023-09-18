@@ -26,8 +26,9 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
 @ExtendWith(MockitoExtension.class)
-public class SessionProviderKpnTest {
+public class SessionProviderKpnPollJasperTest {
 
+  private static final String DEVICE_IDENTIFICATION = "device-identification";
   private static final String ICC_ID = "icc-id";
   private static final String IP_ADDRESS = "1.2.3.4";
 
@@ -37,12 +38,12 @@ public class SessionProviderKpnTest {
   private final int jasperGetSessionRetries = 1;
   private final int jasperGetSessionSleepBetweenRetries = 2;
 
-  private SessionProviderKpn sessionProviderKpn;
+  private SessionProviderKpnPollJasper sessionProviderKpnPollJasper;
 
   @BeforeEach
   void setUp() {
-    this.sessionProviderKpn =
-        new SessionProviderKpn(
+    this.sessionProviderKpnPollJasper =
+        new SessionProviderKpnPollJasper(
             this.sessionProviderMap,
             this.jasperWirelessTerminalClient,
             this.jasperWirelessSmsClient,
@@ -52,9 +53,10 @@ public class SessionProviderKpnTest {
 
   @Test
   void testInit() {
-    this.sessionProviderKpn.init();
+    this.sessionProviderKpnPollJasper.init();
 
-    verify(this.sessionProviderMap).addProvider(SessionProviderEnum.KPN, this.sessionProviderKpn);
+    verify(this.sessionProviderMap)
+        .addProvider(SessionProviderEnum.KPN, this.sessionProviderKpnPollJasper);
   }
 
   @Test
@@ -62,7 +64,8 @@ public class SessionProviderKpnTest {
     final GetSessionInfoResponse response = this.newGetSessionInfoResponse(ICC_ID, IP_ADDRESS);
     when(this.jasperWirelessTerminalClient.getSession(ICC_ID)).thenReturn(response);
 
-    final Optional<String> ipAddress = this.sessionProviderKpn.getIpAddress(ICC_ID);
+    final Optional<String> ipAddress =
+        this.sessionProviderKpnPollJasper.getIpAddress(DEVICE_IDENTIFICATION, ICC_ID);
     assertThat(ipAddress).isPresent().isEqualTo(Optional.of(IP_ADDRESS));
   }
 
@@ -74,7 +77,8 @@ public class SessionProviderKpnTest {
         .thenReturn(emptyResponse)
         .thenReturn(response);
 
-    final Optional<String> ipAddress = this.sessionProviderKpn.getIpAddress(ICC_ID);
+    final Optional<String> ipAddress =
+        this.sessionProviderKpnPollJasper.getIpAddress(DEVICE_IDENTIFICATION, ICC_ID);
 
     verify(this.jasperWirelessSmsClient).sendWakeUpSMS(ICC_ID);
     assertThat(ipAddress).isPresent().isEqualTo(Optional.of(IP_ADDRESS));
@@ -88,7 +92,8 @@ public class SessionProviderKpnTest {
         .thenReturn(emptyResponse)
         .thenReturn(emptyResponse);
 
-    final Optional<String> ipAddress = this.sessionProviderKpn.getIpAddress(ICC_ID);
+    final Optional<String> ipAddress =
+        this.sessionProviderKpnPollJasper.getIpAddress(DEVICE_IDENTIFICATION, ICC_ID);
 
     verify(this.jasperWirelessSmsClient).sendWakeUpSMS(ICC_ID);
     assertThat(ipAddress).isEmpty();
@@ -108,7 +113,7 @@ public class SessionProviderKpnTest {
         assertThrows(
             FunctionalException.class,
             () -> {
-              this.sessionProviderKpn.getIpAddress(ICC_ID);
+              this.sessionProviderKpnPollJasper.getIpAddress(DEVICE_IDENTIFICATION, ICC_ID);
             });
 
     assertThat(functionalException.getExceptionType()).isEqualTo(INVALID_ICCID);

@@ -74,6 +74,7 @@ class DomainHelperServiceTest {
     this.whenSessionProviderReturnsIpAddress(communicationProvider, iccId, ipAddress);
     final DlmsDevice dlmsDevice =
         new DlmsDeviceBuilder()
+            .withDeviceIdentification(DEVICE_IDENTIFICATION)
             .withCommunicationProvider(communicationProvider)
             .setIccId(iccId)
             .build();
@@ -90,7 +91,8 @@ class DomainHelperServiceTest {
 
     when(this.sessionProviderService.getSessionProvider(communicationProvider))
         .thenReturn(this.sessionProvider);
-    when(this.sessionProvider.getIpAddress(iccId)).thenReturn(Optional.of(IP_ADDRESS));
+    when(this.sessionProvider.getIpAddress(DEVICE_IDENTIFICATION, iccId))
+        .thenReturn(Optional.of(IP_ADDRESS));
   }
 
   @Test
@@ -115,10 +117,12 @@ class DomainHelperServiceTest {
 
     when(this.sessionProviderService.getSessionProvider(communicationProvider))
         .thenReturn(this.sessionProvider);
-    when(this.sessionProvider.getIpAddress(iccId)).thenReturn(Optional.of(ipAddress));
+    when(this.sessionProvider.getIpAddress(DEVICE_IDENTIFICATION, iccId))
+        .thenReturn(Optional.of(ipAddress));
 
     final DlmsDevice dlmsDevice =
         new DlmsDeviceBuilder()
+            .withDeviceIdentification(DEVICE_IDENTIFICATION)
             .withIpAddressStatic(false)
             .withCommunicationProvider(communicationProvider)
             .setIccId(iccId)

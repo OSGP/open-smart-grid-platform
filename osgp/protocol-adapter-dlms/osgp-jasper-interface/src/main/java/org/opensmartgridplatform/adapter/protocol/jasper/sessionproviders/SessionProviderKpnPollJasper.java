@@ -18,12 +18,10 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 
-@Component
-public class SessionProviderKpn extends SessionProvider {
+public class SessionProviderKpnPollJasper extends SessionProvider {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SessionProviderKpn.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SessionProviderKpnPollJasper.class);
 
   private final JasperWirelessTerminalClient jasperWirelessTerminalClient;
   private final JasperWirelessSmsClient jasperWirelessSmsClient;
@@ -31,7 +29,7 @@ public class SessionProviderKpn extends SessionProvider {
 
   private final int jasperGetSessionSleepBetweenRetries;
 
-  public SessionProviderKpn(
+  public SessionProviderKpnPollJasper(
       final SessionProviderMap sessionProviderMap,
       final JasperWirelessTerminalClient jasperWirelessTerminalClient,
       final JasperWirelessSmsClient jasperWirelessSmsClient,
@@ -54,7 +52,8 @@ public class SessionProviderKpn extends SessionProvider {
   }
 
   @Override
-  public Optional<String> getIpAddress(final String iccId) throws OsgpException {
+  public Optional<String> getIpAddress(final String deviceIdentification, final String iccId)
+      throws OsgpException {
     String deviceIpAddress;
     try {
       deviceIpAddress = this.getIpAddressFromSessionInfo(iccId);

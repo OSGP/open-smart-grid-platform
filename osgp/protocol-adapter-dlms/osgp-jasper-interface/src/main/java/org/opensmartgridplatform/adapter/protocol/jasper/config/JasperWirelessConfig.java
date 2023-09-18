@@ -16,6 +16,10 @@ import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWireless
 import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWirelessTerminalSoapClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.rest.client.JasperWirelessSmsRestClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.rest.client.JasperWirelessTerminalRestClient;
+import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProvider;
+import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProviderKpnPollJasper;
+import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProviderKpnPushAlarm;
+import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProviderMap;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,12 +46,6 @@ import org.springframework.ws.soap.security.wss4j2.Wss4jSecurityInterceptor;
 public class JasperWirelessConfig extends AbstractConfig {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JasperWirelessConfig.class);
-
-  @Value("${jwcc.getsession.retries}")
-  private String retries;
-
-  @Value("${jwcc.getsession.sleep.between.retries}")
-  private String sleepBetweenRetries;
 
   @Value("${jwcc.uri.sms}")
   private String uri;
@@ -138,18 +136,8 @@ public class JasperWirelessConfig extends AbstractConfig {
   }
 
   @Bean
-  public int jasperGetSessionRetries() {
-    return Integer.parseInt(this.retries);
-  }
-
-  @Bean
   public short jasperGetValidityPeriod() {
     return Short.parseShort(this.validityPeriod);
-  }
-
-  @Bean
-  public int jasperGetSessionSleepBetweenRetries() {
-    return Integer.parseInt(this.sleepBetweenRetries);
   }
 
   @Bean
@@ -189,6 +177,27 @@ public class JasperWirelessConfig extends AbstractConfig {
       return new JasperWirelessTerminalRestClient();
     } else {
       return new JasperWirelessTerminalSoapClient();
+    }
+  }
+
+  @Bean
+  public SessionProvider sessionProviderKpn(
+      final SessionProviderMap sessionProviderMap,
+      final JasperWirelessTerminalClient jasperWirelessTerminalClient,
+      final JasperWirelessSmsClient jasperWirelessSmsClient,
+      @Value("${jwcc.getsession.poll.jasper:true}") final boolean pollJasper,
+      @Value("${jwcc.getsession.retries}") final int jasperGetSessionRetries,
+      @Value("${jwcc.getsession.sleep.between.retries}")
+          final int jasperGetSessionSleepBetweenRetries) {
+    if (pollJasper) {
+      return new SessionProviderKpnPollJasper(
+          sessionProviderMap,
+          jasperWirelessTerminalClient,
+          jasperWirelessSmsClient,
+          jasperGetSessionRetries,
+          jasperGetSessionSleepBetweenRetries);
+    } else {
+      return new SessionProviderKpnPushAlarm(sessionProviderMap, jasperWirelessSmsClient);
     }
   }
 }

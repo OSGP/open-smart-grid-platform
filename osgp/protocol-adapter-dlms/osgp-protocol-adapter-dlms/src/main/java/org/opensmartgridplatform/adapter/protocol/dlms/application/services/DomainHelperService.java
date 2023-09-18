@@ -85,7 +85,8 @@ public class DomainHelperService {
 
     final SessionProvider sessionProvider =
         this.sessionProviderService.getSessionProvider(dlmsDevice.getCommunicationProvider());
-    final Optional<String> deviceIpAddress = sessionProvider.getIpAddress(dlmsDevice.getIccId());
+    final Optional<String> deviceIpAddress =
+        sessionProvider.getIpAddress(dlmsDevice.getDeviceIdentification(), dlmsDevice.getIccId());
 
     return deviceIpAddress.orElseThrow(
         () ->
