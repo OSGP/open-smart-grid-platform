@@ -109,7 +109,7 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
             this.toDateTime.toDate(),
             ChannelDto.ONE);
     when(this.dlmsObjectConfigService.findAttributeAddressForProfile(
-            any(), any(), any(), any(), any(), any()))
+            any(), any(), any(), any(), any(), any(), eq(true)))
         .thenReturn(Optional.empty());
 
     // CALL
@@ -172,7 +172,8 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
             eq(channel.getChannelNumber()),
             eq(convertedFromTime),
             eq(convertedToTime),
-            eq(Medium.GAS)))
+            eq(Medium.GAS),
+            eq(true)))
         .thenReturn(Optional.of(attributeAddressForProfile));
 
     when(this.dlmsObjectConfigService.getAttributeAddressesForScalerUnit(
@@ -305,6 +306,7 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
 
   private DlmsDevice createDevice(final Protocol protocol) {
     final DlmsDevice device = new DlmsDevice();
+    device.setSelectiveAccessPeriodicMeterReadsSupported(true);
     device.setProtocol(protocol);
     return device;
   }
