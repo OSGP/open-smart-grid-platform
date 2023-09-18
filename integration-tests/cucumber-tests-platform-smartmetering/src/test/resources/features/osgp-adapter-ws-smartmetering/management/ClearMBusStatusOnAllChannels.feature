@@ -23,7 +23,7 @@ Feature: SmartMetering Management - Clear M-Bus alarm status on all channels of 
       | TEST1029000000001     | SMR      | 5.2     |
       | TEST1030000000001     | SMR      | 5.5     |
 
-
+  @SMHE-1695
   Scenario Outline: Clear M-Bus alarm status on all channels of a E-meter for protocol <protocol> <version> and check result NOT_OK
     Given a dlms device
       | DeviceIdentification | <deviceIdentification> |
