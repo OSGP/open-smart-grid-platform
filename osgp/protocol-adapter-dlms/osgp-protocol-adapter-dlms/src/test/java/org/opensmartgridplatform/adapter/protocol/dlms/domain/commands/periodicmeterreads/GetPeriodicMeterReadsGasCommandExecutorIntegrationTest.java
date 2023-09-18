@@ -23,11 +23,14 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.assertj.core.util.Lists;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
@@ -64,24 +67,21 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   private DlmsConnectionStub connectionStub;
 
   private final ObisCode OBIS_DAILY_DSMR4 = new ObisCode("1.0.99.2.0.255");
-  private final ObisCode OBIS_INTERVAL_DSMR4 = new ObisCode("0.1.24.3.0.255");
   private final ObisCode OBIS_MONTHLY_DSMR4 = new ObisCode("0.0.98.1.0.255");
+  private final String OBIS_INTERVAL_DSMR4 = "0.<c>.24.3.0.255";
 
-  private final ObisCode OBIS_DAILY_SMR5 = new ObisCode("0.1.24.3.1.255");
-  private final ObisCode OBIS_INTERVAL_SMR5 = new ObisCode("0.1.24.3.0.255");
-  private final ObisCode OBIS_MONTHLY_SMR5 = new ObisCode("0.1.24.3.2.255");
+  private final String OBIS_DAILY_SMR5 = "0.<c>.24.3.1.255";
+  private final String OBIS_INTERVAL_SMR5 = "0.<c>.24.3.0.255";
+  private final String OBIS_MONTHLY_SMR5 = "0.<c>.24.3.2.255";
 
   private final ObisCode OBIS_CLOCK = new ObisCode("0.0.1.0.0.255");
   private final ObisCode OBIS_STATUS = new ObisCode("0.0.96.10.2.255");
-  private final ObisCode OBIS_GAS_VALUE_SMR5 = new ObisCode("0.1.24.2.2.255");
+  private final String OBIS_GAS_VALUE_SMR5 = "0.<c>.24.2.2.255";
   private final ObisCode OBIS_ACTIVE_ENERGY_IMPORT_RATE_1 = new ObisCode("1.0.1.8.1.255");
   private final ObisCode OBIS_ACTIVE_ENERGY_IMPORT_RATE_2 = new ObisCode("1.0.1.8.2.255");
   private final ObisCode OBIS_ACTIVE_ENERGY_EXPORT_RATE_1 = new ObisCode("1.0.2.8.1.255");
   private final ObisCode OBIS_ACTIVE_ENERGY_EXPORT_RATE_2 = new ObisCode("1.0.2.8.2.255");
-  private final ObisCode OBIS_GAS_VALUE_DSMR4_CHANNEL_1 = new ObisCode("0.1.24.2.1.255");
-  private final ObisCode OBIS_GAS_VALUE_DSMR4_CHANNEL_2 = new ObisCode("0.2.24.2.1.255");
-  private final ObisCode OBIS_GAS_VALUE_DSMR4_CHANNEL_3 = new ObisCode("0.3.24.2.1.255");
-  private final ObisCode OBIS_GAS_VALUE_DSMR4_CHANNEL_4 = new ObisCode("0.4.24.2.1.255");
+  private final String OBIS_GAS_VALUE_DSMR4 = "0.<c>.24.2.1.255";
 
   private final int CLASS_ID_CLOCK = 8;
   private final int CLASS_ID_DATA = 1;
@@ -107,22 +107,6 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
               DataObject.newUInteger16Data(this.CLASS_ID_DATA),
                   DataObject.newOctetStringData(this.OBIS_STATUS.bytes()),
               DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
-
-  private final DataObject GAS_VALUE_DSMR4 =
-      DataObject.newStructureData(
-          Arrays.asList(
-              DataObject.newUInteger16Data(this.CLASS_ID_EXTENDED_REGISTER),
-              DataObject.newOctetStringData(this.OBIS_GAS_VALUE_DSMR4_CHANNEL_1.bytes()),
-              DataObject.newInteger8Data(this.ATTR_ID_VALUE),
-              DataObject.newUInteger16Data(0)));
-
-  private final DataObject GAS_CAPTURE_TIME_DSMR4 =
-      DataObject.newStructureData(
-          Arrays.asList(
-              DataObject.newUInteger16Data(this.CLASS_ID_EXTENDED_REGISTER),
-              DataObject.newOctetStringData(this.OBIS_GAS_VALUE_DSMR4_CHANNEL_1.bytes()),
-              DataObject.newInteger8Data(this.ATTR_ID_CAPTURE_TIME),
-              DataObject.newUInteger16Data(0)));
 
   private Date TIME_FROM;
   private Date TIME_TO;
@@ -195,47 +179,62 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 0, 0).getTime();
   }
 
-  @ParameterizedTest
-  @EnumSource(PeriodTypeDto.class)
-  void testExecuteDsmr4NoSelectiveAccess(final PeriodTypeDto type) throws Exception {
-    this.testExecute(Protocol.DSMR_4_2_2, type, false, false);
+  private static Stream<Arguments> combinePeriodTypesWithChannels() {
+    return Arrays.stream(PeriodTypeDto.values())
+        .map(GetPeriodicMeterReadsGasCommandExecutorIntegrationTest::combineWithChannels)
+        .flatMap(List::stream);
+  }
+
+  private static List<Arguments> combineWithChannels(final PeriodTypeDto periodType) {
+    final List<Integer> channels = Lists.newArrayList(1, 2, 3, 4);
+    return channels.stream().map(channel -> Arguments.of(periodType, channel)).toList();
   }
 
   @ParameterizedTest
-  @EnumSource(PeriodTypeDto.class)
-  void testExecuteDsmr4(final PeriodTypeDto type) throws Exception {
-    this.testExecute(Protocol.DSMR_4_2_2, type, false, true);
+  @MethodSource("combinePeriodTypesWithChannels")
+  void testExecuteDsmr4NoSelectiveAccess(final PeriodTypeDto type, final int channel)
+      throws Exception {
+    this.testExecute(Protocol.DSMR_4_2_2, type, false, false, channel);
   }
 
   @ParameterizedTest
-  @EnumSource(PeriodTypeDto.class)
-  void testExecuteSmr5_0(final PeriodTypeDto type) throws Exception {
-    this.testExecute(Protocol.SMR_5_0_0, type, false, true);
+  @MethodSource("combinePeriodTypesWithChannels")
+  void testExecuteDsmr4(final PeriodTypeDto type, final int channel) throws Exception {
+    this.testExecute(Protocol.DSMR_4_2_2, type, false, true, channel);
   }
 
   @ParameterizedTest
-  @EnumSource(PeriodTypeDto.class)
-  void testExecuteSmr5_0_WithNullData(final PeriodTypeDto type) throws Exception {
-    this.testExecute(Protocol.SMR_5_0_0, type, true, true);
+  @MethodSource("combinePeriodTypesWithChannels")
+  void testExecuteSmr5_0(final PeriodTypeDto type, final int channel) throws Exception {
+    this.testExecute(Protocol.SMR_5_0_0, type, false, true, channel);
   }
 
   @ParameterizedTest
-  @EnumSource(PeriodTypeDto.class)
-  void testExecuteSmr5_1(final PeriodTypeDto type) throws Exception {
-    this.testExecute(Protocol.SMR_5_1, type, false, true);
+  @MethodSource("combinePeriodTypesWithChannels")
+  void testExecuteSmr5_0_WithNullData(final PeriodTypeDto type, final int channel)
+      throws Exception {
+    this.testExecute(Protocol.SMR_5_0_0, type, true, true, channel);
   }
 
   @ParameterizedTest
-  @EnumSource(PeriodTypeDto.class)
-  void testExecuteSmr5_1_WithNullData(final PeriodTypeDto type) throws Exception {
-    this.testExecute(Protocol.SMR_5_1, type, true, true);
+  @MethodSource("combinePeriodTypesWithChannels")
+  void testExecuteSmr5_1(final PeriodTypeDto type, final int channel) throws Exception {
+    this.testExecute(Protocol.SMR_5_1, type, false, true, channel);
+  }
+
+  @ParameterizedTest
+  @MethodSource("combinePeriodTypesWithChannels")
+  void testExecuteSmr5_1_WithNullData(final PeriodTypeDto type, final int channel)
+      throws Exception {
+    this.testExecute(Protocol.SMR_5_1, type, true, true, channel);
   }
 
   private void testExecute(
       final Protocol protocol,
       final PeriodTypeDto type,
       final boolean useNullData,
-      final boolean selectiveAccessPeriodicMeterReadsSupported)
+      final boolean selectiveAccessPeriodicMeterReadsSupported,
+      final int channel)
       throws Exception {
 
     // SETUP
@@ -252,13 +251,14 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     // Create request object
     final PeriodicMeterReadsRequestDto request =
         new PeriodicMeterReadsRequestDto(
-            type, this.TIME_FROM, this.TIME_TO, ChannelDto.fromNumber(1));
+            type, this.TIME_FROM, this.TIME_TO, ChannelDto.fromNumber(channel));
 
     // Get expected values
     final AttributeAddress expectedAddressProfile =
-        this.createAttributeAddress(protocol, type, this.TIME_FROM, this.TIME_TO, device);
+        this.createAttributeAddress(protocol, type, this.TIME_FROM, this.TIME_TO, device, channel);
     final List<AttributeAddress> expectedScalerUnitAddresses =
-        this.getScalerUnitAttributeAddresses(protocol, selectiveAccessPeriodicMeterReadsSupported);
+        this.getScalerUnitAttributeAddresses(
+            protocol, selectiveAccessPeriodicMeterReadsSupported, channel);
 
     // Set response in stub
     this.setResponseForProfile(
@@ -337,7 +337,8 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
       final PeriodTypeDto type,
       final Date timeFrom,
       final Date timeTo,
-      final DlmsDevice device)
+      final DlmsDevice device,
+      final int channel)
       throws Exception {
     final DataObject from =
         this.dlmsHelper.asDataObject(
@@ -349,20 +350,20 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     if (protocol == Protocol.DSMR_4_2_2) {
       if (type == PeriodTypeDto.DAILY) {
         return this.createAttributeAddressDsmr4Daily(
-            from, to, device.isSelectiveAccessPeriodicMeterReadsSupported());
+            from, to, device.isSelectiveAccessPeriodicMeterReadsSupported(), channel);
       } else if (type == PeriodTypeDto.MONTHLY) {
         return this.createAttributeAddressDsmr4Monthly(
-            from, to, device.isSelectiveAccessPeriodicMeterReadsSupported());
+            from, to, device.isSelectiveAccessPeriodicMeterReadsSupported(), channel);
       } else if (type == PeriodTypeDto.INTERVAL) {
-        return this.createAttributeAddressDsmr4Interval(from, to);
+        return this.createAttributeAddressDsmr4Interval(from, to, channel);
       }
     } else if (protocol == Protocol.SMR_5_0_0 || protocol == Protocol.SMR_5_1) {
       if (type == PeriodTypeDto.DAILY) {
-        return this.createAttributeAddressSmr5Daily(from, to);
+        return this.createAttributeAddressSmr5Daily(from, to, channel);
       } else if (type == PeriodTypeDto.MONTHLY) {
-        return this.createAttributeAddressSmr5Monthly(from, to);
+        return this.createAttributeAddressSmr5Monthly(from, to, channel);
       } else if (type == PeriodTypeDto.INTERVAL) {
-        return this.createAttributeAddressSmr5Interval(from, to);
+        return this.createAttributeAddressSmr5Interval(from, to, channel);
       }
     }
 
@@ -374,14 +375,14 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   }
 
   private List<AttributeAddress> getScalerUnitAttributeAddresses(
-      final Protocol protocol, final boolean selectedValuesSupported) {
+      final Protocol protocol, final boolean selectedValuesSupported, final int channel) {
 
     if (protocol == Protocol.DSMR_4_2_2) {
       if (selectedValuesSupported) {
         return List.of(
             new AttributeAddress(
                 this.CLASS_ID_EXTENDED_REGISTER,
-                this.OBIS_GAS_VALUE_DSMR4_CHANNEL_1,
+                this.getObisCodeForChannel(this.OBIS_GAS_VALUE_DSMR4, channel),
                 this.ATTR_ID_SCALER_UNIT,
                 null));
       } else {
@@ -408,22 +409,22 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
                 null),
             new AttributeAddress(
                 this.CLASS_ID_EXTENDED_REGISTER,
-                this.OBIS_GAS_VALUE_DSMR4_CHANNEL_1,
+                this.getObisCodeForChannel(this.OBIS_GAS_VALUE_DSMR4, 1),
                 this.ATTR_ID_SCALER_UNIT,
                 null),
             new AttributeAddress(
                 this.CLASS_ID_EXTENDED_REGISTER,
-                this.OBIS_GAS_VALUE_DSMR4_CHANNEL_2,
+                this.getObisCodeForChannel(this.OBIS_GAS_VALUE_DSMR4, 2),
                 this.ATTR_ID_SCALER_UNIT,
                 null),
             new AttributeAddress(
                 this.CLASS_ID_EXTENDED_REGISTER,
-                this.OBIS_GAS_VALUE_DSMR4_CHANNEL_3,
+                this.getObisCodeForChannel(this.OBIS_GAS_VALUE_DSMR4, 3),
                 this.ATTR_ID_SCALER_UNIT,
                 null),
             new AttributeAddress(
                 this.CLASS_ID_EXTENDED_REGISTER,
-                this.OBIS_GAS_VALUE_DSMR4_CHANNEL_4,
+                this.getObisCodeForChannel(this.OBIS_GAS_VALUE_DSMR4, 4),
                 this.ATTR_ID_SCALER_UNIT,
                 null));
       }
@@ -431,7 +432,7 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
       return List.of(
           new AttributeAddress(
               this.CLASS_ID_EXTENDED_REGISTER,
-              this.OBIS_GAS_VALUE_SMR5,
+              this.getObisCodeForChannel(this.OBIS_GAS_VALUE_SMR5, channel),
               this.ATTR_ID_SCALER_UNIT,
               null));
     }
@@ -653,10 +654,11 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   private AttributeAddress createAttributeAddressDsmr4Daily(
       final DataObject from,
       final DataObject to,
-      final boolean selectiveAccessPeriodicMeterReadsSupported) {
+      final boolean selectiveAccessPeriodicMeterReadsSupported,
+      final int channel) {
     final SelectiveAccessDescription expectedSelectiveAccess =
         this.createSelectiveAccessDescriptionDsmr4Daily(
-            from, to, selectiveAccessPeriodicMeterReadsSupported);
+            from, to, selectiveAccessPeriodicMeterReadsSupported, channel);
     return new AttributeAddress(
         this.CLASS_ID_PROFILE, this.OBIS_DAILY_DSMR4, this.ATTR_ID_BUFFER, expectedSelectiveAccess);
   }
@@ -664,12 +666,16 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   private SelectiveAccessDescription createSelectiveAccessDescriptionDsmr4Daily(
       final DataObject from,
       final DataObject to,
-      final boolean selectiveAccessPeriodicMeterReadsSupported) {
+      final boolean selectiveAccessPeriodicMeterReadsSupported,
+      final int channel) {
 
     final List<DataObject> dataObjects =
         selectiveAccessPeriodicMeterReadsSupported
             ? Arrays.asList(
-                this.CLOCK, this.STATUS, this.GAS_VALUE_DSMR4, this.GAS_CAPTURE_TIME_DSMR4)
+                this.CLOCK,
+                this.STATUS,
+                this.getDataObjectForGasValueDsmr4(channel, this.ATTR_ID_VALUE),
+                this.getDataObjectForGasValueDsmr4(channel, this.ATTR_ID_CAPTURE_TIME))
             : new ArrayList<>();
 
     final DataObject selectedValues = DataObject.newArrayData(dataObjects);
@@ -683,10 +689,11 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   private AttributeAddress createAttributeAddressDsmr4Monthly(
       final DataObject from,
       final DataObject to,
-      final boolean selectiveAccessPeriodicMeterReadsSupported) {
+      final boolean selectiveAccessPeriodicMeterReadsSupported,
+      final int channel) {
     final SelectiveAccessDescription expectedSelectiveAccess =
         this.createSelectiveAccessDescriptionDsmr4Monthly(
-            from, to, selectiveAccessPeriodicMeterReadsSupported);
+            from, to, selectiveAccessPeriodicMeterReadsSupported, channel);
     return new AttributeAddress(
         this.CLASS_ID_PROFILE,
         this.OBIS_MONTHLY_DSMR4,
@@ -697,11 +704,15 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   private SelectiveAccessDescription createSelectiveAccessDescriptionDsmr4Monthly(
       final DataObject from,
       final DataObject to,
-      final boolean selectiveAccessPeriodicMeterReadsSupported) {
+      final boolean selectiveAccessPeriodicMeterReadsSupported,
+      final int channel) {
 
     final List<DataObject> dataObjects =
         selectiveAccessPeriodicMeterReadsSupported
-            ? Arrays.asList(this.CLOCK, this.GAS_VALUE_DSMR4, this.GAS_CAPTURE_TIME_DSMR4)
+            ? Arrays.asList(
+                this.CLOCK,
+                this.getDataObjectForGasValueDsmr4(channel, this.ATTR_ID_VALUE),
+                this.getDataObjectForGasValueDsmr4(channel, this.ATTR_ID_CAPTURE_TIME))
             : new ArrayList<>();
 
     final DataObject selectedValues = DataObject.newArrayData(dataObjects);
@@ -713,12 +724,12 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   }
 
   private AttributeAddress createAttributeAddressDsmr4Interval(
-      final DataObject from, final DataObject to) {
+      final DataObject from, final DataObject to, final int channel) {
     final SelectiveAccessDescription expectedSelectiveAccess =
         this.createSelectiveAccessDescriptionDsmr4Interval(from, to);
     return new AttributeAddress(
         this.CLASS_ID_PROFILE,
-        this.OBIS_INTERVAL_DSMR4,
+        this.getObisCodeForChannel(this.OBIS_INTERVAL_DSMR4, channel),
         this.ATTR_ID_BUFFER,
         expectedSelectiveAccess);
   }
@@ -737,31 +748,34 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   // SMR5
 
   private AttributeAddress createAttributeAddressSmr5Daily(
-      final DataObject from, final DataObject to) {
-    final SelectiveAccessDescription expectedSelectiveAccess =
-        this.createSelectiveAccessDescriptionSmr5(from, to);
-    return new AttributeAddress(
-        this.CLASS_ID_PROFILE, this.OBIS_DAILY_SMR5, this.ATTR_ID_BUFFER, expectedSelectiveAccess);
-  }
-
-  private AttributeAddress createAttributeAddressSmr5Monthly(
-      final DataObject from, final DataObject to) {
+      final DataObject from, final DataObject to, final int channel) {
     final SelectiveAccessDescription expectedSelectiveAccess =
         this.createSelectiveAccessDescriptionSmr5(from, to);
     return new AttributeAddress(
         this.CLASS_ID_PROFILE,
-        this.OBIS_MONTHLY_SMR5,
+        this.getObisCodeForChannel(this.OBIS_DAILY_SMR5, channel),
+        this.ATTR_ID_BUFFER,
+        expectedSelectiveAccess);
+  }
+
+  private AttributeAddress createAttributeAddressSmr5Monthly(
+      final DataObject from, final DataObject to, final int channel) {
+    final SelectiveAccessDescription expectedSelectiveAccess =
+        this.createSelectiveAccessDescriptionSmr5(from, to);
+    return new AttributeAddress(
+        this.CLASS_ID_PROFILE,
+        this.getObisCodeForChannel(this.OBIS_MONTHLY_SMR5, channel),
         this.ATTR_ID_BUFFER,
         expectedSelectiveAccess);
   }
 
   private AttributeAddress createAttributeAddressSmr5Interval(
-      final DataObject from, final DataObject to) {
+      final DataObject from, final DataObject to, final int channel) {
     final SelectiveAccessDescription expectedSelectiveAccess =
         this.createSelectiveAccessDescriptionSmr5(from, to);
     return new AttributeAddress(
         this.CLASS_ID_PROFILE,
-        this.OBIS_INTERVAL_SMR5,
+        this.getObisCodeForChannel(this.OBIS_INTERVAL_SMR5, channel),
         this.ATTR_ID_BUFFER,
         expectedSelectiveAccess);
   }
@@ -775,5 +789,19 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         DataObject.newStructureData(Arrays.asList(this.CLOCK, from, to, selectedValues));
 
     return new SelectiveAccessDescription(1, expectedAccessParam);
+  }
+
+  private ObisCode getObisCodeForChannel(final String obis, final int channel) {
+    return new ObisCode(obis.replace("<c>", String.valueOf(channel)));
+  }
+
+  private DataObject getDataObjectForGasValueDsmr4(final int channel, final byte attributeId) {
+    return DataObject.newStructureData(
+        Arrays.asList(
+            DataObject.newUInteger16Data(this.CLASS_ID_EXTENDED_REGISTER),
+            DataObject.newOctetStringData(
+                this.getObisCodeForChannel(this.OBIS_GAS_VALUE_DSMR4, channel).bytes()),
+            DataObject.newInteger8Data(attributeId),
+            DataObject.newUInteger16Data(0)));
   }
 }

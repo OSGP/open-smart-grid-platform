@@ -44,6 +44,21 @@ public class AttributeAddressForProfile {
     return null;
   }
 
+  public Integer getIndex(final DlmsObjectType type, final Integer attributeId, final int channel) {
+    int index = 0;
+
+    for (final DlmsCaptureObject object : this.selectedObjects) {
+      if (object.getRelatedObject().getType().equals(type)
+          && (attributeId == null || object.getAttributeId() == attributeId)
+          && ((object.getChannel() == null) || (object.getChannel() == channel))) {
+        return index;
+      }
+      index++;
+    }
+
+    return null;
+  }
+
   public DlmsCaptureObject getCaptureObject(final DlmsObjectType dlmsObjectType)
       throws ProtocolAdapterException {
     return this.selectedObjects.stream()
