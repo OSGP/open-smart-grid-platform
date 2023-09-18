@@ -14,7 +14,6 @@ Feature: SmartMetering Bundle - ReadAlarmRegister
       | SelectiveAccessSupported | true              |
       | Protocol                 | <protocol>        |
       | ProtocolVersion          | <version>         |
-      | Port                     | <port>            |
       | Lls1active               | <lls1active>      |
       | Hls5active               | <hls5active>      |
     And a bundle request
@@ -23,9 +22,9 @@ Feature: SmartMetering Bundle - ReadAlarmRegister
     When the bundle request is received
     Then the bundle response should contain a read alarm register response
     Examples:
-      | protocol | version | port | lls1active | hls5active |
-      | DSMR     | 2.2     | 1026 | true       | false      |
-      | DSMR     | 4.2.2   | 1024 | false      | true       |
-      | SMR      | 4.3     | 1031 | false      | true       |
-      | SMR      | 5.0.0   | 1027 | false      | true       |
-      | SMR      | 5.1     | 1028 | false      | true       |
+      | protocol | version | lls1active | hls5active |
+      | DSMR     | 2.2     | true       | false      |
+      | DSMR     | 4.2.2   | false      | true       |
+      | SMR      | 4.3     | false      | true       |
+      | SMR      | 5.0.0   | false      | true       |
+      | SMR      | 5.1     | false      | true       |
