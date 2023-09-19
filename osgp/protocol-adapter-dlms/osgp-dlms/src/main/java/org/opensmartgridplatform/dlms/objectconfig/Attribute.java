@@ -10,6 +10,7 @@ import lombok.Data;
 public class Attribute {
   private int id;
   private String description;
+  private String note;
   private DlmsDataType datatype;
   private ValueType valuetype;
   private String value;
