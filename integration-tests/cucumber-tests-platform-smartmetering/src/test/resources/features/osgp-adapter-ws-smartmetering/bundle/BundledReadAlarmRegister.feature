@@ -28,3 +28,5 @@ Feature: SmartMetering Bundle - ReadAlarmRegister
       | SMR      | 4.3     | false      | true       |
       | SMR      | 5.0.0   | false      | true       |
       | SMR      | 5.1     | false      | true       |
+      | SMR      | 5.2     | false      | true       |
+      | SMR      | 5.5     | false      | true       |
