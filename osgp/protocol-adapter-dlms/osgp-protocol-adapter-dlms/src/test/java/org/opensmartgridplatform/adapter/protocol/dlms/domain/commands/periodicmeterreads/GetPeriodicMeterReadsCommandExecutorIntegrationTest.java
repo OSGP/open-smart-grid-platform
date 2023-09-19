@@ -17,8 +17,9 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
@@ -69,10 +70,15 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
   private final ObisCode OBIS_ACTIVE_ENERGY_IMPORT_RATE_2 = new ObisCode("1.0.1.8.2.255");
   private final ObisCode OBIS_ACTIVE_ENERGY_EXPORT_RATE_1 = new ObisCode("1.0.2.8.1.255");
   private final ObisCode OBIS_ACTIVE_ENERGY_EXPORT_RATE_2 = new ObisCode("1.0.2.8.2.255");
+  private final ObisCode OBIS_MBUS_CHANNEL_1 = new ObisCode("0.1.24.2.1.255");
+  private final ObisCode OBIS_MBUS_CHANNEL_2 = new ObisCode("0.2.24.2.1.255");
+  private final ObisCode OBIS_MBUS_CHANNEL_3 = new ObisCode("0.3.24.2.1.255");
+  private final ObisCode OBIS_MBUS_CHANNEL_4 = new ObisCode("0.4.24.2.1.255");
 
   private final int CLASS_ID_CLOCK = 8;
   private final int CLASS_ID_DATA = 1;
   private final int CLASS_ID_REGISTER = 3;
+  private final int CLASS_ID_EXTENDED_REGISTER = 4;
   private final int CLASS_ID_PROFILE = 7;
 
   private final byte ATTR_ID_VALUE = 2;
@@ -198,44 +204,47 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     DateTimeZone.setDefault(defaultDateTimeZone);
   }
 
-  @Test
-  void testExecuteDsmr4() throws Exception {
-    for (final PeriodTypeDto type : PeriodTypeDto.values()) {
-      this.testExecute(Protocol.DSMR_4_2_2, type, false);
-    }
+  @ParameterizedTest
+  @EnumSource(PeriodTypeDto.class)
+  void testExecuteDsmr4NoSelectiveAccess(final PeriodTypeDto type) throws Exception {
+    this.testExecute(Protocol.DSMR_4_2_2, type, false, false);
   }
 
-  @Test
-  void testExecuteSmr5_0() throws Exception {
-    for (final PeriodTypeDto type : PeriodTypeDto.values()) {
-      this.testExecute(Protocol.SMR_5_0_0, type, false);
-    }
+  @ParameterizedTest
+  @EnumSource(PeriodTypeDto.class)
+  void testExecuteDsmr4(final PeriodTypeDto type) throws Exception {
+    this.testExecute(Protocol.DSMR_4_2_2, type, false, true);
   }
 
-  @Test
-  void testExecuteSmr5_0_WithNullData() throws Exception {
-    for (final PeriodTypeDto type : PeriodTypeDto.values()) {
-      this.testExecute(Protocol.SMR_5_0_0, type, true);
-    }
+  @ParameterizedTest
+  @EnumSource(PeriodTypeDto.class)
+  void testExecuteSmr5_0(final PeriodTypeDto type) throws Exception {
+    this.testExecute(Protocol.SMR_5_0_0, type, false, true);
   }
 
-  @Test
-  void testExecuteSmr5_1() throws Exception {
-
-    for (final PeriodTypeDto type : PeriodTypeDto.values()) {
-      this.testExecute(Protocol.SMR_5_1, type, false);
-    }
+  @ParameterizedTest
+  @EnumSource(PeriodTypeDto.class)
+  void testExecuteSmr5_0_WithNullData(final PeriodTypeDto type) throws Exception {
+    this.testExecute(Protocol.SMR_5_0_0, type, true, true);
   }
 
-  @Test
-  void testExecuteSmr5_1_WithNullData() throws Exception {
-    for (final PeriodTypeDto type : PeriodTypeDto.values()) {
-      this.testExecute(Protocol.SMR_5_1, type, true);
-    }
+  @ParameterizedTest
+  @EnumSource(PeriodTypeDto.class)
+  void testExecuteSmr5_1(final PeriodTypeDto type) throws Exception {
+    this.testExecute(Protocol.SMR_5_1, type, false, true);
+  }
+
+  @ParameterizedTest
+  @EnumSource(PeriodTypeDto.class)
+  void testExecuteSmr5_1_WithNullData(final PeriodTypeDto type) throws Exception {
+    this.testExecute(Protocol.SMR_5_1, type, true, true);
   }
 
   private void testExecute(
-      final Protocol protocol, final PeriodTypeDto type, final boolean useNullData)
+      final Protocol protocol,
+      final PeriodTypeDto type,
+      final boolean useNullData,
+      final boolean selectiveAccessPeriodicMeterReadsSupported)
       throws Exception {
 
     // SETUP
@@ -246,7 +255,8 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     this.connectionStub.clearRequestedAttributeAddresses();
 
     // Create device with requested protocol version
-    final DlmsDevice device = this.createDlmsDevice(protocol);
+    final DlmsDevice device =
+        this.createDlmsDevice(protocol, selectiveAccessPeriodicMeterReadsSupported);
 
     // Create request object
     final PeriodicMeterReadsRequestDto request =
@@ -256,7 +266,7 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     final AttributeAddress expectedAddressProfile =
         this.createAttributeAddress(protocol, type, this.timeFrom, this.timeTo, device);
     final List<AttributeAddress> expectedScalerUnitAddresses =
-        this.getScalerUnitAttributeAddresses(type);
+        this.getScalerUnitAttributeAddresses(type, selectiveAccessPeriodicMeterReadsSupported);
     final int expectedTotalNumberOfAttributeAddresses = expectedScalerUnitAddresses.size() + 1;
 
     // Set response in stub
@@ -290,7 +300,8 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
         requestedAttributeAddresses.stream()
             .filter(
                 a ->
-                    a.getClassId() == this.CLASS_ID_REGISTER
+                    (a.getClassId() == this.CLASS_ID_REGISTER
+                            || a.getClassId() == this.CLASS_ID_EXTENDED_REGISTER)
                         && a.getId() == this.ATTR_ID_SCALER_UNIT)
             .collect(Collectors.toList());
     assertThat(attributeAddressesScalerUnit).hasSize(expectedScalerUnitAddresses.size());
@@ -305,10 +316,13 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     this.checkValues(periodicMeterReads, type);
   }
 
-  private DlmsDevice createDlmsDevice(final Protocol protocol) {
+  private DlmsDevice createDlmsDevice(
+      final Protocol protocol, final boolean selectiveAccessPeriodicMeterReadsSupported) {
     final DlmsDevice device = new DlmsDevice();
     device.setProtocol(protocol);
     device.setSelectiveAccessSupported(true);
+    device.setSelectiveAccessPeriodicMeterReadsSupported(
+        selectiveAccessPeriodicMeterReadsSupported);
     return device;
   }
 
@@ -329,9 +343,11 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
     if (protocol == Protocol.DSMR_4_2_2) {
       if (type == PeriodTypeDto.DAILY) {
-        return this.createAttributeAddressDsmr4Daily(from, to);
+        return this.createAttributeAddressDsmr4Daily(
+            from, to, device.isSelectiveAccessPeriodicMeterReadsSupported());
       } else if (type == PeriodTypeDto.MONTHLY) {
-        return this.createAttributeAddressDsmr4Monthly(from, to);
+        return this.createAttributeAddressDsmr4Monthly(
+            from, to, device.isSelectiveAccessPeriodicMeterReadsSupported());
       } else if (type == PeriodTypeDto.INTERVAL) {
         return this.createAttributeAddressDsmr4Interval(from, to);
       }
@@ -352,8 +368,8 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
             + protocol.getVersion());
   }
 
-  private List<AttributeAddress> getScalerUnitAttributeAddresses(final PeriodTypeDto type)
-      throws Exception {
+  private List<AttributeAddress> getScalerUnitAttributeAddresses(
+      final PeriodTypeDto type, final boolean selectedValuesSupported) throws Exception {
     final List<AttributeAddress> attributeAddresses = new ArrayList<>();
 
     switch (type) {
@@ -383,6 +399,32 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
                 this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_2,
                 this.ATTR_ID_SCALER_UNIT,
                 null));
+        if (!selectedValuesSupported) {
+          attributeAddresses.add(
+              new AttributeAddress(
+                  this.CLASS_ID_EXTENDED_REGISTER,
+                  this.OBIS_MBUS_CHANNEL_1,
+                  this.ATTR_ID_SCALER_UNIT,
+                  null));
+          attributeAddresses.add(
+              new AttributeAddress(
+                  this.CLASS_ID_EXTENDED_REGISTER,
+                  this.OBIS_MBUS_CHANNEL_2,
+                  this.ATTR_ID_SCALER_UNIT,
+                  null));
+          attributeAddresses.add(
+              new AttributeAddress(
+                  this.CLASS_ID_EXTENDED_REGISTER,
+                  this.OBIS_MBUS_CHANNEL_3,
+                  this.ATTR_ID_SCALER_UNIT,
+                  null));
+          attributeAddresses.add(
+              new AttributeAddress(
+                  this.CLASS_ID_EXTENDED_REGISTER,
+                  this.OBIS_MBUS_CHANNEL_4,
+                  this.ATTR_ID_SCALER_UNIT,
+                  null));
+        }
         break;
       case INTERVAL:
         attributeAddresses.add(
@@ -561,25 +603,33 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
   // DSMR4
 
   private AttributeAddress createAttributeAddressDsmr4Daily(
-      final DataObject from, final DataObject to) {
+      final DataObject from,
+      final DataObject to,
+      final boolean selectiveAccessPeriodicMeterReadsSupported) {
     final SelectiveAccessDescription expectedSelectiveAccess =
-        this.createSelectiveAccessDescriptionDsmr4Daily(from, to);
+        this.createSelectiveAccessDescriptionDsmr4Daily(
+            from, to, selectiveAccessPeriodicMeterReadsSupported);
     return new AttributeAddress(
         this.CLASS_ID_PROFILE, this.OBIS_DAILY_DSMR4, this.ATTR_ID_BUFFER, expectedSelectiveAccess);
   }
 
   private SelectiveAccessDescription createSelectiveAccessDescriptionDsmr4Daily(
-      final DataObject from, final DataObject to) {
+      final DataObject from,
+      final DataObject to,
+      final boolean selectiveAccessPeriodicMeterReadsSupported) {
 
-    final DataObject selectedValues =
-        DataObject.newArrayData(
-            Arrays.asList(
+    final List<DataObject> dataObjects =
+        selectiveAccessPeriodicMeterReadsSupported
+            ? Arrays.asList(
                 this.CLOCK,
                 this.STATUS,
                 this.ACTIVE_ENERGY_IMPORT_RATE_1,
                 this.ACTIVE_ENERGY_IMPORT_RATE_2,
                 this.ACTIVE_ENERGY_EXPORT_RATE_1,
-                this.ACTIVE_ENERGY_EXPORT_RATE_2));
+                this.ACTIVE_ENERGY_EXPORT_RATE_2)
+            : new ArrayList<>();
+
+    final DataObject selectedValues = DataObject.newArrayData(dataObjects);
 
     final DataObject expectedAccessParam =
         DataObject.newStructureData(Arrays.asList(this.CLOCK, from, to, selectedValues));
@@ -588,9 +638,12 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
   }
 
   private AttributeAddress createAttributeAddressDsmr4Monthly(
-      final DataObject from, final DataObject to) {
+      final DataObject from,
+      final DataObject to,
+      final boolean selectiveAccessPeriodicMeterReadsSupported) {
     final SelectiveAccessDescription expectedSelectiveAccess =
-        this.createSelectiveAccessDescriptionDsmr4Monthly(from, to);
+        this.createSelectiveAccessDescriptionDsmr4Monthly(
+            from, to, selectiveAccessPeriodicMeterReadsSupported);
     return new AttributeAddress(
         this.CLASS_ID_PROFILE,
         this.OBIS_MONTHLY_DSMR4,
@@ -599,16 +652,21 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
   }
 
   private SelectiveAccessDescription createSelectiveAccessDescriptionDsmr4Monthly(
-      final DataObject from, final DataObject to) {
+      final DataObject from,
+      final DataObject to,
+      final boolean selectiveAccessPeriodicMeterReadsSupported) {
 
-    final DataObject selectedValues =
-        DataObject.newArrayData(
-            Arrays.asList(
+    final List<DataObject> dataObjects =
+        selectiveAccessPeriodicMeterReadsSupported
+            ? Arrays.asList(
                 this.CLOCK,
                 this.ACTIVE_ENERGY_IMPORT_RATE_1,
                 this.ACTIVE_ENERGY_IMPORT_RATE_2,
                 this.ACTIVE_ENERGY_EXPORT_RATE_1,
-                this.ACTIVE_ENERGY_EXPORT_RATE_2));
+                this.ACTIVE_ENERGY_EXPORT_RATE_2)
+            : new ArrayList<>();
+
+    final DataObject selectedValues = DataObject.newArrayData(dataObjects);
 
     final DataObject expectedAccessParam =
         DataObject.newStructureData(Arrays.asList(this.CLOCK, from, to, selectedValues));

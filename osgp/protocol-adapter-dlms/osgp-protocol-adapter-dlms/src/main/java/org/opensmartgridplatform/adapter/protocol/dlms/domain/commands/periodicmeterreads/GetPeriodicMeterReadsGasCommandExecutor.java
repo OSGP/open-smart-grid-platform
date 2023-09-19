@@ -108,7 +108,13 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
     final AttributeAddressForProfile profileBufferAddress =
         this.getProfileBufferAddress(
-            queryPeriodType, periodicMeterReadsQuery.getChannel(), from, to, device);
+            queryPeriodType,
+            from,
+            to,
+            device,
+            this.dlmsObjectConfigService,
+            Medium.GAS,
+            periodicMeterReadsQuery.getChannel().getChannelNumber());
 
     final List<AttributeAddress> scalerUnitAddresses =
         this.getScalerUnitAddresses(periodicMeterReadsQuery.getChannel(), profileBufferAddress);
@@ -205,7 +211,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
     final AmrProfileStatusCodeDto status =
         this.readStatus(ctx.bufferedObjects, ctx.attributeAddressForProfile);
-    final DataObject gasValue = this.readValue(ctx.bufferedObjects, ctx.attributeAddressForProfile);
+    final DataObject gasValue =
+        this.readValue(
+            ctx.bufferedObjects,
+            ctx.attributeAddressForProfile,
+            ctx.periodicMeterReadsQuery.getChannel().getChannelNumber());
     final DataObject scalerUnit =
         this.readScalerUnit(
             ctx.getResultList,
@@ -254,10 +264,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
   private DataObject readValue(
       final List<DataObject> bufferedObjects,
-      final AttributeAddressForProfile attributeAddressForProfile) {
+      final AttributeAddressForProfile attributeAddressForProfile,
+      final int channel) {
 
     final Integer valueIndex =
-        attributeAddressForProfile.getIndex(DlmsObjectType.MBUS_MASTER_VALUE, 2);
+        attributeAddressForProfile.getIndex(DlmsObjectType.MBUS_MASTER_VALUE, 2, channel);
 
     DataObject value = null;
 
@@ -327,29 +338,6 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     }
 
     return null;
-  }
-
-  private AttributeAddressForProfile getProfileBufferAddress(
-      final PeriodTypeDto periodType,
-      final ChannelDto channel,
-      final DateTime beginDateTime,
-      final DateTime endDateTime,
-      final DlmsDevice device)
-      throws ProtocolAdapterException {
-
-    final DlmsObjectType type = DlmsObjectType.getTypeForPeriodType(periodType);
-
-    // Add the attribute address for the profile
-    final AttributeAddressForProfile attributeAddressProfile =
-        this.dlmsObjectConfigService
-            .findAttributeAddressForProfile(
-                device, type, channel.getChannelNumber(), beginDateTime, endDateTime, Medium.GAS)
-            .orElseThrow(() -> new ProtocolAdapterException("No address found for " + type));
-
-    LOGGER.debug(
-        "Dlms object config service returned profile buffer address {} ", attributeAddressProfile);
-
-    return attributeAddressProfile;
   }
 
   private List<AttributeAddress> getScalerUnitAddresses(
