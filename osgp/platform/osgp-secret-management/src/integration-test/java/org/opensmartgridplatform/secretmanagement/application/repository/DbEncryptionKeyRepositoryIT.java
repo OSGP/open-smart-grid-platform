@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +49,7 @@ public class DbEncryptionKeyRepositoryIT extends AbstractRepositoryIT {
   @Test
   public void findNoValidTo() {
     final List<DbEncryptionKeyReference> results =
-        this.repository.findByTypeAndValid(EncryptionProviderType.HSM, new Date());
+        this.repository.findByTypeAndValid(EncryptionProviderType.HSM, Instant.now());
     assertThat(results.size()).isEqualTo(1);
     final DbEncryptionKeyReference keyReference = results.get(0);
     assertThat(keyReference).isNotNull();
@@ -62,7 +61,7 @@ public class DbEncryptionKeyRepositoryIT extends AbstractRepositoryIT {
   @Test
   public void findValidTo() {
     final List<DbEncryptionKeyReference> results =
-        this.repository.findByTypeAndValid(EncryptionProviderType.JRE, new Date());
+        this.repository.findByTypeAndValid(EncryptionProviderType.JRE, Instant.now());
     assertThat(results.size()).isEqualTo(1);
     final DbEncryptionKeyReference keyReference = results.get(0);
     assertThat(keyReference).isNotNull();

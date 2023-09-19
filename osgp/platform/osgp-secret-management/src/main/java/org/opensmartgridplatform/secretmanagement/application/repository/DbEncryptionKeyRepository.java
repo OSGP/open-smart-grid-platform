@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.secretmanagement.application.repository;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
@@ -18,7 +18,8 @@ public interface DbEncryptionKeyRepository extends JpaRepository<DbEncryptionKey
           + "AND ekr.validFrom < :date AND (ekr.validTo IS NULL OR ekr.validTo > :date) "
           + "ORDER BY ekr.validFrom DESC")
   List<DbEncryptionKeyReference> findByTypeAndValid(
-      @Param("ept") EncryptionProviderType encryptionProviderType, @Param("date") Date validDate);
+      @Param("ept") EncryptionProviderType encryptionProviderType,
+      @Param("date") Instant validDate);
 
   @Query(
       "SELECT ekr FROM DbEncryptionKeyReference ekr WHERE ekr.encryptionProviderType = :ept "

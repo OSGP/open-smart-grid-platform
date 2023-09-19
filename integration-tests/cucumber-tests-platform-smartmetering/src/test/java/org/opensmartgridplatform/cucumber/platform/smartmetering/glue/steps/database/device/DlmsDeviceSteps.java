@@ -40,7 +40,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -744,7 +743,7 @@ public class DlmsDeviceSteps {
     }
     final DbEncryptionKeyReference encryptionKeyRef =
         this.encryptionKeyRepository
-            .findByTypeAndValid(EncryptionProviderType.JRE, new Date())
+            .findByTypeAndValid(EncryptionProviderType.JRE, Instant.now())
             .iterator()
             .next();
     secretBuilders.stream()
@@ -860,7 +859,7 @@ public class DlmsDeviceSteps {
 
       final DbEncryptionKeyReference encryptionKeyRef =
           this.encryptionKeyRepository
-              .findByTypeAndValid(EncryptionProviderType.JRE, new Date())
+              .findByTypeAndValid(EncryptionProviderType.JRE, Instant.now())
               .iterator()
               .next();
       final DbEncryptedSecret secret =
@@ -904,7 +903,7 @@ public class DlmsDeviceSteps {
     }
     final DbEncryptionKeyReference encryptionKeyRef =
         this.encryptionKeyRepository
-            .findByTypeAndValid(EncryptionProviderType.JRE, new Date())
+            .findByTypeAndValid(EncryptionProviderType.JRE, Instant.now())
             .iterator()
             .next();
     for (int i = 0; i < secretTypesToCreate.size(); i++) {

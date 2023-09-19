@@ -4,6 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
@@ -37,9 +40,10 @@ public class UpdateFirmwareCommandExecutor
   private static final String EXCEPTION_MSG_FIRMWARE_IMAGE_IDENTIFIER_NOT_AVAILABLE =
       "Firmware Image Identifier is not available.";
   private static final String EXCEPTION_MSG_DEVICE_NOT_AVAILABLE_IN_DATABASE =
-      "Device {} not available in database.";
+      "Device %s not available in database.";
   private static final String EXCEPTION_MSG_DEVICE_HAS_NO_MBUS_IDENTIFICATION_NUMBER =
-      "Device {} has no M-Bus identification number.";
+      "Device %s has no M-Bus identification number.";
+  private static final String SHA256 = "SHA-256";
 
   private final DlmsDeviceRepository dlmsDeviceRepository;
 
@@ -81,9 +85,34 @@ public class UpdateFirmwareCommandExecutor
             this.getImageIdentifier(firmwareIdentification, firmwareFile),
             firmwareFile.getByteArray());
 
+    // Calculate the hash of the FW file
+    final String calculatedHash =
+        this.calculateHash(firmwareFile.getFirmwareImageByteArray(), SHA256);
+
+    // Resume on the last not transferred block if
+    // a hash of a previously uploaded FW file is stored with this device
+    // and this hash is equal to the hash of the FW file to be uploaded
+    // and the image_transfer_status is INITIATED
+    final boolean resumeOnLastBlock =
+        device.getFirmwareHash() != null
+            && device.getFirmwareHash().equals(calculatedHash)
+            && transfer.isInitiated();
+
     try {
-      this.prepare(transfer);
-      this.transfer(transfer);
+      if (resumeOnLastBlock) {
+        this.enable(transfer);
+        // do not call method image_transfer_initiate (in this class' prepare method).
+        // This method will reset first_not_transferred_block_number to 0 (zero)
+        // This assumes that the image_transfer_status attribute is (1) Image transfer initiated.
+        final int blockNumber = transfer.getImageFirstNotTransferredBlockNumber();
+        this.transfer(transfer, blockNumber);
+      } else {
+        this.storeFirmwareHashWithDlmsDevice(device, calculatedHash);
+        this.prepare(transfer);
+        this.transfer(transfer, 0);
+      }
+      // After completing the transfer removed the Firmware hash stored with the device
+      this.removeFirmwareHashFromDlmsDevice(device);
       if (!firmwareFile.isMbusFirmware()) {
         this.verify(transfer);
         this.activate(transfer);
@@ -97,16 +126,19 @@ public class UpdateFirmwareCommandExecutor
   }
 
   private void prepare(final ImageTransfer transfer) throws ProtocolAdapterException {
-    if (!transfer.imageTransferEnabled()) {
-      transfer.setImageTransferEnabled(true);
-    }
-
+    this.enable(transfer);
     transfer.initiateImageTransfer();
   }
 
-  private void transfer(final ImageTransfer transfer) throws OsgpException {
+  private void enable(final ImageTransfer transfer) throws ProtocolAdapterException {
+    if (!transfer.imageTransferEnabled()) {
+      transfer.setImageTransferEnabled(true);
+    }
+  }
+
+  private void transfer(final ImageTransfer transfer, final int firstBlock) throws OsgpException {
     if (transfer.shouldTransferImage()) {
-      transfer.transferImageBlocks();
+      transfer.transferImageBlocks(firstBlock);
       transfer.transferMissingImageBlocks();
     } else {
       log.info("The current ImageTransferStatus is not INITIATED");
@@ -216,7 +248,7 @@ public class UpdateFirmwareCommandExecutor
       final String firmwareIdentification, final FirmwareFile firmwareFile)
       throws ProtocolAdapterException {
 
-    byte[] imageIdentifier = null;
+    final byte[] imageIdentifier;
 
     if (firmwareFile.isMbusFirmware()) {
 
@@ -257,5 +289,30 @@ public class UpdateFirmwareCommandExecutor
       throws ProtocolAdapterException {
 
     return executionResult;
+  }
+
+  private String calculateHash(final byte[] content, final String algorithm) {
+
+    try {
+      final MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
+      final byte[] digest = messageDigest.digest(content);
+      return new BigInteger(1, digest).toString(16);
+    } catch (final NoSuchAlgorithmException e) {
+      log.error("Error calculating digest", e);
+      return "";
+    }
+  }
+
+  private void storeFirmwareHashWithDlmsDevice(final DlmsDevice device, final String firmwareHash) {
+    log.info(
+        "Storing Firmware hash {} for dlms-device {}",
+        firmwareHash,
+        device.getDeviceIdentification());
+    this.dlmsDeviceRepository.storeFirmwareHash(device.getDeviceIdentification(), firmwareHash);
+  }
+
+  private void removeFirmwareHashFromDlmsDevice(final DlmsDevice device) {
+    log.info("Removing Firmware hash from dlms-device {}", device.getDeviceIdentification());
+    this.dlmsDeviceRepository.storeFirmwareHash(device.getDeviceIdentification(), null);
   }
 }

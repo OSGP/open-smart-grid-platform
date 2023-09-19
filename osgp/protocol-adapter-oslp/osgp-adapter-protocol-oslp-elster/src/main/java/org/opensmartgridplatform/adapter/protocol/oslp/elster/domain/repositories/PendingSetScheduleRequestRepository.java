@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.PendingSetScheduleRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,11 +15,11 @@ public interface PendingSetScheduleRequestRepository
     extends JpaRepository<PendingSetScheduleRequest, Long> {
 
   List<PendingSetScheduleRequest> findAllByDeviceIdentificationAndExpiredAtIsAfter(
-      String deviceIdentification, Date expiredAt);
+      String deviceIdentification, Instant expiredAt);
 
   List<PendingSetScheduleRequest> findAllByDeviceUidAndExpiredAtIsAfter(
-      String deviceUid, Date expiredAt);
+      String deviceUid, Instant expiredAt);
 
   void deleteAllByDeviceIdentificationAndExpiredAtIsBefore(
-      String deviceIdentification, Date expireDateTime);
+      String deviceIdentification, Instant expireDateTime);
 }

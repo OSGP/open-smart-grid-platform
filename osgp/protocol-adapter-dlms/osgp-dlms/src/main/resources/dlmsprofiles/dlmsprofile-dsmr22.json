@@ -7,6 +7,7 @@
     {
       "tag": "CLOCK",
       "description": "Clock",
+      "note": null,
       "class-id": 8,
       "version": 0,
       "obis": "0.0.1.0.0.255",
@@ -42,6 +43,7 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
       "description": "Number of voltage swells in phase L1",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.32.36.0.255",
@@ -65,6 +67,7 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L2",
       "description": "Number of voltage swells in phase L2",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.52.36.0.255",
@@ -88,6 +91,7 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L3",
       "description": "Number of voltage swells in phase L3",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.72.36.0.255",
@@ -111,6 +115,7 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
       "description": "Number of voltage sags in phase L1",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.32.32.0.255",
@@ -134,6 +139,7 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L2",
       "description": "Number of voltage sags in phase L2",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.52.32.0.255",
@@ -157,6 +163,7 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L3",
       "description": "Number of voltage sags in phase L3",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.72.32.0.255",
@@ -180,6 +187,7 @@
     {
       "tag": "NUMBER_OF_LONG_POWER_FAILURES",
       "description": "Number of long power failures in any phases",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.7.9.255",
@@ -203,6 +211,7 @@
     {
       "tag": "NUMBER_OF_POWER_FAILURES",
       "description": "Number of power failures in any phases",
+      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.7.21.255",
@@ -226,6 +235,7 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L1",
       "description": "Instantaneous voltage L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.32.7.0.255",
@@ -257,6 +267,7 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L2",
       "description": "Instantaneous voltage L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.52.7.0.255",
@@ -288,6 +299,7 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L3",
       "description": "Instantaneous voltage L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.72.7.0.255",
@@ -319,6 +331,7 @@
     {
       "tag": "AVERAGE_VOLTAGE_L1",
       "description": "Average voltage L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.32.24.0.255",
@@ -350,6 +363,7 @@
     {
       "tag": "AVERAGE_VOLTAGE_L2",
       "description": "Average voltage L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.52.24.0.255",
@@ -381,6 +395,7 @@
     {
       "tag": "AVERAGE_VOLTAGE_L3",
       "description": "Average voltage L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.72.24.0.255",
@@ -412,6 +427,7 @@
     {
       "tag": "INSTANTANEOUS_CURRENT_L1",
       "description": "Instantaneous current L1",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.31.7.0.255",
@@ -443,6 +459,7 @@
     {
       "tag": "INSTANTANEOUS_CURRENT_L2",
       "description": "Instantaneous current L2",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.51.7.0.255",
@@ -474,6 +491,7 @@
     {
       "tag": "INSTANTANEOUS_CURRENT_L3",
       "description": "Instantaneous current L3",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.71.7.0.255",
@@ -505,6 +523,7 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES",
       "description": "Instantaneous current total",
+      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.90.7.0.255",
@@ -530,6 +549,27 @@
           "valuetype": "FIXED_IN_PROFILE",
           "value": "0, A",
           "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ALARM_REGISTER_1",
+      "description": "Alarm register 1",
+      "note": null,
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.97.98.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "RW"
         }
       ]
     }

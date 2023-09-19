@@ -10,7 +10,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.opensmartgridplatform.adapter.domain.core.application.services.TransactionalEventService;
 import org.opensmartgridplatform.domain.core.entities.Event;
@@ -70,7 +69,7 @@ public class EventCleanupJob implements Job {
       final ZonedDateTime retention = this.calculateRetentionDate();
       final List<Event> oldEvents =
           this.transactionalEventService.getEventsBeforeDate(
-              Date.from(retention.toInstant()), this.eventPageSize);
+              retention.toInstant(), this.eventPageSize);
       if (!oldEvents.isEmpty()) {
         this.saveEventsToCsvFile(oldEvents);
 

@@ -43,4 +43,15 @@ public interface DlmsDeviceRepository extends JpaRepository<DlmsDevice, Long> {
   int updateInvocationCounter(
       @Param("deviceIdentification") String deviceIdentification,
       @Param("invocationCounter") Long invocationCounter);
+
+  @Transactional
+  @Modifying
+  @Query(
+      value =
+          "UPDATE DlmsDevice"
+              + "   SET firmwareHash = :firmwareHash"
+              + " WHERE deviceIdentification = :deviceIdentification")
+  int storeFirmwareHash(
+      @Param("deviceIdentification") String deviceIdentification,
+      @Param("firmwareHash") String firmwareHash);
 }

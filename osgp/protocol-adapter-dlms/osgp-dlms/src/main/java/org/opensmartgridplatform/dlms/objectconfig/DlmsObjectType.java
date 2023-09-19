@@ -55,7 +55,10 @@ public enum DlmsObjectType {
   LTE_DIAGNOSTIC,
   MBUS_CLIENT_SETUP,
   MBUS_DIAGNOSTIC,
-  PUSH_SETUP_UDP;
+  PUSH_SETUP_UDP,
+  ALARM_REGISTER_1,
+  ALARM_REGISTER_2,
+  ALARM_REGISTER_3;
 
   public String value() {
     return this.name();

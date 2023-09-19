@@ -24,13 +24,13 @@ Feature: SmartMetering Monitoring - Alarm Register
     Then the alarm register should be returned
       | DeviceIdentification | TEST1024000000001 |
 
-  Scenario: Clear alarm register SMR 5.1
+  Scenario Outline: Clear only alarm register 1 for protocol <protocol> <version>
     Given a dlms device
       | DeviceIdentification     | TEST1028000000002 |
       | DeviceType               | SMART_METER_E     |
       | SelectiveAccessSupported | true              |
-      | Protocol                 | SMR               |
-      | ProtocolVersion          | 5.1               |
+      | Protocol                 | <protocol>        |
+      | ProtocolVersion          | <version>         |
       | Port                     |              1028 |
     And device "TEST1028000000002" has alarm register "1" with some value
     And device "TEST1028000000002" has alarm register "2" with some value
@@ -41,6 +41,13 @@ Feature: SmartMetering Monitoring - Alarm Register
       | Result               | OK                |
     And alarm register "1" of device "TEST1028000000002" has been cleared
     And alarm register "2" of device "TEST1028000000002" has not been cleared
+    Examples:
+    | protocol | version |
+    | DSMR     | 2.2     |
+    | DSMR     | 4.2.2   |
+    | SMR      | 4.3     |
+    | SMR      | 5.0.0   |
+    | SMR      | 5.1     |
 
   Scenario: Clear both alarm registers with SMR 5.2
     Given a dlms device

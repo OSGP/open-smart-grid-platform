@@ -9,7 +9,6 @@ import static org.springframework.data.jpa.domain.Specification.where;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
@@ -198,14 +197,13 @@ public class DeviceManagementService {
 
     final ZonedDateTime from = criteria.getFrom();
     if (from != null) {
-      specification =
-          specification.and(this.eventSpecifications.isCreatedAfter(Date.from(from.toInstant())));
+      specification = specification.and(this.eventSpecifications.isCreatedAfter(from.toInstant()));
     }
 
     final ZonedDateTime until = criteria.getUntil();
     if (until != null) {
       specification =
-          specification.and(this.eventSpecifications.isCreatedBefore(Date.from(until.toInstant())));
+          specification.and(this.eventSpecifications.isCreatedBefore(until.toInstant()));
     }
 
     specification =
