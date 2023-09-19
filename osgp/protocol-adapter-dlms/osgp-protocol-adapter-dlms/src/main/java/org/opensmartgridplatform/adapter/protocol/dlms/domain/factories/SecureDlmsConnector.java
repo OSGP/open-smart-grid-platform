@@ -65,6 +65,10 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
         .setReferencingMethod(
             device.isUseSn() ? ReferencingMethod.SHORT : ReferencingMethod.LOGICAL);
 
+    if (device.isLls1Active()) {
+      tcpConnectionBuilder.setAlwaysSendSecurityMechanismName(true).setSkipAARQEncryption(true);
+    }
+
     if (device.isUseHdlc()) {
       tcpConnectionBuilder.useHdlc();
     }
