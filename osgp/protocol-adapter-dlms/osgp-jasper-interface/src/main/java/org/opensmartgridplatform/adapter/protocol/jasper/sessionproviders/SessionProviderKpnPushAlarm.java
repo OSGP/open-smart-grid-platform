@@ -8,6 +8,7 @@ import java.util.Optional;
 import javax.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
+import org.opensmartgridplatform.adapter.protocol.jasper.service.DeviceSessionService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -20,12 +21,15 @@ public class SessionProviderKpnPushAlarm extends SessionProvider {
   private static final Logger LOGGER = LoggerFactory.getLogger(SessionProviderKpnPushAlarm.class);
 
   private final JasperWirelessSmsClient jasperWirelessSmsClient;
+  private final DeviceSessionService deviceSessionService;
 
   public SessionProviderKpnPushAlarm(
       final SessionProviderMap sessionProviderMap,
-      final JasperWirelessSmsClient jasperWirelessSmsClient) {
+      final JasperWirelessSmsClient jasperWirelessSmsClient,
+      final DeviceSessionService deviceSessionService) {
     super(sessionProviderMap);
     this.jasperWirelessSmsClient = jasperWirelessSmsClient;
+    this.deviceSessionService = deviceSessionService;
   }
 
   /**
@@ -42,8 +46,6 @@ public class SessionProviderKpnPushAlarm extends SessionProvider {
       throws OsgpException {
     LOGGER.info("Get ip address for device: " + deviceIdentification);
     try {
-      this.clearIpAddress(deviceIdentification);
-
       this.jasperWirelessSmsClient.sendWakeUpSMS(iccId);
 
       return this.waitForIpAddress(deviceIdentification);
@@ -53,9 +55,12 @@ public class SessionProviderKpnPushAlarm extends SessionProvider {
     }
   }
 
-  private void clearIpAddress(final String deviceIdentification) {}
-
   private Optional<String> waitForIpAddress(final String deviceIdentification) {
-    return Optional.empty();
+    LOGGER.info(
+        "Wait for ip-address, this will be pushed by alarm for device: {}", deviceIdentification);
+    final Optional<String> ipAddress =
+        this.deviceSessionService.waitForIpAddress(deviceIdentification);
+    LOGGER.info("Received ip-address: {} for device: {}", ipAddress, deviceIdentification);
+    return ipAddress;
   }
 }

@@ -5,7 +5,9 @@
 package org.opensmartgridplatform.adapter.protocol.jasper.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zaxxer.hikari.util.DriverDataSource;
 import java.text.SimpleDateFormat;
+import java.util.Properties;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPException;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
@@ -16,6 +18,7 @@ import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWireless
 import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWirelessTerminalSoapClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.rest.client.JasperWirelessSmsRestClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.rest.client.JasperWirelessTerminalRestClient;
+import org.opensmartgridplatform.adapter.protocol.jasper.service.DeviceSessionService;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProvider;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProviderKpnPollJasper;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProviderKpnPushAlarm;
@@ -47,6 +50,12 @@ public class JasperWirelessConfig extends AbstractConfig {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JasperWirelessConfig.class);
 
+  @Value("${jwcc.getsession.retries}")
+  private int retries;
+
+  @Value("${jwcc.getsession.sleep.between.retries}")
+  private int sleepBetweenRetries;
+
   @Value("${jwcc.uri.sms}")
   private String uri;
 
@@ -70,6 +79,33 @@ public class JasperWirelessConfig extends AbstractConfig {
 
   @Value("${jwcc.api.type:SOAP}")
   private String apiType;
+
+  @Value("${jwcc.getsession.poll.jasper:false}")
+  private boolean pollJasper;
+
+  @Value("${push.alarm.max-wait-in-ms:60000}")
+  private int maxWaitInMs;
+
+  @Value("${db.driver}")
+  private String databaseDriver;
+
+  @Value("${db.host}")
+  private String databaseHost;
+
+  @Value("${db.protocol}")
+  private String databaseProtocol;
+
+  @Value("${db.port}")
+  private int databasePort;
+
+  @Value("${db.name}")
+  private String databaseName;
+
+  @Value("${db.username}")
+  private String databaseUsername;
+
+  @Value("${db.password}")
+  private String databasePassword;
 
   public enum ApiType {
     SOAP,
@@ -181,23 +217,39 @@ public class JasperWirelessConfig extends AbstractConfig {
   }
 
   @Bean
+  public DeviceSessionService deviceSessionService() {
+    final String jdbcUrl =
+        String.format(
+            "%s%s:%s/%s",
+            this.databaseProtocol, this.databaseHost, this.databasePort, this.databaseName);
+    LOGGER.info("Created jdbcUrl {} for deviceSessionService", jdbcUrl);
+    final DriverDataSource dataSource =
+        new DriverDataSource(
+            jdbcUrl,
+            this.databaseDriver,
+            new Properties(),
+            this.databaseUsername,
+            this.databasePassword);
+
+    return new DeviceSessionService(dataSource, this.maxWaitInMs);
+  }
+
+  @Bean
   public SessionProvider sessionProviderKpn(
       final SessionProviderMap sessionProviderMap,
       final JasperWirelessTerminalClient jasperWirelessTerminalClient,
       final JasperWirelessSmsClient jasperWirelessSmsClient,
-      @Value("${jwcc.getsession.poll.jasper:true}") final boolean pollJasper,
-      @Value("${jwcc.getsession.retries}") final int jasperGetSessionRetries,
-      @Value("${jwcc.getsession.sleep.between.retries}")
-          final int jasperGetSessionSleepBetweenRetries) {
-    if (pollJasper) {
+      final DeviceSessionService deviceSessionService) {
+    if (this.pollJasper) {
       return new SessionProviderKpnPollJasper(
           sessionProviderMap,
           jasperWirelessTerminalClient,
           jasperWirelessSmsClient,
-          jasperGetSessionRetries,
-          jasperGetSessionSleepBetweenRetries);
+          this.retries,
+          this.sleepBetweenRetries);
     } else {
-      return new SessionProviderKpnPushAlarm(sessionProviderMap, jasperWirelessSmsClient);
+      return new SessionProviderKpnPushAlarm(
+          sessionProviderMap, jasperWirelessSmsClient, deviceSessionService);
     }
   }
 }
