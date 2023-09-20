@@ -4,13 +4,12 @@
 
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.joda.time.DateTime;
 
 /** Helper class to create ActionDto objects. */
 public class ActionDtoBuilder {
@@ -43,12 +42,12 @@ public class ActionDtoBuilder {
   }
 
   public PeriodicMeterReadsRequestDataDto makePeriodicMeterReadsRequestDataDto() {
-    return new PeriodicMeterReadsRequestDataDto(PeriodTypeDto.DAILY, new Date(), new Date());
+    return new PeriodicMeterReadsRequestDataDto(PeriodTypeDto.DAILY, Instant.now(), Instant.now());
   }
 
   public PeriodicMeterReadsGasRequestDto makePeriodicMeterReadsGasRequestDataDto() {
     return new PeriodicMeterReadsGasRequestDto(
-        PeriodTypeDto.DAILY, new Date(), new Date(), ChannelDto.ONE);
+        PeriodTypeDto.DAILY, Instant.now(), Instant.now(), ChannelDto.ONE);
   }
 
   public AdministrativeStatusTypeDataDto makeAdministrativeStatusTypeDataDto() {
@@ -160,6 +159,6 @@ public class ActionDtoBuilder {
   }
 
   public CosemDateTimeDto makeCosemDateTimeDto() {
-    return new CosemDateTimeDto(new DateTime());
+    return new CosemDateTimeDto(ZonedDateTime.now());
   }
 }

@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
+import java.time.Instant;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
@@ -30,8 +31,20 @@ public class PeriodicMeterReadsRequestConverter
     return new PeriodicMeterReadsQuery(
         org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodType.valueOf(
             source.getPeriodicReadsRequestData().getPeriodType().name()),
-        source.getPeriodicReadsRequestData().getBeginDate().toGregorianCalendar().getTime(),
-        source.getPeriodicReadsRequestData().getEndDate().toGregorianCalendar().getTime(),
+        Instant.ofEpochMilli(
+            source
+                .getPeriodicReadsRequestData()
+                .getBeginDate()
+                .toGregorianCalendar()
+                .getTime()
+                .getTime()),
+        Instant.ofEpochMilli(
+            source
+                .getPeriodicReadsRequestData()
+                .getEndDate()
+                .toGregorianCalendar()
+                .getTime()
+                .getTime()),
         source instanceof PeriodicMeterReadsGasRequest,
         "");
   }

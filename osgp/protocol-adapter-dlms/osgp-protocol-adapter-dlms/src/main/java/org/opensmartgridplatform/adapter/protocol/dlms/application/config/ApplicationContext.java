@@ -4,9 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeZone;
+import java.time.Instant;
+import java.time.ZoneId;
 import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.config.MetricsConfig;
@@ -39,11 +38,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class ApplicationContext extends AbstractConfig {
 
   private static final String LOCAL_TIME_ZONE_IDENTIFIER = "Europe/Paris";
-  private static final DateTimeZone LOCAL_TIME_ZONE =
-      DateTimeZone.forID(LOCAL_TIME_ZONE_IDENTIFIER);
+  private static final ZoneId LOCAL_TIME_ZONE = ZoneId.of(LOCAL_TIME_ZONE_IDENTIFIER);
+  public static final int SECONDS_PER_MINUTE = 60;
   private static final int TIME_ZONE_OFFSET_MINUTES =
-      LOCAL_TIME_ZONE.getStandardOffset(new DateTime().getMillis())
-          / DateTimeConstants.MILLIS_PER_MINUTE;
+      LOCAL_TIME_ZONE.getRules().getStandardOffset(Instant.now()).getTotalSeconds()
+          / SECONDS_PER_MINUTE;
 
   // === Time zone config ===
 
@@ -53,7 +52,7 @@ public class ApplicationContext extends AbstractConfig {
   }
 
   @Bean
-  public DateTimeZone localTimeZone() {
+  public ZoneId localTimeZone() {
     return LOCAL_TIME_ZONE;
   }
 

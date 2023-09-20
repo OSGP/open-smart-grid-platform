@@ -4,22 +4,23 @@
 
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
-import java.util.Date;
+import java.time.Instant;
 
 public class MeterReadsResponseDto extends ActionResponseDto {
   private static final long serialVersionUID = -297320204916085999L;
 
-  private final Date logTime;
+  private final Instant logTime;
 
   private final ActiveEnergyValuesDto activeEnergyValues;
 
-  public MeterReadsResponseDto(final Date logTime, final ActiveEnergyValuesDto activeEnergyValues) {
-    this.logTime = new Date(logTime.getTime());
+  public MeterReadsResponseDto(
+      final Instant logTime, final ActiveEnergyValuesDto activeEnergyValues) {
+    this.logTime = logTime;
     this.activeEnergyValues = activeEnergyValues;
   }
 
-  public Date getLogTime() {
-    return new Date(this.logTime.getTime());
+  public Instant getLogTime() {
+    return this.logTime;
   }
 
   public DlmsMeterValueDto getActiveEnergyImportTariffOne() {

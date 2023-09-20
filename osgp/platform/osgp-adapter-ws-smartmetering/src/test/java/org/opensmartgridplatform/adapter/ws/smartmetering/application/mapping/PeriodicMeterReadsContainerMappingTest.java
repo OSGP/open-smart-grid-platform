@@ -7,8 +7,8 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -26,13 +26,13 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Periodic
 public class PeriodicMeterReadsContainerMappingTest {
 
   private static final PeriodType PERIODTYPE = PeriodType.DAILY;
-  private static final Date DATE = new Date();
+  private static final Instant DATE = Instant.now();
   private static final BigDecimal VALUE = new BigDecimal(1.0);
   private static final OsgpUnit OSGP_UNIT = OsgpUnit.M3;
   private static final OsgpUnitType OSGP_UNITTYPE = OsgpUnitType.M_3;
   private static final AmrProfileStatusCodeFlag AMRCODEFLAG =
       AmrProfileStatusCodeFlag.CLOCK_INVALID;
-  private MonitoringMapper monitoringMapper = new MonitoringMapper();
+  private final MonitoringMapper monitoringMapper = new MonitoringMapper();
 
   /** Tests the mapping of a PeriodicMeterReadsContainer object with a filled List and Set. */
   @Test

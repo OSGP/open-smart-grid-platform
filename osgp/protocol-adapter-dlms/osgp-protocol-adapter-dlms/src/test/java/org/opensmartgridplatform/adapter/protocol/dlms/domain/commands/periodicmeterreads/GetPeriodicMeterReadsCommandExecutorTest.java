@@ -15,12 +15,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsCommandExecutor.PERIODIC_E_METER_READS;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -74,12 +75,14 @@ class GetPeriodicMeterReadsCommandExecutorTest {
   @Mock private DlmsConnectionManager connectionManager;
 
   private final DlmsDevice device = this.createDevice(Protocol.DSMR_4_2_2);
-  private final long from = 1111110L;
-  private final long to = 2222222L;
-  private final DateTime fromDateTime =
-      DlmsDateTimeConverter.toDateTime(new Date(this.from), this.device.getTimezone());
-  private final DateTime toDateTime =
-      DlmsDateTimeConverter.toDateTime(new Date(this.to), this.device.getTimezone());
+  private final Instant from = Instant.ofEpochMilli(1111110L);
+  private final Instant to = Instant.ofEpochMilli(2222222L);
+  private final ZonedDateTime fromDateTime =
+      DlmsDateTimeConverter.toZonedDateTime(
+          ZonedDateTime.ofInstant(this.from, ZoneId.of("UTC")), this.device.getTimezone());
+  private final ZonedDateTime toDateTime =
+      DlmsDateTimeConverter.toZonedDateTime(
+          ZonedDateTime.ofInstant(this.to, ZoneId.of("UTC")), this.device.getTimezone());
 
   private final String DEFAULT_TIMEZONE = "UTC";
   private MessageMetadata messageMetadata;
@@ -105,8 +108,8 @@ class GetPeriodicMeterReadsCommandExecutorTest {
     final PeriodicMeterReadsRequestDto request =
         new PeriodicMeterReadsRequestDto(
             PeriodTypeDto.DAILY,
-            this.fromDateTime.toDate(),
-            this.toDateTime.toDate(),
+            this.fromDateTime.toInstant(),
+            this.toDateTime.toInstant(),
             ChannelDto.ONE);
     when(this.dlmsObjectConfigService.findAttributeAddressForProfile(
             any(), any(), any(), any(), any(), any()))
@@ -125,8 +128,7 @@ class GetPeriodicMeterReadsCommandExecutorTest {
   @Test
   void testBundle() throws ProtocolAdapterException {
     final PeriodicMeterReadsRequestDataDto request =
-        new PeriodicMeterReadsRequestDataDto(
-            PeriodTypeDto.DAILY, new Date(this.from), new Date(this.to));
+        new PeriodicMeterReadsRequestDataDto(PeriodTypeDto.DAILY, this.from, this.to);
 
     final PeriodicMeterReadsRequestDto dto = this.executor.fromBundleRequestInput(request);
 
@@ -140,13 +142,15 @@ class GetPeriodicMeterReadsCommandExecutorTest {
     // SETUP
     final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
     final PeriodicMeterReadsRequestDto request =
-        new PeriodicMeterReadsRequestDto(periodType, new Date(this.from), new Date(this.to));
+        new PeriodicMeterReadsRequestDto(periodType, this.from, this.to);
 
     this.device.setTimezone(timeZone);
-    final DateTime convertedFromTime =
-        DlmsDateTimeConverter.toDateTime(new Date(this.from), this.device.getTimezone());
-    final DateTime convertedToTime =
-        DlmsDateTimeConverter.toDateTime(new Date(this.to), this.device.getTimezone());
+    final ZonedDateTime convertedFromTime =
+        DlmsDateTimeConverter.toZonedDateTime(
+            ZonedDateTime.ofInstant(this.from, ZoneId.of("UTC")), this.device.getTimezone());
+    final ZonedDateTime convertedToTime =
+        DlmsDateTimeConverter.toZonedDateTime(
+            ZonedDateTime.ofInstant(this.to, ZoneId.of("UTC")), this.device.getTimezone());
 
     // SETUP - dlms objects
     final DlmsObject dlmsClock = new DlmsClock("0.0.1.0.0.255");

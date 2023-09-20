@@ -7,7 +7,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.Instant;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ public class MonitoringMapperTest {
 
   @Test
   public void convertsMeterReadsResponseDtoToMeterReads() {
-    final Date logTime = new Date(123L * 24 * 60 * 60 * 1000);
+    final Instant logTime = Instant.ofEpochMilli(123L * 24 * 60 * 60 * 1000);
     final ActiveEnergyValuesDto activeEnergyValuesDto =
         new ActiveEnergyValuesDto(
             new DlmsMeterValueDto(new BigDecimal("12.34"), DlmsUnitTypeDto.M3),

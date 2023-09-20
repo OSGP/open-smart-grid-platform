@@ -4,14 +4,10 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
+import java.time.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -62,13 +58,13 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
    * @throws ProtocolAdapterException
    * @throws BufferedDateTimeValidationException in case the date is invalid or null
    */
-  Date readClock(
+  Instant readClock(
       final ConversionContext ctx,
-      final Optional<Date> previousLogTime,
+      final Optional<Instant> previousLogTime,
       final DlmsHelper dlmsHelper)
       throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
-    final Date logTime;
+    final Instant logTime;
 
     final PeriodTypeDto queryPeriodType = ctx.periodicMeterReadsQuery.getPeriodType();
     final Integer clockIndex = ctx.attributeAddressForProfile.getIndex(DlmsObjectType.CLOCK, null);
@@ -81,10 +77,11 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
               ctx.bufferedObjects.get(clockIndex), "Clock from " + queryPeriodType + " buffer");
     }
 
-    final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
+    final ZonedDateTime bufferedDateTime =
+        cosemDateTime == null ? null : cosemDateTime.asDateTime();
 
     if (bufferedDateTime != null) {
-      logTime = bufferedDateTime.toDate();
+      logTime = bufferedDateTime.toInstant();
     } else {
       logTime =
           this.calculateIntervalTimeBasedOnPreviousValue(
@@ -109,9 +106,9 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
    * @return the derived date based on the previous meter read record, or null if it cannot be
    *     determined
    */
-  protected Date calculateIntervalTimeBasedOnPreviousValue(
+  protected Instant calculateIntervalTimeBasedOnPreviousValue(
       final PeriodTypeDto periodTypeDto,
-      final Optional<Date> previousLogTime,
+      final Optional<Instant> previousLogTime,
       final Optional<ProfileCaptureTime> intervalTime)
       throws BufferedDateTimeValidationException {
 
@@ -120,21 +117,18 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
           "Unable to calculate next interval date, previous logTime " + "is not available");
     }
 
-    final Date prevLogTime = previousLogTime.get();
+    final Instant prevLogTime = previousLogTime.get();
 
     switch (periodTypeDto) {
       case DAILY:
-        return Date.from(prevLogTime.toInstant().plus(Duration.ofDays(1)));
+        return prevLogTime.plus(Duration.ofDays(1));
       case MONTHLY:
         final LocalDateTime localDateTime =
-            LocalDateTime.ofInstant(prevLogTime.toInstant(), ZoneId.systemDefault()).plusMonths(1);
+            LocalDateTime.ofInstant(prevLogTime, ZoneId.systemDefault()).plusMonths(1);
 
-        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        return localDateTime.atZone(ZoneId.systemDefault()).toInstant();
       case INTERVAL:
-        return Date.from(
-            prevLogTime
-                .toInstant()
-                .plus(Duration.ofMinutes(this.getIntervalTimeMinutes(intervalTime))));
+        return prevLogTime.plus(Duration.ofMinutes(this.getIntervalTimeMinutes(intervalTime)));
       default:
         throw new BufferedDateTimeValidationException(
             "Invalid PeriodTypeDto given: " + periodTypeDto);
@@ -225,9 +219,9 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
   }
 
   protected boolean validateDateTime(
-      final Date meterReadTime, final Date beginDateTime, final Date endDateTime) {
+      final Instant meterReadTime, final Instant beginDateTime, final Instant endDateTime) {
 
-    if (meterReadTime.before(beginDateTime) || meterReadTime.after(endDateTime)) {
+    if (meterReadTime.isBefore(beginDateTime) || meterReadTime.isAfter(endDateTime)) {
       LOGGER.info(
           "Not using an object from capture buffer (clock= {}), because the date does not match the given period: [ {} .. {} ].",
           meterReadTime,

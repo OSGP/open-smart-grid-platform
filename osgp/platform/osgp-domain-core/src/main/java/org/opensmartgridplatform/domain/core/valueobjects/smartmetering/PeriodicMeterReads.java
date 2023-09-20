@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
-import java.util.Date;
+import java.time.Instant;
 
 public class PeriodicMeterReads extends MeterReads {
 
@@ -13,7 +13,7 @@ public class PeriodicMeterReads extends MeterReads {
   private final AmrProfileStatusCode amrProfileStatusCode;
 
   public PeriodicMeterReads(
-      final Date logTime,
+      final Instant logTime,
       final ActiveEnergyValues activeEnergyValues,
       final AmrProfileStatusCode amrProfileStatusCode) {
     super(logTime, activeEnergyValues);
@@ -22,7 +22,7 @@ public class PeriodicMeterReads extends MeterReads {
 
   /** Constructor for interval reads. */
   public PeriodicMeterReads(
-      final Date logTime,
+      final Instant logTime,
       final OsgpMeterValue activeEnergyImport,
       final OsgpMeterValue activeEnergyExport,
       final AmrProfileStatusCode amrProfileStatusCode) {
@@ -34,7 +34,7 @@ public class PeriodicMeterReads extends MeterReads {
 
   /** Constructor for monthly reads. Does not hold a AMR profile status. */
   public PeriodicMeterReads(
-      final Date logTime,
+      final Instant logTime,
       final OsgpMeterValue activeEnergyImportTariffOne,
       final OsgpMeterValue activeEnergyImportTariffTwo,
       final OsgpMeterValue activeEnergyExportTariffOne,
@@ -50,7 +50,7 @@ public class PeriodicMeterReads extends MeterReads {
 
   /** Constructor for daily reads. Holds tariff values and AMR profile status. */
   public PeriodicMeterReads(
-      final Date logTime,
+      final Instant logTime,
       final OsgpMeterValue activeEnergyImportTariffOne,
       final OsgpMeterValue activeEnergyImportTariffTwo,
       final OsgpMeterValue activeEnergyExportTariffOne,

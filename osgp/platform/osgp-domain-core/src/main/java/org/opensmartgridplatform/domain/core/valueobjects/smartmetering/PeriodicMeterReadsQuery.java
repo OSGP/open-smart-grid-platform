@@ -5,7 +5,7 @@
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * request periodic reads for E or GAS meter
@@ -17,34 +17,34 @@ public class PeriodicMeterReadsQuery implements Serializable {
   private static final long serialVersionUID = -2483665562035897062L;
 
   private final PeriodType periodType;
-  private final Date beginDate;
-  private final Date endDate;
+  private final Instant beginDate;
+  private final Instant endDate;
   private final boolean mbusDevice;
   private final String deviceIdentification;
 
   public PeriodicMeterReadsQuery(
       final PeriodType periodType,
-      final Date beginDate,
-      final Date endDate,
+      final Instant beginDate,
+      final Instant endDate,
       final boolean mbusDevice) {
     this(periodType, beginDate, endDate, mbusDevice, "");
   }
 
   public PeriodicMeterReadsQuery(
       final PeriodType periodType,
-      final Date beginDate,
-      final Date endDate,
+      final Instant beginDate,
+      final Instant endDate,
       final boolean mbusDevice,
       final String deviceIdentification) {
     this.periodType = periodType;
-    this.beginDate = new Date(beginDate.getTime());
-    this.endDate = new Date(endDate.getTime());
+    this.beginDate = beginDate;
+    this.endDate = endDate;
     this.mbusDevice = mbusDevice;
     this.deviceIdentification = deviceIdentification;
   }
 
   public PeriodicMeterReadsQuery(
-      final PeriodType periodType, final Date beginDate, final Date endDate) {
+      final PeriodType periodType, final Instant beginDate, final Instant endDate) {
     this(periodType, beginDate, endDate, false, "");
   }
 
@@ -52,12 +52,12 @@ public class PeriodicMeterReadsQuery implements Serializable {
     return this.periodType;
   }
 
-  public Date getBeginDate() {
-    return new Date(this.beginDate.getTime());
+  public Instant getBeginDate() {
+    return this.beginDate;
   }
 
-  public Date getEndDate() {
-    return new Date(this.endDate.getTime());
+  public Instant getEndDate() {
+    return this.endDate;
   }
 
   public boolean isMbusDevice() {
