@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import org.openmuc.jdlms.AccessResultCode;
@@ -12,13 +13,14 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
@@ -37,13 +39,15 @@ public class ReadAlarmRegisterCommandExecutor
   private static final Logger LOGGER =
       LoggerFactory.getLogger(ReadAlarmRegisterCommandExecutor.class);
 
-  final DlmsObjectConfigService dlmsObjectConfigService;
+  final ObjectConfigServiceHelper objectConfigServiceHelper;
+  static final int ALARM_REGISTER_ATTRIBUTE_ID = RegisterAttribute.VALUE.attributeId();
 
   @Autowired private AlarmHelperService alarmHelperService;
 
-  public ReadAlarmRegisterCommandExecutor(final DlmsObjectConfigService dlmsObjectConfigService) {
+  public ReadAlarmRegisterCommandExecutor(
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(ReadAlarmRegisterDataDto.class);
-    this.dlmsObjectConfigService = dlmsObjectConfigService;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
@@ -68,18 +72,27 @@ public class ReadAlarmRegisterCommandExecutor
       final ReadAlarmRegisterRequestDto object,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
+    Set<AlarmTypeDto> alarmList = new HashSet<>();
 
-    final AttributeAddress alarmRegister1AttributeAddress =
-        this.dlmsObjectConfigService.getAttributeAddress(
-            device, DlmsObjectType.ALARM_REGISTER_1, null);
+    final Optional<AttributeAddress> alarmRegister1AttributeAddress =
+        this.objectConfigServiceHelper.findOptionalAttributeAddress(
+            device.getProtocolName(),
+            device.getProtocolVersion(),
+            DlmsObjectType.ALARM_REGISTER_1,
+            ALARM_REGISTER_ATTRIBUTE_ID);
 
-    final Set<AlarmTypeDto> alarmList =
-        this.readAlarmRegister(
-            conn, alarmRegister1AttributeAddress, DlmsObjectType.ALARM_REGISTER_1);
+    if (alarmRegister1AttributeAddress.isPresent()) {
+      alarmList =
+          this.readAlarmRegister(
+              conn, alarmRegister1AttributeAddress.get(), DlmsObjectType.ALARM_REGISTER_1);
+    }
 
     final Optional<AttributeAddress> alarmRegister2AttributeAddress =
-        this.dlmsObjectConfigService.findAttributeAddress(
-            device, DlmsObjectType.ALARM_REGISTER_2, null);
+        this.objectConfigServiceHelper.findOptionalAttributeAddress(
+            device.getProtocolName(),
+            device.getProtocolVersion(),
+            DlmsObjectType.ALARM_REGISTER_2,
+            ALARM_REGISTER_ATTRIBUTE_ID);
 
     if (alarmRegister2AttributeAddress.isPresent()) {
       alarmList.addAll(
