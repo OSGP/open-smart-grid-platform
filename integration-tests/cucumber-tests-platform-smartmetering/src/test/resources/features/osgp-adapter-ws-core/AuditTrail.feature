@@ -14,5 +14,5 @@ Feature: Core operations
       | Port                 |              9999 |
     When the get actual meter reads request is received
       | DeviceIdentification | TEST1024000000002 |
-    Then the audit trail contains multiple retry log records
+    Then the audit trail contains a retry log records
       | DeviceIdentification | TEST1024000000002 |
