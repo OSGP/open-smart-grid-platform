@@ -12,6 +12,7 @@ Feature: SmartMetering Bundle - ReadAlarmRegister
       | DeviceIdentification     | TEST1024000000001 |
       | DeviceType               | SMART_METER_E     |
       | SelectiveAccessSupported | true              |
+      | Port                     | <port>            |
       | Protocol                 | <protocol>        |
       | ProtocolVersion          | <version>         |
       | Lls1active               | <lls1active>      |
@@ -22,11 +23,11 @@ Feature: SmartMetering Bundle - ReadAlarmRegister
     When the bundle request is received
     Then the bundle response should contain a read alarm register response
     Examples:
-      | protocol | version | lls1active | hls5active |
-      | DSMR     | 2.2     | true       | false      |
-      | DSMR     | 4.2.2   | false      | true       |
-      | SMR      | 4.3     | false      | true       |
-      | SMR      | 5.0.0   | false      | true       |
-      | SMR      | 5.1     | false      | true       |
-      | SMR      | 5.2     | false      | true       |
-      | SMR      | 5.5     | false      | true       |
+      | protocol | version | port | lls1active | hls5active |
+      | DSMR     | 2.2     | 1026 | true       | false      |
+      | DSMR     | 4.2.2   |      | false      | true       |
+      | SMR      | 4.3     |      | false      | true       |
+      | SMR      | 5.0.0   |      | false      | true       |
+      | SMR      | 5.1     |      | false      | true       |
+      | SMR      | 5.2     |      | false      | true       |
+      | SMR      | 5.5     |      | false      | true       |
