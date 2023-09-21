@@ -36,6 +36,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -199,11 +200,8 @@ class ReadAlarmRegisterCommandExecutorTest {
             new ObisCode(obisCode),
             RegisterAttribute.VALUE.attributeId());
 
-    when(this.objectConfigServiceHelper.findOptionalAttributeAddress(
-            dlmsDevice.getProtocolName(),
-            dlmsDevice.getProtocolVersion(),
-            DlmsObjectType.valueOf(dlmsObjectTypeName),
-            ClearAlarmRegisterCommandExecutor.ALARM_REGISTER_ATTRIBUTE_ID))
+    when(this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
+            Protocol.forDevice(dlmsDevice), DlmsObjectType.valueOf(dlmsObjectTypeName)))
         .thenReturn(Optional.of(attributeAddress));
   }
 
