@@ -27,12 +27,12 @@ import org.openmuc.jdlms.SetParameter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.LoggingDlmsMessageListener;
-import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.OsgpResultTypeDto;
@@ -86,32 +86,27 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void shouldExecuteForProtocolDsmr422()
-      throws ProtocolAdapterException, IOException, ObjectConfigException {
+  void shouldExecuteForProtocolDsmr422() throws ProtocolAdapterException, IOException {
     this.assertForOneRegister("DSMR", "4.2.2");
   }
 
   @Test
-  void shouldExecuteForProtocolSmr500()
-      throws ProtocolAdapterException, IOException, ObjectConfigException {
+  void shouldExecuteForProtocolSmr500() throws ProtocolAdapterException, IOException {
     this.assertForOneRegister("SMR", "5.0.0");
   }
 
   @Test
-  void shouldExecuteForProtocolSmr51()
-      throws ProtocolAdapterException, IOException, ObjectConfigException {
+  void shouldExecuteForProtocolSmr51() throws ProtocolAdapterException, IOException {
     this.assertForOneRegister("SMR", "5.1");
   }
 
   @Test
-  void shouldExecuteForProtocolSmr52()
-      throws ProtocolAdapterException, IOException, ObjectConfigException {
+  void shouldExecuteForProtocolSmr52() throws ProtocolAdapterException, IOException {
     this.assertForTwoRegisters("SMR", "5.2");
   }
 
   @Test
-  void shouldExecuteForProtocolSmr55()
-      throws ProtocolAdapterException, IOException, ObjectConfigException {
+  void shouldExecuteForProtocolSmr55() throws ProtocolAdapterException, IOException {
     this.assertForThreeRegisters("SMR", "5.5");
   }
 
@@ -145,8 +140,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void connectionProblemAlarmRegister2()
-      throws IOException, ObjectConfigException, ProtocolAdapterException {
+  void connectionProblemAlarmRegister2() throws IOException, ProtocolAdapterException {
     when(this.dlmsConnection.set(any(SetParameter.class)))
         .thenReturn(AccessResultCode.SUCCESS)
         .thenThrow(new IOException());
@@ -162,8 +156,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void nullResultAlarmRegister2()
-      throws IOException, ObjectConfigException, ProtocolAdapterException {
+  void nullResultAlarmRegister2() throws IOException, ProtocolAdapterException {
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
         .thenReturn(AccessResultCode.SUCCESS)
         .thenReturn(null);
@@ -192,8 +185,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void successRegister1AndResultAlarmRegister2()
-      throws ProtocolAdapterException, IOException, ObjectConfigException {
+  void successRegister1AndResultAlarmRegister2() throws ProtocolAdapterException, IOException {
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
         .thenReturn(AccessResultCode.SUCCESS)
         .thenReturn(AccessResultCode.TEMPORARY_FAILURE);
@@ -206,7 +198,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void resultAlarmRegister2() throws ProtocolAdapterException, IOException, ObjectConfigException {
+  void resultAlarmRegister2() throws ProtocolAdapterException, IOException {
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
         .thenReturn(AccessResultCode.SUCCESS)
         .thenReturn(AccessResultCode.SUCCESS);
@@ -253,8 +245,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void failureRegister2AndResultAlarmRegister3()
-      throws ProtocolAdapterException, IOException, ObjectConfigException {
+  void failureRegister2AndResultAlarmRegister3() throws ProtocolAdapterException, IOException {
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
         .thenReturn(AccessResultCode.SUCCESS)
         .thenReturn(AccessResultCode.OTHER_REASON)
@@ -282,7 +273,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void resultAlarmRegister3() throws ProtocolAdapterException, IOException, ObjectConfigException {
+  void resultAlarmRegister3() throws ProtocolAdapterException, IOException {
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
         .thenReturn(AccessResultCode.SUCCESS)
         .thenReturn(AccessResultCode.SUCCESS)
@@ -323,15 +314,11 @@ class ClearAlarmRegisterCommandExecutorTest {
 
     final AttributeAddress attributeAddress = Mockito.mock(AttributeAddress.class);
     when(attributeAddress.getClassId()).thenReturn(1);
-    when(attributeAddress.getId())
-        .thenReturn(ClearAlarmRegisterCommandExecutor.ALARM_REGISTER_ATTRIBUTE_ID);
+    when(attributeAddress.getId()).thenReturn(2);
     when(attributeAddress.getInstanceId()).thenReturn(newObisCode);
 
-    when(this.objectConfigServiceHelper.findOptionalAttributeAddress(
-            dlmsDevice.getProtocolName(),
-            dlmsDevice.getProtocolVersion(),
-            DlmsObjectType.valueOf(dlmsObjectTypeName),
-            ClearAlarmRegisterCommandExecutor.ALARM_REGISTER_ATTRIBUTE_ID))
+    when(this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
+            Protocol.forDevice(dlmsDevice), DlmsObjectType.valueOf(dlmsObjectTypeName)))
         .thenReturn(Optional.of(attributeAddress));
   }
 
@@ -380,7 +367,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   void assertForTwoRegisters(final String protocol, final String protocolVersion)
-      throws ProtocolAdapterException, IOException, ObjectConfigException {
+      throws ProtocolAdapterException, IOException {
     final DlmsDevice dlmsDevice = new DlmsDevice(protocol + " " + protocolVersion + " device");
     dlmsDevice.setProtocol(protocol, protocolVersion);
 
@@ -414,7 +401,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   void assertForThreeRegisters(final String protocol, final String protocolVersion)
-      throws ProtocolAdapterException, IOException, ObjectConfigException {
+      throws ProtocolAdapterException, IOException {
     final DlmsDevice dlmsDevice = new DlmsDevice(protocol + " " + protocolVersion + " device");
     dlmsDevice.setProtocol(protocol, protocolVersion);
 

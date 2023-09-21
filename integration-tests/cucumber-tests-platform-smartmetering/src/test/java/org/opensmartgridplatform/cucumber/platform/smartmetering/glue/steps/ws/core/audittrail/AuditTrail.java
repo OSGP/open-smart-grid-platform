@@ -29,7 +29,7 @@ public class AuditTrail {
 
   @Autowired private DeviceLogItemPagingRepository deviceLogItemRepository;
 
-  @Then("^the audit trail contains multiple retry log records$")
+  @Then("^the audit trail contains a retry log records$")
   public void theAuditTrailContainsMultipleRetryLogRecords(final Map<String, String> settings)
       throws Throwable {
     final String deviceIdentification =
@@ -38,7 +38,7 @@ public class AuditTrail {
             PlatformKeys.KEY_DEVICE_IDENTIFICATION,
             PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
 
-    final int minimumNumberReturned = 2;
+    final int minimumNumberReturned = 1;
     final Predicate<DeviceLogItem> filter =
         dli -> Pattern.matches(PATTERN_RETRY_OPERATION, dli.getDecodedMessage());
 

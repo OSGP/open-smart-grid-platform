@@ -38,7 +38,7 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
     return this.waitFailMillis;
   }
 
-  protected void waitForNotification(final String correlationUid) {
+  protected Notification waitForNotification(final String correlationUid) {
     final int nextWait = this.getNextWait();
     LOGGER.info(
         "Waiting for a notification for correlation UID {} for at most {} milliseconds.",
@@ -56,6 +56,7 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
               + nextWait
               + " milliseconds");
     }
+    return notification;
   }
 
   protected Notification waitForNotification(final NotificationType notificationType) {
@@ -79,10 +80,8 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
         notificationType,
         nextWait);
 
-    final Notification notification =
-        this.notificationService.getNotification(notificationType, nextWait, TimeUnit.MILLISECONDS);
-
-    return notification;
+    return this.notificationService.getNotification(
+        notificationType, nextWait, TimeUnit.MILLISECONDS);
   }
 
   protected Notification waitForNotification(final int nextWait) {
