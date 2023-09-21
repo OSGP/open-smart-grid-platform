@@ -11,7 +11,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.opensmartgridplatform.adapter.domain.core.application.services.TransactionalDeviceLogItemService;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
@@ -72,7 +71,7 @@ public class DeviceMessageCleanupJob implements Job {
       final ZonedDateTime retention = this.calculateRetentionDate();
       final List<DeviceLogItem> oldDeviceMessages =
           this.transactionalDeviceLogItemService.findDeviceLogItemsBeforeDate(
-              Date.from(retention.toInstant()), this.deviceMessagePageSize);
+              retention.toInstant(), this.deviceMessagePageSize);
       if (!oldDeviceMessages.isEmpty()) {
         this.saveDeviceMessagesToCsvFile(oldDeviceMessages);
 

@@ -10,8 +10,8 @@ import static org.mockito.ArgumentMatchers.any;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,7 +58,7 @@ public class DeviceMessageCleanupJobTest {
     final List<DeviceLogItem> deviceLogItems = this.createDeviceLogItems();
     Mockito.when(
             this.transactionalDeviceLogItemService.findDeviceLogItemsBeforeDate(
-                any(Date.class), any(Integer.class)))
+                any(Instant.class), any(Integer.class)))
         .thenReturn(deviceLogItems);
 
     // Act
