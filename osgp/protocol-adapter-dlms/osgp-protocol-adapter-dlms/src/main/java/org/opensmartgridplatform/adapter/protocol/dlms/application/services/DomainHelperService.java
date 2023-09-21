@@ -91,12 +91,12 @@ public class DomainHelperService {
     return deviceIpAddress.orElseThrow(
         () ->
             new ProtocolAdapterException(
-                "Session provider: "
-                    + dlmsDevice.getCommunicationProvider()
-                    + " did not return an IP address for device: "
+                "Session provider: No IP address was returned for device: "
                     + dlmsDevice.getDeviceIdentification()
                     + " and iccId: "
-                    + dlmsDevice.getIccId()));
+                    + dlmsDevice.getIccId()
+                    + " and communicationProvider: "
+                    + dlmsDevice.getCommunicationProvider()));
   }
 
   public DlmsDevice findMbusDevice(
