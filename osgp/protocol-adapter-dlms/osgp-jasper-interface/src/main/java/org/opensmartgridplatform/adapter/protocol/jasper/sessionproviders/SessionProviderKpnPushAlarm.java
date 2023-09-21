@@ -60,7 +60,11 @@ public class SessionProviderKpnPushAlarm extends SessionProvider {
         "Wait for ip-address, this will be pushed by alarm for device: {}", deviceIdentification);
     final Optional<String> ipAddress =
         this.deviceSessionService.waitForIpAddress(deviceIdentification);
-    LOGGER.info("Received ip-address: {} for device: {}", ipAddress, deviceIdentification);
+    if (ipAddress.isEmpty()) {
+      LOGGER.info("Did not receive an ip-address for device: {}", deviceIdentification);
+    } else {
+      LOGGER.info("Received ip-address: {} for device: {}", ipAddress.get(), deviceIdentification);
+    }
     return ipAddress;
   }
 }
