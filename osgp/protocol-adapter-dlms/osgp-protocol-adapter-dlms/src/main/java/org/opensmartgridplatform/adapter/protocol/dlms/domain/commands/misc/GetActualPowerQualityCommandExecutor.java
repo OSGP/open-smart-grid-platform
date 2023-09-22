@@ -114,7 +114,7 @@ public class GetActualPowerQualityCommandExecutor
       if (pqObject.getClassId() == CLASS_ID_CLOCK) {
         final CosemDateTimeDto cosemDateTime =
             this.dlmsHelper.readDateTime(resultValue, "Actual Power Quality - Time");
-        powerQualityValue = new PowerQualityValueDto(cosemDateTime.asDateTime().toDate());
+        powerQualityValue = new PowerQualityValueDto(cosemDateTime.asDateTime());
         powerQualityObject = new PowerQualityObjectDto(pqObject.getTag(), null);
 
       } else if (pqObject.getClassId() == CLASS_ID_REGISTER) {

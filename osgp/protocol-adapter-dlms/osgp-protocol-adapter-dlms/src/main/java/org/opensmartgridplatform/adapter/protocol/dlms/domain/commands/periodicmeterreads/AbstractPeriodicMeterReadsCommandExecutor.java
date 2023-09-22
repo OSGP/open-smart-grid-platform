@@ -50,8 +50,8 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
 
   protected AttributeAddressForProfile getProfileBufferAddress(
       final PeriodTypeDto periodType,
-      final DateTime beginDateTime,
-      final DateTime endDateTime,
+      final ZonedDateTime beginDateTime,
+      final ZonedDateTime endDateTime,
       final DlmsDevice device,
       final DlmsObjectConfigService dlmsObjectConfigService,
       final Medium medium,

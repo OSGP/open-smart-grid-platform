@@ -14,14 +14,8 @@ import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfil
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto.POWER_DOWN;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto.RECOVERED_VALUE;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.TimeZone;
+import java.time.Instant;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.assertj.core.util.Lists;
@@ -108,15 +102,15 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
                   DataObject.newOctetStringData(this.OBIS_STATUS.bytes()),
               DataObject.newInteger8Data(this.ATTR_ID_VALUE), DataObject.newUInteger16Data(0)));
 
-  private Date TIME_FROM;
-  private Date TIME_TO;
+  private Instant TIME_FROM;
+  private Instant TIME_TO;
   private DataObject PERIOD_1_CLOCK;
   private DataObject PERIOD_2_CLOCK;
-  private Date PERIOD_1_CLOCK_VALUE;
-  private Date PERIOD_2_CLOCK_VALUE;
-  private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_HOURLY;
-  private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY;
-  private Date PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY;
+  private Instant PERIOD_1_CLOCK_VALUE;
+  private Instant PERIOD_2_CLOCK_VALUE;
+  private Instant PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_HOURLY;
+  private Instant PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY;
+  private Instant PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY;
 
   private final CosemDateTime PERIOD_1_CAPTURE_TIME = new CosemDateTime(2018, 12, 31, 23, 50, 0, 0);
   private final CosemDateTime PERIOD_2_CAPTURE_TIME = new CosemDateTime(2019, 1, 1, 0, 7, 0, 0);
@@ -138,7 +132,6 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     // all time based tests must use UTC time.
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    DateTimeZone.setDefault(DateTimeZone.UTC);
 
     this.initDates();
 
@@ -160,23 +153,22 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     // reset to original TimeZone
     TimeZone.setDefault(defaultTimeZone);
-    DateTimeZone.setDefault(defaultDateTimeZone);
   }
 
   private void initDates() {
 
-    this.TIME_FROM = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
-    this.TIME_TO = new GregorianCalendar(2019, Calendar.FEBRUARY, 5).getTime();
+    this.TIME_FROM = new GregorianCalendar(2019, Calendar.JANUARY, 1).toInstant();
+    this.TIME_TO = new GregorianCalendar(2019, Calendar.FEBRUARY, 5).toInstant();
     this.PERIOD_1_CLOCK = this.getDateAsOctetString(2019, 1, 1);
     this.PERIOD_2_CLOCK = this.getDateAsOctetString(2019, 1, 2);
-    this.PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 0).getTime();
-    this.PERIOD_2_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).getTime();
+    this.PERIOD_1_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 0).toInstant();
+    this.PERIOD_2_CLOCK_VALUE = new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).toInstant();
     this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_HOURLY =
-        new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 0).getTime();
+        new GregorianCalendar(2019, Calendar.JANUARY, 1, 1, 0).toInstant();
     this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY =
-        new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).getTime();
+        new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).toInstant();
     this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY =
-        new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 0, 0).getTime();
+        new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 0, 0).toInstant();
   }
 
   private static Stream<Arguments> combinePeriodTypesWithChannels() {
@@ -336,17 +328,17 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   private AttributeAddress createAttributeAddress(
       final Protocol protocol,
       final PeriodTypeDto type,
-      final Date timeFrom,
-      final Date timeTo,
+      final Instant timeFrom,
+      final Instant timeTo,
       final DlmsDevice device,
       final int channel)
       throws Exception {
     final DataObject from =
         this.dlmsHelper.asDataObject(
-            DlmsDateTimeConverter.toDateTime(timeFrom, device.getTimezone()));
+            DlmsDateTimeConverter.toZonedDateTime(timeFrom, device.getTimezone()));
     final DataObject to =
         this.dlmsHelper.asDataObject(
-            DlmsDateTimeConverter.toDateTime(timeTo, device.getTimezone()));
+            DlmsDateTimeConverter.toZonedDateTime(timeTo, device.getTimezone()));
 
     if (protocol == Protocol.DSMR_4_2_2) {
       if (type == PeriodTypeDto.DAILY) {
@@ -613,23 +605,23 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
       final boolean useNullData) {
 
     final PeriodicMeterReadsGasResponseItemDto periodicMeterRead1 = periodicMeterReads.get(0);
-    assertThat(periodicMeterRead1.getLogTime()).isEqualTo(this.PERIOD_1_CLOCK_VALUE);
+    assertThat(periodicMeterRead1.getLogTime().toInstant()).isEqualTo(this.PERIOD_1_CLOCK_VALUE);
 
     final PeriodicMeterReadsGasResponseItemDto periodicMeterRead2 = periodicMeterReads.get(1);
 
     if (!useNullData) { // The timestamps should be the same as the times
       // set in the test
-      assertThat(periodicMeterRead2.getLogTime()).isEqualTo(this.PERIOD_2_CLOCK_VALUE);
+      assertThat(periodicMeterRead2.getLogTime().toInstant()).isEqualTo(this.PERIOD_2_CLOCK_VALUE);
     } else { // The timestamps should be calculated using the periodType,
       // starting from the time of period 1
       if (type == PeriodTypeDto.INTERVAL) {
-        assertThat(periodicMeterRead2.getLogTime())
+        assertThat(periodicMeterRead2.getLogTime().toInstant())
             .isEqualTo(this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_HOURLY);
       } else if (type == PeriodTypeDto.DAILY) {
-        assertThat(periodicMeterRead2.getLogTime())
+        assertThat(periodicMeterRead2.getLogTime().toInstant())
             .isEqualTo(this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_DAILY);
       } else if (type == PeriodTypeDto.MONTHLY) {
-        assertThat(periodicMeterRead2.getLogTime())
+        assertThat(periodicMeterRead2.getLogTime().toInstant())
             .isEqualTo(this.PERIOD_2_CLOCK_VALUE_NULL_DATA_PERIOD_MONTHLY);
       }
     }

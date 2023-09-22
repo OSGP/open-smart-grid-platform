@@ -13,6 +13,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -79,8 +82,10 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
   private final DlmsDevice device = this.createDevice(Protocol.DSMR_4_2_2);
   private final long from = 1111110L;
   private final long to = 2222222L;
-  private final DateTime fromDateTime = new DateTime(this.from);
-  private final DateTime toDateTime = new DateTime(this.to);
+  private final ZonedDateTime fromDateTime =
+      ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.from), ZoneId.systemDefault());
+  private final ZonedDateTime toDateTime =
+      ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.to), ZoneId.systemDefault());
   private MessageMetadata messageMetadata;
 
   @BeforeEach
@@ -105,8 +110,8 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
     final PeriodicMeterReadsRequestDto request =
         new PeriodicMeterReadsRequestDto(
             PeriodTypeDto.DAILY,
-            this.fromDateTime.toDate(),
-            this.toDateTime.toDate(),
+            this.fromDateTime.toInstant(),
+            this.toDateTime.toInstant(),
             ChannelDto.ONE);
     when(this.dlmsObjectConfigService.findAttributeAddressForProfile(
             any(), any(), any(), any(), any(), any(), eq(true)))
@@ -131,13 +136,17 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
     final ChannelDto channel = ChannelDto.ONE;
     final PeriodicMeterReadsRequestDto request =
         new PeriodicMeterReadsRequestDto(
-            periodType, this.fromDateTime.toDate(), this.toDateTime.toDate(), channel);
+            periodType, this.fromDateTime.toInstant(), this.toDateTime.toInstant(), channel);
 
     this.device.setTimezone(timeZone);
-    final DateTime convertedFromTime =
-        DlmsDateTimeConverter.toDateTime(new Date(this.from), this.device.getTimezone());
-    final DateTime convertedToTime =
-        DlmsDateTimeConverter.toDateTime(new Date(this.to), this.device.getTimezone());
+    final ZonedDateTime convertedFromTime =
+        DlmsDateTimeConverter.toZonedDateTime(
+            ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.from), ZoneId.of("UTC")),
+            this.device.getTimezone());
+    final ZonedDateTime convertedToTime =
+        DlmsDateTimeConverter.toZonedDateTime(
+            ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.to), ZoneId.of("UTC")),
+            this.device.getTimezone());
 
     // SETUP - dlms objects
     final DlmsObject dlmsClock = new DlmsClock("0.0.1.0.0.255");

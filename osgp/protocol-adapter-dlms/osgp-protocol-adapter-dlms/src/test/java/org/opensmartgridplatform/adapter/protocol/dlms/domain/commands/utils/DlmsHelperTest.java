@@ -16,10 +16,10 @@ import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.format.ISODateTimeFormat;
 import org.junit.jupiter.api.Test;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
@@ -170,9 +170,9 @@ public class DlmsHelperTest {
 
     assertThat(cosemDateTime.isDateTimeSpecified()).isTrue();
 
-    final DateTime dateInSummerTime = cosemDateTime.asDateTime();
+    final ZonedDateTime dateInSummerTime = cosemDateTime.asDateTime();
 
-    assertThat(ISODateTimeFormat.dateTime().print(dateInSummerTime))
+    assertThat(DateTimeFormatter.ISO_DATE_TIME.format(dateInSummerTime))
         .isEqualTo("2015-07-21T14:53:07.230+02:00");
   }
 
@@ -183,9 +183,9 @@ public class DlmsHelperTest {
 
     assertThat(cosemDateTime.isDateTimeSpecified()).isTrue();
 
-    final DateTime dateInWinterTime = cosemDateTime.asDateTime();
+    final ZonedDateTime dateInWinterTime = cosemDateTime.asDateTime();
 
-    assertThat(ISODateTimeFormat.dateTime().print(dateInWinterTime))
+    assertThat(DateTimeFormatter.ISO_DATE_TIME.format(dateInWinterTime))
         .isEqualTo("2015-02-21T14:53:07.230+01:00");
   }
 

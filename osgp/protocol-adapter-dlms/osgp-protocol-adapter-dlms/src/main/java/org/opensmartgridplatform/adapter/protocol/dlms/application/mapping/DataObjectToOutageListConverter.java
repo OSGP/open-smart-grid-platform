@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -55,7 +55,7 @@ public class DataObjectToOutageListConverter {
       throw new ProtocolAdapterException("outageData size should be " + NUMBER_OF_ELEMENTS);
     }
 
-    final DateTime endTime = this.extractDateTime(outageData);
+    final ZonedDateTime endTime = this.extractDateTime(outageData);
     final Long duration = this.extractEventDuration(outageData);
 
     final OutageDto outage = new OutageDto(endTime, duration);
@@ -64,9 +64,9 @@ public class DataObjectToOutageListConverter {
     return outage;
   }
 
-  private DateTime extractDateTime(final List<DataObject> eventData)
+  private ZonedDateTime extractDateTime(final List<DataObject> eventData)
       throws ProtocolAdapterException {
-    final DateTime dateTime =
+    final ZonedDateTime dateTime =
         this.dlmsHelper.convertDataObjectToDateTime(eventData.get(0)).asDateTime();
 
     if (dateTime == null) {

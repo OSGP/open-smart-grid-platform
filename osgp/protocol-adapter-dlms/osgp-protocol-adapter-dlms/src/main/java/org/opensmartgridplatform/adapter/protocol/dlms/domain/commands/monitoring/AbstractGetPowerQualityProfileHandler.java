@@ -493,7 +493,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       return new ProfileEntryValueDto(
           Date.from(newLocalDateTime.atZone(ZoneId.systemDefault()).toInstant()));
     } else {
-      return new ProfileEntryValueDto(cosemDateTime.asDateTime().toDate());
+      return new ProfileEntryValueDto(cosemDateTime.asDateTime());
     }
   }
 

@@ -9,11 +9,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,7 +71,8 @@ class EventServiceTest {
               when(protocolInfo.getProtocol()).thenReturn("SMR");
               when(this.smartMeter.getProtocolInfo()).thenReturn(protocolInfo);
 
-              final EventDto event = new EventDto(new DateTime(), 266, 2, "STANDARD_EVENT_LOG");
+              final EventDto event =
+                  new EventDto(ZonedDateTime.now(), 266, 2, "STANDARD_EVENT_LOG");
               final ArrayList<EventDto> events = new ArrayList<>();
               events.add(event);
               final EventMessageDataResponseDto responseDto =
@@ -138,7 +139,7 @@ class EventServiceTest {
     when(protocolInfo.getProtocol()).thenReturn(protocol);
     when(this.smartMeter.getProtocolInfo()).thenReturn(protocolInfo);
 
-    final EventDto event = new EventDto(new DateTime(), eventCode, 2, "STANDARD_EVENT_LOG");
+    final EventDto event = new EventDto(ZonedDateTime.now(), eventCode, 2, "STANDARD_EVENT_LOG");
     final ArrayList<EventDto> events = new ArrayList<>();
     events.add(event);
     final EventMessageDataResponseDto responseDto = new EventMessageDataResponseDto(events);

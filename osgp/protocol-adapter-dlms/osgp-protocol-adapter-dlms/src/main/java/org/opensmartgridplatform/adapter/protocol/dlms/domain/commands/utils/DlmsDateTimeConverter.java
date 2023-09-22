@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -36,6 +37,13 @@ public class DlmsDateTimeConverter {
 
     final ZonedDateTime utcZonedDateTime =
         ZonedDateTime.ofInstant(utcDateTime.toInstant(), ZoneId.of(UTC));
+
+    return utcZonedDateTime.withZoneSameInstant(ZoneId.of(determineTimeZone(timezone)));
+  }
+
+  public static ZonedDateTime toZonedDateTime(final Instant utcDateTime, final String timezone) {
+
+    final ZonedDateTime utcZonedDateTime = ZonedDateTime.ofInstant(utcDateTime, ZoneId.of(UTC));
 
     return utcZonedDateTime.withZoneSameInstant(ZoneId.of(determineTimeZone(timezone)));
   }

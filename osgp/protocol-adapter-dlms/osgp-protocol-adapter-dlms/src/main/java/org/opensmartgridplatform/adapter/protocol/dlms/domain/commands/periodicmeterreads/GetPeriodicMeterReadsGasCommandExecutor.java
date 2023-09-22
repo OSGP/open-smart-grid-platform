@@ -103,11 +103,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
     final ZonedDateTime from =
         DlmsDateTimeConverter.toZonedDateTime(
-            ZonedDateTime.ofInstant(periodicMeterReadsQuery.getBeginDate(), ZoneId.of("UTC")),
+            ZonedDateTime.ofInstant(periodicMeterReadsQuery.getBeginDate(), ZoneId.systemDefault()),
             device.getTimezone());
     final ZonedDateTime to =
         DlmsDateTimeConverter.toZonedDateTime(
-            ZonedDateTime.ofInstant(periodicMeterReadsQuery.getEndDate(), ZoneId.of("UTC")),
+            ZonedDateTime.ofInstant(periodicMeterReadsQuery.getEndDate(), ZoneId.systemDefault()),
             device.getTimezone());
 
     final AttributeAddressForProfile profileBufferAddress =
@@ -196,7 +196,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
         periodicMeterReads.stream()
             .filter(
                 meterRead ->
-                    this.validateDateTime(meterRead.getLogTime(), from.toDate(), to.toDate()))
+                    this.validateDateTime(
+                        meterRead.getLogTime().toInstant(), from.toInstant(), to.toInstant()))
             .toList();
 
     LOGGER.debug("Resulting periodicMeterReads: {} ", periodicMeterReads);
@@ -210,8 +211,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads)
       throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
-    final Optional<Date> previousLogTime = this.getPreviousLogTime(periodicMeterReads);
-    final Date logTime = this.readClock(ctx, previousLogTime, this.dlmsHelper);
+    final Optional<Instant> previousLogTime = this.getPreviousLogTime(periodicMeterReads);
+    final Instant logTime = this.readClock(ctx, previousLogTime, this.dlmsHelper);
 
     final AmrProfileStatusCodeDto status =
         this.readStatus(ctx.bufferedObjects, ctx.attributeAddressForProfile);
@@ -228,7 +229,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
             ctx.periodicMeterReadsQuery.getChannel().getChannelNumber());
 
     final Optional<Instant> previousCaptureTime = this.getPreviousCaptureTime(periodicMeterReads);
-    final Date captureTime = this.readCaptureTime(ctx, previousCaptureTime);
+    final Instant captureTime = this.readCaptureTime(ctx, previousCaptureTime);
 
     LOGGER.debug("Converting bufferObject with value: {} ", ctx.bufferedObjects);
     LOGGER.debug(
@@ -240,20 +241,21 @@ public class GetPeriodicMeterReadsGasCommandExecutor
         captureTime);
 
     return new PeriodicMeterReadsGasResponseItemDto(
-        logTime,
+        Date.from(logTime),
         this.dlmsHelper.getScaledMeterValue(gasValue, scalerUnit, GAS_VALUE),
-        captureTime,
+        Date.from(captureTime),
         status);
   }
 
-  private Optional<Date> getPreviousLogTime(
+  private Optional<Instant> getPreviousLogTime(
       final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads) {
 
     if (periodicMeterReads.isEmpty()) {
       return Optional.empty();
     }
 
-    return Optional.of(periodicMeterReads.get(periodicMeterReads.size() - 1).getLogTime());
+    return Optional.of(
+        periodicMeterReads.get(periodicMeterReads.size() - 1).getLogTime().toInstant());
   }
 
   private Optional<Instant> getPreviousCaptureTime(
@@ -346,32 +348,6 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     return null;
   }
 
-<<<<<<< HEAD
-  private AttributeAddressForProfile getProfileBufferAddress(
-      final PeriodTypeDto periodType,
-      final ChannelDto channel,
-      final ZonedDateTime beginDateTime,
-      final ZonedDateTime endDateTime,
-      final DlmsDevice device)
-      throws ProtocolAdapterException {
-
-    final DlmsObjectType type = DlmsObjectType.getTypeForPeriodType(periodType);
-
-    // Add the attribute address for the profile
-    final AttributeAddressForProfile attributeAddressProfile =
-        this.dlmsObjectConfigService
-            .findAttributeAddressForProfile(
-                device, type, channel.getChannelNumber(), beginDateTime, endDateTime, Medium.GAS)
-            .orElseThrow(() -> new ProtocolAdapterException("No address found for " + type));
-
-    LOGGER.debug(
-        "Dlms object config service returned profile buffer address {} ", attributeAddressProfile);
-
-    return attributeAddressProfile;
-  }
-
-=======
->>>>>>> development
   private List<AttributeAddress> getScalerUnitAddresses(
       final ChannelDto channel, final AttributeAddressForProfile attributeAddressForProfile) {
 

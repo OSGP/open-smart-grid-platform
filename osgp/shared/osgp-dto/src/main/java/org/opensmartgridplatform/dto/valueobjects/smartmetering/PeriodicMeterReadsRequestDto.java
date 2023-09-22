@@ -27,7 +27,7 @@ public class PeriodicMeterReadsRequestDto implements ActionRequestDto {
       final ChannelDto channel) {
     this.periodType = periodType;
     this.beginDate = beginDate;
-    this.endDate = beginDate;
+    this.endDate = endDate;
     this.channel = channel;
   }
 

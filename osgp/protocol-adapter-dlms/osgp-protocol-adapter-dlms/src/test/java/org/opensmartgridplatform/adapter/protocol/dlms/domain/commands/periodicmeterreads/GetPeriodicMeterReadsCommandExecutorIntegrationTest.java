@@ -6,16 +6,9 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodic
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.TimeZone;
+import java.time.Instant;
+import java.util.*;
 import java.util.stream.Collectors;
-import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -131,15 +124,15 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
               DataObject.newInteger8Data(this.ATTR_ID_VALUE),
               DataObject.newUInteger16Data(0)));
 
-  private Date timeFrom;
-  private Date timeTo;
+  private Instant timeFrom;
+  private Instant timeTo;
   private DataObject period1Clock;
   private DataObject period2Clock;
-  private Date period1ClockValue;
-  private Date period2ClockValue;
-  private Date period2ClockValueNullDataPeriod15Min;
-  private Date period2ClockValueNullDataPeriodDaily;
-  private Date period2ClockValueNullDataPeriodMonthly;
+  private Instant period1ClockValue;
+  private Instant period2ClockValue;
+  private Instant period2ClockValueNullDataPeriod15Min;
+  private Instant period2ClockValueNullDataPeriodDaily;
+  private Instant period2ClockValueNullDataPeriodMonthly;
 
   private final int AMOUNT_OF_PERIODS = 2;
 
@@ -156,30 +149,25 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
   private final int DLMS_ENUM_VALUE_WH = 30;
 
   private void initDates() {
-
-    this.timeFrom = new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime();
-    this.timeTo = new GregorianCalendar(2019, Calendar.FEBRUARY, 2).getTime();
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    this.timeFrom = new GregorianCalendar(2019, Calendar.JANUARY, 1).toInstant();
+    this.timeTo = new GregorianCalendar(2019, Calendar.FEBRUARY, 2).toInstant();
     this.period1Clock = this.getDateAsOctetString(2019, 1, 1);
     this.period2Clock = this.getDateAsOctetString(2019, 1, 2);
-    this.period1ClockValue = new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 0).getTime();
-    this.period2ClockValue = new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).getTime();
+    this.period1ClockValue = new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 0).toInstant();
+    this.period2ClockValue = new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).toInstant();
     this.period2ClockValueNullDataPeriod15Min =
-        new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 15).getTime();
+        new GregorianCalendar(2019, Calendar.JANUARY, 1, 0, 15).toInstant();
     this.period2ClockValueNullDataPeriodDaily =
-        new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).getTime();
+        new GregorianCalendar(2019, Calendar.JANUARY, 2, 0, 0).toInstant();
     this.period2ClockValueNullDataPeriodMonthly =
-        new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 0, 0).getTime();
+        new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 0, 0).toInstant();
   }
 
   @BeforeEach
   public void setUp() {
 
-    final TimeZone defaultTimeZone = TimeZone.getDefault();
-    final DateTimeZone defaultDateTimeZone = DateTimeZone.getDefault();
-
     // all time based tests must use UTC time.
-    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    DateTimeZone.setDefault(DateTimeZone.UTC);
 
     this.initDates();
 
@@ -198,10 +186,6 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
     this.connectionStub.setDefaultReturnValue(DataObject.newArrayData(Collections.emptyList()));
-
-    // reset to original TimeZone
-    TimeZone.setDefault(defaultTimeZone);
-    DateTimeZone.setDefault(defaultDateTimeZone);
   }
 
   @ParameterizedTest
@@ -329,17 +313,17 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
   private AttributeAddress createAttributeAddress(
       final Protocol protocol,
       final PeriodTypeDto type,
-      final Date timeFrom,
-      final Date timeTo,
+      final Instant timeFrom,
+      final Instant timeTo,
       final DlmsDevice device)
       throws Exception {
 
     final DataObject from =
         this.dlmsHelper.asDataObject(
-            DlmsDateTimeConverter.toDateTime(timeFrom, device.getTimezone()));
+            DlmsDateTimeConverter.toZonedDateTime(timeFrom, device.getTimezone()));
     final DataObject to =
         this.dlmsHelper.asDataObject(
-            DlmsDateTimeConverter.toDateTime(timeTo, device.getTimezone()));
+            DlmsDateTimeConverter.toZonedDateTime(timeTo, device.getTimezone()));
 
     if (protocol == Protocol.DSMR_4_2_2) {
       if (type == PeriodTypeDto.DAILY) {

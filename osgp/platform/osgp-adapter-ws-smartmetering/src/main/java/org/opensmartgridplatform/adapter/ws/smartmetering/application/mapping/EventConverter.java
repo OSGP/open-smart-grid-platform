@@ -4,6 +4,8 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
+import java.time.ZonedDateTime;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -12,7 +14,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventLogCategory;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Event;
@@ -39,7 +40,7 @@ public class EventConverter
     try {
       final XMLGregorianCalendar timestamp =
           DatatypeFactory.newInstance()
-              .newXMLGregorianCalendar(source.getTimestamp().toGregorianCalendar());
+              .newXMLGregorianCalendar(GregorianCalendar.from(source.getTimestamp()));
       final org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event event =
           new org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event();
       event.setEventCode(source.getEventCode());
@@ -74,7 +75,7 @@ public class EventConverter
       return null;
     }
 
-    final DateTime timestamp = new DateTime(source.getTimestamp().toGregorianCalendar().getTime());
+    final ZonedDateTime timestamp = source.getTimestamp().toGregorianCalendar().toZonedDateTime();
     final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory
         eventLogCategory =
             org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory
