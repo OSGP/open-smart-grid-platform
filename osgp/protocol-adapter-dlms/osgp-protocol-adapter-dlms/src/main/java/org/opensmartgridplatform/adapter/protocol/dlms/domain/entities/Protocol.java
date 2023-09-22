@@ -5,25 +5,21 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.entities;
 
 public enum Protocol {
-  DSMR_4_2_2("DSMR", "4.2.2", true),
-  SMR_4_3("SMR", "4.3", true),
-  SMR_5_0_0("SMR", "5.0.0", true),
-  SMR_5_1("SMR", "5.1", true),
-  SMR_5_2("SMR", "5.2", true),
-  SMR_5_5("SMR", "5.5", true),
-  OTHER_PROTOCOL("?", "?", true);
+  DSMR_2_2("DSMR", "2.2"),
+  DSMR_4_2_2("DSMR", "4.2.2"),
+  SMR_4_3("SMR", "4.3"),
+  SMR_5_0_0("SMR", "5.0.0"),
+  SMR_5_1("SMR", "5.1"),
+  SMR_5_2("SMR", "5.2"),
+  SMR_5_5("SMR", "5.5"),
+  OTHER_PROTOCOL("?", "?");
 
   private final String name;
   private final String version;
-  private final boolean selectValuesInSelectiveAccessSupported;
 
-  Protocol(
-      final String name,
-      final String version,
-      final boolean selectValuesInSelectiveAccessSupported) {
+  Protocol(final String name, final String version) {
     this.name = name;
     this.version = version;
-    this.selectValuesInSelectiveAccessSupported = selectValuesInSelectiveAccessSupported;
   }
 
   public String getName() {
@@ -32,10 +28,6 @@ public enum Protocol {
 
   public String getVersion() {
     return this.version;
-  }
-
-  public boolean isSelectValuesInSelectiveAccessSupported() {
-    return this.selectValuesInSelectiveAccessSupported;
   }
 
   public static Protocol forDevice(final DlmsDevice device) {

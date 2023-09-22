@@ -4,12 +4,17 @@
 
 package org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders;
 
+import java.util.Optional;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class SessionProvider {
 
-  @Autowired protected SessionProviderMap sessionProviderMap;
+  protected SessionProviderMap sessionProviderMap;
 
-  public abstract String getIpAddress(String iccId) throws OsgpException;
+  public SessionProvider(final SessionProviderMap sessionProviderMap) {
+    this.sessionProviderMap = sessionProviderMap;
+  }
+
+  public abstract Optional<String> getIpAddress(String deviceIdentification, String iccId)
+      throws OsgpException;
 }

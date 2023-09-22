@@ -11,7 +11,7 @@
     {
       "tag": "DEFINABLE_LOAD_PROFILE",
       "description": "Definable load profile",
-      "note": null,
+      "note": "Attribute 4 (capture period in sec) is overridden in factory with value 900 (default in spec: 86400)",
       "class-id": 7,
       "version": 1,
       "obis": "0.1.94.31.6.255",
@@ -70,9 +70,10 @@
         {
           "id": 4,
           "description": "capture period in sec",
+          "note": "Attribute 4 (capture period in sec) is overridden in factory with value 900 (default in spec: 86400)",
           "datatype": "double-long-unsigned",
           "valuetype": "SET_BY_CLIENT",
-          "value": "86400",
+          "value": "900",
           "access": "RW"
         },
         {

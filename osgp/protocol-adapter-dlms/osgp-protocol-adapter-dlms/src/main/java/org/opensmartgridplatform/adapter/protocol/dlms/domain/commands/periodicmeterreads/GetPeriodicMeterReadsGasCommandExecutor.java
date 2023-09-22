@@ -112,7 +112,13 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
     final AttributeAddressForProfile profileBufferAddress =
         this.getProfileBufferAddress(
-            queryPeriodType, periodicMeterReadsQuery.getChannel(), from, to, device);
+            queryPeriodType,
+            from,
+            to,
+            device,
+            this.dlmsObjectConfigService,
+            Medium.GAS,
+            periodicMeterReadsQuery.getChannel().getChannelNumber());
 
     final List<AttributeAddress> scalerUnitAddresses =
         this.getScalerUnitAddresses(periodicMeterReadsQuery.getChannel(), profileBufferAddress);
@@ -209,7 +215,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
     final AmrProfileStatusCodeDto status =
         this.readStatus(ctx.bufferedObjects, ctx.attributeAddressForProfile);
-    final DataObject gasValue = this.readValue(ctx.bufferedObjects, ctx.attributeAddressForProfile);
+    final DataObject gasValue =
+        this.readValue(
+            ctx.bufferedObjects,
+            ctx.attributeAddressForProfile,
+            ctx.periodicMeterReadsQuery.getChannel().getChannelNumber());
     final DataObject scalerUnit =
         this.readScalerUnit(
             ctx.getResultList,
@@ -260,10 +270,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
   private DataObject readValue(
       final List<DataObject> bufferedObjects,
-      final AttributeAddressForProfile attributeAddressForProfile) {
+      final AttributeAddressForProfile attributeAddressForProfile,
+      final int channel) {
 
     final Integer valueIndex =
-        attributeAddressForProfile.getIndex(DlmsObjectType.MBUS_MASTER_VALUE, 2);
+        attributeAddressForProfile.getIndex(DlmsObjectType.MBUS_MASTER_VALUE, 2, channel);
 
     DataObject value = null;
 
@@ -335,6 +346,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     return null;
   }
 
+<<<<<<< HEAD
   private AttributeAddressForProfile getProfileBufferAddress(
       final PeriodTypeDto periodType,
       final ChannelDto channel,
@@ -358,6 +370,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     return attributeAddressProfile;
   }
 
+=======
+>>>>>>> development
   private List<AttributeAddress> getScalerUnitAddresses(
       final ChannelDto channel, final AttributeAddressForProfile attributeAddressForProfile) {
 
