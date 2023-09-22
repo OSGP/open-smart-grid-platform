@@ -1981,11 +1981,187 @@
       ]
     },
     {
+      "tag": "DAILY_VALUES_G",
+      "description": "Daily billing values of M-Bus device",
+      "class-id": 7,
+      "version": 1,
+      "obis": "0.x.24.3.1.255",
+      "group": "GAS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "buffer",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "value": "EMPTY",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture objects",
+          "datatype": "array",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "CLOCK,2|AMR_PROFILE_STATUS_DAILY_G,2|MBUS_MASTER_VALUE_HOURLY,2|MBUS_MASTER_VALUE_HOURLY,5",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "capture period in sec",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "86400",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "sort method",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_METER",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "sort object",
+          "datatype": "object_definition",
+          "valuetype": "FIXED_IN_METER",
+          "value": "NONE",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "entries in use",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "profile entries",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "40",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MONTHLY_VALUES_G",
+      "description": "Monthly billing values of M-Bus device",
+      "class-id": 7,
+      "version": 1,
+      "obis": "0.x.24.3.2.255",
+      "group": "GAS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "buffer",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "value": "EMPTY",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture objects",
+          "datatype": "array",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "CLOCK,2|AMR_PROFILE_STATUS_MONTHLY_G,2|MBUS_MASTER_VALUE_HOURLY,2|MBUS_MASTER_VALUE_HOURLY,5",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "capture period in sec",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "sort method",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_METER",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "sort object",
+          "datatype": "object_definition",
+          "valuetype": "FIXED_IN_METER",
+          "value": "NONE",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "entries in use",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "profile entries",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "13",
+          "access": "R"
+        }
+      ]
+    },
+    {
       "tag": "AMR_PROFILE_STATUS_HOURLY_G",
-      "description": "AMR Profile status code M-Bus, hourly loud profile values",
+      "description": "AMR Profile status code M-Bus, hourly load profile values",
       "class-id": 1,
       "version": 0,
       "obis": "0.x.96.10.3.255",
+      "group": "GAS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "AMR_PROFILE_STATUS_DAILY_G",
+      "description": "AMR Profile status code M-Bus, daily load profile values",
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.x.96.10.5.255",
+      "group": "GAS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "AMR_PROFILE_STATUS_MONTHLY_G",
+      "description": "AMR Profile status code M-Bus, monthly load profile values",
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.x.96.10.7.255",
       "group": "GAS",
       "meterTypes": ["SP","PP"],
       "properties": {},

@@ -50,6 +50,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsGasResponseItemDto;
@@ -193,7 +194,7 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
   @ParameterizedTest
   @MethodSource("combinePeriodTypesWithChannels")
-  void testExecuteDsmr4NoSelectiveAccess(final PeriodTypeDto type, final int channel)
+  void testExecuteDsmr4NoSelectedValues(final PeriodTypeDto type, final int channel)
       throws Exception {
     this.testExecute(Protocol.DSMR_4_2_2, type, false, false, channel);
   }
@@ -234,7 +235,7 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
       final Protocol protocol,
       final PeriodTypeDto type,
       final boolean useNullData,
-      final boolean selectiveAccessPeriodicMeterReadsSupported,
+      final boolean selectedValuesSupported,
       final int channel)
       throws Exception {
 
@@ -246,8 +247,7 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     this.connectionStub.clearRequestedAttributeAddresses();
 
     // Create device with requested protocol version
-    final DlmsDevice device =
-        this.createDlmsDevice(protocol, selectiveAccessPeriodicMeterReadsSupported);
+    final DlmsDevice device = this.createDlmsDevice(protocol, selectedValuesSupported);
 
     // Create request object
     final PeriodicMeterReadsRequestDto request =
@@ -260,12 +260,7 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     // Set response in stub
     this.setResponseForProfile(
-        expectedAddressProfile,
-        protocol,
-        type,
-        useNullData,
-        selectiveAccessPeriodicMeterReadsSupported,
-        channel);
+        expectedAddressProfile, protocol, type, useNullData, selectedValuesSupported, channel);
 
     // CALL
     final PeriodicMeterReadGasResponseDto response =
@@ -544,8 +539,11 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     assertThat(period1.getConsumption().getValue().multiply(this.SCALER).intValue())
         .isEqualTo(this.PERIOD_1_LONG_VALUE + channel);
+    assertThat(period1.getConsumption().getDlmsUnit()).isEqualTo(DlmsUnitTypeDto.M3);
+
     assertThat(period2.getConsumption().getValue().multiply(this.SCALER).intValue())
         .isEqualTo(this.PERIOD_2_LONG_VALUE + channel);
+    assertThat(period2.getConsumption().getDlmsUnit()).isEqualTo(DlmsUnitTypeDto.M3);
   }
 
   private void checkAmrStatus(

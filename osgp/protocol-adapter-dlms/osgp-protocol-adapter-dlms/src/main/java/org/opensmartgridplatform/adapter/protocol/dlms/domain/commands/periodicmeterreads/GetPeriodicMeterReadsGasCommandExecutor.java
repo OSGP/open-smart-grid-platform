@@ -7,7 +7,9 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodic
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute.BUFFER;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute.CAPTURE_OBJECTS;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute.CAPTURE_PERIOD;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.AMR_PROFILE_STATUS_DAILY_G;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.AMR_PROFILE_STATUS_HOURLY_G;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.AMR_PROFILE_STATUS_MONTHLY_G;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.CLOCK;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.DAILY_VALUES_COMBINED;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.DAILY_VALUES_G;
@@ -224,7 +226,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
             bufferedObjects,
             this.dlmsHelper);
 
-    final AmrProfileStatusCodeDto status = this.readStatus(bufferedObjects, selectedObjects);
+    final AmrProfileStatusCodeDto status =
+        this.readStatus(bufferedObjects, selectedObjects, periodType);
     final DataObject gasValue = this.readValue(bufferedObjects, selectedObjects, channel);
 
     final String scalerUnit = this.getScalerUnit(selectedObjects, channel);
@@ -309,10 +312,19 @@ public class GetPeriodicMeterReadsGasCommandExecutor
   }
 
   AmrProfileStatusCodeDto readStatus(
-      final List<DataObject> bufferedObjects, final List<CaptureObject> selectedObjects)
+      final List<DataObject> bufferedObjects,
+      final List<CaptureObject> selectedObjects,
+      final PeriodTypeDto periodType)
       throws ProtocolAdapterException {
 
-    final Integer statusIndex = this.getIndex(selectedObjects, AMR_PROFILE_STATUS_HOURLY_G, null);
+    final DlmsObjectType amrStatus =
+        switch (periodType) {
+          case INTERVAL -> AMR_PROFILE_STATUS_HOURLY_G;
+          case DAILY -> AMR_PROFILE_STATUS_DAILY_G;
+          case MONTHLY -> AMR_PROFILE_STATUS_MONTHLY_G;
+        };
+
+    final Integer statusIndex = this.getIndex(selectedObjects, amrStatus, null);
 
     AmrProfileStatusCodeDto amrProfileStatusCode = null;
 
@@ -326,7 +338,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
   public Integer getIndex(
       final List<CaptureObject> selectedObjects,
       final DlmsObjectType type,
-      final Integer attributeId) throws ProtocolAdapterException {
+      final Integer attributeId)
+      throws ProtocolAdapterException {
     return this.getIndex(selectedObjects, type, attributeId, null);
   }
 
@@ -334,7 +347,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       final List<CaptureObject> selectedObjects,
       final DlmsObjectType type,
       final Integer attributeId,
-      final Integer channel) throws ProtocolAdapterException {
+      final Integer channel)
+      throws ProtocolAdapterException {
     int index = 0;
 
     try {
@@ -346,7 +360,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
         }
         index++;
       }
-      } catch (final ObjectConfigException e) {
+    } catch (final ObjectConfigException e) {
       throw new ProtocolAdapterException("Can't get index for " + type.name(), e);
     }
 
@@ -356,7 +370,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
   private DataObject readValue(
       final List<DataObject> bufferedObjects,
       final List<CaptureObject> selectedObjects,
-      final int channel) throws ProtocolAdapterException {
+      final int channel)
+      throws ProtocolAdapterException {
 
     final Integer valueIndex = this.getIndex(selectedObjects, MBUS_MASTER_VALUE_HOURLY, 2, channel);
 
