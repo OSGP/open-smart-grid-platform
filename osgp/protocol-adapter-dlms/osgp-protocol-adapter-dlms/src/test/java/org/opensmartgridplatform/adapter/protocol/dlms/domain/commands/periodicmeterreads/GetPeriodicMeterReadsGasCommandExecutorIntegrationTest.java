@@ -14,6 +14,8 @@ import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfil
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto.POWER_DOWN;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto.RECOVERED_VALUE;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -22,7 +24,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.assertj.core.util.Lists;
 import org.joda.time.DateTimeZone;
@@ -38,7 +39,6 @@ import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigConfiguration;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.AttributeAddressAssert;
@@ -47,6 +47,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
@@ -61,7 +63,7 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
   private DlmsHelper dlmsHelper;
   private AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
-  private DlmsObjectConfigService dlmsObjectConfigService;
+  private ObjectConfigService objectConfigService;
 
   private DlmsConnectionManagerStub connectionManagerStub;
   private DlmsConnectionStub connectionStub;
@@ -92,7 +94,6 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   private final byte ATTR_ID_VALUE = 2;
   private final byte ATTR_ID_BUFFER = 2;
   private final byte ATTR_ID_CAPTURE_TIME = 5;
-  private final byte ATTR_ID_SCALER_UNIT = 3;
 
   private final DataObject CLOCK =
       DataObject.newStructureData(
@@ -124,6 +125,8 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   private final long PERIOD_1_LONG_VALUE = 1000L;
   private final long PERIOD_2_LONG_VALUE = 1500L;
 
+  private final BigDecimal SCALER = BigDecimal.valueOf(1000);
+
   private final long PERIOD_1_LONG_VALUE_E = 33L;
   private final long PERIOD_2_LONG_VALUE_E = 44L;
 
@@ -131,7 +134,7 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   private final short PERIOD2_AMR_STATUS_VALUE = 0xF0; // Last 4 status bits set
 
   @BeforeEach
-  public void setUp() {
+  public void setUp() throws IOException, ObjectConfigException {
 
     final TimeZone defaultTimeZone = TimeZone.getDefault();
     final DateTimeZone defaultDateTimeZone = DateTimeZone.getDefault();
@@ -146,13 +149,11 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     this.amrProfileStatusCodeHelper = new AmrProfileStatusCodeHelper();
     final DlmsObjectConfigConfiguration dlmsObjectConfigConfiguration =
         new DlmsObjectConfigConfiguration();
-    this.dlmsObjectConfigService =
-        new DlmsObjectConfigService(
-            this.dlmsHelper, dlmsObjectConfigConfiguration.getDlmsObjectConfigs());
+    this.objectConfigService = new ObjectConfigService();
 
     this.executor =
         new GetPeriodicMeterReadsGasCommandExecutor(
-            this.dlmsHelper, this.amrProfileStatusCodeHelper, this.dlmsObjectConfigService);
+            this.dlmsHelper, this.amrProfileStatusCodeHelper, this.objectConfigService);
     this.connectionStub = new DlmsConnectionStub();
     this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
@@ -256,9 +257,6 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     // Get expected values
     final AttributeAddress expectedAddressProfile =
         this.createAttributeAddress(protocol, type, this.TIME_FROM, this.TIME_TO, device, channel);
-    final List<AttributeAddress> expectedScalerUnitAddresses =
-        this.getScalerUnitAttributeAddresses(
-            protocol, selectiveAccessPeriodicMeterReadsSupported, channel);
 
     // Set response in stub
     this.setResponseForProfile(
@@ -268,7 +266,6 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         useNullData,
         selectiveAccessPeriodicMeterReadsSupported,
         channel);
-    this.setResponsesForScalerUnit(expectedScalerUnitAddresses);
 
     // CALL
     final PeriodicMeterReadGasResponseDto response =
@@ -279,11 +276,7 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     // Get resulting requests from connection stub
     final List<AttributeAddress> requestedAttributeAddresses =
         this.connectionStub.getRequestedAttributeAddresses();
-    if (selectiveAccessPeriodicMeterReadsSupported || type == PeriodTypeDto.INTERVAL) {
-      assertThat(requestedAttributeAddresses).hasSize(2);
-    } else {
-      assertThat(requestedAttributeAddresses).hasSize(9);
-    }
+    assertThat(requestedAttributeAddresses).hasSize(1);
 
     // There should be 1 request to the buffer (id = 2) of a profile
     // (class-id = 7)
@@ -294,22 +287,6 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
             .get(0);
 
     AttributeAddressAssert.is(actualAttributeAddressProfile, expectedAddressProfile);
-
-    // Check the amount of requests to the scaler_unit of the meter value in
-    // the extended register
-    final List<AttributeAddress> attributeAddressesScalerUnit =
-        requestedAttributeAddresses.stream()
-            .filter(
-                a ->
-                    (a.getClassId() == this.CLASS_ID_EXTENDED_REGISTER
-                            || a.getClassId() == this.CLASS_ID_REGISTER)
-                        && a.getId() == this.ATTR_ID_SCALER_UNIT)
-            .collect(Collectors.toList());
-    if (selectiveAccessPeriodicMeterReadsSupported || type == PeriodTypeDto.INTERVAL) {
-      assertThat(attributeAddressesScalerUnit).hasSize(1);
-    } else {
-      assertThat(attributeAddressesScalerUnit).hasSize(8);
-    }
 
     // Check response
     assertThat(response.getPeriodType()).isEqualTo(type);
@@ -373,70 +350,6 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
             + protocol.getName()
             + " and version "
             + protocol.getVersion());
-  }
-
-  private List<AttributeAddress> getScalerUnitAttributeAddresses(
-      final Protocol protocol, final boolean selectedValuesSupported, final int channel) {
-
-    if (protocol == Protocol.DSMR_4_2_2) {
-      if (selectedValuesSupported) {
-        return List.of(
-            new AttributeAddress(
-                this.CLASS_ID_EXTENDED_REGISTER,
-                this.getObisCodeForChannel(this.OBIS_GAS_VALUE_DSMR4, channel),
-                this.ATTR_ID_SCALER_UNIT,
-                null));
-      } else {
-        return List.of(
-            new AttributeAddress(
-                this.CLASS_ID_REGISTER,
-                this.OBIS_ACTIVE_ENERGY_IMPORT_RATE_1,
-                this.ATTR_ID_SCALER_UNIT,
-                null),
-            new AttributeAddress(
-                this.CLASS_ID_REGISTER,
-                this.OBIS_ACTIVE_ENERGY_IMPORT_RATE_2,
-                this.ATTR_ID_SCALER_UNIT,
-                null),
-            new AttributeAddress(
-                this.CLASS_ID_REGISTER,
-                this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_1,
-                this.ATTR_ID_SCALER_UNIT,
-                null),
-            new AttributeAddress(
-                this.CLASS_ID_REGISTER,
-                this.OBIS_ACTIVE_ENERGY_EXPORT_RATE_2,
-                this.ATTR_ID_SCALER_UNIT,
-                null),
-            new AttributeAddress(
-                this.CLASS_ID_EXTENDED_REGISTER,
-                this.getObisCodeForChannel(this.OBIS_GAS_VALUE_DSMR4, 1),
-                this.ATTR_ID_SCALER_UNIT,
-                null),
-            new AttributeAddress(
-                this.CLASS_ID_EXTENDED_REGISTER,
-                this.getObisCodeForChannel(this.OBIS_GAS_VALUE_DSMR4, 2),
-                this.ATTR_ID_SCALER_UNIT,
-                null),
-            new AttributeAddress(
-                this.CLASS_ID_EXTENDED_REGISTER,
-                this.getObisCodeForChannel(this.OBIS_GAS_VALUE_DSMR4, 3),
-                this.ATTR_ID_SCALER_UNIT,
-                null),
-            new AttributeAddress(
-                this.CLASS_ID_EXTENDED_REGISTER,
-                this.getObisCodeForChannel(this.OBIS_GAS_VALUE_DSMR4, 4),
-                this.ATTR_ID_SCALER_UNIT,
-                null));
-      }
-    } else {
-      return List.of(
-          new AttributeAddress(
-              this.CLASS_ID_EXTENDED_REGISTER,
-              this.getObisCodeForChannel(this.OBIS_GAS_VALUE_SMR5, channel),
-              this.ATTR_ID_SCALER_UNIT,
-              null));
-    }
   }
 
   private void setResponseForProfile(
@@ -589,18 +502,6 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     this.connectionStub.addReturnValue(attributeAddressForProfile, responseDataObject);
   }
 
-  private void setResponsesForScalerUnit(
-      final List<AttributeAddress> attributeAddressesForScalerUnit) {
-    final int DLMS_ENUM_VALUE_M3 = 14;
-    final DataObject responseDataObject =
-        DataObject.newStructureData(
-            DataObject.newInteger8Data((byte) 0), DataObject.newEnumerateData(DLMS_ENUM_VALUE_M3));
-
-    for (final AttributeAddress attributeAddress : attributeAddressesForScalerUnit) {
-      this.connectionStub.addReturnValue(attributeAddress, responseDataObject);
-    }
-  }
-
   private DataObject getDateAsOctetString(final int year, final int month, final int day) {
     final CosemDateTime dateTime = new CosemDateTime(year, month, day, 0, 0, 0, 0);
 
@@ -641,9 +542,9 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     final PeriodicMeterReadsGasResponseItemDto period1 = periodicMeterReads.get(0);
     final PeriodicMeterReadsGasResponseItemDto period2 = periodicMeterReads.get(1);
 
-    assertThat(period1.getConsumption().getValue().longValue())
+    assertThat(period1.getConsumption().getValue().multiply(this.SCALER).intValue())
         .isEqualTo(this.PERIOD_1_LONG_VALUE + channel);
-    assertThat(period2.getConsumption().getValue().longValue())
+    assertThat(period2.getConsumption().getValue().multiply(this.SCALER).intValue())
         .isEqualTo(this.PERIOD_2_LONG_VALUE + channel);
   }
 

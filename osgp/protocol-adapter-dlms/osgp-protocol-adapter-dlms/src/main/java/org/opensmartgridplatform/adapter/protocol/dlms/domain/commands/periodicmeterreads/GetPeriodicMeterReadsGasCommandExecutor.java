@@ -4,19 +4,31 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute.BUFFER;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute.CAPTURE_OBJECTS;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute.CAPTURE_PERIOD;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.AMR_PROFILE_STATUS_HOURLY_G;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.CLOCK;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.DAILY_VALUES_COMBINED;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.DAILY_VALUES_G;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.INTERVAL_VALUES_G;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_MASTER_VALUE_HOURLY;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MONTHLY_VALUES_COMBINED;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MONTHLY_VALUES_G;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
+import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.AttributeAddressForProfile;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsCaptureObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
@@ -27,9 +39,14 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.objectconfig.Attribute;
+import org.opensmartgridplatform.dlms.objectconfig.CaptureObject;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
@@ -58,16 +75,16 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       "GetPeriodicMeterReadsGas for channel %s, %s from %s until %s, " + "retrieve attribute: %s";
 
   private final DlmsHelper dlmsHelper;
-  private final DlmsObjectConfigService dlmsObjectConfigService;
+  private final ObjectConfigService objectConfigService;
 
   @Autowired
   public GetPeriodicMeterReadsGasCommandExecutor(
       final DlmsHelper dlmsHelper,
       final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper,
-      final DlmsObjectConfigService dlmsObjectConfigService) {
+      final ObjectConfigService objectConfigService) {
     super(PeriodicMeterReadsGasRequestDto.class, amrProfileStatusCodeHelper);
     this.dlmsHelper = dlmsHelper;
-    this.dlmsObjectConfigService = dlmsObjectConfigService;
+    this.objectConfigService = objectConfigService;
   }
 
   @Override
@@ -105,22 +122,27 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     final DateTime to =
         DlmsDateTimeConverter.toDateTime(
             periodicMeterReadsQuery.getEndDate(), device.getTimezone());
+    final boolean selectedValuesSupported = device.isSelectiveAccessPeriodicMeterReadsSupported();
+    final int channel = periodicMeterReadsQuery.getChannel().getChannelNumber();
 
-    final AttributeAddressForProfile profileBufferAddress =
-        this.getProfileBufferAddress(
-            queryPeriodType,
-            from,
-            to,
-            device,
-            this.dlmsObjectConfigService,
-            Medium.GAS,
-            periodicMeterReadsQuery.getChannel().getChannelNumber());
+    final CosemObject profileObject = this.getProfileConfigObject(device, queryPeriodType);
 
-    final List<AttributeAddress> scalerUnitAddresses =
-        this.getScalerUnitAddresses(periodicMeterReadsQuery.getChannel(), profileBufferAddress);
+    final List<CaptureObject> allCaptureObjectsInProfile =
+        this.getCaptureObjectsInProfile(profileObject, device);
 
-    final Optional<ProfileCaptureTime> intervalTime =
-        this.getProfileCaptureTime(device, this.dlmsObjectConfigService, Medium.GAS);
+    final List<CaptureObject> selectedCaptureObjects =
+        this.getSelectedCaptureObjects(
+            allCaptureObjectsInProfile, Medium.GAS, channel, selectedValuesSupported);
+
+    final boolean selectValues =
+        selectedValuesSupported
+            && (allCaptureObjectsInProfile.size() != selectedCaptureObjects.size());
+
+    final AttributeAddress profileBufferAddress =
+        this.getAttributeAddressForProfile(
+            profileObject, from, to, channel, selectedCaptureObjects, selectValues);
+
+    final ProfileCaptureTime intervalTime = this.getProfileCaptureTime(profileObject);
 
     LOGGER.info(
         "Retrieving current billing period and profiles for gas for period type: {}, from: "
@@ -129,38 +151,22 @@ public class GetPeriodicMeterReadsGasCommandExecutor
         from,
         to);
 
-    /*
-     * workaround for a problem when using with_list and retrieving a profile
-     * buffer, this will be returned erroneously.
-     */
-    final List<GetResult> getResultList = new ArrayList<>();
+    conn.getDlmsMessageListener()
+        .setDescription(
+            String.format(
+                FORMAT_DESCRIPTION,
+                periodicMeterReadsQuery.getChannel(),
+                queryPeriodType,
+                from,
+                to,
+                JdlmsObjectToStringUtil.describeAttributes(profileBufferAddress)));
 
-    final List<AttributeAddress> allAttributeAddresses = new ArrayList<>();
-    allAttributeAddresses.add(profileBufferAddress.getAttributeAddress());
-    allAttributeAddresses.addAll(scalerUnitAddresses);
-
-    for (final AttributeAddress address : allAttributeAddresses) {
-
-      conn.getDlmsMessageListener()
-          .setDescription(
-              String.format(
-                  FORMAT_DESCRIPTION,
-                  periodicMeterReadsQuery.getChannel(),
-                  queryPeriodType,
-                  from,
-                  to,
-                  JdlmsObjectToStringUtil.describeAttributes(address)));
-
-      getResultList.addAll(
-          this.dlmsHelper.getAndCheck(
-              conn,
-              device,
-              "retrieve periodic meter reads for "
-                  + queryPeriodType
-                  + ", channel "
-                  + periodicMeterReadsQuery.getChannel(),
-              address));
-    }
+    final List<GetResult> getResultList =
+        this.dlmsHelper.getAndCheck(
+            conn,
+            device,
+            "retrieve periodic meter reads for " + queryPeriodType + ", channel " + channel,
+            profileBufferAddress);
 
     LOGGER.debug("Received getResult: {} ", getResultList);
 
@@ -175,13 +181,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       try {
         periodicMeterReads.add(
             this.convertToResponseItem(
-                new ConversionContext(
-                    periodicMeterReadsQuery,
-                    bufferedObjectValue,
-                    getResultList,
-                    profileBufferAddress,
-                    scalerUnitAddresses,
-                    intervalTime),
+                queryPeriodType,
+                selectedCaptureObjects,
+                intervalTime,
+                bufferedObjectValue,
+                channel,
                 periodicMeterReads));
       } catch (final BufferedDateTimeValidationException e) {
         LOGGER.warn(e.getMessage(), e);
@@ -202,31 +206,35 @@ public class GetPeriodicMeterReadsGasCommandExecutor
   }
 
   private PeriodicMeterReadsGasResponseItemDto convertToResponseItem(
-      final ConversionContext ctx,
+      final PeriodTypeDto periodType,
+      final List<CaptureObject> selectedObjects,
+      final ProfileCaptureTime intervalTime,
+      final List<DataObject> bufferedObjects,
+      final int channel,
       final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads)
       throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
     final Optional<Date> previousLogTime = this.getPreviousLogTime(periodicMeterReads);
-    final Date logTime = this.readClock(ctx, previousLogTime, this.dlmsHelper);
+    final Date logTime =
+        this.readClock(
+            periodType,
+            selectedObjects,
+            previousLogTime,
+            intervalTime,
+            bufferedObjects,
+            this.dlmsHelper);
 
-    final AmrProfileStatusCodeDto status =
-        this.readStatus(ctx.bufferedObjects, ctx.attributeAddressForProfile);
-    final DataObject gasValue =
-        this.readValue(
-            ctx.bufferedObjects,
-            ctx.attributeAddressForProfile,
-            ctx.periodicMeterReadsQuery.getChannel().getChannelNumber());
-    final DataObject scalerUnit =
-        this.readScalerUnit(
-            ctx.getResultList,
-            ctx.attributeAddresses,
-            ctx.attributeAddressForProfile,
-            ctx.periodicMeterReadsQuery.getChannel().getChannelNumber());
+    final AmrProfileStatusCodeDto status = this.readStatus(bufferedObjects, selectedObjects);
+    final DataObject gasValue = this.readValue(bufferedObjects, selectedObjects, channel);
+
+    final String scalerUnit = this.getScalerUnit(selectedObjects, channel);
 
     final Optional<Date> previousCaptureTime = this.getPreviousCaptureTime(periodicMeterReads);
-    final Date captureTime = this.readCaptureTime(ctx, previousCaptureTime);
+    final Date captureTime =
+        this.readCaptureTime(
+            bufferedObjects, selectedObjects, previousCaptureTime, periodType, intervalTime);
 
-    LOGGER.debug("Converting bufferObject with value: {} ", ctx.bufferedObjects);
+    LOGGER.debug("Converting bufferObject with value: {} ", bufferedObjects);
     LOGGER.debug(
         "Resulting values: LogTime: {}, status: {}, gasValue {}, scalerUnit: {}, captureTime {} ",
         logTime,
@@ -237,7 +245,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
     return new PeriodicMeterReadsGasResponseItemDto(
         logTime,
-        this.dlmsHelper.getScaledMeterValue(gasValue, scalerUnit, GAS_VALUE),
+        this.dlmsHelper.getScaledMeterValueWithScalerUnit(gasValue, scalerUnit, GAS_VALUE),
         captureTime,
         status);
   }
@@ -262,13 +270,95 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     return Optional.of(periodicMeterReads.get(periodicMeterReads.size() - 1).getCaptureTime());
   }
 
+  private Date readClock(
+      final PeriodTypeDto periodType,
+      final List<CaptureObject> selectedObjects,
+      final Optional<Date> previousLogTime,
+      final ProfileCaptureTime intervalTime,
+      final List<DataObject> bufferedObjects,
+      final DlmsHelper dlmsHelper)
+      throws ProtocolAdapterException, BufferedDateTimeValidationException {
+
+    final Date logTime;
+
+    final Integer clockIndex = this.getIndex(selectedObjects, CLOCK, null);
+
+    CosemDateTimeDto cosemDateTime = null;
+
+    if (clockIndex != null) {
+      cosemDateTime =
+          dlmsHelper.readDateTime(
+              bufferedObjects.get(clockIndex), "Clock from " + periodType + " buffer");
+    }
+
+    final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
+
+    if (bufferedDateTime != null) {
+      logTime = bufferedDateTime.toDate();
+    } else {
+      logTime =
+          this.calculateIntervalTimeBasedOnPreviousValue(
+              periodType, previousLogTime, Optional.of(intervalTime));
+    }
+
+    if (logTime == null) {
+      throw new BufferedDateTimeValidationException("Unable to calculate logTime");
+    }
+
+    return logTime;
+  }
+
+  AmrProfileStatusCodeDto readStatus(
+      final List<DataObject> bufferedObjects, final List<CaptureObject> selectedObjects)
+      throws ProtocolAdapterException {
+
+    final Integer statusIndex = this.getIndex(selectedObjects, AMR_PROFILE_STATUS_HOURLY_G, null);
+
+    AmrProfileStatusCodeDto amrProfileStatusCode = null;
+
+    if (statusIndex != null) {
+      amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects.get(statusIndex));
+    }
+
+    return amrProfileStatusCode;
+  }
+
+  public Integer getIndex(
+      final List<CaptureObject> selectedObjects,
+      final DlmsObjectType type,
+      final Integer attributeId) throws ProtocolAdapterException {
+    return this.getIndex(selectedObjects, type, attributeId, null);
+  }
+
+  public Integer getIndex(
+      final List<CaptureObject> selectedObjects,
+      final DlmsObjectType type,
+      final Integer attributeId,
+      final Integer channel) throws ProtocolAdapterException {
+    int index = 0;
+
+    try {
+      for (final CaptureObject object : selectedObjects) {
+        if (object.getCosemObject().getTag().equals(type.name())
+            && (attributeId == null || object.getAttributeId() == attributeId)
+            && (channel == null || object.getCosemObject().getChannel() == channel)) {
+          return index;
+        }
+        index++;
+      }
+      } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException("Can't get index for " + type.name(), e);
+    }
+
+    return null;
+  }
+
   private DataObject readValue(
       final List<DataObject> bufferedObjects,
-      final AttributeAddressForProfile attributeAddressForProfile,
-      final int channel) {
+      final List<CaptureObject> selectedObjects,
+      final int channel) throws ProtocolAdapterException {
 
-    final Integer valueIndex =
-        attributeAddressForProfile.getIndex(DlmsObjectType.MBUS_MASTER_VALUE, 2, channel);
+    final Integer valueIndex = this.getIndex(selectedObjects, MBUS_MASTER_VALUE_HOURLY, 2, channel);
 
     DataObject value = null;
 
@@ -279,46 +369,16 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     return value;
   }
 
-  private DataObject readScalerUnit(
-      final List<GetResult> getResultList,
-      final List<AttributeAddress> attributeAddresses,
-      final AttributeAddressForProfile attributeAddressForProfile,
-      final Integer channel)
-      throws ProtocolAdapterException {
-
-    final DlmsCaptureObject captureObject =
-        attributeAddressForProfile.getCaptureObject(DlmsObjectType.MBUS_MASTER_VALUE);
-
-    int index = 0;
-    Integer scalerUnitIndex = null;
-    for (final AttributeAddress address : attributeAddresses) {
-      final String obisCode =
-          captureObject.getRelatedObject().getObisCodeAsString().replace("<c>", channel.toString());
-      if (address.getInstanceId().equals(new ObisCode(obisCode))) {
-        scalerUnitIndex = index;
-      }
-      index++;
-    }
-
-    // Get scaler unit from result list. Note: "index + 1" because the first result is the array
-    // with values
-    // and should be skipped. The first scaler unit is at index 1.
-    if (scalerUnitIndex != null) {
-      return getResultList.get(scalerUnitIndex + 1).getResultData();
-    }
-
-    return null;
-  }
-
   private Date readCaptureTime(
-      final ConversionContext ctx, final Optional<Date> previousCaptureTime)
+      final List<DataObject> bufferedObjects,
+      final List<CaptureObject> selectedObjects,
+      final Optional<Date> previousCaptureTime,
+      final PeriodTypeDto periodType,
+      final ProfileCaptureTime intervalTime)
       throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
-    final List<DataObject> bufferedObjects = ctx.bufferedObjects;
-    final AttributeAddressForProfile attributeAddressForProfile = ctx.attributeAddressForProfile;
-
     final Integer captureTimeIndex =
-        attributeAddressForProfile.getIndex(DlmsObjectType.MBUS_MASTER_VALUE, 5);
+        this.getIndex(selectedObjects, DlmsObjectType.MBUS_MASTER_VALUE_HOURLY, 5);
 
     if (captureTimeIndex != null) {
       final CosemDateTimeDto cosemDateTime =
@@ -333,24 +393,218 @@ public class GetPeriodicMeterReadsGasCommandExecutor
         }
       } else {
         return this.calculateIntervalTimeBasedOnPreviousValue(
-            ctx.periodicMeterReadsQuery.getPeriodType(), previousCaptureTime, ctx.intervalTime);
+            periodType, previousCaptureTime, Optional.of(intervalTime));
       }
     }
 
     return null;
   }
 
-  private List<AttributeAddress> getScalerUnitAddresses(
-      final ChannelDto channel, final AttributeAddressForProfile attributeAddressForProfile) {
+  private String getScalerUnit(final List<CaptureObject> selectedObjects, final int channel)
+      throws ProtocolAdapterException {
 
-    final List<AttributeAddress> attributeAddresses =
-        this.dlmsObjectConfigService.getAttributeAddressesForScalerUnit(
-            attributeAddressForProfile, channel.getChannelNumber());
+    final Integer index = this.getIndex(selectedObjects, MBUS_MASTER_VALUE_HOURLY, 2, channel);
 
-    LOGGER.debug(
-        "Dlms object config service returned scaler unit addresses {} ", attributeAddresses);
+    if (index != null) {
+      return selectedObjects.get(index).getCosemObject().getAttribute(3).getValue();
+    }
 
-    return attributeAddresses;
+    return null;
+  }
+
+  private CosemObject getProfileConfigObject(
+      final DlmsDevice device, final PeriodTypeDto periodType) throws ProtocolAdapterException {
+    final String protocol = device.getProtocolName();
+    final String version = device.getProtocolVersion();
+
+    try {
+      return switch (periodType) {
+        case DAILY -> {
+          final Optional<CosemObject> optionalDaily =
+              this.objectConfigService.getOptionalCosemObject(protocol, version, DAILY_VALUES_G);
+          if (optionalDaily.isPresent()) {
+            yield optionalDaily.get();
+          } else {
+            yield this.objectConfigService.getCosemObject(protocol, version, DAILY_VALUES_COMBINED);
+          }
+        }
+        case MONTHLY -> {
+          final Optional<CosemObject> optionalMonthly =
+              this.objectConfigService.getOptionalCosemObject(protocol, version, MONTHLY_VALUES_G);
+          if (optionalMonthly.isPresent()) {
+            yield optionalMonthly.get();
+          } else {
+            yield this.objectConfigService.getCosemObject(
+                protocol, version, MONTHLY_VALUES_COMBINED);
+          }
+        }
+        case INTERVAL -> this.objectConfigService.getCosemObject(
+            protocol, version, INTERVAL_VALUES_G);
+      };
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException(
+          "Can't find profile object in "
+              + protocol
+              + " "
+              + version
+              + " config for "
+              + periodType.name()
+              + " values",
+          e);
+    }
+  }
+
+  private AttributeAddress getAttributeAddressForProfile(
+      final CosemObject profile,
+      final DateTime from,
+      final DateTime to,
+      final int channel,
+      final List<CaptureObject> selectedCaptureObjects,
+      final boolean selectValues) {
+
+    final SelectiveAccessDescription access =
+        this.getAccessDescription(selectedCaptureObjects, from, to, selectValues);
+
+    final ObisCode obisCode = new ObisCode(profile.getObis().replace("x", String.valueOf(channel)));
+
+    return new AttributeAddress(profile.getClassId(), obisCode, BUFFER.attributeId(), access);
+  }
+
+  private List<CaptureObject> getCaptureObjectsInProfile(
+      final CosemObject profile, final DlmsDevice device) throws ProtocolAdapterException {
+    final Attribute captureObjectsAttribute = profile.getAttribute(CAPTURE_OBJECTS.attributeId());
+    final List<String> captureObjectDefinitions =
+        List.of(captureObjectsAttribute.getValue().split("\\|"));
+
+    final List<CaptureObject> captureObjects = new ArrayList<>();
+
+    for (final String def : captureObjectDefinitions) {
+      captureObjects.add(this.getCaptureObject(def, device));
+    }
+
+    return captureObjects;
+  }
+
+  private List<CaptureObject> getSelectedCaptureObjects(
+      final List<CaptureObject> allCaptureObjectsInProfile,
+      final Medium medium,
+      final int channel,
+      final boolean selectedValuesSupported) {
+
+    return allCaptureObjectsInProfile.stream()
+        .filter(
+            object ->
+                !selectedValuesSupported
+                    || object.getCosemObject().getGroup().equals(medium.name())
+                    || object.getCosemObject().getTag().equals(CLOCK.name()))
+        .map(object -> this.addChannels(object, channel, selectedValuesSupported))
+        .flatMap(List::stream)
+        .toList();
+  }
+
+  private SelectiveAccessDescription getAccessDescription(
+      final List<CaptureObject> selectedCaptureObjects,
+      final DateTime from,
+      final DateTime to,
+      final boolean selectValues) {
+
+    if (from == null || to == null) {
+      return null;
+    } else {
+      final int accessSelector = 1;
+
+      final DataObject selectedValues = this.getSelectedValuesObject(selectedCaptureObjects);
+
+      final DataObject accessParameter =
+          this.dlmsHelper.getAccessSelectionTimeRangeParameter(
+              from,
+              to,
+              selectValues ? selectedValues : DataObject.newArrayData(Collections.emptyList()));
+
+      return new SelectiveAccessDescription(accessSelector, accessParameter);
+    }
+  }
+
+  private DataObject getSelectedValuesObject(final List<CaptureObject> selectedObjects) {
+    final List<DataObject> objectDefinitions = this.getObjectDefinitions(selectedObjects);
+    return DataObject.newArrayData(objectDefinitions);
+  }
+
+  private List<DataObject> getObjectDefinitions(final List<CaptureObject> selectedObjects) {
+    final List<DataObject> objectDefinitions = new ArrayList<>();
+
+    for (final CaptureObject captureObject : selectedObjects) {
+      final CosemObject relatedObject = captureObject.getCosemObject();
+      objectDefinitions.add(
+          DataObject.newStructureData(
+              Arrays.asList(
+                  DataObject.newUInteger16Data(relatedObject.getClassId()),
+                  DataObject.newOctetStringData(new ObisCode(relatedObject.getObis()).bytes()),
+                  DataObject.newInteger8Data((byte) captureObject.getAttributeId()),
+                  DataObject.newUInteger16Data(0))));
+    }
+
+    return objectDefinitions;
+  }
+
+  private CaptureObject getCaptureObject(
+      final String captureObjectDefinition, final DlmsDevice device)
+      throws ProtocolAdapterException {
+    final String protocol = device.getProtocolName();
+    final String version = device.getProtocolVersion();
+
+    final String[] captureObjectDefinitionParts = captureObjectDefinition.split(",");
+    final DlmsObjectType objectType = DlmsObjectType.fromValue(captureObjectDefinitionParts[0]);
+    final int attributeId = Integer.parseInt(captureObjectDefinitionParts[1]);
+
+    try {
+      final CosemObject cosemObject =
+          this.objectConfigService.getCosemObject(protocol, version, objectType);
+      return new CaptureObject(cosemObject, attributeId);
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException(
+          "Capture object " + captureObjectDefinition + " not found in object config", e);
+    }
+  }
+
+  private List<CaptureObject> addChannels(
+      final CaptureObject captureObject, final int channel, final boolean selectedValuesSupported) {
+    final CosemObject cosemObject = captureObject.getCosemObject();
+    if (selectedValuesSupported) {
+      return List.of(
+          new CaptureObject(
+              this.updateCosemObjectWithChannel(cosemObject, channel),
+              captureObject.getAttributeId()));
+    } else {
+      return IntStream.of(1, 2, 3, 4)
+          .mapToObj(
+              c ->
+                  new CaptureObject(
+                      this.updateCosemObjectWithChannel(cosemObject, c),
+                      captureObject.getAttributeId()))
+          .toList();
+    }
+  }
+
+  private CosemObject updateCosemObjectWithChannel(
+      final CosemObject cosemObject, final int channel) {
+    cosemObject.setObis(cosemObject.getObis().replace("x", String.valueOf(channel)));
+    return cosemObject;
+  }
+
+  private ProfileCaptureTime getProfileCaptureTime(final CosemObject profile)
+      throws ProtocolAdapterException {
+
+    final Attribute capturePeriodAttribute = profile.getAttribute(CAPTURE_PERIOD.attributeId());
+    final String capturePeriodValue = capturePeriodAttribute.getValue();
+
+    return switch (capturePeriodValue) {
+      case "3600" -> ProfileCaptureTime.HOUR;
+      case "86400" -> ProfileCaptureTime.DAY;
+      case "0" -> ProfileCaptureTime.MONTH;
+      default -> throw new ProtocolAdapterException(
+          "Unexpected capture period " + capturePeriodValue);
+    };
   }
 
   @Override

@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.dlms.objectconfig;
 
+import java.util.Map;
 import lombok.Data;
 
 @Data
@@ -14,5 +15,6 @@ public class Attribute {
   private DlmsDataType datatype;
   private ValueType valuetype;
   private String value;
+  private Map<Object, Object> values;
   private AccessType access;
 }

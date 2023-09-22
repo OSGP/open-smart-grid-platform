@@ -236,7 +236,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
    * @return AmrProfileStatusCode object holding status enum values.
    * @throws ProtocolAdapterException on invalid register data.
    */
-  private AmrProfileStatusCodeDto readAmrProfileStatusCode(final DataObject amrProfileStatusData)
+  AmrProfileStatusCodeDto readAmrProfileStatusCode(final DataObject amrProfileStatusData)
       throws ProtocolAdapterException {
 
     if (!amrProfileStatusData.isNumber()) {
