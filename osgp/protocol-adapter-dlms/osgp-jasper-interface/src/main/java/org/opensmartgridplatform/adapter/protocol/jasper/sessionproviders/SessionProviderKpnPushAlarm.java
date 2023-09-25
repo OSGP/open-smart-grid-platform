@@ -24,18 +24,20 @@ public class SessionProviderKpnPushAlarm extends SessionProvider {
 
   private final JasperWirelessSmsClient jasperWirelessSmsClient;
   private final JasperWirelessTerminalClient jasperWirelessTerminalClient;
-
   private final DeviceSessionService deviceSessionService;
+  private final int nrOfAttempts;
 
   public SessionProviderKpnPushAlarm(
       final SessionProviderMap sessionProviderMap,
       final JasperWirelessSmsClient jasperWirelessSmsClient,
       final JasperWirelessTerminalClient jasperWirelessTerminalClient,
-      final DeviceSessionService deviceSessionService) {
+      final DeviceSessionService deviceSessionService,
+      final int nrOfAttempts) {
     super(sessionProviderMap);
     this.jasperWirelessSmsClient = jasperWirelessSmsClient;
     this.jasperWirelessTerminalClient = jasperWirelessTerminalClient;
     this.deviceSessionService = deviceSessionService;
+    this.nrOfAttempts = nrOfAttempts;
   }
 
   /**
@@ -69,17 +71,30 @@ public class SessionProviderKpnPushAlarm extends SessionProvider {
 
   private Optional<String> waitForIpAddress(final String deviceIdentification, final String iccId)
       throws OsgpJasperException {
-    LOGGER.info(
-        "Wait for ip-address, this will be pushed by alarm for device: {}", deviceIdentification);
-    Optional<String> ipAddress = this.deviceSessionService.waitForIpAddress(deviceIdentification);
-    if (ipAddress.isEmpty()) {
+
+    Optional<String> ipAddress = Optional.empty();
+    for (int attempt = 1; attempt <= this.nrOfAttempts; attempt++) {
       LOGGER.info(
-          "Did not receive an ip-address for device: {}, try to get ip-address from session provider",
-          deviceIdentification);
-      ipAddress = this.getIpAddressFromSessionInfo(deviceIdentification, iccId);
+          "Wait for ip-address, this will be pushed by alarm for device: {}, attempt {}",
+          deviceIdentification,
+          attempt);
+      ipAddress = this.deviceSessionService.waitForIpAddress(deviceIdentification);
+      if (ipAddress.isEmpty()) {
+        LOGGER.info(
+            "Did not receive an ip-address for device: {}, try to get ip-address from session provider, attempt {}",
+            deviceIdentification,
+            attempt);
+        ipAddress = this.getIpAddressFromSessionInfo(deviceIdentification, iccId);
+      }
+      if (ipAddress.isPresent()) {
+        LOGGER.info(
+            "Received ip-address: {} for device: {}, attempt: {}",
+            ipAddress.get(),
+            deviceIdentification,
+            attempt);
+        return ipAddress;
+      }
     }
-    ipAddress.ifPresent(
-        s -> LOGGER.info("Received ip-address: {} for device: {}", s, deviceIdentification));
 
     return ipAddress;
   }

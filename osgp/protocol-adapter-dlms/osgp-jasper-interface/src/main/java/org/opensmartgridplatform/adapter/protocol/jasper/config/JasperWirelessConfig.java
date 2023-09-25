@@ -86,6 +86,9 @@ public class JasperWirelessConfig extends AbstractConfig {
   @Value("${push.alarm.max-wait-in-ms:60000}")
   private int maxWaitInMs;
 
+  @Value("${push.alarm.attempts:5}")
+  private int attempts;
+
   @Value("${db.driver}")
   private String databaseDriver;
 
@@ -252,7 +255,8 @@ public class JasperWirelessConfig extends AbstractConfig {
           sessionProviderMap,
           jasperWirelessSmsClient,
           jasperWirelessTerminalClient,
-          deviceSessionService);
+          deviceSessionService,
+          this.attempts);
     }
   }
 }

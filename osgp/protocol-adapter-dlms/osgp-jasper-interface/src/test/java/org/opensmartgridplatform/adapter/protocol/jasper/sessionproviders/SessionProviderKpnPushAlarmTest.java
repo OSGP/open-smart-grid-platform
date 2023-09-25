@@ -39,14 +39,18 @@ public class SessionProviderKpnPushAlarmTest {
   @Mock private JasperWirelessTerminalClient jasperWirelessTerminalClient;
 
   @Mock private DeviceSessionService deviceSessionService;
+  private final int nrOfAttempts = 2;
   private SessionProviderKpnPushAlarm sessionProviderKpnPushAlarm;
 
   @BeforeEach
   void setUp() {
     this.sessionProviderKpnPushAlarm =
         new SessionProviderKpnPushAlarm(
-            this.sessionProviderMap, this.jasperWirelessSmsClient,
-            this.jasperWirelessTerminalClient, this.deviceSessionService);
+            this.sessionProviderMap,
+            this.jasperWirelessSmsClient,
+            this.jasperWirelessTerminalClient,
+            this.deviceSessionService,
+            this.nrOfAttempts);
   }
 
   @Test
@@ -67,6 +71,7 @@ public class SessionProviderKpnPushAlarmTest {
 
     assertThat(ipAddress).isEqualTo(Optional.of(IP_ADDRESS));
     verify(this.jasperWirelessSmsClient).sendWakeUpSMS(ICC_ID);
+    verifyNoInteractions(this.jasperWirelessTerminalClient);
   }
 
   @Test
@@ -86,14 +91,47 @@ public class SessionProviderKpnPushAlarmTest {
   @Test
   void testGetIpAddressNoAlarmNoSession() throws OsgpException, OsgpJasperException {
     when(this.deviceSessionService.waitForIpAddress(DEVICE_IDENTIFICATION))
+        .thenReturn(Optional.empty())
         .thenReturn(Optional.empty());
     when(this.jasperWirelessTerminalClient.getSession(ICC_ID))
+        .thenReturn(this.newGetSessionInfoResponse(null))
         .thenReturn(this.newGetSessionInfoResponse(null));
 
     final Optional<String> ipAddress =
         this.sessionProviderKpnPushAlarm.getIpAddress(DEVICE_IDENTIFICATION, ICC_ID);
 
     assertThat(ipAddress).isEqualTo(Optional.empty());
+    verify(this.jasperWirelessSmsClient).sendWakeUpSMS(ICC_ID);
+  }
+
+  @Test
+  void testGetIpAddressSecondAttemptAlarm() throws OsgpException, OsgpJasperException {
+    when(this.deviceSessionService.waitForIpAddress(DEVICE_IDENTIFICATION))
+        .thenReturn(Optional.empty())
+        .thenReturn(Optional.of(IP_ADDRESS));
+    when(this.jasperWirelessTerminalClient.getSession(ICC_ID))
+        .thenReturn(this.newGetSessionInfoResponse(null));
+
+    final Optional<String> ipAddress =
+        this.sessionProviderKpnPushAlarm.getIpAddress(DEVICE_IDENTIFICATION, ICC_ID);
+
+    assertThat(ipAddress).isEqualTo(Optional.of(IP_ADDRESS));
+    verify(this.jasperWirelessSmsClient).sendWakeUpSMS(ICC_ID);
+  }
+
+  @Test
+  void testGetIpAddressSecondAttemptSession() throws OsgpException, OsgpJasperException {
+    when(this.deviceSessionService.waitForIpAddress(DEVICE_IDENTIFICATION))
+        .thenReturn(Optional.empty())
+        .thenReturn(Optional.empty());
+    when(this.jasperWirelessTerminalClient.getSession(ICC_ID))
+        .thenReturn(this.newGetSessionInfoResponse(null))
+        .thenReturn(this.newGetSessionInfoResponse(IP_ADDRESS));
+
+    final Optional<String> ipAddress =
+        this.sessionProviderKpnPushAlarm.getIpAddress(DEVICE_IDENTIFICATION, ICC_ID);
+
+    assertThat(ipAddress).isEqualTo(Optional.of(IP_ADDRESS));
     verify(this.jasperWirelessSmsClient).sendWakeUpSMS(ICC_ID);
   }
 
