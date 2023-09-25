@@ -70,7 +70,7 @@ public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {
 
   @Override
   List<Protocol> initProtocols() {
-    return Arrays.asList(Protocol.DSMR_4_2_2, Protocol.OTHER_PROTOCOL);
+    return Arrays.asList(Protocol.DSMR_2_2, Protocol.DSMR_4_2_2, Protocol.OTHER_PROTOCOL);
   }
 
   @Override
