@@ -249,7 +249,10 @@ public class JasperWirelessConfig extends AbstractConfig {
           this.sleepBetweenRetries);
     } else {
       return new SessionProviderKpnPushAlarm(
-          sessionProviderMap, jasperWirelessSmsClient, deviceSessionService);
+          sessionProviderMap,
+          jasperWirelessSmsClient,
+          jasperWirelessTerminalClient,
+          deviceSessionService);
     }
   }
 }

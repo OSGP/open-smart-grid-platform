@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.Date;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
+import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessTerminalClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
+import org.opensmartgridplatform.adapter.protocol.jasper.response.GetSessionInfoResponse;
+import org.opensmartgridplatform.adapter.protocol.jasper.rest.JasperError;
 import org.opensmartgridplatform.adapter.protocol.jasper.service.DeviceSessionService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -32,6 +36,8 @@ public class SessionProviderKpnPushAlarmTest {
 
   @Mock private SessionProviderMap sessionProviderMap;
   @Mock private JasperWirelessSmsClient jasperWirelessSmsClient;
+  @Mock private JasperWirelessTerminalClient jasperWirelessTerminalClient;
+
   @Mock private DeviceSessionService deviceSessionService;
   private SessionProviderKpnPushAlarm sessionProviderKpnPushAlarm;
 
@@ -39,7 +45,8 @@ public class SessionProviderKpnPushAlarmTest {
   void setUp() {
     this.sessionProviderKpnPushAlarm =
         new SessionProviderKpnPushAlarm(
-            this.sessionProviderMap, this.jasperWirelessSmsClient, this.deviceSessionService);
+            this.sessionProviderMap, this.jasperWirelessSmsClient,
+            this.jasperWirelessTerminalClient, this.deviceSessionService);
   }
 
   @Test
@@ -63,8 +70,37 @@ public class SessionProviderKpnPushAlarmTest {
   }
 
   @Test
+  void testGetIpAddressNoAlarmIpFromSession() throws OsgpException, OsgpJasperException {
+    when(this.deviceSessionService.waitForIpAddress(DEVICE_IDENTIFICATION))
+        .thenReturn(Optional.empty());
+    when(this.jasperWirelessTerminalClient.getSession(ICC_ID))
+        .thenReturn(this.newGetSessionInfoResponse(IP_ADDRESS));
+
+    final Optional<String> ipAddress =
+        this.sessionProviderKpnPushAlarm.getIpAddress(DEVICE_IDENTIFICATION, ICC_ID);
+
+    assertThat(ipAddress).isEqualTo(Optional.of(IP_ADDRESS));
+    verify(this.jasperWirelessSmsClient).sendWakeUpSMS(ICC_ID);
+  }
+
+  @Test
+  void testGetIpAddressNoAlarmNoSession() throws OsgpException, OsgpJasperException {
+    when(this.deviceSessionService.waitForIpAddress(DEVICE_IDENTIFICATION))
+        .thenReturn(Optional.empty());
+    when(this.jasperWirelessTerminalClient.getSession(ICC_ID))
+        .thenReturn(this.newGetSessionInfoResponse(null));
+
+    final Optional<String> ipAddress =
+        this.sessionProviderKpnPushAlarm.getIpAddress(DEVICE_IDENTIFICATION, ICC_ID);
+
+    assertThat(ipAddress).isEqualTo(Optional.empty());
+    verify(this.jasperWirelessSmsClient).sendWakeUpSMS(ICC_ID);
+  }
+
+  @Test
   void testGetIpAddressJasperException() throws OsgpJasperException {
-    when(this.jasperWirelessSmsClient.sendWakeUpSMS(ICC_ID)).thenThrow(new OsgpJasperException(""));
+    when(this.jasperWirelessSmsClient.sendWakeUpSMS(ICC_ID))
+        .thenThrow(new OsgpJasperException(JasperError.INVALID_ICCID));
 
     final FunctionalException functionalException =
         assertThrows(
@@ -76,5 +112,9 @@ public class SessionProviderKpnPushAlarmTest {
     assertThat(functionalException.getExceptionType())
         .isEqualTo(FunctionalExceptionType.INVALID_ICCID);
     verifyNoInteractions(this.deviceSessionService);
+  }
+
+  private GetSessionInfoResponse newGetSessionInfoResponse(final String ipAddress) {
+    return new GetSessionInfoResponse(ICC_ID, ipAddress, null, new Date(), new Date());
   }
 }
