@@ -16,7 +16,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -482,16 +481,12 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     if (cosemDateTime == null) {
       // in case of null date, we calculate the date based on the always
       // existing previous value plus interval
-      final Date previousDate =
-          (Date) previousProfileEntryDto.getProfileEntryValues().get(0).getValue();
+      final Instant previousDate =
+          (Instant) previousProfileEntryDto.getProfileEntryValues().get(0).getValue();
       final LocalDateTime newLocalDateTime =
-          Instant.ofEpochMilli(previousDate.getTime())
-              .atZone(ZoneId.systemDefault())
-              .toLocalDateTime()
-              .plusMinutes(timeInterval);
+          previousDate.atZone(ZoneId.systemDefault()).toLocalDateTime().plusMinutes(timeInterval);
 
-      return new ProfileEntryValueDto(
-          Date.from(newLocalDateTime.atZone(ZoneId.systemDefault()).toInstant()));
+      return new ProfileEntryValueDto(newLocalDateTime.atZone(ZoneId.systemDefault()).toInstant());
     } else {
       return new ProfileEntryValueDto(cosemDateTime.asDateTime());
     }

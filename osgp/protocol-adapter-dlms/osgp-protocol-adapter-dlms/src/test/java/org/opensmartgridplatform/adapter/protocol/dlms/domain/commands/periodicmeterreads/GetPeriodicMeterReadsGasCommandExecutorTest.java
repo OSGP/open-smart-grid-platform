@@ -16,12 +16,12 @@ import static org.mockito.Mockito.when;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -323,16 +323,17 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
   // Compares date with cosemDateTime. Note: cosemDateTime uses hundredths and
   // not milliseconds
   private boolean areDatesEqual(final Date date, final CosemDateTimeDto cosemDateTime) {
-    final DateTime dateTime = new DateTime(date);
+    final ZonedDateTime dateTime =
+        ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
     final CosemDateDto cosemDate = cosemDateTime.getDate();
     final CosemTimeDto cosemTime = cosemDateTime.getTime();
 
     return (dateTime.getYear() == cosemDate.getYear()
-        && dateTime.getMonthOfYear() == cosemDate.getMonth()
+        && dateTime.getMonthValue() == cosemDate.getMonth()
         && dateTime.getDayOfMonth() == cosemDate.getDayOfMonth()
-        && dateTime.getHourOfDay() == cosemTime.getHour()
-        && dateTime.getMinuteOfHour() == cosemTime.getMinute()
-        && dateTime.getSecondOfMinute() == cosemTime.getSecond()
-        && dateTime.getMillisOfSecond() == cosemTime.getHundredths() * 10);
+        && dateTime.getHour() == cosemTime.getHour()
+        && dateTime.getMinute() == cosemTime.getMinute()
+        && dateTime.getSecond() == cosemTime.getSecond()
+        && dateTime.get(ChronoField.MILLI_OF_SECOND) == cosemTime.getHundredths() * 10);
   }
 }

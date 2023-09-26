@@ -17,6 +17,7 @@ public class CosemDateTimeDto implements Serializable, Comparable<CosemDateTimeD
   private static final int MILLISECONDS_PER_SECOND = 1000;
 
   public static final int DEVIATION_NOT_SPECIFIED = 0x8000;
+  public static final int SECONDS_PER_MINUTE = 60;
 
   private final CosemDateDto date;
   private final CosemTimeDto time;
@@ -117,8 +118,8 @@ public class CosemDateTimeDto implements Serializable, Comparable<CosemDateTimeD
   }
 
   private static int determineDeviation(final ZonedDateTime dateTime) {
-    return -(dateTime.getZone().getRules().getOffset(Instant.now()).getTotalSeconds()
-        / MILLISECONDS_PER_SECOND);
+    return -(dateTime.getZone().getRules().getOffset(dateTime.toInstant()).getTotalSeconds()
+        / SECONDS_PER_MINUTE);
   }
 
   private static ClockStatusDto determineClockStatus(final ZonedDateTime dateTime) {
@@ -184,8 +185,7 @@ public class CosemDateTimeDto implements Serializable, Comparable<CosemDateTimeD
       return null;
     }
     final LocalDateTime localDateTime = this.asLocalDateTime();
-    return localDateTime.atZone(
-        ZoneOffset.ofTotalSeconds(this.deviation * MILLISECONDS_PER_SECOND));
+    return localDateTime.atZone(ZoneOffset.ofTotalSeconds(-this.deviation * SECONDS_PER_MINUTE));
   }
 
   /**
