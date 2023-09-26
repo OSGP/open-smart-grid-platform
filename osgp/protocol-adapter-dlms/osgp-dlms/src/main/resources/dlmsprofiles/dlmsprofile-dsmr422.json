@@ -1913,7 +1913,7 @@
       "class-id": 7,
       "version": 1,
       "obis": "0.0.98.1.0.255",
-      "group": "GAS",
+      "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [

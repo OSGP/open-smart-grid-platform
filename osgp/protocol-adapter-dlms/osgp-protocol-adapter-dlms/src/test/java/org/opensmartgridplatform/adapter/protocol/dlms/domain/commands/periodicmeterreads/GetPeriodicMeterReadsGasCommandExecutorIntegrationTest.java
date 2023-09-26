@@ -24,8 +24,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.assertj.core.util.Lists;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -128,6 +128,11 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   private final short PERIOD1_AMR_STATUS_VALUE = 0x0F; // First 4 status bits set
   private final short PERIOD2_AMR_STATUS_VALUE = 0xF0; // Last 4 status bits set
 
+  private final List<Protocol> protocolsNoStatusMonthlyValues =
+      List.of(Protocol.DSMR_2_2, Protocol.DSMR_4_2_2, Protocol.SMR_4_3);
+
+  private static final List<Integer> ALL_CHANNELS = List.of(1, 2, 3, 4);
+
   @BeforeEach
   public void setUp() throws IOException, ObjectConfigException {
 
@@ -175,54 +180,80 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         new GregorianCalendar(2019, Calendar.FEBRUARY, 1, 0, 0).getTime();
   }
 
-  private static Stream<Arguments> combinePeriodTypesWithChannels() {
-    return Arrays.stream(PeriodTypeDto.values())
-        .map(GetPeriodicMeterReadsGasCommandExecutorIntegrationTest::combineWithChannels)
-        .flatMap(List::stream);
+  private static Stream<Arguments> combinationsDsmr() {
+    final List<Protocol> dsmrProtocols =
+        Arrays.stream(Protocol.values())
+            .filter(protocol -> protocol.isDsmr4() || protocol.isDsmr2())
+            .collect(Collectors.toList());
+
+    return generateCombinations(dsmrProtocols);
   }
 
-  private static List<Arguments> combineWithChannels(final PeriodTypeDto periodType) {
-    final List<Integer> channels = Lists.newArrayList(1, 2, 3, 4);
-    return channels.stream().map(channel -> Arguments.of(periodType, channel)).toList();
+  private static Stream<Arguments> combinationsSmr5() {
+    final List<Protocol> smr5Protocols =
+        Arrays.stream(Protocol.values()).filter(Protocol::isSmr5).toList();
+
+    return generateCombinations(smr5Protocols);
+  }
+
+  private static Stream<Arguments> generateCombinations(final List<Protocol> protocols) {
+    final List<Arguments> arguments = new ArrayList<>();
+
+    for (final Protocol protocol : protocols) {
+      for (final PeriodTypeDto periodType : PeriodTypeDto.values()) {
+        for (final int channel : ALL_CHANNELS) {
+          arguments.add(Arguments.of(protocol, periodType, channel));
+        }
+      }
+    }
+
+    return arguments.stream();
   }
 
   @ParameterizedTest
-  @MethodSource("combinePeriodTypesWithChannels")
-  void testExecuteDsmr4NoSelectedValues(final PeriodTypeDto type, final int channel)
+  @MethodSource("combinationsDsmr")
+  void testExecuteDsmrNoSelectedValues(
+      final Protocol protocol, final PeriodTypeDto type, final int channel) throws Exception {
+    try {
+      this.testExecute(protocol, type, false, false, channel);
+    } catch (final IllegalArgumentException e) {
+      assertThat(this.exceptionExpected(protocol, type))
+          .withFailMessage(
+              "Reading %s values should be supported for %s. Error: %s", type, protocol.name(), e)
+          .isTrue();
+    }
+  }
+
+  @ParameterizedTest
+  @MethodSource("combinationsDsmr")
+  void testExecuteDsmr(final Protocol protocol, final PeriodTypeDto type, final int channel)
       throws Exception {
-    this.testExecute(Protocol.DSMR_4_2_2, type, false, false, channel);
+    try {
+      this.testExecute(protocol, type, false, true, channel);
+    } catch (final IllegalArgumentException e) {
+      assertThat(this.exceptionExpected(protocol, type))
+          .withFailMessage(
+              "Reading %s values should be supported for %s. Error: %s", type, protocol.name(), e)
+          .isTrue();
+    }
+  }
+
+  private boolean exceptionExpected(final Protocol protocol, final PeriodTypeDto type) {
+    return protocol == Protocol.DSMR_2_2 && type == PeriodTypeDto.DAILY;
   }
 
   @ParameterizedTest
-  @MethodSource("combinePeriodTypesWithChannels")
-  void testExecuteDsmr4(final PeriodTypeDto type, final int channel) throws Exception {
-    this.testExecute(Protocol.DSMR_4_2_2, type, false, true, channel);
-  }
-
-  @ParameterizedTest
-  @MethodSource("combinePeriodTypesWithChannels")
-  void testExecuteSmr5_0(final PeriodTypeDto type, final int channel) throws Exception {
-    this.testExecute(Protocol.SMR_5_0_0, type, false, true, channel);
-  }
-
-  @ParameterizedTest
-  @MethodSource("combinePeriodTypesWithChannels")
-  void testExecuteSmr5_0_WithNullData(final PeriodTypeDto type, final int channel)
+  @MethodSource("combinationsSmr5")
+  void testExecuteSmr5(final Protocol protocol, final PeriodTypeDto type, final int channel)
       throws Exception {
-    this.testExecute(Protocol.SMR_5_0_0, type, true, true, channel);
+    this.testExecute(protocol, type, false, true, channel);
   }
 
   @ParameterizedTest
-  @MethodSource("combinePeriodTypesWithChannels")
-  void testExecuteSmr5_1(final PeriodTypeDto type, final int channel) throws Exception {
-    this.testExecute(Protocol.SMR_5_1, type, false, true, channel);
-  }
-
-  @ParameterizedTest
-  @MethodSource("combinePeriodTypesWithChannels")
-  void testExecuteSmr5_1_WithNullData(final PeriodTypeDto type, final int channel)
-      throws Exception {
-    this.testExecute(Protocol.SMR_5_1, type, true, true, channel);
+  @MethodSource("combinationsSmr5")
+  void testExecuteSmr5_WithNullData(
+      final Protocol protocol, final PeriodTypeDto type, final int channel) throws Exception {
+    this.testExecute(protocol, type, true, true, channel);
   }
 
   private void testExecute(
@@ -314,17 +345,17 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
         this.dlmsHelper.asDataObject(
             DlmsDateTimeConverter.toDateTime(timeTo, device.getTimezone()));
 
-    if (protocol == Protocol.DSMR_4_2_2) {
+    if (protocol.isDsmr2() || protocol.isDsmr4()) {
       if (type == PeriodTypeDto.DAILY) {
         return this.createAttributeAddressDsmr4Daily(
             from, to, device.isSelectiveAccessPeriodicMeterReadsSupported(), channel);
       } else if (type == PeriodTypeDto.MONTHLY) {
         return this.createAttributeAddressDsmr4Monthly(
-            from, to, device.isSelectiveAccessPeriodicMeterReadsSupported(), channel);
+            from, to, device.isSelectiveAccessPeriodicMeterReadsSupported(), channel, protocol);
       } else if (type == PeriodTypeDto.INTERVAL) {
         return this.createAttributeAddressDsmr4Interval(from, to, channel);
       }
-    } else if (protocol.getName().equals("SMR") && protocol.getVersion().startsWith("5")) {
+    } else if (protocol.isSmr5()) {
       if (type == PeriodTypeDto.DAILY) {
         return this.createAttributeAddressSmr5Daily(from, to, channel);
       } else if (type == PeriodTypeDto.MONTHLY) {
@@ -351,67 +382,19 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     // PERIOD 1
 
-    final DataObject period1Clock = this.PERIOD_1_CLOCK;
-    final DataObject period1Status = DataObject.newUInteger8Data(this.PERIOD1_AMR_STATUS_VALUE);
     final DataObject period1CaptureTime = DataObject.newDateTimeData(this.PERIOD_1_CAPTURE_TIME);
-    final DataObject period1ValueE = DataObject.newUInteger32Data(this.PERIOD_1_LONG_VALUE_E);
 
-    final DataObject periodItem1;
-    if (type == PeriodTypeDto.MONTHLY && protocol == Protocol.DSMR_4_2_2) {
-      if (selectedValuesSupported) {
-        periodItem1 =
-            DataObject.newStructureData(
-                Arrays.asList(
-                    period1Clock,
-                    this.createValue(this.PERIOD_1_LONG_VALUE, channel),
-                    period1CaptureTime));
-      } else {
-        periodItem1 =
-            DataObject.newStructureData(
-                Arrays.asList(
-                    period1Clock,
-                    period1ValueE,
-                    period1ValueE,
-                    period1ValueE,
-                    period1ValueE,
-                    this.createValue(this.PERIOD_1_LONG_VALUE, 1),
-                    period1CaptureTime,
-                    this.createValue(this.PERIOD_1_LONG_VALUE, 2),
-                    period1CaptureTime,
-                    this.createValue(this.PERIOD_1_LONG_VALUE, 3),
-                    period1CaptureTime,
-                    this.createValue(this.PERIOD_1_LONG_VALUE, 4),
-                    period1CaptureTime));
-      }
-    } else {
-      if (selectedValuesSupported || type == PeriodTypeDto.INTERVAL) {
-        periodItem1 =
-            DataObject.newStructureData(
-                Arrays.asList(
-                    period1Clock,
-                    period1Status,
-                    this.createValue(this.PERIOD_1_LONG_VALUE, channel),
-                    period1CaptureTime));
-      } else {
-        periodItem1 =
-            DataObject.newStructureData(
-                Arrays.asList(
-                    period1Clock,
-                    period1Status,
-                    period1ValueE,
-                    period1ValueE,
-                    period1ValueE,
-                    period1ValueE,
-                    this.createValue(this.PERIOD_1_LONG_VALUE, 1),
-                    period1CaptureTime,
-                    this.createValue(this.PERIOD_1_LONG_VALUE, 2),
-                    period1CaptureTime,
-                    this.createValue(this.PERIOD_1_LONG_VALUE, 3),
-                    period1CaptureTime,
-                    this.createValue(this.PERIOD_1_LONG_VALUE, 4),
-                    period1CaptureTime));
-      }
-    }
+    final DataObject periodItem1 =
+        this.createPeriodItem(
+            type,
+            protocol,
+            selectedValuesSupported,
+            channel,
+            this.PERIOD_1_CLOCK,
+            this.PERIOD1_AMR_STATUS_VALUE,
+            this.PERIOD_1_LONG_VALUE_E,
+            this.PERIOD_1_LONG_VALUE,
+            period1CaptureTime);
 
     // PERIOD 2
 
@@ -424,71 +407,91 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
       period2Clock = this.PERIOD_2_CLOCK;
       period2CaptureTime = DataObject.newDateTimeData(this.PERIOD_2_CAPTURE_TIME);
     }
-    final DataObject period2Status = DataObject.newUInteger8Data(this.PERIOD2_AMR_STATUS_VALUE);
-    final DataObject period2ValueE = DataObject.newUInteger32Data(this.PERIOD_2_LONG_VALUE_E);
 
-    final DataObject periodItem2;
-    if (type == PeriodTypeDto.MONTHLY && protocol == Protocol.DSMR_4_2_2) {
-      // No status for Monthly values in DSMR4.2.2
-      if (selectedValuesSupported) {
-        periodItem2 =
-            DataObject.newStructureData(
-                Arrays.asList(
-                    period2Clock,
-                    this.createValue(this.PERIOD_2_LONG_VALUE, channel),
-                    period2CaptureTime));
-      } else {
-        periodItem2 =
-            DataObject.newStructureData(
-                Arrays.asList(
-                    period2Clock,
-                    period2ValueE,
-                    period2ValueE,
-                    period2ValueE,
-                    period2ValueE,
-                    this.createValue(this.PERIOD_2_LONG_VALUE, 1),
-                    period1CaptureTime,
-                    this.createValue(this.PERIOD_2_LONG_VALUE, 2),
-                    period1CaptureTime,
-                    this.createValue(this.PERIOD_2_LONG_VALUE, 3),
-                    period1CaptureTime,
-                    this.createValue(this.PERIOD_2_LONG_VALUE, 4),
-                    period1CaptureTime));
-      }
-    } else {
-      if (selectedValuesSupported || type == PeriodTypeDto.INTERVAL) {
-        periodItem2 =
-            DataObject.newStructureData(
-                Arrays.asList(
-                    period2Clock,
-                    period2Status,
-                    this.createValue(this.PERIOD_2_LONG_VALUE, channel),
-                    period2CaptureTime));
-      } else {
-        periodItem2 =
-            DataObject.newStructureData(
-                Arrays.asList(
-                    period2Clock,
-                    period2Status,
-                    period2ValueE,
-                    period2ValueE,
-                    period2ValueE,
-                    period2ValueE,
-                    this.createValue(this.PERIOD_2_LONG_VALUE, 1),
-                    period1CaptureTime,
-                    this.createValue(this.PERIOD_2_LONG_VALUE, 2),
-                    period1CaptureTime,
-                    this.createValue(this.PERIOD_2_LONG_VALUE, 3),
-                    period1CaptureTime,
-                    this.createValue(this.PERIOD_2_LONG_VALUE, 4),
-                    period1CaptureTime));
-      }
-    }
+    final DataObject periodItem2 =
+        this.createPeriodItem(
+            type,
+            protocol,
+            selectedValuesSupported,
+            channel,
+            period2Clock,
+            this.PERIOD2_AMR_STATUS_VALUE,
+            this.PERIOD_2_LONG_VALUE_E,
+            this.PERIOD_2_LONG_VALUE,
+            period2CaptureTime);
 
     // Create returnvalue and set in stub
     final DataObject responseDataObject =
         DataObject.newArrayData(Arrays.asList(periodItem1, periodItem2));
     this.connectionStub.addReturnValue(attributeAddressForProfile, responseDataObject);
+  }
+
+  private DataObject createPeriodItem(
+      final PeriodTypeDto type,
+      final Protocol protocol,
+      final boolean selectedValuesSupported,
+      final int channel,
+      final DataObject clock,
+      final short statusValue,
+      final long longValueE,
+      final long longValueG,
+      final DataObject captureTime) {
+    final DataObject periodStatus = DataObject.newUInteger8Data(statusValue);
+    final DataObject periodValueE = DataObject.newUInteger32Data(longValueE);
+
+    final List<DataObject> items = new ArrayList<>();
+
+    // Overview protocols - periodtypes (Interval/Daily/Monthly) - selected values supported
+    //
+    //               DSMR2.2  DSMR4.2.2 / SMR4.3  SMR5.0-5.5
+    //                I D M          I D M          I D M
+    //
+    // Clock          1 X 1          1 1 1          1 1 1
+    // Status         1 X 0          1 1 0          1 1 1
+    // E values       0 X 0          0 0 0          0 0 0
+    // G values       1 X 1          1 1 1          1 1 1
+    // Capture time   0 X 0          1 1 1          1 1 1
+
+    // Overview protocols - periodtypes - selected values NOT supported
+    //
+    //               DSMR2.2  DSMR4.2.2 / SMR4.3
+    //                I D M          I D M
+    //
+    // Clock          1 X 1          1 1 1
+    // Status         1 X 0          1 1 0
+    // E values       4 X 4          4 4 4
+    // G values       4 X 4          4 4 4
+    // Capture time   4 X 4          4 4 4
+
+    // Always add clock first
+    items.add(clock);
+
+    // Add status
+    if (type != PeriodTypeDto.MONTHLY || !this.protocolsNoStatusMonthlyValues.contains(protocol)) {
+      items.add(periodStatus);
+    }
+
+    // Add E values (import rate 1 and 2, export rate 1 and 2)
+    if (!selectedValuesSupported && type != PeriodTypeDto.INTERVAL) {
+      items.addAll(List.of(periodValueE, periodValueE, periodValueE, periodValueE));
+    }
+
+    // Add G values and capture times
+    if (selectedValuesSupported || type == PeriodTypeDto.INTERVAL) {
+      items.add(this.createValue(longValueG, channel));
+      if (protocol != Protocol.DSMR_2_2) {
+        items.add(captureTime);
+      }
+    } else {
+      for (final int c : this.ALL_CHANNELS) {
+        items.add(this.createValue(longValueG, c));
+        if (protocol != Protocol.DSMR_2_2) {
+          items.add(captureTime);
+        }
+      }
+    }
+
+    return DataObject.newStructureData(items);
   }
 
   private DataObject getDateAsOctetString(final int year, final int month, final int day) {
@@ -548,7 +551,7 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     final PeriodicMeterReadsGasResponseItemDto period1 = periodicMeterReads.get(0);
     final PeriodicMeterReadsGasResponseItemDto period2 = periodicMeterReads.get(1);
 
-    if (protocol == Protocol.DSMR_4_2_2 && type == PeriodTypeDto.MONTHLY) {
+    if (type == PeriodTypeDto.MONTHLY && this.protocolsNoStatusMonthlyValues.contains(protocol)) {
       assertThat(period1.getAmrProfileStatusCode()).isNull();
       assertThat(period2.getAmrProfileStatusCode()).isNull();
     } else {
@@ -600,10 +603,11 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
       final DataObject from,
       final DataObject to,
       final boolean selectiveAccessPeriodicMeterReadsSupported,
-      final int channel) {
+      final int channel,
+      final Protocol protocol) {
     final SelectiveAccessDescription expectedSelectiveAccess =
         this.createSelectiveAccessDescriptionDsmr4Monthly(
-            from, to, selectiveAccessPeriodicMeterReadsSupported, channel);
+            from, to, selectiveAccessPeriodicMeterReadsSupported, channel, protocol);
     return new AttributeAddress(
         this.CLASS_ID_PROFILE,
         this.OBIS_MONTHLY_DSMR4,
@@ -614,16 +618,25 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   private SelectiveAccessDescription createSelectiveAccessDescriptionDsmr4Monthly(
       final DataObject from,
       final DataObject to,
-      final boolean selectiveAccessPeriodicMeterReadsSupported,
-      final int channel) {
+      final boolean selectedValuesSupported,
+      final int channel,
+      final Protocol protocol) {
 
-    final List<DataObject> dataObjects =
-        selectiveAccessPeriodicMeterReadsSupported
-            ? Arrays.asList(
-                this.CLOCK,
-                this.getDataObjectForGasValueDsmr4(channel, this.ATTR_ID_VALUE),
-                this.getDataObjectForGasValueDsmr4(channel, this.ATTR_ID_CAPTURE_TIME))
-            : new ArrayList<>();
+    final List<DataObject> dataObjects;
+
+    if (!selectedValuesSupported) {
+      dataObjects = new ArrayList<>();
+    } else if (protocol == Protocol.DSMR_2_2) {
+      dataObjects =
+          Arrays.asList(
+              this.CLOCK, this.getDataObjectForGasValueDsmr4(channel, this.ATTR_ID_VALUE));
+    } else {
+      dataObjects =
+          Arrays.asList(
+              this.CLOCK,
+              this.getDataObjectForGasValueDsmr4(channel, this.ATTR_ID_VALUE),
+              this.getDataObjectForGasValueDsmr4(channel, this.ATTR_ID_CAPTURE_TIME));
+    }
 
     final DataObject selectedValues = DataObject.newArrayData(dataObjects);
 

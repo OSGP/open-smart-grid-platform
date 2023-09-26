@@ -271,7 +271,14 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       return Optional.empty();
     }
 
-    return Optional.of(periodicMeterReads.get(periodicMeterReads.size() - 1).getCaptureTime());
+    final PeriodicMeterReadsGasResponseItemDto meterRead =
+        periodicMeterReads.get(periodicMeterReads.size() - 1);
+
+    if (meterRead.getCaptureTime() == null) {
+      return Optional.empty();
+    }
+
+    return Optional.of(meterRead.getCaptureTime());
   }
 
   private Date readClock(
