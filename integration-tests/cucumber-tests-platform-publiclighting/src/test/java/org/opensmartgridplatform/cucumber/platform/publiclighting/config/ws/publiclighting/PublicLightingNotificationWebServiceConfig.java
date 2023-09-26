@@ -63,7 +63,7 @@ public class PublicLightingNotificationWebServiceConfig extends WsConfigurerAdap
 
   @Bean("wsPublicLightingNotificationTargetUri")
   public String notificationTargetUri() {
-    return "http://172.17.0.1:" + this.notificationPort + this.notificationContextPath;
+    return "http://localhost:" + this.notificationPort + this.notificationContextPath;
   }
 
   @Override
