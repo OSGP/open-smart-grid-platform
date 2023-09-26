@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +21,8 @@ public class ResponseUrlDataCleanupService {
 
   public void execute() {
 
-    final DateTime removeBeforeDateTime =
-        DateTime.now(DateTimeZone.UTC).minusDays(this.cleanupJobRetentionTimeInDays);
-    this.responseUrlDataRepository.removeByCreationTimeBefore(removeBeforeDateTime.toDate());
+    final ZonedDateTime removeBeforeDateTime =
+        ZonedDateTime.now(ZoneId.of("UTC")).minusDays(this.cleanupJobRetentionTimeInDays);
+    this.responseUrlDataRepository.removeByCreationTimeBefore(removeBeforeDateTime.toInstant());
   }
 }

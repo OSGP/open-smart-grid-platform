@@ -9,8 +9,11 @@ import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.shared.security.EncryptionProviderType.HSM;
 import static org.opensmartgridplatform.shared.security.EncryptionProviderType.JRE;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -57,7 +60,10 @@ class EncryptionKeyReferenceCacheServiceTest {
 
     assertThat(
             this.service.findAllByTypeAndValid(
-                HSM, new DateTime(this.hsm1.getValidFrom()).minusMillis(1).toDate()))
+                HSM,
+                ZonedDateTime.ofInstant(this.hsm1.getValidFrom(), ZoneId.systemDefault())
+                    .minus(1, ChronoUnit.MILLIS)
+                    .toInstant()))
         .isEqualTo(List.of());
     assertThat(this.service.findAllByTypeAndValid(HSM, this.hsm1.getValidFrom()))
         .isEqualTo(List.of(this.hsm1));
@@ -67,12 +73,18 @@ class EncryptionKeyReferenceCacheServiceTest {
         .isEqualTo(List.of(this.hsm2));
     assertThat(
             this.service.findAllByTypeAndValid(
-                HSM, new DateTime(this.hsm2.getValidTo()).plusSeconds(1).toDate()))
+                HSM,
+                ZonedDateTime.ofInstant(this.hsm2.getValidTo(), ZoneId.systemDefault())
+                    .plusSeconds(1)
+                    .toInstant()))
         .isEqualTo(List.of());
 
     assertThat(
             this.service.findAllByTypeAndValid(
-                JRE, new DateTime(this.jre1.getValidFrom()).minusSeconds(1).toDate()))
+                JRE,
+                ZonedDateTime.ofInstant(this.jre1.getValidFrom(), ZoneId.systemDefault())
+                    .minusSeconds(1)
+                    .toInstant()))
         .isEqualTo(List.of());
     assertThat(this.service.findAllByTypeAndValid(JRE, this.jre1.getValidFrom()))
         .isEqualTo(List.of(this.jre1));
@@ -82,7 +94,10 @@ class EncryptionKeyReferenceCacheServiceTest {
         .isEqualTo(List.of(this.jre2));
     assertThat(
             this.service.findAllByTypeAndValid(
-                JRE, new DateTime(this.jre2.getValidFrom()).plusDays(100).toDate()))
+                JRE,
+                ZonedDateTime.ofInstant(this.jre2.getValidFrom(), ZoneId.systemDefault())
+                    .plusDays(100)
+                    .toInstant()))
         .isEqualTo(List.of(this.jre2));
   }
 
@@ -95,10 +110,18 @@ class EncryptionKeyReferenceCacheServiceTest {
     dbEncryptionKeyReference.setReference(reference);
     dbEncryptionKeyReference.setEncryptionProviderType(encryptionProviderType);
     dbEncryptionKeyReference.setValidFrom(
-        new DateTime().withTimeAtStartOfDay().plusDays(validFromDaysOffset).toDate());
+        LocalDate.now()
+            .atStartOfDay()
+            .atZone(ZoneId.systemDefault())
+            .plusDays(validFromDaysOffset)
+            .toInstant());
     if (validToDaysOffset != null) {
       dbEncryptionKeyReference.setValidTo(
-          new DateTime().withTimeAtStartOfDay().plusDays(validToDaysOffset).toDate());
+          LocalDate.now()
+              .atStartOfDay()
+              .atZone(ZoneId.systemDefault())
+              .plusDays(validToDaysOffset)
+              .toInstant());
     }
     return dbEncryptionKeyReference;
   }

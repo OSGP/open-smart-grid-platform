@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.core.infra.jms.protocol.inbound.messageprocessors;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import javax.jms.JMSException;
@@ -163,7 +163,7 @@ public class PushNotificationAlarmMessageProcessor extends AbstractProtocolReque
        */
       this.eventNotificationMessageService.handleEvent(
           pushNotificationAlarm.getDeviceIdentification(),
-          new Date(),
+          Instant.now(),
           org.opensmartgridplatform.domain.core.valueobjects.EventType.ALARM_NOTIFICATION,
           pushNotificationAlarm.getAlarms().toString(),
           0);

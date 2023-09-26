@@ -11,8 +11,8 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -104,7 +104,7 @@ public class PushNotificationAlarmMessageProcessorTest {
         .when(this.eventNotificationMessageService)
         .handleEvent(
             any(String.class),
-            any(Date.class),
+            any(Instant.class),
             any(EventType.class),
             any(String.class),
             any(Integer.class));

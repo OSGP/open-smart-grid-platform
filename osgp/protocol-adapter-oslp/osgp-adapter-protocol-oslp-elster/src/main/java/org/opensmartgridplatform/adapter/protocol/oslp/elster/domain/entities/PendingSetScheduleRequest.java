@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities;
 
-import java.util.Date;
+import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import lombok.AllArgsConstructor;
@@ -33,7 +33,7 @@ public class PendingSetScheduleRequest extends AbstractEntity {
 
   @Column(nullable = false)
   @Getter
-  private Date expiredAt;
+  private Instant expiredAt;
 
   @Column(nullable = false)
   @Getter

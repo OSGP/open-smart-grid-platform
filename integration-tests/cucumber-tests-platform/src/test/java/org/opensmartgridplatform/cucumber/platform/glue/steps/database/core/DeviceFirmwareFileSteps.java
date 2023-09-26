@@ -10,8 +10,8 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -54,12 +54,10 @@ public class DeviceFirmwareFileSteps {
     final FirmwareFile firmwareFile =
         this.getFirmwareFile(getString(settings, PlatformKeys.FIRMWARE_FILE_FILENAME));
 
-    final Date installationDate =
-        Date.from(
-            getDateTime2(
-                    getString(settings, PlatformKeys.FIRMWARE_INSTALLATION_DATE),
-                    ZonedDateTime.now())
-                .toInstant());
+    final Instant installationDate =
+        getDateTime2(
+                getString(settings, PlatformKeys.FIRMWARE_INSTALLATION_DATE), ZonedDateTime.now())
+            .toInstant();
     final String installedBy =
         getString(
             settings, PlatformKeys.FIRMWARE_INSTALLED_BY, PlatformDefaults.FIRMWARE_INSTALLED_BY);

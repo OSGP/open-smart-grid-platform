@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.domain.core.entities;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,7 +19,7 @@ public class DeviceFirmwareFile extends AbstractEntity implements Comparable<Dev
   private static final long serialVersionUID = 5003530514434626119L;
 
   @Column(nullable = false)
-  private Date installationDate;
+  private Instant installationDate;
 
   @Column() private String installedBy;
 
@@ -38,7 +38,7 @@ public class DeviceFirmwareFile extends AbstractEntity implements Comparable<Dev
   public DeviceFirmwareFile(
       final Device device,
       final FirmwareFile firmwareFile,
-      final Date installationDate,
+      final Instant installationDate,
       final String installedBy) {
     this.device = device;
     this.firmwareFile = firmwareFile;
@@ -79,7 +79,7 @@ public class DeviceFirmwareFile extends AbstractEntity implements Comparable<Dev
     return this.installationDate.compareTo(o.installationDate);
   }
 
-  public Date getInstallationDate() {
+  public Instant getInstallationDate() {
     return this.installationDate;
   }
 

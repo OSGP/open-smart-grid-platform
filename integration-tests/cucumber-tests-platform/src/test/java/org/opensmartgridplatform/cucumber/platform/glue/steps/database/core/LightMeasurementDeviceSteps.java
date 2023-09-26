@@ -20,7 +20,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -254,8 +253,7 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
 
     final String deviceType = "LMD";
     final InetAddress networkAddress = InetAddress.getLoopbackAddress();
-    final Date technicalInstallationDate =
-        Date.from(ZonedDateTime.now(ZoneId.of("UTC")).toInstant());
+    final Instant technicalInstallationDate = ZonedDateTime.now(ZoneId.of("UTC")).toInstant();
     final ProtocolInfo protocolInfo =
         this.protocolInfoRepository.findByProtocolAndProtocolVersion("IEC61850", "1.0");
 
@@ -268,7 +266,7 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
     lightMeasurementDevice.setDescription(deviceIdentification);
     lightMeasurementDevice.setCode(code);
     lightMeasurementDevice.setColor(color);
-    lightMeasurementDevice.setLastCommunicationTime(technicalInstallationDate.toInstant());
+    lightMeasurementDevice.setLastCommunicationTime(technicalInstallationDate);
     lightMeasurementDevice.setDigitalInput(digitalInput);
 
     // Both creates the device and adds the device authorization as owner for the identified

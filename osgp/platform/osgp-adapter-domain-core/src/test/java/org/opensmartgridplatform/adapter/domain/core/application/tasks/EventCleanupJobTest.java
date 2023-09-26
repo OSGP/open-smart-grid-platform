@@ -10,9 +10,9 @@ import static org.mockito.ArgumentMatchers.any;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,7 +59,8 @@ public class EventCleanupJobTest {
     // Arrange
     final List<Event> events = this.createEvents();
     Mockito.when(
-            this.transactionalEventService.getEventsBeforeDate(any(Date.class), any(Integer.class)))
+            this.transactionalEventService.getEventsBeforeDate(
+                any(Instant.class), any(Integer.class)))
         .thenReturn(events);
 
     // Act
@@ -92,7 +93,7 @@ public class EventCleanupJobTest {
     final Event event =
         new Event(
             "test",
-            Date.from(ZonedDateTime.now().minusMonths(1).toInstant()),
+            ZonedDateTime.now().minusMonths(1).toInstant(),
             EventType.DIAG_EVENTS_GENERAL,
             "description",
             1);

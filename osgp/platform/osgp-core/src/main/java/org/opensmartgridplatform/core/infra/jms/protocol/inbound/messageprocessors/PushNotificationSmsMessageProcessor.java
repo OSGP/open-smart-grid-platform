@@ -6,7 +6,7 @@ package org.opensmartgridplatform.core.infra.jms.protocol.inbound.messageprocess
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Date;
+import java.time.Instant;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.core.application.services.EventNotificationMessageService;
@@ -118,7 +118,7 @@ public class PushNotificationSmsMessageProcessor extends AbstractProtocolRequest
        */
       this.eventNotificationMessageService.handleEvent(
           pushNotificationSms.getDeviceIdentification(),
-          new Date(),
+          Instant.now(),
           org.opensmartgridplatform.domain.core.valueobjects.EventType.SMS_NOTIFICATION,
           pushNotificationSms.getIpAddress(),
           0);

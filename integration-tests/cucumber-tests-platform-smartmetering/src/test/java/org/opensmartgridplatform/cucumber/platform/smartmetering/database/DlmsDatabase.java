@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.cucumber.platform.smartmetering.database;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.TimeZone;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
@@ -34,12 +34,12 @@ public class DlmsDatabase {
 
     this.secretRepository.deleteAllInBatch();
     if (this.encryptionKeyRepository.count() == 0) {
-      final DbEncryptionKeyReference jreEncryptionKey = this.getJreEncryptionKey(new Date());
+      final DbEncryptionKeyReference jreEncryptionKey = this.getJreEncryptionKey(Instant.now());
       this.encryptionKeyRepository.save(jreEncryptionKey);
     }
   }
 
-  private DbEncryptionKeyReference getJreEncryptionKey(final Date now) {
+  private DbEncryptionKeyReference getJreEncryptionKey(final Instant now) {
     final DbEncryptionKeyReference jreEncryptionKey = new DbEncryptionKeyReference();
     jreEncryptionKey.setEncryptionProviderType(EncryptionProviderType.JRE);
     jreEncryptionKey.setReference("1");

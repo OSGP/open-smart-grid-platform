@@ -6,8 +6,8 @@ package org.opensmartgridplatform.adapter.ws.admin.infra.specifications;
 
 import static org.opensmartgridplatform.shared.utils.SearchUtil.replaceAndEscapeWildcards;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -56,7 +56,7 @@ public class JpaDeviceLogItemSpecifications implements DeviceLogItemSpecificatio
       return ALL;
     } else {
       return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) ->
-          cb.greaterThanOrEqualTo(r.<Date>get(MODIFICATION_TIME), Date.from(startDate.toInstant()));
+          cb.greaterThanOrEqualTo(r.<Instant>get(MODIFICATION_TIME), startDate.toInstant());
     }
   }
 
@@ -66,7 +66,7 @@ public class JpaDeviceLogItemSpecifications implements DeviceLogItemSpecificatio
       return ALL;
     } else {
       return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) ->
-          cb.lessThanOrEqualTo(r.<Date>get(MODIFICATION_TIME), Date.from(endDate.toInstant()));
+          cb.lessThanOrEqualTo(r.<Instant>get(MODIFICATION_TIME), endDate.toInstant());
     }
   }
 }

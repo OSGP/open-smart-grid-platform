@@ -5,7 +5,7 @@
 package org.opensmartgridplatform.core.db.api.iec61850.entities;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,11 +36,11 @@ public class Device implements Serializable {
 
   /** Creation time of this entity. This field is set by { @see this.prePersist() }. */
   @Column(nullable = false)
-  protected Date creationTime = new Date();
+  protected Instant creationTime = Instant.now();
 
   /** Modification time of this entity. This field is set by { @see this.preUpdate() }. */
   @Column(nullable = false)
-  protected Date modificationTime = new Date();
+  protected Instant modificationTime = Instant.now();
 
   /** Version of this entity. */
   @Version private Long version = -1L;
@@ -83,8 +83,8 @@ public class Device implements Serializable {
     return Objects.equals(this.deviceIdentification, device.deviceIdentification);
   }
 
-  public Date getCreationTime() {
-    return (Date) this.creationTime.clone();
+  public Instant getCreationTime() {
+    return this.creationTime;
   }
 
   public String getDeviceIdentification() {
@@ -103,8 +103,8 @@ public class Device implements Serializable {
     return this.id;
   }
 
-  public Date getModificationTime() {
-    return (Date) this.modificationTime.clone();
+  public Instant getModificationTime() {
+    return this.modificationTime;
   }
 
   public Long getVersion() {
@@ -119,7 +119,7 @@ public class Device implements Serializable {
   /** Method for actions to be taken before inserting. */
   @PrePersist
   private void prePersist() {
-    final Date now = new Date();
+    final Instant now = Instant.now();
     this.creationTime = now;
     this.modificationTime = now;
   }
@@ -127,7 +127,7 @@ public class Device implements Serializable {
   /** Method for actions to be taken before updating. */
   @PreUpdate
   private void preUpdate() {
-    this.modificationTime = new Date();
+    this.modificationTime = Instant.now();
   }
 
   public void setVersion(final Long newVersion) {
