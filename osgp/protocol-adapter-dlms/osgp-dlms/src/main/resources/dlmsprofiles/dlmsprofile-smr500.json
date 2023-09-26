@@ -1935,7 +1935,7 @@
           "description": "capture objects",
           "datatype": "array",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "CLOCK,2|AMR_PROFILE_STATUS_HOURLY_G,2|MBUS_MASTER_VALUE_HOURLY,2|MBUS_MASTER_VALUE_HOURLY,5",
+          "value": "CLOCK,2|AMR_PROFILE_STATUS_HOURLY_G,2|MBUS_MASTER_VALUE,2|MBUS_MASTER_VALUE,5",
           "access": "R"
         },
         {
@@ -2003,7 +2003,7 @@
           "description": "capture objects",
           "datatype": "array",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "CLOCK,2|AMR_PROFILE_STATUS_DAILY_G,2|MBUS_MASTER_VALUE_HOURLY,2|MBUS_MASTER_VALUE_HOURLY,5",
+          "value": "CLOCK,2|AMR_PROFILE_STATUS_DAILY_G,2|MBUS_MASTER_VALUE,2|MBUS_MASTER_VALUE,5",
           "access": "R"
         },
         {
@@ -2071,7 +2071,7 @@
           "description": "capture objects",
           "datatype": "array",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "CLOCK,2|AMR_PROFILE_STATUS_MONTHLY_G,2|MBUS_MASTER_VALUE_HOURLY,2|MBUS_MASTER_VALUE_HOURLY,5",
+          "value": "CLOCK,2|AMR_PROFILE_STATUS_MONTHLY_G,2|MBUS_MASTER_VALUE,2|MBUS_MASTER_VALUE,5",
           "access": "R"
         },
         {
@@ -2177,7 +2177,7 @@
       ]
     },
     {
-      "tag": "MBUS_MASTER_VALUE_HOURLY",
+      "tag": "MBUS_MASTER_VALUE",
       "description": "M-Bus volume hourly",
       "note": null,
       "class-id": 4,

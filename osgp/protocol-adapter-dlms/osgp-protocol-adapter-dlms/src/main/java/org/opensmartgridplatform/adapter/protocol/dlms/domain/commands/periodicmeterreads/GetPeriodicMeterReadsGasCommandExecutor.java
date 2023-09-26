@@ -7,6 +7,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodic
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute.BUFFER;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute.CAPTURE_OBJECTS;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute.CAPTURE_PERIOD;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.AMR_PROFILE_STATUS;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.AMR_PROFILE_STATUS_DAILY_G;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.AMR_PROFILE_STATUS_HOURLY_G;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.AMR_PROFILE_STATUS_MONTHLY_G;
@@ -14,7 +15,7 @@ import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.CLOCK;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.DAILY_VALUES_COMBINED;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.DAILY_VALUES_G;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.INTERVAL_VALUES_G;
-import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_MASTER_VALUE_HOURLY;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_MASTER_VALUE;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MONTHLY_VALUES_COMBINED;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MONTHLY_VALUES_G;
 
@@ -130,7 +131,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     final CosemObject profileObject = this.getProfileConfigObject(device, queryPeriodType);
 
     final List<CaptureObject> allCaptureObjectsInProfile =
-        this.getCaptureObjectsInProfile(profileObject, device);
+        this.getCaptureObjectsInProfile(profileObject, device, channel);
 
     final List<CaptureObject> selectedCaptureObjects =
         this.getSelectedCaptureObjects(
@@ -324,7 +325,12 @@ public class GetPeriodicMeterReadsGasCommandExecutor
           case MONTHLY -> AMR_PROFILE_STATUS_MONTHLY_G;
         };
 
-    final Integer statusIndex = this.getIndex(selectedObjects, amrStatus, null);
+    Integer statusIndex = this.getIndex(selectedObjects, amrStatus, null);
+
+    if (statusIndex == null) {
+      // If combined profiles are used, get the index for the general amr status
+      statusIndex = this.getIndex(selectedObjects, AMR_PROFILE_STATUS, null);
+    }
 
     AmrProfileStatusCodeDto amrProfileStatusCode = null;
 
@@ -373,7 +379,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       final int channel)
       throws ProtocolAdapterException {
 
-    final Integer valueIndex = this.getIndex(selectedObjects, MBUS_MASTER_VALUE_HOURLY, 2, channel);
+    final Integer valueIndex = this.getIndex(selectedObjects, MBUS_MASTER_VALUE, 2, channel);
 
     DataObject value = null;
 
@@ -393,7 +399,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
     final Integer captureTimeIndex =
-        this.getIndex(selectedObjects, DlmsObjectType.MBUS_MASTER_VALUE_HOURLY, 5);
+        this.getIndex(selectedObjects, DlmsObjectType.MBUS_MASTER_VALUE, 5);
 
     if (captureTimeIndex != null) {
       final CosemDateTimeDto cosemDateTime =
@@ -418,13 +424,13 @@ public class GetPeriodicMeterReadsGasCommandExecutor
   private String getScalerUnit(final List<CaptureObject> selectedObjects, final int channel)
       throws ProtocolAdapterException {
 
-    final Integer index = this.getIndex(selectedObjects, MBUS_MASTER_VALUE_HOURLY, 2, channel);
+    final Integer index = this.getIndex(selectedObjects, MBUS_MASTER_VALUE, 2, channel);
 
     if (index != null) {
       return selectedObjects.get(index).getCosemObject().getAttribute(3).getValue();
+    } else {
+      throw new ProtocolAdapterException("Can't get scaler unit, selected object not found");
     }
-
-    return null;
   }
 
   private CosemObject getProfileConfigObject(
@@ -486,16 +492,53 @@ public class GetPeriodicMeterReadsGasCommandExecutor
   }
 
   private List<CaptureObject> getCaptureObjectsInProfile(
-      final CosemObject profile, final DlmsDevice device) throws ProtocolAdapterException {
+      final CosemObject profile, final DlmsDevice device, final Integer channel)
+      throws ProtocolAdapterException {
     final Attribute captureObjectsAttribute = profile.getAttribute(CAPTURE_OBJECTS.attributeId());
     final List<String> captureObjectDefinitions =
         List.of(captureObjectsAttribute.getValue().split("\\|"));
 
     final List<CaptureObject> captureObjects = new ArrayList<>();
 
-    for (final String def : captureObjectDefinitions) {
-      captureObjects.add(this.getCaptureObject(def, device));
+    final List<Integer> channels;
+    try {
+      if (profile.hasWildcardChannel()) {
+        // If the profile has an x for the channel in the obis code, then we will request the
+        // profile with the channel specified in the request. All capture objects then have the
+        // same channel.
+        channels = List.of(channel);
+      } else {
+        // If the profile has no x for channel, then for each capture objects with an x in the
+        // config should be handled as 4 different capture objects, one for each channel 1..4.
+        channels = List.of(1, 2, 3, 4);
+      }
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException("Could not get channel from obis " + profile.getObis(), e);
     }
+
+    final List<CaptureObject> captureObjectsWithWildcardChannel = new ArrayList<>();
+    final List<CaptureObject> captureObjectsWithoutWildcardChannel = new ArrayList<>();
+    for (final String def : captureObjectDefinitions) {
+      final CaptureObject captureObject = this.getCaptureObject(def, device);
+      try {
+        if (captureObject.getCosemObject().hasWildcardChannel()) {
+          captureObjectsWithWildcardChannel.add(captureObject);
+        } else {
+          captureObjectsWithoutWildcardChannel.add(captureObject);
+        }
+      } catch (final ObjectConfigException e) {
+        throw new ProtocolAdapterException(
+            "Could not get channel from obis " + captureObject.getCosemObject(), e);
+      }
+    }
+
+    captureObjects.addAll(captureObjectsWithoutWildcardChannel);
+
+    captureObjects.addAll(
+        channels.stream()
+            .map(c -> this.addChannel(captureObjectsWithWildcardChannel, c))
+            .flatMap(List::stream)
+            .toList());
 
     return captureObjects;
   }
@@ -504,17 +547,27 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       final List<CaptureObject> allCaptureObjectsInProfile,
       final Medium medium,
       final int channel,
-      final boolean selectedValuesSupported) {
+      final boolean selectedValuesSupported)
+      throws ProtocolAdapterException {
 
-    return allCaptureObjectsInProfile.stream()
-        .filter(
-            object ->
-                !selectedValuesSupported
-                    || object.getCosemObject().getGroup().equals(medium.name())
-                    || object.getCosemObject().getTag().equals(CLOCK.name()))
-        .map(object -> this.addChannels(object, channel, selectedValuesSupported))
-        .flatMap(List::stream)
-        .toList();
+    final List<CaptureObject> selectedObjects = new ArrayList<>();
+
+    try {
+      for (final CaptureObject captureObject : allCaptureObjectsInProfile) {
+        // If selectedValues is supported, then select all capture objects with the same medium and
+        // the same channel. All abstract objects (clock and amr status) should be selected as well.
+        if (!selectedValuesSupported
+            || (captureObject.getCosemObject().getGroup().equals(medium.name())
+                && captureObject.getCosemObject().getChannel() == channel)
+            || (captureObject.getCosemObject().getGroup().equals(Medium.ABSTRACT.name()))) {
+          selectedObjects.add(captureObject);
+        }
+      }
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException("Can't get selected capture objects", e);
+    }
+
+    return selectedObjects;
   }
 
   private SelectiveAccessDescription getAccessDescription(
@@ -582,10 +635,43 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     }
   }
 
+  private List<CaptureObject> addChannel(
+      final List<CaptureObject> captureObjects, final int channel) {
+    final List<CaptureObject> captureObjectsWithChannel = new ArrayList<>();
+
+    for (final CaptureObject captureObject : captureObjects) {
+      final CosemObject cosemObject = captureObject.getCosemObject();
+      captureObjectsWithChannel.add(
+          new CaptureObject(
+              this.updateCosemObjectWithChannel(cosemObject, channel),
+              captureObject.getAttributeId()));
+    }
+
+    return captureObjectsWithChannel;
+  }
+
+  private List<CaptureObject> addChannels(
+      final CaptureObject captureObject, final List<Integer> channels) {
+    final CosemObject cosemObject = captureObject.getCosemObject();
+    if (!cosemObject.getObis().contains("x")) {
+      return List.of(captureObject);
+    } else {
+      return channels.stream()
+          .map(
+              c ->
+                  new CaptureObject(
+                      this.updateCosemObjectWithChannel(cosemObject, c),
+                      captureObject.getAttributeId()))
+          .toList();
+    }
+  }
+
   private List<CaptureObject> addChannels(
       final CaptureObject captureObject, final int channel, final boolean selectedValuesSupported) {
     final CosemObject cosemObject = captureObject.getCosemObject();
-    if (selectedValuesSupported) {
+    if (!cosemObject.getObis().contains("x")) {
+      return List.of(captureObject);
+    } else if (selectedValuesSupported) {
       return List.of(
           new CaptureObject(
               this.updateCosemObjectWithChannel(cosemObject, channel),
@@ -603,8 +689,18 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
   private CosemObject updateCosemObjectWithChannel(
       final CosemObject cosemObject, final int channel) {
-    cosemObject.setObis(cosemObject.getObis().replace("x", String.valueOf(channel)));
-    return cosemObject;
+    final CosemObject cosemObjectWithChannel = new CosemObject();
+    cosemObjectWithChannel.setObis(cosemObject.getObis().replace("x", String.valueOf(channel)));
+    cosemObjectWithChannel.setGroup(cosemObject.getGroup());
+    cosemObjectWithChannel.setDescription(cosemObject.getDescription());
+    cosemObjectWithChannel.setMeterTypes(cosemObject.getMeterTypes());
+    cosemObjectWithChannel.setNote(cosemObject.getNote());
+    cosemObjectWithChannel.setAttributes(cosemObject.getAttributes());
+    cosemObjectWithChannel.setClassId(cosemObject.getClassId());
+    cosemObjectWithChannel.setTag(cosemObject.getTag());
+    cosemObjectWithChannel.setProperties(cosemObject.getProperties());
+    cosemObjectWithChannel.setVersion(cosemObject.getVersion());
+    return cosemObjectWithChannel;
   }
 
   private ProfileCaptureTime getProfileCaptureTime(final CosemObject profile)

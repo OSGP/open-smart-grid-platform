@@ -79,16 +79,10 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
   private final ObisCode OBIS_CLOCK = new ObisCode("0.0.1.0.0.255");
   private final ObisCode OBIS_STATUS = new ObisCode("0.0.96.10.2.255");
-  private final String OBIS_GAS_VALUE_SMR5 = "0.<c>.24.2.2.255";
-  private final ObisCode OBIS_ACTIVE_ENERGY_IMPORT_RATE_1 = new ObisCode("1.0.1.8.1.255");
-  private final ObisCode OBIS_ACTIVE_ENERGY_IMPORT_RATE_2 = new ObisCode("1.0.1.8.2.255");
-  private final ObisCode OBIS_ACTIVE_ENERGY_EXPORT_RATE_1 = new ObisCode("1.0.2.8.1.255");
-  private final ObisCode OBIS_ACTIVE_ENERGY_EXPORT_RATE_2 = new ObisCode("1.0.2.8.2.255");
   private final String OBIS_GAS_VALUE_DSMR4 = "0.<c>.24.2.1.255";
 
   private final int CLASS_ID_CLOCK = 8;
   private final int CLASS_ID_DATA = 1;
-  private final int CLASS_ID_REGISTER = 3;
   private final int CLASS_ID_EXTENDED_REGISTER = 4;
   private final int CLASS_ID_PROFILE = 7;
 
@@ -330,7 +324,7 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
       } else if (type == PeriodTypeDto.INTERVAL) {
         return this.createAttributeAddressDsmr4Interval(from, to, channel);
       }
-    } else if (protocol == Protocol.SMR_5_0_0 || protocol == Protocol.SMR_5_1) {
+    } else if (protocol.getName().equals("SMR") && protocol.getVersion().startsWith("5")) {
       if (type == PeriodTypeDto.DAILY) {
         return this.createAttributeAddressSmr5Daily(from, to, channel);
       } else if (type == PeriodTypeDto.MONTHLY) {

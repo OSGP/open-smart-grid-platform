@@ -51,13 +51,23 @@ public class CosemObject {
   }
 
   public int getChannel() throws ObjectConfigException {
-    final String[] obisParts = this.obis.split("\\.");
-    if (obisParts.length != 6) {
-      throw new ObjectConfigException("Invalid obiscode " + this.obis);
-    }
+    final String[] obisParts = this.getObisInParts();
     if (obisParts[1].equals("x")) {
       throw new ObjectConfigException("Can't get channel from " + this.obis);
     }
     return Integer.parseInt(obisParts[1]);
+  }
+
+  public boolean hasWildcardChannel() throws ObjectConfigException {
+    final String[] obisParts = this.getObisInParts();
+    return obisParts[1].equals("x");
+  }
+
+  private String[] getObisInParts() throws ObjectConfigException {
+    final String[] obisParts = this.obis.split("\\.");
+    if (obisParts.length != 6) {
+      throw new ObjectConfigException("Invalid obiscode " + this.obis);
+    }
+    return obisParts;
   }
 }
