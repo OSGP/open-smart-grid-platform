@@ -19,7 +19,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.assertj.core.util.Lists;
-import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -128,7 +127,6 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   public void setUp() {
 
     final TimeZone defaultTimeZone = TimeZone.getDefault();
-    final DateTimeZone defaultDateTimeZone = DateTimeZone.getDefault();
 
     // all time based tests must use UTC time.
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));

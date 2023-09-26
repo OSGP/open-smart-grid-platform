@@ -10,6 +10,7 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,7 +20,6 @@ import java.util.Objects;
 import java.util.TreeMap;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -65,6 +65,7 @@ public class DlmsHelper {
       new TreeMap<>();
 
   private static final int MAX_CONCURRENT_ATTRIBUTE_ADDRESSES = 32;
+  public static final int SECONDS_PER_MINUTE = 60;
 
   static {
     TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(0, TransportServiceTypeDto.TCP);
@@ -510,39 +511,6 @@ public class DlmsHelper {
   }
 
   /**
-   * Creates a COSEM date-time object based on the given {@code dateTime}.
-   *
-   * <p>The deviation and clock status (is daylight saving active or not) are based on the zone of
-   * the given {@code dateTime}.
-   *
-   * @param dateTime a DateTime to translate into COSEM date-time format.
-   * @return a DataObject having a CosemDateTime matching the given DateTime as value.
-   */
-  public DataObject asDataObject(final DateTime dateTime) {
-
-    final CosemDate cosemDate =
-        new CosemDate(dateTime.getYear(), dateTime.getMonthOfYear(), dateTime.getDayOfMonth());
-    final CosemTime cosemTime =
-        new CosemTime(
-            dateTime.getHourOfDay(),
-            dateTime.getMinuteOfHour(),
-            dateTime.getSecondOfMinute(),
-            dateTime.getMillisOfSecond() / 10);
-    final int deviation =
-        -(dateTime.getZone().getOffset(dateTime.getMillis()) / MILLISECONDS_PER_MINUTE);
-    final ClockStatus[] clockStatusBits;
-    if (dateTime.getZone().isStandardOffset(dateTime.getMillis())) {
-      clockStatusBits = new ClockStatus[0];
-    } else {
-      clockStatusBits = new ClockStatus[1];
-      clockStatusBits[0] = ClockStatus.DAYLIGHT_SAVING_ACTIVE;
-    }
-    final CosemDateTime cosemDateTime =
-        new CosemDateTime(cosemDate, cosemTime, deviation, clockStatusBits);
-    return DataObject.newDateTimeData(cosemDateTime);
-  }
-
-  /**
    * Creates a COSEM date-time object based on the given {@code zonedTime}.
    *
    * <p>The deviation and clock status (is daylight saving active or not) are based on the zone of
@@ -560,10 +528,11 @@ public class DlmsHelper {
             zonedTime.getHour(),
             zonedTime.getMinute(),
             zonedTime.getSecond(),
-            zonedTime.getNano() / 10_000_000);
+            zonedTime.get(ChronoField.MILLI_OF_SECOND) / 10);
 
     final int deviationInMinutes =
-        -(zonedTime.getZone().getRules().getOffset(zonedTime.toInstant()).getTotalSeconds() / 60);
+        -(zonedTime.getZone().getRules().getOffset(zonedTime.toInstant()).getTotalSeconds()
+            / SECONDS_PER_MINUTE);
 
     final ClockStatus[] clockStatusBits;
 

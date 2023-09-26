@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 import org.mockito.ArgumentMatcher;
 
-public class DateTimeMatcher implements ArgumentMatcher<DateTime> {
+public class DateTimeMatcher implements ArgumentMatcher<ZonedDateTime> {
 
   private final long time;
 
@@ -15,12 +15,12 @@ public class DateTimeMatcher implements ArgumentMatcher<DateTime> {
     this.time = time;
   }
 
-  private long getActualTime(final DateTime actual) {
-    return actual.getMillis();
+  private long getActualTime(final ZonedDateTime actual) {
+    return actual.toInstant().toEpochMilli();
   }
 
   @Override
-  public boolean matches(final DateTime argument) {
+  public boolean matches(final ZonedDateTime argument) {
     return this.getActualTime(argument) == this.time;
   }
 }

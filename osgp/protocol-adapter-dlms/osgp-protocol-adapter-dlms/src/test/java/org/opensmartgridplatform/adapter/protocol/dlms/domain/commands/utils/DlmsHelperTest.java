@@ -13,13 +13,10 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
@@ -39,10 +36,9 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 
 public class DlmsHelperTest {
 
-  public static final DateTimeZone DATE_TIME_ZONE_AMSTERDAM =
-      DateTimeZone.forID("Europe/Amsterdam");
-  public static final DateTimeZone DATE_TIME_ZONE_NEW_YORK = DateTimeZone.forID("America/New_York");
-  public static final DateTimeZone DATE_TIME_ZONE_UTC = DateTimeZone.UTC;
+  public static final ZoneId DATE_TIME_ZONE_AMSTERDAM = ZoneId.of("Europe/Amsterdam");
+  public static final ZoneId DATE_TIME_ZONE_NEW_YORK = ZoneId.of("America/New_York");
+  public static final ZoneId DATE_TIME_ZONE_UTC = ZoneId.of("UTC");
   public static final short YEAR = 2015;
   public static final byte MONTH_SUMMER_TIME = 7;
   public static final byte MONTH_WINTER_TIME = 2;
@@ -125,7 +121,7 @@ public class DlmsHelperTest {
   @Test
   public void testDateTimeSummerTimeWithZonedTime() {
     final DataObject dateInSummerTimeDataObject =
-        this.dlmsHelper.asDataObject(this.convertToZonedDateTime(this.dateTimeSummerTime()));
+        this.dlmsHelper.asDataObject(this.dateTimeSummerTime());
 
     assertThat(dateInSummerTimeDataObject.isCosemDateFormat()).isTrue();
     assertThat(dateInSummerTimeDataObject.getValue() instanceof CosemDateTime).isTrue();
@@ -150,8 +146,7 @@ public class DlmsHelperTest {
 
   @Test
   public void testDateTimeWinterTimeWithZonedTime() {
-    final DateTime dateTime = this.dateTimeWinterTime();
-    final ZonedDateTime zonedDateTime = this.convertToZonedDateTime(dateTime);
+    final ZonedDateTime zonedDateTime = this.dateTimeWinterTime();
 
     final DataObject dateInWinterTimeDataObject = this.dlmsHelper.asDataObject(zonedDateTime);
 
@@ -173,7 +168,7 @@ public class DlmsHelperTest {
     final ZonedDateTime dateInSummerTime = cosemDateTime.asDateTime();
 
     assertThat(DateTimeFormatter.ISO_DATE_TIME.format(dateInSummerTime))
-        .isEqualTo("2015-07-21T14:53:07.230+02:00");
+        .isEqualTo("2015-07-21T14:53:07.23+02:00");
   }
 
   @Test
@@ -186,7 +181,7 @@ public class DlmsHelperTest {
     final ZonedDateTime dateInWinterTime = cosemDateTime.asDateTime();
 
     assertThat(DateTimeFormatter.ISO_DATE_TIME.format(dateInWinterTime))
-        .isEqualTo("2015-02-21T14:53:07.230+01:00");
+        .isEqualTo("2015-02-21T14:53:07.23+01:00");
   }
 
   @Test
@@ -307,60 +302,60 @@ public class DlmsHelperTest {
     assertThat(exception.getMessage()).contains(dlmsDevice.getDeviceIdentification());
   }
 
-  private DateTime dateTimeSummerTime() {
-    return new DateTime(
+  private ZonedDateTime dateTimeSummerTime() {
+    return ZonedDateTime.of(
         YEAR,
         MONTH_SUMMER_TIME,
         DAY,
         HOUR,
         MINUTE,
         SECOND,
-        HUNDREDTHS * 10,
+        HUNDREDTHS * 10_000_000,
         DATE_TIME_ZONE_AMSTERDAM);
   }
 
-  private DateTime dateTimeSummerTimeUtc() {
+  private ZonedDateTime dateTimeSummerTimeUtc() {
     /*
      * Original time in Europe/Amsterdam is in UTC+2 for the summer time, so
      * subtract 2 from the hour for UTC time at the same instant.
      */
-    return new DateTime(
+    return ZonedDateTime.of(
         YEAR,
         MONTH_SUMMER_TIME,
         DAY,
         HOUR - 2,
         MINUTE,
         SECOND,
-        HUNDREDTHS * 10,
+        HUNDREDTHS * 10_000_000,
         DATE_TIME_ZONE_UTC);
   }
 
-  private DateTime dateTimeWinterTime() {
-    return new DateTime(
+  private ZonedDateTime dateTimeWinterTime() {
+    return ZonedDateTime.of(
         YEAR,
         MONTH_WINTER_TIME,
         DAY,
         HOUR,
         MINUTE,
         SECOND,
-        HUNDREDTHS * 10,
+        HUNDREDTHS * 10_000_000,
         DATE_TIME_ZONE_AMSTERDAM);
   }
 
-  private DateTime dateTimeWinterTimeNewYork() {
+  private ZonedDateTime dateTimeWinterTimeNewYork() {
     /*
      * New York - for the winter date time - is in UTC-5, original time in
      * Europe/Amsterdam is in UTC+1 then, so subtract 6 from the hour to get
      * New York time for the same instant.
      */
-    return new DateTime(
+    return ZonedDateTime.of(
         YEAR,
         MONTH_WINTER_TIME,
         DAY,
         HOUR - 6,
         MINUTE,
         SECOND,
-        HUNDREDTHS * 10,
+        HUNDREDTHS * 10_000_000,
         DATE_TIME_ZONE_NEW_YORK);
   }
 
@@ -413,11 +408,5 @@ public class DlmsHelperTest {
     bb.put((byte) ClockStatusDto.STATUS_NOT_SPECIFIED);
 
     return bb.array();
-  }
-
-  private ZonedDateTime convertToZonedDateTime(final DateTime dateTime) {
-    final Instant instant = Instant.ofEpochMilli(dateTime.getMillis());
-    final ZoneId zoneId = ZoneId.of(dateTime.getZone().getID(), ZoneId.SHORT_IDS);
-    return ZonedDateTime.ofInstant(instant, zoneId);
   }
 }
