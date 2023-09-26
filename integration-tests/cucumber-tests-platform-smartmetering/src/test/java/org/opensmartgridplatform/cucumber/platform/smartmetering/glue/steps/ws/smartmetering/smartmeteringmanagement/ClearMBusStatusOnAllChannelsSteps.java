@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -64,7 +64,6 @@ public class ClearMBusStatusOnAllChannelsSteps extends BaseBundleSteps {
 
     final ClearMBusStatusOnAllChannelsResponse response =
         this.managementResponseClient.getResponse(asyncRequest);
-
     assertThat(response).as("ClearMBusStatusOnAllChannelsResponse should not be null").isNotNull();
     assertThat(response.getResult()).as("Result").isEqualTo(OsgpResultType.valueOf(result));
   }

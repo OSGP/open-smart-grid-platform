@@ -7,7 +7,9 @@ package org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
+import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessTerminalClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
+import org.opensmartgridplatform.adapter.protocol.jasper.response.GetSessionInfoResponse;
 import org.opensmartgridplatform.adapter.protocol.jasper.service.DeviceSessionService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -21,15 +23,21 @@ public class SessionProviderKpnPushAlarm extends SessionProvider {
   private static final Logger LOGGER = LoggerFactory.getLogger(SessionProviderKpnPushAlarm.class);
 
   private final JasperWirelessSmsClient jasperWirelessSmsClient;
+  private final JasperWirelessTerminalClient jasperWirelessTerminalClient;
   private final DeviceSessionService deviceSessionService;
+  private final int nrOfAttempts;
 
   public SessionProviderKpnPushAlarm(
       final SessionProviderMap sessionProviderMap,
       final JasperWirelessSmsClient jasperWirelessSmsClient,
-      final DeviceSessionService deviceSessionService) {
+      final JasperWirelessTerminalClient jasperWirelessTerminalClient,
+      final DeviceSessionService deviceSessionService,
+      final int nrOfAttempts) {
     super(sessionProviderMap);
     this.jasperWirelessSmsClient = jasperWirelessSmsClient;
+    this.jasperWirelessTerminalClient = jasperWirelessTerminalClient;
     this.deviceSessionService = deviceSessionService;
+    this.nrOfAttempts = nrOfAttempts;
   }
 
   /**
@@ -48,19 +56,66 @@ public class SessionProviderKpnPushAlarm extends SessionProvider {
     try {
       this.jasperWirelessSmsClient.sendWakeUpSMS(iccId);
 
-      return this.waitForIpAddress(deviceIdentification);
+      return this.waitForIpAddress(deviceIdentification, iccId);
     } catch (final OsgpJasperException e) {
+      LOGGER.error(
+          "Jasper exception occurred (code: {}, httpStatus: {}): {}",
+          e.getJasperError().getCode(),
+          e.getJasperError().getHttpStatus(),
+          e.getJasperError().getMessage(),
+          e);
       throw new FunctionalException(
           FunctionalExceptionType.INVALID_ICCID, ComponentType.PROTOCOL_DLMS, e);
     }
   }
 
-  private Optional<String> waitForIpAddress(final String deviceIdentification) {
-    LOGGER.info(
-        "Wait for ip-address, this will be pushed by alarm for device: {}", deviceIdentification);
-    final Optional<String> ipAddress =
-        this.deviceSessionService.waitForIpAddress(deviceIdentification);
-    LOGGER.info("Received ip-address: {} for device: {}", ipAddress, deviceIdentification);
+  private Optional<String> waitForIpAddress(final String deviceIdentification, final String iccId)
+      throws OsgpJasperException {
+
+    Optional<String> ipAddress = Optional.empty();
+    for (int attempt = 1; attempt <= this.nrOfAttempts; attempt++) {
+      LOGGER.info(
+          "Wait for ip-address, this will be pushed by alarm for device: {}, attempt {}",
+          deviceIdentification,
+          attempt);
+      ipAddress = this.deviceSessionService.waitForIpAddress(deviceIdentification);
+      if (ipAddress.isEmpty()) {
+        LOGGER.info(
+            "Did not receive an ip-address for device: {}, try to get ip-address from session provider, attempt {}",
+            deviceIdentification,
+            attempt);
+        ipAddress = this.getIpAddressFromSessionInfo(deviceIdentification, iccId);
+      }
+      if (ipAddress.isPresent()) {
+        LOGGER.info(
+            "Received ip-address: {} for device: {}, attempt: {}",
+            ipAddress.get(),
+            deviceIdentification,
+            attempt);
+        return ipAddress;
+      }
+    }
+
+    return ipAddress;
+  }
+
+  private Optional<String> getIpAddressFromSessionInfo(
+      final String deviceIdentification, final String iccId) throws OsgpJasperException {
+    final GetSessionInfoResponse response = this.jasperWirelessTerminalClient.getSession(iccId);
+    final Optional<String> ipAddress = Optional.ofNullable(response.getIpAddress());
+    if (ipAddress.isEmpty()) {
+      LOGGER.info(
+          "Session provider did not return an ip-address for device: {}, icc: {}",
+          deviceIdentification,
+          iccId);
+    } else {
+      LOGGER.info(
+          "Session provider returned ip-address: {} for device: {}, icc: {}",
+          ipAddress.get(),
+          deviceIdentification,
+          iccId);
+    }
+
     return ipAddress;
   }
 }

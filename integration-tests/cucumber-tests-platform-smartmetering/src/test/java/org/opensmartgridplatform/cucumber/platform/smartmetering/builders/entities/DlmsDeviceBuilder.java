@@ -272,8 +272,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         this.setLogicalId(Long.parseLong(inputSettings.get(PlatformSmartmeteringKeys.LOGICAL_ID)));
       }
     }
-    if (inputSettings.containsKey(PlatformSmartmeteringKeys.PORT)) {
-      if (inputSettings.get(PlatformSmartmeteringKeys.PORT).isEmpty()) {
+    final String port = inputSettings.get(PlatformSmartmeteringKeys.PORT);
+    if (hasPortDefined(inputSettings, port)) {
+      if (port.isEmpty()) {
         this.setPort(null);
       } else {
         this.setPort(Long.parseLong(inputSettings.get(PlatformSmartmeteringKeys.PORT)));
@@ -283,6 +284,11 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     }
 
     return this;
+  }
+
+  private static boolean hasPortDefined(
+      final Map<String, String> inputSettings, final String port) {
+    return inputSettings.containsKey(PlatformSmartmeteringKeys.PORT) && port != null;
   }
 
   private void setTimezone(final String timezone) {
@@ -323,10 +329,10 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
   }
 
   public Long getPortBasedOnProtocolInfo(final String protocol, final String protocolVersion) {
-    return PlatformSmartmeteringDefaults.PORT_MAPPING.entrySet().stream()
-        .filter(e -> this.protocolsAreEqual(protocol, protocolVersion, e.getValue()))
+    return PlatformSmartmeteringDefaults.PORT_MAPPING.keySet().stream()
+        .filter(protocol1 -> this.protocolsAreEqual(protocol, protocolVersion, protocol1))
         .findFirst()
-        .map(e2 -> e2.getKey())
+        .map(protocol2 -> PlatformSmartmeteringDefaults.PORT_MAPPING.get(protocol2))
         .orElseThrow(
             () ->
                 new IllegalArgumentException(
