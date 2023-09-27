@@ -85,6 +85,17 @@ public class DomainHelperService {
 
     final SessionProvider sessionProvider =
         this.sessionProviderService.getSessionProvider(dlmsDevice.getCommunicationProvider());
+
+    if (sessionProvider == null) {
+      throw new ProtocolAdapterException(
+          "Session provider: Cannot find SessionProvider for device: "
+              + dlmsDevice.getDeviceIdentification()
+              + " and iccId: "
+              + dlmsDevice.getIccId()
+              + " and communicationProvider: "
+              + dlmsDevice.getCommunicationProvider());
+    }
+
     final Optional<String> deviceIpAddress =
         sessionProvider.getIpAddress(dlmsDevice.getDeviceIdentification(), dlmsDevice.getIccId());
 
