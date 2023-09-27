@@ -43,6 +43,7 @@ public class SetAlarmNotificationsCommandExecutor
   private static final Logger LOGGER =
       LoggerFactory.getLogger(SetAlarmNotificationsCommandExecutor.class);
   private static final int NUMBER_OF_BITS_IN_ALARM_FILTER = 32;
+  private static final int DEFAULT_ATTRIBUTE_ID = 2;
 
   private final AlarmHelperService alarmHelperService = new AlarmHelperService();
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
@@ -84,20 +85,17 @@ public class SetAlarmNotificationsCommandExecutor
       throws ProtocolAdapterException {
 
     final Protocol protocol = Protocol.forDevice(device);
-    AccessResultCode resultCodeAlarmFilter1 = null;
 
-    final Optional<AttributeAddress> alarmFilter1AttributeAddress =
-        this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
-            protocol, DlmsObjectType.ALARM_FILTER_1);
+    final AttributeAddress alarmFilter1AttributeAddress =
+        this.objectConfigServiceHelper.findAttributeAddress(
+            device, protocol, DlmsObjectType.ALARM_FILTER_1, null, DEFAULT_ATTRIBUTE_ID);
 
-    if (alarmFilter1AttributeAddress.isPresent()) {
-      resultCodeAlarmFilter1 =
-          this.setAlarmNotifications(
-              conn,
-              alarmNotifications,
-              alarmFilter1AttributeAddress.get(),
-              DlmsObjectType.ALARM_REGISTER_1);
-    }
+    final AccessResultCode resultCodeAlarmFilter1 =
+        this.setAlarmNotifications(
+            conn,
+            alarmNotifications,
+            alarmFilter1AttributeAddress,
+            DlmsObjectType.ALARM_REGISTER_1);
 
     final Optional<AttributeAddress> alarmFilter2AttributeAddress =
         this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
@@ -117,7 +115,7 @@ public class SetAlarmNotificationsCommandExecutor
 
     final Optional<AttributeAddress> alarmFilter3AttributeAddress =
         this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
-            protocol, DlmsObjectType.ALARM_FILTER_3, null);
+            protocol, DlmsObjectType.ALARM_FILTER_3);
 
     if (alarmFilter3AttributeAddress.isPresent()) {
       return this.setAlarmNotifications(
