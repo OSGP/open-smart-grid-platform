@@ -23,6 +23,7 @@ import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperEx
 import org.opensmartgridplatform.adapter.protocol.jasper.response.GetSessionInfoResponse;
 import org.opensmartgridplatform.adapter.protocol.jasper.rest.JasperError;
 import org.opensmartgridplatform.adapter.protocol.jasper.service.DeviceSessionService;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -136,7 +137,7 @@ public class SessionProviderKpnPushAlarmTest {
   }
 
   @Test
-  void testGetIpAddressJasperException() throws OsgpJasperException {
+  void testGetIpAddressJasperExceptionNotFound() throws OsgpJasperException {
     when(this.jasperWirelessSmsClient.sendWakeUpSMS(ICC_ID))
         .thenThrow(new OsgpJasperException(JasperError.INVALID_ICCID));
 
@@ -149,6 +150,44 @@ public class SessionProviderKpnPushAlarmTest {
 
     assertThat(functionalException.getExceptionType())
         .isEqualTo(FunctionalExceptionType.INVALID_ICCID);
+    assertThat(functionalException.getComponentType()).isEqualTo(ComponentType.PROTOCOL_DLMS);
+    verifyNoInteractions(this.deviceSessionService);
+  }
+
+  @Test
+  void testGetIpAddressJasperExceptionOtherError() throws OsgpJasperException {
+    when(this.jasperWirelessSmsClient.sendWakeUpSMS(ICC_ID))
+        .thenThrow(new OsgpJasperException(JasperError.INVALID_REQUEST));
+
+    final FunctionalException functionalException =
+        assertThrows(
+            FunctionalException.class,
+            () -> {
+              this.sessionProviderKpnPushAlarm.getIpAddress(DEVICE_IDENTIFICATION, ICC_ID);
+            });
+
+    assertThat(functionalException.getExceptionType())
+        .isEqualTo(FunctionalExceptionType.SESSION_PROVIDER_ERROR);
+    assertThat(functionalException.getComponentType()).isEqualTo(ComponentType.PROTOCOL_DLMS);
+    verifyNoInteractions(this.deviceSessionService);
+  }
+
+  @Test
+  void testGetIpAddressJasperExceptionString() throws OsgpJasperException {
+    final String errorMessage = "error message";
+    when(this.jasperWirelessSmsClient.sendWakeUpSMS(ICC_ID))
+        .thenThrow(new OsgpJasperException("String error"));
+
+    final FunctionalException functionalException =
+        assertThrows(
+            FunctionalException.class,
+            () -> {
+              this.sessionProviderKpnPushAlarm.getIpAddress(DEVICE_IDENTIFICATION, ICC_ID);
+            });
+
+    assertThat(functionalException.getExceptionType())
+        .isEqualTo(FunctionalExceptionType.SESSION_PROVIDER_ERROR);
+    assertThat(functionalException.getComponentType()).isEqualTo(ComponentType.PROTOCOL_DLMS);
     verifyNoInteractions(this.deviceSessionService);
   }
 
