@@ -141,7 +141,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       // meter. This list can then be used to filter the retrieved values. A LinkedHashMap is used
       // to preserve the order of entries (which will be used in the handler for selective access).
       final LinkedHashMap<Integer, SelectableObject> selectableObjects =
-          this.determineSelectableObjects(captureObjects, configObjects);
+          this.determineSelectableObjects(conn, captureObjects, configObjects);
 
       // Get the values from the buffer in the meter
       final List<GetResult> bufferList =
@@ -539,7 +539,9 @@ public abstract class AbstractGetPowerQualityProfileHandler {
   }
 
   private LinkedHashMap<Integer, SelectableObject> determineSelectableObjects(
-      final List<GetResult> captureObjects, final List<CosemObject> cosemConfigObjects)
+      final DlmsConnectionManager conn,
+      final List<GetResult> captureObjects,
+      final List<CosemObject> cosemConfigObjects)
       throws ProtocolAdapterException {
 
     final LinkedHashMap<Integer, SelectableObject> selectableObjects = new LinkedHashMap<>();
@@ -572,7 +574,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
                   obis,
                   (byte) objectDefinition.getAttributeIndex(),
                   objectDefinition.getDataIndex(),
-                  this.getScalerUnit(matchedCosemObject.get())));
+                  this.getScalerUnit(conn, matchedCosemObject.get())));
         }
       }
     }
@@ -591,11 +593,14 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     return obisCodesToMatch.contains(captureObis);
   }
 
-  private String getScalerUnit(final CosemObject object) {
+  private String getScalerUnit(final DlmsConnectionManager conn, final CosemObject object)
+      throws ProtocolAdapterException {
     if (object.getClassId() == InterfaceClass.REGISTER.id()) {
-      return object.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId()).getValue();
+      return this.dlmsHelper.getScalerUnitValue(
+          conn, object, RegisterAttribute.SCALER_UNIT.attributeId());
     } else if (object.getClassId() == InterfaceClass.EXTENDED_REGISTER.id()) {
-      return object.getAttribute(ExtendedRegisterAttribute.SCALER_UNIT.attributeId()).getValue();
+      return this.dlmsHelper.getScalerUnitValue(
+          conn, object, ExtendedRegisterAttribute.SCALER_UNIT.attributeId());
     } else {
       return null;
     }
