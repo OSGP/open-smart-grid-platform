@@ -6,6 +6,7 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Objects;
 
 /**
  * request periodic reads for E or GAS meter
@@ -36,6 +37,8 @@ public class PeriodicMeterReadsQuery implements Serializable {
       final Instant endDate,
       final boolean mbusDevice,
       final String deviceIdentification) {
+    Objects.requireNonNull(beginDate);
+    Objects.requireNonNull(endDate);
     this.periodType = periodType;
     this.beginDate = beginDate;
     this.endDate = endDate;
