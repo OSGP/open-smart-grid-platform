@@ -8,7 +8,7 @@ import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.MessageLog;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
-import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
+import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToInstantConverter;
 import org.springframework.stereotype.Component;
 
 @Component(value = "smartMeteringManagementMapper")
@@ -24,7 +24,7 @@ public class ManagementMapper extends ConfigurableMapper {
     // dates and times.
     mapperFactory
         .getConverterFactory()
-        .registerConverter(new XMLGregorianCalendarToDateTimeConverter());
+        .registerConverter(new XMLGregorianCalendarToInstantConverter());
     mapperFactory.getConverterFactory().registerConverter(new XsdDateTimeToLongConverter());
 
     mapperFactory.getConverterFactory().registerConverter(new EventMessageDataContainerConverter());
