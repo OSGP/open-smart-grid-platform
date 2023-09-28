@@ -335,7 +335,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
       if (cosemDateTime != null) {
         if (cosemDateTime.isDateTimeSpecified()) {
-          return cosemDateTime.asDateTime().toInstant();
+          return cosemDateTime.asInstant();
         } else {
           throw new ProtocolAdapterException(UNEXPECTED_VALUE);
         }

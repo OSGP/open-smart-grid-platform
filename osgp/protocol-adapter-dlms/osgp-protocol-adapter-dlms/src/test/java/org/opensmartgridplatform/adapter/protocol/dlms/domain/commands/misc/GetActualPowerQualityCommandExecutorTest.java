@@ -21,7 +21,6 @@ import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.NUMBER_
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -218,8 +217,7 @@ class GetActualPowerQualityCommandExecutorTest {
   private void assertValue(final Serializable value, final int i, final CosemObject object) {
     switch (object.getClassId()) {
       case CLASS_ID_CLOCK:
-        assertThat(value)
-            .isEqualTo(Date.from(ZonedDateTime.parse("2018-12-31T23:00:00Z").toInstant()));
+        assertThat(value).isEqualTo(ZonedDateTime.parse("2018-12-31T23:00:00Z"));
         break;
       case CLASS_ID_DATA:
         assertThat(value).isEqualTo(BigDecimal.valueOf(i));

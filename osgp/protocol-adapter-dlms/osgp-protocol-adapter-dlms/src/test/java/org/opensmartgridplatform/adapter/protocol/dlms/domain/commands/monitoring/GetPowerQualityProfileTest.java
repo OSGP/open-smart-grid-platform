@@ -19,7 +19,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -209,12 +208,11 @@ public abstract class GetPowerQualityProfileTest {
       final ProfileEntryDto entry, final int index, final int intervalInMinutes) {
     final List<ProfileEntryValueDto> values = entry.getProfileEntryValues();
     assertThat(values).hasSize(3);
-    assertThat((Date) values.get(0).getValue())
+    assertThat(values.get(0).getValue())
         .isEqualTo(
-            Date.from(
-                ZonedDateTime.of(2023, 1, 12, 0, 0, 0, 0, ZoneId.of("Europe/Amsterdam"))
-                    .plusMinutes(index * intervalInMinutes)
-                    .toInstant()));
+            ZonedDateTime.of(2023, 1, 12, 0, 0, 0, 0, ZoneId.of("Europe/Amsterdam"))
+                .plusMinutes((long) index * intervalInMinutes)
+                .toInstant());
     assertThat((BigDecimal) values.get(1).getValue()).isEqualTo(BigDecimal.valueOf(VALUES[index]));
     assertThat(values.get(2).getValue())
         .isEqualTo("MINUS_" + (113 - SIGNAL_STRENGTH_ENUM_VALUES[index] * 2) + "_DBM");

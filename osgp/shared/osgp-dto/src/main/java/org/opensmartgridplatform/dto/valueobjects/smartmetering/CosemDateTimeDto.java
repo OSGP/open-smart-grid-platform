@@ -11,17 +11,12 @@ import java.util.Objects;
 import java.util.Set;
 
 public class CosemDateTimeDto implements Serializable, Comparable<CosemDateTimeDto> {
-
   private static final long serialVersionUID = 4157582293990514746L;
-
-  private static final int MILLISECONDS_PER_SECOND = 1000;
-
   public static final int DEVIATION_NOT_SPECIFIED = 0x8000;
   public static final int SECONDS_PER_MINUTE = 60;
-
   private final CosemDateDto date;
   private final CosemTimeDto time;
-
+  /** deviation in milliseconds */
   private final int deviation;
 
   private final ClockStatusDto clockStatus;
@@ -186,6 +181,18 @@ public class CosemDateTimeDto implements Serializable, Comparable<CosemDateTimeD
     }
     final LocalDateTime localDateTime = this.asLocalDateTime();
     return localDateTime.atZone(ZoneOffset.ofTotalSeconds(-this.deviation * SECONDS_PER_MINUTE));
+  }
+
+  /**
+   * Returns this {@link CosemDateTimeDto} as {@link Instant} if the date, time and deviation are
+   * specified.
+   *
+   * @return this {@link CosemDateTimeDto} as {@link Instant}, or {@code null} if not {@link
+   *     #isDateTimeSpecified()}.
+   * @see #isDateTimeSpecified()
+   */
+  public Instant asInstant() {
+    return asDateTime().toInstant();
   }
 
   /**

@@ -131,11 +131,11 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       final ObisCode obisCode = new ObisCode(profile.getObis());
       final ZonedDateTime beginDateTime =
           toZonedDateTime(
-              ZonedDateTime.ofInstant(request.getBeginDate().toInstant(), ZoneId.systemDefault()),
+              ZonedDateTime.ofInstant(request.getBeginDate().toInstant(), ZoneId.of("UTC")),
               device.getTimezone());
       final ZonedDateTime endDateTime =
           toZonedDateTime(
-              ZonedDateTime.ofInstant(request.getEndDate().toInstant(), ZoneId.systemDefault()),
+              ZonedDateTime.ofInstant(request.getEndDate().toInstant(), ZoneId.of("UTC")),
               device.getTimezone());
 
       // All values that can be selected based on the info in the meter
@@ -488,7 +488,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
       return new ProfileEntryValueDto(newLocalDateTime.atZone(ZoneId.systemDefault()).toInstant());
     } else {
-      return new ProfileEntryValueDto(cosemDateTime.asDateTime());
+      return new ProfileEntryValueDto(cosemDateTime.asInstant());
     }
   }
 
