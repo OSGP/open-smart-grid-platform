@@ -11,6 +11,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -24,6 +25,8 @@ class DataObjectToEventListConverterTest {
   private final DlmsHelper dlmsHelper = new DlmsHelper();
   private final DataObjectToEventListConverter converter =
       new DataObjectToEventListConverter(this.dlmsHelper);
+
+  Comparator<ZonedDateTime> comparator = (a, b) -> a.toInstant().equals(b.toInstant()) ? 0 : 1;
 
   @Test
   void testSourceIsNull() {
@@ -92,6 +95,7 @@ class DataObjectToEventListConverterTest {
     // THEN
     assertThat(events)
         .usingRecursiveFieldByFieldElementComparator()
+        .usingComparatorForElementFieldsWithType(this.comparator, ZonedDateTime.class)
         .containsExactly(expectedEvent1, expectedEvent2);
   }
 
@@ -118,6 +122,7 @@ class DataObjectToEventListConverterTest {
     // THEN
     assertThat(events)
         .usingRecursiveFieldByFieldElementComparator()
+        .usingComparatorForElementFieldsWithType(this.comparator, ZonedDateTime.class)
         .containsExactly(expectedEvent1, expectedEvent2);
   }
 
@@ -152,6 +157,7 @@ class DataObjectToEventListConverterTest {
     // THEN
     assertThat(events)
         .usingRecursiveFieldByFieldElementComparator()
+        .usingComparatorForElementFieldsWithType(this.comparator, ZonedDateTime.class)
         .containsExactly(expectedEvent1, expectedEvent2);
   }
 

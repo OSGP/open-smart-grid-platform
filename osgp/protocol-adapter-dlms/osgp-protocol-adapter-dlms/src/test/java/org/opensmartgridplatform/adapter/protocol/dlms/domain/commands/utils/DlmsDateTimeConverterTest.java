@@ -21,7 +21,7 @@ import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 
 @ExtendWith(MockitoExtension.class)
 class DlmsDateTimeConverterTest {
-  protected static final String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
+  protected static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
   @Mock private DlmsDevice dlmsDevice;
 
@@ -42,7 +42,7 @@ class DlmsDateTimeConverterTest {
       final String toDateTimeString)
       throws ParseException {
     final String deviceTimeZone = "null".equals(deviceTimeZoneString) ? null : deviceTimeZoneString;
-    final ZonedDateTime date = JavaTimeHelpers.parseToZonedDateTime(utcDateTime);
+    final ZonedDateTime date = this.utcSimpleDateFormat.parse(utcDateTime, ZonedDateTime::from);
     final ZonedDateTime toDateTime = DateTimeParserUtil.parseToZonedDateTime(toDateTimeString);
 
     when(this.dlmsDevice.getTimezone()).thenReturn(deviceTimeZone);
