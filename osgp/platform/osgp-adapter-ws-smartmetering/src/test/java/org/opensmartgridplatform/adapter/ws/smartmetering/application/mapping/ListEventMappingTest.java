@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1428,9 +1429,17 @@ class ListEventMappingTest {
           .as(EVENT_COUNTER_WITH_MAPPING_OF + originalEvent)
           .isEqualTo(originalEvent.getEventCounter());
 
-      assertThat(mappedEvent.getTimestamp().toGregorianCalendar().toZonedDateTime())
+      // Mapping from ZonedDateTime to XMLGregorianCalandar causes a loss of nanosecond precision.
+      // We should only compare the milliseconds.
+      assertThat(
+              mappedEvent
+                  .getTimestamp()
+                  .toGregorianCalendar()
+                  .toZonedDateTime()
+                  .toInstant()
+                  .truncatedTo(ChronoUnit.MILLIS))
           .as(TIMESTAMP_WITH_MAPPING_OF + originalEvent)
-          .isEqualTo(originalEvent.getTimestamp());
+          .isEqualTo(originalEvent.getTimestamp().toInstant().truncatedTo(ChronoUnit.MILLIS));
     }
   }
 
