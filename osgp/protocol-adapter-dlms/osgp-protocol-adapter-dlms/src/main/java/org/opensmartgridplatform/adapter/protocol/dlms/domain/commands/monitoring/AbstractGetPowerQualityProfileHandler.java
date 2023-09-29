@@ -34,10 +34,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
@@ -595,12 +593,9 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
   private String getScalerUnit(final DlmsConnectionManager conn, final CosemObject object)
       throws ProtocolAdapterException {
-    if (object.getClassId() == InterfaceClass.REGISTER.id()) {
-      return this.dlmsHelper.getScalerUnitValue(
-          conn, object, RegisterAttribute.SCALER_UNIT.attributeId());
-    } else if (object.getClassId() == InterfaceClass.EXTENDED_REGISTER.id()) {
-      return this.dlmsHelper.getScalerUnitValue(
-          conn, object, ExtendedRegisterAttribute.SCALER_UNIT.attributeId());
+    if (object.getClassId() == InterfaceClass.REGISTER.id()
+        || object.getClassId() == InterfaceClass.EXTENDED_REGISTER.id()) {
+      return this.dlmsHelper.getScalerUnitValue(conn, object);
     } else {
       return null;
     }

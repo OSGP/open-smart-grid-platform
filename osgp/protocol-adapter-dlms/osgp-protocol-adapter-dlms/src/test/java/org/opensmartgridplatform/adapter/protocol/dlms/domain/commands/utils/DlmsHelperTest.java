@@ -304,8 +304,7 @@ public class DlmsHelperTest {
     final CosemObject cosemObject =
         this.newCosemObject(ValueType.FIXED_IN_PROFILE, scaler + ", " + unit.getUnit());
 
-    final String result =
-        this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject, this.ATTRIBUTE_ID);
+    final String result = this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject);
     assertThat(result).isEqualTo(scaler + ", " + unit.getUnit());
     verifyNoInteractions(connectionManager);
   }
@@ -324,8 +323,7 @@ public class DlmsHelperTest {
 
     final CosemObject cosemObject = this.newCosemObject(ValueType.DYNAMIC, "0, V");
 
-    final String result =
-        this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject, this.ATTRIBUTE_ID);
+    final String result = this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject);
     assertThat(result).isEqualTo(scaler + ", " + unit.getUnit());
   }
 
@@ -341,7 +339,7 @@ public class DlmsHelperTest {
         assertThrows(
             ProtocolAdapterException.class,
             () -> {
-              this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject, this.ATTRIBUTE_ID);
+              this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject);
             });
     assertThat(protocolAdapterException.getMessage())
         .contains("complex data (structure) expected while retrieving scaler and unit.");
@@ -360,7 +358,7 @@ public class DlmsHelperTest {
         assertThrows(
             ProtocolAdapterException.class,
             () -> {
-              this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject, this.ATTRIBUTE_ID);
+              this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject);
             });
     assertThat(protocolAdapterException.getMessage())
         .contains("expected 2 values while retrieving scaler and unit.");
@@ -381,7 +379,7 @@ public class DlmsHelperTest {
         assertThrows(
             ProtocolAdapterException.class,
             () -> {
-              this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject, this.ATTRIBUTE_ID);
+              this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject);
             });
     assertThat(protocolAdapterException.getMessage())
         .contains("FunctionalException occurred when reading dynamic scalar unit for object");

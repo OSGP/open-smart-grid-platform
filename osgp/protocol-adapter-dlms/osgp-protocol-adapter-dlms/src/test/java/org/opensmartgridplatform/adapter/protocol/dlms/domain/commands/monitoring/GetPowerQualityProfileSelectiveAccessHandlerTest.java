@@ -70,8 +70,7 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends GetPowerQualityPr
             .filter(obj -> obj.getTag().equals(INSTANTANEOUS_VOLTAGE_L1.name()))
             .findFirst()
             .get();
-    when(this.dlmsHelper.getScalerUnitValue(
-            this.conn, cosemObjectInstVoltage, RegisterAttribute.SCALER_UNIT.attributeId()))
+    when(this.dlmsHelper.getScalerUnitValue(this.conn, cosemObjectInstVoltage))
         .thenReturn(
             cosemObjectInstVoltage
                 .getAttribute(RegisterAttribute.SCALER_UNIT.attributeId())

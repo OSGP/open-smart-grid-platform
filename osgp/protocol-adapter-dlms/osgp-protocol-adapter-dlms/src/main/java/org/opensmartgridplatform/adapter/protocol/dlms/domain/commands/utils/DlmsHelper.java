@@ -34,6 +34,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.ValueType;
@@ -1039,9 +1042,17 @@ public class DlmsHelper {
             + resultDataType);
   }
 
-  public String getScalerUnitValue(
-      final DlmsConnectionManager conn, final CosemObject object, final int attributeId)
+  public String getScalerUnitValue(final DlmsConnectionManager conn, final CosemObject object)
       throws ProtocolAdapterException {
+    final int attributeId;
+    if (object.getClassId() == InterfaceClass.REGISTER.id()) {
+      attributeId = RegisterAttribute.SCALER_UNIT.attributeId();
+    } else if (object.getClassId() == InterfaceClass.EXTENDED_REGISTER.id()) {
+      attributeId = ExtendedRegisterAttribute.SCALER_UNIT.attributeId();
+    } else {
+      return null;
+    }
+
     final Attribute attribute = object.getAttribute(attributeId);
     if (attribute.getValuetype() == ValueType.FIXED_IN_PROFILE) {
       return attribute.getValue();
