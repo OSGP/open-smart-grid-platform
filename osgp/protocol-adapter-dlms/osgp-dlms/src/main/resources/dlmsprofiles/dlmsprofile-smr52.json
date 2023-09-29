@@ -203,7 +203,7 @@
     {
       "tag": "ALARM_FILTER_2",
       "description": "Alarm filter 2",
-      "note": null,
+      "note": "Specified in addendum for SMR5.2",
       "class-id": 1,
       "version": 0,
       "obis": "0.0.97.98.11.255",

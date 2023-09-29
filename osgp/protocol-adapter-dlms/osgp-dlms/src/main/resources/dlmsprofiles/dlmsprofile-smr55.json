@@ -91,7 +91,7 @@
     {
       "tag": "ALARM_FILTER_3",
       "description": "Alarm filter 3",
-      "note": null,
+      "note": "Specified in addendum for SMR5.5",
       "class-id": 1,
       "version": 0,
       "obis": "0.0.97.98.12.255",
