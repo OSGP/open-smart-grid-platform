@@ -33,10 +33,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
@@ -146,7 +144,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       // meter. This list can then be used to filter the retrieved values. A LinkedHashMap is used
       // to preserve the order of entries (which will be used in the handler for selective access).
       final LinkedHashMap<Integer, SelectableObject> selectableObjects =
-          this.determineSelectableObjects(captureObjects, configObjects);
+          this.determineSelectableObjects(conn, captureObjects, configObjects);
 
       // Get the values from the buffer in the meter
       final List<GetResult> bufferList =
@@ -540,7 +538,9 @@ public abstract class AbstractGetPowerQualityProfileHandler {
   }
 
   private LinkedHashMap<Integer, SelectableObject> determineSelectableObjects(
-      final List<GetResult> captureObjects, final List<CosemObject> cosemConfigObjects)
+      final DlmsConnectionManager conn,
+      final List<GetResult> captureObjects,
+      final List<CosemObject> cosemConfigObjects)
       throws ProtocolAdapterException {
 
     final LinkedHashMap<Integer, SelectableObject> selectableObjects = new LinkedHashMap<>();
@@ -573,7 +573,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
                   obis,
                   (byte) objectDefinition.getAttributeIndex(),
                   objectDefinition.getDataIndex(),
-                  this.getScalerUnit(matchedCosemObject.get())));
+                  this.getScalerUnit(conn, matchedCosemObject.get())));
         }
       }
     }
@@ -592,11 +592,11 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     return obisCodesToMatch.contains(captureObis);
   }
 
-  private String getScalerUnit(final CosemObject object) {
-    if (object.getClassId() == InterfaceClass.REGISTER.id()) {
-      return object.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId()).getValue();
-    } else if (object.getClassId() == InterfaceClass.EXTENDED_REGISTER.id()) {
-      return object.getAttribute(ExtendedRegisterAttribute.SCALER_UNIT.attributeId()).getValue();
+  private String getScalerUnit(final DlmsConnectionManager conn, final CosemObject object)
+      throws ProtocolAdapterException {
+    if (object.getClassId() == InterfaceClass.REGISTER.id()
+        || object.getClassId() == InterfaceClass.EXTENDED_REGISTER.id()) {
+      return this.dlmsHelper.getScalerUnitValue(conn, object);
     } else {
       return null;
     }

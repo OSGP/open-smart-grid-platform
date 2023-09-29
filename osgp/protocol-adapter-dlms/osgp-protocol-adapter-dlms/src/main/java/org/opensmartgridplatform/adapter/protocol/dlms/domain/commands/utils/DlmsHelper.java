@@ -34,6 +34,12 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.Attribute;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.ValueType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
@@ -1003,5 +1009,54 @@ public class DlmsHelper {
             + resultData.getType()
             + ", value type: "
             + resultDataType);
+  }
+
+  public String getScalerUnitValue(final DlmsConnectionManager conn, final CosemObject object)
+      throws ProtocolAdapterException {
+    final int attributeId;
+    if (object.getClassId() == InterfaceClass.REGISTER.id()) {
+      attributeId = RegisterAttribute.SCALER_UNIT.attributeId();
+    } else if (object.getClassId() == InterfaceClass.EXTENDED_REGISTER.id()) {
+      attributeId = ExtendedRegisterAttribute.SCALER_UNIT.attributeId();
+    } else {
+      return null;
+    }
+
+    final Attribute attribute = object.getAttribute(attributeId);
+    if (attribute.getValuetype() == ValueType.FIXED_IN_PROFILE) {
+      return attribute.getValue();
+    } else {
+      final AttributeAddress attributeAddress =
+          new AttributeAddress(object.getClassId(), object.getObis(), attributeId);
+
+      try {
+        final DataObject scalerUnitObject = this.getAttributeValue(conn, attributeAddress);
+        LOGGER.debug(this.getDebugInfo(scalerUnitObject));
+
+        if (!scalerUnitObject.isComplex()) {
+          throw new ProtocolAdapterException(
+              "complex data (structure) expected while retrieving scaler and unit."
+                  + this.getDebugInfo(scalerUnitObject));
+        }
+        final List<DataObject> dataObjects = scalerUnitObject.getValue();
+        if (dataObjects.size() != 2) {
+          throw new ProtocolAdapterException(
+              "expected 2 values while retrieving scaler and unit."
+                  + this.getDebugInfo(scalerUnitObject));
+        }
+        final int scaler =
+            this.readLongNotNull(dataObjects.get(0), object.getDescription()).intValue();
+        final DlmsUnitTypeDto unit =
+            DlmsUnitTypeDto.getUnitType(
+                this.readLongNotNull(dataObjects.get(1), object.getDescription()).intValue());
+
+        return String.format("%s, %s", scaler, unit.getUnit());
+      } catch (final FunctionalException e) {
+        throw new ProtocolAdapterException(
+            "FunctionalException occurred when reading dynamic scalar unit for object: "
+                + object.getObis(),
+            e);
+      }
+    }
   }
 }
