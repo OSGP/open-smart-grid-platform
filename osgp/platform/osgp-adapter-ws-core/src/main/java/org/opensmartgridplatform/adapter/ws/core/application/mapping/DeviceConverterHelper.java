@@ -35,7 +35,7 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
 
   @SuppressWarnings("unchecked")
   T initEntity(final Device source) {
-    T destination;
+    final T destination;
 
     final Address containerAddress = this.mapper.map(source.getContainerAddress(), Address.class);
 
@@ -78,7 +78,7 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
 
     if (source.getTechnicalInstallationDate() != null) {
       destination.setTechnicalInstallationDate(
-          source.getTechnicalInstallationDate().toGregorianCalendar().getTime());
+          source.getTechnicalInstallationDate().toGregorianCalendar().toInstant());
     }
 
     destination.setDeviceModel(

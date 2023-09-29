@@ -9,9 +9,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.lang.reflect.Field;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
@@ -39,11 +38,8 @@ public class WsCoreResponseDataSteps extends BaseDeviceSteps {
     final ResponseData responseData =
         this.responseDataRepository.save(new ResponseDataBuilder().fromSettings(settings).build());
 
-    final Date creationTime =
-        Date.from(
-            Objects.requireNonNull(
-                    DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)))
-                .toInstant());
+    final Instant creationTime =
+        DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toInstant();
 
     LOGGER.info(
         "Creating response data record with correlationUid: {} and creationTime: {}",

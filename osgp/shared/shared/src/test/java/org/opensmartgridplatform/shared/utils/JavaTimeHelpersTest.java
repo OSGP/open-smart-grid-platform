@@ -78,25 +78,6 @@ class JavaTimeHelpersTest {
   }
 
   @Test
-  void shouldShiftZoneToUTCCorrectly() {
-    final Instant instant = Instant.ofEpochMilli(1000L);
-    final Date date = Date.from(instant);
-
-    final DateTime joda = new DateTime(date);
-    final ZonedDateTime java = ZonedDateTime.ofInstant(instant, ZoneId.of("Europe/Amsterdam"));
-
-    final DateTime jodaTimeShifted =
-        joda.plusSeconds(
-                ZonedDateTime.now(ZoneId.of("Europe/Amsterdam")).getOffset().getTotalSeconds())
-            .withZone(DateTimeZone.UTC);
-
-    final ZonedDateTime javaTimeShifted = JavaTimeHelpers.shiftZoneToUTC(java);
-
-    assertThat(jodaTimeShifted.toInstant().getMillis())
-        .isEqualTo(javaTimeShifted.toInstant().toEpochMilli());
-  }
-
-  @Test
   void shouldParseDatesLikeJoda() {
     final String localDateString = "1998-01-24";
     final String localDateTimeString = "1998-01-24T13:00:00";

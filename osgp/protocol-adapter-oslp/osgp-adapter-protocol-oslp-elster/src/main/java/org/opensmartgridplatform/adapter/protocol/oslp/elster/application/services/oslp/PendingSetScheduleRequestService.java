@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.PendingSetScheduleRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.PendingSetScheduleRequestRepository;
@@ -49,7 +49,7 @@ public class PendingSetScheduleRequestService {
 
   public List<PendingSetScheduleRequest> getAllByDeviceIdentificationNotExpired(
       final String deviceIdentification) {
-    final Date currentDate = new Date();
+    final Instant currentDate = Instant.now();
     LOGGER.info(
         "get device by deviceIdentification {} and current time: {}",
         deviceIdentification,
@@ -60,7 +60,7 @@ public class PendingSetScheduleRequestService {
   }
 
   public List<PendingSetScheduleRequest> getAllByDeviceUidNotExpired(final String deviceUid) {
-    final Date currentDate = new Date();
+    final Instant currentDate = Instant.now();
     LOGGER.info("get device by deviceUid {} and current time: {}", deviceUid, currentDate);
 
     return this.pendingSetScheduleRequestRepository.findAllByDeviceUidAndExpiredAtIsAfter(
@@ -74,11 +74,10 @@ public class PendingSetScheduleRequestService {
   }
 
   public void removeExpiredPendingSetScheduleRequestRecords(final String deviceIdentification) {
-    final Date expireDateTime =
-        Date.from(
-            ZonedDateTime.now()
-                .minusMinutes(this.pendingSetScheduleRequestExpiresInMinutes)
-                .toInstant());
+    final Instant expireDateTime =
+        ZonedDateTime.now()
+            .minusMinutes(this.pendingSetScheduleRequestExpiresInMinutes)
+            .toInstant();
 
     LOGGER.info(
         "remove PendingSetScheduleRequest(s) for device {} and older than time: {}",

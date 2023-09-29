@@ -17,6 +17,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionTyp
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
 public class SessionProviderKpnPushAlarm extends SessionProvider {
 
@@ -58,14 +59,8 @@ public class SessionProviderKpnPushAlarm extends SessionProvider {
 
       return this.waitForIpAddress(deviceIdentification, iccId);
     } catch (final OsgpJasperException e) {
-      LOGGER.error(
-          "Jasper exception occurred (code: {}, httpStatus: {}): {}",
-          e.getJasperError().getCode(),
-          e.getJasperError().getHttpStatus(),
-          e.getJasperError().getMessage(),
-          e);
-      throw new FunctionalException(
-          FunctionalExceptionType.INVALID_ICCID, ComponentType.PROTOCOL_DLMS, e);
+      this.handleException(e);
+      return Optional.empty();
     }
   }
 
@@ -117,5 +112,35 @@ public class SessionProviderKpnPushAlarm extends SessionProvider {
     }
 
     return ipAddress;
+  }
+
+  private void handleException(final OsgpJasperException e) throws FunctionalException {
+    String errorMessage = "";
+    final FunctionalExceptionType functionalExceptionType;
+    if (e.getJasperError() != null) {
+      if (e.getJasperError().getHttpStatus() == HttpStatus.NOT_FOUND) {
+        functionalExceptionType = FunctionalExceptionType.INVALID_ICCID;
+      } else {
+        errorMessage =
+            String.format(
+                "Session provider %s returned error %s : %s",
+                SessionProviderEnum.KPN.name(),
+                e.getJasperError().getCode(),
+                e.getJasperError().getMessage());
+        LOGGER.error(errorMessage, e);
+        functionalExceptionType = FunctionalExceptionType.SESSION_PROVIDER_ERROR;
+      }
+    } else {
+      errorMessage =
+          String.format(
+              "Session provider %s returned unknown error message: %s",
+              SessionProviderEnum.KPN.name(), e.getMessage());
+      LOGGER.error(errorMessage, e);
+      functionalExceptionType = FunctionalExceptionType.SESSION_PROVIDER_ERROR;
+    }
+    throw new FunctionalException(
+        functionalExceptionType,
+        ComponentType.PROTOCOL_DLMS,
+        new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage()));
   }
 }

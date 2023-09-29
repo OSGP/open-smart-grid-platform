@@ -5,11 +5,12 @@
 package org.opensmartgridplatform.adapter.domain.core.application.tasks;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.Period;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.opensmartgridplatform.adapter.domain.core.application.services.TransactionalDeviceLogItemService;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
@@ -70,7 +71,7 @@ public class DeviceMessageCleanupJob implements Job {
       final ZonedDateTime retention = this.calculateRetentionDate();
       final List<DeviceLogItem> oldDeviceMessages =
           this.transactionalDeviceLogItemService.findDeviceLogItemsBeforeDate(
-              Date.from(retention.toInstant()), this.deviceMessagePageSize);
+              retention.toInstant(), this.deviceMessagePageSize);
       if (!oldDeviceMessages.isEmpty()) {
         this.saveDeviceMessagesToCsvFile(oldDeviceMessages);
 
@@ -122,7 +123,8 @@ public class DeviceMessageCleanupJob implements Job {
 
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
+    public static final DateTimeFormatter FORMATTER =
+        DateTimeFormatter.ofPattern(DATE_TIME_FORMAT).withZone(ZoneId.systemDefault());
 
     private static final int ID = 0;
     private static final int CREATION_TIME = 1;
@@ -190,7 +192,7 @@ public class DeviceMessageCleanupJob implements Job {
       return array;
     }
 
-    private static String formatDate(final Date date) {
+    private static String formatDate(final Instant date) {
       return JavaTimeHelpers.formatDate(date, FORMATTER);
     }
   }

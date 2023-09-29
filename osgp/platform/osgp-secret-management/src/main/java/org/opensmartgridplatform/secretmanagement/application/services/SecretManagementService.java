@@ -9,10 +9,10 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -147,7 +147,7 @@ public class SecretManagementService {
   }
 
   private DbEncryptionKeyReference getCurrentKey() {
-    final Date now = new Date();
+    final Instant now = Instant.now();
     final List<DbEncryptionKeyReference> keyRefs =
         this.encryptionKeyReferenceCacheService.findAllByTypeAndValid(
             this.encryptionProviderType, now);
@@ -180,7 +180,7 @@ public class SecretManagementService {
       final String deviceIdentification,
       final EncryptedTypedSecret secret,
       final DbEncryptionKeyReference keyReference) {
-    final Date now = new Date();
+    final Instant now = Instant.now();
     final DbEncryptedSecret dbEncryptedSecret = new DbEncryptedSecret();
     dbEncryptedSecret.setDeviceIdentification(deviceIdentification);
     dbEncryptedSecret.setEncodedSecret(HexUtils.toHexString(secret.encryptedSecret));

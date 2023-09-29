@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.secretmanagement.application.domain;
 
-import java.util.Date;
+import java.time.Instant;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -35,7 +35,7 @@ public class DbEncryptedSecret {
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "encrypted_secret_seq_gen")
   private Long id;
 
-  private Date creationTime;
+  private Instant creationTime;
   private String deviceIdentification;
 
   @Enumerated(EnumType.STRING)

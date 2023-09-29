@@ -8,7 +8,6 @@ import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.List;
 import org.apache.commons.lang3.EnumUtils;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
@@ -248,6 +247,6 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
         PageRequest.of(0, this.resendPageSize, Sort.by(Direction.ASC, "creationTime"));
 
     return this.responseDataRepository.findByNumberOfNotificationsSentAndCreationTimeBefore(
-        notificationsResent, Date.from(createdBefore.toInstant()), pageable);
+        notificationsResent, createdBefore.toInstant(), pageable);
   }
 }

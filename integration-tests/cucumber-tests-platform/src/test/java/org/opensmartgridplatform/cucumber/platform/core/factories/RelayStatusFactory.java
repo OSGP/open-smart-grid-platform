@@ -9,7 +9,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInte
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.Map;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.domain.core.entities.RelayStatus;
@@ -38,9 +37,9 @@ public class RelayStatusFactory {
 
     final RelayStatus relayStatus =
         new RelayStatus.Builder(ssld, index)
-            .withLastKnownState(lastKnownState, Date.from(lastKnownStateTime.toInstant()))
+            .withLastKnownState(lastKnownState, lastKnownStateTime.toInstant())
             .withLastSwitchingEventState(
-                lastSwitchingEventState, Date.from(lastSwitchingEventTime.toInstant()))
+                lastSwitchingEventState, lastSwitchingEventTime.toInstant())
             .build();
 
     return relayStatus;
@@ -57,14 +56,14 @@ public class RelayStatusFactory {
     if (eventState != null && lastSwitchingEventTime != null) {
       final boolean lastSwitchingEventState = "On".equals(eventState);
       builder.withLastSwitchingEventState(
-          lastSwitchingEventState, Date.from(lastSwitchingEventTime.toInstant()));
+          lastSwitchingEventState, lastSwitchingEventTime.toInstant());
     }
 
     final String knownState = getString(settings, PlatformKeys.LAST_KNOWN_STATE);
     final ZonedDateTime lastKnownStateTime = getDate(settings, PlatformKeys.LAST_KNOWN_STATE_TIME);
     if (knownState != null && lastKnownStateTime != null) {
       final boolean lastKnownState = "On".equals(knownState);
-      builder.withLastKnownState(lastKnownState, Date.from(lastKnownStateTime.toInstant()));
+      builder.withLastKnownState(lastKnownState, lastKnownStateTime.toInstant());
     }
 
     return builder.build();

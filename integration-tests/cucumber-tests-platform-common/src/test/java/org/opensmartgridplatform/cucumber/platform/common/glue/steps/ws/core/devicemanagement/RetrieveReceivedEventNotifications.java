@@ -17,10 +17,8 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindEventsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindEventsResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -58,8 +56,7 @@ public class RetrieveReceivedEventNotifications {
       final Event event =
           new Event(
               deviceIdentification,
-              Date.from(
-                  Objects.requireNonNull(getDateTime(PlatformDefaults.TIMESTAMP)).toInstant()),
+              getDateTime(PlatformDefaults.TIMESTAMP).toInstant(),
               eventType,
               PlatformDefaults.DEFAULT_EVENT_DESCRIPTION,
               PlatformDefaults.DEFAULT_INDEX);
@@ -75,11 +72,8 @@ public class RetrieveReceivedEventNotifications {
       final Event event =
           new Event(
               deviceIdentification,
-              Date.from(
-                  Objects.requireNonNull(
-                          getDateTime(
-                              getString(data, PlatformKeys.TIMESTAMP, PlatformDefaults.TIMESTAMP)))
-                      .toInstant()),
+              getDateTime(getString(data, PlatformKeys.TIMESTAMP, PlatformDefaults.TIMESTAMP))
+                  .toInstant(),
               getEnum(data, PlatformKeys.EVENT_TYPE, EventType.class, EventType.ALARM_NOTIFICATION),
               getString(
                   data, PlatformKeys.KEY_DESCRIPTION, PlatformDefaults.DEFAULT_EVENT_DESCRIPTION),
@@ -223,8 +217,8 @@ public class RetrieveReceivedEventNotifications {
         toTimestamp = getDateTime(getString(expectedResponse, PlatformKeys.TO_TIMESTAMP));
 
     for (final Event e : eventIterator) {
-      if (fromTimestamp.isBefore(ZonedDateTime.from(e.getDateTime().toInstant()))
-          && toTimestamp.isAfter(ZonedDateTime.from(e.getDateTime().toInstant()))) {
+      if (fromTimestamp.isBefore(ZonedDateTime.from(e.getDateTime()))
+          && toTimestamp.isAfter(ZonedDateTime.from(e.getDateTime()))) {
         events.add(e);
       }
     }
