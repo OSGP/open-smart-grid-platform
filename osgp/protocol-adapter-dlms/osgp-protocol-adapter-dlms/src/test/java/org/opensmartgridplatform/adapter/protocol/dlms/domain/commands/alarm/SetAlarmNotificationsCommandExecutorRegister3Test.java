@@ -51,6 +51,7 @@ class SetAlarmNotificationsCommandExecutorRegister3Test {
   private MessageMetadata messageMetadata;
   private DlmsConnectionStub conn;
 
+  private static final int DEFAULT_ATTRIBUTE_ID = 2;
   private static final String OBIS_CODE_ALARM_FILTER_1 = "0.0.97.98.10.255";
   private static final String OBIS_CODE_ALARM_FILTER_2 = "0.0.97.98.11.255";
   private static final String OBIS_CODE_ALARM_FILTER_3 = "0.0.97.98.12.255";
@@ -93,20 +94,8 @@ class SetAlarmNotificationsCommandExecutorRegister3Test {
   void testSetSettingEnabledRegisterAlarmRegister3(
       final long expectedValue, final String alarmTypesInput) throws OsgpException {
     final DlmsDevice device = this.createDevice(Protocol.SMR_5_5);
-    final AttributeAddress attributeAddress =
-        new AttributeAddress(
-            InterfaceClass.REGISTER.id(),
-            new ObisCode(OBIS_CODE_ALARM_FILTER_3),
-            RegisterAttribute.VALUE.attributeId());
 
-    when(this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
-            Protocol.forDevice(device), DlmsObjectType.ALARM_FILTER_3, null))
-        .thenReturn(Optional.of(attributeAddress));
-
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_1, DlmsObjectType.ALARM_FILTER_1.name());
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_2, DlmsObjectType.ALARM_FILTER_2.name());
+    this.setUpAttributeAddress(device);
 
     // Set the return value for alarm register 3 to 0 (no alarms set):
     this.conn.addReturnValue(
@@ -135,20 +124,8 @@ class SetAlarmNotificationsCommandExecutorRegister3Test {
   void testSetSettingDisabledRegisterAlarmRegister3(
       final long expectedValue, final String alarmTypesInput) throws OsgpException {
     final DlmsDevice device = this.createDevice(Protocol.SMR_5_5);
-    final AttributeAddress attributeAddress =
-        new AttributeAddress(
-            InterfaceClass.REGISTER.id(),
-            new ObisCode(OBIS_CODE_ALARM_FILTER_3),
-            RegisterAttribute.VALUE.attributeId());
 
-    when(this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
-            Protocol.forDevice(device), DlmsObjectType.ALARM_FILTER_3, null))
-        .thenReturn(Optional.of(attributeAddress));
-
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_1, DlmsObjectType.ALARM_FILTER_1.name());
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_2, DlmsObjectType.ALARM_FILTER_2.name());
+    this.setUpAttributeAddress(device);
 
     // Set the return value for alarm register 3 to 3 (all alarms (LAST_GASP & LAST_GASP_TEST) set)
     this.conn.addReturnValue(
@@ -171,20 +148,8 @@ class SetAlarmNotificationsCommandExecutorRegister3Test {
   @Test
   void testSetSettingThatIsAlreadySetInAlarmRegister3() throws OsgpException {
     final DlmsDevice device = this.createDevice(Protocol.SMR_5_5);
-    final AttributeAddress attributeAddress =
-        new AttributeAddress(
-            InterfaceClass.REGISTER.id(),
-            new ObisCode(OBIS_CODE_ALARM_FILTER_3),
-            RegisterAttribute.VALUE.attributeId());
 
-    when(this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
-            Protocol.forDevice(device), DlmsObjectType.ALARM_FILTER_3, null))
-        .thenReturn(Optional.of(attributeAddress));
-
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_1, DlmsObjectType.ALARM_FILTER_1.name());
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_2, DlmsObjectType.ALARM_FILTER_2.name());
+    this.setUpAttributeAddress(device);
 
     // Set the return value for alarm register 3 to 3 (all alarms (LAST_GASP & LAST_GASP_TEST) set)
     this.conn.addReturnValue(
@@ -206,20 +171,9 @@ class SetAlarmNotificationsCommandExecutorRegister3Test {
   @Test
   void testSetDisabledThatIsAlreadySetDisabledInAlarmRegister3() throws OsgpException {
     final DlmsDevice device = this.createDevice(Protocol.SMR_5_5);
-    final AttributeAddress attributeAddress =
-        new AttributeAddress(
-            InterfaceClass.REGISTER.id(),
-            new ObisCode(OBIS_CODE_ALARM_FILTER_3),
-            RegisterAttribute.VALUE.attributeId());
 
-    when(this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
-            Protocol.forDevice(device), DlmsObjectType.ALARM_FILTER_3, null))
-        .thenReturn(Optional.of(attributeAddress));
+    this.setUpAttributeAddress(device);
 
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_1, DlmsObjectType.ALARM_FILTER_1.name());
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_2, DlmsObjectType.ALARM_FILTER_2.name());
     // Set the return value for alarm register 3 to 0 (no alarms set):
     this.conn.addReturnValue(
         new AttributeAddress(1, "0.0.97.98.12.255", 2), DataObject.newInteger32Data(0));
@@ -254,18 +208,32 @@ class SetAlarmNotificationsCommandExecutorRegister3Test {
     return device;
   }
 
-  private void mockAlarmCosemObject(
-      final DlmsDevice dlmsDevice, final String obisCode, final String dlmsObjectTypeName)
-      throws ProtocolAdapterException {
+  private void setUpAttributeAddress(final DlmsDevice dlmsDevice) throws ProtocolAdapterException {
 
+    when(this.objectConfigServiceHelper.findAttributeAddress(
+            dlmsDevice,
+            Protocol.forDevice(dlmsDevice),
+            DlmsObjectType.valueOf(DlmsObjectType.ALARM_FILTER_1.name()),
+            null,
+            DEFAULT_ATTRIBUTE_ID))
+        .thenReturn(this.getAttributeAddress(OBIS_CODE_ALARM_FILTER_1));
+
+    when(this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
+            Protocol.forDevice(dlmsDevice),
+            DlmsObjectType.valueOf(DlmsObjectType.ALARM_FILTER_2.name())))
+        .thenReturn(Optional.of(this.getAttributeAddress(OBIS_CODE_ALARM_FILTER_2)));
+
+    when(this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
+            Protocol.forDevice(dlmsDevice), DlmsObjectType.ALARM_FILTER_3))
+        .thenReturn(Optional.of(this.getAttributeAddress(OBIS_CODE_ALARM_FILTER_3)));
+  }
+
+  private AttributeAddress getAttributeAddress(final String obisCode) {
     final AttributeAddress attributeAddress =
         new AttributeAddress(
             InterfaceClass.REGISTER.id(),
             new ObisCode(obisCode),
             RegisterAttribute.VALUE.attributeId());
-
-    when(this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
-            Protocol.forDevice(dlmsDevice), DlmsObjectType.valueOf(dlmsObjectTypeName)))
-        .thenReturn(Optional.of(attributeAddress));
+    return attributeAddress;
   }
 }

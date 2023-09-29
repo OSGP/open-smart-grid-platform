@@ -53,6 +53,7 @@ class SetAlarmNotificationsCommandExecutorTest {
 
   private static final String OBIS_CODE_ALARM_FILTER_1 = "0.0.97.98.10.255";
   private static final String OBIS_CODE_ALARM_FILTER_2 = "0.0.97.98.11.255";
+  private static final int DEFAULT_ATTRIBUTE_ID = 2;
 
   @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
 
@@ -83,8 +84,13 @@ class SetAlarmNotificationsCommandExecutorTest {
   @Test
   void testSetSettingThatIsAlreadySet() throws OsgpException {
     final DlmsDevice device = this.createDevice(Protocol.SMR_5_0_0);
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_1, DlmsObjectType.ALARM_FILTER_1.name());
+    when(this.objectConfigServiceHelper.findAttributeAddress(
+            device,
+            Protocol.forDevice(device),
+            DlmsObjectType.valueOf(DlmsObjectType.ALARM_FILTER_1.name()),
+            null,
+            DEFAULT_ATTRIBUTE_ID))
+        .thenReturn(this.getAttributeAddress(OBIS_CODE_ALARM_FILTER_1));
 
     // Setting notifications that are not different from what is on the meter already,
     // should always be successful.
@@ -98,8 +104,13 @@ class SetAlarmNotificationsCommandExecutorTest {
   @Test
   void testSetSettingEnabled() throws OsgpException {
     final DlmsDevice device = this.createDevice(Protocol.SMR_5_0_0);
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_1, DlmsObjectType.ALARM_FILTER_1.name());
+    when(this.objectConfigServiceHelper.findAttributeAddress(
+            device,
+            Protocol.forDevice(device),
+            DlmsObjectType.valueOf(DlmsObjectType.ALARM_FILTER_1.name()),
+            null,
+            DEFAULT_ATTRIBUTE_ID))
+        .thenReturn(this.getAttributeAddress(OBIS_CODE_ALARM_FILTER_1));
 
     // Now we enable something: CLOCK_INVALID to enabled.
     final AccessResultCode res =
@@ -124,10 +135,7 @@ class SetAlarmNotificationsCommandExecutorTest {
   void testSetSettingEnabledRegisterAlarmRegister2(
       final long expectedValue, final String alarmTypesInput) throws OsgpException {
     final DlmsDevice device = this.createDevice(Protocol.SMR_5_2);
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_1, DlmsObjectType.ALARM_FILTER_1.name());
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_2, DlmsObjectType.ALARM_FILTER_2.name());
+    this.setUpAttributeAddress(device);
 
     // Set the return value for alarm register 2 to 0 (no alarms set):
     this.conn.addReturnValue(
@@ -161,10 +169,7 @@ class SetAlarmNotificationsCommandExecutorTest {
   void testSetSettingDisabledRegisterAlarmRegister2(
       final long expectedValue, final String alarmTypesInput) throws OsgpException {
     final DlmsDevice device = this.createDevice(Protocol.SMR_5_2);
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_1, DlmsObjectType.ALARM_FILTER_1.name());
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_2, DlmsObjectType.ALARM_FILTER_2.name());
+    this.setUpAttributeAddress(device);
 
     // Set the return value for alarm register 2 to 3F (all alarms set):
     this.conn.addReturnValue(
@@ -187,10 +192,7 @@ class SetAlarmNotificationsCommandExecutorTest {
   @Test
   void testSetSettingThatIsAlreadySetInAlarmRegister2() throws OsgpException {
     final DlmsDevice device = this.createDevice(Protocol.SMR_5_2);
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_1, DlmsObjectType.ALARM_FILTER_1.name());
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_2, DlmsObjectType.ALARM_FILTER_2.name());
+    this.setUpAttributeAddress(device);
 
     // Set the return value for alarm register 2 to 3F (all alarms set):
     this.conn.addReturnValue(
@@ -210,8 +212,13 @@ class SetAlarmNotificationsCommandExecutorTest {
   @Test
   void testSetSettingEnabledAndDisabled() throws OsgpException {
     final DlmsDevice device = this.createDevice(Protocol.SMR_5_0_0);
-    this.mockAlarmCosemObject(
-        device, OBIS_CODE_ALARM_FILTER_1, DlmsObjectType.ALARM_FILTER_1.name());
+    when(this.objectConfigServiceHelper.findAttributeAddress(
+            device,
+            Protocol.forDevice(device),
+            DlmsObjectType.valueOf(DlmsObjectType.ALARM_FILTER_1.name()),
+            null,
+            DEFAULT_ATTRIBUTE_ID))
+        .thenReturn(this.getAttributeAddress(OBIS_CODE_ALARM_FILTER_1));
 
     // Both enable and disable in one call:
     // CLOCK_INVALID to enabled and REPLACE_BATTERY to disabled.
@@ -237,19 +244,29 @@ class SetAlarmNotificationsCommandExecutorTest {
     return this.executor.execute(this.connMgr, device, alarmNotificationsDto, this.messageMetadata);
   }
 
-  private void mockAlarmCosemObject(
-      final DlmsDevice dlmsDevice, final String obisCode, final String dlmsObjectTypeName)
-      throws ProtocolAdapterException {
+  private void setUpAttributeAddress(final DlmsDevice dlmsDevice) throws ProtocolAdapterException {
 
+    when(this.objectConfigServiceHelper.findAttributeAddress(
+            dlmsDevice,
+            Protocol.forDevice(dlmsDevice),
+            DlmsObjectType.valueOf(DlmsObjectType.ALARM_FILTER_1.name()),
+            null,
+            DEFAULT_ATTRIBUTE_ID))
+        .thenReturn(this.getAttributeAddress(OBIS_CODE_ALARM_FILTER_1));
+
+    when(this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
+            Protocol.forDevice(dlmsDevice),
+            DlmsObjectType.valueOf(DlmsObjectType.ALARM_FILTER_2.name())))
+        .thenReturn(Optional.of(this.getAttributeAddress(OBIS_CODE_ALARM_FILTER_2)));
+  }
+
+  private AttributeAddress getAttributeAddress(final String obisCode) {
     final AttributeAddress attributeAddress =
         new AttributeAddress(
             InterfaceClass.REGISTER.id(),
             new ObisCode(obisCode),
             RegisterAttribute.VALUE.attributeId());
-
-    when(this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
-            Protocol.forDevice(dlmsDevice), DlmsObjectType.valueOf(dlmsObjectTypeName)))
-        .thenReturn(Optional.of(attributeAddress));
+    return attributeAddress;
   }
 
   private DlmsDevice createDevice(final Protocol protocol) {
