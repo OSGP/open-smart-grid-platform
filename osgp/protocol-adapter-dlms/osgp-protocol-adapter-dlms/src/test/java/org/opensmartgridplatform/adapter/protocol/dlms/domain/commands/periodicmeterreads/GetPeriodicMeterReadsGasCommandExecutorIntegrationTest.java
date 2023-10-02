@@ -214,32 +214,14 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   @MethodSource("combinationsDsmr")
   void testExecuteDsmrNoSelectedValues(
       final Protocol protocol, final PeriodTypeDto type, final int channel) throws Exception {
-    try {
-      this.testExecute(protocol, type, false, false, channel);
-    } catch (final IllegalArgumentException e) {
-      assertThat(this.exceptionExpected(protocol, type))
-          .withFailMessage(
-              "Reading %s values should be supported for %s. Error: %s", type, protocol.name(), e)
-          .isTrue();
-    }
+    this.testExecute(protocol, type, false, false, channel);
   }
 
   @ParameterizedTest
   @MethodSource("combinationsDsmr")
   void testExecuteDsmr(final Protocol protocol, final PeriodTypeDto type, final int channel)
       throws Exception {
-    try {
-      this.testExecute(protocol, type, false, true, channel);
-    } catch (final IllegalArgumentException e) {
-      assertThat(this.exceptionExpected(protocol, type))
-          .withFailMessage(
-              "Reading %s values should be supported for %s. Error: %s", type, protocol.name(), e)
-          .isTrue();
-    }
-  }
-
-  private boolean exceptionExpected(final Protocol protocol, final PeriodTypeDto type) {
-    return protocol == Protocol.DSMR_2_2 && type == PeriodTypeDto.DAILY;
+    this.testExecute(protocol, type, false, true, channel);
   }
 
   @ParameterizedTest
@@ -446,22 +428,22 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     //               DSMR2.2  DSMR4.2.2 / SMR4.3  SMR5.0-5.5
     //                I D M          I D M          I D M
     //
-    // Clock          1 X 1          1 1 1          1 1 1
-    // Status         1 X 0          1 1 0          1 1 1
-    // E values       0 X 0          0 0 0          0 0 0
-    // G values       1 X 1          1 1 1          1 1 1
-    // Capture time   0 X 0          1 1 1          1 1 1
+    // Clock          1 1 1          1 1 1          1 1 1
+    // Status         1 1 0          1 1 0          1 1 1
+    // E values       0 0 0          0 0 0          0 0 0
+    // G values       1 1 1          1 1 1          1 1 1
+    // Capture time   0 0 0          1 1 1          1 1 1
 
     // Overview protocols - periodtypes - selected values NOT supported
     //
     //               DSMR2.2  DSMR4.2.2 / SMR4.3
     //                I D M          I D M
     //
-    // Clock          1 X 1          1 1 1
-    // Status         1 X 0          1 1 0
-    // E values       4 X 4          4 4 4
-    // G values       4 X 4          4 4 4
-    // Capture time   4 X 4          4 4 4
+    // Clock          1 1 1          1 1 1
+    // Status         1 1 0          1 1 0
+    // E values       4 4 4          4 4 4
+    // G values       4 4 4          4 4 4
+    // Capture time   0 0 0          4 4 4
 
     // Always add clock first
     items.add(clock);

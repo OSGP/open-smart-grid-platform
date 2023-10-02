@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.IntStream;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -655,43 +654,6 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     }
 
     return captureObjectsWithChannel;
-  }
-
-  private List<CaptureObject> addChannels(
-      final CaptureObject captureObject, final List<Integer> channels) {
-    final CosemObject cosemObject = captureObject.getCosemObject();
-    if (!cosemObject.getObis().contains("x")) {
-      return List.of(captureObject);
-    } else {
-      return channels.stream()
-          .map(
-              c ->
-                  new CaptureObject(
-                      this.updateCosemObjectWithChannel(cosemObject, c),
-                      captureObject.getAttributeId()))
-          .toList();
-    }
-  }
-
-  private List<CaptureObject> addChannels(
-      final CaptureObject captureObject, final int channel, final boolean selectedValuesSupported) {
-    final CosemObject cosemObject = captureObject.getCosemObject();
-    if (!cosemObject.getObis().contains("x")) {
-      return List.of(captureObject);
-    } else if (selectedValuesSupported) {
-      return List.of(
-          new CaptureObject(
-              this.updateCosemObjectWithChannel(cosemObject, channel),
-              captureObject.getAttributeId()));
-    } else {
-      return IntStream.of(1, 2, 3, 4)
-          .mapToObj(
-              c ->
-                  new CaptureObject(
-                      this.updateCosemObjectWithChannel(cosemObject, c),
-                      captureObject.getAttributeId()))
-          .toList();
-    }
   }
 
   private CosemObject updateCosemObjectWithChannel(
