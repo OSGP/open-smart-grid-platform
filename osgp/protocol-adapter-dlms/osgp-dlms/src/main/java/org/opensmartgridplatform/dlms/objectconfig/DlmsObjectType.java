@@ -60,7 +60,9 @@ public enum DlmsObjectType {
   ALARM_REGISTER_2,
   ALARM_REGISTER_3,
   READ_MBUS_STATUS,
-  CLEAR_MBUS_STATUS;
+  CLEAR_MBUS_STATUS,
+  PHASE_OUTAGE_TEST,
+  LAST_GASP_TEST;
 
   public String value() {
     return this.name();
