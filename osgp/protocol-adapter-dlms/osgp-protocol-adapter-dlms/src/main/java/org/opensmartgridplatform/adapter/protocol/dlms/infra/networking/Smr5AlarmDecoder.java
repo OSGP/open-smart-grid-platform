@@ -8,6 +8,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.INTERNAL_TRIGGER_ALARM;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SCHEDULER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SETUP_ALARM;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SETUP_CSD_SMS;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SETUP_SCHEDULER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SETUP_UDP;
 
@@ -212,7 +213,10 @@ public class Smr5AlarmDecoder extends AlarmDecoder {
       throws ProtocolAdapterException {
     // SMR5 has one general object for the SMS and CSD triggers
     return Arrays.equals(
-        this.dlmsObjectConfigSmr50.getObisForObject(EXTERNAL_TRIGGER).bytes(), logicalNameBytes);
+            this.dlmsObjectConfigSmr50.getObisForObject(EXTERNAL_TRIGGER).bytes(), logicalNameBytes)
+        || Arrays.equals(
+            this.dlmsObjectConfigSmr50.getObisForObject(PUSH_SETUP_CSD_SMS).bytes(),
+            logicalNameBytes);
   }
 
   private boolean isLogicalNameCsdTrigger(final byte[] logicalNameBytes)

@@ -93,6 +93,18 @@ class DlmsPushNotificationDecoderTest {
   }
 
   @Test
+  void testDecodeSmr5_sms_wakeup() throws UnrecognizedMessageDataException, IOException {
+    final List<Object> out = new ArrayList<>();
+    final ByteBuf byteBuf =
+        this.newByteBuf(AlarmGeneratorUtil.smr5Alarm(IDENTIFIER, 2, Collections.EMPTY_LIST));
+    this.decoder.decode(this.ctx, byteBuf, out);
+
+    assertThat(out).hasSize(1);
+    this.assertPushNotification(
+        (DlmsPushNotification) out.get(0), IDENTIFIER, PUSH_SMS_TRIGGER, Set.of());
+  }
+
+  @Test
   void decodeDsmr4AlarmsWithLogicalNames() throws UnrecognizedMessageDataException, IOException {
 
     // Test the 4 possible logical names (3 different trigger types)
