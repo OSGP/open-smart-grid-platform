@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.DEFINABLE_LOAD_PROFILE;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.INSTANTANEOUS_VOLTAGE_L1;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.POWER_QUALITY_PROFILE_1;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.POWER_QUALITY_PROFILE_2;
 
@@ -31,6 +32,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.PowerQualityProfile;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
@@ -62,6 +64,18 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends GetPowerQualityPr
             Date.from(Instant.now().minus(2, ChronoUnit.DAYS)),
             new Date(),
             new ArrayList<>());
+
+    final CosemObject cosemObjectInstVoltage =
+        allPqObjectsForThisMeter.stream()
+            .filter(obj -> obj.getTag().equals(INSTANTANEOUS_VOLTAGE_L1.name()))
+            .findFirst()
+            .get();
+    when(this.dlmsHelper.getScalerUnitValue(this.conn, cosemObjectInstVoltage))
+        .thenReturn(
+            cosemObjectInstVoltage
+                .getAttribute(RegisterAttribute.SCALER_UNIT.attributeId())
+                .getValue());
+
     when(this.dlmsHelper.readLogicalName(any(DataObject.class), any(String.class)))
         .thenCallRealMethod();
     when(this.dlmsHelper.readObjectDefinition(any(DataObject.class), any(String.class)))
