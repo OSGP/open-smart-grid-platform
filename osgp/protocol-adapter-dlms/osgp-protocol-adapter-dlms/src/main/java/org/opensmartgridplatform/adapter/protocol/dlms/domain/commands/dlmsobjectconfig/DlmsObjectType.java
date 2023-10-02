@@ -18,6 +18,7 @@ public enum DlmsObjectType {
   PUSH_SCHEDULER(null),
   PUSH_SETUP_SCHEDULER(null),
   PUSH_SETUP_ALARM(null),
+  PUSH_SETUP_CSD_SMS(null),
   PUSH_SETUP_UDP(null),
   EXTERNAL_TRIGGER(null),
   EXTERNAL_TRIGGER_SMS(null),
