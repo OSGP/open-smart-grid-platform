@@ -41,7 +41,7 @@
       "properties": {},
       "attributes": [
         {
-          "id": 2,
+          "id": 4,
           "description": "Contains the logical name of the ‘alarm push phase outage test script table’ and the script selector (1) of the script, not used yet",
           "datatype": "array",
           "valuetype": "DYNAMIC",
