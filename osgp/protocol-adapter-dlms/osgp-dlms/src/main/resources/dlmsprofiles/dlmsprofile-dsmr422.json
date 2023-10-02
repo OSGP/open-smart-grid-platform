@@ -382,7 +382,7 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L1",
       "description": "Instantaneous voltage L1",
-      "note": "Attribute 3 (scaler_unit) is overridden in factory with value -1, V (default in spec: 0, V)",
+      "note": "Attribute 3 (scaler_unit) is default in spec: '0, V', this is overridden in factory with value -1, V for some meter-types (so use valuetype dynamic)",
       "class-id": 3,
       "version": 0,
       "obis": "1.0.32.7.0.255",
@@ -412,10 +412,10 @@
         {
           "id": 3,
           "description": "scaler_unit",
-          "note": "Attribute 3 (scaler_unit) is overridden in factory with value -1, V (default in spec: 0, V)",
+          "note": "Attribute 3 (scaler_unit) is default in spec: '0, V', this is overridden in factory with value -1, V for some meter-types (so use valuetype dynamic)",
           "datatype": "scal_unit_type",
-          "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "valuetype": "DYNAMIC",
+          "value": "0, V",
           "access": "RW"
         }
       ]
@@ -423,7 +423,7 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L2",
       "description": "Instantaneous voltage L2",
-      "note": "Attribute 3 (scaler_unit) is overridden in factory with value -1, V (default in spec: 0, V)",
+      "note": "Attribute 3 (scaler_unit) is default in spec: '0, V', this is overridden in factory with value -1, V for some meter-types (so use valuetype dynamic)",
       "class-id": 3,
       "version": 0,
       "obis": "1.0.52.7.0.255",
@@ -450,10 +450,10 @@
         {
           "id": 3,
           "description": "scaler_unit",
-          "note": "Attribute 3 (scaler_unit) is overridden in factory with value -1, V (default in spec: 0, V)",
+          "note": "Attribute 3 (scaler_unit) is default in spec: '0, V', this is overridden in factory with value -1, V for some meter-types (so use valuetype dynamic)",
           "datatype": "scal_unit_type",
-          "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "valuetype": "DYNAMIC",
+          "value": "0, V",
           "access": "RW"
         }
       ]
@@ -461,7 +461,7 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L3",
       "description": "Instantaneous voltage L3",
-      "note": "Attribute 3 (scaler_unit) is overridden in factory with value -1, V (default in spec: 0, V)",
+      "note": "Attribute 3 (scaler_unit) is default in spec: '0, V', this is overridden in factory with value -1, V for some meter-types (so use valuetype dynamic)",
       "class-id": 3,
       "version": 0,
       "obis": "1.0.72.7.0.255",
@@ -488,10 +488,10 @@
         {
           "id": 3,
           "description": "scaler_unit",
-          "note": "Attribute 3 (scaler_unit) is overridden in factory with value -1, V (default in spec: 0, V)",
+          "note": "Attribute 3 (scaler_unit) is default in spec: '0, V', this is overridden in factory with value -1, V for some meter-types (so use valuetype dynamic)",
           "datatype": "scal_unit_type",
-          "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "valuetype": "DYNAMIC",
+          "value": "0, V",
           "access": "RW"
         }
       ]

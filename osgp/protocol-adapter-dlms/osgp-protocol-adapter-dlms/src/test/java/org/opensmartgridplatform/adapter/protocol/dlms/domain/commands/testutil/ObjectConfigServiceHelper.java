@@ -10,6 +10,7 @@ import java.util.List;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.MeterType;
+import org.opensmartgridplatform.dlms.objectconfig.ValueType;
 
 public class ObjectConfigServiceHelper {
   private static final int ATTRIBUTE_ID_SCALER_UNIT = 3;
@@ -36,6 +37,7 @@ public class ObjectConfigServiceHelper {
     final Attribute scalerUnitAttribute = new Attribute();
     scalerUnitAttribute.setId(ATTRIBUTE_ID_SCALER_UNIT);
     scalerUnitAttribute.setValue(value);
+    scalerUnitAttribute.setValuetype(ValueType.FIXED_IN_PROFILE);
     return Collections.singletonList(scalerUnitAttribute);
   }
 
