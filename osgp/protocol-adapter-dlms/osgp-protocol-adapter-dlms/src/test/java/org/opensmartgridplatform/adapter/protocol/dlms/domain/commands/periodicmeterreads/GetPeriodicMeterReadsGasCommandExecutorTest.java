@@ -39,6 +39,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
+import org.opensmartgridplatform.dlms.objectconfig.CaptureObject;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
@@ -154,6 +155,11 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
         this.createCosemObject(
             "MBUS_MASTER_VALUE", "0.x.24.1.0.255", "GAS", List.of(attributeScalerUnit));
 
+    final CaptureObject captureObjectClock = new CaptureObject(clock, 2);
+    final CaptureObject captureObjectStatus = new CaptureObject(status, 2);
+    final CaptureObject captureObjectValue = new CaptureObject(value_g, 2);
+    final CaptureObject captureObjectScalerUnit = new CaptureObject(value_g, 5);
+
     // SETUP - mock dlms object config to return attribute addresses
     when(this.objectConfigService.getOptionalCosemObject(
             "DSMR", "4.2.2", DlmsObjectType.DAILY_VALUES_G))
@@ -165,6 +171,13 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
         .thenReturn(status);
     when(this.objectConfigService.getCosemObject("DSMR", "4.2.2", DlmsObjectType.MBUS_MASTER_VALUE))
         .thenReturn(value_g);
+    when(this.objectConfigService.getCaptureObjects(profile, "DSMR", "4.2.2"))
+        .thenReturn(
+            List.of(
+                captureObjectClock,
+                captureObjectStatus,
+                captureObjectValue,
+                captureObjectScalerUnit));
 
     when(this.dlmsHelper.getAccessSelectionTimeRangeParameter(
             eq(this.fromDateTime), eq(this.toDateTime), any()))
