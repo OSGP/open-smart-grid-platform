@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 
 @Slf4j
 public class DlmsProfileValidator {
@@ -32,7 +33,7 @@ public class DlmsProfileValidator {
         dlmsProfiles.stream()
             .map(DlmsProfileValidator::validateProfile)
             .flatMap(Collection::stream)
-            .collect(Collectors.toList());
+            .toList();
 
     if (!validationErrors.isEmpty()) {
       throw new ObjectConfigException(String.join("\n", validationErrors));
@@ -41,12 +42,14 @@ public class DlmsProfileValidator {
 
   private static List<String> validateProfile(final DlmsProfile dlmsProfile) {
     final List<String> validationErrors = new ArrayList<>();
+    dlmsProfile.createMap();
 
     try {
       allRegistersShouldHaveAUnit(dlmsProfile, validationErrors);
       allPQProfilesShouldHaveSelectableObjects(dlmsProfile, validationErrors);
       allPqPeriodicShouldBeInAProfileSelectableObjects(dlmsProfile, validationErrors);
       allPqRequestsShouldMatchType(dlmsProfile, validationErrors);
+      allCaptureObjectsShouldExist(dlmsProfile, validationErrors);
 
       return validationErrors;
     } catch (final Exception e) {
@@ -219,6 +222,33 @@ public class DlmsProfileValidator {
     final List<String> pqRequest = selectableObject.getListProperty(ObjectProperty.PQ_REQUEST);
     if (pqRequest == null) {
       return tagForSelectableObject + " doesn't contain PQ Request";
+    }
+
+    return "";
+  }
+
+  private static void allCaptureObjectsShouldExist(
+      final DlmsProfile dlmsProfile, final List<String> validationErrors) {
+    final String validationError =
+        dlmsProfile.getObjects().stream()
+            .filter(object -> object.getClassId() == InterfaceClass.PROFILE_GENERIC.id())
+            .map(ObjectConfigService::getCaptureObjectDefinitions)
+            .flatMap(Collection::stream)
+            .map(ObjectConfigService::getCosemObjectTypeFromCaptureObjectDefinition)
+            .map(tag -> objectShouldExist(dlmsProfile, tag))
+            .filter(error -> !error.isEmpty())
+            .collect(Collectors.joining(", "));
+
+    if (!validationError.isEmpty()) {
+      validationErrors.add(
+          "DlmsProfile " + dlmsProfile.getProfileWithVersion() + " error: " + validationError);
+    }
+  }
+
+  private static String objectShouldExist(
+      final DlmsProfile dlmsProfile, final DlmsObjectType type) {
+    if (!dlmsProfile.getObjectMap().containsKey(type)) {
+      return "Profile doesn't contain object for " + type.name();
     }
 
     return "";

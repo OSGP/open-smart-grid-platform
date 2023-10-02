@@ -5,7 +5,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute.BUFFER;
-import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute.CAPTURE_OBJECTS;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute.CAPTURE_PERIOD;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.AMR_PROFILE_STATUS;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.AMR_PROFILE_STATUS_DAILY_G;
@@ -500,10 +499,6 @@ public class GetPeriodicMeterReadsGasCommandExecutor
   private List<CaptureObject> getCaptureObjectsInProfile(
       final CosemObject profile, final DlmsDevice device, final Integer channel)
       throws ProtocolAdapterException {
-    final Attribute captureObjectsAttribute = profile.getAttribute(CAPTURE_OBJECTS.attributeId());
-    final List<String> captureObjectDefinitions =
-        List.of(captureObjectsAttribute.getValue().split("\\|"));
-
     final List<CaptureObject> captureObjects = new ArrayList<>();
 
     final List<Integer> channels;
@@ -524,18 +519,22 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
     final List<CaptureObject> captureObjectsWithWildcardChannel = new ArrayList<>();
     final List<CaptureObject> captureObjectsWithoutWildcardChannel = new ArrayList<>();
-    for (final String def : captureObjectDefinitions) {
-      final CaptureObject captureObject = this.getCaptureObject(def, device);
-      try {
+
+    try {
+      final List<CaptureObject> captureObjectsFromConfig =
+          this.objectConfigService.getCaptureObjects(
+              profile, device.getProtocolName(), device.getProtocolVersion());
+
+      for (final CaptureObject captureObject : captureObjectsFromConfig) {
         if (captureObject.getCosemObject().hasWildcardChannel()) {
           captureObjectsWithWildcardChannel.add(captureObject);
         } else {
           captureObjectsWithoutWildcardChannel.add(captureObject);
         }
-      } catch (final ObjectConfigException e) {
-        throw new ProtocolAdapterException(
-            "Could not get channel from obis " + captureObject.getCosemObject(), e);
       }
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException(
+          "Could not get capture objects for profile " + profile.getTag(), e);
     }
 
     captureObjects.addAll(captureObjectsWithoutWildcardChannel);
@@ -619,26 +618,6 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     }
 
     return objectDefinitions;
-  }
-
-  private CaptureObject getCaptureObject(
-      final String captureObjectDefinition, final DlmsDevice device)
-      throws ProtocolAdapterException {
-    final String protocol = device.getProtocolName();
-    final String version = device.getProtocolVersion();
-
-    final String[] captureObjectDefinitionParts = captureObjectDefinition.split(",");
-    final DlmsObjectType objectType = DlmsObjectType.fromValue(captureObjectDefinitionParts[0]);
-    final int attributeId = Integer.parseInt(captureObjectDefinitionParts[1]);
-
-    try {
-      final CosemObject cosemObject =
-          this.objectConfigService.getCosemObject(protocol, version, objectType);
-      return new CaptureObject(cosemObject, attributeId);
-    } catch (final ObjectConfigException e) {
-      throw new ProtocolAdapterException(
-          "Capture object " + captureObjectDefinition + " not found in object config", e);
-    }
   }
 
   private List<CaptureObject> addChannel(

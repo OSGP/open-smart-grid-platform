@@ -71,4 +71,22 @@ class DlmsProfileValidatorTest {
               "DlmsProfile SMR 5.0.0 PQ validation error: AVERAGE_ACTIVE_POWER_IMPORT_L1 doesn't contain PQ Profile, PQ Profile POWER_QUALITY_PROFILE_2 has no selectable objects");
     }
   }
+
+  @Test
+  void testProfileWithCaptureObjectErrors() throws IOException {
+
+    final ObjectMapper objectMapper = new ObjectMapper();
+    final DlmsProfile dlmsProfile =
+        objectMapper.readValue(
+            new ClassPathResource("/dlmsprofile-smr50-missingCaptureObject.json").getFile(),
+            DlmsProfile.class);
+
+    try {
+      DlmsProfileValidator.validate(Collections.singletonList(dlmsProfile));
+    } catch (final ObjectConfigException e) {
+      assertThat(e.getMessage())
+          .isEqualTo(
+              "DlmsProfile SMR 5.0.0 error: Profile doesn't contain object for MBUS_MASTER_VALUE");
+    }
+  }
 }

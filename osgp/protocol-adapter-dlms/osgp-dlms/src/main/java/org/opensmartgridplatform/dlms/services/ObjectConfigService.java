@@ -14,6 +14,10 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.Attribute;
+import org.opensmartgridplatform.dlms.objectconfig.CaptureObject;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
@@ -234,5 +238,55 @@ public class ObjectConfigService {
    */
   public List<DlmsProfile> getConfiguredDlmsProfiles() {
     return this.dlmsProfiles;
+  }
+
+  public static List<String> getCaptureObjectDefinitions(final CosemObject profile) {
+    if (profile.getClassId() != InterfaceClass.PROFILE_GENERIC.id()) {
+      throw new IllegalArgumentException(
+          "Can't get capture objects, object " + profile.getTag() + " is not a Profile Generic");
+    }
+
+    final Attribute captureObjectsAttribute =
+        profile.getAttribute(ProfileGenericAttribute.CAPTURE_OBJECTS.attributeId());
+
+    final String captureObjectsAttributeValue = captureObjectsAttribute.getValue();
+
+    if (captureObjectsAttributeValue.equals("EMPTY")) {
+      return List.of();
+    }
+
+    final String[] captureObjectDefinitions = captureObjectsAttribute.getValue().split("\\|");
+
+    return List.of(captureObjectDefinitions);
+  }
+
+  public static DlmsObjectType getCosemObjectTypeFromCaptureObjectDefinition(
+      final String captureObjectDefinition) {
+    return DlmsObjectType.fromValue(captureObjectDefinition.split(",")[0]);
+  }
+
+  public static int getAttributeIdFromCaptureObjectDefinition(
+      final String captureObjectDefinition) {
+    return Integer.parseInt(captureObjectDefinition.split(",")[1]);
+  }
+
+  public List<CaptureObject> getCaptureObjects(
+      final CosemObject profile, final String protocol, final String version)
+      throws ObjectConfigException {
+    final List<String> captureObjectDefinitions = getCaptureObjectDefinitions(profile);
+
+    final List<CaptureObject> captureObjects = new ArrayList<>();
+
+    for (final String def : captureObjectDefinitions) {
+      try {
+        final DlmsObjectType objectType = getCosemObjectTypeFromCaptureObjectDefinition(def);
+        final int attributeId = getAttributeIdFromCaptureObjectDefinition(def);
+        final CosemObject cosemObject = this.getCosemObject(protocol, version, objectType);
+        captureObjects.add(new CaptureObject(cosemObject, attributeId));
+      } catch (final ObjectConfigException e) {
+        throw new ObjectConfigException("Capture object " + def + " not found in object config", e);
+      }
+    }
+    return captureObjects;
   }
 }

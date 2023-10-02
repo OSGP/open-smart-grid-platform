@@ -330,7 +330,7 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     if (protocol.isDsmr2() || protocol.isDsmr4()) {
       if (type == PeriodTypeDto.DAILY) {
         return this.createAttributeAddressDsmr4Daily(
-            from, to, device.isSelectiveAccessPeriodicMeterReadsSupported(), channel);
+            from, to, device.isSelectiveAccessPeriodicMeterReadsSupported(), channel, protocol);
       } else if (type == PeriodTypeDto.MONTHLY) {
         return this.createAttributeAddressDsmr4Monthly(
             from, to, device.isSelectiveAccessPeriodicMeterReadsSupported(), channel, protocol);
@@ -549,11 +549,12 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   private AttributeAddress createAttributeAddressDsmr4Daily(
       final DataObject from,
       final DataObject to,
-      final boolean selectiveAccessPeriodicMeterReadsSupported,
-      final int channel) {
+      final boolean selectedValuesSupported,
+      final int channel,
+      final Protocol protocol) {
     final SelectiveAccessDescription expectedSelectiveAccess =
         this.createSelectiveAccessDescriptionDsmr4Daily(
-            from, to, selectiveAccessPeriodicMeterReadsSupported, channel);
+            from, to, selectedValuesSupported, channel, protocol);
     return new AttributeAddress(
         this.CLASS_ID_PROFILE, this.OBIS_DAILY_DSMR4, this.ATTR_ID_BUFFER, expectedSelectiveAccess);
   }
@@ -561,17 +562,28 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   private SelectiveAccessDescription createSelectiveAccessDescriptionDsmr4Daily(
       final DataObject from,
       final DataObject to,
-      final boolean selectiveAccessPeriodicMeterReadsSupported,
-      final int channel) {
+      final boolean selectedValuesSupported,
+      final int channel,
+      final Protocol protocol) {
 
-    final List<DataObject> dataObjects =
-        selectiveAccessPeriodicMeterReadsSupported
-            ? Arrays.asList(
-                this.CLOCK,
-                this.STATUS,
-                this.getDataObjectForGasValueDsmr4(channel, this.ATTR_ID_VALUE),
-                this.getDataObjectForGasValueDsmr4(channel, this.ATTR_ID_CAPTURE_TIME))
-            : new ArrayList<>();
+    final List<DataObject> dataObjects;
+
+    if (!selectedValuesSupported) {
+      dataObjects = new ArrayList<>();
+    } else if (protocol == Protocol.DSMR_2_2) {
+      dataObjects =
+          Arrays.asList(
+              this.CLOCK,
+              this.STATUS,
+              this.getDataObjectForGasValueDsmr4(channel, this.ATTR_ID_VALUE));
+    } else {
+      dataObjects =
+          Arrays.asList(
+              this.CLOCK,
+              this.STATUS,
+              this.getDataObjectForGasValueDsmr4(channel, this.ATTR_ID_VALUE),
+              this.getDataObjectForGasValueDsmr4(channel, this.ATTR_ID_CAPTURE_TIME));
+    }
 
     final DataObject selectedValues = DataObject.newArrayData(dataObjects);
 
