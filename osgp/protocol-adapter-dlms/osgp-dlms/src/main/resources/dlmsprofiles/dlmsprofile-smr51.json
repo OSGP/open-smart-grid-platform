@@ -33,7 +33,7 @@
       "tag": "PHASE_OUTAGE_TEST",
       "description": "Phase outage test scheduler",
       "note": null,
-      "class-id": 1,
+      "class-id": 22,
       "version": 0,
       "obis": "0.0.15.1.4.255",
       "group": "ELECTRICITY",
@@ -42,10 +42,10 @@
       "attributes": [
         {
           "id": 2,
-          "description": "value",
+          "description": "Contains the logical name of the ‘alarm push phase outage test script table’ and the script selector (1) of the script, not used yet",
           "datatype": "array",
           "valuetype": "DYNAMIC",
-          "value": "EMPTY",
+          "value": "PHASE_OUTAGE_TEST_SCRIPT_TABLE,1",
           "access": "RW"
         }
       ]
