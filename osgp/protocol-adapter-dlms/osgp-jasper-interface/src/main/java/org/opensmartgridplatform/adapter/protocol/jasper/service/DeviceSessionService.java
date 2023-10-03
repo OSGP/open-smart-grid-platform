@@ -26,9 +26,10 @@ public class DeviceSessionService {
 
   public Optional<String> waitForIpAddress(final String deviceIdentification) {
     String ipAddress = null;
+    Connection connection = null;
     try {
-      final PGConnection pgConnection =
-          this.getListenerConnection(this.dataSource.getConnection(), deviceIdentification);
+      connection = this.dataSource.getConnection();
+      final PGConnection pgConnection = this.startListening(connection, deviceIdentification);
 
       final PGNotification[] notifications = pgConnection.getNotifications(this.maxWaitInMs);
       if (notifications == null) {
@@ -51,14 +52,17 @@ public class DeviceSessionService {
           "SQLException occurred while listening for notification for device: "
               + deviceIdentification,
           sqle);
+    } finally {
+      this.closeConnection(connection, deviceIdentification);
     }
 
     return Optional.ofNullable(ipAddress);
   }
 
   public void notifyIpAddress(final String deviceIdentification, final String ipAddress) {
+    Connection connection = null;
     try {
-      final Connection connection = this.dataSource.getConnection();
+      connection = this.dataSource.getConnection();
 
       final String sqlStatement =
           String.format("NOTIFY %s, '%s'", this.getChannelName(deviceIdentification), ipAddress);
@@ -67,10 +71,12 @@ public class DeviceSessionService {
       }
     } catch (final SQLException sqle) {
       log.error("SQLException occurred while notify for device: " + deviceIdentification, sqle);
+    } finally {
+      this.closeConnection(connection, deviceIdentification);
     }
   }
 
-  private PGConnection getListenerConnection(
+  private PGConnection startListening(
       final Connection connection, final String deviceIdentification) throws SQLException {
 
     final PGConnection pgConnection = connection.unwrap(PGConnection.class);
@@ -81,6 +87,19 @@ public class DeviceSessionService {
     }
 
     return pgConnection;
+  }
+
+  private void closeConnection(final Connection connection, final String deviceIdentification) {
+    try {
+      if (connection != null) {
+        connection.close();
+      }
+    } catch (final SQLException e) {
+      log.error(
+          "SQLException occurred while listening for notification for device: "
+              + deviceIdentification,
+          e);
+    }
   }
 
   private String getChannelName(final String deviceIdentification) {
