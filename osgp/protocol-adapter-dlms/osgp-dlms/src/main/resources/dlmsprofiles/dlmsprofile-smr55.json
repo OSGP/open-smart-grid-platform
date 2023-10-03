@@ -54,7 +54,6 @@
         "description": "number of retries",
         "datatype": "unsigned",
         "valuetype": "DYNAMIC",
-        "value": "0",
         "access": "RW"
       },
       {
@@ -62,7 +61,6 @@
         "description": "repetition_delay",
         "datatype": "long-unsigned",
         "valuetype": "DYNAMIC",
-        "value": "0",
         "access": "RW"
       }
     ]
@@ -83,7 +81,6 @@
           "description": "value",
           "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "RW"
         }
       ]
@@ -107,7 +104,6 @@
           "description": "value",
           "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "RW"
         }
       ]

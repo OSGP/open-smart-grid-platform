@@ -85,7 +85,6 @@
           "description": "entries in use",
           "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -131,7 +130,6 @@
           "description": "status",
           "datatype": "enum",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -139,7 +137,6 @@
           "description": "cs attachment",
           "datatype": "enum",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -147,7 +144,6 @@
           "description": "ps status",
           "datatype": "enum",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -195,7 +191,6 @@
           "description": "value",
           "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "RW"
         }
       ]
@@ -219,7 +214,6 @@
           "description": "value",
           "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "RW"
         }
       ]
