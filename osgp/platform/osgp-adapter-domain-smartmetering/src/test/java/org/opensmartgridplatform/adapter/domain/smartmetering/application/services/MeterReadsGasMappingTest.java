@@ -26,7 +26,7 @@ class MeterReadsGasMappingTest {
   void testMeterReadsGasMappingTest() {
     // build test data
     final DlmsMeterValueDto consumption =
-        new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitTypeDto.M3);
+        new DlmsMeterValueDto(new BigDecimal("1.0"), DlmsUnitTypeDto.M3);
     final MeterReadsGasResponseDto meterReadsGasDto =
         new MeterReadsGasResponseDto(new Date(), consumption, new Date());
     // actual mapping
@@ -39,7 +39,7 @@ class MeterReadsGasMappingTest {
 
     final BigDecimal bigDecimal1 = consumption.getValue();
     final BigDecimal bigDecimal2 = meterReadsGas.getConsumption().getValue();
-    assertThat(bigDecimal1.compareTo(bigDecimal2) == 0).isTrue();
+    assertThat(bigDecimal1).isEqualByComparingTo(bigDecimal2);
     assertThat(meterReadsGas.getConsumption().getOsgpUnit()).isEqualTo(OsgpUnit.M3);
   }
 
@@ -48,7 +48,7 @@ class MeterReadsGasMappingTest {
   void testMeterReadsGasMappingWithoutCaptureTimeTest() {
     // build test data
     final DlmsMeterValueDto consumption =
-        new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitTypeDto.M3);
+        new DlmsMeterValueDto(new BigDecimal("1.0"), DlmsUnitTypeDto.M3);
     final MeterReadsGasResponseDto meterReadsGasDto =
         new MeterReadsGasResponseDto(new Date(), consumption, null);
     // actual mapping
@@ -61,7 +61,7 @@ class MeterReadsGasMappingTest {
 
     final BigDecimal bigDecimal1 = consumption.getValue();
     final BigDecimal bigDecimal2 = meterReadsGas.getConsumption().getValue();
-    assertThat(bigDecimal1.compareTo(bigDecimal2) == 0).isTrue();
+    assertThat(bigDecimal1).isEqualByComparingTo(bigDecimal2);
     assertThat(meterReadsGas.getConsumption().getOsgpUnit()).isEqualTo(OsgpUnit.M3);
   }
 

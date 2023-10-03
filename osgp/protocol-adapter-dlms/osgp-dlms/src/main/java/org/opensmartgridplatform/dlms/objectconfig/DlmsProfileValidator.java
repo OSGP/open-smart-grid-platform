@@ -24,6 +24,9 @@ import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 
 @Slf4j
 public class DlmsProfileValidator {
+  private static final String PQ_ERROR = " PQ validation error: ";
+  private static final String CAPTURE_OBJECTS_ERROR = " Capture objects validation error: ";
+
   private DlmsProfileValidator() {
     // Static class
   }
@@ -71,7 +74,7 @@ public class DlmsProfileValidator {
             .collect(Collectors.joining(", "));
 
     if (!validationError.isEmpty()) {
-      validationErrors.add(createErrorMessage(dlmsProfile, validationError));
+      validationErrors.add(createErrorMessage(dlmsProfile, PQ_ERROR, validationError));
     }
   }
 
@@ -85,7 +88,7 @@ public class DlmsProfileValidator {
             .collect(Collectors.joining(", "));
 
     if (!validationError.isEmpty()) {
-      validationErrors.add(createErrorMessage(dlmsProfile, validationError));
+      validationErrors.add(createErrorMessage(dlmsProfile, PQ_ERROR, validationError));
     }
   }
 
@@ -180,7 +183,7 @@ public class DlmsProfileValidator {
             .collect(Collectors.joining(", "));
 
     if (!validationError.isEmpty()) {
-      validationErrors.add(createErrorMessage(dlmsProfile, validationError));
+      validationErrors.add(createErrorMessage(dlmsProfile, PQ_ERROR, validationError));
     }
   }
 
@@ -240,8 +243,7 @@ public class DlmsProfileValidator {
             .collect(Collectors.joining(", "));
 
     if (!validationError.isEmpty()) {
-      validationErrors.add(
-          "DlmsProfile " + dlmsProfile.getProfileWithVersion() + " error: " + validationError);
+      validationErrors.add(createErrorMessage(dlmsProfile, CAPTURE_OBJECTS_ERROR, validationError));
     }
   }
 
@@ -255,10 +257,7 @@ public class DlmsProfileValidator {
   }
 
   private static String createErrorMessage(
-      final DlmsProfile dlmsProfile, final String validationError) {
-    return "DlmsProfile "
-        + dlmsProfile.getProfileWithVersion()
-        + " PQ validation error: "
-        + validationError;
+      final DlmsProfile dlmsProfile, final String validationType, final String validationError) {
+    return "DlmsProfile " + dlmsProfile.getProfileWithVersion() + validationType + validationError;
   }
 }
