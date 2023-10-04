@@ -40,11 +40,26 @@
       "properties": {},
       "attributes": [
         {
+          "id": 2,
+          "description": "executed_script",
+          "datatype": "visible-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "type",
+          "datatype": "enum",
+          "valuetype": "DYNAMIC",
+          "value": "1",
+          "access": "R"
+        },
+        {
           "id": 4,
-          "description": "Contains the logical name of the ‘alarm push phase outage test script table’ and the script selector (1) of the script, not used yet",
+          "description": "execution time",
           "datatype": "array",
           "valuetype": "DYNAMIC",
-          "value": "PHASE_OUTAGE_TEST_SCRIPT_TABLE,1",
+          "value": "EMPTY",
           "access": "RW"
         }
       ]

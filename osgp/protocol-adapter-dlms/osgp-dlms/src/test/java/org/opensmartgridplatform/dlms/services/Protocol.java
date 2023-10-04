@@ -11,14 +11,14 @@ import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
 
 @Getter
 public enum Protocol {
-  DSMR_2_2("DSMR", "2.2", 20, 2, 4, 6, 14, 0, 0, 0, 0, false, false),
-  DSMR_4_2_2("DSMR", "4.2.2", 44, 11, 27, 6, 14, 6, 13, 5, 6, true, false),
-  SMR_4_3("SMR", "4.3", 45, 11, 27, 6, 14, 6, 13, 6, 7, true, false),
-  SMR_5_0_0("SMR", "5.0.0", 51, 11, 27, 6, 14, 6, 15, 9, 14, true, true),
+  DSMR_2_2("DSMR", "2.2", 21, 2, 4, 6, 14, 0, 0, 0, 0, false, false),
+  DSMR_4_2_2("DSMR", "4.2.2", 45, 11, 27, 6, 14, 6, 13, 5, 6, true, false),
+  SMR_4_3("SMR", "4.3", 46, 11, 27, 6, 14, 6, 13, 6, 7, true, false),
+  SMR_5_0_0("SMR", "5.0.0", 52, 11, 27, 6, 14, 6, 15, 9, 14, true, true),
 
-  SMR_5_1("SMR", "5.1", 53, 11, 27, 6, 14, 6, 15, 9, 14, true, true),
-  SMR_5_2("SMR", "5.2", 55, 11, 27, 6, 14, 6, 15, 10, 15, true, true),
-  SMR_5_5("SMR", "5.5", 58, 11, 27, 6, 14, 6, 15, 10, 15, true, true);
+  SMR_5_1("SMR", "5.1", 54, 11, 27, 6, 14, 6, 15, 9, 14, true, true),
+  SMR_5_2("SMR", "5.2", 57, 11, 27, 6, 14, 6, 15, 10, 15, true, true),
+  SMR_5_5("SMR", "5.5", 61, 11, 27, 6, 14, 6, 15, 10, 15, true, true);
 
   private final String name;
   private final String version;
