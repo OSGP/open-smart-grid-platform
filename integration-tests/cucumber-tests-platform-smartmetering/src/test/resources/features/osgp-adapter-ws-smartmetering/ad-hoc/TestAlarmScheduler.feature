@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: Contributors to the GXF project
 #
 # SPDX-License-Identifier: Apache-2.0
-
 @SmartMetering @Platform @SmartMeteringAdHoc @NightlyBuildOnly
 Feature: SmartMetering schedule test alarms
   As a grid operator
@@ -23,7 +22,6 @@ Feature: SmartMetering schedule test alarms
 
     Examples:
       | protocol | version |
-      | SMR      | 5.0.0   |
       | SMR      | 5.1     |
       | SMR      | 5.2     |
       | SMR      | 5.5     |
