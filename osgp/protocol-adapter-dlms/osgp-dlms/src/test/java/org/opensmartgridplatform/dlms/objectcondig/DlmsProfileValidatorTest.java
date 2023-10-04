@@ -10,11 +10,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfileValidator;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.springframework.core.io.ClassPathResource;
 
 @Slf4j
@@ -70,5 +73,28 @@ class DlmsProfileValidatorTest {
           .isEqualTo(
               "DlmsProfile SMR 5.0.0 PQ validation error: AVERAGE_ACTIVE_POWER_IMPORT_L1 doesn't contain PQ Profile, PQ Profile POWER_QUALITY_PROFILE_2 has no selectable objects");
     }
+  }
+
+  @Test
+  void testAllValueTypesFixedInProfileHaveAValue() throws IOException, ObjectConfigException {
+
+    final ObjectConfigService objectConfigService = new ObjectConfigService();
+    final List<DlmsProfile> dlmsProfiles = objectConfigService.dlmsProfiles;
+
+    final List<DlmsProfile> fixedWithoutValueList =
+        dlmsProfiles.stream()
+            .filter(
+                profile ->
+                    profile.getObjects().stream()
+                        .anyMatch(
+                            object ->
+                                object.getAttributes().stream()
+                                    .anyMatch(
+                                        attribute ->
+                                            attribute.getValuetype().equals("FIXED_IN_PROFILE")
+                                                && attribute.getValue() == null)))
+            .toList();
+
+    Assertions.assertThat(fixedWithoutValueList).isEmpty();
   }
 }
