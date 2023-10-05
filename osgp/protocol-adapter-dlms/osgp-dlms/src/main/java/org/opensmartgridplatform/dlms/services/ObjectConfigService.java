@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ObjectConfigService {
 
-  private final List<DlmsProfile> dlmsProfiles;
+  public final List<DlmsProfile> dlmsProfiles;
 
   /*
    * Profiles are loaded from the classpath resource '/dlmsprofiles'.

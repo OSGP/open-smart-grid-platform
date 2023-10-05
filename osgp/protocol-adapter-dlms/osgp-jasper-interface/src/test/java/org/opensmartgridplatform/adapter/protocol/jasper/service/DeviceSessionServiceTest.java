@@ -6,6 +6,7 @@ package org.opensmartgridplatform.adapter.protocol.jasper.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
@@ -27,7 +28,6 @@ public class DeviceSessionServiceTest {
   private static final String IP_ADDRESS_CHANNEL = "ip_address";
 
   private static final String DEVICE_IDENTIFICATION = "device-identification";
-  private static final String ICC_ID = "icc-id";
   private static final String IP_ADDRESS = "1.2.3.4";
   @Mock private DataSource dataSource;
   private final int maxWaitInMs = 654321;
@@ -62,6 +62,7 @@ public class DeviceSessionServiceTest {
         this.deviceSessionService.waitForIpAddress(DEVICE_IDENTIFICATION);
 
     assertThat(ipAddress).isEqualTo(Optional.of(IP_ADDRESS));
+    verify(this.dataSource.getConnection()).close();
   }
 
   @Test
@@ -74,6 +75,7 @@ public class DeviceSessionServiceTest {
         this.deviceSessionService.waitForIpAddress(DEVICE_IDENTIFICATION);
 
     assertThat(ipAddress).isEqualTo(Optional.empty());
+    verify(this.dataSource.getConnection()).close();
   }
 
   @Test
@@ -81,6 +83,7 @@ public class DeviceSessionServiceTest {
     this.setupPgConnectionNotify();
 
     this.deviceSessionService.notifyIpAddress(DEVICE_IDENTIFICATION, IP_ADDRESS);
+    verify(this.dataSource.getConnection()).close();
   }
 
   @Test
@@ -93,6 +96,7 @@ public class DeviceSessionServiceTest {
         .thenThrow(new SQLException());
 
     this.deviceSessionService.notifyIpAddress(DEVICE_IDENTIFICATION, IP_ADDRESS);
+    verify(this.dataSource.getConnection()).close();
   }
 
   private void setupPgConnectionNotify() throws SQLException {

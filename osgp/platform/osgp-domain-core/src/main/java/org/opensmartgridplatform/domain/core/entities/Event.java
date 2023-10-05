@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.domain.core.entities;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,7 +22,7 @@ public class Event extends AbstractEntity {
   private String deviceIdentification;
 
   @Column(nullable = false)
-  private Date dateTime;
+  private Instant dateTime;
 
   @Column(nullable = false, name = "event")
   private EventType eventType;
@@ -39,7 +39,7 @@ public class Event extends AbstractEntity {
 
   public Event(
       final String deviceIdentification,
-      final Date dateTime,
+      final Instant dateTime,
       final EventType eventType,
       final String description,
       final Integer index) {
@@ -54,7 +54,7 @@ public class Event extends AbstractEntity {
     return this.deviceIdentification;
   }
 
-  public Date getDateTime() {
+  public Instant getDateTime() {
     return this.dateTime;
   }
 

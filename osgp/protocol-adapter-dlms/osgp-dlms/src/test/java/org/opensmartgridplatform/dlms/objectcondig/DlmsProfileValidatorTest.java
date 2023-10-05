@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -20,6 +21,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfileValidator;
+import org.opensmartgridplatform.dlms.objectconfig.ValueType;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.springframework.core.io.ClassPathResource;
 
 @Slf4j
@@ -70,5 +73,28 @@ class DlmsProfileValidatorTest {
     } catch (final ObjectConfigException e) {
       assertThat(e.getMessage()).isEqualTo(expectedError);
     }
+  }
+
+  @Test
+  void testAllValueTypesFixedInProfileHaveAValue() throws IOException, ObjectConfigException {
+
+    final ObjectConfigService objectConfigService = new ObjectConfigService();
+    final List<DlmsProfile> dlmsProfiles = objectConfigService.dlmsProfiles;
+
+    final List<DlmsProfile> fixedWithoutValueList =
+        dlmsProfiles.stream()
+            .filter(
+                profile ->
+                    profile.getObjects().stream()
+                        .anyMatch(
+                            object ->
+                                object.getAttributes().stream()
+                                    .anyMatch(
+                                        attribute ->
+                                            attribute.getValuetype() == ValueType.FIXED_IN_PROFILE
+                                                && attribute.getValue() == null)))
+            .toList();
+
+    Assertions.assertThat(fixedWithoutValueList).isEmpty();
   }
 }

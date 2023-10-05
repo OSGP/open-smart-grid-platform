@@ -255,7 +255,6 @@
           "description": "entries in use",
           "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -294,7 +293,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -322,8 +320,7 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
-          "access": "R"
+            "access": "R"
         }
       ]
     },
@@ -350,7 +347,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -381,7 +377,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -409,7 +404,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -437,7 +431,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -467,7 +460,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -498,7 +490,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -506,7 +497,7 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L1",
       "description": "Instantaneous voltage L1",
-      "note": "Attribute 3 (scaler_unit) is overridden in factory with value -1, V (default in spec: 0, V)",
+      "note": "Attribute 3 (scaler_unit) is default in spec: '0, V', this is overridden in factory with value -1, V for some meter-types (so use valuetype dynamic)",
       "class-id": 3,
       "version": 0,
       "obis": "1.0.32.7.0.255",
@@ -530,16 +521,15 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
           "id": 3,
           "description": "scaler_unit",
-          "note": "Attribute 3 (scaler_unit) is overridden in factory with value -1, V (default in spec: 0, V)",
+          "note": "Attribute 3 (scaler_unit) is default in spec: '0, V', this is overridden in factory with value -1, V for some meter-types (so use valuetype dynamic)",
           "datatype": "scal_unit_type",
-          "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "valuetype": "DYNAMIC",
+          "value": "0, V",
           "access": "RW"
         }
       ]
@@ -547,7 +537,7 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L2",
       "description": "Instantaneous voltage L2",
-      "note": "Attribute 3 (scaler_unit) is overridden in factory with value -1, V (default in spec: 0, V)",
+      "note": "Attribute 3 (scaler_unit) is default in spec: '0, V', this is overridden in factory with value -1, V for some meter-types (so use valuetype dynamic)",
       "class-id": 3,
       "version": 0,
       "obis": "1.0.52.7.0.255",
@@ -568,16 +558,15 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
           "id": 3,
           "description": "scaler_unit",
-          "note": "Attribute 3 (scaler_unit) is overridden in factory with value -1, V (default in spec: 0, V)",
+          "note": "Attribute 3 (scaler_unit) is default in spec: '0, V', this is overridden in factory with value -1, V for some meter-types (so use valuetype dynamic)",
           "datatype": "scal_unit_type",
-          "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "valuetype": "DYNAMIC",
+          "value": "0, V",
           "access": "RW"
         }
       ]
@@ -585,7 +574,7 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L3",
       "description": "Instantaneous voltage L3",
-      "note": "Attribute 3 (scaler_unit) is overridden in factory with value -1, V (default in spec: 0, V)",
+      "note": "Attribute 3 (scaler_unit) is default in spec: '0, V', this is overridden in factory with value -1, V for some meter-types (so use valuetype dynamic)",
       "class-id": 3,
       "version": 0,
       "obis": "1.0.72.7.0.255",
@@ -606,16 +595,15 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
           "id": 3,
           "description": "scaler_unit",
-          "note": "Attribute 3 (scaler_unit) is overridden in factory with value -1, V (default in spec: 0, V)",
+          "note": "Attribute 3 (scaler_unit) is default in spec: '0, V', this is overridden in factory with value -1, V for some meter-types (so use valuetype dynamic)",
           "datatype": "scal_unit_type",
-          "valuetype": "FIXED_IN_PROFILE",
-          "value": "-1, V",
+          "valuetype": "DYNAMIC",
+          "value": "0, V",
           "access": "RW"
         }
       ]
@@ -647,7 +635,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -684,7 +671,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -721,7 +707,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -760,7 +745,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -796,7 +780,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -832,7 +815,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -871,7 +853,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -907,7 +888,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -943,7 +923,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -982,7 +961,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1020,7 +998,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1058,7 +1035,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1096,7 +1072,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1132,7 +1107,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1168,7 +1142,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1206,7 +1179,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1242,7 +1214,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1278,7 +1249,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1318,7 +1288,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1355,7 +1324,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1392,7 +1360,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1432,7 +1399,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1469,7 +1435,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1506,7 +1471,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1546,7 +1510,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1583,7 +1546,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1620,7 +1582,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1660,7 +1621,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1697,7 +1657,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1734,7 +1693,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1766,7 +1724,29 @@
           "description": "value",
           "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
+          "access": "RW"
+        }
+      ]
+    },
+    {
+      "tag": "ALARM_FILTER_1",
+      "description": "Alarm filter 1",
+      "note": null,
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.97.98.10.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
           "access": "RW"
         }
       ]

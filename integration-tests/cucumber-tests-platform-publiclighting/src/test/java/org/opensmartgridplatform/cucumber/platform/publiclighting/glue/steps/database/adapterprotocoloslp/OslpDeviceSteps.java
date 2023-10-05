@@ -10,8 +10,8 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.codec.binary.Base64;
@@ -83,8 +83,7 @@ public class OslpDeviceSteps {
             PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
             PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
 
-    final Date expireDateTime =
-        Date.from(ZonedDateTime.now().plusMinutes(expiresInMinutes).toInstant());
+    final Instant expireDateTime = ZonedDateTime.now().plusMinutes(expiresInMinutes).toInstant();
 
     // just add a dummy DeviceRequest and a dummy
     // ScheduleMessageDataContainerDto

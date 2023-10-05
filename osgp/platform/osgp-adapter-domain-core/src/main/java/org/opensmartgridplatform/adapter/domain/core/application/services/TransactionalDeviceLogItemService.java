@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.domain.core.application.config.PersistenceDomainLoggingConfig;
@@ -31,7 +31,7 @@ public class TransactionalDeviceLogItemService {
 
   @Autowired private DeviceLogItemSlicingRepository deviceLogItemSlicingRepository;
 
-  public List<DeviceLogItem> findDeviceLogItemsBeforeDate(final Date date, final int pageSize) {
+  public List<DeviceLogItem> findDeviceLogItemsBeforeDate(final Instant date, final int pageSize) {
     final PageRequest pageRequest = PageRequest.of(0, pageSize, Sort.Direction.ASC, "id");
     final Slice<DeviceLogItem> slice =
         this.deviceLogItemSlicingRepository.findByModificationTimeBefore(date, pageRequest);

@@ -258,7 +258,7 @@ public class Ssld extends Device {
       final RelayStatus newStatus = unhandledStatusesByIndex.remove(r.getIndex());
       if (newStatus != null
           && (r.getLastSwitchingEventTime() == null
-              || newStatus.getLastSwitchingEventTime().after(r.getLastSwitchingEventTime()))) {
+              || newStatus.getLastSwitchingEventTime().isAfter(r.getLastSwitchingEventTime()))) {
         r.updateLastSwitchingEventState(
             newStatus.isLastSwitchingEventState(), newStatus.getLastSwitchingEventTime());
       }

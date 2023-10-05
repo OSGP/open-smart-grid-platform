@@ -6,8 +6,10 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -17,12 +19,15 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.jupiter.api.Test;
+import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
+import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
@@ -30,6 +35,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.Attribute;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.ValueType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
@@ -62,6 +70,10 @@ public class DlmsHelperTest {
   public static final int DLMS_UNIT_VAR = 29;
   public static final int DLMS_UNIT_WH = 30;
   public static final int DLMS_UNIT_UNDEFINED = 0;
+
+  public static final int CLASS_ID = 3;
+  public static final String OBIS = "1.0.32.7.0.255";
+  private final int ATTRIBUTE_ID = 3;
 
   private final DlmsHelper dlmsHelper = new DlmsHelper();
 
@@ -308,6 +320,117 @@ public class DlmsHelperTest {
         () -> {
           this.dlmsHelper.getScalerUnit(unitUndefined, "getScalerUnitTest");
         });
+  }
+
+  void getScalerUnitValueFixedInProfile() throws ProtocolAdapterException {
+    final int scaler = 0;
+    final DlmsUnitTypeDto unit = DlmsUnitTypeDto.VOLT;
+
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+
+    final CosemObject cosemObject =
+        this.newCosemObject(ValueType.FIXED_IN_PROFILE, scaler + ", " + unit.getUnit());
+
+    final String result = this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject);
+    assertThat(result).isEqualTo(scaler + ", " + unit.getUnit());
+    verifyNoInteractions(connectionManager);
+  }
+
+  @Test
+  void getScalerUnitValue() throws ProtocolAdapterException, IOException {
+    final int scaler = -1;
+    final DlmsUnitTypeDto unit = DlmsUnitTypeDto.VOLT;
+
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DataObject dataObject =
+        DataObject.newArrayData(
+            List.of(
+                DataObject.newInteger32Data(scaler), DataObject.newInteger32Data(unit.getIndex())));
+    this.mockGetAttribute(connectionManager, dataObject);
+
+    final CosemObject cosemObject = this.newCosemObject(ValueType.DYNAMIC, "0, V");
+
+    final String result = this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject);
+    assertThat(result).isEqualTo(scaler + ", " + unit.getUnit());
+  }
+
+  @Test
+  void getScalerUnitValueWrongDataType() throws ProtocolAdapterException, IOException {
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DataObject dataObject = DataObject.newInteger32Data(666);
+    this.mockGetAttribute(connectionManager, dataObject);
+
+    final CosemObject cosemObject = this.newCosemObject(ValueType.DYNAMIC, "0, V");
+
+    final ProtocolAdapterException protocolAdapterException =
+        assertThrows(
+            ProtocolAdapterException.class,
+            () -> {
+              this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject);
+            });
+    assertThat(protocolAdapterException.getMessage())
+        .contains("complex data (structure) expected while retrieving scaler and unit.");
+  }
+
+  @Test
+  void getScalerUnitValueWrongSize() throws ProtocolAdapterException, IOException {
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DataObject dataObject =
+        DataObject.newArrayData(List.of(DataObject.newInteger32Data(666)));
+    this.mockGetAttribute(connectionManager, dataObject);
+
+    final CosemObject cosemObject = this.newCosemObject(ValueType.DYNAMIC, "0, V");
+
+    final ProtocolAdapterException protocolAdapterException =
+        assertThrows(
+            ProtocolAdapterException.class,
+            () -> {
+              this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject);
+            });
+    assertThat(protocolAdapterException.getMessage())
+        .contains("expected 2 values while retrieving scaler and unit.");
+  }
+
+  @Test
+  void getScalerUnitValueFunctionalException() throws ProtocolAdapterException, IOException {
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final GetResult getResult =
+        new GetResultImpl(DataObject.newNullData(), AccessResultCode.OTHER_REASON);
+    when(dlmsConnection.get(any(AttributeAddress.class))).thenReturn(getResult);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+    final CosemObject cosemObject = this.newCosemObject(ValueType.DYNAMIC, "0, V");
+
+    final ProtocolAdapterException protocolAdapterException =
+        assertThrows(
+            ProtocolAdapterException.class,
+            () -> {
+              this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject);
+            });
+    assertThat(protocolAdapterException.getMessage())
+        .contains("FunctionalException occurred when reading dynamic scalar unit for object");
+  }
+
+  private void mockGetAttribute(
+      final DlmsConnectionManager connectionManager, final DataObject dataObject)
+      throws IOException {
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final GetResult getResult = new GetResultImpl(dataObject, AccessResultCode.SUCCESS);
+    when(dlmsConnection.get(any(AttributeAddress.class))).thenReturn(getResult);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+  }
+
+  private CosemObject newCosemObject(final ValueType valueType, final String value) {
+    final CosemObject cosemObject = new CosemObject();
+    cosemObject.setClassId(CLASS_ID);
+    cosemObject.setObis(OBIS);
+    final Attribute attribute = new Attribute();
+    attribute.setId(this.ATTRIBUTE_ID);
+    attribute.setValuetype(valueType);
+    attribute.setValue(value);
+    cosemObject.setAttributes(List.of(attribute));
+    return cosemObject;
   }
 
   private void assertGetWithListException(

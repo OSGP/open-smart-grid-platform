@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
+import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -52,7 +53,7 @@ class DeviceFirmwareConverter
     return new DeviceFirmwareFile(
         device,
         firmwareFile,
-        source.getInstallationDate().toGregorianCalendar().getTime(),
+        source.getInstallationDate().toGregorianCalendar().toInstant(),
         source.getInstalledBy());
   }
 
@@ -69,7 +70,7 @@ class DeviceFirmwareConverter
     destination.setFirmware(firmware);
 
     final GregorianCalendar gCalendar = new GregorianCalendar();
-    gCalendar.setTime(source.getInstallationDate());
+    gCalendar.setTime(Date.from(source.getInstallationDate()));
 
     try {
       destination.setInstallationDate(

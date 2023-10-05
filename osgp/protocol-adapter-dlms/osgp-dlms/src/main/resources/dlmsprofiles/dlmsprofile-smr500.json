@@ -113,7 +113,6 @@
           "description": "entries in use",
           "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -198,7 +197,6 @@
           "description": "entries in use",
           "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -286,7 +284,6 @@
           "description": "entries in use",
           "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -318,7 +315,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -350,7 +346,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -382,7 +377,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -414,7 +408,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -446,7 +439,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -478,7 +470,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -510,7 +501,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -542,7 +532,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -574,7 +563,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -606,7 +594,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -638,7 +625,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -670,7 +656,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -702,7 +687,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -734,7 +718,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -766,7 +749,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -798,7 +780,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -830,7 +811,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -862,7 +842,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -894,7 +873,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -926,7 +904,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -958,7 +935,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -990,7 +966,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1022,7 +997,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1054,7 +1028,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1086,7 +1059,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1118,7 +1090,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1150,7 +1121,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1182,7 +1152,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1214,7 +1183,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1246,7 +1214,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1278,7 +1245,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1310,7 +1276,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1342,7 +1307,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1374,7 +1338,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -1398,7 +1361,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -1422,7 +1384,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -1446,7 +1407,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -1470,7 +1430,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -1494,7 +1453,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -1518,7 +1476,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -1542,7 +1499,6 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -1574,7 +1530,6 @@
           "description": "status",
           "datatype": "enum",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1582,7 +1537,6 @@
           "description": "cs attachment",
           "datatype": "enum",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1646,7 +1600,6 @@
           "description": "status",
           "datatype": "enum",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1654,7 +1607,6 @@
           "description": "cs attachment",
           "datatype": "enum",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1662,7 +1614,6 @@
           "description": "ps status",
           "datatype": "enum",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1774,7 +1725,6 @@
           "description": "access number",
           "datatype": "unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1782,7 +1732,6 @@
           "description": "status",
           "datatype": "unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1790,7 +1739,6 @@
           "description": "alarm",
           "datatype": "unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1830,7 +1778,6 @@
           "description": "received signal strength",
           "datatype": "unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1846,7 +1793,6 @@
           "description": "link status",
           "datatype": "enum",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -1886,7 +1832,6 @@
           "description": "capture time",
           "datatype": "structure",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -1907,7 +1852,29 @@
           "description": "value",
           "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
+          "access": "RW"
+        }
+      ]
+    },
+    {
+      "tag": "ALARM_FILTER_1",
+      "description": "Alarm filter 1",
+      "note": null,
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.97.98.10.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
           "access": "RW"
         }
       ]
@@ -2247,7 +2214,6 @@
           "description": "value",
           "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -2263,7 +2229,6 @@
           "description": "status",
           "datatype": "unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {

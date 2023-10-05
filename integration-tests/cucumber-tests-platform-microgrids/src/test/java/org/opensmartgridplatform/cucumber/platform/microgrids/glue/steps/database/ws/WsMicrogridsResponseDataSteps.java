@@ -9,9 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.lang.reflect.Field;
-import java.util.Date;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
@@ -50,10 +48,7 @@ public class WsMicrogridsResponseDataSteps extends BaseDeviceSteps {
         fld.setAccessible(true);
         fld.set(
             responseData,
-            Date.from(
-                Objects.requireNonNull(
-                        DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)))
-                    .toInstant()));
+            DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toInstant());
         this.microgridsResponseDataRepository.saveAndFlush(responseData);
       }
     } catch (final Exception e) {

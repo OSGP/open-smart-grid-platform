@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.logging.domain.repositories;
 
-import java.util.Date;
+import java.time.Instant;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,5 +21,6 @@ public interface DeviceLogItemPagingRepository extends JpaRepository<DeviceLogIt
   // Added only for testing
   @Modifying
   @Query(value = "UPDATE DeviceLogItem SET modificationTime = :modificationTime WHERE id = :id")
-  int setModificationTime(@Param("id") long id, @Param("modificationTime") Date modificationTime);
+  int setModificationTime(
+      @Param("id") long id, @Param("modificationTime") Instant modificationTime);
 }

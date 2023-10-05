@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.logging.domain.repositories;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DeviceLogItemSlicingRepository
     extends JpaRepository<DeviceLogItem, Long>, JpaSpecificationExecutor<DeviceLogItem> {
-  Slice<DeviceLogItem> findByModificationTimeBefore(Date endDate, Pageable pageable);
+  Slice<DeviceLogItem> findByModificationTimeBefore(Instant endDate, Pageable pageable);
 
   @Modifying
   @Query("delete from DeviceLogItem d where d.id in :ids")

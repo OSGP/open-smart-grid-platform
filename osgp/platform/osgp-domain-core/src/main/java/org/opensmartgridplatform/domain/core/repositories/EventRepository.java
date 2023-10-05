@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.domain.core.repositories;
 
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Event;
@@ -32,9 +32,9 @@ public interface EventRepository
 
   List<Event> findTop2ByDeviceIdentificationOrderByDateTimeDesc(String deviceIdentification);
 
-  List<Event> findByDateTimeBefore(Date date);
+  List<Event> findByDateTimeBefore(Instant date);
 
-  Slice<Event> findByDateTimeBefore(Date date, Pageable pageable);
+  Slice<Event> findByDateTimeBefore(Instant date, Pageable pageable);
 
   @Modifying
   @Query("delete from Event e where e.id in :ids")

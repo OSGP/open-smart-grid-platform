@@ -10,7 +10,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -75,7 +74,7 @@ public class DeviceLogItemSteps {
       final long deviceLogItemId, final ZonedDateTime modificationTime) {
     if (modificationTime != null) {
       this.deviceLogItemRepository.setModificationTime(
-          deviceLogItemId, Date.from(modificationTime.toInstant()));
+          deviceLogItemId, modificationTime.toInstant());
     }
   }
 
