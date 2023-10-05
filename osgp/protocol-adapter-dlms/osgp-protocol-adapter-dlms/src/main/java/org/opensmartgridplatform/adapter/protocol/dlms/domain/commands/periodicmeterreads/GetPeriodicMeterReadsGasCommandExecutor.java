@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.joda.time.DateTime;
+import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
@@ -41,10 +42,14 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CaptureObject;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
+import org.opensmartgridplatform.dlms.objectconfig.TypeBasedValue;
+import org.opensmartgridplatform.dlms.objectconfig.ValueType;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeDto;
@@ -173,6 +178,12 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
     final DataObject resultData =
         this.dlmsHelper.readDataObject(getResultList.get(0), PERIODIC_G_METER_READS);
+
+    // A capture object might not have a scaler unit, or the scaler unit needs to be chosen based
+    // on the device type. So check if that is the case and update the capture objects if necessary.
+    // Note: this might result in an additional request to the meter.
+    this.checkAndGetScalerUnits(selectedCaptureObjects, conn, device);
+
     final List<DataObject> bufferedObjectsList = resultData.getValue();
 
     final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads = new ArrayList<>();
@@ -643,12 +654,16 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     cosemObjectWithChannel.setDescription(cosemObject.getDescription());
     cosemObjectWithChannel.setMeterTypes(cosemObject.getMeterTypes());
     cosemObjectWithChannel.setNote(cosemObject.getNote());
-    cosemObjectWithChannel.setAttributes(cosemObject.getAttributes());
+    cosemObjectWithChannel.setAttributes(this.copyAttributes(cosemObject.getAttributes()));
     cosemObjectWithChannel.setClassId(cosemObject.getClassId());
     cosemObjectWithChannel.setTag(cosemObject.getTag());
     cosemObjectWithChannel.setProperties(cosemObject.getProperties());
     cosemObjectWithChannel.setVersion(cosemObject.getVersion());
     return cosemObjectWithChannel;
+  }
+
+  private List<Attribute> copyAttributes(final List<Attribute> attributes) {
+    return attributes.stream().map(Attribute::new).toList();
   }
 
   private ProfileCaptureTime getProfileCaptureTime(final CosemObject profile)
@@ -664,6 +679,119 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       default -> throw new ProtocolAdapterException(
           "Unexpected capture period " + capturePeriodValue);
     };
+  }
+
+  private void checkAndGetScalerUnits(
+      final List<CaptureObject> captureObjects,
+      final DlmsConnectionManager conn,
+      final DlmsDevice device)
+      throws ProtocolAdapterException {
+    final List<CaptureObject> captureObjectsWithoutScalerUnit = new ArrayList<>();
+
+    for (final CaptureObject captureObject : captureObjects) {
+      final CosemObject cosemObject = captureObject.getCosemObject();
+      if ((cosemObject.getClassId() != InterfaceClass.EXTENDED_REGISTER.id()
+              && cosemObject.getClassId() != InterfaceClass.REGISTER.id())
+          || captureObject.getAttributeId() != ExtendedRegisterAttribute.VALUE.attributeId()) {
+        continue;
+      }
+      final Attribute scalerUnitAttribute =
+          cosemObject.getAttribute(ExtendedRegisterAttribute.SCALER_UNIT.attributeId());
+      if (scalerUnitAttribute == null || scalerUnitAttribute.getValuetype() == ValueType.DYNAMIC) {
+        captureObjectsWithoutScalerUnit.add(captureObject);
+      } else if (scalerUnitAttribute.getValue().equals("BASED_ON_TYPE")) {
+        // Handle scaler unit based on type
+        final Optional<String> scalerUnitOptional =
+            this.getScalerUnitBasedOnModel(device, scalerUnitAttribute);
+        if (scalerUnitOptional.isPresent()) {
+          scalerUnitAttribute.setValue(scalerUnitOptional.get());
+        } else {
+          captureObjectsWithoutScalerUnit.add(captureObject);
+        }
+      }
+    }
+
+    if (!captureObjectsWithoutScalerUnit.isEmpty()) {
+      final List<String> scalerUnits =
+          this.getScalerUnitsFromMeter(captureObjectsWithoutScalerUnit, conn, device);
+
+      // Put retrieved scaler units in the correct capture objects
+      int index = 0;
+      for (final CaptureObject captureObject : captureObjectsWithoutScalerUnit) {
+        final Attribute attribute =
+            captureObject
+                .getCosemObject()
+                .getAttribute(ExtendedRegisterAttribute.SCALER_UNIT.attributeId());
+        attribute.setValue(scalerUnits.get(index));
+        index++;
+      }
+    }
+  }
+
+  private Optional<String> getScalerUnitBasedOnModel(
+      final DlmsDevice device, final Attribute scalerUnitAttribute) {
+    final List<TypeBasedValue> scalerUnits = scalerUnitAttribute.getValues();
+
+    for (final TypeBasedValue typeBasedValue : scalerUnits) {
+      if (typeBasedValue.getTypes().contains(device.getManufacturerId())) { // TODO: Change to model
+        return Optional.of(typeBasedValue.getValue());
+      }
+    }
+
+    return Optional.empty();
+  }
+
+  private List<String> getScalerUnitsFromMeter(
+      final List<CaptureObject> captureObjects,
+      final DlmsConnectionManager conn,
+      final DlmsDevice device)
+      throws ProtocolAdapterException {
+    final AttributeAddress[] scalerUnitAddresses = this.getScalerUnitAddresses(captureObjects);
+
+    conn.getDlmsMessageListener()
+        .setDescription(
+            String.format(
+                "GetPeriodicMeterReadsGas scaler units, retrieve attribute: %s",
+                JdlmsObjectToStringUtil.describeAttributes(scalerUnitAddresses)));
+
+    final List<GetResult> getResults =
+        this.dlmsHelper.getWithList(conn, device, scalerUnitAddresses);
+
+    if (getResults.stream()
+        .anyMatch(result -> result.getResultCode() != AccessResultCode.SUCCESS)) {
+      throw new ProtocolAdapterException(
+          "Could not get all scaler units from meter: " + getResults);
+    }
+
+    return this.readScalerUnits(getResults);
+  }
+
+  private AttributeAddress[] getScalerUnitAddresses(final List<CaptureObject> captureObjects) {
+    return captureObjects.stream().map(this::getScalerUnitAddress).toArray(AttributeAddress[]::new);
+  }
+
+  private AttributeAddress getScalerUnitAddress(final CaptureObject captureObject) {
+    final CosemObject cosemObject = captureObject.getCosemObject();
+    return new AttributeAddress(
+        cosemObject.getClassId(),
+        new ObisCode(cosemObject.getObis()),
+        ExtendedRegisterAttribute.SCALER_UNIT.attributeId());
+  }
+
+  private List<String> readScalerUnits(final List<GetResult> getResultList)
+      throws ProtocolAdapterException {
+
+    final List<String> scalerUnits = new ArrayList<>();
+
+    for (final GetResult getResult : getResultList) {
+      final DataObject scalerUnitObject = getResult.getResultData();
+
+      scalerUnits.add(
+          this.dlmsHelper.getScalerUnit(
+              scalerUnitObject, "get scaler unit for periodic meter reads"));
+    }
+
+    return scalerUnits;
   }
 
   @Override

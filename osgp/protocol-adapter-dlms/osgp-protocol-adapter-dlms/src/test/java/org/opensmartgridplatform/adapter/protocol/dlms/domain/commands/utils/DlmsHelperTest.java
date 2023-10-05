@@ -282,6 +282,34 @@ public class DlmsHelperTest {
     assertThat(meterValueDto.getDlmsUnit()).isEqualTo(DlmsUnitTypeDto.VAR);
   }
 
+  @Test
+  void testGetScalerUnit() {
+    final DataObject wrongType = DataObject.newBoolData(false);
+    final DataObject structureWithOnlyOneElement =
+        DataObject.newStructureData(DataObject.newInteger8Data((byte) 2));
+    final DataObject unitUndefined =
+        DataObject.newStructureData(
+            DataObject.newInteger8Data((byte) 2), DataObject.newEnumerateData(0));
+
+    assertThrows(
+        ProtocolAdapterException.class,
+        () -> {
+          this.dlmsHelper.getScalerUnit(wrongType, "getScalerUnitTest");
+        });
+
+    assertThrows(
+        ProtocolAdapterException.class,
+        () -> {
+          this.dlmsHelper.getScalerUnit(structureWithOnlyOneElement, "getScalerUnitTest");
+        });
+
+    assertThrows(
+        ProtocolAdapterException.class,
+        () -> {
+          this.dlmsHelper.getScalerUnit(unitUndefined, "getScalerUnitTest");
+        });
+  }
+
   private void assertGetWithListException(
       final Class<? extends Exception> jdlmsExceptionClazz,
       final Class<? extends Exception> exceptionClazz)

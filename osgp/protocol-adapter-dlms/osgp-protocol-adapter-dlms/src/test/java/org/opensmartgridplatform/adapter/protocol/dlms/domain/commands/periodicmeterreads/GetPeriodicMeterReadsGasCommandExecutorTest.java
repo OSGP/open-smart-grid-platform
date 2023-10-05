@@ -21,12 +21,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
@@ -42,6 +43,7 @@ import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CaptureObject;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
+import org.opensmartgridplatform.dlms.objectconfig.ValueType;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
@@ -76,6 +78,14 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
   private final DateTime fromDateTime = new DateTime(this.from);
   private final DateTime toDateTime = new DateTime(this.to);
   private MessageMetadata messageMetadata;
+
+  private static final int CLASS_ID_DATA = 1;
+  private static final int CLASS_ID_EXTENDED_REGISTER = 4;
+  private static final int CLASS_ID_PROFILE_GENERIC = 7;
+  private static final int CLASS_ID_CLOCK = 8;
+
+  private static final String SCALER_UNIT_DYNAMIC = "-3, M3";
+  private static final String SCALER_UNIT_FIXED = "0, M3";
 
   @BeforeEach
   public void setUp() {
@@ -117,8 +127,9 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"UTC", "Australia/Tasmania"})
-  void testHappyWithDifferentTimeZones(final String timeZone) throws Exception {
+  @CsvSource({"UTC,FIXED_IN_PROFILE", "Australia/Tasmania,DYNAMIC"})
+  void testHappyWithDifferentTimeZones(final String timeZone, final ValueType valueType)
+      throws Exception {
 
     // SETUP - request
     final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
@@ -134,26 +145,10 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
         DlmsDateTimeConverter.toDateTime(new Date(this.to), this.device.getTimezone());
 
     // SETUP - dlms objects
-    final Attribute attributeCaptureObjects =
-        this.createAttribute(
-            3, "CLOCK,2|AMR_PROFILE_STATUS,2|MBUS_MASTER_VALUE,2|MBUS_MASTER_VALUE,5");
-    final Attribute attributeCapturePeriod = this.createAttribute(4, "86400");
-    final CosemObject profile =
-        this.createCosemObject(
-            "DAILY_VALUES_G",
-            "1.x.3.4.5.6",
-            "GAS",
-            List.of(attributeCaptureObjects, attributeCapturePeriod));
-
-    final CosemObject clock =
-        this.createCosemObject("CLOCK", "0.0.1.0.0.255", "ABSTRACT", List.of());
-    final CosemObject status =
-        this.createCosemObject("AMR_PROFILE_STATUS", "0.x.1.2.3.255", "GAS", List.of());
-
-    final Attribute attributeScalerUnit = this.createAttribute(3, "0, M3");
-    final CosemObject value_g =
-        this.createCosemObject(
-            "MBUS_MASTER_VALUE", "0.x.24.1.0.255", "GAS", List.of(attributeScalerUnit));
+    final CosemObject profile = this.createProfile();
+    final CosemObject clock = this.createClock();
+    final CosemObject status = this.createStatus();
+    final CosemObject value_g = this.createMBusMasterValue(valueType);
 
     final CaptureObject captureObjectClock = new CaptureObject(clock, 2);
     final CaptureObject captureObjectStatus = new CaptureObject(status, 2);
@@ -224,6 +219,16 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
 
     when(this.dlmsHelper.readDataObject(eq(getResult), any(String.class))).thenReturn(resultData);
 
+    // SETUP - mock dlms helper to return data objects for scaler units on request
+    final String scalerUnit =
+        valueType.equals(ValueType.DYNAMIC) ? SCALER_UNIT_DYNAMIC : SCALER_UNIT_FIXED;
+    final GetResult getResultScalerUnits = mock(GetResult.class);
+    when(this.dlmsHelper.getWithList(eq(this.connectionManager), eq(this.device), any()))
+        .thenReturn(List.of(getResultScalerUnits));
+    when(getResultScalerUnits.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+
+    when(this.dlmsHelper.getScalerUnit(any(), any())).thenReturn(scalerUnit);
+
     // Make mocks return different times for each meterread. The last meterread has a time
     // outside the requested period, causing the meterread to be not included in the result.
     final CosemDateTimeDto timeMeterRead1 = new CosemDateTimeDto(this.fromDateTime);
@@ -240,9 +245,9 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
 
     final DlmsMeterValueDto meterValue1 = mock(DlmsMeterValueDto.class);
     final DlmsMeterValueDto meterValue2 = mock(DlmsMeterValueDto.class);
-    when(this.dlmsHelper.getScaledMeterValueWithScalerUnit(data2, "0, M3", "gasValue"))
+    when(this.dlmsHelper.getScaledMeterValueWithScalerUnit(data2, scalerUnit, "gasValue"))
         .thenReturn(meterValue1);
-    when(this.dlmsHelper.getScaledMeterValueWithScalerUnit(data6, "0, M3", "gasValue"))
+    when(this.dlmsHelper.getScaledMeterValueWithScalerUnit(data6, scalerUnit, "gasValue"))
         .thenReturn(meterValue2);
 
     // CALL
@@ -290,8 +295,13 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
   }
 
   private CosemObject createCosemObject(
-      final String tag, final String obis, final String group, final List<Attribute> attributes) {
+      final int classId,
+      final String tag,
+      final String obis,
+      final String group,
+      final List<Attribute> attributes) {
     final CosemObject object = new CosemObject();
+    object.setClassId(classId);
     object.setTag(tag);
     object.setObis(obis);
     object.setGroup(group);
@@ -300,9 +310,14 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
   }
 
   private Attribute createAttribute(final int id, final String value) {
+    return this.createAttribute(id, value, ValueType.FIXED_IN_PROFILE);
+  }
+
+  private Attribute createAttribute(final int id, final String value, final ValueType valueType) {
     final Attribute attribute = new Attribute();
     attribute.setId(id);
     attribute.setValue(value);
+    attribute.setValuetype(valueType);
     return attribute;
   }
 
@@ -311,6 +326,39 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
     device.setSelectiveAccessPeriodicMeterReadsSupported(true);
     device.setProtocol(protocol);
     return device;
+  }
+
+  private CosemObject createProfile() {
+    final Attribute attributeCaptureObjects =
+        this.createAttribute(
+            3, "CLOCK,2|AMR_PROFILE_STATUS,2|MBUS_MASTER_VALUE,2|MBUS_MASTER_VALUE,5");
+    final Attribute attributeCapturePeriod = this.createAttribute(4, "86400");
+    return this.createCosemObject(
+        this.CLASS_ID_PROFILE_GENERIC,
+        "DAILY_VALUES_G",
+        "1.x.3.4.5.6",
+        "GAS",
+        List.of(attributeCaptureObjects, attributeCapturePeriod));
+  }
+
+  private CosemObject createClock() {
+    return this.createCosemObject(
+        this.CLASS_ID_CLOCK, "CLOCK", "0.0.1.0.0.255", "ABSTRACT", List.of());
+  }
+
+  private CosemObject createStatus() {
+    return this.createCosemObject(
+        this.CLASS_ID_DATA, "AMR_PROFILE_STATUS", "0.x.1.2.3.255", "GAS", List.of());
+  }
+
+  private CosemObject createMBusMasterValue(final ValueType valueType) {
+    final Attribute attributeScalerUnit = this.createAttribute(3, "0, M3", valueType);
+    return this.createCosemObject(
+        this.CLASS_ID_EXTENDED_REGISTER,
+        "MBUS_MASTER_VALUE",
+        "0.x.24.1.0.255",
+        "GAS",
+        List.of(attributeScalerUnit));
   }
 
   // Compares date with cosemDateTime. Note: cosemDateTime uses hundredths and

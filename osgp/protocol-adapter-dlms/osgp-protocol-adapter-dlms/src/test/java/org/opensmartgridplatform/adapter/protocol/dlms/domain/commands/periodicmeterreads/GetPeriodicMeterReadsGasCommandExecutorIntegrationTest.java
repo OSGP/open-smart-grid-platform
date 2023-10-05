@@ -4,6 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.pow;
+import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto.CLOCK_ADJUSTED;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto.CLOCK_INVALID;
@@ -23,6 +26,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -133,6 +137,11 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
   private static final List<Integer> ALL_CHANNELS = List.of(1, 2, 3, 4);
 
+  private static final List<String> GMETER_TYPES = List.of("G4", "G6", "G10", "G16", "G25");
+  private static final Map<String, Integer> SCALERS_FOR_METER_TYPES =
+      Map.ofEntries(
+          entry("G4", -3), entry("G6", -3), entry("G10", -2), entry("G16", -2), entry("G25", -2));
+
   @BeforeEach
   public void setUp() throws IOException, ObjectConfigException {
 
@@ -202,7 +211,9 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     for (final Protocol protocol : protocols) {
       for (final PeriodTypeDto periodType : PeriodTypeDto.values()) {
         for (final int channel : ALL_CHANNELS) {
-          arguments.add(Arguments.of(protocol, periodType, channel));
+          for (final String gMeterType : GMETER_TYPES) {
+            arguments.add(Arguments.of(protocol, periodType, channel, gMeterType));
+          }
         }
       }
     }
@@ -213,29 +224,33 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   @ParameterizedTest
   @MethodSource("combinationsDsmr")
   void testExecuteDsmrNoSelectedValues(
-      final Protocol protocol, final PeriodTypeDto type, final int channel) throws Exception {
-    this.testExecute(protocol, type, false, false, channel);
+      final Protocol protocol, final PeriodTypeDto type, final int channel, final String gMeterType)
+      throws Exception {
+    this.testExecute(protocol, type, false, false, channel, gMeterType);
   }
 
   @ParameterizedTest
   @MethodSource("combinationsDsmr")
-  void testExecuteDsmr(final Protocol protocol, final PeriodTypeDto type, final int channel)
+  void testExecuteDsmr(
+      final Protocol protocol, final PeriodTypeDto type, final int channel, final String gMeterType)
       throws Exception {
-    this.testExecute(protocol, type, false, true, channel);
+    this.testExecute(protocol, type, false, true, channel, gMeterType);
   }
 
   @ParameterizedTest
   @MethodSource("combinationsSmr5")
-  void testExecuteSmr5(final Protocol protocol, final PeriodTypeDto type, final int channel)
+  void testExecuteSmr5(
+      final Protocol protocol, final PeriodTypeDto type, final int channel, final String gMeterType)
       throws Exception {
-    this.testExecute(protocol, type, false, true, channel);
+    this.testExecute(protocol, type, false, true, channel, gMeterType);
   }
 
   @ParameterizedTest
   @MethodSource("combinationsSmr5")
   void testExecuteSmr5_WithNullData(
-      final Protocol protocol, final PeriodTypeDto type, final int channel) throws Exception {
-    this.testExecute(protocol, type, true, true, channel);
+      final Protocol protocol, final PeriodTypeDto type, final int channel, final String gMeterType)
+      throws Exception {
+    this.testExecute(protocol, type, true, true, channel, gMeterType);
   }
 
   private void testExecute(
@@ -243,7 +258,8 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
       final PeriodTypeDto type,
       final boolean useNullData,
       final boolean selectedValuesSupported,
-      final int channel)
+      final int channel,
+      final String gMeterType)
       throws Exception {
 
     // SETUP
@@ -254,7 +270,7 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     this.connectionStub.clearRequestedAttributeAddresses();
 
     // Create device with requested protocol version
-    final DlmsDevice device = this.createDlmsDevice(protocol, selectedValuesSupported);
+    final DlmsDevice device = this.createDlmsDevice(protocol, selectedValuesSupported, gMeterType);
 
     // Create request object
     final PeriodicMeterReadsRequestDto request =
@@ -298,17 +314,20 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     assertThat(periodicMeterReads).hasSize(AMOUNT_OF_PERIODS);
 
     this.checkClockValues(periodicMeterReads, type, useNullData);
-    this.checkValues(periodicMeterReads, channel);
+    this.checkValues(periodicMeterReads, channel, this.SCALERS_FOR_METER_TYPES.get(gMeterType));
     this.checkAmrStatus(periodicMeterReads, protocol, type);
   }
 
   private DlmsDevice createDlmsDevice(
-      final Protocol protocol, final boolean selectiveAccessPeriodicMeterReadsSupported) {
+      final Protocol protocol,
+      final boolean selectiveAccessPeriodicMeterReadsSupported,
+      final String gMeterType) {
     final DlmsDevice device = new DlmsDevice();
     device.setProtocol(protocol);
     device.setSelectiveAccessSupported(true);
     device.setSelectiveAccessPeriodicMeterReadsSupported(
         selectiveAccessPeriodicMeterReadsSupported);
+    device.setMbusManufacturerIdentification(gMeterType); // TODO
     return device;
   }
 
@@ -511,16 +530,19 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
   }
 
   private void checkValues(
-      final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads, final int channel) {
+      final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads,
+      final int channel,
+      final int scaler) {
 
     final PeriodicMeterReadsGasResponseItemDto period1 = periodicMeterReads.get(0);
     final PeriodicMeterReadsGasResponseItemDto period2 = periodicMeterReads.get(1);
+    final BigDecimal multiplier = BigDecimal.valueOf(pow(10, abs(scaler)));
 
-    assertThat(period1.getConsumption().getValue().multiply(this.SCALER).intValue())
+    assertThat(period1.getConsumption().getValue().multiply(multiplier).intValue())
         .isEqualTo(this.PERIOD_1_LONG_VALUE + channel);
     assertThat(period1.getConsumption().getDlmsUnit()).isEqualTo(DlmsUnitTypeDto.M3);
 
-    assertThat(period2.getConsumption().getValue().multiply(this.SCALER).intValue())
+    assertThat(period2.getConsumption().getValue().multiply(multiplier).intValue())
         .isEqualTo(this.PERIOD_2_LONG_VALUE + channel);
     assertThat(period2.getConsumption().getDlmsUnit()).isEqualTo(DlmsUnitTypeDto.M3);
   }

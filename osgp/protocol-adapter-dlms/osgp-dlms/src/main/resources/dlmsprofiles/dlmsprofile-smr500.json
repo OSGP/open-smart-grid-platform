@@ -2199,8 +2199,18 @@
           "id": 3,
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
-          "valuetype": "DYNAMIC",
-          "value": "-3, M3",
+          "valuetype": "FIXED_IN_METER",
+          "value": "BASED_ON_TYPE",
+          "values": [
+            {
+              "types": ["G4", "G6"],
+              "value": "-3, M3"
+            },
+            {
+              "types": ["G10", "G16", "G25"],
+              "value": "-2, M3"
+            }
+          ],
           "access": "R"
         },
         {
