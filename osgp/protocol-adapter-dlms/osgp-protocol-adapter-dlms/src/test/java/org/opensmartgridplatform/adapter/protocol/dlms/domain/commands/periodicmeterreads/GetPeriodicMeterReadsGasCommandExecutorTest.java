@@ -8,7 +8,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,7 +30,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.AccessResultCode;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AmrProfileStatusCodeHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter;
@@ -39,6 +43,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CaptureObject;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
@@ -223,7 +228,14 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
     final String scalerUnit =
         valueType.equals(ValueType.DYNAMIC) ? SCALER_UNIT_DYNAMIC : SCALER_UNIT_FIXED;
     final GetResult getResultScalerUnits = mock(GetResult.class);
-    when(this.dlmsHelper.getWithList(eq(this.connectionManager), eq(this.device), any()))
+    final AttributeAddress expectedAttributeAddressScalerUnit =
+        new AttributeAddress(
+            CLASS_ID_EXTENDED_REGISTER,
+            new ObisCode("0.1.24.1.0.255"),
+            ExtendedRegisterAttribute.SCALER_UNIT.attributeId(),
+            null);
+    when(this.dlmsHelper.getWithList(
+            eq(this.connectionManager), eq(this.device), refEq(expectedAttributeAddressScalerUnit)))
         .thenReturn(List.of(getResultScalerUnits));
     when(getResultScalerUnits.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
 
@@ -264,6 +276,14 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
                 profile.getClassId(),
                 profile.getObis().replace("x", String.valueOf(channel.getChannelNumber())),
                 2));
+
+    // Expect only one call to retrieve the values from the buffer
+    verify(this.dlmsHelper, times(1))
+        .getAndCheck(eq(this.connectionManager), eq(this.device), any(), any());
+
+    // If a dynamic scalerUnit is used then expect 1 additional call
+    verify(this.dlmsHelper, times(valueType == ValueType.DYNAMIC ? 1 : 0))
+        .getWithList(eq(this.connectionManager), eq(this.device), any());
 
     // ASSERT - the result should contain 2 values
     final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads =
