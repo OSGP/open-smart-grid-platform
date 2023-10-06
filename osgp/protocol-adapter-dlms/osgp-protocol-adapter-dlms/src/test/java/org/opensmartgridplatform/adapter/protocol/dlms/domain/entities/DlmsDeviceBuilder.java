@@ -19,6 +19,7 @@ public class DlmsDeviceBuilder {
   private DefaultValue<Boolean> hls4Active = notSet();
   private DefaultValue<Boolean> hls5Active = notSet();
   private DefaultValue<String> protocol = notSet();
+  private DefaultValue<String> configLookupType = notSet();
   private DefaultValue<Long> invocationCounter = notSet();
   private DefaultValue<String> ipAddress = notSet();
   private DefaultValue<Boolean> ipAddressStatic = notSet();
@@ -43,7 +44,14 @@ public class DlmsDeviceBuilder {
     device.setCommunicationMethod(this.communicationMethod.orElse(null));
     device.setCommunicationProvider(this.communicationProvider.orElse(null));
     device.setVersion(this.version.orElse(0L));
+    device.setConfigLookupType(this.configLookupType.orElse(null));
     return device;
+  }
+
+  /** set the configLookupType that will be used to lookup values in the object config service. */
+  public DlmsDeviceBuilder withConfigLookupType(final String configLookupType) {
+    this.configLookupType = setTo(configLookupType);
+    return this;
   }
 
   public DlmsDeviceBuilder withDeviceIdentification(final String deviceIdentification) {

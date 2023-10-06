@@ -429,4 +429,14 @@ public class DlmsDevice extends AbstractEntity {
   public void setFirmwareHash(final String firmwareHash) {
     this.firmwareHash = firmwareHash;
   }
+
+  /** get the configLookupType that will be used to lookup values in the object config service. */
+  public String getConfigLookupType() {
+    return this.configLookupType;
+  }
+
+  /** set the configLookupType that will be used to lookup values in the object config service. */
+  public void setConfigLookupType(final String configLookupType) {
+    this.configLookupType = configLookupType;
+  }
 }
