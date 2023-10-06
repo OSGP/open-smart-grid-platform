@@ -121,34 +121,61 @@ public class GetPeriodicMeterReadsGasCommandExecutor
           "PeriodicMeterReadsQuery should contain PeriodType, BeginDate and EndDate.");
     }
 
-    final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
     final DateTime from =
         DlmsDateTimeConverter.toDateTime(
             periodicMeterReadsQuery.getBeginDate(), device.getTimezone());
     final DateTime to =
         DlmsDateTimeConverter.toDateTime(
             periodicMeterReadsQuery.getEndDate(), device.getTimezone());
-    final boolean selectedValuesSupported = device.isSelectiveAccessPeriodicMeterReadsSupported();
-    final int channel = periodicMeterReadsQuery.getChannel().getChannelNumber();
 
+    // The query can be for 3 different types of values: Interval (hourly), daily or monthly.
+    final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
+
+    // The periodic values are stored in the meter in the buffer of a Profile Generic.
+    // Based on the type and the protocol version, get the information for the right Profile from
+    // the object configuration.
     final CosemObject profileObject = this.getProfileConfigObject(device, queryPeriodType);
 
+    // A Profile Generic periodically stores values of multiple objects. Usually, this is a
+    // timestamp from the Clock, a status, a meter value and the timestamp when the meter value was
+    // stored (the capture time). For some meters, the gas values and the electricity values are
+    // combined in one profile.
+    // Values in the profile will be selected using selective access. Selecting values based on a
+    // start and end datetime should be supported for all devices. Selecting a subset of values to
+    // be retrieved (e.g. only gas values in a combined profile) is not supported by all devices.
+    final boolean selectedValuesSupported = device.isSelectiveAccessPeriodicMeterReadsSupported();
+
+    // A request can be for channel 1-4.
+    final int channel = periodicMeterReadsQuery.getChannel().getChannelNumber();
+
+    // The profile object from the object config contains information about the objects for which
+    // a value (one of the attributes) is stored in the profile: the capture objects.
+    // Note that the order is important: the meter will return the values in the order of the
+    // capture object definition in the profile.
+    // All capture objects are retrieved from the config as well to get information about the scaler
+    // and unit of the values.
     final List<CaptureObject> allCaptureObjectsInProfile =
         this.getCaptureObjectsInProfile(profileObject, device, channel);
 
+    // If it selectedValues is supported, then determine a subset of capture objects that are to be
+    // retrieved. E.g. when it is a combined profile, we can only get the gas values without the
+    // electricity values. This is more efficient and improves privacy (we only get what we need).
     final List<CaptureObject> selectedCaptureObjects =
         this.getSelectedCaptureObjects(
             allCaptureObjectsInProfile, Medium.GAS, channel, selectedValuesSupported);
 
+    // Check if it's needed to select values. If all values are requested, then we can skip the
+    // select values option in the request to the meter.
     final boolean selectValues =
         selectedValuesSupported
             && (allCaptureObjectsInProfile.size() != selectedCaptureObjects.size());
 
+    // To request the values from the meter, we need the address. This contains the obis code of
+    // the profile object, the attribute id of the buffer (2) and the selective access parameters:
+    // the from and to dates and (if applicable) the selected values.
     final AttributeAddress profileBufferAddress =
         this.getAttributeAddressForProfile(
             profileObject, from, to, channel, selectedCaptureObjects, selectValues);
-
-    final ProfileCaptureTime intervalTime = this.getProfileCaptureTime(profileObject);
 
     LOGGER.info(
         "Retrieving current billing period and profiles for gas for period type: {}, from: "
@@ -167,6 +194,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
                 to,
                 JdlmsObjectToStringUtil.describeAttributes(profileBufferAddress)));
 
+    // This is the actual request to the meter. The DlmsHelper will automatically check if the
+    // result is SUCCESS. Otherwise, it will throw an exception.
     final List<GetResult> getResultList =
         this.dlmsHelper.getAndCheck(
             conn,
@@ -176,16 +205,27 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
     LOGGER.debug("Received getResult: {} ", getResultList);
 
+    // Unpack the data from the meter response
     final DataObject resultData =
         this.dlmsHelper.readDataObject(getResultList.get(0), PERIODIC_G_METER_READS);
-
-    // A capture object might not have a scaler unit, or the scaler unit needs to be chosen based
-    // on the device type. So check if that is the case and update the capture objects if necessary.
-    // Note: this might result in an additional request to the meter.
-    this.checkAndGetScalerUnits(selectedCaptureObjects, conn, device);
-
     final List<DataObject> bufferedObjectsList = resultData.getValue();
 
+    // The values in the bufferedObjectList now need to be converted to a ResponseItem including
+    // information about the time, the type of value and the unit.
+
+    // A capture object might not have a fixed scaler unit in the config, or the scaler unit needs
+    // to be chosen based on the device type. So check if that is the case and update the capture
+    // objects if necessary. Note: this might result in an additional request to the meter.
+    this.checkAndGetScalerUnits(selectedCaptureObjects, conn, device, Medium.GAS, channel);
+
+    // The interval time of the profile is important. For efficiency, most meters only send a
+    // timestamp for the first value in the response. The timestamp of the other values should be
+    // calculated using the interval time.
+    final ProfileCaptureTime intervalTime = this.getProfileCaptureTime(profileObject);
+
+    // Now convert the retrieved values. Each buffered object contains the values for a single
+    // interval (e.g. a timestamp, a status and a meter value). The values in the buffered object
+    // are in the order of the capture objects in the profile.
     final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads = new ArrayList<>();
     for (final DataObject bufferedObject : bufferedObjectsList) {
       final List<DataObject> bufferedObjectValue = bufferedObject.getValue();
@@ -204,6 +244,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       }
     }
 
+    // To be sure no values are returned outside the requested period, filter on from and to date.
     final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReadsWithinRequestedPeriod =
         periodicMeterReads.stream()
             .filter(
@@ -226,6 +267,14 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads)
       throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
+    // The bufferedObjects contain the values retrieved from the meter for a single interval.
+    // The bufferedObjects contain no information about the type of value. But because the
+    // bufferedObjects are always in the same known order (the order of the selectedObjects), we can
+    // still convert the values.
+
+    // The first timestamp in the response of a meter should always be included. The following
+    // intervals could have a 'null' timestamp, meaning the time should be calculated based on the
+    // previous timestamp.
     final Optional<Date> previousLogTime = this.getPreviousLogTime(periodicMeterReads);
     final Date logTime =
         this.readClock(
@@ -236,12 +285,19 @@ public class GetPeriodicMeterReadsGasCommandExecutor
             bufferedObjects,
             this.dlmsHelper);
 
+    // The status is used in most profiles. But for some it is not used. In that case, the
+    // selectedObjects will not contain a status object and readStatus will return null.
     final AmrProfileStatusCodeDto status =
         this.readStatus(bufferedObjects, selectedObjects, periodType);
-    final DataObject gasValue = this.readValue(bufferedObjects, selectedObjects, channel);
 
+    // The gasValue should always be included. The value of the meter has no information about
+    // the scaler or the unit, so that information is retrieved from the corresponding capture
+    // object in the selected objects.
+    final DataObject gasValue = this.readValue(bufferedObjects, selectedObjects, channel);
     final String scalerUnit = this.getScalerUnit(selectedObjects, channel);
 
+    // The capture time is used in most profiles. But for some it is not used. In that case, the
+    // selectedObjects will not contain a capture time object and readCaptureTime will return null.
     final Optional<Date> previousCaptureTime = this.getPreviousCaptureTime(periodicMeterReads);
     final Date captureTime =
         this.readCaptureTime(
@@ -684,23 +740,36 @@ public class GetPeriodicMeterReadsGasCommandExecutor
   private void checkAndGetScalerUnits(
       final List<CaptureObject> captureObjects,
       final DlmsConnectionManager conn,
-      final DlmsDevice device)
+      final DlmsDevice device,
+      final Medium medium,
+      final int channel)
       throws ProtocolAdapterException {
     final List<CaptureObject> captureObjectsWithoutScalerUnit = new ArrayList<>();
 
-    for (final CaptureObject captureObject : captureObjects) {
+    // Each relevant meter value retrieved from the meter should have a scaler and unit. If values
+    // were retrieved from a combined (E+G) profile and selectedValues is not supported, then
+    // more values are retrieved than needed. For example: if the request was for gas and channel 1,
+    // then all electricity values and values for other channels are not relevant and no scaler and
+    // unit is needed for those objects.
+    final List<CaptureObject> relevantCaptureObjects =
+        this.getRelevantCaptureObjects(captureObjects, medium.name(), channel);
+
+    for (final CaptureObject captureObject : relevantCaptureObjects) {
       final CosemObject cosemObject = captureObject.getCosemObject();
-      if ((cosemObject.getClassId() != InterfaceClass.EXTENDED_REGISTER.id()
-              && cosemObject.getClassId() != InterfaceClass.REGISTER.id())
-          || captureObject.getAttributeId() != ExtendedRegisterAttribute.VALUE.attributeId()) {
-        continue;
-      }
       final Attribute scalerUnitAttribute =
           cosemObject.getAttribute(ExtendedRegisterAttribute.SCALER_UNIT.attributeId());
+
+      // There are 3 possibilities for the scalerUnit in the capture object:
+      // - A fixed scalerUnit is defined. In that case, we don't need to do anything.
+      // - No scalerUnit is defined of the scalerUnit is defined as Dynamic. In that case, the
+      //   scaler unit needs to be read from the meter
+      // - The scalerUnit is defined based on the meter type. In that case, we need to select the
+      //   right scalerUnit. If that fails (e.g. because the meter type of the device is not
+      //   defined), then we have to read the scalerUnit from the meter.
+
       if (scalerUnitAttribute == null || scalerUnitAttribute.getValuetype() == ValueType.DYNAMIC) {
         captureObjectsWithoutScalerUnit.add(captureObject);
       } else if (scalerUnitAttribute.getValue().equals("BASED_ON_TYPE")) {
-        // Handle scaler unit based on type
         final Optional<String> scalerUnitOptional =
             this.getScalerUnitBasedOnModel(device, scalerUnitAttribute);
         if (scalerUnitOptional.isPresent()) {
@@ -725,6 +794,31 @@ public class GetPeriodicMeterReadsGasCommandExecutor
         attribute.setValue(scalerUnits.get(index));
         index++;
       }
+    }
+  }
+
+  private List<CaptureObject> getRelevantCaptureObjects(
+      final List<CaptureObject> captureObjects, final String medium, final int channel) {
+    return captureObjects.stream()
+        .filter(
+            captureObject ->
+                captureObject.getCosemObject().getClassId() == InterfaceClass.EXTENDED_REGISTER.id()
+                    || captureObject.getCosemObject().getClassId() == InterfaceClass.REGISTER.id())
+        .filter(
+            captureObject ->
+                captureObject.getAttributeId() == ExtendedRegisterAttribute.VALUE.attributeId())
+        .filter(captureObject -> captureObject.getCosemObject().getGroup().equals(medium))
+        .filter(
+            captureObject ->
+                this.getChannelWithoutException(captureObject.getCosemObject()) == channel)
+        .toList();
+  }
+
+  private int getChannelWithoutException(final CosemObject object) {
+    try {
+      return object.getChannel();
+    } catch (final ObjectConfigException e) {
+      return -1;
     }
   }
 
