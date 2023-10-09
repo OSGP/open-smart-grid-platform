@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitoring;
 
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter.toDateTime;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter.toZonedDateTime;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.DEFINABLE_LOAD_PROFILE;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.POWER_QUALITY_PROFILE_1;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.POWER_QUALITY_PROFILE_2;
@@ -12,17 +12,16 @@ import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.POWER_Q
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.Getter;
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
@@ -128,8 +127,14 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       final List<CosemObject> configObjects = entry.getValue();
 
       final ObisCode obisCode = new ObisCode(profile.getObis());
-      final DateTime beginDateTime = toDateTime(request.getBeginDate(), device.getTimezone());
-      final DateTime endDateTime = toDateTime(request.getEndDate(), device.getTimezone());
+      final ZonedDateTime beginDateTime =
+          toZonedDateTime(
+              ZonedDateTime.ofInstant(request.getBeginDate().toInstant(), ZoneId.of("UTC")),
+              device.getTimezone());
+      final ZonedDateTime endDateTime =
+          toZonedDateTime(
+              ZonedDateTime.ofInstant(request.getEndDate().toInstant(), ZoneId.of("UTC")),
+              device.getTimezone());
 
       // All values that can be selected based on the info in the meter
       final List<GetResult> captureObjects = this.retrieveCaptureObjects(conn, device, obisCode);
@@ -258,8 +263,8 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       final DlmsConnectionManager conn,
       final DlmsDevice device,
       final ObisCode obisCode,
-      final DateTime beginDateTime,
-      final DateTime endDateTime,
+      final ZonedDateTime beginDateTime,
+      final ZonedDateTime endDateTime,
       final List<SelectableObject> selectableObjects)
       throws ProtocolAdapterException {
 
@@ -392,8 +397,8 @@ public abstract class AbstractGetPowerQualityProfileHandler {
   }
 
   private SelectiveAccessDescription getSelectiveAccessDescription(
-      final DateTime beginDateTime,
-      final DateTime endDateTime,
+      final ZonedDateTime beginDateTime,
+      final ZonedDateTime endDateTime,
       final DataObject selectableCaptureObjects) {
 
     /*
@@ -474,18 +479,14 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     if (cosemDateTime == null) {
       // in case of null date, we calculate the date based on the always
       // existing previous value plus interval
-      final Date previousDate =
-          (Date) previousProfileEntryDto.getProfileEntryValues().get(0).getValue();
+      final Instant previousDate =
+          (Instant) previousProfileEntryDto.getProfileEntryValues().get(0).getValue();
       final LocalDateTime newLocalDateTime =
-          Instant.ofEpochMilli(previousDate.getTime())
-              .atZone(ZoneId.systemDefault())
-              .toLocalDateTime()
-              .plusMinutes(timeInterval);
+          previousDate.atZone(ZoneId.systemDefault()).toLocalDateTime().plusMinutes(timeInterval);
 
-      return new ProfileEntryValueDto(
-          Date.from(newLocalDateTime.atZone(ZoneId.systemDefault()).toInstant()));
+      return new ProfileEntryValueDto(newLocalDateTime.atZone(ZoneId.systemDefault()).toInstant());
     } else {
-      return new ProfileEntryValueDto(cosemDateTime.asDateTime().toDate());
+      return new ProfileEntryValueDto(cosemDateTime.asInstant());
     }
   }
 

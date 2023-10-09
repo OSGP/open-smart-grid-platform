@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
-import java.util.Date;
+import java.time.Instant;
 
 public class PeriodicMeterReadsResponseItemDto extends MeterReadsResponseDto {
 
@@ -20,7 +20,7 @@ public class PeriodicMeterReadsResponseItemDto extends MeterReadsResponseDto {
    * @param amrProfileStatusCode the value of amrProfileStatusCode
    */
   public PeriodicMeterReadsResponseItemDto(
-      final Date logTime,
+      final Instant logTime,
       final ActiveEnergyValuesDto activeEnergyValues,
       final AmrProfileStatusCodeDto amrProfileStatusCode) {
 
@@ -39,7 +39,7 @@ public class PeriodicMeterReadsResponseItemDto extends MeterReadsResponseDto {
    * @param activeEnergyExportTariffTwo the value of activeEnergyExportTariffTwo
    */
   public PeriodicMeterReadsResponseItemDto(
-      final Date logTime,
+      final Instant logTime,
       final DlmsMeterValueDto activeEnergyImportTariffOne,
       final DlmsMeterValueDto activeEnergyImportTariffTwo,
       final DlmsMeterValueDto activeEnergyExportTariffOne,
@@ -68,7 +68,7 @@ public class PeriodicMeterReadsResponseItemDto extends MeterReadsResponseDto {
    * @param amrProfileStatusCode the value of amrProfileStatusCode
    */
   public PeriodicMeterReadsResponseItemDto(
-      final Date logTime,
+      final Instant logTime,
       final DlmsMeterValueDto activeEnergyImportTariffOne,
       final DlmsMeterValueDto activeEnergyImportTariffTwo,
       final DlmsMeterValueDto activeEnergyExportTariffOne,
@@ -95,7 +95,7 @@ public class PeriodicMeterReadsResponseItemDto extends MeterReadsResponseDto {
    * @param amrProfileStatusCode the value of amrProfileStatusCode
    */
   public PeriodicMeterReadsResponseItemDto(
-      final Date logTime,
+      final Instant logTime,
       final DlmsMeterValueDto activeEnergyImport,
       final DlmsMeterValueDto activeEnergyExport,
       final AmrProfileStatusCodeDto amrProfileStatusCode) {

@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import org.openmuc.jdlms.AttributeAddress;
@@ -115,15 +116,16 @@ public class GetActualMeterReadsGasCommandExecutor
             "retrieve scaled value for mbus " + actualMeterReadsRequest.getChannel());
     final CosemDateTimeDto cosemDateTime =
         this.dlmsHelper.readDateTime(getResultList.get(1), "captureTime gas");
-    final Date captureTime;
+    final ZonedDateTime captureTime;
     if (cosemDateTime.isDateTimeSpecified()) {
-      captureTime = cosemDateTime.asDateTime().toDate();
+      captureTime = cosemDateTime.asDateTime();
     } else {
       throw new ProtocolAdapterException(
           "Unexpected null/unspecified value for M-Bus Capture Time");
     }
 
-    return new MeterReadsGasResponseDto(new Date(), consumption, captureTime);
+    return new MeterReadsGasResponseDto(
+        new Date(), consumption, Date.from(captureTime.toInstant()));
   }
 
   private ObisCode masterValueForChannel(final ChannelDto channel) throws ProtocolAdapterException {

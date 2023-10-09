@@ -7,6 +7,7 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
+import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToInstantConverter;
 import org.springframework.stereotype.Component;
 
 @Component(value = "monitoringMapper")
@@ -90,5 +91,8 @@ public class MonitoringMapper extends ConfigurableMapper {
         .getConverterFactory()
         .registerConverter(new ActualPowerQualityResponseDataConverter());
     mapperFactory.getConverterFactory().registerConverter(new PowerQualityValueConverter());
+    mapperFactory
+        .getConverterFactory()
+        .registerConverter(new XMLGregorianCalendarToInstantConverter());
   }
 }

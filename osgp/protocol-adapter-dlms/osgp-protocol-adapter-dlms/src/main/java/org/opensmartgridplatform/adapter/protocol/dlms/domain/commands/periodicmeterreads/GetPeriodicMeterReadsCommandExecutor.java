@@ -4,11 +4,12 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
@@ -94,12 +95,14 @@ public class GetPeriodicMeterReadsCommandExecutor
     }
 
     final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
-    final DateTime from =
-        DlmsDateTimeConverter.toDateTime(
-            periodicMeterReadsQuery.getBeginDate(), device.getTimezone());
-    final DateTime to =
-        DlmsDateTimeConverter.toDateTime(
-            periodicMeterReadsQuery.getEndDate(), device.getTimezone());
+    final ZonedDateTime from =
+        DlmsDateTimeConverter.toZonedDateTime(
+            ZonedDateTime.ofInstant(periodicMeterReadsQuery.getBeginDate(), ZoneId.systemDefault()),
+            device.getTimezone());
+    final ZonedDateTime to =
+        DlmsDateTimeConverter.toZonedDateTime(
+            ZonedDateTime.ofInstant(periodicMeterReadsQuery.getEndDate(), ZoneId.systemDefault()),
+            device.getTimezone());
 
     final AttributeAddressForProfile profileBufferAddress =
         this.getProfileBufferAddress(
@@ -170,7 +173,7 @@ public class GetPeriodicMeterReadsCommandExecutor
         periodicMeterReads.stream()
             .filter(
                 meterRead ->
-                    this.validateDateTime(meterRead.getLogTime(), from.toDate(), to.toDate()))
+                    this.validateDateTime(meterRead.getLogTime(), from.toInstant(), to.toInstant()))
             .toList();
 
     return new PeriodicMeterReadsResponseDto(
@@ -183,8 +186,8 @@ public class GetPeriodicMeterReadsCommandExecutor
 
     LOGGER.debug("Converting bufferObject with value: {} ", ctx.bufferedObjects);
 
-    final Optional<Date> previousLogTime = this.getPreviousLogTime(periodicMeterReads);
-    final Date logTime = this.readClock(ctx, previousLogTime, this.dlmsHelper);
+    final Optional<Instant> previousLogTime = this.getPreviousLogTime(periodicMeterReads);
+    final Instant logTime = this.readClock(ctx, previousLogTime, this.dlmsHelper);
 
     final AmrProfileStatusCodeDto status =
         this.readStatus(ctx.bufferedObjects, ctx.attributeAddressForProfile);
@@ -264,7 +267,7 @@ public class GetPeriodicMeterReadsCommandExecutor
     }
   }
 
-  private Optional<Date> getPreviousLogTime(
+  private Optional<Instant> getPreviousLogTime(
       final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads) {
 
     if (periodicMeterReads.isEmpty()) {

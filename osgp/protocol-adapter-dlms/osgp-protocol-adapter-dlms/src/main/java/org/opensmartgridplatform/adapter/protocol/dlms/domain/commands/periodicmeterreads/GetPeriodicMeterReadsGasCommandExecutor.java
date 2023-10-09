@@ -4,11 +4,13 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
@@ -99,12 +101,14 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     }
 
     final PeriodTypeDto queryPeriodType = periodicMeterReadsQuery.getPeriodType();
-    final DateTime from =
-        DlmsDateTimeConverter.toDateTime(
-            periodicMeterReadsQuery.getBeginDate(), device.getTimezone());
-    final DateTime to =
-        DlmsDateTimeConverter.toDateTime(
-            periodicMeterReadsQuery.getEndDate(), device.getTimezone());
+    final ZonedDateTime from =
+        DlmsDateTimeConverter.toZonedDateTime(
+            ZonedDateTime.ofInstant(periodicMeterReadsQuery.getBeginDate(), ZoneId.systemDefault()),
+            device.getTimezone());
+    final ZonedDateTime to =
+        DlmsDateTimeConverter.toZonedDateTime(
+            ZonedDateTime.ofInstant(periodicMeterReadsQuery.getEndDate(), ZoneId.systemDefault()),
+            device.getTimezone());
 
     final AttributeAddressForProfile profileBufferAddress =
         this.getProfileBufferAddress(
@@ -192,7 +196,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
         periodicMeterReads.stream()
             .filter(
                 meterRead ->
-                    this.validateDateTime(meterRead.getLogTime(), from.toDate(), to.toDate()))
+                    this.validateDateTime(
+                        meterRead.getLogTime().toInstant(), from.toInstant(), to.toInstant()))
             .toList();
 
     LOGGER.debug("Resulting periodicMeterReads: {} ", periodicMeterReads);
@@ -206,8 +211,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads)
       throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
-    final Optional<Date> previousLogTime = this.getPreviousLogTime(periodicMeterReads);
-    final Date logTime = this.readClock(ctx, previousLogTime, this.dlmsHelper);
+    final Optional<Instant> previousLogTime = this.getPreviousLogTime(periodicMeterReads);
+    final Instant logTime = this.readClock(ctx, previousLogTime, this.dlmsHelper);
 
     final AmrProfileStatusCodeDto status =
         this.readStatus(ctx.bufferedObjects, ctx.attributeAddressForProfile);
@@ -223,8 +228,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
             ctx.attributeAddressForProfile,
             ctx.periodicMeterReadsQuery.getChannel().getChannelNumber());
 
-    final Optional<Date> previousCaptureTime = this.getPreviousCaptureTime(periodicMeterReads);
-    final Date captureTime = this.readCaptureTime(ctx, previousCaptureTime);
+    final Optional<Instant> previousCaptureTime = this.getPreviousCaptureTime(periodicMeterReads);
+    final Instant captureTime = this.readCaptureTime(ctx, previousCaptureTime);
 
     LOGGER.debug("Converting bufferObject with value: {} ", ctx.bufferedObjects);
     LOGGER.debug(
@@ -236,30 +241,33 @@ public class GetPeriodicMeterReadsGasCommandExecutor
         captureTime);
 
     return new PeriodicMeterReadsGasResponseItemDto(
-        logTime,
+        Date.from(logTime),
         this.dlmsHelper.getScaledMeterValue(gasValue, scalerUnit, GAS_VALUE),
-        captureTime,
+        Date.from(captureTime),
         status);
   }
 
-  private Optional<Date> getPreviousLogTime(
+  private Optional<Instant> getPreviousLogTime(
       final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads) {
 
     if (periodicMeterReads.isEmpty()) {
       return Optional.empty();
     }
 
-    return Optional.of(periodicMeterReads.get(periodicMeterReads.size() - 1).getLogTime());
+    return Optional.of(
+        periodicMeterReads.get(periodicMeterReads.size() - 1).getLogTime().toInstant());
   }
 
-  private Optional<Date> getPreviousCaptureTime(
+  private Optional<Instant> getPreviousCaptureTime(
       final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads) {
 
     if (periodicMeterReads.isEmpty()) {
       return Optional.empty();
     }
 
-    return Optional.of(periodicMeterReads.get(periodicMeterReads.size() - 1).getCaptureTime());
+    return Optional.of(
+        Instant.ofEpochMilli(
+            periodicMeterReads.get(periodicMeterReads.size() - 1).getCaptureTime().getTime()));
   }
 
   private DataObject readValue(
@@ -310,8 +318,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     return null;
   }
 
-  private Date readCaptureTime(
-      final ConversionContext ctx, final Optional<Date> previousCaptureTime)
+  private Instant readCaptureTime(
+      final ConversionContext ctx, final Optional<Instant> previousCaptureTime)
       throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
     final List<DataObject> bufferedObjects = ctx.bufferedObjects;
@@ -327,7 +335,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
       if (cosemDateTime != null) {
         if (cosemDateTime.isDateTimeSpecified()) {
-          return cosemDateTime.asDateTime().toDate();
+          return cosemDateTime.asInstant();
         } else {
           throw new ProtocolAdapterException(UNEXPECTED_VALUE);
         }

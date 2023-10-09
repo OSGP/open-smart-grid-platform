@@ -6,8 +6,8 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory;
@@ -53,7 +53,7 @@ public class FindEventsRequestMessageDataContainerMappingTest {
     // build test data
     final FindEventsRequestData findEventsQuery =
         new FindEventsRequestData(
-            EventLogCategory.STANDARD_EVENT_LOG, new DateTime(), new DateTime());
+            EventLogCategory.STANDARD_EVENT_LOG, ZonedDateTime.now(), ZonedDateTime.now());
     final ArrayList<FindEventsRequestData> findEventsQueryList = new ArrayList<>();
     findEventsQueryList.add(findEventsQuery);
     final FindEventsRequestDataList container = new FindEventsRequestDataList(findEventsQueryList);

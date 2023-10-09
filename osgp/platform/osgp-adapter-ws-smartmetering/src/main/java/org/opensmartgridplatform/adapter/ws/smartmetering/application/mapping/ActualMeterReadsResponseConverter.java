@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
+import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -36,7 +37,7 @@ public class ActualMeterReadsResponseConverter
         destination = new ObjectFactory().createActualMeterReadsResponseData();
 
     final GregorianCalendar c = new GregorianCalendar();
-    c.setTime(source.getLogTime());
+    c.setTime(Date.from(source.getLogTime()));
     XMLGregorianCalendar convertedDate;
     try {
       convertedDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);

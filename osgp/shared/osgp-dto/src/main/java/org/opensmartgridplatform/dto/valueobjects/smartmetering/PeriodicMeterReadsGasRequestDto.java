@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
-import java.util.Date;
+import java.time.Instant;
 
 /** request periodic reads for GAS meter */
 public class PeriodicMeterReadsGasRequestDto extends PeriodicMeterReadsRequestDataDto {
@@ -15,8 +15,8 @@ public class PeriodicMeterReadsGasRequestDto extends PeriodicMeterReadsRequestDa
 
   public PeriodicMeterReadsGasRequestDto(
       final PeriodTypeDto periodType,
-      final Date beginDate,
-      final Date endDate,
+      final Instant beginDate,
+      final Instant endDate,
       final ChannelDto channel) {
     super(periodType, beginDate, endDate);
     this.channel = channel;

@@ -7,7 +7,7 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse;
@@ -19,11 +19,11 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpUnit
 
 public class MeterReadsMappingTest {
 
-  private static final Date DATE = new Date();
+  private static final Instant DATE = Instant.now();
   private static final BigDecimal VALUE = new BigDecimal(1.0);
   private static final OsgpUnit OSGP_UNIT = OsgpUnit.M3;
   private static final OsgpUnitType OSGP_UNITTYPE = OsgpUnitType.M_3;
-  private MonitoringMapper monitoringMapper = new MonitoringMapper();
+  private final MonitoringMapper monitoringMapper = new MonitoringMapper();
 
   /** Method checks mapping of OsgpMeterValue objects to MeterValue objects. */
   private void checkOsgpMeterValueMapping(final MeterValue meterValue) {

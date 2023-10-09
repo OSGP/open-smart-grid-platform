@@ -7,7 +7,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import java.util.Date;
+import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodType;
@@ -22,8 +22,8 @@ public class PeriodicMeterReadsQueryMappingTest {
   @Test
   public void testWithNullBeginDate() {
     final PeriodType periodType = PeriodType.DAILY;
-    final Date beginDate = null;
-    final Date endDate = new Date();
+    final Instant beginDate = null;
+    final Instant endDate = Instant.now();
     final boolean mbusDevice = false;
 
     assertThatExceptionOfType(NullPointerException.class)
@@ -38,8 +38,8 @@ public class PeriodicMeterReadsQueryMappingTest {
   public void testWithNullEndDate() {
 
     final PeriodType periodType = PeriodType.DAILY;
-    final Date beginDate = new Date();
-    final Date endDate = null;
+    final Instant beginDate = Instant.now();
+    final Instant endDate = null;
     final boolean mbusDevice = false;
 
     assertThatExceptionOfType(NullPointerException.class)
@@ -55,8 +55,8 @@ public class PeriodicMeterReadsQueryMappingTest {
   public void TestMapping() {
     // build test data
     final PeriodType periodType = PeriodType.DAILY;
-    final Date beginDate = new Date();
-    final Date endDate = new Date();
+    final Instant beginDate = Instant.now();
+    final Instant endDate = Instant.now();
     final boolean mbusDevice = false;
 
     final PeriodicMeterReadsQuery periodicMeterReadsQuery =

@@ -5,23 +5,23 @@
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.Instant;
 
 public class MeterReads extends ActionResponse implements Serializable {
   private static final long serialVersionUID = -297320204916085999L;
 
-  private final Date logTime;
+  private final Instant logTime;
 
   private final ActiveEnergyValues activeEnergyValues;
 
-  public MeterReads(final Date logTime, final ActiveEnergyValues activeEnergyValues) {
+  public MeterReads(final Instant logTime, final ActiveEnergyValues activeEnergyValues) {
     super();
-    this.logTime = new Date(logTime.getTime());
+    this.logTime = logTime;
     this.activeEnergyValues = activeEnergyValues;
   }
 
-  public Date getLogTime() {
-    return new Date(this.logTime.getTime());
+  public Instant getLogTime() {
+    return this.logTime;
   }
 
   public OsgpMeterValue getActiveEnergyImportTariffOne() {

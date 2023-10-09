@@ -24,8 +24,8 @@ public class PeriodicReadsRequestQueryConverter
     return new PeriodicMeterReadsQuery(
         org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodType.valueOf(
             source.getPeriodicReadsRequestData().getPeriodType().name()),
-        source.getPeriodicReadsRequestData().getBeginDate().toGregorianCalendar().getTime(),
-        source.getPeriodicReadsRequestData().getEndDate().toGregorianCalendar().getTime(),
+        source.getPeriodicReadsRequestData().getBeginDate().toGregorianCalendar().toInstant(),
+        source.getPeriodicReadsRequestData().getEndDate().toGregorianCalendar().toInstant(),
         false,
         "");
   }

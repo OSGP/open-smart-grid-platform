@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 
 public class FindEventsRequestDto implements ActionRequestDto {
 
@@ -12,11 +12,13 @@ public class FindEventsRequestDto implements ActionRequestDto {
   private static final long serialVersionUID = 8250454329135950249L;
 
   private final EventLogCategoryDto eventLogCategory;
-  private final DateTime from;
-  private final DateTime until;
+  private final ZonedDateTime from;
+  private final ZonedDateTime until;
 
   public FindEventsRequestDto(
-      final EventLogCategoryDto eventLogCategory, final DateTime from, final DateTime until) {
+      final EventLogCategoryDto eventLogCategory,
+      final ZonedDateTime from,
+      final ZonedDateTime until) {
     this.eventLogCategory = eventLogCategory;
     this.from = from;
     this.until = until;
@@ -26,11 +28,11 @@ public class FindEventsRequestDto implements ActionRequestDto {
     return this.eventLogCategory;
   }
 
-  public DateTime getFrom() {
+  public ZonedDateTime getFrom() {
     return this.from;
   }
 
-  public DateTime getUntil() {
+  public ZonedDateTime getUntil() {
     return this.until;
   }
 }

@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters;
 
-import java.util.Date;
+import java.time.Instant;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.MappingContext;
@@ -31,7 +31,7 @@ public class PeriodicMeterReadsResponseItemDtoConverter
       final PeriodicMeterReadsResponseItemDto source,
       final Type<? extends PeriodicMeterReads> destinationType,
       final MappingContext mappingContext) {
-    final Date logTime = source.getLogTime();
+    final Instant logTime = source.getLogTime();
     final ActiveEnergyValues activeEnergyValues =
         new ActiveEnergyValues(
             this.toOsgpMeterValue(source.getActiveEnergyImport()),

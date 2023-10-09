@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
-import java.util.Date;
+import java.time.Instant;
 
 /** request periodic reads for E meter */
 public class PeriodicMeterReadsRequestDataDto implements ActionRequestDto {
@@ -12,25 +12,25 @@ public class PeriodicMeterReadsRequestDataDto implements ActionRequestDto {
   private static final long serialVersionUID = -2483665562035897062L;
 
   private final PeriodTypeDto periodType;
-  private final Date beginDate;
-  private final Date endDate;
+  private final Instant beginDate;
+  private final Instant endDate;
 
   public PeriodicMeterReadsRequestDataDto(
-      final PeriodTypeDto periodType, final Date beginDate, final Date endDate) {
+      final PeriodTypeDto periodType, final Instant beginDate, final Instant endDate) {
     this.periodType = periodType;
-    this.beginDate = new Date(beginDate.getTime());
-    this.endDate = new Date(endDate.getTime());
+    this.beginDate = beginDate;
+    this.endDate = endDate;
   }
 
   public PeriodTypeDto getPeriodType() {
     return this.periodType;
   }
 
-  public Date getBeginDate() {
-    return new Date(this.beginDate.getTime());
+  public Instant getBeginDate() {
+    return this.beginDate;
   }
 
-  public Date getEndDate() {
-    return new Date(this.endDate.getTime());
+  public Instant getEndDate() {
+    return this.endDate;
   }
 }

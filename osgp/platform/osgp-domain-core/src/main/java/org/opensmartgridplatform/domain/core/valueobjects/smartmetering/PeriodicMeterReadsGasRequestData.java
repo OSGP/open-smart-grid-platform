@@ -5,7 +5,7 @@
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.Instant;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
@@ -19,14 +19,14 @@ public class PeriodicMeterReadsGasRequestData implements Serializable, ActionReq
   private static final long serialVersionUID = -7830158798159794041L;
 
   private final PeriodType periodType;
-  private final Date beginDate;
-  private final Date endDate;
+  private final Instant beginDate;
+  private final Instant endDate;
   private final String deviceIdentification;
 
   public PeriodicMeterReadsGasRequestData(
       final PeriodType periodType,
-      final Date beginDate,
-      final Date endDate,
+      final Instant beginDate,
+      final Instant endDate,
       final String deviceIdentification) {
     this.periodType = periodType;
     this.beginDate = beginDate;
@@ -38,11 +38,11 @@ public class PeriodicMeterReadsGasRequestData implements Serializable, ActionReq
     return this.periodType;
   }
 
-  public Date getBeginDate() {
+  public Instant getBeginDate() {
     return this.beginDate;
   }
 
-  public Date getEndDate() {
+  public Instant getEndDate() {
     return this.endDate;
   }
 

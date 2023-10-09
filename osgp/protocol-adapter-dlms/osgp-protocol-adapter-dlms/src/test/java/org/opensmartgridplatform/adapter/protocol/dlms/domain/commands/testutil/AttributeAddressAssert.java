@@ -76,6 +76,8 @@ public class AttributeAddressAssert {
     final CosemDateFormat expectedDate = expected.getValue();
 
     for (final CosemDateFormat.Field field : CosemDateFormat.Field.values()) {
+      final var a = actualDate.get(field);
+      final var b = expectedDate.get(field);
       assertThat(actualDate.get(field)).isEqualTo(expectedDate.get(field));
     }
   }

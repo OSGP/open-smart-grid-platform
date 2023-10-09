@@ -5,7 +5,7 @@
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -17,11 +17,13 @@ public class FindEventsRequestData implements Serializable, ActionRequest {
   private static final long serialVersionUID = 150978792120024431L;
 
   private final EventLogCategory eventLogCategory;
-  private final DateTime from;
-  private final DateTime until;
+  private final ZonedDateTime from;
+  private final ZonedDateTime until;
 
   public FindEventsRequestData(
-      final EventLogCategory eventLogCategory, final DateTime from, final DateTime until) {
+      final EventLogCategory eventLogCategory,
+      final ZonedDateTime from,
+      final ZonedDateTime until) {
     this.eventLogCategory = eventLogCategory;
     this.from = from;
     this.until = until;
@@ -31,11 +33,11 @@ public class FindEventsRequestData implements Serializable, ActionRequest {
     return this.eventLogCategory;
   }
 
-  public DateTime getFrom() {
+  public ZonedDateTime getFrom() {
     return this.from;
   }
 
-  public DateTime getUntil() {
+  public ZonedDateTime getUntil() {
     return this.until;
   }
 

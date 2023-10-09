@@ -9,8 +9,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -87,7 +87,7 @@ public class PeriodicMeterReadContainerMappingTest {
 
     final PeriodicMeterReadsResponseItemDto periodicMeterReadsDto =
         new PeriodicMeterReadsResponseItemDto(
-            new Date(), activeEnergyImport, activeEnergyExport, amrProfileStatusCodeDto);
+            Instant.now(), activeEnergyImport, activeEnergyExport, amrProfileStatusCodeDto);
     final List<PeriodicMeterReadsResponseItemDto> meterReads = new ArrayList<>();
     meterReads.add(periodicMeterReadsDto);
 
@@ -163,7 +163,7 @@ public class PeriodicMeterReadContainerMappingTest {
 
   @Test
   public void mapsPeriodicMeterReadsResponseItemDto() {
-    final Date logTime = new Date();
+    final Instant logTime = Instant.now();
     final ActiveEnergyValuesDto valuesDto =
         new ActiveEnergyValuesDto(
             new DlmsMeterValueDto(new BigDecimal("12.34"), DlmsUnitTypeDto.M3),
