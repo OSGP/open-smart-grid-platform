@@ -26,12 +26,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.objectconfig.AccessType;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CaptureObject;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsDataType;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
 import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
+import org.opensmartgridplatform.dlms.objectconfig.ValueType;
 
 @Slf4j
 class ObjectConfigServiceTest {
@@ -338,12 +341,11 @@ class ObjectConfigServiceTest {
 
   @Test
   void testGetCaptureObjectDefinitions() {
-    final Attribute captureObjectsAttribute = new Attribute();
-    captureObjectsAttribute.setId(this.PROFILE_GENERIC_CAPTURE_OBJECTS_ATTR_ID);
-    captureObjectsAttribute.setValue("CLOCK,10|AMR_PROFILE_STATUS,11");
-    final CosemObject profile = new CosemObject();
-    profile.setClassId(this.PROFILE_GENERIC_CLASS_ID);
-    profile.setAttributes(List.of(captureObjectsAttribute));
+    final Attribute captureObjectsAttribute =
+        this.createAttribute(
+            this.PROFILE_GENERIC_CAPTURE_OBJECTS_ATTR_ID, "CLOCK,10|AMR_PROFILE_STATUS,11");
+    final CosemObject profile =
+        this.createCosemObject(this.PROFILE_GENERIC_CLASS_ID, List.of(captureObjectsAttribute));
 
     final List<String> captureObjectDefinitions = getCaptureObjectDefinitions(profile);
 
@@ -362,12 +364,10 @@ class ObjectConfigServiceTest {
 
   @Test
   void testGetCaptureObjectDefinitionsEmpty() {
-    final Attribute captureObjectsAttribute = new Attribute();
-    captureObjectsAttribute.setId(this.PROFILE_GENERIC_CAPTURE_OBJECTS_ATTR_ID);
-    captureObjectsAttribute.setValue("EMPTY");
-    final CosemObject profile = new CosemObject();
-    profile.setClassId(this.PROFILE_GENERIC_CLASS_ID);
-    profile.setAttributes(List.of(captureObjectsAttribute));
+    final Attribute captureObjectsAttribute =
+        this.createAttribute(this.PROFILE_GENERIC_CAPTURE_OBJECTS_ATTR_ID, "EMPTY");
+    final CosemObject profile =
+        this.createCosemObject(this.PROFILE_GENERIC_CLASS_ID, List.of(captureObjectsAttribute));
 
     final List<String> captureObjectDefinitions = getCaptureObjectDefinitions(profile);
 
@@ -376,21 +376,18 @@ class ObjectConfigServiceTest {
 
   @Test
   void testGetCaptureObjectDefinitionsWrongClassId() {
-    final CosemObject profile = new CosemObject();
-    profile.setClassId(5);
-    profile.setTag("OBJECT_WITH_WRONG_CLASS");
+    final CosemObject profile = this.createCosemObject(5, List.of());
 
     assertThrows(IllegalArgumentException.class, () -> getCaptureObjectDefinitions(profile));
   }
 
   @Test
   void testGetCaptureObjects() throws ObjectConfigException {
-    final Attribute captureObjectsAttribute = new Attribute();
-    captureObjectsAttribute.setId(this.PROFILE_GENERIC_CAPTURE_OBJECTS_ATTR_ID);
-    captureObjectsAttribute.setValue("CLOCK,10|AMR_PROFILE_STATUS,11");
-    final CosemObject profile = new CosemObject();
-    profile.setClassId(this.PROFILE_GENERIC_CLASS_ID);
-    profile.setAttributes(List.of(captureObjectsAttribute));
+    final Attribute captureObjectsAttribute =
+        this.createAttribute(
+            this.PROFILE_GENERIC_CAPTURE_OBJECTS_ATTR_ID, "CLOCK,10|AMR_PROFILE_STATUS,11");
+    final CosemObject profile =
+        this.createCosemObject(this.PROFILE_GENERIC_CLASS_ID, List.of(captureObjectsAttribute));
 
     final List<CaptureObject> captureObjectDefinitions =
         this.objectConfigService.getCaptureObjects(profile, "DSMR", "4.2.2");
@@ -459,5 +456,15 @@ class ObjectConfigServiceTest {
             || object
                 .getProperty(ObjectProperty.PQ_REQUEST)
                 .equals(PowerQualityRequest.PERIODIC_PP));
+  }
+
+  private Attribute createAttribute(final int id, final String value) {
+    return new Attribute(
+        id, "descr", null, DlmsDataType.DONT_CARE, ValueType.DYNAMIC, value, null, AccessType.RW);
+  }
+
+  private CosemObject createCosemObject(final int classId, final List<Attribute> attributes) {
+    return new CosemObject(
+        "TAG", "descr", classId, 0, "1.2.3", "group", null, List.of(), Map.of(), attributes);
   }
 }

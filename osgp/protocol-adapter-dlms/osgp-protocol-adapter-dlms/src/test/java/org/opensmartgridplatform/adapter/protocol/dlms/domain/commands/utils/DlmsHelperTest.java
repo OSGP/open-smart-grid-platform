@@ -20,6 +20,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
@@ -35,8 +36,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.AccessType;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsDataType;
 import org.opensmartgridplatform.dlms.objectconfig.ValueType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
@@ -422,15 +425,18 @@ public class DlmsHelperTest {
   }
 
   private CosemObject newCosemObject(final ValueType valueType, final String value) {
-    final CosemObject cosemObject = new CosemObject();
-    cosemObject.setClassId(CLASS_ID);
-    cosemObject.setObis(OBIS);
-    final Attribute attribute = new Attribute();
-    attribute.setId(this.ATTRIBUTE_ID);
-    attribute.setValuetype(valueType);
-    attribute.setValue(value);
-    cosemObject.setAttributes(List.of(attribute));
-    return cosemObject;
+    final Attribute attribute =
+        new Attribute(
+            this.ATTRIBUTE_ID,
+            "descr",
+            null,
+            DlmsDataType.DONT_CARE,
+            valueType,
+            value,
+            List.of(),
+            AccessType.RW);
+    return new CosemObject(
+        "TAG", "descr", CLASS_ID, 0, OBIS, "", null, List.of(), Map.of(), List.of(attribute));
   }
 
   private void assertGetWithListException(

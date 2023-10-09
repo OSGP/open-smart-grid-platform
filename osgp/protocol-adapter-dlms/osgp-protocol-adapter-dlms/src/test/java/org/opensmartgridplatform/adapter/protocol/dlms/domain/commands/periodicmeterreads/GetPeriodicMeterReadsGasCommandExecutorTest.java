@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.joda.time.DateTime;
@@ -44,11 +45,14 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.AccessType;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CaptureObject;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsDataType;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.ValueType;
+import org.opensmartgridplatform.dlms.objectconfig.dlmsClasses.ProfileGeneric;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
@@ -320,13 +324,8 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
       final String obis,
       final String group,
       final List<Attribute> attributes) {
-    final CosemObject object = new CosemObject();
-    object.setClassId(classId);
-    object.setTag(tag);
-    object.setObis(obis);
-    object.setGroup(group);
-    object.setAttributes(attributes);
-    return object;
+    return new CosemObject(
+        tag, "descr", classId, 0, obis, group, null, List.of(), Map.of(), attributes);
   }
 
   private Attribute createAttribute(final int id, final String value) {
@@ -334,11 +333,8 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
   }
 
   private Attribute createAttribute(final int id, final String value, final ValueType valueType) {
-    final Attribute attribute = new Attribute();
-    attribute.setId(id);
-    attribute.setValue(value);
-    attribute.setValuetype(valueType);
-    return attribute;
+    return new Attribute(
+        id, "descr", null, DlmsDataType.DONT_CARE, valueType, value, List.of(), AccessType.RW);
   }
 
   private DlmsDevice createDevice(final Protocol protocol) {
@@ -353,11 +349,16 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
         this.createAttribute(
             3, "CLOCK,2|AMR_PROFILE_STATUS,2|MBUS_MASTER_VALUE,2|MBUS_MASTER_VALUE,5");
     final Attribute attributeCapturePeriod = this.createAttribute(4, "86400");
-    return this.createCosemObject(
-        this.CLASS_ID_PROFILE_GENERIC,
+    return new ProfileGeneric(
         "DAILY_VALUES_G",
+        "descr",
+        this.CLASS_ID_PROFILE_GENERIC,
+        0,
         "1.x.3.4.5.6",
         "GAS",
+        null,
+        List.of(),
+        Map.of(),
         List.of(attributeCaptureObjects, attributeCapturePeriod));
   }
 

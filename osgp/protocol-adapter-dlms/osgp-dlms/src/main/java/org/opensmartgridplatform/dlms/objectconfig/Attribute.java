@@ -5,9 +5,13 @@
 package org.opensmartgridplatform.dlms.objectconfig;
 
 import java.util.List;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Data
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Attribute {
   private int id;
   private String description;
@@ -18,16 +22,21 @@ public class Attribute {
   private List<TypeBasedValue> values;
   private AccessType access;
 
-  public Attribute() {}
+  public Attribute copy() {
+    return new Attribute(
+        this.id,
+        this.description,
+        this.note,
+        this.datatype,
+        this.valuetype,
+        this.value,
+        this.getValues(),
+        this.access);
+  }
 
-  public Attribute(final Attribute attribute) {
-    this.id = attribute.id;
-    this.description = attribute.description;
-    this.note = attribute.note;
-    this.datatype = attribute.datatype;
-    this.valuetype = attribute.valuetype;
-    this.value = attribute.value;
-    this.values = attribute.getValues();
-    this.access = attribute.access;
+  public Attribute copyWithNewValue(final String newValue) {
+    final Attribute newAttribute = this.copy();
+    newAttribute.value = newValue;
+    return newAttribute;
   }
 }

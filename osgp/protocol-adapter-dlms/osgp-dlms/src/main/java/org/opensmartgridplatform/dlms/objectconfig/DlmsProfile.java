@@ -8,10 +8,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import lombok.Data;
+import lombok.Getter;
 import lombok.ToString;
 
-@Data
+@Getter
 @ToString
 public class DlmsProfile {
   private String profile;

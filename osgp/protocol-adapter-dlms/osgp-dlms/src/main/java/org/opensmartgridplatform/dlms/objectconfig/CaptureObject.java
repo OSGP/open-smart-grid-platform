@@ -4,15 +4,23 @@
 
 package org.opensmartgridplatform.dlms.objectconfig;
 
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class CaptureObject {
-  private CosemObject cosemObject;
-  private int attributeId;
+  private final CosemObject cosemObject;
+  private final int attributeId;
 
   public CaptureObject(final CosemObject cosemObject, final int attributeId) {
     this.cosemObject = cosemObject;
     this.attributeId = attributeId;
+  }
+
+  public CaptureObject copy() {
+    return new CaptureObject(this.cosemObject.copy(), this.attributeId);
+  }
+
+  public CaptureObject copyWithNewAttribute(final Attribute newAttribute) {
+    return new CaptureObject(this.cosemObject.copyWithNewAttribute(newAttribute), this.attributeId);
   }
 }
