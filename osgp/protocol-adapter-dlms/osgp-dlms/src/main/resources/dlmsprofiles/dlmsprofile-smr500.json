@@ -2070,7 +2070,6 @@
           "description": "entries in use",
           "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -2098,7 +2097,6 @@
           "description": "value",
           "datatype": "unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -2118,7 +2116,6 @@
           "description": "value",
           "datatype": "unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -2138,7 +2135,6 @@
           "description": "value",
           "datatype": "unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         }
       ]
@@ -2159,7 +2155,6 @@
           "description": "value",
           "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -2170,7 +2165,7 @@
           "value": "BASED_ON_TYPE",
           "values": [
             {
-              "types": ["G4", "G6"],
+              "types": ["G4", "G6", "G4_G6"],
               "value": "-3, M3"
             },
             {
@@ -2185,7 +2180,6 @@
           "description": "status",
           "datatype": "unsigned",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -2193,7 +2187,6 @@
           "description": "capture_time",
           "datatype": "octet-string",
           "valuetype": "DYNAMIC",
-          "value": "EMPTY",
           "access": "R"
         }
       ]
