@@ -24,11 +24,13 @@ import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
 import org.opensmartgridplatform.dlms.objectconfig.PowerQualityProfile;
 import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
+import org.opensmartgridplatform.dlms.objectconfig.ValueType;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityRequestDto;
@@ -118,12 +120,21 @@ public class GetActualPowerQualityCommandExecutor
         powerQualityObject = new PowerQualityObjectDto(pqObject.getTag(), null);
 
       } else if (pqObject.getClassId() == CLASS_ID_REGISTER) {
-        final String scalerUnit =
-            pqObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId()).getValue();
-
-        final DlmsMeterValueDto meterValue =
-            this.dlmsHelper.getScaledMeterValueWithScalerUnit(
-                resultValue, scalerUnit, "Actual Power Quality - " + pqObject.getObis());
+        final DlmsMeterValueDto meterValue;
+        if (this.readScalerValueFromMeter(pqObject)) {
+          final GetResult resultValueScalerUnit = resultList.get(idx++);
+          meterValue =
+              this.dlmsHelper.getScaledMeterValue(
+                  resultValue,
+                  resultValueScalerUnit,
+                  "Actual Power Quality - " + pqObject.getObis());
+        } else {
+          final String scalerUnit =
+              pqObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId()).getValue();
+          meterValue =
+              this.dlmsHelper.getScaledMeterValueWithScalerUnit(
+                  resultValue, scalerUnit, "Actual Power Quality - " + pqObject.getObis());
+        }
 
         final BigDecimal value = meterValue != null ? meterValue.getValue() : null;
         final String unit = meterValue != null ? meterValue.getDlmsUnit().getUnit() : null;
@@ -151,6 +162,15 @@ public class GetActualPowerQualityCommandExecutor
     }
 
     return new ActualPowerQualityDataDto(powerQualityObjects, powerQualityValues);
+  }
+
+  private boolean readScalerValueFromMeter(final CosemObject pqObject) {
+    if (pqObject.hasAttribute(RegisterAttribute.SCALER_UNIT.attributeId())) {
+      final Attribute attribute =
+          pqObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId());
+      return attribute.getValuetype() != ValueType.FIXED_IN_PROFILE;
+    }
+    return false;
   }
 
   private PowerQualityProfile determineProfile(final ActualPowerQualityRequestDto request) {
@@ -198,7 +218,18 @@ public class GetActualPowerQualityCommandExecutor
   }
 
   private List<AttributeAddress> getAttributeAddresses(final List<CosemObject> pqObjects) {
-    return pqObjects.stream().map(this::getAttributeAddress).filter(Objects::nonNull).toList();
+    final List<AttributeAddress> attributeAddresses = new ArrayList<>();
+    for (final CosemObject pqObject : pqObjects) {
+      attributeAddresses.add(this.getAttributeAddress(pqObject));
+      if (this.readScalerValueFromMeter(pqObject)) {
+        attributeAddresses.add(
+            new AttributeAddress(
+                pqObject.getClassId(),
+                pqObject.getObis(),
+                RegisterAttribute.SCALER_UNIT.attributeId()));
+      }
+    }
+    return attributeAddresses.stream().filter(Objects::nonNull).toList();
   }
 
   private AttributeAddress getAttributeAddress(final CosemObject object) {
