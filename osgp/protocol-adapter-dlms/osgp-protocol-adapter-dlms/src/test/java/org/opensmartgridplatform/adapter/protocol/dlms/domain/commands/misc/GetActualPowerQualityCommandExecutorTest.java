@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.AVERAGE_CURRENT_L1;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.AVERAGE_REACTIVE_POWER_IMPORT_L1;
-import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.AVERAGE_REACTIVE_POWER_IMPORT_L2;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.INSTANTANEOUS_VOLTAGE_L1;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.NUMBER_OF_POWER_FAILURES;
 
@@ -27,7 +26,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,6 +48,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.AccessType;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
@@ -78,6 +77,8 @@ class GetActualPowerQualityCommandExecutorTest {
   private static final String PROTOCOL_VERSION = "5.0.0";
   private static final MessageMetadata MESSAGE_METADATA =
       MessageMetadata.newBuilder().withCorrelationUid("123456").build();
+
+  private static final int SCALER_VALUE = -1;
 
   @Spy private DlmsHelper dlmsHelper;
 
@@ -214,6 +215,7 @@ class GetActualPowerQualityCommandExecutorTest {
 
       final PowerQualityValueDto powerQualityValue =
           responseDto.getActualPowerQualityData().getPowerQualityValues().get(i);
+
       this.assertValue(powerQualityValue.getValue(), i, object);
     }
   }
@@ -237,6 +239,9 @@ class GetActualPowerQualityCommandExecutorTest {
   }
 
   private byte getScaler(final CosemObject object) {
+    if (this.readScalerValueFromMeter(object)) {
+      return SCALER_VALUE;
+    }
     final String scalerUnit = object.getAttribute(ATTRIBUTE_ID_SCALER_UNIT).getValue();
     return Byte.parseByte(scalerUnit.split(",")[0]);
   }
@@ -269,15 +274,25 @@ class GetActualPowerQualityCommandExecutorTest {
   private List<CosemObject> getObjects(final MeterType meterType) {
     final CosemObject dataObject =
         this.createObject(
-            CLASS_ID_DATA, "1.0.0.0.0.1", NUMBER_OF_POWER_FAILURES.name(), null, meterType);
+            CLASS_ID_DATA, "1.0.0.0.0.1", NUMBER_OF_POWER_FAILURES.name(), null, null, meterType);
 
     final CosemObject registerVoltObject =
         this.createObject(
-            CLASS_ID_REGISTER, "3.0.0.0.0.1", INSTANTANEOUS_VOLTAGE_L1.name(), "0, V", meterType);
+            CLASS_ID_REGISTER,
+            "3.0.0.0.0.1",
+            INSTANTANEOUS_VOLTAGE_L1.name(),
+            "0, V",
+            ValueType.DYNAMIC,
+            meterType);
 
     final CosemObject registerAmpereObject =
         this.createObject(
-            CLASS_ID_REGISTER, "3.0.0.0.0.2", AVERAGE_CURRENT_L1.name(), "-1, A", meterType);
+            CLASS_ID_REGISTER,
+            "3.0.0.0.0.2",
+            AVERAGE_CURRENT_L1.name(),
+            "-1, A",
+            ValueType.FIXED_IN_PROFILE,
+            meterType);
 
     final CosemObject registerVarObject =
         this.createObject(
@@ -285,6 +300,7 @@ class GetActualPowerQualityCommandExecutorTest {
             "3.0.0.0.0.3",
             AVERAGE_REACTIVE_POWER_IMPORT_L1.name(),
             "2, VAR",
+            ValueType.FIXED_IN_PROFILE,
             meterType);
 
     return new ArrayList<>(
@@ -296,32 +312,23 @@ class GetActualPowerQualityCommandExecutorTest {
       final String obis,
       final String tag,
       final String scalerUnitValue,
+      final ValueType valueType,
       final MeterType meterType) {
-    return this.createCosemObject(tag, classId, obis, scalerUnitValue, meterType);
+    return this.createCosemObject(tag, classId, obis, scalerUnitValue, valueType, meterType);
   }
 
-  private List<Attribute> createScalerUnitAttributeList(final String value) {
+  private List<Attribute> createScalerUnitAttributeList(
+      final String value, final ValueType valueType) {
     return List.of(
         new Attribute(
             ATTRIBUTE_ID_SCALER_UNIT,
             "descr",
             null,
             DlmsDataType.DONT_CARE,
-            ValueType.FIXED_IN_PROFILE,
+            valueType,
             value,
             List.of(),
             AccessType.RW));
-  }
-
-  private CosemObject getObjectWithWrongMeterType(final MeterType meterType) {
-
-    // This object has the wrong meter type. The value shouldn't be requested by the commandexecutor
-    return this.createCosemObject(
-        AVERAGE_REACTIVE_POWER_IMPORT_L2.name(),
-        CLASS_ID_DATA,
-        "1.0.0.0.0.2",
-        "",
-        meterType.equals(MeterType.PP) ? MeterType.SP : MeterType.PP);
   }
 
   private List<MeterType> getMeterTypes(final MeterType meterType) {
@@ -345,9 +352,25 @@ class GetActualPowerQualityCommandExecutorTest {
                 resultCode));
       } else {
         results.add(new GetResultImpl(DataObject.newInteger64Data(idx++), resultCode));
+        if (this.readScalerValueFromMeter(object)) {
+
+          final DataObject scalerValue =
+              DataObject.newArrayData(
+                  Arrays.asList(
+                      DataObject.newInteger32Data(SCALER_VALUE), DataObject.newInteger32Data(35)));
+          results.add(new GetResultImpl(scalerValue, resultCode));
+        }
       }
     }
     return results;
+  }
+
+  private boolean readScalerValueFromMeter(final CosemObject pqObject) {
+    if (!pqObject.hasAttribute(RegisterAttribute.SCALER_UNIT.attributeId())) {
+      return false;
+    }
+    final Attribute attribute = pqObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId());
+    return attribute.getValuetype() != ValueType.FIXED_IN_PROFILE;
   }
 
   private EnumMap<ObjectProperty, List<String>> getObjectProperties(
@@ -366,11 +389,18 @@ class GetActualPowerQualityCommandExecutorTest {
   }
 
   private List<AttributeAddress> getAttributeAddresses(final List<CosemObject> objects) {
-    return objects.stream()
-        .map(
-            object ->
-                new AttributeAddress(object.getClassId(), object.getObis(), ATTRIBUTE_ID_VALUE))
-        .collect(Collectors.toList());
+    final List<AttributeAddress> attributeAddresses = new ArrayList<>();
+    for (final CosemObject cosemObject : objects) {
+      attributeAddresses.add(
+          new AttributeAddress(
+              cosemObject.getClassId(), cosemObject.getObis(), ATTRIBUTE_ID_VALUE));
+      if (this.readScalerValueFromMeter(cosemObject)) {
+        attributeAddresses.add(
+            new AttributeAddress(
+                cosemObject.getClassId(), cosemObject.getObis(), ATTRIBUTE_ID_SCALER_UNIT));
+      }
+    }
+    return attributeAddresses;
   }
 
   private CosemObject createCosemObject(final String tag, final int classId, final String obis) {
@@ -383,6 +413,7 @@ class GetActualPowerQualityCommandExecutorTest {
       final int classId,
       final String obis,
       final String scalerUnitValue,
+      final ValueType valueType,
       final MeterType meterType) {
     return new CosemObject(
         tag,
@@ -394,6 +425,8 @@ class GetActualPowerQualityCommandExecutorTest {
         null,
         this.getMeterTypes(meterType),
         Map.of(),
-        scalerUnitValue != null ? this.createScalerUnitAttributeList(scalerUnitValue) : List.of());
+        scalerUnitValue != null
+            ? this.createScalerUnitAttributeList(scalerUnitValue, valueType)
+            : List.of());
   }
 }
