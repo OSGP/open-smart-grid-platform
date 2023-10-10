@@ -365,7 +365,7 @@ class ObjectConfigServiceTest {
   @Test
   void testGetCaptureObjectDefinitionsEmpty() {
     final Attribute captureObjectsAttribute =
-        this.createAttribute(this.PROFILE_GENERIC_CAPTURE_OBJECTS_ATTR_ID, "EMPTY");
+        this.createAttribute(this.PROFILE_GENERIC_CAPTURE_OBJECTS_ATTR_ID, null);
     final CosemObject profile =
         this.createCosemObject(this.PROFILE_GENERIC_CLASS_ID, List.of(captureObjectsAttribute));
 

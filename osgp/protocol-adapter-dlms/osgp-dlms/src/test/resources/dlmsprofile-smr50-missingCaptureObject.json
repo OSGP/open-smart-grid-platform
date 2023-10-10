@@ -61,7 +61,6 @@
           "description": "buffer",
           "datatype": "array",
           "valuetype": "DYNAMIC",
-          "value": "EMPTY",
           "access": "R"
         },
         {
@@ -69,7 +68,6 @@
           "description": "capture objects",
           "datatype": "array",
           "valuetype": "SET_BY_CLIENT",
-          "value": "EMPTY",
           "access": "RW"
         },
         {
@@ -136,7 +134,6 @@
           "description": "buffer",
           "datatype": "array",
           "valuetype": "DYNAMIC",
-          "value": "EMPTY",
           "access": "R"
         },
         {
@@ -144,7 +141,6 @@
           "description": "capture objects",
           "datatype": "array",
           "valuetype": "SET_BY_CLIENT",
-          "value": "EMPTY",
           "access": "RW"
         },
         {
@@ -211,7 +207,6 @@
           "description": "buffer",
           "datatype": "array",
           "valuetype": "DYNAMIC",
-          "value": "EMPTY",
           "access": "R"
         },
         {
@@ -219,7 +214,6 @@
           "description": "capture objects",
           "datatype": "array",
           "valuetype": "SET_BY_CLIENT",
-          "value": "EMPTY",
           "access": "RW"
         },
         {
@@ -534,7 +528,6 @@
           "description": "buffer",
           "datatype": "array",
           "valuetype": "DYNAMIC",
-          "value": "EMPTY",
           "access": "R"
         },
         {
