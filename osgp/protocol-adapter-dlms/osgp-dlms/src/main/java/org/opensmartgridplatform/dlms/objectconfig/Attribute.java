@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.dlms.objectconfig;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,7 +48,7 @@ public class Attribute {
         this.datatype,
         this.valuetype,
         this.value,
-        this.getValues(),
+        this.getValues() == null ? null : new ArrayList<>(this.getValues()),
         this.access);
   }
 

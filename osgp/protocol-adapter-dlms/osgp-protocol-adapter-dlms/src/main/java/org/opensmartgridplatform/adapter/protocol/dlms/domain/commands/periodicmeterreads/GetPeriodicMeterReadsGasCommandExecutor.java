@@ -49,7 +49,6 @@ import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CaptureObject;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
-import org.opensmartgridplatform.dlms.objectconfig.TypeBasedValue;
 import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.ProfileGeneric;
 import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.Register;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
@@ -764,19 +763,6 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     } catch (final ObjectConfigException e) {
       return -1;
     }
-  }
-
-  private Optional<String> getScalerUnitBasedOnModel(
-      final DlmsDevice device, final Attribute scalerUnitAttribute) {
-    final List<TypeBasedValue> scalerUnits = scalerUnitAttribute.getValues();
-
-    for (final TypeBasedValue typeBasedValue : scalerUnits) {
-      if (typeBasedValue.getTypes().contains(device.getManufacturerId())) { // TODO: Change to model
-        return Optional.of(typeBasedValue.getValue());
-      }
-    }
-
-    return Optional.empty();
   }
 
   private Map<CaptureObject, String> getScalerUnitsFromMeter(
