@@ -251,7 +251,7 @@ public class ObjectConfigService {
 
     final String captureObjectsAttributeValue = captureObjectsAttribute.getValue();
 
-    if (captureObjectsAttributeValue.equals("EMPTY")) {
+    if (captureObjectsAttributeValue == null || captureObjectsAttributeValue.isEmpty()) {
       return List.of();
     }
 

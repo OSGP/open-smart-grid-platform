@@ -14,20 +14,21 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
-import org.opensmartgridplatform.dlms.objectconfig.dlmsClasses.ProfileGeneric;
+import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.Data;
+import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.ExtendedRegister;
+import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.ProfileGeneric;
+import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.Register;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 @JsonTypeInfo(use = Id.NAME, property = "class-id", visible = true)
 @JsonSubTypes({
-  @JsonSubTypes.Type(value = CosemObject.class, name = "1"),
-  @JsonSubTypes.Type(value = CosemObject.class, name = "3"),
-  @JsonSubTypes.Type(value = CosemObject.class, name = "4"),
+  @JsonSubTypes.Type(value = Data.class, name = "1"),
+  @JsonSubTypes.Type(value = Register.class, name = "3"),
+  @JsonSubTypes.Type(value = ExtendedRegister.class, name = "4"),
   @JsonSubTypes.Type(value = ProfileGeneric.class, name = "7"),
   @JsonSubTypes.Type(value = CosemObject.class, name = "8"),
   @JsonSubTypes.Type(value = CosemObject.class, name = "40"),
@@ -36,19 +37,42 @@ import org.opensmartgridplatform.dlms.objectconfig.dlmsClasses.ProfileGeneric;
   @JsonSubTypes.Type(value = CosemObject.class, name = "77")
 })
 public class CosemObject {
-  private String tag;
-  private String description;
+  protected String tag;
+  protected String description;
 
   @JsonProperty("class-id")
-  private int classId;
+  protected int classId;
 
-  private int version;
-  private String obis;
-  private String group;
-  private String note;
-  private List<MeterType> meterTypes;
-  private Map<ObjectProperty, Object> properties;
-  private List<Attribute> attributes;
+  protected int version;
+  protected String obis;
+  protected String group;
+  protected String note;
+  protected List<MeterType> meterTypes;
+  protected Map<ObjectProperty, Object> properties;
+  protected List<Attribute> attributes;
+
+  public CosemObject(
+      final String tag,
+      final String description,
+      final int classId,
+      final int version,
+      final String obis,
+      final String group,
+      final String note,
+      final List<MeterType> meterTypes,
+      final Map<ObjectProperty, Object> properties,
+      final List<Attribute> attributes) {
+    this.tag = tag;
+    this.description = description;
+    this.classId = classId;
+    this.version = version;
+    this.obis = obis;
+    this.group = group;
+    this.note = note;
+    this.meterTypes = meterTypes;
+    this.properties = properties;
+    this.attributes = attributes;
+  }
 
   public CosemObject copy() {
     return new CosemObject(

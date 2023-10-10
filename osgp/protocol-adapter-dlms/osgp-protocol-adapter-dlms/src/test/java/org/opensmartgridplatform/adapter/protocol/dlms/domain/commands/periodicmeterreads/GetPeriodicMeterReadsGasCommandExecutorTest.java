@@ -52,7 +52,8 @@ import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsDataType;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.ValueType;
-import org.opensmartgridplatform.dlms.objectconfig.dlmsClasses.ProfileGeneric;
+import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.ExtendedRegister;
+import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.ProfileGeneric;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
@@ -154,10 +155,10 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
         DlmsDateTimeConverter.toDateTime(new Date(this.to), this.device.getTimezone());
 
     // SETUP - dlms objects
-    final CosemObject profile = this.createProfile();
+    final ProfileGeneric profile = this.createProfile();
     final CosemObject clock = this.createClock();
     final CosemObject status = this.createStatus();
-    final CosemObject value_g = this.createMBusMasterValue(valueType);
+    final ExtendedRegister value_g = this.createMBusMasterValue(valueType);
 
     final CaptureObject captureObjectClock = new CaptureObject(clock, 2);
     final CaptureObject captureObjectStatus = new CaptureObject(status, 2);
@@ -344,7 +345,7 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
     return device;
   }
 
-  private CosemObject createProfile() {
+  private ProfileGeneric createProfile() {
     final Attribute attributeCaptureObjects =
         this.createAttribute(
             3, "CLOCK,2|AMR_PROFILE_STATUS,2|MBUS_MASTER_VALUE,2|MBUS_MASTER_VALUE,5");
@@ -372,13 +373,18 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
         this.CLASS_ID_DATA, "AMR_PROFILE_STATUS", "0.x.1.2.3.255", "GAS", List.of());
   }
 
-  private CosemObject createMBusMasterValue(final ValueType valueType) {
+  private ExtendedRegister createMBusMasterValue(final ValueType valueType) {
     final Attribute attributeScalerUnit = this.createAttribute(3, "0, M3", valueType);
-    return this.createCosemObject(
-        this.CLASS_ID_EXTENDED_REGISTER,
+    return new ExtendedRegister(
         "MBUS_MASTER_VALUE",
+        "descr",
+        this.CLASS_ID_EXTENDED_REGISTER,
+        0,
         "0.x.24.1.0.255",
         "GAS",
+        null,
+        List.of(),
+        Map.of(),
         List.of(attributeScalerUnit));
   }
 

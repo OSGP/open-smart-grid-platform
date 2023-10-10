@@ -44,15 +44,14 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
-import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CaptureObject;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.TypeBasedValue;
-import org.opensmartgridplatform.dlms.objectconfig.ValueType;
-import org.opensmartgridplatform.dlms.objectconfig.dlmsClasses.ProfileGeneric;
+import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.ProfileGeneric;
+import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.Register;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeDto;
@@ -242,7 +241,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
                 intervalTime,
                 bufferedObjectValue,
                 channel,
-                periodicMeterReads));
+                periodicMeterReads,
+                device));
       } catch (final BufferedDateTimeValidationException e) {
         LOGGER.warn(e.getMessage(), e);
       }
@@ -268,7 +268,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       final ProfileCaptureTime intervalTime,
       final List<DataObject> bufferedObjects,
       final int channel,
-      final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads)
+      final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads,
+      final DlmsDevice device)
       throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
     // The bufferedObjects contain the values retrieved from the meter for a single interval.
@@ -298,7 +299,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     // the scaler or the unit, so that information is retrieved from the corresponding capture
     // object in the selected objects.
     final DataObject gasValue = this.readValue(bufferedObjects, selectedObjects, channel);
-    final String scalerUnit = this.getScalerUnit(selectedObjects, channel);
+    final String scalerUnit =
+        this.getScalerUnit(selectedObjects, channel, device.getManufacturerId()); // TODO use model
 
     // The capture time is used in most profiles. But for some it is not used. In that case, the
     // selectedObjects will not contain a capture time object and readCaptureTime will return null.
@@ -497,15 +499,22 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     return null;
   }
 
-  private String getScalerUnit(final List<CaptureObject> selectedObjects, final int channel)
+  private String getScalerUnit(
+      final List<CaptureObject> selectedObjects, final int channel, final String configLookupType)
       throws ProtocolAdapterException {
 
     final Integer index = this.getIndex(selectedObjects, MBUS_MASTER_VALUE, 2, channel);
 
-    if (index != null) {
-      return selectedObjects.get(index).getCosemObject().getAttribute(3).getValue();
-    } else {
-      throw new ProtocolAdapterException("Can't get scaler unit, selected object not found");
+    try {
+      if (index != null) {
+        return ((Register) selectedObjects.get(index).getCosemObject())
+            .getScalerUnit(configLookupType);
+      } else {
+        throw new ProtocolAdapterException("Can't get scaler unit, selected object not found");
+      }
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException(
+          "Can't get scaler unit based on type " + configLookupType, e);
     }
   }
 
@@ -694,12 +703,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
     final List<CaptureObject> captureObjectsThatNeedScalerUnitFromMeter = new ArrayList<>();
 
-    final Map<CaptureObject, String> scalerUnits = new HashMap<>();
-
     for (final CaptureObject captureObject : relevantCaptureObjects) {
-      final CosemObject cosemObject = captureObject.getCosemObject();
-      final Attribute scalerUnitAttribute =
-          cosemObject.getAttribute(ExtendedRegisterAttribute.SCALER_UNIT.attributeId());
+      final Register register = (Register) captureObject.getCosemObject();
 
       // There are 3 possibilities for the scalerUnit in the capture object:
       // - A fixed scalerUnit is defined. In that case, we don't need to do anything.
@@ -708,22 +713,15 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       // - The scalerUnit is defined based on the meter type. In that case, we need to select the
       //   right scalerUnit. If that fails (e.g. because the meter type of the device is not
       //   defined), then we have to read the scalerUnit from the meter.
-      if (scalerUnitAttribute == null || scalerUnitAttribute.getValuetype() == ValueType.DYNAMIC) {
+      if (register.needsScalerUnitFromMeter(device.getManufacturerId())) { // TODO: Use model
         captureObjectsThatNeedScalerUnitFromMeter.add(captureObject);
-      } else if (scalerUnitAttribute.getValue().equals("BASED_ON_TYPE")) {
-        final Optional<String> scalerUnitOptional =
-            this.getScalerUnitBasedOnModel(device, scalerUnitAttribute);
-        if (scalerUnitOptional.isPresent()) {
-          scalerUnits.put(captureObject, scalerUnitOptional.get());
-        } else {
-          captureObjectsThatNeedScalerUnitFromMeter.add(captureObject);
-        }
       }
     }
 
     // Get scaler units from meter. They are read from the meter in one call for efficiency.
-    scalerUnits.putAll(
-        this.getScalerUnitsFromMeter(captureObjectsThatNeedScalerUnitFromMeter, conn, device));
+    final Map<CaptureObject, String> scalerUnits =
+        new HashMap<>(
+            this.getScalerUnitsFromMeter(captureObjectsThatNeedScalerUnitFromMeter, conn, device));
 
     // Create a new list with capture objects and fill in the missing scaler units.
     // Note: the order should be the same as the order of the capture objects in the input param.
@@ -733,11 +731,13 @@ public class GetPeriodicMeterReadsGasCommandExecutor
         final Attribute scalerUnitAttribute =
             cosemObject.getAttribute(ExtendedRegisterAttribute.SCALER_UNIT.attributeId());
 
+        final Attribute newScalerUnitAttribute =
+            scalerUnitAttribute.copyWithNewValue(scalerUnits.get(captureObject));
+
         captureObjectsWithScalerUnit.add(
-            captureObject.copyWithNewAttribute(
-                scalerUnitAttribute.copyWithNewValue(scalerUnits.get(captureObject))));
+            captureObject.copyWithNewAttribute(newScalerUnitAttribute));
       } else {
-        captureObjectsWithScalerUnit.add(captureObject.copy());
+        captureObjectsWithScalerUnit.add(captureObject);
       }
     }
 
@@ -747,10 +747,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
   private List<CaptureObject> getRelevantCaptureObjects(
       final List<CaptureObject> captureObjects, final String medium, final int channel) {
     return captureObjects.stream()
-        .filter(
-            captureObject ->
-                captureObject.getCosemObject().getClassId() == InterfaceClass.EXTENDED_REGISTER.id()
-                    || captureObject.getCosemObject().getClassId() == InterfaceClass.REGISTER.id())
+        .filter(captureObject -> captureObject.getCosemObject() instanceof Register)
         .filter(
             captureObject ->
                 captureObject.getAttributeId() == ExtendedRegisterAttribute.VALUE.attributeId())

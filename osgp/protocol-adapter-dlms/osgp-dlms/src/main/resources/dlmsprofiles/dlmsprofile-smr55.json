@@ -22,7 +22,6 @@
         "description": "push_object_list",
         "datatype": "array",
         "valuetype": "DYNAMIC",
-        "value": "EMPTY",
         "access": "RW"
       },
       {
@@ -30,7 +29,6 @@
         "description": "send_destination_and_method",
         "datatype": "structure",
         "valuetype": "DYNAMIC",
-        "value": "EMPTY",
         "access": "RW"
       },
       {
@@ -38,7 +36,6 @@
         "description": "communication_window",
         "datatype": "array",
         "valuetype": "DYNAMIC",
-        "value": "EMPTY",
         "access": "RW"
       },
       {

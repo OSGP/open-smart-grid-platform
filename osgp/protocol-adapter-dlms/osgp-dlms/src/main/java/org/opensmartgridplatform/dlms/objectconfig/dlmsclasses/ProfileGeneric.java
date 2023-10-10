@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package org.opensmartgridplatform.dlms.objectconfig.dlmsClasses;
+package org.opensmartgridplatform.dlms.objectconfig.dlmsclasses;
 
 import java.util.ArrayList;
 import java.util.List;
