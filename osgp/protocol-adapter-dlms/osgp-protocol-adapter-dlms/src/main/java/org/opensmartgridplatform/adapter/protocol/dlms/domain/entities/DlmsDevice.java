@@ -72,9 +72,9 @@ public class DlmsDevice extends AbstractEntity {
   @Column(length = 40)
   private String timezone;
 
-  @Column(name = "config_lookup_type")
+  @Column(name = "type")
   /* marking for a device type for G-meter G4,G6,G10,G16,G25,null or E-meter devicemodel.code */
-  private String configLookupType;
+  private String type;
 
   @Column(name = "protocol", nullable = false)
   private String protocolName;
