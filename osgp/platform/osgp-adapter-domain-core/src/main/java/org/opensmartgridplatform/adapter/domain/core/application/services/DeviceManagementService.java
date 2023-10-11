@@ -63,7 +63,7 @@ public class DeviceManagementService extends AbstractService {
             eventNotificationMessageDataContainer),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   @Transactional(value = "transactionManager")
@@ -97,7 +97,7 @@ public class DeviceManagementService extends AbstractService {
             correlationUid, organisationIdentification, deviceIdentification, certificationDto),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   @Transactional(value = "transactionManager")
@@ -127,7 +127,7 @@ public class DeviceManagementService extends AbstractService {
             correlationUid, organisationIdentification, deviceIdentification, verificationKey),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   public void setDeviceLifecycleStatus(

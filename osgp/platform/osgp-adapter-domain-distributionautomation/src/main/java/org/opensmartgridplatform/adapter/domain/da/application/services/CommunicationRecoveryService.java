@@ -64,7 +64,7 @@ public class CommunicationRecoveryService extends BaseService {
 
     final RequestMessage message = this.createMessage(rtu);
     this.osgpCoreRequestMessageSender.send(
-        message, DeviceFunction.GET_DATA.toString(), rtu.getIpAddress());
+        message, DeviceFunction.GET_DATA.toString(), rtu.getNetworkAddress());
   }
 
   private RequestMessage createMessage(final RtuDevice rtu) {

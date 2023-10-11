@@ -70,7 +70,7 @@ public class SystemEventService {
             .withDeviceIdentification(device.getDeviceIdentification())
             .withCorrelationUid(correlationId)
             .withOrganisationIdentification(sourceMessageMetadata.getOrganisationIdentification())
-            .withIpAddress(sourceMessageMetadata.getIpAddress())
+            .withNetworkAddress(sourceMessageMetadata.getNetworkAddress())
             .withMessagePriority(MessagePriorityEnum.HIGH.getPriority())
             .withMessageType(MessageType.SYSTEM_EVENT.name())
             .withDomain(sourceMessageMetadata.getDomain())

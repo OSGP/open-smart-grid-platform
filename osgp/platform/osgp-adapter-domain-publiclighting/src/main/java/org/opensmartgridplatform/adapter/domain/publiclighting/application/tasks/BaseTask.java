@@ -4,7 +4,6 @@
 
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.tasks;
 
-import java.net.InetAddress;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -252,23 +251,24 @@ public class BaseTask {
     final String deviceFunctionString = deviceFunction.name();
     final DomainTypeDto domain = DomainTypeDto.PUBLIC_LIGHTING;
 
-    String ipAddress = null;
-    if (device.getNetworkAddress() == null) {
+    final String networkAddress = device.getNetworkAddress();
+    if (networkAddress == null) {
       // In case the device does not have a known IP address, don't send
       // a request message.
       LOGGER.warn(
-          "Unable to create protocol request message because the IP address is empty for device: {}",
+          "Unable to create protocol request message because the network address is empty for device: {}",
           deviceIdentification);
       return;
-    } else {
-      ipAddress = device.getNetworkAddress().getHostAddress();
     }
 
     final RequestMessage requestMessage =
         new RequestMessage(correlationUid, organisation, deviceIdentification, domain);
 
     this.osgpCoreRequestMessageSender.send(
-        requestMessage, deviceFunctionString, MessagePriorityEnum.LOW.getPriority(), ipAddress);
+        requestMessage,
+        deviceFunctionString,
+        MessagePriorityEnum.LOW.getPriority(),
+        networkAddress);
   }
 
   /**
@@ -431,10 +431,10 @@ public class BaseTask {
     final String messageType = DeviceFunction.CONNECT.name();
     final DomainTypeDto domain = DomainTypeDto.PUBLIC_LIGHTING;
 
-    final String ipAddress = getIpAddress(lightMeasurementDevice);
-    if (ipAddress == null) {
+    final String networkAddress = getNetworkAddress(lightMeasurementDevice);
+    if (networkAddress == null) {
       LOGGER.warn(
-          "Unable to create connect request because no IP address is known for device: {}",
+          "Unable to create connect request because no network address is known for device: {}",
           deviceIdentification);
       return;
     }
@@ -442,7 +442,7 @@ public class BaseTask {
     final RequestMessage requestMessage =
         new RequestMessage(correlationUid, organisation, deviceIdentification, domain);
     this.osgpCoreRequestMessageSender.send(
-        requestMessage, messageType, MessagePriorityEnum.LOW.getPriority(), ipAddress);
+        requestMessage, messageType, MessagePriorityEnum.LOW.getPriority(), networkAddress);
   }
 
   private static String getDeviceIdentification(final LightMeasurementDevice device) {
@@ -461,25 +461,18 @@ public class BaseTask {
     }
   }
 
-  private static String getIpAddress(final Device lightMeasurementDevice) {
-    final String gatewayIpAddress = getGatewayIpAddress(lightMeasurementDevice);
-    if (gatewayIpAddress != null) {
-      return gatewayIpAddress;
+  private static String getNetworkAddress(final Device lightMeasurementDevice) {
+    final String gatewayNetworkAddress = getGatewayNetworkAddress(lightMeasurementDevice);
+    if (gatewayNetworkAddress != null) {
+      return gatewayNetworkAddress;
     }
-    return getHostAddress(lightMeasurementDevice.getNetworkAddress());
+    return lightMeasurementDevice.getNetworkAddress();
   }
 
-  private static String getGatewayIpAddress(final Device lightMeasurementDevice) {
+  private static String getGatewayNetworkAddress(final Device lightMeasurementDevice) {
     if (lightMeasurementDevice.getGatewayDevice() == null) {
       return null;
     }
-    return getHostAddress(lightMeasurementDevice.getGatewayDevice().getNetworkAddress());
-  }
-
-  private static String getHostAddress(final InetAddress inetAddress) {
-    if (inetAddress == null) {
-      return null;
-    }
-    return inetAddress.getHostAddress();
+    return lightMeasurementDevice.getGatewayDevice().getNetworkAddress();
   }
 }

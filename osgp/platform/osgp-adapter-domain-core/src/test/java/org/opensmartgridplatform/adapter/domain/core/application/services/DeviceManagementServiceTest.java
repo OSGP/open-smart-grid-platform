@@ -90,7 +90,7 @@ public class DeviceManagementServiceTest {
     final List<EventNotificationType> eventNotifications =
         Arrays.asList(EventNotificationType.COMM_EVENTS, EventNotificationType.DIAG_EVENTS);
     final Device device = mock(Device.class);
-    when(device.getIpAddress()).thenReturn(TEST_IP);
+    when(device.getNetworkAddress()).thenReturn(TEST_IP);
     when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE))
         .thenReturn(device);
 
@@ -136,7 +136,7 @@ public class DeviceManagementServiceTest {
   @Test
   public void testUpdateDeviceSslCertification() throws FunctionalException {
     final Device device = mock(Device.class);
-    when(device.getIpAddress()).thenReturn(TEST_IP);
+    when(device.getNetworkAddress()).thenReturn(TEST_IP);
     when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE))
         .thenReturn(device);
     final Certification certification = new Certification("testUrl", "testDomain");
@@ -176,7 +176,7 @@ public class DeviceManagementServiceTest {
   @Test
   public void testSetDeviceVerificationKey() throws FunctionalException {
     final Device device = mock(Device.class);
-    when(device.getIpAddress()).thenReturn(TEST_IP);
+    when(device.getNetworkAddress()).thenReturn(TEST_IP);
     when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE))
         .thenReturn(device);
     this.deviceManagementService.setDeviceVerificationKey(

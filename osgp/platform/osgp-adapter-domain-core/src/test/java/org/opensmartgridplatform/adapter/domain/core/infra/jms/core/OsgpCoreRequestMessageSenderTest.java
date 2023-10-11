@@ -76,7 +76,7 @@ class OsgpCoreRequestMessageSenderTest {
         .setStringProperty(Constants.ORGANISATION_IDENTIFICATION, organisationIdentification);
     verify(this.objectMessage)
         .setStringProperty(Constants.DEVICE_IDENTIFICATION, deviceIdentification);
-    verify(this.objectMessage).setStringProperty(Constants.IP_ADDRESS, ipAddress);
+    verify(this.objectMessage).setStringProperty(Constants.NETWORK_ADDRESS, ipAddress);
     verify(this.objectMessage).setObject(requestMessage.getRequest());
   }
 }

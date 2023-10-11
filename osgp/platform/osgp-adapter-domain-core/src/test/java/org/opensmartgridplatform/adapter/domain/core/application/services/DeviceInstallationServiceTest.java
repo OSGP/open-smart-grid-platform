@@ -89,7 +89,7 @@ public class DeviceInstallationServiceTest {
   @Test
   public void testGetStatusTestDeviceTypeIsNotLmdType() throws FunctionalException {
     final Device device = Mockito.mock(Device.class);
-    when(device.getIpAddress()).thenReturn(TEST_IP);
+    when(device.getNetworkAddress()).thenReturn(TEST_IP);
     when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE))
         .thenReturn(device);
 
@@ -115,7 +115,7 @@ public class DeviceInstallationServiceTest {
   public void testGetStatusTestDeviceTypeIsLmdType() throws FunctionalException {
     final Device device = Mockito.mock(Device.class);
     when(device.getDeviceType()).thenReturn("LMD");
-    when(device.getIpAddress()).thenReturn(TEST_IP);
+    when(device.getNetworkAddress()).thenReturn(TEST_IP);
     when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE))
         .thenReturn(device);
 
@@ -281,7 +281,7 @@ public class DeviceInstallationServiceTest {
   @Test
   public void testStartSelfTest() throws FunctionalException {
     final Device device = Mockito.mock(Device.class);
-    when(device.getIpAddress()).thenReturn(TEST_IP);
+    when(device.getNetworkAddress()).thenReturn(TEST_IP);
     when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE))
         .thenReturn(device);
 
@@ -306,7 +306,7 @@ public class DeviceInstallationServiceTest {
   @Test
   public void testStopSelfTest() throws FunctionalException {
     final Device device = Mockito.mock(Device.class);
-    when(device.getIpAddress()).thenReturn(TEST_IP);
+    when(device.getNetworkAddress()).thenReturn(TEST_IP);
     when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE))
         .thenReturn(device);
 

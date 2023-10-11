@@ -362,7 +362,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         .domainVersion(deviceRequest.getDomainVersion())
         .messageType(deviceRequest.getMessageType())
         .messagePriority(deviceRequest.getMessagePriority())
-        .ipAddress(deviceRequest.getIpAddress())
+        .ipAddress(deviceRequest.getNetworkAddress())
         .retryCount(deviceRequest.getRetryCount())
         .isScheduled(deviceRequest.isScheduled());
   }

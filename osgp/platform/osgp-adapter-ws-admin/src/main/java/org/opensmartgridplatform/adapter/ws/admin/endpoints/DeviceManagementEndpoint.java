@@ -597,7 +597,7 @@ public class DeviceManagementEndpoint {
               request.getCellId());
 
       response.setResult(OsgpResultType.OK);
-      response.setIpAddress(updatedDevice.getIpAddress());
+      response.setIpAddress(updatedDevice.getNetworkAddress());
       response.setBtsId(updatedDevice.getBtsId());
       response.setCellId(updatedDevice.getCellId());
 

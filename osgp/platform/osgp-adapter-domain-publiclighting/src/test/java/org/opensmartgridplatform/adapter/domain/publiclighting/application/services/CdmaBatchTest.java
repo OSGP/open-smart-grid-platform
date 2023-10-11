@@ -14,7 +14,7 @@ import org.opensmartgridplatform.adapter.domain.publiclighting.application.value
 
 public class CdmaBatchTest {
 
-  private final InetAddress loopbackAddress = InetAddress.getLoopbackAddress();
+  private final String loopbackAddress = InetAddress.getLoopbackAddress().getHostAddress();
 
   @Test
   public void newBatchNumberNull() {

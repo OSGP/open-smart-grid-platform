@@ -123,7 +123,7 @@ public class ProtocolRequestMessage extends RequestMessage {
       this.messageType = messageMetadata.getMessageType();
       this.domain = messageMetadata.getDomain();
       this.domainVersion = messageMetadata.getDomainVersion();
-      this.ipAddress = messageMetadata.getIpAddress();
+      this.ipAddress = messageMetadata.getNetworkAddress();
       this.baseTransceiverStationId = messageMetadata.getBaseTransceiverStationId();
       this.cellId = messageMetadata.getCellId();
       this.messagePriority = messageMetadata.getMessagePriority();

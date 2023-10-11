@@ -104,7 +104,7 @@ public class AdHocManagementService extends AbstractService {
             lightValueMessageDataContainer),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   // === GET LIGHT SENSOR STATUS ===
@@ -221,10 +221,10 @@ public class AdHocManagementService extends AbstractService {
   private String getIpAddress(final Device device) {
     String ipAddress = null;
     if (device.getGatewayDevice() != null) {
-      ipAddress = device.getGatewayDevice().getIpAddress();
+      ipAddress = device.getGatewayDevice().getNetworkAddress();
     }
     if (ipAddress == null) {
-      ipAddress = device.getIpAddress();
+      ipAddress = device.getNetworkAddress();
     }
     return ipAddress;
   }
@@ -370,7 +370,7 @@ public class AdHocManagementService extends AbstractService {
         new RequestMessage(ids, resumeScheduleMessageDataContainerDto),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   // === TRANSITION MESSAGE FROM LIGHT MEASUREMENT DEVICE ===

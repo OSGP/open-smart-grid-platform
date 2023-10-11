@@ -52,7 +52,7 @@ public class ScheduleManagementService extends AbstractService {
         new RequestMessage(ids, scheduleDto),
         messageType,
         messagePriority,
-        device.getIpAddress(),
+        device.getNetworkAddress(),
         scheduleTime);
   }
 

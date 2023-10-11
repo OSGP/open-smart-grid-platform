@@ -4,15 +4,18 @@
 
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects;
 
-import java.net.InetAddress;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CdmaBatchDevice {
 
-  private String deviceIdentification;
-  private InetAddress networkAddress;
+  private static final Logger LOGGER = LoggerFactory.getLogger(CdmaBatchDevice.class);
 
-  public CdmaBatchDevice(final String deviceIdentification, final InetAddress networkAddress) {
+  private final String deviceIdentification;
+  private final String networkAddress;
+
+  public CdmaBatchDevice(final String deviceIdentification, final String networkAddress) {
     this.deviceIdentification = deviceIdentification;
     this.networkAddress = networkAddress;
   }
@@ -26,7 +29,7 @@ public class CdmaBatchDevice {
     return this.deviceIdentification;
   }
 
-  public InetAddress getInetAddress() {
+  public String getNetworkAddress() {
     return this.networkAddress;
   }
 

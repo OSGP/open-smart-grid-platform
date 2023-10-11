@@ -145,12 +145,13 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
             InetAddress.getByName(
                 getString(
                     settings,
-                    PlatformKeys.IP_ADDRESS,
+                    PlatformKeys.NETWORK_ADDRESS,
                     this.configuration.getDeviceNetworkAddress()));
       } catch (final UnknownHostException e) {
         inetAddress = InetAddress.getLoopbackAddress();
       }
-      lmd.updateRegistrationData(inetAddress, getString(settings, PlatformKeys.KEY_DEVICE_TYPE));
+      lmd.updateRegistrationData(
+          inetAddress.getHostAddress(), getString(settings, PlatformKeys.KEY_DEVICE_TYPE));
     }
     lmd.updateMetaData(
         getString(settings, PlatformKeys.ALIAS, PlatformDefaults.DEFAULT_ALIAS),
@@ -260,7 +261,7 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
     final LightMeasurementDevice lightMeasurementDevice =
         new LightMeasurementDevice(deviceIdentification);
     lightMeasurementDevice.setTechnicalInstallationDate(technicalInstallationDate);
-    lightMeasurementDevice.updateRegistrationData(networkAddress, deviceType);
+    lightMeasurementDevice.updateRegistrationData(networkAddress.getHostAddress(), deviceType);
     lightMeasurementDevice.updateProtocol(protocolInfo);
     lightMeasurementDevice.updateInMaintenance(false);
     lightMeasurementDevice.setDescription(deviceIdentification);
