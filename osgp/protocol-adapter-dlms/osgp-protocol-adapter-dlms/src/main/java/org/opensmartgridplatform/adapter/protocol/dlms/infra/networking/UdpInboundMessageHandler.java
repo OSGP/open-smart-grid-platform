@@ -4,7 +4,6 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.networking;
 
-import java.io.ByteArrayInputStream;
 import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -23,15 +22,15 @@ public class UdpInboundMessageHandler {
 
   @Autowired private PushedMessageProcessor pushedMessageProcessor;
 
+  private final DlmsPushNotificationDecoder decoder = new DlmsPushNotificationDecoder();
+
   @ServiceActivator(inputChannel = "inboundChannel")
   public void handeMessage(final Message message, @Headers final Map<String, Object> headerMap)
       throws UnrecognizedMessageDataException {
     final byte[] payload = (byte[]) message.getPayload();
     log.info("Received UDP message: {}", new String(payload));
 
-    final ByteArrayInputStream inputStream = new ByteArrayInputStream(payload);
-    final Smr5AlarmDecoder alarmDecoder = new Smr5AlarmDecoder();
-    final DlmsPushNotification dlmsPushNotification = alarmDecoder.decodeSmr5alarm(inputStream);
+    final DlmsPushNotification dlmsPushNotification = this.decoder.decode(payload);
 
     final String correlationId = UUID.randomUUID().toString().replace("-", "");
     final String deviceIdentification = dlmsPushNotification.getEquipmentIdentifier();
