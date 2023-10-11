@@ -217,8 +217,8 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
       | Number of power failures in any phase |       1 | 0.0.96.7.21.255 |              2 |         0 | UNDEFINED | NUMBER         |
       | CDMA Diagnostics (Signal quality)     |      47 | 0.1.25.6.0.255  |              6 |         3 | UNDEFINED | SIGNAL_QUALITY |
       | GPRS Diagnostics (Signal quality)     |      47 | 0.0.25.6.0.255  |              6 |         3 | UNDEFINED | SIGNAL_QUALITY |
-      | CDMA Diagnostics (BER)                |      47 | 0.1.25.6.0.255  |              6 |         4 | UNDEFINED | BER            |
-      | GPRS Diagnostics (BER)                |      47 | 0.0.25.6.0.255  |              6 |         4 | UNDEFINED | BER            |
+      | CDMA Diagnostics (BER)                |      47 | 0.1.25.6.0.255  |              6 |         4 | UNDEFINED | NUMBER         |
+      | GPRS Diagnostics (BER)                |      47 | 0.0.25.6.0.255  |              6 |         4 | UNDEFINED | NUMBER         |
       | M-Bus Client Setup CHn1               |      72 | 0.1.24.1.0.255  |             11 |         0 | UNDEFINED | NUMBER         |
       | M-Bus Client Setup CHn2               |      72 | 0.2.24.1.0.255  |             11 |         0 | UNDEFINED | NUMBER         |
       | M-Bus diagnostics RSSi CHn1           |      77 | 0.1.24.9.0.255  |              2 |         0 | UNDEFINED | NUMBER         |
@@ -265,8 +265,8 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
       | Number of power failures in any phase |       1 | 0.0.96.7.21.255 |              2 |         0 | UNDEFINED | NUMBER         |
       | CDMA Diagnostics (Signal quality)     |      47 | 0.1.25.6.0.255  |              6 |         3 | UNDEFINED | SIGNAL_QUALITY |
       | GPRS Diagnostics (Signal quality)     |      47 | 0.0.25.6.0.255  |              6 |         3 | UNDEFINED | SIGNAL_QUALITY |
-      | CDMA Diagnostics (BER)                |      47 | 0.1.25.6.0.255  |              6 |         4 | UNDEFINED | BER            |
-      | GPRS Diagnostics (BER)                |      47 | 0.0.25.6.0.255  |              6 |         4 | UNDEFINED | BER            |
+      | CDMA Diagnostics (BER)                |      47 | 0.1.25.6.0.255  |              6 |         4 | UNDEFINED | NUMBER         |
+      | GPRS Diagnostics (BER)                |      47 | 0.0.25.6.0.255  |              6 |         4 | UNDEFINED | NUMBER         |
       | M-Bus Client Setup CHn1               |      72 | 0.1.24.1.0.255  |             11 |         0 | UNDEFINED | NUMBER         |
       | M-Bus Client Setup CHn2               |      72 | 0.2.24.1.0.255  |             11 |         0 | UNDEFINED | NUMBER         |
       | M-Bus diagnostics RSSi CHn1           |      77 | 0.1.24.9.0.255  |              2 |         0 | UNDEFINED | NUMBER         |

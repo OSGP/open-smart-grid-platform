@@ -1106,7 +1106,7 @@
       <xsd:element name="CellId" type="xsd:unsignedInt"/>
       <xsd:element name="LocationId" type="xsd:unsignedShort"/>
       <xsd:element name="SignalQuality" type="tns:SignalQuality"/>
-      <xsd:element name="BitErrorRate" type="tns:BitErrorRate"/>
+      <xsd:element name="BitErrorRate" type="xsd:short"/>
       <xsd:element name="MobileCountryCode" type="xsd:unsignedShort"/>
       <xsd:element name="MobileNetworkCode" type="xsd:unsignedShort"/>
       <xsd:element name="ChannelNumber" type="xsd:unsignedInt"/>
@@ -1243,21 +1243,6 @@
       <xsd:enumeration value="MINUS_53_DBM"/>
       <!-- 31 - -51 dBm or greater -->
       <xsd:enumeration value="MINUS_51_DBM_OR_GREATER"/>
-      <!-- 99 - not known or not detectable -->
-      <xsd:enumeration value="NOT_KNOWN_OR_NOT_DETECTABLE"/>
-    </xsd:restriction>
-  </xsd:simpleType>
-
-  <xsd:simpleType name="BitErrorRate">
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="RXQUAL_0"/>
-      <xsd:enumeration value="RXQUAL_1"/>
-      <xsd:enumeration value="RXQUAL_2"/>
-      <xsd:enumeration value="RXQUAL_3"/>
-      <xsd:enumeration value="RXQUAL_4"/>
-      <xsd:enumeration value="RXQUAL_5"/>
-      <xsd:enumeration value="RXQUAL_6"/>
-      <xsd:enumeration value="RXQUAL_7"/>
       <!-- 99 - not known or not detectable -->
       <xsd:enumeration value="NOT_KNOWN_OR_NOT_DETECTABLE"/>
     </xsd:restriction>

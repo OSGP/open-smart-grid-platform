@@ -7,7 +7,7 @@ Feature: SmartMetering Management - Get GSM Diagnostic
   As a grid operator
   I want to be able to get the GSM Diagnostic of a smart meter
 
-  Scenario Outline: Get the gsm diagnostic of an E-Meter
+  Scenario Outline: Get the gsm diagnostic of an E-Meter for <CommunicationMethod>
     Given
     Given a manufacturer
       | ManufacturerCode | KAI   |
@@ -32,7 +32,7 @@ Feature: SmartMetering Management - Get GSM Diagnostic
       | cellId                      |                        77 |
       | locationId                  |                      2230 |
       | signalQuality               | MINUS_87_DBM              |
-      | bitErrorRate                | RXQUAL_6                  |
+      | bitErrorRate                |            <BitErrorRate> |
       | mobileCountryCode           |                        66 |
       | mobileNetworkCode           |                       204 |
       | channelNumber               |                       107 |
@@ -41,6 +41,10 @@ Feature: SmartMetering Management - Get GSM Diagnostic
 # Reading of captureTime is disabled for now
 #      | captureTime               | 2021-04-13T08:45:00.000Z |
   Examples:
-    | DeviceIdentification | Port | Protocol | ProtocolVersion | CommunicationMethod | ModelCode |
-    | TEST1028000000001    | 1028 | SMR      | 5.1             | GPRS                | MA105     |
-    | TEST1031000000001    | 1031 | SMR      | 4.3             | CDMA                | MA105A    |
+    | DeviceIdentification | Port | Protocol | ProtocolVersion | CommunicationMethod | ModelCode | BitErrorRate |
+    | TEST1031000000001    | 1031 | SMR      | 4.3             | CDMA                | MA105A    |            6 |
+    | TEST1027000000001    | 1027 | SMR      | 5.0.0           | CDMA                | MA105A    |            6 |
+    | TEST1027000000001    | 1027 | SMR      | 5.0.0           | GPRS                | MA105     |            6 |
+    | TEST1029000000001    | 1029 | SMR      | 5.2             | CDMA                | MA105A    |            6 |
+    | TEST1029000000001    | 1029 | SMR      | 5.2             | GPRS                | MA105     |            6 |
+    | TEST1029000000001    | 1029 | SMR      | 5.2             | LTE                 | MA105A    |            6 |
