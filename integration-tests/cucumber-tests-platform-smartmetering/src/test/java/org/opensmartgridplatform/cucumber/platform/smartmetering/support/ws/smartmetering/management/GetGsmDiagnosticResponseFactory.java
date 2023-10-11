@@ -7,6 +7,7 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.sma
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Arrays;
@@ -16,7 +17,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetGsmDiagnosticResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.AdjacentCellInfo;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.BitErrorRate;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.CellInfo;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.CircuitSwitchedStatus;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ModemRegistrationStatus;
@@ -44,8 +44,7 @@ public class GetGsmDiagnosticResponseFactory {
     final Integer locationId = getInteger(requestParameters, "locationId");
     final SignalQuality signalQuality =
         getEnum(requestParameters, "signalQuality", SignalQuality.class);
-    final BitErrorRate bitErrorRate =
-        getEnum(requestParameters, "bitErrorRate", BitErrorRate.class);
+    final short bitErrorRate = getShort(requestParameters, "bitErrorRate");
     final Integer mobileCountryCode = getInteger(requestParameters, "mobileCountryCode");
     final Integer mobileNetworkCode = getInteger(requestParameters, "mobileNetworkCode");
     final Long channelNumber = getLong(requestParameters, "channelNumber");

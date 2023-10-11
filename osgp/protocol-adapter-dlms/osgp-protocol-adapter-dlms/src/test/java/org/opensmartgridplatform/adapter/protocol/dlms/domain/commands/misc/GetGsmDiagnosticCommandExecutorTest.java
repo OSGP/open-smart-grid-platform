@@ -18,6 +18,8 @@ import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -35,7 +37,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessa
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.BitErrorRateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CircuitSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticResponseDto;
@@ -60,7 +61,9 @@ class GetGsmDiagnosticCommandExecutorTest {
 
   private final DlmsDevice device = this.createDevice(Protocol.SMR_5_1, CommunicationMethod.CDMA);
   private final int classId = InterfaceClass.GSM_DIAGNOSTIC.id();
-  private final String obisCode = "0.1.25.6.0.255";
+  private final String obisCodeGsm = "0.0.25.6.0.255";
+  private final String obisCodeCdma = "0.1.25.6.0.255";
+  private final String obisCodeLte = "0.2.25.6.0.255";
   private final GetGsmDiagnosticRequestDto request = new GetGsmDiagnosticRequestDto();
   private MessageMetadata messageMetadata;
 
@@ -91,8 +94,11 @@ class GetGsmDiagnosticCommandExecutorTest {
     }
   }
 
-  @Test
-  void testHappy() throws Exception {
+  @ParameterizedTest
+  @EnumSource(CommunicationMethod.class)
+  void testHappy(final CommunicationMethod communicationMethod) throws Exception {
+
+    final DlmsDevice testDevice = this.createDevice(Protocol.SMR_5_2, communicationMethod);
 
     // SETUP - mock return data objects
     final GetResult result2 = mock(GetResult.class);
@@ -157,25 +163,26 @@ class GetGsmDiagnosticCommandExecutorTest {
     when(adjacentCellSignalQuality.getValue()).thenReturn((short) 7);
 
     when(this.dlmsHelper.getAndCheck(
-            eq(this.connectionManager), eq(this.device), eq("Get GsmDiagnostic"), any()))
+            eq(this.connectionManager), eq(testDevice), eq("Get GsmDiagnostic"), any()))
         .thenReturn(Arrays.asList(result2, result3, result4, result5, result6, result7));
 
     // CALL
     final GetGsmDiagnosticResponseDto result =
         this.executor.execute(
-            this.connectionManager, this.device, this.request, this.messageMetadata);
+            this.connectionManager, testDevice, this.request, this.messageMetadata);
 
     // VERIFY calls to mocks
+    final String obisCode = this.getObisCode(communicationMethod);
     verify(this.dlmsMessageListener)
         .setDescription(
             String.format(
                 "Get GsmDiagnostic, retrieve attributes: %s, %s, %s, %s, %s, %s",
-                this.createAttributeAddress(2),
-                this.createAttributeAddress(3),
-                this.createAttributeAddress(4),
-                this.createAttributeAddress(5),
-                this.createAttributeAddress(6),
-                this.createAttributeAddress(7)));
+                this.createAttributeAddress(obisCode, 2),
+                this.createAttributeAddress(obisCode, 3),
+                this.createAttributeAddress(obisCode, 4),
+                this.createAttributeAddress(obisCode, 5),
+                this.createAttributeAddress(obisCode, 6),
+                this.createAttributeAddress(obisCode, 7)));
 
     // VERIFY contents of the return value
     assertThat(result.getOperator()).isEqualTo("AB");
@@ -189,7 +196,7 @@ class GetGsmDiagnosticCommandExecutorTest {
     assertThat(result.getCellInfo().getLocationId()).isEqualTo(1);
     assertThat(result.getCellInfo().getSignalQuality())
         .isEqualTo(SignalQualityDto.fromIndexValue(2));
-    assertThat(result.getCellInfo().getBitErrorRate()).isEqualTo(BitErrorRateDto.fromIndexValue(3));
+    assertThat(result.getCellInfo().getBitErrorRate()).isEqualTo(3);
     assertThat(result.getCellInfo().getMobileCountryCode()).isEqualTo(4);
     assertThat(result.getCellInfo().getMobileNetworkCode()).isEqualTo(5);
     assertThat(result.getCellInfo().getChannelNumber()).isEqualTo(6);
@@ -197,6 +204,21 @@ class GetGsmDiagnosticCommandExecutorTest {
     assertThat(result.getAdjacentCells().get(0).getCellId()).isEqualTo(256L);
     assertThat(result.getAdjacentCells().get(0).getSignalQuality())
         .isEqualTo(SignalQualityDto.fromIndexValue(7));
+  }
+
+  private String getObisCode(final CommunicationMethod communicationMethod) {
+    switch (communicationMethod) {
+      case LTE -> {
+        return this.obisCodeLte;
+      }
+      case GPRS -> {
+        return this.obisCodeGsm;
+      }
+      case CDMA -> {
+        return this.obisCodeCdma;
+      }
+    }
+    return null;
   }
 
   @Test
@@ -222,8 +244,8 @@ class GetGsmDiagnosticCommandExecutorTest {
     }
   }
 
-  private String createAttributeAddress(final int attributeId) {
-    return String.format("{%s,%s,%d}", this.classId, this.obisCode, attributeId);
+  private String createAttributeAddress(final String obisCode, final int attributeId) {
+    return String.format("{%s,%s,%d}", this.classId, obisCode, attributeId);
   }
 
   private DlmsDevice createDevice(final Protocol protocol, final CommunicationMethod method) {

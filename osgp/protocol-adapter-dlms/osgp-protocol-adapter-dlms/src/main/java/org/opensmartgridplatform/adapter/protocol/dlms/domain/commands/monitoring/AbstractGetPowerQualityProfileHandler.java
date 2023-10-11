@@ -41,7 +41,6 @@ import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
 import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.BitErrorRateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
@@ -500,8 +499,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
           return new ProfileEntryValueDto(signalQuality.value());
         } else if (selectableObject.dataIndex == DATA_INDEX_BER) {
           final int value = this.dlmsHelper.readLong(dataObject, "Read ber").intValue();
-          final BitErrorRateDto ber = BitErrorRateDto.fromIndexValue(value);
-          return new ProfileEntryValueDto(ber.value());
+          return new ProfileEntryValueDto(value);
         }
       }
     } catch (final ProtocolAdapterException | IllegalArgumentException e) {

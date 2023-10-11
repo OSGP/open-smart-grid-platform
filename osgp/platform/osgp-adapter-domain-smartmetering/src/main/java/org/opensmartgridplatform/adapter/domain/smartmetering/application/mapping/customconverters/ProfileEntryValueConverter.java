@@ -22,12 +22,16 @@ public class ProfileEntryValueConverter
       final MappingContext context) {
     final Object value = source.getValue();
     if (value != null) {
-      if (value instanceof Long) {
-        return new ProfileEntryValue((Long) value);
-      } else if (value instanceof Date) {
-        return new ProfileEntryValue((Date) value);
-      } else if (value instanceof BigDecimal) {
-        return new ProfileEntryValue((BigDecimal) value);
+      if (value instanceof final Long longValue) {
+        return new ProfileEntryValue(longValue);
+      } else if (value instanceof final Date date) {
+        return new ProfileEntryValue(date);
+      } else if (value instanceof final BigDecimal bigDecimal) {
+        return new ProfileEntryValue(bigDecimal);
+      } else if (value instanceof final Integer integer) {
+        return new ProfileEntryValue(integer);
+      } else if (value instanceof final Short shortValue) {
+        return new ProfileEntryValue(shortValue);
       } else {
         return new ProfileEntryValue((String) value);
       }
