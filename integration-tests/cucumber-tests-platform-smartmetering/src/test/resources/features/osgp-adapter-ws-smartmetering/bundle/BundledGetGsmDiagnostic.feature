@@ -27,7 +27,7 @@ Feature: SmartMetering Bundle - Get Gsm Diagnostic
       | cellId                      |                        77 |
       | locationId                  |                      2230 |
       | signalQuality               | MINUS_87_DBM              |
-      | bitErrorRate                | RXQUAL_6                  |
+      | bitErrorRate                |                         6 |
       | mobileCountryCode           |                        66 |
       | mobileNetworkCode           |                       204 |
       | channelNumber               |                       107 |

@@ -16,7 +16,7 @@ public class CellInfo implements Serializable {
 
   private final SignalQualityType signalQuality;
 
-  private final BitErrorRateType bitErrorRate;
+  private final short bitErrorRate;
 
   private final int mobileCountryCode;
 
@@ -28,7 +28,7 @@ public class CellInfo implements Serializable {
       final long cellId,
       final int locationId,
       final SignalQualityType signalQuality,
-      final BitErrorRateType bitErrorRate,
+      final short bitErrorRate,
       final int mobileCountryCode,
       final int mobileNetworkCode,
       final long channelNumber) {
@@ -53,7 +53,7 @@ public class CellInfo implements Serializable {
     return this.signalQuality;
   }
 
-  public BitErrorRateType getBitErrorRate() {
+  public short getBitErrorRate() {
     return this.bitErrorRate;
   }
 
