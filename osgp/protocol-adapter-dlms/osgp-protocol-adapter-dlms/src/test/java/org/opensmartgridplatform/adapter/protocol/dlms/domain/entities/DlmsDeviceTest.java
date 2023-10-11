@@ -8,9 +8,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-public class DlmsDeviceTest {
+class DlmsDeviceTest {
+
   @Test
-  public void returnsIfDeviceNeedsInvocationCounter() {
+  void isAbleToSetAObjectConfigLookupType() {
+    assertThat(
+            new DlmsDeviceBuilder()
+                .withHls5Active(true)
+                .withProtocol("SMR")
+                .withConfigLookupType("DUMMY")
+                .build()
+                .getConfigLookupType())
+        .isEqualTo("DUMMY");
+  }
+
+  @Test
+  void isAbleToUnSetAObjectConfigLookupType() {
+    assertThat(
+            new DlmsDeviceBuilder()
+                .withHls5Active(true)
+                .withProtocol("SMR")
+                .withConfigLookupType(null)
+                .build()
+                .getConfigLookupType())
+        .isNull();
+  }
+
+  @Test
+  void returnsIfDeviceNeedsInvocationCounter() {
     assertThat(
             new DlmsDeviceBuilder()
                 .withHls5Active(true)

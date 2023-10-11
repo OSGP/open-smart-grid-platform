@@ -72,6 +72,10 @@ public class DlmsDevice extends AbstractEntity {
   @Column(length = 40)
   private String timezone;
 
+  @Column(name = "config_lookup_type")
+  /* marking for a device type for G-meter G4,G6,G10,G16,G25,null or E-meter devicemodel.code */
+  private String configLookupType;
+
   @Column(name = "protocol", nullable = false)
   private String protocolName;
 
@@ -424,5 +428,15 @@ public class DlmsDevice extends AbstractEntity {
 
   public void setFirmwareHash(final String firmwareHash) {
     this.firmwareHash = firmwareHash;
+  }
+
+  /** get the configLookupType that will be used to lookup values in the object config service. */
+  public String getConfigLookupType() {
+    return this.configLookupType;
+  }
+
+  /** set the configLookupType that will be used to lookup values in the object config service. */
+  public void setConfigLookupType(final String configLookupType) {
+    this.configLookupType = configLookupType;
   }
 }
