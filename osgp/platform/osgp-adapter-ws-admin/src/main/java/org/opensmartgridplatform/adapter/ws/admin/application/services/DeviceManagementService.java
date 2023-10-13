@@ -674,10 +674,18 @@ public class DeviceManagementService {
 
     if (btsId != null) {
       device.setBtsId(btsId);
+    } else {
+      LOGGER.info(
+          "Bts id for device {} is not overwritten since no new value is found",
+          deviceIdentification);
     }
 
     if (cellId != null) {
       device.setCellId(cellId);
+    } else {
+      LOGGER.info(
+          "Cell id for device {} is not overwritten since no new value is found",
+          deviceIdentification);
     }
 
     final Device updatedDevice = this.deviceRepository.save(device);
