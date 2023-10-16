@@ -37,7 +37,10 @@ public class ProfileEntryValueConverter
       } else if (value instanceof final String stringValue) {
         return new ProfileEntryValue(stringValue);
       } else {
-        log.info("Using default convert toString() for value {}", value);
+        log.info(
+            "Using default convert toString() for value {}, with class {}",
+            value,
+            value.getClass().getSimpleName());
         return new ProfileEntryValue(value.toString());
       }
     } else {
