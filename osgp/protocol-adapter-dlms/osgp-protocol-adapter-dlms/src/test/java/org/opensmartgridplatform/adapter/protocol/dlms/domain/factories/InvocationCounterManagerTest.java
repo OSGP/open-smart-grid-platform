@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 class InvocationCounterManagerTest {
   private static final AttributeAddress ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE =
       new AttributeAddress(1, new ObisCode(new byte[] {0, 0, 43, 1, 0, -1}), 2);
+  private static final String IP_ADDRESS = "1.2.3.4";
 
   private InvocationCounterManager manager;
   private MessageMetadata messageMetadata;
@@ -75,8 +76,11 @@ class InvocationCounterManagerTest {
 
   @Test
   void initializeInvocationCounterForDeviceTaskExecuted() throws OsgpException {
+    this.device.setIpAddress(IP_ADDRESS);
+
     this.manager.initializeInvocationCounter(this.messageMetadata, this.device);
 
+    assertThat(this.device.getIpAddress()).isNull();
     verify(this.connectionFactory, times(1))
         .createAndHandlePublicClientConnection(
             any(MessageMetadata.class), eq(this.device), isNull(), isNull(), any());
@@ -85,8 +89,11 @@ class InvocationCounterManagerTest {
   @Test
   void initializeInvocationCounterForDeviceTaskExecutedDebugEnabled() throws OsgpException {
     this.device.setInDebugMode(true);
+    this.device.setIpAddress(IP_ADDRESS);
+
     this.manager.initializeInvocationCounter(this.messageMetadata, this.device);
 
+    assertThat(this.device.getIpAddress()).isNull();
     verify(this.connectionFactory, times(1))
         .createAndHandlePublicClientConnection(
             any(MessageMetadata.class), eq(this.device), isNotNull(), isNull(), any());
