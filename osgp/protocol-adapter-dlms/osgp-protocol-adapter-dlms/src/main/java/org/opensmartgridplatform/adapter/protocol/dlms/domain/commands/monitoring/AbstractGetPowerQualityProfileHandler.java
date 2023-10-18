@@ -497,7 +497,6 @@ public abstract class AbstractGetPowerQualityProfileHandler {
           final Long signalQualityLong =
               this.dlmsHelper.readLong(dataObject, "Read signal quality");
           if (signalQualityLong == null) {
-            LOGGER.warn("Read signal quality: mapping null value to not known or not detectable");
             return notKnownProfileEntryValue();
           }
           final int value = signalQualityLong.intValue();
@@ -506,7 +505,6 @@ public abstract class AbstractGetPowerQualityProfileHandler {
         } else if (selectableObject.dataIndex == DATA_INDEX_BER) {
           final Long berLong = this.dlmsHelper.readLong(dataObject, "Read ber");
           if (berLong == null) {
-            LOGGER.warn("Read ber: mapping null value to not known or not detectable");
             return notKnownProfileEntryValue();
           }
           final int value = berLong.intValue();
