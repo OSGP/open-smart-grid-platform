@@ -494,11 +494,20 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     try {
       if (selectableObject.attributeIndex == GsmDiagnosticAttribute.CELL_INFO.attributeId()) {
         if (selectableObject.dataIndex == DATA_INDEX_SIGNAL_QUALITY) {
-          final int value = this.dlmsHelper.readLong(dataObject, "Read signal quality").intValue();
+          final Long signalQualityLong =
+              this.dlmsHelper.readLong(dataObject, "Read signal quality");
+          if (signalQualityLong == null) {
+            return notKnownProfileEntryValue();
+          }
+          final int value = signalQualityLong.intValue();
           final SignalQualityDto signalQuality = SignalQualityDto.fromIndexValue(value);
           return new ProfileEntryValueDto(signalQuality.value());
         } else if (selectableObject.dataIndex == DATA_INDEX_BER) {
-          final int value = this.dlmsHelper.readLong(dataObject, "Read ber").intValue();
+          final Long berLong = this.dlmsHelper.readLong(dataObject, "Read ber");
+          if (berLong == null) {
+            return notKnownProfileEntryValue();
+          }
+          final int value = berLong.intValue();
           return new ProfileEntryValueDto(value);
         }
       }
@@ -508,6 +517,10 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
     final String debugInfo = this.dlmsHelper.getDebugInfo(dataObject);
     return new ProfileEntryValueDto(debugInfo);
+  }
+
+  private static ProfileEntryValueDto notKnownProfileEntryValue() {
+    return new ProfileEntryValueDto(99);
   }
 
   private ProfileEntryValueDto createNumericProfileEntryValueDto(
