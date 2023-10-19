@@ -83,6 +83,7 @@ class InvocationCounterManagerTest {
     this.manager.initializeInvocationCounter(this.messageMetadata, this.device);
 
     final InOrder inOrder = inOrder(this.connectionFactory, this.device);
+    inOrder.verify(this.device).setIpAddress(null);
     inOrder
         .verify(this.connectionFactory, times(1))
         .createAndHandlePublicClientConnection(
