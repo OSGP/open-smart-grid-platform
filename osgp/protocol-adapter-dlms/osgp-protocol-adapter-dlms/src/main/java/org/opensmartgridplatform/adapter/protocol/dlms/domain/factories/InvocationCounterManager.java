@@ -60,7 +60,7 @@ public class InvocationCounterManager {
   public void initializeInvocationCounter(
       final MessageMetadata messageMetadata, final DlmsDevice device) throws OsgpException {
     /*
-     * When the invocation counter is out of sync, the device closes the session.
+     * When the invocation counter is out of sync, some devices close the session.
      * By setting the ip-address to null, the application will be forced to get a new ip-address.
      * The meter will start a new session.
      * This is done by the DlmsConnectionFactory in the method:
@@ -71,8 +71,7 @@ public class InvocationCounterManager {
     this.initializeWithInvocationCounterStoredOnDevice(messageMetadata, device, null);
 
     /*
-     * When the invocation counter has been initialized, the device closes the session.
-     * By setting the ip-address to null, the application will be forced to get a new ip-address.
+     * by setting the ip-address to null again, the application will be forced to get a new ip-address.
      * The meter will start a new session.
      * This is done by the DlmsConnectionFactory in the method:
      * this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider
