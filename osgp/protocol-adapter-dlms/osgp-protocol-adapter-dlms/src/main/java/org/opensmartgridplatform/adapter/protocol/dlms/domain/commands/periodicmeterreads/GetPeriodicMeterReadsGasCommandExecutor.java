@@ -298,8 +298,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     // the scaler or the unit, so that information is retrieved from the corresponding capture
     // object in the selected objects.
     final DataObject gasValue = this.readValue(bufferedObjects, selectedObjects, channel);
-    final String scalerUnit =
-        this.getScalerUnit(selectedObjects, channel, device.getManufacturerId()); // TODO use model
+    final String scalerUnit = this.getScalerUnit(selectedObjects, channel);
 
     // The capture time is used in most profiles. But for some it is not used. In that case, the
     // selectedObjects will not contain a capture time object and readCaptureTime will return null.
@@ -498,22 +497,15 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     return null;
   }
 
-  private String getScalerUnit(
-      final List<CaptureObject> selectedObjects, final int channel, final String configLookupType)
+  private String getScalerUnit(final List<CaptureObject> selectedObjects, final int channel)
       throws ProtocolAdapterException {
 
     final Integer index = this.getIndex(selectedObjects, MBUS_MASTER_VALUE, 2, channel);
 
-    try {
-      if (index != null) {
-        return ((Register) selectedObjects.get(index).getCosemObject())
-            .getScalerUnit(configLookupType);
-      } else {
-        throw new ProtocolAdapterException("Can't get scaler unit, selected object not found");
-      }
-    } catch (final ObjectConfigException e) {
-      throw new ProtocolAdapterException(
-          "Can't get scaler unit based on type " + configLookupType, e);
+    if (index != null) {
+      return ((Register) selectedObjects.get(index).getCosemObject()).getScalerUnit();
+    } else {
+      throw new ProtocolAdapterException("Can't get scaler unit, selected object not found");
     }
   }
 
@@ -588,7 +580,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       throws ProtocolAdapterException {
     try {
       return profile.getCaptureObjects(
-          this.objectConfigService, device.getProtocolName(), device.getProtocolVersion(), channel);
+          this.objectConfigService,
+          device.getProtocolName(),
+          device.getProtocolVersion(),
+          channel,
+          device.getManufacturerId()); // TODO: Use device model
     } catch (final ObjectConfigException e) {
       throw new ProtocolAdapterException(
           "Could not get capture objects for profile " + profile.getTag(), e);
@@ -705,14 +701,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     for (final CaptureObject captureObject : relevantCaptureObjects) {
       final Register register = (Register) captureObject.getCosemObject();
 
-      // There are 3 possibilities for the scalerUnit in the capture object:
+      // There are 2 possibilities for the scalerUnit in the capture object:
       // - A fixed scalerUnit is defined. In that case, we don't need to do anything.
       // - No scalerUnit is defined or the scalerUnit is defined as Dynamic. In that case, the
       //   scaler unit needs to be read from the meter
-      // - The scalerUnit is defined based on the meter type. In that case, we need to select the
-      //   right scalerUnit. If that fails (e.g. because the meter type of the device is not
-      //   defined), then we have to read the scalerUnit from the meter.
-      if (register.needsScalerUnitFromMeter(device.getManufacturerId())) { // TODO: Use model
+      if (register.needsScalerUnitFromMeter()) {
         captureObjectsThatNeedScalerUnitFromMeter.add(captureObject);
       }
     }

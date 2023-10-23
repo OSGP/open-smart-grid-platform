@@ -327,7 +327,7 @@ class GetActualPowerQualityCommandExecutorTest {
             DlmsDataType.DONT_CARE,
             valueType,
             value,
-            List.of(),
+            null,
             AccessType.RW));
   }
 

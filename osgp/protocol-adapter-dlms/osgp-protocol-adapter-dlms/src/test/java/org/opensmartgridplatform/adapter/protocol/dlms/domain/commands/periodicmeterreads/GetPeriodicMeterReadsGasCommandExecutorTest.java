@@ -176,7 +176,7 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
         .thenReturn(status);
     when(this.objectConfigService.getCosemObject("DSMR", "4.2.2", DlmsObjectType.MBUS_MASTER_VALUE))
         .thenReturn(value_g);
-    when(this.objectConfigService.getCaptureObjects(profile, "DSMR", "4.2.2"))
+    when(this.objectConfigService.getCaptureObjects(profile, "DSMR", "4.2.2", "DeviceModel"))
         .thenReturn(
             List.of(
                 captureObjectClock,
@@ -335,13 +335,14 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
 
   private Attribute createAttribute(final int id, final String value, final ValueType valueType) {
     return new Attribute(
-        id, "descr", null, DlmsDataType.DONT_CARE, valueType, value, List.of(), AccessType.RW);
+        id, "descr", null, DlmsDataType.DONT_CARE, valueType, value, null, AccessType.RW);
   }
 
   private DlmsDevice createDevice(final Protocol protocol) {
     final DlmsDevice device = new DlmsDevice();
     device.setSelectiveAccessPeriodicMeterReadsSupported(true);
     device.setProtocol(protocol);
+    device.setMbusManufacturerIdentification("DeviceModel"); // Todo use model
     return device;
   }
 

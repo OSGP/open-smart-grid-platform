@@ -4,8 +4,6 @@
 
 package org.opensmartgridplatform.dlms.objectconfig;
 
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +16,7 @@ public class Attribute {
   private DlmsDataType datatype;
   private ValueType valuetype;
   private String value;
-  private List<TypeBasedValue> values;
+  private ValueBasedOnModel valuebasedonmodel;
   private AccessType access;
 
   public Attribute(
@@ -28,7 +26,7 @@ public class Attribute {
       final DlmsDataType datatype,
       final ValueType valuetype,
       final String value,
-      final List<TypeBasedValue> values,
+      final ValueBasedOnModel valuebasedonmodel,
       final AccessType access) {
     this.id = id;
     this.description = description;
@@ -36,7 +34,7 @@ public class Attribute {
     this.datatype = datatype;
     this.valuetype = valuetype;
     this.value = value;
-    this.values = values;
+    this.valuebasedonmodel = valuebasedonmodel;
     this.access = access;
   }
 
@@ -48,13 +46,20 @@ public class Attribute {
         this.datatype,
         this.valuetype,
         this.value,
-        this.getValues() == null ? null : new ArrayList<>(this.getValues()),
+        this.valuebasedonmodel == null ? null : this.valuebasedonmodel.copy(),
         this.access);
   }
 
   public Attribute copyWithNewValue(final String newValue) {
     final Attribute newAttribute = this.copy();
     newAttribute.value = newValue;
+    return newAttribute;
+  }
+
+  public Attribute copyWithNewValueAndType(final String newValue, final ValueType newValueType) {
+    final Attribute newAttribute = this.copy();
+    newAttribute.value = newValue;
+    newAttribute.valuetype = newValueType;
     return newAttribute;
   }
 }

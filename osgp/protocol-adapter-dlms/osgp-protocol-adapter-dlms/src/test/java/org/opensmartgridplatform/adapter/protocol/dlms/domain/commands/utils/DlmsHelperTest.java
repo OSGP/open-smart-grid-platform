@@ -433,7 +433,7 @@ public class DlmsHelperTest {
             DlmsDataType.DONT_CARE,
             valueType,
             value,
-            List.of(),
+            null,
             AccessType.RW);
     return new CosemObject(
         "TAG", "descr", CLASS_ID, 0, OBIS, "", null, List.of(), Map.of(), List.of(attribute));

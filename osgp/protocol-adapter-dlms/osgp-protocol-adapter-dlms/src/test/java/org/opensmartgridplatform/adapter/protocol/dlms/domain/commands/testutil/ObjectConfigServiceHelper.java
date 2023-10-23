@@ -64,7 +64,7 @@ public class ObjectConfigServiceHelper {
             DlmsDataType.DONT_CARE,
             ValueType.FIXED_IN_PROFILE,
             value,
-            List.of(),
+            null,
             AccessType.RW));
   }
 
@@ -84,7 +84,7 @@ public class ObjectConfigServiceHelper {
         DlmsDataType.DONT_CARE,
         ValueType.FIXED_IN_PROFILE,
         value,
-        List.of(),
+        null,
         AccessType.RW);
   }
 }

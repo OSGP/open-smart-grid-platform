@@ -38,14 +38,15 @@ The DLMS Object Config defined by json files.
 
 ## Attribute
 
- | Path        | Description                           |
- |-------------|---------------------------------------|
- | id          | id of attribute                       |
- | description | description of attribute              |
- | datatype    | datatype name                         |
- | valuetype   | defines the source of the value       |
- | value       | standard value                        |
- | access      | access to attribute - read (R) write (W) |
+ | Path              | Description                                         |
+ |-------------------|-----------------------------------------------------|
+ | id                | id of attribute                                     |
+ | description       | description of attribute                            |
+ | datatype          | datatype name                                       |
+ | valuetype         | defines the source of the value                     |
+ | value             | the fixed value or null                             |
+ | valuebasedonmodel | defines the values if it depends on the devicemodel |
+ | access            | access to attribute - read (R) write (W)            |
 
 ### ValueType
 
@@ -54,3 +55,4 @@ Valuetype can be one of the following:
 - FIXED_IN_PROFILE: A fixed value, defined in the profile, e.g. a scaler/unit defined in SMR5.0.
 - FIXED_IN_METER: A fixed value set in the factory
 - SET_BY_CLIENT: A fixed value set by the client during installation
+- BASED_ON_MODEL: The value depends on the device model, as defined in the valuesbasedonmodel block

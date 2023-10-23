@@ -34,6 +34,8 @@ import org.opensmartgridplatform.dlms.objectconfig.DlmsDataType;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
 import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
+import org.opensmartgridplatform.dlms.objectconfig.TypeBasedValue;
+import org.opensmartgridplatform.dlms.objectconfig.ValueBasedOnModel;
 import org.opensmartgridplatform.dlms.objectconfig.ValueType;
 
 @Slf4j
@@ -43,6 +45,8 @@ class ObjectConfigServiceTest {
 
   private final int PROFILE_GENERIC_CLASS_ID = 7;
   private final int PROFILE_GENERIC_CAPTURE_OBJECTS_ATTR_ID = 3;
+  private final int REGISTER_CLASS_ID = 3;
+  private final int REGISTER_SCALER_UNIT_ATTR_ID = 3;
 
   @BeforeEach
   void setUp() throws IOException, ObjectConfigException {
@@ -390,7 +394,7 @@ class ObjectConfigServiceTest {
         this.createCosemObject(this.PROFILE_GENERIC_CLASS_ID, List.of(captureObjectsAttribute));
 
     final List<CaptureObject> captureObjectDefinitions =
-        this.objectConfigService.getCaptureObjects(profile, "DSMR", "4.2.2");
+        this.objectConfigService.getCaptureObjects(profile, "DSMR", "4.2.2", "DeviceModel");
 
     assertThat(captureObjectDefinitions).hasSize(2);
     final CaptureObject clock = captureObjectDefinitions.get(0);
@@ -400,6 +404,48 @@ class ObjectConfigServiceTest {
     assertThat(status.getCosemObject().getTag())
         .isEqualTo(DlmsObjectType.AMR_PROFILE_STATUS.name());
     assertThat(status.getAttributeId()).isEqualTo(11);
+  }
+
+  @Test
+  void HandleValueBasedOnModel() throws ObjectConfigException {
+    final ValueBasedOnModel valueBasedOnModel =
+        new ValueBasedOnModel(
+            "GAS_METER_TYPE",
+            List.of(
+                new TypeBasedValue(List.of("G4-G6"), "-3, M3"),
+                new TypeBasedValue(List.of("G10-G25"), "-2, M3)")));
+    final Attribute attribute =
+        this.createAttribute(
+            this.REGISTER_SCALER_UNIT_ATTR_ID, null, ValueType.BASED_ON_MODEL, valueBasedOnModel);
+    final CosemObject origObject =
+        this.createCosemObject(this.REGISTER_CLASS_ID, List.of(attribute));
+
+    // When the device model can be matched, then the value should be replaced with the value for
+    // this model. The valuetype should be set to FIXED_IN_METER.
+    final CosemObject handledObject1 =
+        this.objectConfigService.handleValueBasedOnModel(origObject, "DeviceModelG4");
+    this.verifyHandledObject(handledObject1, origObject, "-3, M3", ValueType.FIXED_IN_METER);
+
+    // When the device model cannot be matched, then the value should be set to null. The valuetype
+    // should be set to DYNAMIC to indicate that the value should be read from the meter.
+    final CosemObject handledObject2 =
+        this.objectConfigService.handleValueBasedOnModel(origObject, "UnknownDeviceModel");
+    this.verifyHandledObject(handledObject2, origObject, null, ValueType.DYNAMIC);
+  }
+
+  private void verifyHandledObject(final CosemObject handledObject, final CosemObject originalObject, final String expectedValue, final ValueType expectedValuetype) {
+    assertThat(handledObject)
+        .usingRecursiveComparison()
+        .ignoringFields("attributes")
+        .isEqualTo(originalObject);
+    final Attribute handledAttribute =
+        handledObject.getAttribute(this.REGISTER_SCALER_UNIT_ATTR_ID);
+    assertThat(handledAttribute)
+        .usingRecursiveComparison()
+        .ignoringFields("value", "valuetype")
+        .isEqualTo(originalObject.getAttribute(this.REGISTER_SCALER_UNIT_ATTR_ID));
+    assertThat(handledAttribute.getValue()).isEqualTo(expectedValue);
+    assertThat(handledAttribute.getValuetype()).isEqualTo(expectedValuetype);
   }
 
   private void assertAllInConfig(
@@ -459,12 +505,27 @@ class ObjectConfigServiceTest {
   }
 
   private Attribute createAttribute(final int id, final String value) {
+    return this.createAttribute(id, value, ValueType.DYNAMIC, null);
+  }
+
+  private Attribute createAttribute(
+      final int id,
+      final String value,
+      final ValueType valueType,
+      final ValueBasedOnModel valueBasedOnModel) {
     return new Attribute(
-        id, "descr", null, DlmsDataType.DONT_CARE, ValueType.DYNAMIC, value, null, AccessType.RW);
+        id,
+        "descr",
+        null,
+        DlmsDataType.DONT_CARE,
+        valueType,
+        value,
+        valueBasedOnModel,
+        AccessType.RW);
   }
 
   private CosemObject createCosemObject(final int classId, final List<Attribute> attributes) {
     return new CosemObject(
-        "TAG", "descr", classId, 0, "1.2.3", "group", null, List.of(), Map.of(), attributes);
+        "TAG", "descr", classId, 0, "1.2.3", "group", null, List.of(), null, attributes);
   }
 }

@@ -40,7 +40,8 @@ public class ProfileGeneric extends CosemObject {
       final ObjectConfigService service,
       final String protocol,
       final String version,
-      final Integer channel)
+      final Integer channel,
+      final String deviceModel)
       throws ObjectConfigException {
     final List<CaptureObject> captureObjects = new ArrayList<>();
 
@@ -59,7 +60,7 @@ public class ProfileGeneric extends CosemObject {
     final List<CaptureObject> captureObjectsWithoutWildcardChannel = new ArrayList<>();
 
     final List<CaptureObject> captureObjectsFromConfig =
-        service.getCaptureObjects(this, protocol, version);
+        service.getCaptureObjects(this, protocol, version, deviceModel);
 
     for (final CaptureObject captureObject : captureObjectsFromConfig) {
       if (captureObject.getCosemObject().hasWildcardChannel()) {
