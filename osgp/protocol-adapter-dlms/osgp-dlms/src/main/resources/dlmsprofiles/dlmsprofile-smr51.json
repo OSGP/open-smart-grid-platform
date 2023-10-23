@@ -42,7 +42,7 @@
         {
           "id": 2,
           "description": "executed_script",
-          "datatype": "visible-string",
+          "datatype": "script",
           "valuetype": "DYNAMIC",
           "access": "R"
         },
@@ -58,8 +58,7 @@
           "id": 4,
           "description": "execution time",
           "datatype": "array",
-          "valuetype": "DYNAMIC",
-          "value": "EMPTY",
+          "valuetype": "SET_BY_CLIENT",
           "access": "RW"
         }
       ]
