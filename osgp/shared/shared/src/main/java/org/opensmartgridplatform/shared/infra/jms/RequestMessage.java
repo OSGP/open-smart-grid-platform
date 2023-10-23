@@ -24,7 +24,7 @@ public class RequestMessage implements Serializable {
         messageMetadata.getCorrelationUid(),
         messageMetadata.getOrganisationIdentification(),
         messageMetadata.getDeviceIdentification(),
-        messageMetadata.getIpAddress(),
+        messageMetadata.getNetworkAddress(),
         messageMetadata.getBaseTransceiverStationId(),
         messageMetadata.getCellId(),
         request);
@@ -113,7 +113,7 @@ public class RequestMessage implements Serializable {
         .withDeviceIdentification(this.deviceIdentification)
         .withOrganisationIdentification(this.organisationIdentification)
         .withCorrelationUid(this.correlationUid)
-        .withIpAddress(this.ipAddress)
+        .withNetworkAddress(this.ipAddress)
         .withNetworkSegmentIds(this.baseTransceiverStationId, this.cellId)
         .build();
   }

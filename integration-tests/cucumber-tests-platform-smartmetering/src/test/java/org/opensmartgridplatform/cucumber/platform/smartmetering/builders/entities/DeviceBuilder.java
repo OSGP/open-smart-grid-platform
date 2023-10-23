@@ -53,7 +53,7 @@ public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder>
     device.setTechnicalInstallationDate(this.technicalInstallationDate);
     // updateRegistrationData sets the status to IN_USE, so setting of any
     // other status has to be done after that.
-    device.updateRegistrationData(this.networkAddress, this.deviceType);
+    device.updateRegistrationData(this.networkAddress.getHostAddress(), this.deviceType);
     device.setDeviceLifecycleStatus(this.deviceLifeCycleStatus);
 
     return device;

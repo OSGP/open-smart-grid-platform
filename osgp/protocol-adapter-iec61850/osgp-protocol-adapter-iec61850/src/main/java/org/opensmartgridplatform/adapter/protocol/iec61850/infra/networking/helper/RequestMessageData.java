@@ -66,7 +66,7 @@ public class RequestMessageData {
       this.correlationUid = messageMetadata.getCorrelationUid();
       this.organisationIdentification = messageMetadata.getOrganisationIdentification();
       this.deviceIdentification = messageMetadata.getDeviceIdentification();
-      this.ipAddress = messageMetadata.getIpAddress();
+      this.ipAddress = messageMetadata.getNetworkAddress();
       this.messagePriority = messageMetadata.getMessagePriority();
       this.scheduleTime = messageMetadata.getScheduleTime();
       return this;

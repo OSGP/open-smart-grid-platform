@@ -99,7 +99,7 @@ public class Iec61850DaRtuDeviceService implements DaRtuDeviceService {
 
     final DeviceConnectionParameters deviceConnectionParameters =
         DeviceConnectionParameters.newBuilder()
-            .ipAddress(deviceRequest.getIpAddress())
+            .networkAddress(deviceRequest.getNetworkAddress())
             .deviceIdentification(deviceRequest.getDeviceIdentification())
             .ied(IED.DA_RTU)
             .serverName(serverName)

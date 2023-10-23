@@ -72,7 +72,7 @@ public class DomainHelperService {
     }
 
     if (dlmsDevice.isIpAddressIsStatic()) {
-      dlmsDevice.setIpAddress(messageMetadata.getIpAddress());
+      dlmsDevice.setIpAddress(messageMetadata.getNetworkAddress());
     } else {
       final String ipAddressFromSessionProvider =
           this.getDeviceIpAddressFromSessionProvider(dlmsDevice);

@@ -106,7 +106,7 @@ public class FileZipper {
       final String zipEntryName,
       final int inMemoryBufferSize)
       throws IOException {
-    try (FileInputStream fileInputStream = new FileInputStream(inputFilePath);
+    try (final FileInputStream fileInputStream = new FileInputStream(inputFilePath);
         final ZipOutputStream zipOutputStream = this.createZipOutputStream(zipFilePath)) {
       this.createZipEntry(zipEntryName, zipOutputStream);
       this.writeZipFile(fileInputStream, zipOutputStream, inMemoryBufferSize);

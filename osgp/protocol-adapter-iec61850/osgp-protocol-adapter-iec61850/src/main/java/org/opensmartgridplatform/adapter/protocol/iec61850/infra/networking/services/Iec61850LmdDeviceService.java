@@ -89,7 +89,7 @@ public class Iec61850LmdDeviceService implements LmdDeviceService {
 
     final DeviceConnectionParameters deviceConnectionParameters =
         DeviceConnectionParameters.newBuilder()
-            .ipAddress(deviceRequest.getIpAddress())
+            .networkAddress(deviceRequest.getNetworkAddress())
             .deviceIdentification(deviceRequest.getDeviceIdentification())
             .ied(IED.ABB_RTU)
             .serverName(IED.ABB_RTU.getDescription())

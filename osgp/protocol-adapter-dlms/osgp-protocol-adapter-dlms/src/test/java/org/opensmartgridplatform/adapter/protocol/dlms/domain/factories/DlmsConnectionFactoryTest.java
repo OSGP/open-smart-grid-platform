@@ -138,7 +138,7 @@ class DlmsConnectionFactoryTest {
         this.newConnectionManager(device, listener, this.lls0Connector);
 
     this.factory.createAndHandlePublicClientConnection(
-        this.messageMetadata, device, listener, this.task);
+        this.messageMetadata, device, listener, null, this.task);
 
     this.assertConnectionManagerForDevice(expected);
   }

@@ -20,7 +20,7 @@ public class Constants {
   public static final String DEVICE_IDENTIFICATION = "DeviceIdentification";
 
   /** JMS constant for message field: IPAddress. */
-  public static final String IP_ADDRESS = "IPAddress";
+  public static final String NETWORK_ADDRESS = "NetworkAddress";
 
   /** JMS constant for message field: BtsId. */
   public static final String BASE_TRANSCEIVER_STATION_ID = "BtsId";

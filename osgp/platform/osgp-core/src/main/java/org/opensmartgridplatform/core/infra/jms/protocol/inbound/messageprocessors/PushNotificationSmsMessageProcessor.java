@@ -4,8 +4,6 @@
 
 package org.opensmartgridplatform.core.infra.jms.protocol.inbound.messageprocessors;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.time.Instant;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
@@ -73,10 +71,7 @@ public class PushNotificationSmsMessageProcessor extends AbstractProtocolRequest
             requestMessage.getIpAddress(),
             pushNotificationSms.getIpAddress());
 
-        // Convert the IP address from String to InetAddress.
-        final InetAddress address = InetAddress.getByName(pushNotificationSms.getIpAddress());
-
-        device.updateRegistrationData(address, device.getDeviceType());
+        device.updateRegistrationData(pushNotificationSms.getIpAddress(), device.getDeviceType());
         device.updateConnectionDetailsToSuccess();
         this.deviceRepository.save(device);
 
@@ -86,7 +81,7 @@ public class PushNotificationSmsMessageProcessor extends AbstractProtocolRequest
             metadata.getDeviceIdentification());
       }
 
-    } catch (final UnknownHostException | FunctionalException e) {
+    } catch (final FunctionalException e) {
       final String errorMessage =
           String.format("%s occurred, reason: %s", e.getClass().getName(), e.getMessage());
       LOGGER.error(errorMessage, e);

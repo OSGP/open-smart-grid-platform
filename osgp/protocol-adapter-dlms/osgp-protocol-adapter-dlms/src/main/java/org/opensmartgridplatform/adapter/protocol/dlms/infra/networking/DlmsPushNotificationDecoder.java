@@ -4,18 +4,13 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.networking;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ReplayingDecoder;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.List;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DlmsPushNotificationDecoder
-    extends ReplayingDecoder<DlmsPushNotificationDecoder.DecodingState> {
+public class DlmsPushNotificationDecoder {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DlmsPushNotificationDecoder.class);
 
@@ -25,28 +20,7 @@ public class DlmsPushNotificationDecoder
   private static final byte DATA_NOTIFICATION = 0x0F;
   private static final byte EVENT_NOTIFICATION_REQUEST = (byte) 0xC2;
 
-  public enum DecodingState {
-    EQUIPMENT_IDENTIFIER
-  }
-
-  public DlmsPushNotificationDecoder() {
-    LOGGER.debug("Created new DLMS Push Notification decoder");
-  }
-
-  /**
-   * Decoded the alarm bytes in the buffer. Could be either a MX382, DSMR4 or SMR5 alarm. If there
-   * are not enough bytes while decoding, the ReplayingDecoder rewinds and tries the decoding again
-   * when there are more bytes received.
-   *
-   * @param ctx the context from the ReplayingDecoder. Not used in decoding the alarm.
-   * @param byteBuf the bytes of the alarm.
-   * @param out decoded list of objects
-   * @throws UnrecognizedMessageDataException
-   */
-  @Override
-  protected void decode(
-      final ChannelHandlerContext ctx, final ByteBuf byteBuf, final List<Object> out)
-      throws UnrecognizedMessageDataException {
+  public DlmsPushNotification decode(final byte[] message) throws UnrecognizedMessageDataException {
     /**
      * MX382 alarm examples (in HEX bytes):
      *
@@ -97,15 +71,12 @@ public class DlmsPushNotificationDecoder
      */
     final DlmsPushNotification pushNotification;
 
-    final byte[] byteArray = new byte[byteBuf.readableBytes()];
-    byteBuf.readBytes(byteArray);
-
     // Determine whether the alarm is in MX382, DSMR4 or SMR5 format.
-    final boolean smr5alarm = byteArray[8] == DATA_NOTIFICATION;
-    final boolean mx382alarm = byteArray[8] == EVENT_NOTIFICATION_REQUEST;
+    final boolean smr5alarm = message[8] == DATA_NOTIFICATION;
+    final boolean mx382alarm = message[8] == EVENT_NOTIFICATION_REQUEST;
 
-    final InputStream inputStream = new ByteArrayInputStream(byteArray);
-    LOGGER.info("Decoding state: {}, SMR5 alarm: {}", this.state(), smr5alarm);
+    final InputStream inputStream = new ByteArrayInputStream(message);
+    LOGGER.info("Decoding alarm, SMR5 alarm: {}, MX382 alarm: {}", smr5alarm, mx382alarm);
 
     if (smr5alarm) {
       final Smr5AlarmDecoder alarmDecoder = new Smr5AlarmDecoder();
@@ -119,6 +90,6 @@ public class DlmsPushNotificationDecoder
     }
 
     LOGGER.info("Decoded push notification: {}", pushNotification);
-    out.add(pushNotification);
+    return pushNotification;
   }
 }

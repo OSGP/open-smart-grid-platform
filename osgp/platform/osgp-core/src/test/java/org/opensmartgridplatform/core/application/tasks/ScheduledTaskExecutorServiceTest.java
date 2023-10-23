@@ -12,7 +12,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -84,7 +83,7 @@ public class ScheduledTaskExecutorServiceTest {
         .thenReturn(new ArrayList<ScheduledTask>());
 
     final Device device = new Device();
-    device.updateRegistrationData(InetAddress.getByName("127.0.0.1"), "deviceType");
+    device.updateRegistrationData("127.0.0.1", "deviceType");
     when(this.deviceRepository.findByDeviceIdentification(anyString())).thenReturn(device);
     when(this.scheduledTaskRepository.save(any(ScheduledTask.class))).thenReturn(scheduledTask);
     when(this.scheduledTaskExecutorJobConfig.scheduledTaskPageSize()).thenReturn(30);

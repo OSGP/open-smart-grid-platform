@@ -95,7 +95,7 @@ public class ManagementService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -189,7 +189,7 @@ public class ManagementService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -225,7 +225,7 @@ public class ManagementService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -284,7 +284,7 @@ public class ManagementService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -329,7 +329,7 @@ public class ManagementService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -367,7 +367,7 @@ public class ManagementService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -447,7 +447,7 @@ public class ManagementService {
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
-    this.osgpCoreRequestMessageSender.send(smartMeter.getIpAddress(), messageMetadata);
+    this.osgpCoreRequestMessageSender.send(smartMeter.getNetworkAddress(), messageMetadata);
   }
 
   private void handleMetadataOnlyResponseMessage(

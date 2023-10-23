@@ -33,6 +33,13 @@ public class CosemObject {
         .orElseThrow(() -> new IllegalArgumentException("Attribute " + id + " not found"));
   }
 
+  public boolean hasAttribute(final int id) {
+    if (this.attributes == null) {
+      return false;
+    }
+    return this.attributes.stream().anyMatch(attribute -> attribute.getId() == id);
+  }
+
   public Object getProperty(final ObjectProperty objectProperty) {
     if (this.properties == null) {
       return null;

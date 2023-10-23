@@ -2335,7 +2335,7 @@ public class OslpDeviceService implements DeviceService {
     final String deviceIdentification = deviceRequest.getDeviceIdentification();
     final String organisationIdentification = deviceRequest.getOrganisationIdentification();
     final String correlationUid = deviceRequest.getCorrelationUid();
-    final String ipAddress = deviceRequest.getIpAddress();
+    final String networkAddress = deviceRequest.getNetworkAddress();
     final String domain = deviceRequest.getDomain();
     final String domainVersion = deviceRequest.getDomainVersion();
     final String messageType = deviceRequest.getMessageType();
@@ -2361,7 +2361,7 @@ public class OslpDeviceService implements DeviceService {
         correlationUid,
         deviceId,
         sequenceNumber,
-        ipAddress,
+        networkAddress,
         domain,
         domainVersion,
         messageType,

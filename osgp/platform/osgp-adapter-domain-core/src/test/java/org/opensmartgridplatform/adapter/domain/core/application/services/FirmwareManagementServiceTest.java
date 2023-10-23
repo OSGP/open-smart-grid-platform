@@ -693,7 +693,7 @@ class FirmwareManagementServiceTest {
    */
   private <T> Device getMockDevice(final Class<T> deviceClass) {
     final Device device = (Device) Mockito.mock(deviceClass);
-    when(device.getIpAddress()).thenReturn("0.0.0.0");
+    when(device.getNetworkAddress()).thenReturn("0.0.0.0");
     return device;
   }
 

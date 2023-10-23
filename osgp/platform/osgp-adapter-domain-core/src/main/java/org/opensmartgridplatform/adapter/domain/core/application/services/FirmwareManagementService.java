@@ -117,7 +117,7 @@ public class FirmwareManagementService extends AbstractService {
                     .class)),
         messageType,
         messagePriority,
-        device.getIpAddress(),
+        device.getNetworkAddress(),
         scheduleTime);
   }
 
@@ -292,7 +292,7 @@ public class FirmwareManagementService extends AbstractService {
         new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null),
         messageType,
         messagePriority,
-        device.getIpAddress(),
+        device.getNetworkAddress(),
         delay);
   }
 
@@ -659,6 +659,6 @@ public class FirmwareManagementService extends AbstractService {
             correlationUid, organisationIdentification, deviceIdentification, version),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 }

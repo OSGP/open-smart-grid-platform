@@ -13,7 +13,7 @@ public class CellInfoDto implements Serializable {
   private final long cellId;
   private final int locationId;
   private final SignalQualityDto signalQuality;
-  private final BitErrorRateDto bitErrorRate;
+  private final int bitErrorRate;
   private final int mobileCountryCode;
   private final int mobileNetworkCode;
   private final long channelNumber;
@@ -22,7 +22,7 @@ public class CellInfoDto implements Serializable {
       final long cellId,
       final int locationId,
       final SignalQualityDto signalQuality,
-      final BitErrorRateDto bitErrorRate,
+      final int bitErrorRate,
       final int mobileCountryCode,
       final int mobileNetworkCode,
       final long channelNumber) {
@@ -47,7 +47,7 @@ public class CellInfoDto implements Serializable {
     return this.signalQuality;
   }
 
-  public BitErrorRateDto getBitErrorRate() {
+  public int getBitErrorRate() {
     return this.bitErrorRate;
   }
 

@@ -56,7 +56,7 @@ class DlmsConnectionHelperTest {
     this.messageMetadata =
         MessageMetadata.newBuilder()
             .withCorrelationUid("123456")
-            .withIpAddress("192.168.92.56")
+            .withNetworkAddress("192.168.92.56")
             .build();
     this.task = dlmsConnectionManager -> {};
   }

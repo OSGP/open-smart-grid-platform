@@ -79,7 +79,8 @@ public class ProtocolResponseMessageSender implements ProtocolResponseService {
           objectMessage.setStringProperty(Constants.DOMAIN, messageMetadata.getDomain());
           objectMessage.setStringProperty(
               Constants.DOMAIN_VERSION, messageMetadata.getDomainVersion());
-          objectMessage.setStringProperty(Constants.IP_ADDRESS, messageMetadata.getIpAddress());
+          objectMessage.setStringProperty(
+              Constants.NETWORK_ADDRESS, messageMetadata.getNetworkAddress());
           objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, messageMetadata.isScheduled());
           objectMessage.setIntProperty(Constants.RETRY_COUNT, messageMetadata.getRetryCount());
           objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, messageMetadata.isBypassRetry());

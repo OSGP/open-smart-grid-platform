@@ -41,7 +41,6 @@ import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
 import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.BitErrorRateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
@@ -495,13 +494,21 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     try {
       if (selectableObject.attributeIndex == GsmDiagnosticAttribute.CELL_INFO.attributeId()) {
         if (selectableObject.dataIndex == DATA_INDEX_SIGNAL_QUALITY) {
-          final int value = this.dlmsHelper.readLong(dataObject, "Read signal quality").intValue();
+          final Long signalQualityLong =
+              this.dlmsHelper.readLong(dataObject, "Read signal quality");
+          if (signalQualityLong == null) {
+            return notKnownProfileEntryValue();
+          }
+          final int value = signalQualityLong.intValue();
           final SignalQualityDto signalQuality = SignalQualityDto.fromIndexValue(value);
           return new ProfileEntryValueDto(signalQuality.value());
         } else if (selectableObject.dataIndex == DATA_INDEX_BER) {
-          final int value = this.dlmsHelper.readLong(dataObject, "Read ber").intValue();
-          final BitErrorRateDto ber = BitErrorRateDto.fromIndexValue(value);
-          return new ProfileEntryValueDto(ber.value());
+          final Long berLong = this.dlmsHelper.readLong(dataObject, "Read ber");
+          if (berLong == null) {
+            return notKnownProfileEntryValue();
+          }
+          final int value = berLong.intValue();
+          return new ProfileEntryValueDto(value);
         }
       }
     } catch (final ProtocolAdapterException | IllegalArgumentException e) {
@@ -510,6 +517,10 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
     final String debugInfo = this.dlmsHelper.getDebugInfo(dataObject);
     return new ProfileEntryValueDto(debugInfo);
+  }
+
+  private static ProfileEntryValueDto notKnownProfileEntryValue() {
+    return new ProfileEntryValueDto(99);
   }
 
   private ProfileEntryValueDto createNumericProfileEntryValueDto(
