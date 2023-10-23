@@ -4,6 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import static org.opensmartgridplatform.adapter.domain.smartmetering.application.services.utils.MessageMetadataUtil.buildMetadata;
+
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
@@ -124,25 +126,14 @@ public class MonitoringService {
                 "Meter for gas reads should have an energy meter as gateway device."));
       }
       this.osgpCoreRequestMessageSender.send(
-          requestDto,
-          messageMetadata
-              .builder()
-              .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
-              .withNetworkAddress(gatewayDevice.getNetworkAddress())
-              .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
-              .build());
+          requestDto, buildMetadata(messageMetadata, gatewayDevice));
     } else {
 
       final PeriodicMeterReadsRequestDto requestDto =
           this.monitoringMapper.map(
               periodicMeterReadsValueQuery, PeriodicMeterReadsRequestDto.class);
       this.osgpCoreRequestMessageSender.send(
-          requestDto,
-          messageMetadata
-              .builder()
-              .withNetworkAddress(smartMeter.getNetworkAddress())
-              .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-              .build());
+          requestDto, buildMetadata(messageMetadata, smartMeter));
     }
   }
 
@@ -243,21 +234,10 @@ public class MonitoringService {
       final ActualMeterReadsQueryDto requestDto =
           new ActualMeterReadsQueryDto(ChannelDto.fromNumber(smartMeter.getChannel()));
       this.osgpCoreRequestMessageSender.send(
-          requestDto,
-          messageMetadata
-              .builder()
-              .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
-              .withNetworkAddress(gatewayDevice.getNetworkAddress())
-              .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
-              .build());
+          requestDto, buildMetadata(messageMetadata, gatewayDevice));
     } else {
       this.osgpCoreRequestMessageSender.send(
-          new ActualMeterReadsQueryDto(),
-          messageMetadata
-              .builder()
-              .withNetworkAddress(smartMeter.getNetworkAddress())
-              .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-              .build());
+          new ActualMeterReadsQueryDto(), buildMetadata(messageMetadata, smartMeter));
     }
   }
 
@@ -326,13 +306,7 @@ public class MonitoringService {
     final ActualPowerQualityRequestDto requestDto =
         this.monitoringMapper.map(request, ActualPowerQualityRequestDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleActualPowerQualityResponse(
@@ -381,13 +355,7 @@ public class MonitoringService {
         this.monitoringMapper.map(
             readAlarmRegisterRequestValueObject, ReadAlarmRegisterRequestDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleReadAlarmRegisterResponse(
@@ -433,13 +401,7 @@ public class MonitoringService {
     final ConfigureDefinableLoadProfileRequestDto requestDto =
         this.monitoringMapper.map(request, ConfigureDefinableLoadProfileRequestDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleGetPowerQualityProfileResponse(
@@ -488,13 +450,7 @@ public class MonitoringService {
         this.monitoringMapper.map(
             clearAlarmRegisterRequestValueObject, ClearAlarmRegisterRequestDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleClearAlarmRegisterResponse(

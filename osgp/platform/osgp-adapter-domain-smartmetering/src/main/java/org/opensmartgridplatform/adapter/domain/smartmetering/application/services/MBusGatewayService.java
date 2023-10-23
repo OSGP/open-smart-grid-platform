@@ -4,6 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import static org.opensmartgridplatform.adapter.domain.smartmetering.application.services.utils.MessageMetadataUtil.buildMetadata;
+
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -91,12 +93,7 @@ public class MBusGatewayService {
         this.makeCoupleMbusDeviceRequestDataDto(requestData, mbusDevice);
 
     this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(gatewayDevice.getNetworkAddress())
-            .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
-            .build());
+        requestDto, buildMetadata(messageMetadata, gatewayDevice));
   }
 
   public void decoupleMbusDevice(
@@ -172,12 +169,7 @@ public class MBusGatewayService {
 
     final DecoupleMbusDeviceDto requestDto = new DecoupleMbusDeviceDto(requestData.getChannel());
     this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(gatewayDevice.getNetworkAddress())
-            .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
-            .build());
+        requestDto, buildMetadata(messageMetadata, gatewayDevice));
   }
 
   private Optional<SmartMeter> findByMBusIdentificationNumber(
@@ -232,12 +224,7 @@ public class MBusGatewayService {
     final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
     this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(gatewayDevice.getNetworkAddress())
-            .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
-            .build());
+        requestDto, buildMetadata(messageMetadata, gatewayDevice));
   }
 
   public void handleCoupleMbusDeviceByChannelResponse(

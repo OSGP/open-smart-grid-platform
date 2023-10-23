@@ -4,6 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import static org.opensmartgridplatform.adapter.domain.smartmetering.application.services.utils.MessageMetadataUtil.buildMetadata;
+
 import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -126,13 +128,7 @@ public class ConfigurationService {
     final SpecialDaysRequestDto requestDto =
         this.configurationMapper.map(specialDaysRequest, SpecialDaysRequestDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void setConfigurationObject(
@@ -152,13 +148,7 @@ public class ConfigurationService {
         this.configurationMapper.map(
             setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void setPushSetupAlarm(
@@ -176,13 +166,7 @@ public class ConfigurationService {
     final PushSetupAlarmDto requestDto =
         this.configurationMapper.map(pushSetupAlarm, PushSetupAlarmDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void setPushSetupLastGasp(
@@ -200,13 +184,7 @@ public class ConfigurationService {
     final PushSetupLastGaspDto requestDto =
         this.configurationMapper.map(pushSetupLastGasp, PushSetupLastGaspDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void setPushSetupSms(
@@ -224,13 +202,7 @@ public class ConfigurationService {
     final PushSetupSmsDto requestDto =
         this.configurationMapper.map(pushSetupSms, PushSetupSmsDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void setPushSetupUdp(
@@ -249,13 +221,7 @@ public class ConfigurationService {
     final SetPushSetupUdpRequestDto requestDto =
         this.configurationMapper.map(setPushSetupUdpRequestData, SetPushSetupUdpRequestDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleSpecialDaysResponse(
@@ -295,13 +261,7 @@ public class ConfigurationService {
     final AlarmNotificationsDto requestDto =
         this.configurationMapper.map(alarmNotifications, AlarmNotificationsDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void setAdministrativeStatus(
@@ -322,13 +282,7 @@ public class ConfigurationService {
     final AdministrativeStatusTypeDto requestDto =
         this.configurationMapper.map(administrativeStatusType, AdministrativeStatusTypeDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleSetAdministrativeStatusResponse(
@@ -374,13 +328,7 @@ public class ConfigurationService {
     final AdministrativeStatusTypeDto requestDto =
         this.configurationMapper.map(administrativeStatusType, AdministrativeStatusTypeDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleGetAdministrativeStatusResponse(
@@ -428,13 +376,7 @@ public class ConfigurationService {
     final ActivityCalendarDto requestDto =
         this.configurationMapper.map(activityCalendar, ActivityCalendarDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleSetAlarmNotificationsResponse(
@@ -680,12 +622,7 @@ public class ConfigurationService {
         new SetMbusUserKeyByChannelRequestDataDto(setMbusUserKeyByChannelRequestData.getChannel());
 
     this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(gatewayDevice.getNetworkAddress())
-            .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
-            .build());
+        requestDto, buildMetadata(messageMetadata, gatewayDevice));
   }
 
   public void handleSetMbusUserKeyByChannelResponse(
@@ -725,13 +662,7 @@ public class ConfigurationService {
     final SetKeysRequestDto requestDto =
         this.configurationMapper.map(keySet, SetKeysRequestDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleReplaceKeysResponse(
@@ -766,13 +697,7 @@ public class ConfigurationService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
-    this.osgpCoreRequestMessageSender.send(
-        null,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(null, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleGenerateAndReplaceKeysResponse(
@@ -870,12 +795,7 @@ public class ConfigurationService {
 
       final GetFirmwareVersionQueryDto requestDto = new GetFirmwareVersionQueryDto();
       this.osgpCoreRequestMessageSender.send(
-          requestDto,
-          messageMetadata
-              .builder()
-              .withNetworkAddress(smartMeter.getNetworkAddress())
-              .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-              .build());
+          requestDto, buildMetadata(messageMetadata, smartMeter));
     }
   }
 
@@ -1054,13 +974,7 @@ public class ConfigurationService {
         this.configurationMapper.map(
             setClockConfigurationRequest, SetClockConfigurationRequestDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleSetClockConfigurationResponse(
@@ -1104,13 +1018,7 @@ public class ConfigurationService {
         this.configurationMapper.map(
             getConfigurationObjectRequest, GetConfigurationObjectRequestDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleGetConfigurationObjectResponse(
@@ -1159,13 +1067,7 @@ public class ConfigurationService {
         this.configurationMapper.map(
             definableLoadProfileConfigurationData, DefinableLoadProfileConfigurationDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleConfigureDefinableLoadProfileResponse(
@@ -1328,13 +1230,7 @@ public class ConfigurationService {
             data.getMultiplicationFactor(),
             data.getNumberOfRetries());
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleSetRandomisationSettingsResponse(
@@ -1379,13 +1275,7 @@ public class ConfigurationService {
             .toList();
     final GetKeysRequestDto requestDto = new GetKeysRequestDto(secretTypes);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withNetworkAddress(smartMeter.getNetworkAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleGetKeysResponse(
