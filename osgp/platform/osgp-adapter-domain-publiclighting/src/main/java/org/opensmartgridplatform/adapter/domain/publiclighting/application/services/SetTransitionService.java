@@ -4,7 +4,6 @@
 
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.services;
 
-import java.net.InetAddress;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -58,7 +57,8 @@ public class SetTransitionService extends AbstractService {
     this.findOrganisation(organisationIdentification);
     final Device device = this.findActiveDevice(deviceIdentification);
 
-    this.setTransitionForDevice(metadata, device.getIpAddress(), transitionType, transitionTime);
+    this.setTransitionForDevice(
+        metadata, device.getNetworkAddress(), transitionType, transitionTime);
   }
 
   private void setTransitionForDevice(
@@ -212,12 +212,12 @@ public class SetTransitionService extends AbstractService {
                   DeviceFunction.SET_TRANSITION.name())
               .build();
 
-      final InetAddress inetAddress = device.getInetAddress();
+      final String networkAddress = device.getNetworkAddress();
 
       try {
-        if (inetAddress != null) {
+        if (networkAddress != null) {
           SetTransitionService.this.setTransitionForDevice(
-              metadata, inetAddress.getHostAddress(), transitionType, null);
+              metadata, networkAddress, transitionType, null);
         } else {
           LOGGER.warn(
               "setTransition not possible, because InetAddress is null for device {}",

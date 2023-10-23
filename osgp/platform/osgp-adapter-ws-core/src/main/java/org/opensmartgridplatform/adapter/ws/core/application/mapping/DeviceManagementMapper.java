@@ -43,7 +43,6 @@ public class DeviceManagementMapper extends ConfigurableMapper {
             .classMap(
                 org.opensmartgridplatform.domain.core.entities.Device.class,
                 org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device.class)
-            .field("ipAddress", "networkAddress")
             .byDefault()
             .toClassMap());
 

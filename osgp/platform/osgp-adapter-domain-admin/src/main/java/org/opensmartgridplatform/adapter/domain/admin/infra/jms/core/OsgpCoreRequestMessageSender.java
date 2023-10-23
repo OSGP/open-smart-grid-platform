@@ -49,7 +49,7 @@ public class OsgpCoreRequestMessageSender {
                 requestMessage.getOrganisationIdentification());
             objectMessage.setStringProperty(
                 Constants.DEVICE_IDENTIFICATION, requestMessage.getDeviceIdentification());
-            objectMessage.setStringProperty(Constants.IP_ADDRESS, ipAddress);
+            objectMessage.setStringProperty(Constants.NETWORK_ADDRESS, ipAddress);
             if (scheduleTime != null) {
               objectMessage.setLongProperty(Constants.SCHEDULE_TIME, scheduleTime);
             }

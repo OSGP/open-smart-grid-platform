@@ -31,7 +31,6 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityProfileData;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.GetPowerQualityProfileRequestBuilder;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BitErrorRateType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SignalQualityType;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 
@@ -176,16 +175,12 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
   private boolean isOfValueOfType(
       final Object value, final ValueType valueType, final String description) {
     return switch (valueType) {
-      case BER -> {
-        BitErrorRateType.valueOf((String) value);
-        yield value != null;
-      }
       case SIGNAL_QUALITY -> {
         SignalQualityType.valueOf((String) value);
         yield true;
       }
       case DATE_TIME -> value instanceof XMLGregorianCalendar;
-      case NUMBER -> value instanceof Long;
+      case NUMBER -> value instanceof Number;
       case BIG_DECIMAL -> value instanceof BigDecimal;
     };
   }
@@ -258,7 +253,6 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
     NUMBER,
     BIG_DECIMAL,
     SIGNAL_QUALITY,
-    BER,
     DATE_TIME
   }
 }

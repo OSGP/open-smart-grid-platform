@@ -300,7 +300,7 @@ public class PlatformKeys extends Keys {
 
   public static final String HOSTNAME = "Hostname";
   public static final String PORT = "Port";
-  public static final String IP_ADDRESS = "IpAddress";
+  public static final String NETWORK_ADDRESS = "NetworkAddress";
   public static final String BTS_ID = "BtsId";
   public static final String CELL_ID = "CellId";
 

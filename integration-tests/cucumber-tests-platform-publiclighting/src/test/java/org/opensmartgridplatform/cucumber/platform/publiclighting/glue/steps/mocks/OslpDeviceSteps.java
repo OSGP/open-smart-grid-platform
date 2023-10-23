@@ -1217,7 +1217,7 @@ public class OslpDeviceSteps {
                                       InetAddress.getByName(
                                               getString(
                                                   settings,
-                                                  PlatformPubliclightingKeys.IP_ADDRESS,
+                                                  PlatformPubliclightingKeys.NETWORK_ADDRESS,
                                                   PlatformPubliclightingDefaults.LOCALHOST))
                                           .getAddress()))
                               .setDeviceType(

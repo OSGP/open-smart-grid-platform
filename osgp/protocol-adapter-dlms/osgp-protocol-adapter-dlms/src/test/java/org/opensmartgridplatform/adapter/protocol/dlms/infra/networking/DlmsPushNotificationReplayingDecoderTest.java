@@ -27,7 +27,7 @@ import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 
 @ExtendWith(MockitoExtension.class)
-class DlmsPushNotificationDecoderTest {
+class DlmsPushNotificationReplayingDecoderTest {
 
   private static final String IDENTIFIER = "EXXXX123456789012";
 
@@ -49,13 +49,13 @@ class DlmsPushNotificationDecoderTest {
 
   private static final int PUSH_SETUP_TCP_BIT = 1;
 
-  private DlmsPushNotificationDecoder decoder;
+  private DlmsPushNotificationReplayingDecoder decoder;
 
   @Mock private ChannelHandlerContext ctx;
 
   @BeforeEach
   void setUp() {
-    this.decoder = new DlmsPushNotificationDecoder();
+    this.decoder = new DlmsPushNotificationReplayingDecoder();
   }
 
   @Test

@@ -60,7 +60,7 @@ public class RequestMetadata {
       this.correlationUid = messageMetadata.getCorrelationUid();
       this.organisationIdentification = messageMetadata.getOrganisationIdentification();
       this.deviceIdentification = messageMetadata.getDeviceIdentification();
-      this.ipAddress = messageMetadata.getIpAddress();
+      this.ipAddress = messageMetadata.getNetworkAddress();
       return this;
     }
 

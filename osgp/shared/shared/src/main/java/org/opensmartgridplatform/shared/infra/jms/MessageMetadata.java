@@ -23,7 +23,7 @@ public class MessageMetadata implements Serializable {
   private String messageType;
   private String domain;
   private String domainVersion;
-  private String ipAddress;
+  private String networkAddress;
   private Integer baseTransceiverStationId;
   private Integer cellId;
   private int messagePriority;
@@ -34,6 +34,7 @@ public class MessageMetadata implements Serializable {
   private int retryCount;
   private int jmsxDeliveryCount;
   private String topic;
+  private String deviceModelCode;
 
   private MessageMetadata() {
     // Default private constructor.
@@ -46,7 +47,7 @@ public class MessageMetadata implements Serializable {
     this.messageType = builder.messageType;
     this.domain = builder.domain;
     this.domainVersion = builder.domainVersion;
-    this.ipAddress = builder.ipAddress;
+    this.networkAddress = builder.networkAddress;
     this.baseTransceiverStationId = builder.baseTransceiverStationId;
     this.cellId = builder.cellId;
     this.messagePriority = builder.messagePriority;
@@ -57,6 +58,7 @@ public class MessageMetadata implements Serializable {
     this.retryCount = builder.retryCount;
     this.jmsxDeliveryCount = builder.jmsxDeliveryCount;
     this.topic = builder.topic;
+    this.deviceModelCode = builder.deviceModelCode;
   }
 
   public static MessageMetadata fromMessage(final Message message) throws JMSException {
@@ -76,8 +78,8 @@ public class MessageMetadata implements Serializable {
     metadata.domainVersion =
         metadata.getStringProperty(message, Constants.DOMAIN_VERSION, StringUtils.EMPTY);
 
-    metadata.ipAddress =
-        metadata.getStringProperty(message, Constants.IP_ADDRESS, StringUtils.EMPTY);
+    metadata.networkAddress =
+        metadata.getStringProperty(message, Constants.NETWORK_ADDRESS, StringUtils.EMPTY);
 
     metadata.baseTransceiverStationId =
         metadata.getIntProperty(message, Constants.BASE_TRANSCEIVER_STATION_ID, null);
@@ -92,6 +94,9 @@ public class MessageMetadata implements Serializable {
     metadata.jmsxDeliveryCount = metadata.getIntProperty(message, Constants.DELIVERY_COUNT, 0);
 
     metadata.topic = metadata.getStringProperty(message, Constants.TOPIC, StringUtils.EMPTY);
+
+    metadata.deviceModelCode =
+        metadata.getStringProperty(message, Constants.DEVICE_MODEL_CODE, StringUtils.EMPTY);
 
     return metadata;
   }
@@ -117,8 +122,8 @@ public class MessageMetadata implements Serializable {
       message.setStringProperty(Constants.DOMAIN_VERSION, this.domainVersion);
     }
 
-    if (StringUtils.isNotBlank(this.ipAddress)) {
-      message.setStringProperty(Constants.IP_ADDRESS, this.ipAddress);
+    if (StringUtils.isNotBlank(this.networkAddress)) {
+      message.setStringProperty(Constants.NETWORK_ADDRESS, this.networkAddress);
     }
 
     if (this.baseTransceiverStationId != null) {
@@ -141,6 +146,10 @@ public class MessageMetadata implements Serializable {
 
     if (StringUtils.isNotBlank(this.topic)) {
       message.setStringProperty(Constants.TOPIC, this.topic);
+    }
+
+    if (StringUtils.isNotBlank(this.deviceModelCode)) {
+      message.setStringProperty(Constants.DEVICE_MODEL_CODE, this.deviceModelCode);
     }
 
     /*
@@ -192,6 +201,9 @@ public class MessageMetadata implements Serializable {
   }
 
   public static class Builder {
+
+    private String deviceModelCode;
+
     private String correlationUid;
     private String organisationIdentification;
     private String deviceIdentification;
@@ -199,7 +211,7 @@ public class MessageMetadata implements Serializable {
 
     private String domain = StringUtils.EMPTY;
     private String domainVersion = StringUtils.EMPTY;
-    private String ipAddress = StringUtils.EMPTY;
+    private String networkAddress = StringUtils.EMPTY;
     private Integer baseTransceiverStationId = null;
     private Integer cellId = null;
     private int messagePriority = 0;
@@ -218,7 +230,7 @@ public class MessageMetadata implements Serializable {
       this.messageType = otherMetadata.getMessageType();
       this.domain = otherMetadata.getDomain();
       this.domainVersion = otherMetadata.getDomainVersion();
-      this.ipAddress = otherMetadata.getIpAddress();
+      this.networkAddress = otherMetadata.getNetworkAddress();
       this.baseTransceiverStationId = otherMetadata.getBaseTransceiverStationId();
       this.cellId = otherMetadata.getCellId();
       this.messagePriority = otherMetadata.getMessagePriority();
@@ -229,6 +241,7 @@ public class MessageMetadata implements Serializable {
       this.retryCount = otherMetadata.getRetryCount();
       this.jmsxDeliveryCount = otherMetadata.getJmsxDeliveryCount();
       this.topic = otherMetadata.getTopic();
+      this.deviceModelCode = otherMetadata.getDeviceModelCode();
     }
 
     public Builder(
@@ -274,8 +287,8 @@ public class MessageMetadata implements Serializable {
       return this;
     }
 
-    public Builder withIpAddress(final String ipAddress) {
-      this.ipAddress = ipAddress;
+    public Builder withNetworkAddress(final String networkAddress) {
+      this.networkAddress = networkAddress;
       return this;
     }
 
@@ -324,6 +337,11 @@ public class MessageMetadata implements Serializable {
 
     public Builder withTopic(final String topic) {
       this.topic = topic;
+      return this;
+    }
+
+    public Builder withDeviceModelCode(final String deviceModelCode) {
+      this.deviceModelCode = deviceModelCode;
       return this;
     }
 

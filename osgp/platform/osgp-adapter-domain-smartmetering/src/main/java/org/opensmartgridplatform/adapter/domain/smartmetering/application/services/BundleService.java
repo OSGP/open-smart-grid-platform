@@ -4,6 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import static org.opensmartgridplatform.adapter.domain.smartmetering.application.services.utils.MessageMetadataUtil.buildMetadata;
+
 import java.util.Arrays;
 import java.util.List;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
@@ -86,13 +88,7 @@ public class BundleService {
 
     LOGGER.info("Sending request message to core.");
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withIpAddress(smartMeter.getIpAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   @Transactional(value = "transactionManager")

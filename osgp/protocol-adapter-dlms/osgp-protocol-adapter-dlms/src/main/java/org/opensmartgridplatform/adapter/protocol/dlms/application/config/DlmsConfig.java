@@ -30,7 +30,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Lls0Conn
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Lls1Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsChannelHandlerServer;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsPushNotificationDecoder;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsPushNotificationReplayingDecoder;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
@@ -102,7 +102,8 @@ public class DlmsConfig extends AbstractConfig {
     final ChannelPipeline pipeline = channel.pipeline();
 
     pipeline.addLast("loggingHandler", new LoggingHandler(LogLevel.INFO));
-    pipeline.addLast("dlmsPushNotificationDecoder", new DlmsPushNotificationDecoder());
+    pipeline.addLast(
+        "dlmsPushNotificationReplayingDecoder", new DlmsPushNotificationReplayingDecoder());
     pipeline.addLast("dlmsChannelHandler", handler);
 
     return pipeline;

@@ -4,6 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import static org.opensmartgridplatform.adapter.domain.smartmetering.application.services.utils.MessageMetadataUtil.*;
+
 import java.io.Serializable;
 import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFactory;
@@ -79,13 +81,7 @@ public class AdhocService {
             .getMapperFacade()
             .map(synchronizeTimeRequestData, SynchronizeTimeRequestDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withIpAddress(smartMeter.getIpAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void scheduleTestAlarm(
@@ -106,13 +102,7 @@ public class AdhocService {
             .getMapperFacade()
             .map(testAlarmSchedulerRequestData, TestAlarmSchedulerRequestDto.class);
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withIpAddress(smartMeter.getIpAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleSynchronizeTimeResponse(
@@ -141,13 +131,7 @@ public class AdhocService {
 
     final GetAllAttributeValuesRequestDto requestDto = new GetAllAttributeValuesRequestDto();
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withIpAddress(smartMeter.getIpAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleGetAllAttributeValuesResponse(
@@ -179,13 +163,7 @@ public class AdhocService {
 
     final GetAssociationLnObjectsRequestDto requestDto = new GetAssociationLnObjectsRequestDto();
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withIpAddress(smartMeter.getIpAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleGetAssocationLnObjectsResponse(
@@ -223,13 +201,7 @@ public class AdhocService {
                 .getMapperFacade()
                 .map(request.getObisCode(), ObisCodeValuesDto.class));
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withIpAddress(smartMeter.getIpAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleGetSpecificAttributeValueResponse(
@@ -260,13 +232,7 @@ public class AdhocService {
 
     final ScanMbusChannelsRequestDataDto requestDto = new ScanMbusChannelsRequestDataDto();
 
-    this.osgpCoreRequestMessageSender.send(
-        requestDto,
-        messageMetadata
-            .builder()
-            .withIpAddress(smartMeter.getIpAddress())
-            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .build());
+    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
   }
 
   public void handleScanMbusChannelsResponse(

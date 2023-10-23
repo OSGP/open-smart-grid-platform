@@ -356,9 +356,9 @@ public class DeviceSteps extends BaseDeviceSteps {
               this.deviceRepository.findByDeviceIdentification(
                   getString(expectedEntity, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
-          assertThat(device.getIpAddress())
+          assertThat(device.getNetworkAddress())
               .as("IP address does not match")
-              .isEqualTo(getString(expectedEntity, PlatformKeys.IP_ADDRESS));
+              .isEqualTo(getString(expectedEntity, PlatformKeys.NETWORK_ADDRESS));
         });
   }
 }

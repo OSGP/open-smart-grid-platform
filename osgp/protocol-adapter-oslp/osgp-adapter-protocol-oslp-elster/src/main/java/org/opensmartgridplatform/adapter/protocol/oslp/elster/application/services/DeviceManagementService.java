@@ -291,7 +291,7 @@ public class DeviceManagementService {
         .withMessageType(deviceRequest.getMessageType())
         .withDomain(deviceRequest.getDomain())
         .withDomainVersion(deviceRequest.getDomainVersion())
-        .withIpAddress(deviceRequest.getIpAddress())
+        .withNetworkAddress(deviceRequest.getNetworkAddress())
         .withMessagePriority(deviceRequest.getMessagePriority())
         .withScheduled(deviceRequest.isScheduled())
         .withRetryCount(deviceRequest.getRetryCount())

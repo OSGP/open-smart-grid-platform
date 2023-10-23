@@ -101,7 +101,7 @@ class DomainHelperServiceTest {
     final DlmsDevice dlmsDevice =
         new DlmsDeviceBuilder().withIpAddress(null).withIpAddressStatic(true).build();
     final MessageMetadata messageMetadata =
-        MessageMetadata.newBuilder().withIpAddress(ipAddress).build();
+        MessageMetadata.newBuilder().withNetworkAddress(ipAddress).build();
 
     this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider(
         dlmsDevice, messageMetadata);
@@ -128,7 +128,7 @@ class DomainHelperServiceTest {
             .setIccId(iccId)
             .build();
     final MessageMetadata messageMetadata =
-        MessageMetadata.newBuilder().withIpAddress(null).build();
+        MessageMetadata.newBuilder().withNetworkAddress(null).build();
 
     this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider(
         dlmsDevice, messageMetadata);
@@ -142,7 +142,7 @@ class DomainHelperServiceTest {
     final DlmsDevice dlmsDevice =
         new DlmsDeviceBuilder().withIpAddress(IP_ADDRESS).withIpAddressStatic(true).build();
     final MessageMetadata messageMetadata =
-        MessageMetadata.newBuilder().withIpAddress(ipAddressInMessageMetaData).build();
+        MessageMetadata.newBuilder().withNetworkAddress(ipAddressInMessageMetaData).build();
 
     this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider(
         dlmsDevice, messageMetadata);

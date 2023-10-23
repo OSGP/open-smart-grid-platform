@@ -7,6 +7,8 @@ package org.opensmartgridplatform.simulator.protocol.dlms.server.profile;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.bouncycastle.util.encoders.Hex;
@@ -22,6 +24,9 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ConfigurationObje
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DoubleLongUnsignedExtendedRegister;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.EMonthlyBillingValuesPeriod1SMR5;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic.AdjacentCellInfo;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic.CellInfo;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDailyBillingValuesPeriod1SMR5;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDriverActiveFirmwareIdentifier;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDriverActiveFirmwareSignature;
@@ -196,6 +201,144 @@ public class Smr5Profile {
 
   @Value("${command.hourlymeterreads.mbus.capturetime.clockstatus}")
   private byte mBusCaptureTimeStatus;
+
+  @Value("${cdmadiagnostic.operator}")
+  private String cdmaDiagnosticOperator;
+
+  @Value("${cdmadiagnostic.status}")
+  private int cdmaDiagnosticStatus;
+
+  @Value("${cdmadiagnostic.csattachment}")
+  private int cdmaDiagnosticCsAttachment;
+
+  @Value("${cdmadiagnostic.psstatus}")
+  private int cdmaDiagnosticPsStatus;
+
+  @Value("${cdmadiagnostic.cellinfo.cellid}")
+  private int cdmaDiagnosticCellInfoCellId;
+
+  @Value("${cdmadiagnostic.cellinfo.locationid}")
+  private int cdmaDiagnosticCellInfoLocationId;
+
+  @Value("${cdmadiagnostic.cellinfo.signalquality}")
+  private short cdmaDiagnosticCellInfoSignalQuality;
+
+  @Value("${cdmadiagnostic.cellinfo.ber}")
+  private short cdmaDiagnosticCellInfoBer;
+
+  @Value("${cdmadiagnostic.cellinfo.mcc}")
+  private int cdmaDiagnosticCellInfoMcc;
+
+  @Value("${cdmadiagnostic.cellinfo.mnc}")
+  private int cdmaDiagnosticCellInfoMnc;
+
+  @Value("${cdmadiagnostic.cellinfo.channelnumber}")
+  private int cdmaDiagnosticCellInfoChannelNumber;
+
+  @Value("#{'${cdmadiagnostic.adjacentcells.cellids}'.split(',')}")
+  private List<Integer> cdmaDiagnosticAdjacentCellsCellIds;
+
+  @Value("#{'${cdmadiagnostic.adjacentcells.signalqualities}'.split(',')}")
+  private List<Short> cdmaDiagnosticAdjacentCellsSignalQualities;
+
+  @Value("${cdmadiagnostic.capturetime.year}")
+  private int cdmaDiagnosticYear;
+
+  @Value("${cdmadiagnostic.capturetime.month}")
+  private int cdmaDiagnosticMonth;
+
+  @Value("${cdmadiagnostic.capturetime.dayOfMonth}")
+  private int cdmaDiagnosticDayOfMonth;
+
+  @Value("${cdmadiagnostic.capturetime.dayOfWeek}")
+  private int cdmaDiagnosticDayOfWeek;
+
+  @Value("${cdmadiagnostic.capturetime.hour}")
+  private int cdmaDiagnosticHour;
+
+  @Value("${cdmadiagnostic.capturetime.minute}")
+  private int cdmaDiagnosticMinute;
+
+  @Value("${cdmadiagnostic.capturetime.second}")
+  private int cdmaDiagnosticSecond;
+
+  @Value("${cdmadiagnostic.capturetime.hundredths}")
+  private int cdmaDiagnosticHundredths;
+
+  @Value("${cdmadiagnostic.capturetime.deviation}")
+  private int cdmaDiagnosticDeviation;
+
+  @Value("${cdmadiagnostic.capturetime.clockstatus}")
+  private byte cdmaDiagnosticClockStatus;
+
+  @Value("${gprsdiagnostic.operator}")
+  private String gprsDiagnosticOperator;
+
+  @Value("${gprsdiagnostic.status}")
+  private int gprsDiagnosticStatus;
+
+  @Value("${gprsdiagnostic.csattachment}")
+  private int gprsDiagnosticCsAttachment;
+
+  @Value("${gprsdiagnostic.psstatus}")
+  private int gprsDiagnosticPsStatus;
+
+  @Value("${gprsdiagnostic.cellinfo.cellid}")
+  private int gprsDiagnosticCellInfoCellId;
+
+  @Value("${gprsdiagnostic.cellinfo.locationid}")
+  private int gprsDiagnosticCellInfoLocationId;
+
+  @Value("${gprsdiagnostic.cellinfo.signalquality}")
+  private short gprsDiagnosticCellInfoSignalQuality;
+
+  @Value("${gprsdiagnostic.cellinfo.ber}")
+  private short gprsDiagnosticCellInfoBer;
+
+  @Value("${gprsdiagnostic.cellinfo.mcc}")
+  private int gprsDiagnosticCellInfoMcc;
+
+  @Value("${gprsdiagnostic.cellinfo.mnc}")
+  private int gprsDiagnosticCellInfoMnc;
+
+  @Value("${gprsdiagnostic.cellinfo.channelnumber}")
+  private int gprsDiagnosticCellInfoChannelNumber;
+
+  @Value("#{'${gprsdiagnostic.adjacentcells.cellids}'.split(',')}")
+  private List<Integer> gprsDiagnosticAdjacentCellsCellIds;
+
+  @Value("#{'${gprsdiagnostic.adjacentcells.signalqualities}'.split(',')}")
+  private List<Short> gprsDiagnosticAdjacentCellsSignalQualities;
+
+  @Value("${gprsdiagnostic.capturetime.year}")
+  private int gprsDiagnosticYear;
+
+  @Value("${gprsdiagnostic.capturetime.month}")
+  private int gprsDiagnosticMonth;
+
+  @Value("${gprsdiagnostic.capturetime.dayOfMonth}")
+  private int gprsDiagnosticDayOfMonth;
+
+  @Value("${gprsdiagnostic.capturetime.dayOfWeek}")
+  private int gprsDiagnosticDayOfWeek;
+
+  @Value("${gprsdiagnostic.capturetime.hour}")
+  private int gprsDiagnosticHour;
+
+  @Value("${gprsdiagnostic.capturetime.minute}")
+  private int gprsDiagnosticMinute;
+
+  @Value("${gprsdiagnostic.capturetime.second}")
+  private int gprsDiagnosticSecond;
+
+  @Value("${gprsdiagnostic.capturetime.hundredths}")
+  private int gprsDiagnosticHundredths;
+
+  @Value("${gprsdiagnostic.capturetime.deviation}")
+  private int gprsDiagnosticDeviation;
+
+  @Value("${gprsdiagnostic.capturetime.clockstatus}")
+  private byte gprsDiagnosticClockStatus;
 
   @Bean
   public InvocationCounter invocationCounter() {
@@ -478,5 +621,95 @@ public class Smr5Profile {
 
     return new DefinableLoadProfile(
         dynamicValues, cal, MAX_NUMBER_OF_CAPTURE_OBJECTS, DEFINABLE_LOAD_CAPTURE_OBJECTS);
+  }
+
+  @Bean
+  public GsmDiagnostic gsmCdmaDiagnostic() {
+    final CellInfo cellInfo =
+        new CellInfo(
+            this.cdmaDiagnosticCellInfoCellId,
+            this.cdmaDiagnosticCellInfoLocationId,
+            this.cdmaDiagnosticCellInfoSignalQuality,
+            this.cdmaDiagnosticCellInfoBer,
+            this.cdmaDiagnosticCellInfoMcc,
+            this.cdmaDiagnosticCellInfoMnc,
+            this.cdmaDiagnosticCellInfoChannelNumber);
+
+    final List<AdjacentCellInfo> adjacentCellInfos =
+        IntStream.range(0, this.cdmaDiagnosticAdjacentCellsCellIds.size())
+            .mapToObj(
+                i ->
+                    new AdjacentCellInfo(
+                        this.cdmaDiagnosticAdjacentCellsCellIds.get(i),
+                        this.cdmaDiagnosticAdjacentCellsSignalQualities.get(i)))
+            .collect(Collectors.toList());
+
+    final CosemDateTime captureTime =
+        new CosemDateTime(
+            this.cdmaDiagnosticYear,
+            this.cdmaDiagnosticMonth,
+            this.cdmaDiagnosticDayOfMonth,
+            this.cdmaDiagnosticDayOfWeek,
+            this.cdmaDiagnosticHour,
+            this.cdmaDiagnosticMinute,
+            this.cdmaDiagnosticSecond,
+            this.cdmaDiagnosticHundredths,
+            this.cdmaDiagnosticDeviation,
+            ClockStatus.clockStatusFrom(this.cdmaDiagnosticClockStatus)
+                .toArray(new ClockStatus[0]));
+    return new GsmDiagnostic(
+        "0.1.25.6.0.255",
+        this.cdmaDiagnosticOperator,
+        this.cdmaDiagnosticStatus,
+        this.cdmaDiagnosticCsAttachment,
+        this.cdmaDiagnosticPsStatus,
+        cellInfo,
+        adjacentCellInfos,
+        captureTime);
+  }
+
+  @Bean
+  public GsmDiagnostic gsmGprsDiagnostic() {
+    final CellInfo cellInfo =
+        new CellInfo(
+            this.gprsDiagnosticCellInfoCellId,
+            this.gprsDiagnosticCellInfoLocationId,
+            this.gprsDiagnosticCellInfoSignalQuality,
+            this.gprsDiagnosticCellInfoBer,
+            this.gprsDiagnosticCellInfoMcc,
+            this.gprsDiagnosticCellInfoMnc,
+            this.gprsDiagnosticCellInfoChannelNumber);
+
+    final List<AdjacentCellInfo> adjacentCellInfos =
+        IntStream.range(0, this.gprsDiagnosticAdjacentCellsCellIds.size())
+            .mapToObj(
+                i ->
+                    new AdjacentCellInfo(
+                        this.gprsDiagnosticAdjacentCellsCellIds.get(i),
+                        this.gprsDiagnosticAdjacentCellsSignalQualities.get(i)))
+            .collect(Collectors.toList());
+
+    final CosemDateTime captureTime =
+        new CosemDateTime(
+            this.gprsDiagnosticYear,
+            this.gprsDiagnosticMonth,
+            this.gprsDiagnosticDayOfMonth,
+            this.gprsDiagnosticDayOfWeek,
+            this.gprsDiagnosticHour,
+            this.gprsDiagnosticMinute,
+            this.gprsDiagnosticSecond,
+            this.gprsDiagnosticHundredths,
+            this.gprsDiagnosticDeviation,
+            ClockStatus.clockStatusFrom(this.gprsDiagnosticClockStatus)
+                .toArray(new ClockStatus[0]));
+    return new GsmDiagnostic(
+        "0.0.25.6.0.255",
+        this.gprsDiagnosticOperator,
+        this.gprsDiagnosticStatus,
+        this.gprsDiagnosticCsAttachment,
+        this.gprsDiagnosticPsStatus,
+        cellInfo,
+        adjacentCellInfos,
+        captureTime);
   }
 }

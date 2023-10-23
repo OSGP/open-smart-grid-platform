@@ -13,16 +13,16 @@ public class ObjectMessageBuilder {
 
   private String correlationUid = "test-corr-uid";
   private String deviceIdentification = "test-dvc";
-  private String domain = "domain";
-  private String domainVersion = "domain-version";
+  private final String domain = "domain";
+  private final String domainVersion = "domain-version";
   private String ipAddress = "localhost";
   private String organisationIdentification = "test-org";
   private String messageType;
   private Serializable object = null;
-  private int retryCount = 0;
-  private int messagePriority = 0;
-  private boolean bypassRetry = false;
-  private boolean scheduled = false;
+  private final int retryCount = 0;
+  private final int messagePriority = 0;
+  private final boolean bypassRetry = false;
+  private final boolean scheduled = false;
 
   public ObjectMessageBuilder withCorrelationUid(final String correlationUid) {
     this.correlationUid = correlationUid;
@@ -67,7 +67,7 @@ public class ObjectMessageBuilder {
     message.setBooleanProperty(Constants.BYPASS_RETRY, this.bypassRetry);
     message.setStringProperty(Constants.DOMAIN, this.domain);
     message.setStringProperty(Constants.DOMAIN_VERSION, this.domainVersion);
-    message.setStringProperty(Constants.IP_ADDRESS, this.ipAddress);
+    message.setStringProperty(Constants.NETWORK_ADDRESS, this.ipAddress);
     message.setBooleanProperty(Constants.IS_SCHEDULED, this.scheduled);
 
     message.setObject(this.object);

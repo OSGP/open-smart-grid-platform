@@ -30,7 +30,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdjacentCellInfoDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.BitErrorRateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CellInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CircuitSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticRequestDto;
@@ -170,7 +169,7 @@ class GetGsmDiagnosticCommandExecutorIntegrationTest {
     assertThat(cellInfo.getCellId()).isEqualTo(93L);
     assertThat(cellInfo.getLocationId()).isEqualTo(2232);
     assertThat(cellInfo.getSignalQuality()).isEqualTo(SignalQualityDto.MINUS_87_DBM);
-    assertThat(cellInfo.getBitErrorRate()).isEqualTo(BitErrorRateDto.RXQUAL_6);
+    assertThat(cellInfo.getBitErrorRate()).isEqualTo(6);
     assertThat(cellInfo.getMobileCountryCode()).isEqualTo(204);
     assertThat(cellInfo.getMobileNetworkCode()).isEqualTo(66);
     assertThat(cellInfo.getChannelNumber()).isEqualTo(107);

@@ -4,7 +4,6 @@
 
 package org.opensmartgridplatform.core.application.services;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -39,7 +38,7 @@ public class DeviceRegistrationMessageService {
    * doesn't exist.
    *
    * @param deviceIdentification The device identification.
-   * @param ipAddress The IP address of the device.
+   * @param networkAddress The IP address of the device.
    * @param deviceType The type of the device, SSLD or PSLD.
    * @param hasSchedule In case the device has a schedule, this will be true.
    * @return Device with updated data
@@ -48,21 +47,21 @@ public class DeviceRegistrationMessageService {
   @Transactional(value = "transactionManager")
   public Device updateRegistrationData(
       final String deviceIdentification,
-      final String ipAddress,
+      final String networkAddress,
       final String deviceType,
       final boolean hasSchedule)
       throws UnknownHostException {
 
     LOGGER.info(
-        "updateRegistrationData called for device: {} ipAddress: {}, deviceType: {} hasSchedule: {}.",
+        "updateRegistrationData called for device: {} network address: {}, deviceType: {} hasSchedule: {}.",
         deviceIdentification,
-        ipAddress,
+        networkAddress,
         deviceType,
         hasSchedule);
 
     // Check for existing IP addresses
     this.deviceNetworkAddressCleanupService.clearDuplicateAddresses(
-        deviceIdentification, ipAddress);
+        deviceIdentification, networkAddress);
 
     Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
     if (device == null) {
@@ -70,15 +69,14 @@ public class DeviceRegistrationMessageService {
       device = this.createNewDevice(deviceIdentification, deviceType);
     }
 
-    final InetAddress inetAddress = InetAddress.getByName(ipAddress);
-    device.updateRegistrationData(inetAddress, deviceType);
+    device.updateRegistrationData(networkAddress, deviceType);
     device.updateConnectionDetailsToSuccess();
 
     return this.deviceRepository.save(device);
   }
 
   private Device createNewDevice(final String deviceIdentification, final String deviceType) {
-    Device device;
+    final Device device;
     if (Ssld.SSLD_TYPE.equalsIgnoreCase(deviceType)
         || Ssld.PSLD_TYPE.equalsIgnoreCase(deviceType)) {
       device = new Ssld(deviceIdentification);

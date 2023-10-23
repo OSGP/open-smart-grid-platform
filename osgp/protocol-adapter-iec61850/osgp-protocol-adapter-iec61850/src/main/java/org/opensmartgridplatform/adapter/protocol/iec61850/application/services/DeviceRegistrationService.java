@@ -69,7 +69,7 @@ public class DeviceRegistrationService {
 
     final DeviceConnectionParameters deviceConnectionParameters =
         DeviceConnectionParameters.newBuilder()
-            .ipAddress(ipAddress.getHostAddress())
+            .networkAddress(ipAddress.getHostAddress())
             .deviceIdentification(deviceIdentification)
             .ied(ied)
             .serverName(serverName)
