@@ -259,18 +259,21 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
       final boolean useNullData,
       final boolean selectedValuesSupported,
       final int channel,
-      final String gMeterType)
+      final String deviceModel)
       throws Exception {
 
     // SETUP
     final MessageMetadata messageMetadata =
-        MessageMetadata.newBuilder().withCorrelationUid("123456").build();
+        MessageMetadata.newBuilder()
+            .withCorrelationUid("123456")
+            .withDeviceModelCode(deviceModel)
+            .build();
 
     // Reset stub
     this.connectionStub.clearRequestedAttributeAddresses();
 
     // Create device with requested protocol version
-    final DlmsDevice device = this.createDlmsDevice(protocol, selectedValuesSupported, gMeterType);
+    final DlmsDevice device = this.createDlmsDevice(protocol, selectedValuesSupported);
 
     // Create request object
     final PeriodicMeterReadsRequestDto request =
@@ -314,20 +317,17 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     assertThat(periodicMeterReads).hasSize(AMOUNT_OF_PERIODS);
 
     this.checkClockValues(periodicMeterReads, type, useNullData);
-    this.checkValues(periodicMeterReads, channel, this.SCALERS_FOR_METER_TYPES.get(gMeterType));
+    this.checkValues(periodicMeterReads, channel, this.SCALERS_FOR_METER_TYPES.get(deviceModel));
     this.checkAmrStatus(periodicMeterReads, protocol, type);
   }
 
   private DlmsDevice createDlmsDevice(
-      final Protocol protocol,
-      final boolean selectiveAccessPeriodicMeterReadsSupported,
-      final String gMeterType) {
+      final Protocol protocol, final boolean selectiveAccessPeriodicMeterReadsSupported) {
     final DlmsDevice device = new DlmsDevice();
     device.setProtocol(protocol);
     device.setSelectiveAccessSupported(true);
     device.setSelectiveAccessPeriodicMeterReadsSupported(
         selectiveAccessPeriodicMeterReadsSupported);
-    device.setMbusManufacturerIdentification(gMeterType); // TODO
     return device;
   }
 

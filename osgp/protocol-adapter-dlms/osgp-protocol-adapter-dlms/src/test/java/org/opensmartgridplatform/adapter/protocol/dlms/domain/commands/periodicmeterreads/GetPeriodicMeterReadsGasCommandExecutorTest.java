@@ -99,7 +99,11 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
 
   @BeforeEach
   public void setUp() {
-    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
+    this.messageMetadata =
+        MessageMetadata.newBuilder()
+            .withCorrelationUid("123456")
+            .withDeviceModelCode("DeviceModel")
+            .build();
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
   }
 
@@ -342,7 +346,6 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
     final DlmsDevice device = new DlmsDevice();
     device.setSelectiveAccessPeriodicMeterReadsSupported(true);
     device.setProtocol(protocol);
-    device.setMbusManufacturerIdentification("DeviceModel"); // Todo use model
     return device;
   }
 

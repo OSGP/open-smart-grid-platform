@@ -433,7 +433,11 @@ class ObjectConfigServiceTest {
     this.verifyHandledObject(handledObject2, origObject, null, ValueType.DYNAMIC);
   }
 
-  private void verifyHandledObject(final CosemObject handledObject, final CosemObject originalObject, final String expectedValue, final ValueType expectedValuetype) {
+  private void verifyHandledObject(
+      final CosemObject handledObject,
+      final CosemObject originalObject,
+      final String expectedValue,
+      final ValueType expectedValuetype) {
     assertThat(handledObject)
         .usingRecursiveComparison()
         .ignoringFields("attributes")

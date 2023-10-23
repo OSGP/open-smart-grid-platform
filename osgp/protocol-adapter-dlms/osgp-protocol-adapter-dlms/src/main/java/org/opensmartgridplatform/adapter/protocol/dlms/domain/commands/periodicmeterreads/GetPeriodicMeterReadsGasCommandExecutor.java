@@ -156,7 +156,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     // All capture objects are retrieved from the config as well to get information about the scaler
     // and unit of the values.
     final List<CaptureObject> allCaptureObjectsInProfile =
-        this.getCaptureObjectsInProfile(profileObject, device, channel);
+        this.getCaptureObjectsInProfile(
+            profileObject, device, channel, messageMetadata.getDeviceModelCode());
 
     // If it selectedValues is supported, then determine a subset of capture objects that are to be
     // retrieved. E.g. when it is a combined profile, we can only get the gas values without the
@@ -576,7 +577,10 @@ public class GetPeriodicMeterReadsGasCommandExecutor
   }
 
   private List<CaptureObject> getCaptureObjectsInProfile(
-      final ProfileGeneric profile, final DlmsDevice device, final Integer channel)
+      final ProfileGeneric profile,
+      final DlmsDevice device,
+      final Integer channel,
+      final String deviceModel)
       throws ProtocolAdapterException {
     try {
       return profile.getCaptureObjects(
@@ -584,7 +588,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
           device.getProtocolName(),
           device.getProtocolVersion(),
           channel,
-          device.getManufacturerId()); // TODO: Use device model
+          deviceModel);
     } catch (final ObjectConfigException e) {
       throw new ProtocolAdapterException(
           "Could not get capture objects for profile " + profile.getTag(), e);
