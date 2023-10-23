@@ -32,6 +32,7 @@ import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -48,6 +49,9 @@ public class EventNotificationMessageService {
 
   @Autowired private EventNotificationHelperService eventNotificationHelperService;
 
+  @Value("${event.persist.enabled}")
+  private boolean eventPersistEnabled;
+
   public void handleEvent(
       final String deviceIdentification,
       final Instant dateTime,
@@ -56,13 +60,14 @@ public class EventNotificationMessageService {
       final Integer index)
       throws UnknownEntityException {
 
-    this.eventNotificationHelperService.saveEvent(
+    final Event event =
         new Event(
             deviceIdentification,
             dateTime != null ? dateTime : Instant.now(),
             eventType,
             description,
-            index));
+            index);
+    this.saveEventIfRequired(event);
 
     if (this.isSwitchingEvent(eventType)) {
       this.handleSwitchingEvent(deviceIdentification, dateTime, eventType, index);
@@ -131,14 +136,7 @@ public class EventNotificationMessageService {
               eventNotification.getDescription(),
               eventNotification.getIndex());
 
-      LOGGER.info(
-          "Saving event for device: {} with eventType: {} eventTime: {} description: {} index: {}",
-          deviceIdentification,
-          eventType.name(),
-          eventTime,
-          eventNotification.getDescription(),
-          eventNotification.getIndex());
-      this.eventNotificationHelperService.saveEvent(event);
+      this.saveEventIfRequired(event);
 
       if (this.isSwitchingEvent(eventType)) {
         switchDeviceEvents.add(event);
@@ -148,6 +146,20 @@ public class EventNotificationMessageService {
     }
 
     this.handleSwitchDeviceEvents(device, switchDeviceEvents);
+  }
+
+  private void saveEventIfRequired(final Event event) {
+    if (!this.eventPersistEnabled) {
+      return;
+    }
+    LOGGER.info(
+        "Saving event for device: {} with eventType: {} eventTime: {} description: {} index: {}",
+        event.getDeviceIdentification(),
+        event.getEventType(),
+        event.getDateTime(),
+        event.getDescription(),
+        event.getIndex());
+    this.eventNotificationHelperService.saveEvent(event);
   }
 
   private void handleSwitchDeviceEvents(final Device device, final List<Event> switchDeviceEvents)
