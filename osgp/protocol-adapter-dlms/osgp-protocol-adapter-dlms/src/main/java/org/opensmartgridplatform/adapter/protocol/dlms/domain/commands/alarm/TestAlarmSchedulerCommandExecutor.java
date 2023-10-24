@@ -17,11 +17,11 @@ import org.openmuc.jdlms.datatypes.CosemDate;
 import org.openmuc.jdlms.datatypes.CosemTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 public class TestAlarmSchedulerCommandExecutor
     extends AbstractCommandExecutor<TestAlarmSchedulerRequestDto, AccessResultCode> {
 
-  @Autowired private DlmsObjectConfigService dlmsObjectConfigService;
+  @Autowired private ObjectConfigServiceHelper objectConfigServiceHelper;
 
   public TestAlarmSchedulerCommandExecutor() {
     super(TestAlarmSchedulerRequestDto.class);
@@ -79,16 +79,18 @@ public class TestAlarmSchedulerCommandExecutor
 
     final DlmsObjectType alarmObjectType = toAlarmObjectType(alarmTypeDto);
 
-    final DlmsObject dlmsObject =
-        this.dlmsObjectConfigService.getDlmsObject(device, alarmObjectType);
-    final DateTime convertedDateTime =
-        DlmsDateTimeConverter.toDateTime(scheduleDate, device.getTimezone());
+    final Protocol protocol = Protocol.forDevice(device);
 
     final AttributeAddress attributeAddress =
-        new AttributeAddress(
-            dlmsObject.getClassId(),
-            dlmsObject.getObisCode(),
+        this.objectConfigServiceHelper.findAttributeAddress(
+            device,
+            protocol,
+            alarmObjectType,
+            null,
             SingleActionScheduleAttribute.EXECUTION_TIME.attributeId());
+
+    final DateTime convertedDateTime =
+        DlmsDateTimeConverter.toDateTime(scheduleDate, device.getTimezone());
 
     final DataObject timeDataObject = getDataObjectTime(convertedDateTime);
     final DataObject dateDataObject = getDataObjectDate(convertedDateTime);
