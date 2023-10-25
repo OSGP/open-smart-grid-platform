@@ -27,7 +27,7 @@ SPDX-License-Identifier: Apache-2.0
     <display.version>${project.version}-${BUILD_TAG}</display.version>
     <osgp-ws-secret-management-version>${project.version}</osgp-ws-secret-management-version>
     <skipITs>true</skipITs>
-    <openmuc.jdlms.version>1.8.0</openmuc.jdlms.version>
+    <openmuc.jdlms.version>1.7.2.2-SNAPSHOT</openmuc.jdlms.version>
   </properties>
 
   <build>
@@ -192,12 +192,6 @@ SPDX-License-Identifier: Apache-2.0
     <dependency>
       <groupId>org.springframework.ws</groupId>
       <artifactId>spring-ws-security</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.bouncycastle</groupId>
-          <artifactId>bcprov-jdk15on</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework.ws</groupId>
