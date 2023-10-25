@@ -18,8 +18,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 public class Mx382AlarmDecoder extends AlarmDecoder {
 
   private static final byte EVENT_NOTIFICATION_REQUEST = (byte) 0xC2;
-  private static final byte[] WPDU_HEADER =
-      new byte[] {0x00, 0x01, 0x00, 0x67, 0x00, 0x66}; // , 0x00, 0x1d // , 0x00, 0x2a
+  private static final byte[] WPDU_HEADER = new byte[] {0x00, 0x01, 0x00, 0x67, 0x00, 0x66};
   private static final byte[] AMM_FORWARDED_ALARM_VERSION_0 =
       new byte[] {(byte) 0x80, (byte) 0x80, (byte) 0x80, (byte) 0x80, (byte) 0x80, (byte) 0x00};
   static final byte[] CLASS_ID_1 = new byte[] {0x00, 0x01};
