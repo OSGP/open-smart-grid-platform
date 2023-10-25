@@ -4,8 +4,6 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.opensmartgridplatform.adapter.domain.smartmetering.application.services.utils.MessageMetadataUtil.buildMetadata;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
@@ -93,7 +91,13 @@ public class ManagementService {
     LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
     final FindEventsRequestList requestDto =
         this.managementMapper.map(findEventsQueryMessageDataContainer, FindEventsRequestList.class);
-    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
   }
 
   public void handleFindEventsResponse(
@@ -181,7 +185,13 @@ public class ManagementService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
-    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
   }
 
   public void handleSetDeviceCommunicationSettingsResponse(
@@ -211,7 +221,13 @@ public class ManagementService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
-    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
   }
 
   public void handleSetDeviceLifecycleStatusByChannelResponse(
@@ -264,7 +280,13 @@ public class ManagementService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
-    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
   }
 
   public void handleGetGsmDiagnosticResponse(
@@ -303,7 +325,13 @@ public class ManagementService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
-    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
   }
 
   public void handleClearMBusStatusOnAllChannelsResponse(
@@ -335,7 +363,13 @@ public class ManagementService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
-    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
   }
 
   public void handleUpdateProtocolResponse(

@@ -4,8 +4,6 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.opensmartgridplatform.adapter.domain.smartmetering.application.services.utils.MessageMetadataUtil.*;
-
 import java.io.Serializable;
 import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFactory;
@@ -81,7 +79,13 @@ public class AdhocService {
             .getMapperFacade()
             .map(synchronizeTimeRequestData, SynchronizeTimeRequestDto.class);
 
-    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
   }
 
   public void scheduleTestAlarm(
@@ -102,7 +106,13 @@ public class AdhocService {
             .getMapperFacade()
             .map(testAlarmSchedulerRequestData, TestAlarmSchedulerRequestDto.class);
 
-    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
   }
 
   public void handleSynchronizeTimeResponse(
@@ -131,7 +141,14 @@ public class AdhocService {
 
     final GetAllAttributeValuesRequestDto requestDto = new GetAllAttributeValuesRequestDto();
 
-    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .withDeviceModelCode(smartMeter.getDeviceModel().getModelCode())
+            .build());
   }
 
   public void handleGetAllAttributeValuesResponse(
@@ -163,7 +180,14 @@ public class AdhocService {
 
     final GetAssociationLnObjectsRequestDto requestDto = new GetAssociationLnObjectsRequestDto();
 
-    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .withDeviceModelCode(smartMeter.getDeviceModel().getModelCode())
+            .build());
   }
 
   public void handleGetAssocationLnObjectsResponse(
@@ -201,7 +225,14 @@ public class AdhocService {
                 .getMapperFacade()
                 .map(request.getObisCode(), ObisCodeValuesDto.class));
 
-    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .withDeviceModelCode(smartMeter.getDeviceModel().getModelCode())
+            .build());
   }
 
   public void handleGetSpecificAttributeValueResponse(
@@ -232,7 +263,13 @@ public class AdhocService {
 
     final ScanMbusChannelsRequestDataDto requestDto = new ScanMbusChannelsRequestDataDto();
 
-    this.osgpCoreRequestMessageSender.send(requestDto, buildMetadata(messageMetadata, smartMeter));
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
   }
 
   public void handleScanMbusChannelsResponse(
