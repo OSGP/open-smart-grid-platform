@@ -30,7 +30,8 @@ public class UdpInboundMessageHandler {
     final byte[] payload = (byte[]) message.getPayload();
     log.info("Received UDP message: {}", new String(payload));
 
-    final DlmsPushNotification dlmsPushNotification = this.decoder.decode(payload);
+    final DlmsPushNotification dlmsPushNotification =
+        this.decoder.decode(payload, ConnectionProtocol.UDP);
 
     final String correlationId = UUID.randomUUID().toString().replace("-", "");
     final String deviceIdentification = dlmsPushNotification.getEquipmentIdentifier();

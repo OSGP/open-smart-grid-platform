@@ -45,7 +45,8 @@ public class DlmsPushNotificationReplayingDecoder
     final byte[] byteArray = new byte[byteBuf.readableBytes()];
     byteBuf.readBytes(byteArray);
 
-    final DlmsPushNotification dlmsPushNotification = this.decoder.decode(byteArray);
+    final DlmsPushNotification dlmsPushNotification =
+        this.decoder.decode(byteArray, ConnectionProtocol.TCP);
 
     LOGGER.info("Decoded push notification: {}", dlmsPushNotification);
     out.add(dlmsPushNotification);
