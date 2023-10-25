@@ -130,6 +130,7 @@ public class MonitoringService {
               .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
               .withNetworkAddress(gatewayDevice.getNetworkAddress())
               .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
+              // Get devicemodelcode from the original device
               .withDeviceModelCode(smartMeter.getDeviceModel().getModelCode())
               .build());
     } else {
@@ -251,6 +252,7 @@ public class MonitoringService {
               .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
               .withNetworkAddress(gatewayDevice.getNetworkAddress())
               .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
+              // Get devicemodelcode from the original device
               .withDeviceModelCode(smartMeter.getDeviceModel().getModelCode())
               .build());
     } else {
