@@ -86,7 +86,7 @@ public class UpdateFirmwareCommandExecutor
             firmwareFile.getByteArray());
 
     // Calculate the hash of the FW file
-    // for mbus device get a part of the image file bacause we add a mac to it
+    // for mbus device get a part of the image file because we add a mac to it
     // for e-meter use whole file because that is static
     final String calculatedHash =
         this.calculateHash(
