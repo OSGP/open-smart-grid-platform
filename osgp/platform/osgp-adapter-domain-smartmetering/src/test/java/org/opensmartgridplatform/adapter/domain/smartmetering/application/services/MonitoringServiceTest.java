@@ -62,9 +62,7 @@ class MonitoringServiceTest {
   @ParameterizedTest
   @MethodSource("methodNames")
   void requestPeriodicMeterReads(final String methodName, final Class clazz)
-      throws FunctionalException,
-          InvocationTargetException,
-          NoSuchMethodException,
+      throws FunctionalException, InvocationTargetException, NoSuchMethodException,
           IllegalAccessException {
 
     final MessageMetadata messageMetadata = mock(MessageMetadata.class);
