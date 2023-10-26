@@ -104,5 +104,41 @@
           "access": "RW"
         }
       ]
-    }]
+    },
+    {
+      "tag": "LAST_GASP_TEST",
+      "description": "Last gasp test scheduler",
+      "note": "Specified in addendum for SMR5.5",
+      "class-id": 22,
+      "version": 0,
+      "obis": "0.0.15.2.4.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "executed_script",
+          "datatype": "script",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "type",
+          "datatype": "enum",
+          "valuetype": "DYNAMIC",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "execution time",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        }
+      ]
+    }
+  ]
 }
