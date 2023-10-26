@@ -4,6 +4,9 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import static org.opensmartgridplatform.adapter.domain.smartmetering.application.services.util.DeviceModelCodeUtil.createDeviceModelCodes;
+
+import java.util.List;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
@@ -123,6 +126,13 @@ public class MonitoringService {
             new AssertionError(
                 "Meter for gas reads should have an energy meter as gateway device."));
       }
+
+      final SmartMeter gatewaySmartMeter =
+          this.domainHelperService.findSmartMeter(gatewayDevice.getDeviceIdentification());
+      final List<SmartMeter> smartMeters =
+          this.domainHelperService.searchMBusDevicesFor(gatewaySmartMeter);
+      final String deviceModelCodes = createDeviceModelCodes(gatewaySmartMeter, smartMeters);
+
       this.osgpCoreRequestMessageSender.send(
           requestDto,
           messageMetadata
@@ -130,10 +140,12 @@ public class MonitoringService {
               .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
               .withNetworkAddress(gatewayDevice.getNetworkAddress())
               .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
-              // Get devicemodelcode from the original device
-              .withDeviceModelCode(smartMeter.getDeviceModel().getModelCode())
+              .withDeviceModelCode(deviceModelCodes)
               .build());
     } else {
+      final List<SmartMeter> smartMeters =
+          this.domainHelperService.searchMBusDevicesFor(smartMeter);
+      final String deviceModelCodes = createDeviceModelCodes(smartMeter, smartMeters);
 
       final PeriodicMeterReadsRequestDto requestDto =
           this.monitoringMapper.map(
@@ -144,7 +156,7 @@ public class MonitoringService {
               .builder()
               .withNetworkAddress(smartMeter.getNetworkAddress())
               .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-              .withDeviceModelCode(smartMeter.getDeviceModel().getModelCode())
+              .withDeviceModelCode(deviceModelCodes)
               .build());
     }
   }
@@ -214,7 +226,6 @@ public class MonitoringService {
 
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
-
     if (actualMeterReadsQuery.isMbusDevice()) {
 
       if (smartMeter.getChannel() == null) {
@@ -243,6 +254,13 @@ public class MonitoringService {
             new AssertionError(
                 "Meter for gas reads should have an energy meter as gateway device."));
       }
+
+      final SmartMeter gatewaySmartMeter =
+          this.domainHelperService.findSmartMeter(gatewayDevice.getDeviceIdentification());
+      final List<SmartMeter> smartMeters =
+          this.domainHelperService.searchMBusDevicesFor(gatewaySmartMeter);
+      final String deviceModelCodes = createDeviceModelCodes(gatewaySmartMeter, smartMeters);
+
       final ActualMeterReadsQueryDto requestDto =
           new ActualMeterReadsQueryDto(ChannelDto.fromNumber(smartMeter.getChannel()));
       this.osgpCoreRequestMessageSender.send(
@@ -252,17 +270,21 @@ public class MonitoringService {
               .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
               .withNetworkAddress(gatewayDevice.getNetworkAddress())
               .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
-              // Get devicemodelcode from the original device
-              .withDeviceModelCode(smartMeter.getDeviceModel().getModelCode())
+              .withDeviceModelCode(deviceModelCodes)
               .build());
     } else {
+
+      final List<SmartMeter> smartMeters =
+          this.domainHelperService.searchMBusDevicesFor(smartMeter);
+      final String deviceModelCodes = createDeviceModelCodes(smartMeter, smartMeters);
+
       this.osgpCoreRequestMessageSender.send(
           new ActualMeterReadsQueryDto(),
           messageMetadata
               .builder()
               .withNetworkAddress(smartMeter.getNetworkAddress())
               .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-              .withDeviceModelCode(smartMeter.getDeviceModel().getModelCode())
+              .withDeviceModelCode(deviceModelCodes)
               .build());
     }
   }
@@ -329,6 +351,9 @@ public class MonitoringService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
+    final List<SmartMeter> smartMeters = this.domainHelperService.searchMBusDevicesFor(smartMeter);
+    final String deviceModelCodes = createDeviceModelCodes(smartMeter, smartMeters);
+
     final ActualPowerQualityRequestDto requestDto =
         this.monitoringMapper.map(request, ActualPowerQualityRequestDto.class);
 
@@ -338,7 +363,7 @@ public class MonitoringService {
             .builder()
             .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .withDeviceModelCode(smartMeter.getDeviceModel().getModelCode())
+            .withDeviceModelCode(deviceModelCodes)
             .build());
   }
 
@@ -394,7 +419,6 @@ public class MonitoringService {
             .builder()
             .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .withDeviceModelCode(smartMeter.getDeviceModel().getModelCode())
             .build());
   }
 
@@ -438,6 +462,9 @@ public class MonitoringService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
+    final List<SmartMeter> smartMeters = this.domainHelperService.searchMBusDevicesFor(smartMeter);
+    final String deviceModelCodes = createDeviceModelCodes(smartMeter, smartMeters);
+
     final ConfigureDefinableLoadProfileRequestDto requestDto =
         this.monitoringMapper.map(request, ConfigureDefinableLoadProfileRequestDto.class);
 
@@ -447,7 +474,7 @@ public class MonitoringService {
             .builder()
             .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .withDeviceModelCode(smartMeter.getDeviceModel().getModelCode())
+            .withDeviceModelCode(deviceModelCodes)
             .build());
   }
 
@@ -503,7 +530,6 @@ public class MonitoringService {
             .builder()
             .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .withDeviceModelCode(smartMeter.getDeviceModel().getModelCode())
             .build());
   }
 

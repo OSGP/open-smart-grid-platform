@@ -11,9 +11,9 @@ import static org.mockito.Mockito.when;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -29,10 +29,8 @@ import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearAlarmRegisterRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
@@ -43,6 +41,8 @@ class MonitoringServiceTest {
   public static final String TEST_1024000000001 = "TEST1024000000001";
 
   public static final String NETWORK_ADDRESS = "127.0.0.1";
+
+  private static final String DEVICE_MODEL_CODE = "BK-G4 ETB WR";
 
   public static final int BTS_580 = 580;
 
@@ -61,9 +61,50 @@ class MonitoringServiceTest {
 
   @ParameterizedTest
   @MethodSource("methodNames")
-  void requestPeriodicMeterReads(final String name, final Class clazz) throws FunctionalException {
+  void requestPeriodicMeterReads(final String methodName, final Class clazz)
+      throws FunctionalException,
+          InvocationTargetException,
+          NoSuchMethodException,
+          IllegalAccessException {
 
-    this.executeMethodAndValidate(name, clazz, Boolean.TRUE);
+    final MessageMetadata messageMetadata = mock(MessageMetadata.class);
+    final SmartMeter smartMeter = mockSmartMeter("base code", null);
+    final SmartMeter meterOnCh1 = mockSmartMeter("channel 1 code", (short) 1);
+    final SmartMeter meterOnCh2 = mockSmartMeter("channel 2 code", (short) 2);
+    final SmartMeter meterOnCh3 = mockSmartMeter("channel 3 code", (short) 3);
+    final SmartMeter meterOnCh4 = mockSmartMeter("channel 4 code", (short) 4);
+
+    when(messageMetadata.builder()).thenReturn(MessageMetadata.newBuilder());
+    when(messageMetadata.getDeviceIdentification()).thenReturn(TEST_1024000000001);
+    when(messageMetadata.getOrganisationIdentification()).thenReturn("test-org");
+    when(this.domainHelperService.findSmartMeter(TEST_1024000000001)).thenReturn(smartMeter);
+    when(this.domainHelperService.searchMBusDevicesFor(smartMeter))
+        .thenReturn(List.of(smartMeter, meterOnCh1, meterOnCh2, meterOnCh3, meterOnCh4));
+
+    this.invokeMethodByName(methodName, clazz, messageMetadata);
+
+    verify(this.osgpCoreRequestMessageSender)
+        .send(Mockito.any(), this.messageMetadataCaptor.capture());
+
+    final MessageMetadata metadata = this.messageMetadataCaptor.getValue();
+    final String expectedDeviceModelCode =
+        String.format(
+            "%s,%s,%s,%s,%s",
+            getModelCode(smartMeter),
+            getModelCode(meterOnCh1),
+            getModelCode(meterOnCh2),
+            getModelCode(meterOnCh3),
+            getModelCode(meterOnCh4));
+
+    assertNotNull(metadata);
+    assertEquals(NETWORK_ADDRESS, metadata.getNetworkAddress());
+    assertEquals(BTS_580, metadata.getBaseTransceiverStationId());
+    assertEquals(CELL_ID_1, metadata.getCellId());
+    assertEquals(expectedDeviceModelCode, metadata.getDeviceModelCode());
+  }
+
+  private static String getModelCode(final SmartMeter smartMeter) {
+    return smartMeter.getDeviceModel().getModelCode();
   }
 
   private static Stream<Arguments> methodNames() {
@@ -71,69 +112,36 @@ class MonitoringServiceTest {
         Arguments.of("requestPeriodicMeterReads", PeriodicMeterReadsQuery.class),
         Arguments.of("requestActualMeterReads", ActualMeterReadsQuery.class),
         Arguments.of("requestActualPowerQuality", ActualPowerQualityRequest.class),
-        Arguments.of("requestClearAlarmRegister", ClearAlarmRegisterRequest.class),
         Arguments.of("requestPeriodicMeterReads", PeriodicMeterReadsQuery.class),
-        Arguments.of("requestPowerQualityProfile", GetPowerQualityProfileRequest.class),
-        Arguments.of("requestReadAlarmRegister", ReadAlarmRegisterRequest.class));
+        Arguments.of("requestPowerQualityProfile", GetPowerQualityProfileRequest.class));
   }
 
-  private <T> void executeMethodAndValidate(
-      final String methodName, final Class<T> clazz, final boolean withDeviceModel)
-      throws FunctionalException {
-
-    try {
-      final MessageMetadata messageMetadata = mock(MessageMetadata.class);
-      final SmartMeter smartMeter = mockSmartMeter(messageMetadata, withDeviceModel);
-
-      when(this.domainHelperService.findSmartMeter(TEST_1024000000001)).thenReturn(smartMeter);
-
-      final Method method =
-          MonitoringService.class.getMethod(methodName, MessageMetadata.class, clazz);
-
-      method.invoke(this.monitoringService, messageMetadata, mock(clazz));
-
-      this.verifyMessageMetadata(withDeviceModel);
-    } catch (final InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-      final String message = "No Exception expected";
-      log.error(message, e);
-      Assertions.fail(message);
-    }
+  private <T> void invokeMethodByName(
+      final String methodName, final Class<T> clazz, final MessageMetadata messageMetadata)
+      throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    final Method method =
+        MonitoringService.class.getMethod(methodName, MessageMetadata.class, clazz);
+    method.invoke(this.monitoringService, messageMetadata, mock(clazz));
   }
 
-  private void verifyMessageMetadata(final boolean withDeviceModelCode) {
-    verify(this.osgpCoreRequestMessageSender)
-        .send(Mockito.any(), this.messageMetadataCaptor.capture());
+  private void verifyMessageMetadata() {}
 
-    final MessageMetadata metadata = this.messageMetadataCaptor.getValue();
-    assertNotNull(metadata);
-    assertEquals(NETWORK_ADDRESS, metadata.getNetworkAddress());
-    assertEquals(BTS_580, metadata.getBaseTransceiverStationId());
-    assertEquals(CELL_ID_1, metadata.getCellId());
-    if (withDeviceModelCode) {
-      assertEquals(metadata.getDeviceModelCode(), DEVICE_MODEL_CODE());
-    }
-  }
-
-  private static SmartMeter mockSmartMeter(
-      final MessageMetadata messageMetadata, final boolean withDeviceModel) {
+  private static SmartMeter mockSmartMeter(final String deviceModelCode, final Short channel) {
     final DeviceModel deviceModel = mock(DeviceModel.class);
 
     final SmartMeter smartMeter = mock(SmartMeter.class);
-    when(smartMeter.getNetworkAddress()).thenReturn(NETWORK_ADDRESS);
-    when(smartMeter.getBtsId()).thenReturn(BTS_580);
-    when(smartMeter.getCellId()).thenReturn(CELL_ID_1);
-    if (withDeviceModel) {
-      when(smartMeter.getDeviceModel()).thenReturn(deviceModel);
-      when(deviceModel.getModelCode()).thenReturn(DEVICE_MODEL_CODE());
+
+    if (channel == null) {
+      when(smartMeter.getNetworkAddress()).thenReturn(NETWORK_ADDRESS);
+      when(smartMeter.getBtsId()).thenReturn(BTS_580);
+      when(smartMeter.getCellId()).thenReturn(CELL_ID_1);
+    } else {
+      when(smartMeter.getChannel()).thenReturn(channel);
     }
 
-    when(messageMetadata.builder()).thenReturn(MessageMetadata.newBuilder());
-    when(messageMetadata.getDeviceIdentification()).thenReturn(TEST_1024000000001);
-    when(messageMetadata.getOrganisationIdentification()).thenReturn("test-org");
-    return smartMeter;
-  }
+    when(smartMeter.getDeviceModel()).thenReturn(deviceModel);
+    when(deviceModel.getModelCode()).thenReturn(deviceModelCode);
 
-  private static String DEVICE_MODEL_CODE() {
-    return "BK-G4 ETB WR";
+    return smartMeter;
   }
 }

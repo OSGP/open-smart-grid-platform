@@ -36,4 +36,6 @@ public interface SmartMeterRepository extends JpaRepository<SmartMeter, Long> {
 
   @Query("select s from SmartMeter s where s.gatewayDevice = ?1 and s.channel = ?2")
   SmartMeter findByGatewayDeviceAndChannel(Device gatewayDevice, Short channel);
+
+  List<SmartMeter> findByGatewayDevice(Device gatewayDevice);
 }
