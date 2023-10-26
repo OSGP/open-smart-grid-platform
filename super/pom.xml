@@ -155,6 +155,15 @@ SPDX-License-Identifier: Apache-2.0
     <surefireArgLine/>
   </properties>
 
+  <dependencies>
+    <!-- Runtime postgres -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
   <dependencyManagement>
     <dependencies>
       <!-- OSGP -->
