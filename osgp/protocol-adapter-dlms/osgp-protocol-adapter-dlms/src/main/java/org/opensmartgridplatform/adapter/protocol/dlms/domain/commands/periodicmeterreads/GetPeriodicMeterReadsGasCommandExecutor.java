@@ -241,8 +241,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
                 intervalTime,
                 bufferedObjectValue,
                 channel,
-                periodicMeterReads,
-                device));
+                periodicMeterReads));
       } catch (final BufferedDateTimeValidationException e) {
         LOGGER.warn(e.getMessage(), e);
       }
@@ -268,8 +267,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       final ProfileCaptureTime intervalTime,
       final List<DataObject> bufferedObjects,
       final int channel,
-      final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads,
-      final DlmsDevice device)
+      final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads)
       throws ProtocolAdapterException, BufferedDateTimeValidationException {
 
     // The bufferedObjects contain the values retrieved from the meter for a single interval.

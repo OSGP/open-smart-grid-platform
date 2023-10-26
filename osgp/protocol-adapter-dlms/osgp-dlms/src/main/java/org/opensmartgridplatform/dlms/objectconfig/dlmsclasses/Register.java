@@ -43,11 +43,7 @@ public class Register extends Data {
       return true;
     }
 
-    if (scalerUnitAttribute.getValuetype() == ValueType.DYNAMIC) {
-      return true;
-    }
-
-    return false;
+    return scalerUnitAttribute.getValuetype() == ValueType.DYNAMIC;
   }
 
   public String getScalerUnit() {

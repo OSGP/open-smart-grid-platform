@@ -31,6 +31,7 @@ import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.Register;
   @JsonSubTypes.Type(value = ExtendedRegister.class, name = "4"),
   @JsonSubTypes.Type(value = ProfileGeneric.class, name = "7"),
   @JsonSubTypes.Type(value = CosemObject.class, name = "8"),
+  @JsonSubTypes.Type(value = CosemObject.class, name = "22"),
   @JsonSubTypes.Type(value = CosemObject.class, name = "40"),
   @JsonSubTypes.Type(value = CosemObject.class, name = "47"),
   @JsonSubTypes.Type(value = CosemObject.class, name = "72"),
