@@ -26,6 +26,8 @@ Feature: SmartMetering Connection security
       | DeviceIdentification | TEST1026000000001 |
 
   # Needs a DlmsDevice simulator with security level 0 on port 1025
+  # TODO solve Jenkins build image problem with port 1025
+  @Skip
   Scenario: Communicate with LLS0 with simulator supporting unencrypted communication
     Given a dlms device
       | DeviceIdentification | TEST1025000000001 |
