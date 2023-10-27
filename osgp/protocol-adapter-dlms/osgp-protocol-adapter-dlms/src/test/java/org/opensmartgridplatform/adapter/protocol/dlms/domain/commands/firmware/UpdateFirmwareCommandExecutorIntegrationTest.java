@@ -60,6 +60,9 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
           "0000000000230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4f"
               + "fbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d"
               + "5fa821c678e71c05c47e1c69c4bfffe1fd");
+
+  final String fwFileHashNotMBus =
+      "6e55dcd3ec19ea23b1ac2512dc9df827a4f8788cba4a76f49a91f158c4a5c4b3";
   final String fwFileHash = "951948459d2b7b59883cfc75c2bc2b7e4a0232ae7973a0d99526afd9458b0c86";
   final byte[] firmwareFileMbus =
       org.bouncycastle.util.encoders.Hex.decode(
@@ -146,16 +149,15 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
 
   @ParameterizedTest
   @CsvSource({"true, false", "false, false"})
-  void testExecute(final boolean hasFwHash, final boolean fwHashIsEqual) throws Exception {
+  void testExecuteFirmwareFileNotMBus(final boolean hasFwHash, final boolean fwHashIsEqual)
+      throws Exception {
 
     final DlmsDevice device = new DlmsDevice();
     final String firmwareIdentification = RandomStringUtils.randomAlphabetic(10);
     final String deviceIdentification = RandomStringUtils.randomAlphabetic(10);
 
     device.setDeviceIdentification(deviceIdentification);
-    if (hasFwHash) {
-      device.setFirmwareHash(fwHashIsEqual ? this.fwFileHash : "hash_of_different_firmware");
-    }
+    device.setFirmwareHash("hash_of_different_firmware");
 
     final byte[] firmwareImageIdentifier = Hex.decode("496d6167654964656e746966696572");
 
@@ -177,7 +179,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     verify(this.dlmsDeviceRepository, never()).findByDeviceIdentification(deviceIdentification);
     verify(this.dlmsDeviceRepository, times(1)).storeFirmwareHash(deviceIdentification, null);
     verify(this.dlmsDeviceRepository, times(1))
-        .storeFirmwareHash(deviceIdentification, this.fwFileHash);
+        .storeFirmwareHash(deviceIdentification, this.fwFileHashNotMBus);
     verify(this.macGenerationService, never()).calculateMac(any(), any(), any());
     verify(this.firmwareFileCachingRepository, times(1)).retrieve(firmwareIdentification);
     verify(this.firmwareImageIdentifierCachingRepository, times(1))
@@ -193,7 +195,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     final String deviceIdentification = RandomStringUtils.randomAlphabetic(10);
 
     device.setDeviceIdentification(deviceIdentification);
-    device.setFirmwareHash(this.fwFileHash);
+    device.setFirmwareHash(this.fwFileHashNotMBus);
 
     final byte[] firmwareImageIdentifier = Hex.decode("496d6167654964656e746966696572");
 
