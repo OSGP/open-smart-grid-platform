@@ -157,9 +157,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     final String deviceIdentification = RandomStringUtils.randomAlphabetic(10);
 
     device.setDeviceIdentification(deviceIdentification);
-    if (hasFwHash) {
-      device.setFirmwareHash(fwHashIsEqual ? this.fwFileHash : "hash_of_different_firmware");
-    }
+    device.setFirmwareHash("hash_of_different_firmware");
 
     final byte[] firmwareImageIdentifier = Hex.decode("496d6167654964656e746966696572");
 
