@@ -29,6 +29,7 @@ public class DeviceModelCodeUtil {
     return smartMeters.stream()
         .filter(m -> m.getChannel() == x)
         .map(m -> m.getDeviceModel() != null ? m.getDeviceModel().getModelCode() : "")
+        .map(s -> s.replace(",", "")) // no comma's signs
         .findAny()
         .orElse("");
   }
