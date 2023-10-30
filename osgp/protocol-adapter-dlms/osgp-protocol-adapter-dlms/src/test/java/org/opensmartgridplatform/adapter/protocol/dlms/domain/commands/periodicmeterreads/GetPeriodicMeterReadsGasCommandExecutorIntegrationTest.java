@@ -263,10 +263,13 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
       throws Exception {
 
     // SETUP
+    // set device model code in a comma seperated list per channel index 1-4 is channel 1-4 and
+    // index 0 is device model code of master device
+    final String deviceModelCode = ",".repeat(channel) + deviceModel;
     final MessageMetadata messageMetadata =
         MessageMetadata.newBuilder()
             .withCorrelationUid("123456")
-            .withDeviceModelCode(deviceModel)
+            .withDeviceModelCode(deviceModelCode)
             .build();
 
     // Reset stub
