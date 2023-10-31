@@ -147,7 +147,6 @@ public class AdhocService {
             .builder()
             .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .withDeviceModelCode(smartMeter.getDeviceModel().getModelCode())
             .build());
   }
 
@@ -186,7 +185,6 @@ public class AdhocService {
             .builder()
             .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .withDeviceModelCode(smartMeter.getDeviceModel().getModelCode())
             .build());
   }
 
@@ -231,7 +229,6 @@ public class AdhocService {
             .builder()
             .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
-            .withDeviceModelCode(smartMeter.getDeviceModel().getModelCode())
             .build());
   }
 
