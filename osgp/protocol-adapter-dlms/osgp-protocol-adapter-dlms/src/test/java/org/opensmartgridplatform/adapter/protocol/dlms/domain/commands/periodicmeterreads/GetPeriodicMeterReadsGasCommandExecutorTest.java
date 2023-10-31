@@ -41,6 +41,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.valueobjects.CombinedDeviceModelCode;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.valueobjects.CombinedDeviceModelCode.CombinedDeviceModelCodeBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
@@ -99,10 +101,22 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
 
   @BeforeEach
   public void setUp() {
+
+    final CombinedDeviceModelCode.CombinedDeviceModelCodeBuilder builder =
+        new CombinedDeviceModelCodeBuilder();
+
+    final CombinedDeviceModelCode combinedDeviceModelCode =
+        builder
+            .gatewayDeviceModelCode("GateWayDeviceModelCode")
+            .channelBasedDeviceModelCode(1, "DeviceModelCh1")
+            .channelBasedDeviceModelCode(2, "")
+            .channelBasedDeviceModelCode(3, "")
+            .channelBasedDeviceModelCode(4, "")
+            .build();
     this.messageMetadata =
         MessageMetadata.newBuilder()
             .withCorrelationUid("123456")
-            .withDeviceModelCode("DeviceModel")
+            .withDeviceModelCode(combinedDeviceModelCode.toString())
             .build();
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
   }
@@ -180,7 +194,7 @@ class GetPeriodicMeterReadsGasCommandExecutorTest {
         .thenReturn(status);
     when(this.objectConfigService.getCosemObject("DSMR", "4.2.2", DlmsObjectType.MBUS_MASTER_VALUE))
         .thenReturn(value_g);
-    when(this.objectConfigService.getCaptureObjects(profile, "DSMR", "4.2.2", "DeviceModel"))
+    when(this.objectConfigService.getCaptureObjects(profile, "DSMR", "4.2.2", "DeviceModelCh1"))
         .thenReturn(
             List.of(
                 captureObjectClock,

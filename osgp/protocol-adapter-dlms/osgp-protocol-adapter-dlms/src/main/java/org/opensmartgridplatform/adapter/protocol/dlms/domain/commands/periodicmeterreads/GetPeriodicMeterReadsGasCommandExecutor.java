@@ -42,6 +42,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.valueobjects.CombinedDeviceModelCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
@@ -118,6 +119,9 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
+    final CombinedDeviceModelCode combinedDeviceModelCode =
+        CombinedDeviceModelCode.parse(messageMetadata.getDeviceModelCode());
+
     if (periodicMeterReadsQuery == null) {
       throw new IllegalArgumentException(
           "PeriodicMeterReadsQuery should contain PeriodType, BeginDate and EndDate.");
@@ -156,10 +160,9 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     // capture object definition in the profile.
     // All capture objects are retrieved from the config as well to get information about the scaler
     // and unit of the values.
-    final String deviceModelCode =
-        this.getDeviceModelCodeOfChannel(messageMetadata.getDeviceModelCode(), channel);
     final List<CaptureObject> allCaptureObjectsInProfile =
-        this.getCaptureObjectsInProfile(profileObject, device, channel, deviceModelCode);
+        this.getCaptureObjectsInProfile(
+            profileObject, device, channel, combinedDeviceModelCode.getCodeFromChannel(channel));
 
     // If it selectedValues is supported, then determine a subset of capture objects that are to be
     // retrieved. E.g. when it is a combined profile, we can only get the gas values without the
