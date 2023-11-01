@@ -91,7 +91,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       } else {
         device = null;
       }
-      if (this.usesDeviceConnection()) {
+      if (this.usesDeviceConnection(messageObject)) {
         /*
          * Set up a consumer to be called back with a DlmsConnectionManager for which the connection
          * with the device has been created. Note that when usesDeviceConnection is true, in this
@@ -249,7 +249,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
    *
    * @return Use device connection in handleMessage.
    */
-  protected boolean usesDeviceConnection() {
+  protected boolean usesDeviceConnection(final Serializable messageObject) {
     return true;
   }
 
