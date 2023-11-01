@@ -25,7 +25,7 @@ public class UpdateProtocolRequestMessageProcessor extends DeviceRequestMessageP
   }
 
   @Override
-  protected boolean usesDeviceConnection() {
+  protected boolean usesDeviceConnection(final Serializable messageObject) {
     return false;
   }
 

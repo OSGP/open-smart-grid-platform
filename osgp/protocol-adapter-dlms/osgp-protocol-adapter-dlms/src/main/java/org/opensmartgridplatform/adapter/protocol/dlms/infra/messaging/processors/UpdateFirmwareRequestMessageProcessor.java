@@ -38,6 +38,23 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
   }
 
   @Override
+  protected boolean usesDeviceConnection(final Serializable messageObject) {
+    if (messageObject instanceof final UpdateFirmwareRequestDto requestDto) {
+      final String firmwareIdentification = requestDto.getFirmwareIdentification();
+      final boolean usesDeviceConnection =
+          this.firmwareService.isFirmwareFileAvailable(firmwareIdentification);
+      if (!usesDeviceConnection) {
+        LOGGER.info(
+            "Firmware file [{}] not available for device {}. So no device connection required for sending GetFirmwareFile request to core.",
+            firmwareIdentification,
+            requestDto.getDeviceIdentification());
+      }
+      return usesDeviceConnection;
+    }
+    return super.usesDeviceConnection(messageObject);
+  }
+
+  @Override
   protected Serializable handleMessage(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
