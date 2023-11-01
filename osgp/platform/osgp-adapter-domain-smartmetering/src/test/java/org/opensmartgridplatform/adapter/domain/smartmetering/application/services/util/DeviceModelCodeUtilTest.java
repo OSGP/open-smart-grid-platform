@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -33,7 +34,7 @@ class DeviceModelCodeUtilTest {
   }
 
   @Test
-  void shouldNotGiveAllDeviceModelCodes() {
+  void createDeviceModelCodesShouldGiveSomeDeviceModelCodes() {
     final SmartMeter baseMeter = createSmartMeterMock("base meter", null);
     final SmartMeter gmeter1 = createSmartMeterMock("g-meter 1", (short) 1);
     final SmartMeter gmeter3 = createSmartMeterMock("g-meter 3", (short) 3);
@@ -44,13 +45,25 @@ class DeviceModelCodeUtilTest {
     assertEquals("base meter,g-meter 1,,g-meter 3,", codes);
   }
 
+  @Test
+  void createDeviceModelCodesShouldBeSafeForNullChannel() {
+    final SmartMeter baseMeter = createSmartMeterMock("base meter", null);
+    final SmartMeter gmeter1 = createSmartMeterMock(null, null);
+
+    final String codes =
+        DeviceModelCodeUtil.createDeviceModelCodes(baseMeter, Collections.singletonList(gmeter1));
+    assertEquals("base meter,,,,", codes);
+  }
+
   private static SmartMeter createSmartMeterMock(final String code, final Short channel) {
-
-    final DeviceModel deviceModel = Mockito.mock(DeviceModel.class);
-    when(deviceModel.getModelCode()).thenReturn(code);
-
     final SmartMeter smartMeter = Mockito.mock(SmartMeter.class);
-    when(smartMeter.getDeviceModel()).thenReturn(deviceModel);
+
+    if (code != null) {
+      final DeviceModel deviceModel = Mockito.mock(DeviceModel.class);
+      when(deviceModel.getModelCode()).thenReturn(code);
+      when(smartMeter.getDeviceModel()).thenReturn(deviceModel);
+    }
+
     if (channel != null) {
       when(smartMeter.getChannel()).thenReturn(channel);
     }

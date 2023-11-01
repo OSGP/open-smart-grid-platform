@@ -27,7 +27,7 @@ public class DeviceModelCodeUtil {
   private static String getAndMapMbusChannelSmartMeter(
       final List<SmartMeter> smartMeters, final int channel) {
     return smartMeters.stream()
-        .filter(m -> m.getChannel() == channel)
+        .filter(m -> m.getChannel() != null && m.getChannel() == channel)
         .map(m -> m.getDeviceModel() != null ? m.getDeviceModel().getModelCode() : "")
         .map(s -> s.replace(",", "")) // no comma's signs
         .findAny()
