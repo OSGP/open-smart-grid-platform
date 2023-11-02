@@ -112,8 +112,7 @@ class UpdateFirmwareRequestMessageProcessorTest {
     when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(false);
 
     // Act
-    this.processor.processMessageTasks(
-        message.getObject(), messageMetadata, this.dlmsConnectionManagerMock, this.device);
+    this.processor.processMessageTasks(message.getObject(), messageMetadata, null, this.device);
 
     // Assert
     verify(this.osgpRequestMessageSender, times(1))
@@ -218,5 +217,24 @@ class UpdateFirmwareRequestMessageProcessorTest {
 
     assertThat(this.processor.usesDeviceConnection(updateFirmwareRequestDto))
         .isEqualTo(isFirmwareFileAvailable);
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void testProcessMessage(final boolean isFirmwareFileAvailable) throws JMSException {
+    final String firmwareIdentification = "unavailable";
+    final String deviceIdentification = "unavailableEither";
+    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
+        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+    final ObjectMessage message =
+        new ObjectMessageBuilder()
+            .withObject(updateFirmwareRequestDto)
+            .withCorrelationUid("123456")
+            .build();
+
+    when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification))
+        .thenReturn(isFirmwareFileAvailable);
+
+    this.processor.processMessage(message);
   }
 }
