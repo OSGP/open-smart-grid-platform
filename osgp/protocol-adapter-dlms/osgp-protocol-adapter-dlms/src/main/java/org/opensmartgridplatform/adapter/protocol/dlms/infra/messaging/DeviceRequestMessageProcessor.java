@@ -239,7 +239,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       final MessageMetadata messageMetadata)
       throws OsgpException {
     throw new UnsupportedOperationException(
-        "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return"
+        "handleMessage(Serializable) should be overridden by a subclass, or usesDeviceConnection should return"
             + " true.");
   }
 
