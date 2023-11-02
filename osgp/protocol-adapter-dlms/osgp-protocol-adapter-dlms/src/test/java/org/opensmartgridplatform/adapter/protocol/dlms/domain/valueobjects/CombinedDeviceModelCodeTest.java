@@ -48,10 +48,10 @@ class CombinedDeviceModelCodeTest {
         CombinedDeviceModelCode.parse("invalid");
 
     Assertions.assertEquals("", combinedDeviceModelCode.getGatewayDeviceModelCode());
-    assertEquals(null, combinedDeviceModelCode.getCodeFromChannel(1));
-    assertEquals(null, combinedDeviceModelCode.getCodeFromChannel(2));
-    assertEquals(null, combinedDeviceModelCode.getCodeFromChannel(3));
-    assertEquals(null, combinedDeviceModelCode.getCodeFromChannel(4));
+    assertNull(combinedDeviceModelCode.getCodeFromChannel(1));
+    assertNull(combinedDeviceModelCode.getCodeFromChannel(2));
+    assertNull(combinedDeviceModelCode.getCodeFromChannel(3));
+    assertNull(combinedDeviceModelCode.getCodeFromChannel(4));
   }
 
   @Test
