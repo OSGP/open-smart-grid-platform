@@ -210,7 +210,7 @@ public class FirmwareManagementService {
     this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_MANUFACTURER);
 
     final Manufacturer databaseManufacturer =
-        this.manufacturerRepository.findByCode(manufacturer.getCode());
+        this.manufacturerRepository.findByCodeIgnoreCase(manufacturer.getCode());
 
     if (databaseManufacturer != null) {
       LOGGER.info("Manufacturer already exists.");
@@ -237,7 +237,7 @@ public class FirmwareManagementService {
     this.domainHelperService.isAllowed(organisation, PlatformFunction.CHANGE_MANUFACTURER);
 
     final Manufacturer databaseManufacturer =
-        this.manufacturerRepository.findByCode(manufacturer.getCode());
+        this.manufacturerRepository.findByCodeIgnoreCase(manufacturer.getCode());
 
     if (databaseManufacturer == null) {
       LOGGER.info("Manufacturer not found.");
@@ -268,7 +268,7 @@ public class FirmwareManagementService {
     this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_MANUFACTURER);
 
     final Manufacturer databaseManufacturer =
-        this.manufacturerRepository.findByCode(manufacturerCode);
+        this.manufacturerRepository.findByCodeIgnoreCase(manufacturerCode);
     final List<DeviceModel> deviceModels =
         this.deviceModelRepository.findByManufacturer(databaseManufacturer);
 
@@ -377,7 +377,8 @@ public class FirmwareManagementService {
     final Manufacturer manufacturer = this.findManufacturerByCode(manufacturerCode);
 
     final DeviceModel savedDeviceModel =
-        this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer, modelCode);
+        this.deviceModelRepository.findByManufacturerAndModelCodeIgnoreCase(
+            manufacturer, modelCode);
 
     if (savedDeviceModel != null) {
       LOGGER.info("DeviceModel already exists.");
@@ -406,9 +407,11 @@ public class FirmwareManagementService {
         this.domainHelperService.findOrganisation(organisationIdentification);
     this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_DEVICE_MODEL);
 
-    final Manufacturer databaseManufacturer = this.manufacturerRepository.findByCode(manufacturer);
+    final Manufacturer databaseManufacturer =
+        this.manufacturerRepository.findByCodeIgnoreCase(manufacturer);
     final DeviceModel removedDeviceModel =
-        this.deviceModelRepository.findByManufacturerAndModelCode(databaseManufacturer, modelCode);
+        this.deviceModelRepository.findByManufacturerAndModelCodeIgnoreCase(
+            databaseManufacturer, modelCode);
 
     if (removedDeviceModel == null) {
       LOGGER.info("DeviceModel not found.");
@@ -453,9 +456,11 @@ public class FirmwareManagementService {
         this.domainHelperService.findOrganisation(organisationIdentification);
     this.domainHelperService.isAllowed(organisation, PlatformFunction.CHANGE_DEVICE_MODEL);
 
-    final Manufacturer databaseManufacturer = this.manufacturerRepository.findByCode(manufacturer);
+    final Manufacturer databaseManufacturer =
+        this.manufacturerRepository.findByCodeIgnoreCase(manufacturer);
     final DeviceModel changedDeviceModel =
-        this.deviceModelRepository.findByManufacturerAndModelCode(databaseManufacturer, modelCode);
+        this.deviceModelRepository.findByManufacturerAndModelCodeIgnoreCase(
+            databaseManufacturer, modelCode);
 
     if (changedDeviceModel == null) {
       LOGGER.info("DeviceModel not found.");
@@ -505,9 +510,11 @@ public class FirmwareManagementService {
       return new ArrayList<>();
     }
 
-    final Manufacturer manufacturer = this.manufacturerRepository.findByCode(manufacturerCode);
+    final Manufacturer manufacturer =
+        this.manufacturerRepository.findByCodeIgnoreCase(manufacturerCode);
     final DeviceModel deviceModel =
-        this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer, modelCode);
+        this.deviceModelRepository.findByManufacturerAndModelCodeIgnoreCase(
+            manufacturer, modelCode);
 
     if (deviceModel == null) {
       return new ArrayList<>();
@@ -588,7 +595,8 @@ public class FirmwareManagementService {
     final Manufacturer databaseManufacturer = this.findManufacturerByCode(manufacturer);
 
     final DeviceModel databaseDeviceModel =
-        this.deviceModelRepository.findByManufacturerAndModelCode(databaseManufacturer, modelCode);
+        this.deviceModelRepository.findByManufacturerAndModelCodeIgnoreCase(
+            databaseManufacturer, modelCode);
 
     if (databaseDeviceModel == null) {
       LOGGER.info("DeviceModel doesn't exist.");
@@ -654,7 +662,8 @@ public class FirmwareManagementService {
 
   private Manufacturer findManufacturerByCode(final String manufacturer)
       throws FunctionalException {
-    final Manufacturer databaseManufacturer = this.manufacturerRepository.findByCode(manufacturer);
+    final Manufacturer databaseManufacturer =
+        this.manufacturerRepository.findByCodeIgnoreCase(manufacturer);
 
     if (databaseManufacturer == null) {
       LOGGER.info("Manufacturer doesn't exist.");
@@ -694,7 +703,7 @@ public class FirmwareManagementService {
           this.findManufacturerByCode(deviceModel.getManufacturer());
 
       final DeviceModel databaseDeviceModel =
-          this.deviceModelRepository.findByManufacturerAndModelCode(
+          this.deviceModelRepository.findByManufacturerAndModelCodeIgnoreCase(
               databaseManufacturer, deviceModel.getModelCode());
 
       if (databaseDeviceModel == null) {
@@ -812,7 +821,8 @@ public class FirmwareManagementService {
             .orElseThrow(
                 supplyFirmwareFileNotFoundException(id, firmwareFileRequest.getFileName()));
 
-    final Manufacturer databaseManufacturer = this.manufacturerRepository.findByCode(manufacturer);
+    final Manufacturer databaseManufacturer =
+        this.manufacturerRepository.findByCodeIgnoreCase(manufacturer);
 
     if (databaseManufacturer == null) {
       LOGGER.info("Manufacturer {} doesn't exist.", manufacturer);
@@ -823,7 +833,8 @@ public class FirmwareManagementService {
     }
 
     final DeviceModel databaseDeviceModel =
-        this.deviceModelRepository.findByManufacturerAndModelCode(databaseManufacturer, modelCode);
+        this.deviceModelRepository.findByManufacturerAndModelCodeIgnoreCase(
+            databaseManufacturer, modelCode);
 
     if (databaseDeviceModel == null) {
       LOGGER.info(
