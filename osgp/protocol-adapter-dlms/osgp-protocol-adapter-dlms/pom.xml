@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
-SPDX-FileCopyrightText: Contributors to the GXF project
 
-SPDX-License-Identifier: Apache-2.0
+    Copyright 2016 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -19,7 +21,7 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-dlms</artifactId>
-    <version>5.46.0-SNAPSHOT</version>
+    <version>5.28.2</version>
     <relativePath>../parent-pa-dlms/pom.xml</relativePath>
   </parent>
 
@@ -27,7 +29,6 @@ SPDX-License-Identifier: Apache-2.0
     <display.version>${project.version}-${BUILD_TAG}</display.version>
     <osgp-ws-secret-management-version>${project.version}</osgp-ws-secret-management-version>
     <skipITs>true</skipITs>
-    <openmuc.jdlms.version>1.8.0</openmuc.jdlms.version>
   </properties>
 
   <build>
@@ -74,11 +75,6 @@ SPDX-License-Identifier: Apache-2.0
           </execution>
         </executions>
       </plugin>
-
-      <plugin>
-        <groupId>org.cyclonedx</groupId>
-        <artifactId>cyclonedx-maven-plugin</artifactId>
-      </plugin>
     </plugins>
   </build>
 
@@ -88,7 +84,7 @@ SPDX-License-Identifier: Apache-2.0
       <snapshots/>
       <id>osgp-snapshots</id>
       <name>osgp-snapshots</name>
-      <url>https://artifactory.shs.osgp.cloud/artifactory/osgp-snapshots</url>
+      <url>http://artifactory.shs.osgp.cloud/artifactory/osgp-snapshots</url>
     </repository>
   </repositories>
 
@@ -97,7 +93,6 @@ SPDX-License-Identifier: Apache-2.0
     <dependency>
       <groupId>org.openmuc</groupId>
       <artifactId>jdlms</artifactId>
-      <version>${openmuc.jdlms.version}</version>
     </dependency>
 
     <!-- OSGP -->
@@ -172,11 +167,6 @@ SPDX-License-Identifier: Apache-2.0
       <groupId>org.springframework</groupId>
       <artifactId>spring-tx</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.springframework.integration</groupId>
-      <artifactId>spring-integration-ip</artifactId>
-      <version>5.5.14</version>
-    </dependency>
 
     <!-- Spring Data -->
     <dependency>
@@ -192,12 +182,6 @@ SPDX-License-Identifier: Apache-2.0
     <dependency>
       <groupId>org.springframework.ws</groupId>
       <artifactId>spring-ws-security</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.bouncycastle</groupId>
-          <artifactId>bcprov-jdk15on</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework.ws</groupId>

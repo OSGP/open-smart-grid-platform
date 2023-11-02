@@ -136,6 +136,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       final DlmsConnectionManager connectionManager,
       final DlmsDevice device)
       throws OsgpException {
+    DlmsDevice device = null;
     try {
       if (this.maxScheduleTimeExceeded(messageMetadata)) {
         log.info(

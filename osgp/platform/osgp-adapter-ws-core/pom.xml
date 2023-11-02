@@ -1,9 +1,12 @@
 <!--
-SPDX-FileCopyrightText: Copyright Contributors to the GXF project
 
-SPDX-License-Identifier: Apache-2.0
+    Copyright 2015 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -18,7 +21,7 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>5.46.0-SNAPSHOT</version>
+    <version>5.28.2</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
@@ -65,11 +68,6 @@ SPDX-License-Identifier: Apache-2.0
             <exclude>%regex[.*integrationtests.*class]</exclude>
           </excludes>
         </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.cyclonedx</groupId>
-        <artifactId>cyclonedx-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
@@ -177,7 +175,7 @@ SPDX-License-Identifier: Apache-2.0
 
     <!-- Hibernate validator -->
     <dependency>
-      <groupId>org.hibernate.validator</groupId>
+      <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
 

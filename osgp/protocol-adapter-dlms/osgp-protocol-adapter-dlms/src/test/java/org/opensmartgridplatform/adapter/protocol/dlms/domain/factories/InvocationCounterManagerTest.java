@@ -102,6 +102,7 @@ class InvocationCounterManagerTest {
         .thenReturn(dataObject);
 
     this.manager.initializeWithInvocationCounterStoredOnDeviceTask(this.device, connectionManager);
+    verify(this.deviceRepository).save(this.device);
 
     verify(this.deviceRepository)
         .updateInvocationCounter(
