@@ -855,23 +855,25 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
       @RequestPayload final AddFirmwareRequest request)
       throws OsgpException {
 
-    LOGGER.info("Adding firmware:{}.", request.getFirmware().getFilename());
+    final Firmware firmware = request.getFirmware();
+
+    LOGGER.info("Adding firmware:{}.", firmware.getFilename());
     final AddFirmwareResponse addFirmwareResponse = new AddFirmwareResponse();
 
     try {
       final FirmwareModuleData firmwareModuleData =
           this.firmwareManagementMapper.map(
-              request.getFirmware().getFirmwareModuleData(), FirmwareModuleData.class);
+              firmware.getFirmwareModuleData(), FirmwareModuleData.class);
 
       // The AddFirmwareRequest accepts multiple DeviceModels to be related to a Firmware.
       // This FirmwareManagementService only accepts ONE for now
-      final String manufacturer = this.getManufacturerFromFirmware(request.getFirmware());
-      final String modelCode = this.getModelCodeFromFirmware(request.getFirmware());
+      final String manufacturer = this.getManufacturerFromFirmware(firmware);
+      final String modelCode = this.getModelCodeFromFirmware(firmware);
 
       this.firmwareManagementService.addFirmware(
           organisationIdentification,
-          this.firmwareFileRequestFor(request.getFirmware()),
-          request.getFirmware().getFile(),
+          this.firmwareFileRequestFor(firmware),
+          firmware.getFile(),
           manufacturer,
           modelCode,
           firmwareModuleData);
@@ -890,7 +892,7 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
       LOGGER.error(
           "Exception: {} while adding firmware: {} for organisation {}",
           e.getMessage(),
-          request.getFirmware().getFilename(),
+          firmware.getFilename(),
           organisationIdentification,
           e);
       this.handleException(e);
@@ -917,23 +919,24 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
       @OrganisationIdentification final String organisationIdentification,
       @RequestPayload final ChangeFirmwareRequest request)
       throws OsgpException {
+    final Firmware firmware = request.getFirmware();
 
-    LOGGER.info("Changing firmware:{}.", request.getFirmware().getFilename());
+    LOGGER.info("Changing firmware:{}.", firmware.getFilename());
 
     final FirmwareModuleData firmwareModuleData =
         this.firmwareManagementMapper.map(
-            request.getFirmware().getFirmwareModuleData(), FirmwareModuleData.class);
+            firmware.getFirmwareModuleData(), FirmwareModuleData.class);
 
     // The ChangeFirmwareRequest accepts multiple DeviceModels to be related to a Firmware.
     // This FirmwareManagementService only accepts ONE for now
-    final String manufacturer = this.getManufacturerFromFirmware(request.getFirmware());
-    final String modelCode = this.getModelCodeFromFirmware(request.getFirmware());
+    final String manufacturer = this.getManufacturerFromFirmware(firmware);
+    final String modelCode = this.getModelCodeFromFirmware(firmware);
 
     try {
       this.firmwareManagementService.changeFirmware(
           organisationIdentification,
           request.getId(),
-          this.firmwareFileRequestFor(request.getFirmware()),
+          this.firmwareFileRequestFor(firmware),
           manufacturer,
           modelCode,
           firmwareModuleData);
@@ -944,7 +947,7 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
       LOGGER.error(
           "Exception: {} while Changing firmware: {} for organisation {}",
           e.getMessage(),
-          request.getFirmware().getFilename(),
+          firmware.getFilename(),
           organisationIdentification,
           e);
       this.handleException(e);
@@ -963,19 +966,21 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
       @RequestPayload final AddOrChangeFirmwareRequest request)
       throws OsgpException {
 
-    LOGGER.info("Adding Or changing firmware:{}.", request.getFirmware().getFilename());
+    final Firmware firmware = request.getFirmware();
+
+    LOGGER.info("Adding Or changing firmware:{}.", firmware.getFilename());
     final AddOrChangeFirmwareResponse addOrChangeFirmwareResponse =
         new AddOrChangeFirmwareResponse();
 
     try {
       final FirmwareModuleData firmwareModuleData =
           this.firmwareManagementMapper.map(
-              request.getFirmware().getFirmwareModuleData(), FirmwareModuleData.class);
+              firmware.getFirmwareModuleData(), FirmwareModuleData.class);
 
       final List<org.opensmartgridplatform.domain.core.valueobjects.DeviceModel> deviceModels =
           new ArrayList<>();
       for (final org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel
-          wsDeviceModel : request.getFirmware().getDeviceModels()) {
+          wsDeviceModel : firmware.getDeviceModels()) {
         final org.opensmartgridplatform.domain.core.valueobjects.DeviceModel deviceModel =
             this.firmwareManagementMapper.map(
                 wsDeviceModel,
@@ -985,8 +990,8 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
 
       this.firmwareManagementService.addOrChangeFirmware(
           organisationIdentification,
-          this.firmwareFileRequestFor(request.getFirmware()),
-          request.getFirmware().getFile(),
+          this.firmwareFileRequestFor(firmware),
+          firmware.getFile(),
           deviceModels,
           firmwareModuleData);
     } catch (final ConstraintViolationException e) {
@@ -1004,7 +1009,7 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
       LOGGER.error(
           "Exception: {} while adding or changing firmware: {} for organisation {}",
           e.getMessage(),
-          request.getFirmware().getFilename(),
+          firmware.getFilename(),
           organisationIdentification,
           e);
       this.handleException(e);
