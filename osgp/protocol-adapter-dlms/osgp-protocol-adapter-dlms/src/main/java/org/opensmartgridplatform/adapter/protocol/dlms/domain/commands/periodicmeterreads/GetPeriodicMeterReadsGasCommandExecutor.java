@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -828,26 +827,6 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     }
 
     return scalerUnits;
-  }
-
-  /**
-   * get device model code from a comma seperated list per channel index 1-4 is channel 1-4 and
-   * index 0 is device model code of master device
-   */
-  public String getDeviceModelCodeOfChannel(final String codes, final int channel) {
-    if (StringUtils.isNotBlank(codes)) {
-      if (channel >= 1 && channel <= 4) {
-        final String[] deviceModelCodes = codes.split(",");
-        if (deviceModelCodes.length > channel) {
-          return deviceModelCodes[channel];
-        }
-        return "";
-      } else {
-        throw new IllegalArgumentException("Channel is not a correct value");
-      }
-    } else {
-      return "";
-    }
   }
 
   @Override

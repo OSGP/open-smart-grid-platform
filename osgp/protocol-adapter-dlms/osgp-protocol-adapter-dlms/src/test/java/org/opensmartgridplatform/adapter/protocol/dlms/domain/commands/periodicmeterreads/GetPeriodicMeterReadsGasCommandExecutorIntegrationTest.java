@@ -51,6 +51,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.valueobjects.CombinedDeviceModelCode.CombinedDeviceModelCodeBuilder;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
@@ -259,17 +260,22 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
       final boolean useNullData,
       final boolean selectedValuesSupported,
       final int channel,
-      final String deviceModel)
+      final String mbusDeviceModelCode)
       throws Exception {
 
     // SETUP
     // set device model code in a comma seperated list per channel index 1-4 is channel 1-4 and
     // index 0 is device model code of master device
-    final String deviceModelCode = ",".repeat(channel) + deviceModel;
+    final String combinedDeviceModelCodes =
+        new CombinedDeviceModelCodeBuilder()
+            .channelBasedDeviceModelCode(channel, mbusDeviceModelCode)
+            .build()
+            .toString();
+
     final MessageMetadata messageMetadata =
         MessageMetadata.newBuilder()
             .withCorrelationUid("123456")
-            .withDeviceModelCode(deviceModelCode)
+            .withDeviceModelCode(combinedDeviceModelCodes)
             .build();
 
     // Reset stub
@@ -320,7 +326,8 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     assertThat(periodicMeterReads).hasSize(AMOUNT_OF_PERIODS);
 
     this.checkClockValues(periodicMeterReads, type, useNullData);
-    this.checkValues(periodicMeterReads, channel, this.SCALERS_FOR_METER_TYPES.get(deviceModel));
+    this.checkValues(
+        periodicMeterReads, channel, this.SCALERS_FOR_METER_TYPES.get(mbusDeviceModelCode));
     this.checkAmrStatus(periodicMeterReads, protocol, type);
   }
 

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -14,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
  * channel based device model codes in the order of the channels 1-4. The format is :
  * GatewayDeviceModelCode,Channel1DeviceModelCode,Channel2DeviceModelCode,Channel3DeviceModelCode,Channel4DeviceModelCode
  */
+@Slf4j
 public class CombinedDeviceModelCode {
 
   public static final String SEPERATOR = ",";
@@ -34,7 +36,7 @@ public class CombinedDeviceModelCode {
   }
 
   public static CombinedDeviceModelCode parse(final String combinedDeviceModelCodes) {
-    if (combinedDeviceModelCodes != null) {
+    if (hasCombinedDeviceModelCodes(combinedDeviceModelCodes)) {
       final String[] codes = combinedDeviceModelCodes.split(SEPERATOR);
 
       final String gatewayDeviceModelCode = codes[0];
@@ -46,8 +48,16 @@ public class CombinedDeviceModelCode {
 
       return new CombinedDeviceModelCode(gatewayDeviceModelCode, channelBasedDeviceModelCodes);
     } else {
+      log.info(
+          "Devicemodelcode field on MessageMetaData does not contain expected combined device model codes, got: [{}]",
+          combinedDeviceModelCodes);
       return new CombinedDeviceModelCode();
     }
+  }
+
+  private static boolean hasCombinedDeviceModelCodes(final String combinedDeviceModelCodes) {
+    return combinedDeviceModelCodes != null
+        && combinedDeviceModelCodes.chars().filter(ch -> ch == SEPERATOR.charAt(0)).count() == 4;
   }
 
   public String getCodeFromChannel(final int i) {

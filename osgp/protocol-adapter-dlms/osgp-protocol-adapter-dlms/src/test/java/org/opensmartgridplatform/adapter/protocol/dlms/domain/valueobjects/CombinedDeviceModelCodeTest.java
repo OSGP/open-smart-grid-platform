@@ -6,6 +6,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.valueobjects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -39,6 +40,18 @@ class CombinedDeviceModelCodeTest {
     assertEquals(CH2_DEVICE_MODEL_CODE, combinedDeviceModelCode.getCodeFromChannel(2));
     assertEquals(CH3_DEVICE_MODEL_CODE, combinedDeviceModelCode.getCodeFromChannel(3));
     assertEquals(CH4_DEVICE_MODEL_CODE, combinedDeviceModelCode.getCodeFromChannel(4));
+  }
+
+  @Test
+  void parseShouldReturnEmptyCombinedDeviceModelCode() {
+    final CombinedDeviceModelCode combinedDeviceModelCode =
+        CombinedDeviceModelCode.parse("invalid");
+
+    Assertions.assertEquals("", combinedDeviceModelCode.getGatewayDeviceModelCode());
+    assertEquals(null, combinedDeviceModelCode.getCodeFromChannel(1));
+    assertEquals(null, combinedDeviceModelCode.getCodeFromChannel(2));
+    assertEquals(null, combinedDeviceModelCode.getCodeFromChannel(3));
+    assertEquals(null, combinedDeviceModelCode.getCodeFromChannel(4));
   }
 
   @Test
