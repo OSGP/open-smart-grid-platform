@@ -4,6 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import static org.opensmartgridplatform.adapter.domain.smartmetering.application.services.util.DeviceModelCodeUtil.createDeviceModelCodes;
+
 import java.util.Arrays;
 import java.util.List;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
@@ -81,6 +83,9 @@ public class BundleService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
+    final List<SmartMeter> smartMeters = this.domainHelperService.searchMBusDevicesFor(smartMeter);
+    final String deviceModelCodes = createDeviceModelCodes(smartMeter, smartMeters);
+
     final BundleMessagesRequestDto requestDto =
         this.actionMapperService.mapAllActions(bundleMessageRequest, smartMeter);
 
@@ -92,6 +97,7 @@ public class BundleService {
             .builder()
             .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .withDeviceModelCode(deviceModelCodes)
             .build());
   }
 

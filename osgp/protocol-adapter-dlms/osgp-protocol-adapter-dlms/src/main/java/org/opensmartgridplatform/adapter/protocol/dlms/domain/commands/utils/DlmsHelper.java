@@ -315,6 +315,13 @@ public class DlmsHelper {
       final DataObject value, final DataObject scalerUnitObject, final String description)
       throws ProtocolAdapterException {
 
+    final String scalerUnit = this.getScalerUnit(scalerUnitObject, description);
+
+    return this.getScaledMeterValueWithScalerUnit(value, scalerUnit, description);
+  }
+
+  public String getScalerUnit(final DataObject scalerUnitObject, final String description)
+      throws ProtocolAdapterException {
     LOGGER.debug(this.getDebugInfo(scalerUnitObject));
 
     if (!scalerUnitObject.isComplex()) {
@@ -338,7 +345,7 @@ public class DlmsHelper {
           "expected a unit instead of unit UNDEFINED." + this.getDebugInfo(scalerUnitObject));
     }
 
-    return this.createDlmsMeterValueBasedOnValueAndScalerAndUnit(value, scaler, unit, description);
+    return scaler + ", " + unit.getUnit();
   }
 
   private DlmsMeterValueDto createDlmsMeterValueBasedOnValueAndScalerAndUnit(

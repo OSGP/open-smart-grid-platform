@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.dlms.services;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,12 +15,19 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.Attribute;
+import org.opensmartgridplatform.dlms.objectconfig.CaptureObject;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfileValidator;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
 import org.opensmartgridplatform.dlms.objectconfig.ParentProfile;
+import org.opensmartgridplatform.dlms.objectconfig.TypeBasedValue;
+import org.opensmartgridplatform.dlms.objectconfig.ValueType;
+import org.opensmartgridplatform.dlms.objectconfig.configlookup.ConfigLookupGroup;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
@@ -29,22 +37,33 @@ import org.springframework.stereotype.Service;
 public class ObjectConfigService {
 
   public final List<DlmsProfile> dlmsProfiles;
+  public final List<ConfigLookupGroup> configLookupGroups;
 
   /*
    * Profiles are loaded from the classpath resource '/dlmsprofiles'.
    */
   public ObjectConfigService() throws ObjectConfigException, IOException {
     this.dlmsProfiles = this.getDlmsProfileListFromResources();
-
     DlmsProfileValidator.validate(this.dlmsProfiles);
     this.dlmsProfiles.forEach(DlmsProfile::createMap);
+
+    this.configLookupGroups = this.getConfigLookupGroupsFromResources();
   }
 
   public CosemObject getCosemObject(
       final String protocolName, final String protocolVersion, final DlmsObjectType dlmsObjectType)
       throws IllegalArgumentException, ObjectConfigException {
+    return this.getCosemObject(protocolName, protocolVersion, dlmsObjectType, null);
+  }
+
+  public CosemObject getCosemObject(
+      final String protocolName,
+      final String protocolVersion,
+      final DlmsObjectType dlmsObjectType,
+      final String deviceModel)
+      throws IllegalArgumentException, ObjectConfigException {
     final Optional<CosemObject> optionalCosemObject =
-        this.getOptionalCosemObject(protocolName, protocolVersion, dlmsObjectType);
+        this.getOptionalCosemObject(protocolName, protocolVersion, dlmsObjectType, deviceModel);
     return optionalCosemObject.orElseThrow(
         () ->
             new IllegalArgumentException(
@@ -56,9 +75,23 @@ public class ObjectConfigService {
   public Optional<CosemObject> getOptionalCosemObject(
       final String protocolName, final String protocolVersion, final DlmsObjectType dlmsObjectType)
       throws ObjectConfigException {
+    return this.getOptionalCosemObject(protocolName, protocolVersion, dlmsObjectType, null);
+  }
+
+  public Optional<CosemObject> getOptionalCosemObject(
+      final String protocolName,
+      final String protocolVersion,
+      final DlmsObjectType dlmsObjectType,
+      final String deviceModel)
+      throws ObjectConfigException {
     final Map<DlmsObjectType, CosemObject> cosemObjects =
         this.getCosemObjects(protocolName, protocolVersion);
-    return Optional.ofNullable(cosemObjects.get(dlmsObjectType));
+    if (cosemObjects.containsKey(dlmsObjectType)) {
+      final CosemObject cosemObject = cosemObjects.get(dlmsObjectType);
+      return Optional.of(this.handleValueBasedOnModel(cosemObject, deviceModel));
+    } else {
+      return Optional.empty();
+    }
   }
 
   public List<CosemObject> getCosemObjects(
@@ -118,6 +151,21 @@ public class ObjectConfigService {
     return dlmsProfile.get().getObjectMap();
   }
 
+  private String getConfigLookupType(final String matchGroup, final String deviceModel)
+      throws ObjectConfigException {
+
+    final Optional<ConfigLookupGroup> configLookupGroupOptional =
+        this.configLookupGroups.stream()
+            .filter(group -> group.getName().equals(matchGroup))
+            .findFirst();
+
+    if (configLookupGroupOptional.isEmpty()) {
+      throw new ObjectConfigException("Matchgroup " + matchGroup + " not found");
+    } else {
+      return configLookupGroupOptional.get().getMatchingType(deviceModel);
+    }
+  }
+
   private boolean hasProperty(
       final CosemObject object,
       final ObjectProperty wantedProperty,
@@ -158,7 +206,10 @@ public class ObjectConfigService {
 
     Stream.of(resources)
         .filter(
-            resource -> resource.getFilename() != null && resource.getFilename().endsWith(".json"))
+            resource ->
+                resource.getFilename() != null
+                    && resource.getFilename().endsWith(".json")
+                    && !resource.getFilename().equals("configlookup.json"))
         .forEach(
             resource -> {
               try {
@@ -234,5 +285,111 @@ public class ObjectConfigService {
    */
   public List<DlmsProfile> getConfiguredDlmsProfiles() {
     return this.dlmsProfiles;
+  }
+
+  public static List<String> getCaptureObjectDefinitions(final CosemObject profile) {
+    if (profile.getClassId() != InterfaceClass.PROFILE_GENERIC.id()) {
+      throw new IllegalArgumentException(
+          "Can't get capture objects, object " + profile.getTag() + " is not a Profile Generic");
+    }
+
+    final Attribute captureObjectsAttribute =
+        profile.getAttribute(ProfileGenericAttribute.CAPTURE_OBJECTS.attributeId());
+
+    final String captureObjectsAttributeValue = captureObjectsAttribute.getValue();
+
+    if (captureObjectsAttributeValue == null || captureObjectsAttributeValue.isEmpty()) {
+      return List.of();
+    }
+
+    final String[] captureObjectDefinitions = captureObjectsAttribute.getValue().split("\\|");
+
+    return List.of(captureObjectDefinitions);
+  }
+
+  public static DlmsObjectType getCosemObjectTypeFromCaptureObjectDefinition(
+      final String captureObjectDefinition) {
+    return DlmsObjectType.fromValue(captureObjectDefinition.split(",")[0]);
+  }
+
+  public static int getAttributeIdFromCaptureObjectDefinition(
+      final String captureObjectDefinition) {
+    return Integer.parseInt(captureObjectDefinition.split(",")[1]);
+  }
+
+  public List<CaptureObject> getCaptureObjects(
+      final CosemObject profile,
+      final String protocol,
+      final String version,
+      final String deviceModel)
+      throws ObjectConfigException {
+    final List<String> captureObjectDefinitions = getCaptureObjectDefinitions(profile);
+
+    final List<CaptureObject> captureObjects = new ArrayList<>();
+
+    for (final String def : captureObjectDefinitions) {
+      try {
+        final DlmsObjectType objectType = getCosemObjectTypeFromCaptureObjectDefinition(def);
+        final int attributeId = getAttributeIdFromCaptureObjectDefinition(def);
+        final CosemObject cosemObject =
+            this.getCosemObject(protocol, version, objectType, deviceModel);
+        captureObjects.add(new CaptureObject(cosemObject, attributeId));
+      } catch (final ObjectConfigException e) {
+        throw new ObjectConfigException("Capture object " + def + " not found in object config", e);
+      }
+    }
+    return captureObjects;
+  }
+
+  protected CosemObject handleValueBasedOnModel(
+      final CosemObject cosemObject, final String deviceModel) throws ObjectConfigException {
+    if (deviceModel == null) {
+      return cosemObject;
+    }
+
+    final Optional<Attribute> attributeOptional =
+        cosemObject.getAttributes().stream()
+            .filter(attr -> attr.getValuetype() == ValueType.BASED_ON_MODEL)
+            .findFirst();
+
+    if (attributeOptional.isEmpty()) {
+      return cosemObject;
+    } else {
+      final Attribute originalAttribute = attributeOptional.get();
+
+      final String configLookupType =
+          this.getConfigLookupType(originalAttribute.getValuebasedonmodel().getType(), deviceModel);
+
+      final Optional<TypeBasedValue> typeBasedValueOptional =
+          originalAttribute.getValuebasedonmodel().getValues().stream()
+              .filter(tbv -> tbv.getTypes().contains(configLookupType))
+              .findFirst();
+
+      if (typeBasedValueOptional.isPresent()) {
+        final String value = typeBasedValueOptional.get().getValue();
+        final Attribute newAttribute =
+            originalAttribute.copyWithNewValueAndType(value, ValueType.FIXED_IN_METER);
+        return cosemObject.copyWithNewAttribute(newAttribute);
+      } else {
+        // If no value was found for this device model, then set the value to Dynamic and log a
+        // warning. The command executor should get the value from the meter.
+        log.warn(
+            "Could not find value for devicemodel {} for {}",
+            deviceModel,
+            originalAttribute.getValuebasedonmodel().getType());
+        final Attribute newAttribute =
+            originalAttribute.copyWithNewValueAndType(null, ValueType.DYNAMIC);
+        return cosemObject.copyWithNewAttribute(newAttribute);
+      }
+    }
+  }
+
+  private List<ConfigLookupGroup> getConfigLookupGroupsFromResources() throws IOException {
+    final PathMatchingResourcePatternResolver scanner = new PathMatchingResourcePatternResolver();
+    final Resource resource = scanner.getResource("dlmsprofiles/configlookup.json");
+
+    final ObjectMapper objectMapper = new ObjectMapper();
+
+    return objectMapper.readValue(resource.getInputStream(), new TypeReference<>() {});
   }
 }
