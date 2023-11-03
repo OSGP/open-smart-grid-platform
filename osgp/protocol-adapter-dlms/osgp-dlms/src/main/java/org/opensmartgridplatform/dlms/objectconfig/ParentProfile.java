@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.dlms.objectconfig;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.ToString;
 
-@Data
+@Getter
 @ToString
 public class ParentProfile {
   private String profile;

@@ -26,7 +26,7 @@ public enum DlmsUnitTypeDto {
   CURRENCY(10, "CURRENCY"),
   METER(11, "M"),
   METER_PER_SECOND(12, "METER_PER_SECOND"),
-  M3(13, "M_3"), // this underscore is needed because the xsd generates this!
+  M3(13, "M_3", "M3"), // this underscore is needed because the xsd generates this!
   M3_CORR(14, "M_3"),
   M3_FLUX(15, "M_3_FLUX"),
   M3_FLUX_CORR(16, "M_3_FLUX_CORR"),

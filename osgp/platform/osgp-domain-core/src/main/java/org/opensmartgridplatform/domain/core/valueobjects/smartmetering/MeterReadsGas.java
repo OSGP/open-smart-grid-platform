@@ -18,7 +18,7 @@ public class MeterReadsGas extends ActionResponse implements Serializable {
   public MeterReadsGas(
       final Date logTime, final OsgpMeterValue consumption, final Date captureTime) {
     this.logTime = new Date(logTime.getTime());
-    this.captureTime = new Date(captureTime.getTime());
+    this.captureTime = captureTime == null ? null : new Date(captureTime.getTime());
     this.consumption = consumption;
   }
 
@@ -27,7 +27,7 @@ public class MeterReadsGas extends ActionResponse implements Serializable {
   }
 
   public Date getCaptureTime() {
-    return new Date(this.captureTime.getTime());
+    return this.captureTime == null ? null : new Date(this.captureTime.getTime());
   }
 
   public OsgpMeterValue getConsumption() {
