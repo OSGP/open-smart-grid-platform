@@ -20,7 +20,8 @@
       {
         "type": "unknown gas meter type",
         "match": [
-          "Pre-NTA"
+          "elster-instromet",
+          "flonidan-gasmeter"
         ]
       }
     ],
