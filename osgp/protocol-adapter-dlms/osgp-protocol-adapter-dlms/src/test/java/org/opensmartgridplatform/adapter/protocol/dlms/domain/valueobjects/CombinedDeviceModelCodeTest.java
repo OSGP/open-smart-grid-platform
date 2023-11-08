@@ -6,9 +6,10 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.valueobjects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.valueobjects.CombinedDeviceModelCode.CombinedDeviceModelCodeBuilder;
 
@@ -43,11 +44,26 @@ class CombinedDeviceModelCodeTest {
   }
 
   @Test
-  void parseShouldReturnEmptyCombinedDeviceModelCode() {
-    final CombinedDeviceModelCode combinedDeviceModelCode =
-        CombinedDeviceModelCode.parse("invalid");
+  void parseShouldGetEmptyResponse() {
 
-    Assertions.assertEquals("", combinedDeviceModelCode.getGatewayDeviceModelCode());
+    final CombinedDeviceModelCode combinedDeviceModelCode = CombinedDeviceModelCode.parse(",,,,");
+
+    assertNull(combinedDeviceModelCode.getGatewayDeviceModelCode());
+    assertNull(combinedDeviceModelCode.getCodeFromChannel(1));
+    assertNull(combinedDeviceModelCode.getCodeFromChannel(2));
+    assertNull(combinedDeviceModelCode.getCodeFromChannel(3));
+    assertNull(combinedDeviceModelCode.getCodeFromChannel(4));
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+      value = {"invalid", ",", ",,", ",,,", ",,,,", ",,,,,"},
+      delimiterString = ";")
+  void parseShouldReturnEmptyCombinedDeviceModelCode(final String noCombinedDeviceModelCode) {
+    final CombinedDeviceModelCode combinedDeviceModelCode =
+        CombinedDeviceModelCode.parse(noCombinedDeviceModelCode);
+
+    assertNull(combinedDeviceModelCode.getGatewayDeviceModelCode());
     assertNull(combinedDeviceModelCode.getCodeFromChannel(1));
     assertNull(combinedDeviceModelCode.getCodeFromChannel(2));
     assertNull(combinedDeviceModelCode.getCodeFromChannel(3));
