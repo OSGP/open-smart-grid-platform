@@ -20,11 +20,13 @@ public class CombinedDeviceModelCode {
 
   public static final String SEPERATOR = ",";
 
+  public static final int SEPERATOR_COUNT_4 = 4;
+
   private final String gatewayDeviceModelCode;
   private final Map<Integer, String> channelBasedDeviceModelCodes;
 
   private CombinedDeviceModelCode() {
-    this.gatewayDeviceModelCode = "";
+    this.gatewayDeviceModelCode = null;
     this.channelBasedDeviceModelCodes = new HashMap<>();
   }
 
@@ -36,28 +38,50 @@ public class CombinedDeviceModelCode {
   }
 
   public static CombinedDeviceModelCode parse(final String combinedDeviceModelCodes) {
-    if (hasCombinedDeviceModelCodes(combinedDeviceModelCodes)) {
-      final String[] codes = combinedDeviceModelCodes.split(SEPERATOR);
-
-      final String gatewayDeviceModelCode = codes[0];
-
-      final Map<Integer, String> channelBasedDeviceModelCodes = new HashMap<>();
-      for (int i = 1; i < codes.length; i++) {
-        channelBasedDeviceModelCodes.put(i, codes[i]);
-      }
-
-      return new CombinedDeviceModelCode(gatewayDeviceModelCode, channelBasedDeviceModelCodes);
-    } else {
+    if (!hasCombinedDeviceModelCodes(combinedDeviceModelCodes)) {
       log.info(
           "Devicemodelcode field on MessageMetaData does not contain expected combined device model codes, got: [{}]",
           combinedDeviceModelCodes);
       return new CombinedDeviceModelCode();
     }
+
+    if (!hasContent(combinedDeviceModelCodes)) {
+      log.info(
+          "Devicemodelcode field on MessageMetaData does not contain device model codes, got: [{}]",
+          combinedDeviceModelCodes);
+      return new CombinedDeviceModelCode();
+    }
+
+    final String[] codes = combinedDeviceModelCodes.split(SEPERATOR);
+
+    final String gatewayDeviceModelCode = getGatewayDeciceModelCode(codes);
+    final Map<Integer, String> channelBasedDeviceModelCodes = getMbusDeviceModelCodes(codes);
+
+    return new CombinedDeviceModelCode(gatewayDeviceModelCode, channelBasedDeviceModelCodes);
+  }
+
+  private static Map<Integer, String> getMbusDeviceModelCodes(final String[] codes) {
+    final Map<Integer, String> channelBasedDeviceModelCodes = new HashMap<>();
+    for (int i = 1; i < codes.length; i++) {
+      channelBasedDeviceModelCodes.put(i, codes[i]);
+    }
+    return channelBasedDeviceModelCodes;
+  }
+
+  private static String getGatewayDeciceModelCode(final String[] codes) {
+    return codes.length >= 1 ? codes[0] : null;
   }
 
   private static boolean hasCombinedDeviceModelCodes(final String combinedDeviceModelCodes) {
+
     return combinedDeviceModelCodes != null
-        && combinedDeviceModelCodes.chars().filter(ch -> ch == SEPERATOR.charAt(0)).count() == 4;
+        && combinedDeviceModelCodes.chars().filter(ch -> ch == SEPERATOR.charAt(0)).count()
+            == SEPERATOR_COUNT_4;
+  }
+
+  private static boolean hasContent(final String combinedDeviceModelCodes) {
+
+    return combinedDeviceModelCodes.length() > SEPERATOR_COUNT_4;
   }
 
   public String getCodeFromChannel(final int i) {
