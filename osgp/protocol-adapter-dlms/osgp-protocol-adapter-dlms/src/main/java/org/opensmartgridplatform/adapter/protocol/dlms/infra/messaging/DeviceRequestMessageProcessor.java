@@ -111,15 +111,16 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
        * Throttling permit for network access not granted, send the request back to the queue to be
        * picked up again a little later by the message listener for device requests.
        */
+      final Duration permitRejectDelay =
+          this.throttlingClientConfig.permitRejectedDelay(messageMetadata.getMessagePriority());
       log.info(
           "Throttling permit was denied for deviceIdentification {} for network segment ({}, {}) for {}. retry message in {} ms",
           messageMetadata.getDeviceIdentification(),
           exception.getBaseTransceiverStationId(),
           exception.getCellId(),
           exception.getConfigurationName(),
-          this.throttlingClientConfig.permitRejectedDelay().toMillis());
-      this.deviceRequestMessageSender.send(
-          messageObject, messageMetadata, this.throttlingClientConfig.permitRejectedDelay());
+          permitRejectDelay.toMillis());
+      this.deviceRequestMessageSender.send(messageObject, messageMetadata, permitRejectDelay);
 
     } catch (final DeviceKeyProcessAlreadyRunningException exception) {
 
