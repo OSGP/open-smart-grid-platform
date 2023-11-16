@@ -107,7 +107,9 @@ public class RecoverKeyProcess implements Runnable {
                   RecoverKeyProcess.this.run();
                 }
               },
-              this.throttlingClientConfig.permitRejectedDelay().toMillis());
+              this.throttlingClientConfig
+                  .permitRejectedDelay(this.messageMetadata.getMessagePriority())
+                  .toMillis());
 
       this.deviceKeyProcessingService.stopProcessing(this.deviceIdentification);
 
