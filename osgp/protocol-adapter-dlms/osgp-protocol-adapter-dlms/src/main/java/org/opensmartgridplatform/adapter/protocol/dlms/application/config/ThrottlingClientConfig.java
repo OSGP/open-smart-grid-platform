@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
+import java.security.SecureRandom;
 import java.time.Duration;
-import java.util.Random;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.opensmartgridplatform.throttling.ThrottlingClient;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ThrottlingClientConfig {
+  private static final SecureRandom random = new SecureRandom();
 
   @Value("${throttling.client.enabled:false}")
   private boolean clientEnabled;
@@ -79,6 +80,6 @@ public class ThrottlingClientConfig {
         Math.min(this.permitRejectedMinDelay.toMillis(), this.permitRejectedMaxDelay.toMillis());
     final long maxMillis =
         Math.max(this.permitRejectedMinDelay.toMillis(), this.permitRejectedMaxDelay.toMillis());
-    return Duration.ofMillis(new Random().nextLong(minMillis, maxMillis));
+    return Duration.ofMillis(this.random.nextLong(minMillis, maxMillis));
   }
 }
