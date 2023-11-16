@@ -5,6 +5,8 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
 import java.time.Duration;
+import java.util.Random;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.opensmartgridplatform.throttling.ThrottlingClient;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,8 +38,14 @@ public class ThrottlingClientConfig {
   @Value("#{T(java.time.Duration).parse('${throttling.service.timeout:PT30S}')}")
   private Duration timeout;
 
-  @Value("#{T(java.time.Duration).parse('${throttling.rejected.delay:PT10S}')}")
-  private Duration permitRejectedDelay;
+  @Value("#{T(java.time.Duration).parse('${throttling.rejected.min.delay:PT50S}')}")
+  private Duration permitRejectedMinDelay;
+
+  @Value("#{T(java.time.Duration).parse('${throttling.rejected.max.delay:PT70S}')}")
+  private Duration permitRejectedMaxDelay;
+
+  @Value("#{T(java.time.Duration).parse('${throttling.rejected.high.prio.delay:PT2S}')}")
+  private Duration permitRejectedHighPrioDelay;
 
   public boolean clientEnabled() {
     return this.clientEnabled;
@@ -63,7 +71,14 @@ public class ThrottlingClientConfig {
    *
    * @return delay
    */
-  public Duration permitRejectedDelay() {
-    return this.permitRejectedDelay;
+  public Duration permitRejectedDelay(final int messagePriority) {
+    if (messagePriority > MessagePriorityEnum.DEFAULT.getPriority()) {
+      return this.permitRejectedHighPrioDelay;
+    }
+    final long minMillis =
+        Math.min(this.permitRejectedMinDelay.toMillis(), this.permitRejectedMaxDelay.toMillis());
+    final long maxMillis =
+        Math.max(this.permitRejectedMinDelay.toMillis(), this.permitRejectedMaxDelay.toMillis());
+    return Duration.ofMillis(new Random().nextLong(minMillis, maxMillis));
   }
 }
