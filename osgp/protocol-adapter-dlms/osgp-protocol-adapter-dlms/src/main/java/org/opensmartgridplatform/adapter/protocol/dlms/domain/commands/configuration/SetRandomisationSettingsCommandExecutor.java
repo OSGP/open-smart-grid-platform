@@ -15,8 +15,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractC
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.GetConfigurationObjectService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.ProtocolServiceLookup;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.SetConfigurationObjectService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -42,16 +42,16 @@ public class SetRandomisationSettingsCommandExecutor
   private static final Logger LOGGER =
       LoggerFactory.getLogger(SetRandomisationSettingsCommandExecutor.class);
 
-  private final DlmsObjectConfigService dlmsObjectConfigService;
   private final ProtocolServiceLookup protocolServiceLookup;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
   @Autowired
   public SetRandomisationSettingsCommandExecutor(
-      final DlmsObjectConfigService dlmsObjectConfigService,
-      final ProtocolServiceLookup protocolServiceLookup) {
+      final ProtocolServiceLookup protocolServiceLookup,
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(SetRandomisationSettingsRequestDataDto.class);
-    this.dlmsObjectConfigService = dlmsObjectConfigService;
     this.protocolServiceLookup = protocolServiceLookup;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
@@ -109,9 +109,9 @@ public class SetRandomisationSettingsCommandExecutor
       final int multiplicationFactor,
       final int numberOfRetries)
       throws ProtocolAdapterException {
-    final AttributeAddress randomisationSettingsAddress =
-        this.dlmsObjectConfigService.getAttributeAddress(
-            device, DlmsObjectType.RANDOMISATION_SETTINGS, null);
+
+    final Protocol protocol = Protocol.forDevice(device);
+    final AttributeAddress attributeAddress = this.getAttributeAddress(protocol);
 
     final DataObject randomisationStartWindowObject =
         DataObject.newUInteger32Data(randomisationStartWindow);
@@ -122,10 +122,16 @@ public class SetRandomisationSettingsCommandExecutor
     final DataObject randomisationSettingsObject =
         DataObject.newStructureData(
             randomisationStartWindowObject, multiplicationFactorObject, numberOfRetriesObject);
-
     final SetParameter setRandomisationSettings =
-        new SetParameter(randomisationSettingsAddress, randomisationSettingsObject);
+        new SetParameter(attributeAddress, randomisationSettingsObject);
+
     this.writeAttribute(conn, setRandomisationSettings);
+  }
+
+  AttributeAddress getAttributeAddress(final Protocol protocol) throws ProtocolAdapterException {
+    return this.objectConfigServiceHelper
+        .findOptionalDefaultAttributeAddress(protocol, DlmsObjectType.RANDOMISATION_SETTINGS)
+        .orElseThrow();
   }
 
   private void writeDirectAttach(
@@ -136,7 +142,7 @@ public class SetRandomisationSettingsCommandExecutor
     final GetConfigurationObjectService getConfigurationObjectService =
         this.protocolServiceLookup.lookupGetService(protocol);
     final ConfigurationObjectDto configurationOnDevice =
-        getConfigurationObjectService.getConfigurationObject(conn);
+        getConfigurationObjectService.getConfigurationObject(conn, protocol);
     final SetConfigurationObjectService setService =
         this.protocolServiceLookup.lookupSetService(protocol);
 
@@ -144,7 +150,8 @@ public class SetRandomisationSettingsCommandExecutor
         this.createNewConfiguration(directAttach, configurationOnDevice);
 
     final AccessResultCode result =
-        setService.setConfigurationObject(conn, configurationToSet, configurationOnDevice);
+        setService.setConfigurationObject(
+            conn, configurationToSet, configurationOnDevice, protocol);
 
     this.checkResult(result, "directAttach");
   }

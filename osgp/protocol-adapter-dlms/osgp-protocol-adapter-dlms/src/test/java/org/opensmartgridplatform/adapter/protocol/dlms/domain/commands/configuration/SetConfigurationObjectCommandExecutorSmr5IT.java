@@ -12,6 +12,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.SetParameter;
@@ -22,6 +23,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configura
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.SetConfigurationObjectService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.SetConfigurationObjectServiceSmr5;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -33,13 +35,15 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationMod
 public class SetConfigurationObjectCommandExecutorSmr5IT
     extends SetConfigurationObjectCommandExecutorITBase {
 
+  @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
+
   @BeforeEach
   public void setUp() throws IOException {
     final DlmsHelper dlmsHelper = new DlmsHelper();
     final GetConfigurationObjectService getService =
-        new GetConfigurationObjectServiceSmr5(dlmsHelper);
+        new GetConfigurationObjectServiceSmr5(dlmsHelper, this.objectConfigServiceHelper);
     final SetConfigurationObjectService setService =
-        new SetConfigurationObjectServiceSmr5(dlmsHelper);
+        new SetConfigurationObjectServiceSmr5(dlmsHelper, this.objectConfigServiceHelper);
     super.setUp(getService, setService);
   }
 

@@ -82,7 +82,9 @@ public enum DlmsObjectType {
   READ_MBUS_STATUS,
   CLEAR_MBUS_STATUS,
   PHASE_OUTAGE_TEST,
-  LAST_GASP_TEST;
+  LAST_GASP_TEST,
+  CONFIGURATION_OBJECT,
+  RANDOMISATION_SETTINGS;
 
   public String value() {
     return this.name();

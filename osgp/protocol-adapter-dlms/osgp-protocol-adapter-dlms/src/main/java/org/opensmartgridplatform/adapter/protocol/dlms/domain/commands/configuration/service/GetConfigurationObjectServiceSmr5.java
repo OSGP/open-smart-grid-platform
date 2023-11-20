@@ -6,10 +6,13 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configur
 
 import java.util.List;
 import java.util.Optional;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
@@ -28,8 +31,12 @@ public class GetConfigurationObjectServiceSmr5 extends GetConfigurationObjectSer
 
   private final DlmsHelper dlmsHelper;
 
-  public GetConfigurationObjectServiceSmr5(final DlmsHelper dlmsHelper) {
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
+
+  public GetConfigurationObjectServiceSmr5(
+      final DlmsHelper dlmsHelper, final ObjectConfigServiceHelper objectConfigServiceHelper) {
     this.dlmsHelper = dlmsHelper;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
@@ -64,5 +71,12 @@ public class GetConfigurationObjectServiceSmr5 extends GetConfigurationObjectSer
   @Override
   Optional<ConfigurationFlagTypeDto> getFlagType(final int bitPosition) {
     return ConfigurationFlagTypeDto.getSmr5FlagType(bitPosition);
+  }
+
+  @Override
+  AttributeAddress getAttributeAddress(final Protocol protocol) throws ProtocolAdapterException {
+    return this.objectConfigServiceHelper
+        .findOptionalDefaultAttributeAddress(protocol, DlmsObjectType.CONFIGURATION_OBJECT)
+        .orElseThrow();
   }
 }

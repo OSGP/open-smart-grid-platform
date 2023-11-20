@@ -21,7 +21,7 @@ public class ProtocolServiceLookupTest {
 
   @BeforeEach
   public void setUp() {
-    this.getService = new GetConfigurationObjectServiceDsmr4(null);
+    this.getService = new GetConfigurationObjectServiceDsmr4(null, null);
     final List<ProtocolService> services = new ArrayList<>();
     services.add(this.getService);
     this.instance = new ProtocolServiceLookup(services);

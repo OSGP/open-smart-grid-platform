@@ -41,7 +41,8 @@ public class GetConfigurationObjectCommandExecutorTest {
     device.setProtocol(protocol);
 
     when(this.protocolServiceLookup.lookupGetService(protocol)).thenReturn(this.getService);
-    when(this.getService.getConfigurationObject(this.conn)).thenReturn(this.configurationObjectDto);
+    when(this.getService.getConfigurationObject(this.conn, protocol))
+        .thenReturn(this.configurationObjectDto);
 
     // CALL
     final ConfigurationObjectDto result =

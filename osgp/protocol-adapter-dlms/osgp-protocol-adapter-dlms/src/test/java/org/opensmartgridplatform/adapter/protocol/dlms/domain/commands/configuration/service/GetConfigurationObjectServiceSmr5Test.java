@@ -32,7 +32,7 @@ public class GetConfigurationObjectServiceSmr5Test {
 
   @BeforeEach
   public void setUp() {
-    this.instance = new GetConfigurationObjectServiceSmr5(null);
+    this.instance = new GetConfigurationObjectServiceSmr5(null, null);
     when(this.nonBitString.isBitString()).thenReturn(false);
   }
 

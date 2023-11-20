@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
@@ -31,9 +32,12 @@ public class GetConfigurationObjectServiceDsmr4Test {
   @Mock private GetResult getResult;
   @Mock private DlmsHelper dlmsHelper;
 
+  @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
+
   @BeforeEach
   public void setUp() {
-    this.instance = new GetConfigurationObjectServiceDsmr4(this.dlmsHelper);
+    this.instance =
+        new GetConfigurationObjectServiceDsmr4(this.dlmsHelper, this.objectConfigServiceHelper);
   }
 
   @Test

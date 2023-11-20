@@ -24,7 +24,7 @@ public class SetConfigurationObjectServiceSmr5Test {
 
   @BeforeEach
   public void setUp() {
-    this.instance = new SetConfigurationObjectServiceSmr5(null);
+    this.instance = new SetConfigurationObjectServiceSmr5(null, null);
   }
 
   @Test

@@ -19,6 +19,8 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.ObisCode;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -32,6 +34,12 @@ public class GetConfigurationObjectServiceTest {
 
   private final GetConfigurationObjectService instance =
       new GetConfigurationObjectService() {
+
+        @Override
+        AttributeAddress getAttributeAddress(final Protocol protocol) {
+          return new AttributeAddress(-1, (ObisCode) null, -1);
+        }
+
         @Override
         ConfigurationObjectDto getConfigurationObject(final GetResult result) {
           return null;
@@ -48,10 +56,13 @@ public class GetConfigurationObjectServiceTest {
         }
       };
 
+  @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
   @Mock private DlmsConnectionManager conn;
   @Mock private DlmsMessageListener dlmsMessageListener;
   @Mock private DlmsConnection dlmsConnection;
   @Mock private GetResult getResult;
+
+  @Mock Protocol protocol;
 
   @BeforeEach
   public void setUp() {
@@ -69,7 +80,7 @@ public class GetConfigurationObjectServiceTest {
     assertThatExceptionOfType(ConnectionException.class)
         .isThrownBy(
             () -> {
-              this.instance.getConfigurationObject(this.conn);
+              this.instance.getConfigurationObject(this.conn, this.protocol);
             });
   }
 
@@ -83,7 +94,7 @@ public class GetConfigurationObjectServiceTest {
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
             () -> {
-              this.instance.getConfigurationObject(this.conn);
+              this.instance.getConfigurationObject(this.conn, this.protocol);
             });
   }
 
@@ -98,7 +109,7 @@ public class GetConfigurationObjectServiceTest {
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
             () -> {
-              this.instance.getConfigurationObject(this.conn);
+              this.instance.getConfigurationObject(this.conn, this.protocol);
             });
   }
 

@@ -19,7 +19,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
+import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -56,6 +58,11 @@ class SetConfigurationObjectServiceTest {
         new SetConfigurationObjectService(this.dlmsHelper) {
 
           @Override
+          AttributeAddress getAttributeAddress(final Protocol protocol) {
+            return new AttributeAddress(-1, (ObisCode) null, -1);
+          }
+
+          @Override
           public boolean handles(final Protocol protocol) {
             return false;
           }
@@ -84,7 +91,7 @@ class SetConfigurationObjectServiceTest {
         .isThrownBy(
             () -> {
               // CALL
-              this.instance.setConfigurationObject(this.conn, null, null);
+              this.instance.setConfigurationObject(this.conn, null, null, null);
             });
   }
 

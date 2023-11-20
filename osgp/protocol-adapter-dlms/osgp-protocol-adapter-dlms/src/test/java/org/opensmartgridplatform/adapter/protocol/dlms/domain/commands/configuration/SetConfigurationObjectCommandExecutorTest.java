@@ -46,12 +46,13 @@ public class SetConfigurationObjectCommandExecutorTest {
     device.setProtocol(protocol);
 
     when(this.protocolServiceLookup.lookupGetService(protocol)).thenReturn(this.getService);
-    when(this.getService.getConfigurationObject(this.conn)).thenReturn(this.configurationOnDevice);
+    when(this.getService.getConfigurationObject(this.conn, protocol))
+        .thenReturn(this.configurationOnDevice);
 
     when(this.protocolServiceLookup.lookupSetService(protocol)).thenReturn(this.setService);
     final AccessResultCode accessResultCode = AccessResultCode.SUCCESS;
     when(this.setService.setConfigurationObject(
-            this.conn, this.configurationToSet, this.configurationOnDevice))
+            this.conn, this.configurationToSet, this.configurationOnDevice, protocol))
         .thenReturn(accessResultCode);
 
     // CALL
