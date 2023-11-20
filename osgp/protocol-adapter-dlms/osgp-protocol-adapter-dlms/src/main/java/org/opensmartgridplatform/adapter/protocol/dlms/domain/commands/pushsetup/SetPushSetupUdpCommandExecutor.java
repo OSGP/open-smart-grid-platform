@@ -100,7 +100,7 @@ public class SetPushSetupUdpCommandExecutor
       return new SetParameter(communicationWindowAddress, value);
 
     } catch (final ObjectConfigException e) {
-      throw new ProtocolAdapterException("Error in object config", e);
+      throw new ProtocolAdapterException(this.ERROR_IN_OBJECT_CONFIG, e);
     }
   }
 

@@ -17,8 +17,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
@@ -29,16 +32,24 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class SetActivityCalendarCommandActivationExecutorTest {
 
   private static final int CLASS_ID = 20;
-  private static final ObisCode OBIS_CODE = new ObisCode("0.0.13.0.0.255");
+
+  private static final String OBIS = "0.0.13.0.0.255";
+  private static final ObisCode OBIS_CODE = new ObisCode(OBIS);
   private static final int METHOD_ID_ACTIVATE_PASSIVE_CALENDAR = 1;
 
   private final DlmsDevice DLMS_DEVICE = new DlmsDevice();
+
+  @Mock private CosemObject cosemObject;
 
   @Captor ArgumentCaptor<MethodParameter> actionParameterArgumentCaptor;
 
@@ -52,14 +63,19 @@ class SetActivityCalendarCommandActivationExecutorTest {
 
   @Mock private MethodResult methodResult;
 
-  private SetActivityCalendarCommandActivationExecutor executor;
+  @Mock private ObjectConfigService objectConfigService;
+
+  @InjectMocks private SetActivityCalendarCommandActivationExecutor executor;
 
   @BeforeEach
-  public void setUp() throws IOException {
-    this.executor = new SetActivityCalendarCommandActivationExecutor();
+  public void setUp() throws IOException, ObjectConfigException {
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.action(any(MethodParameter.class))).thenReturn(this.methodResult);
+
+    when(this.cosemObject.getObis()).thenReturn(OBIS);
+    when(this.cosemObject.getClassId()).thenReturn(CLASS_ID);
+    when(this.objectConfigService.getCosemObject(any(), any(), any())).thenReturn(this.cosemObject);
   }
 
   @Test

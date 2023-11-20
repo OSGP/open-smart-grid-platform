@@ -8,7 +8,6 @@ import java.io.IOException;
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
@@ -16,21 +15,30 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component()
+@Component
 public class SetActivityCalendarCommandActivationExecutor
     extends AbstractCommandExecutor<Void, MethodResultCode> {
 
   private static final Logger LOGGER =
       LoggerFactory.getLogger(SetActivityCalendarCommandActivationExecutor.class);
 
-  private static final int CLASS_ID = 20;
-  private static final ObisCode OBIS_CODE = new ObisCode("0.0.13.0.0.255");
   private static final int METHOD_ID_ACTIVATE_PASSIVE_CALENDAR = 1;
+
+  @Autowired private ObjectConfigService objectConfigService;
+
+  SetActivityCalendarCommandActivationExecutor(final ObjectConfigService objectConfigService) {
+    this.objectConfigService = objectConfigService;
+  }
 
   @Override
   public MethodResultCode execute(
@@ -41,10 +49,21 @@ public class SetActivityCalendarCommandActivationExecutor
       throws ProtocolAdapterException {
 
     LOGGER.debug("ACTIVATING PASSIVE CALENDAR");
+    final CosemObject cosemObject;
+    try {
+      cosemObject =
+          this.objectConfigService.getCosemObject(
+              device.getProtocolName(),
+              device.getProtocolVersion(),
+              DlmsObjectType.ACTIVITY_CALENDAR);
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException(this.ERROR_IN_OBJECT_CONFIG, e);
+    }
+
     final MethodParameter method =
         new MethodParameter(
-            CLASS_ID,
-            OBIS_CODE,
+            cosemObject.getClassId(),
+            cosemObject.getObis(),
             METHOD_ID_ACTIVATE_PASSIVE_CALENDAR,
             DataObject.newInteger8Data((byte) 0));
 
@@ -64,9 +83,9 @@ public class SetActivityCalendarCommandActivationExecutor
           "Activating the activity calendar failed. MethodResult is: "
               + methodResultCode.getResultCode()
               + " ClassId: "
-              + CLASS_ID
+              + cosemObject.getClassId()
               + " obisCode: "
-              + OBIS_CODE
+              + cosemObject.getObis()
               + " method id: "
               + METHOD_ID_ACTIVATE_PASSIVE_CALENDAR);
     }

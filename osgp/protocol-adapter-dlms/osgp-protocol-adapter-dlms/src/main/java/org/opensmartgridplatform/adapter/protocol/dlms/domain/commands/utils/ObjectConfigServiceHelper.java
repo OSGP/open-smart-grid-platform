@@ -28,9 +28,7 @@ public class ObjectConfigServiceHelper {
 
   private final ObjectConfigService objectConfigService;
 
-  @SuppressWarnings("java:S1144")
-  /* Suppress warning java:S1144 because it's injected with spring autowired. */
-  private ObjectConfigServiceHelper(final ObjectConfigService objectConfigService) {
+  public ObjectConfigServiceHelper(final ObjectConfigService objectConfigService) {
     this.objectConfigService = objectConfigService;
   }
 
@@ -137,6 +135,7 @@ public class ObjectConfigServiceHelper {
     return this.findAttributeAddress(
         dlmsDevice, protocol, dlmsObjectType, channel, DEFAULT_ATTRIBUTE_ID);
   }
+
   /**
    * Find a required attribute from the ObjectConfigService based on the protocol and
    * protocolVersion and a DlmsObjectType name. When not found a ProtocolAdapterException is thrown.
