@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.throttling;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -30,6 +31,7 @@ class MaxConcurrencyByBtsCellConfigTest {
 
     assertThat(this.btsCellConfig.getMaxConcurrency(btsId, cellId))
         .isEqualTo(Optional.of(maxConcurrency));
+    verifyNoInteractions(this.btsCellConfigRepository);
   }
 
   @Test
