@@ -25,8 +25,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
+import org.opensmartgridplatform.throttling.entities.BtsCellConfig;
 import org.opensmartgridplatform.throttling.mapping.ThrottlingMapper;
+import org.opensmartgridplatform.throttling.repositories.BtsCellConfigRepository;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
 import org.opensmartgridplatform.throttling.repositories.ThrottlingConfigRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,10 +117,12 @@ class ThrottlingServiceApplicationIT {
   @Autowired private ThrottlingMapper throttlingMapper;
 
   @Autowired private ThrottlingConfigRepository throttlingConfigRepository;
+  @Autowired private BtsCellConfigRepository btsCellConfigRepository;
 
   @Autowired private PermitRepository permitRepository;
 
   @Autowired private MaxConcurrencyByThrottlingConfig maxConcurrencyByThrottlingConfig;
+  @Autowired private MaxConcurrencyByBtsCellConfig maxConcurrencyByBtsCellConfig;
 
   @Autowired private PermitsByThrottlingConfig permitsByThrottlingConfig;
 
@@ -138,6 +144,7 @@ class ThrottlingServiceApplicationIT {
   void afterEach() {
     this.permitRepository.deleteAllInBatch();
     this.throttlingConfigRepository.deleteAllInBatch();
+    this.btsCellConfigRepository.deleteAllInBatch();
   }
 
   @Test
@@ -314,6 +321,34 @@ class ThrottlingServiceApplicationIT {
 
     this.successfullyRequestPermit(
         this.existingThrottlingConfigId, this.registeredClientId, baseTransceiverStationId, cellId);
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {0, 1})
+  void requestPermitForBtsCell(final int maxConcurrency) {
+    this.maxConcurrencyByBtsCellConfig.reset();
+
+    final int baseTransceiverStationId = 123;
+    final int cellId = 1;
+    final int requestId = 2;
+
+    this.btsCellConfigRepository.save(
+        new BtsCellConfig(baseTransceiverStationId, cellId, maxConcurrency));
+
+    if (maxConcurrency == 0) {
+      this.unsuccessfullyRequestPermit(
+          this.existingThrottlingConfigId,
+          this.registeredClientId,
+          baseTransceiverStationId,
+          cellId,
+          requestId);
+    } else {
+      this.successfullyRequestPermit(
+          this.existingThrottlingConfigId,
+          this.registeredClientId,
+          baseTransceiverStationId,
+          cellId);
+    }
   }
 
   private void successfullyRequestPermit(
