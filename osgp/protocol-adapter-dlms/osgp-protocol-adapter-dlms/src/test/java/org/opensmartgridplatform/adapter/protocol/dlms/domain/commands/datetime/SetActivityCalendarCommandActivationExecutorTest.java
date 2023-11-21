@@ -13,8 +13,9 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -33,9 +34,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
-import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -46,10 +47,6 @@ class SetActivityCalendarCommandActivationExecutorTest {
   private static final String OBIS = "0.0.13.0.0.255";
   private static final ObisCode OBIS_CODE = new ObisCode(OBIS);
   private static final int METHOD_ID_ACTIVATE_PASSIVE_CALENDAR = 1;
-
-  private final DlmsDevice DLMS_DEVICE = new DlmsDevice();
-
-  @Mock private CosemObject cosemObject;
 
   @Captor ArgumentCaptor<MethodParameter> actionParameterArgumentCaptor;
 
@@ -63,30 +60,34 @@ class SetActivityCalendarCommandActivationExecutorTest {
 
   @Mock private MethodResult methodResult;
 
-  @Mock private ObjectConfigService objectConfigService;
+  @Mock private DlmsDevice dlmsDevice;
 
   @InjectMocks private SetActivityCalendarCommandActivationExecutor executor;
 
   @BeforeEach
   public void setUp() throws IOException, ObjectConfigException {
+    final ObjectConfigService objectConfigService = new ObjectConfigService();
+    ReflectionTestUtils.setField(this.executor, "objectConfigService", objectConfigService);
+
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.action(any(MethodParameter.class))).thenReturn(this.methodResult);
-
-    when(this.cosemObject.getObis()).thenReturn(OBIS);
-    when(this.cosemObject.getClassId()).thenReturn(CLASS_ID);
-    when(this.objectConfigService.getCosemObject(any(), any(), any())).thenReturn(this.cosemObject);
   }
 
-  @Test
-  void testActivationWithSuccess() throws ProtocolAdapterException, IOException {
+  @ParameterizedTest
+  @CsvSource({"DSMR,2.2", "DSMR,4.2.2", "SMR,5.0.0", "SMR,5.1", "SMR,5.2", "SMR,5.5"})
+  void testActivationWithSuccess(final String protocolName, final String protocolVersion)
+      throws ProtocolAdapterException, IOException {
+
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocolName);
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocolVersion);
 
     // SETUP
     when(this.methodResult.getResultCode()).thenReturn(MethodResultCode.SUCCESS);
 
     // CALL
     final MethodResultCode resultCode =
-        this.executor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata);
+        this.executor.execute(this.conn, this.dlmsDevice, null, this.messageMetadata);
 
     // VERIFY
     assertThat(resultCode).isEqualTo(MethodResultCode.SUCCESS);
@@ -100,18 +101,20 @@ class SetActivityCalendarCommandActivationExecutorTest {
     assertThat((byte) methodParameter.getParameter().getValue()).isZero();
   }
 
-  @Test
-  void testActivationWithFailure() throws IOException {
+  @ParameterizedTest
+  @CsvSource({"DSMR,2.2", "DSMR,4.2.2", "SMR,5.0.0", "SMR,5.1", "SMR,5.2", "SMR,5.5"})
+  void testActivationWithFailure(final String protocolName, final String protocolVersion)
+      throws IOException {
 
     // SETUP
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocolName);
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocolVersion);
     when(this.methodResult.getResultCode()).thenReturn(MethodResultCode.OTHER_REASON);
 
     // CALL
     assertThrows(
         ProtocolAdapterException.class,
-        () -> {
-          this.executor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata);
-        });
+        () -> this.executor.execute(this.conn, this.dlmsDevice, null, this.messageMetadata));
 
     // VERIFY
     verify(this.dlmsConnection, times(1)).action(this.actionParameterArgumentCaptor.capture());

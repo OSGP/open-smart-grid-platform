@@ -79,3 +79,5 @@ Feature: SmartMetering Bundle - SetActivityCalendar
       | TEST1031000000002     | SMR      | 4.3     |
       | TEST1027000000002     | SMR      | 5.0.0   |
       | TEST1028000000002     | SMR      | 5.1     |
+      | TEST1028000000002     | SMR      | 5.2     |
+      | TEST1028000000002     | SMR      | 5.5     |

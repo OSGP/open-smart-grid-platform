@@ -16,6 +16,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.method.ActivityCalendarMethod;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
@@ -30,8 +31,6 @@ public class SetActivityCalendarCommandActivationExecutor
 
   private static final Logger LOGGER =
       LoggerFactory.getLogger(SetActivityCalendarCommandActivationExecutor.class);
-
-  private static final int METHOD_ID_ACTIVATE_PASSIVE_CALENDAR = 1;
 
   private final ObjectConfigService objectConfigService;
 
@@ -63,7 +62,7 @@ public class SetActivityCalendarCommandActivationExecutor
         new MethodParameter(
             cosemObject.getClassId(),
             cosemObject.getObis(),
-            METHOD_ID_ACTIVATE_PASSIVE_CALENDAR,
+            ActivityCalendarMethod.ACTIVATE_PASSIVE_CALENDAR.getMethodId(),
             DataObject.newInteger8Data((byte) 0));
 
     conn.getDlmsMessageListener()
@@ -86,7 +85,7 @@ public class SetActivityCalendarCommandActivationExecutor
               + " obisCode: "
               + cosemObject.getObis()
               + " method id: "
-              + METHOD_ID_ACTIVATE_PASSIVE_CALENDAR);
+              + ActivityCalendarMethod.ACTIVATE_PASSIVE_CALENDAR.getMethodId());
     }
     return MethodResultCode.SUCCESS;
   }

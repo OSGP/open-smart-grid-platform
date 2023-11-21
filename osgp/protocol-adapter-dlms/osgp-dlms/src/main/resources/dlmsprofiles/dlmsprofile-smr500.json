@@ -2232,7 +2232,6 @@
           "description": "calendar_name_active",
           "datatype": "octet-string",
           "valuetype": "DYNAMIC",
-          "value": null,
           "access": "R"
         },
         {
@@ -2240,7 +2239,6 @@
           "description": "season_profile_active",
           "datatype": "array",
           "valuetype": "DYNAMIC",
-          "value": null,
           "access": "R"
         },
         {
@@ -2248,7 +2246,6 @@
           "description": "week_profile_table_active",
           "datatype": "array",
           "valuetype": "DYNAMIC",
-          "value": null,
           "access": "R"
         },
         {
@@ -2256,47 +2253,41 @@
           "description": "day_profile_table_active",
           "datatype": "array",
           "valuetype": "DYNAMIC",
-          "value": null,
           "access": "R"
         },
         {
           "id": 6,
           "description": "calendar_name_passive",
           "datatype": "octet-string",
-          "valuetype": "DYNAMIC",
-          "value": null,
+          "valuetype": "SET_BY_CLIENT",
           "access": "RW"
         },
         {
           "id": 7,
           "description": "season_profile_passive",
           "datatype": "array",
-          "valuetype": "DYNAMIC",
-          "value": null,
+          "valuetype": "SET_BY_CLIENT",
           "access": "RW"
         },
         {
           "id": 8,
           "description": "week_profile_table_passive",
           "datatype": "array",
-          "valuetype": "DYNAMIC",
-          "value": null,
+          "valuetype": "SET_BY_CLIENT",
           "access": "RW"
         },
         {
           "id": 9,
           "description": "day_profile_table_passive",
           "datatype": "array",
-          "valuetype": "DYNAMIC",
-          "value": null,
+          "valuetype": "SET_BY_CLIENT",
           "access": "RW"
         },
         {
           "id": 10,
           "description": "activate_passive_calendar_time",
           "datatype": "octet-string",
-          "valuetype": "DYNAMIC",
-          "value": null,
+          "valuetype": "SET_BY_CLIENT",
           "access": "RW"
         }
       ]

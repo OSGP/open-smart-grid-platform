@@ -26,6 +26,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -48,7 +50,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
-import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
@@ -79,8 +80,6 @@ class SetActivityCalendarCommandExecutorTest {
   private static final int ATTRIBUTE_ID_WEEK_PROFILE_TABLE_PASSIVE = 8;
   private static final int ATTRIBUTE_ID_DAY_PROFILE_TABLE_PASSIVE = 9;
 
-  private final DlmsDevice DLMS_DEVICE = new DlmsDevice();
-
   private static final String CALENDAR_NAME = "Calendar";
 
   private static final CosemDateTimeDto ACTIVATE_PASSIVE_CALENDAR_TIME =
@@ -88,7 +87,7 @@ class SetActivityCalendarCommandExecutorTest {
 
   @Captor ArgumentCaptor<SetParameter> setParameterArgumentCaptor;
 
-  @Mock DlmsHelper dlmsHelper;
+  @Mock private DlmsDevice dlmsDevice;
 
   @Mock private DlmsConnectionManager conn;
 
@@ -100,44 +99,39 @@ class SetActivityCalendarCommandExecutorTest {
 
   @Mock private SetActivityCalendarCommandActivationExecutor activationExecutor;
 
-  @Mock private ObjectConfigService objectConfigService;
-
-  @Mock private CosemObject cosemObject;
-
   @InjectMocks private SetActivityCalendarCommandExecutor executor;
 
   private MockedStatic<ActivityCalendarValidator> activityCalendarValidator;
 
   @BeforeEach
   public void setUp() throws IOException, ObjectConfigException {
+    final ObjectConfigService objectConfigService = new ObjectConfigService();
 
     ReflectionTestUtils.setField(this.executor, "configurationMapper", new ConfigurationMapper());
     ReflectionTestUtils.setField(this.executor, "dlmsHelper", new DlmsHelper());
+    ReflectionTestUtils.setField(this.executor, "objectConfigService", objectConfigService);
 
     this.activityCalendarValidator = mockStatic(ActivityCalendarValidator.class);
   }
 
-  private void mockCosemObject() throws ObjectConfigException {
-    when(this.objectConfigService.getCosemObject(any(), any(), any())).thenReturn(this.cosemObject);
-    when(this.cosemObject.getObis()).thenReturn(OBIS_CODE.toString());
-    when(this.cosemObject.getClassId()).thenReturn(CLASS_ID);
-  }
-
   @AfterEach
-  public void tearDown() throws Exception {
+  public void tearDown() {
     this.activityCalendarValidator.close();
   }
 
-  @Test
-  void testSetActivityCalendarEmpty()
-      throws ProtocolAdapterException, IOException, FunctionalException, ObjectConfigException {
+  @ParameterizedTest
+  @CsvSource({"DSMR,2.2", "DSMR,4.2.2", "SMR,5.0.0", "SMR,5.1", "SMR,5.2", "SMR,5.5"})
+  void testSetActivityCalendarEmpty(final String protocolName, final String protocolVersion)
+      throws ProtocolAdapterException, IOException, FunctionalException {
+
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocolName);
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocolVersion);
 
     // SETUP
-    this.mockCosemObject();
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
-    when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
+    when(this.activationExecutor.execute(this.conn, this.dlmsDevice, null, this.messageMetadata))
         .thenReturn(MethodResultCode.SUCCESS);
 
     final ActivityCalendarDto activityCalendar =
@@ -146,7 +140,7 @@ class SetActivityCalendarCommandExecutorTest {
 
     // CALL
     final AccessResultCode resultCode =
-        this.executor.execute(this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata);
+        this.executor.execute(this.conn, this.dlmsDevice, activityCalendar, this.messageMetadata);
 
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
@@ -164,15 +158,19 @@ class SetActivityCalendarCommandExecutorTest {
         Collections.emptyList());
   }
 
-  @Test
-  void testSetActivityCalendarWithSingleSeason()
-      throws ProtocolAdapterException, IOException, FunctionalException, ObjectConfigException {
+  @ParameterizedTest
+  @CsvSource({"DSMR,2.2", "DSMR,4.2.2", "SMR,5.0.0", "SMR,5.1", "SMR,5.2", "SMR,5.5"})
+  void testSetActivityCalendarWithSingleSeason(
+      final String protocolName, final String protocolVersion)
+      throws ProtocolAdapterException, IOException, FunctionalException {
     // SETUP
-    this.mockCosemObject();
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocolName);
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocolVersion);
+
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
-    when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
+    when(this.activationExecutor.execute(this.conn, this.dlmsDevice, null, this.messageMetadata))
         .thenReturn(MethodResultCode.SUCCESS);
 
     final List<Short> dayIds = Collections.singletonList((short) 1);
@@ -188,7 +186,7 @@ class SetActivityCalendarCommandExecutorTest {
 
     // CALL
     final AccessResultCode resultCode =
-        this.executor.execute(this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata);
+        this.executor.execute(this.conn, this.dlmsDevice, activityCalendar, this.messageMetadata);
 
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
@@ -201,15 +199,19 @@ class SetActivityCalendarCommandExecutorTest {
         setParameters, dayIds, actionStartTimes, weekNames, seasonNames, seasonStarts);
   }
 
-  @Test
-  void testSetActivityCalendarWithMultipleSeasons()
-      throws ProtocolAdapterException, IOException, FunctionalException, ObjectConfigException {
+  @ParameterizedTest
+  @CsvSource({"DSMR,2.2", "DSMR,4.2.2", "SMR,5.0.0", "SMR,5.1", "SMR,5.2", "SMR,5.5"})
+  void testSetActivityCalendarWithMultipleSeasons(
+      final String protocolName, final String protocolVersion)
+      throws ProtocolAdapterException, IOException, FunctionalException {
     // SETUP
-    this.mockCosemObject();
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocolName);
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocolVersion);
+
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
-    when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
+    when(this.activationExecutor.execute(this.conn, this.dlmsDevice, null, this.messageMetadata))
         .thenReturn(MethodResultCode.SUCCESS);
 
     final List<Short> dayIds = Collections.singletonList((short) 1);
@@ -225,7 +227,7 @@ class SetActivityCalendarCommandExecutorTest {
 
     // CALL
     final AccessResultCode resultCode =
-        this.executor.execute(this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata);
+        this.executor.execute(this.conn, this.dlmsDevice, activityCalendar, this.messageMetadata);
 
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
@@ -238,15 +240,19 @@ class SetActivityCalendarCommandExecutorTest {
         setParameters, dayIds, actionStartTimes, weekNames, seasonNames, seasonStarts);
   }
 
-  @Test
-  void testSetActivityCalendarWithMultipleSeasonsWeeksDaysAndActions()
-      throws ProtocolAdapterException, IOException, FunctionalException, ObjectConfigException {
+  @ParameterizedTest
+  @CsvSource({"DSMR,2.2", "DSMR,4.2.2", "SMR,5.0.0", "SMR,5.1", "SMR,5.2", "SMR,5.5"})
+  void testSetActivityCalendarWithMultipleSeasonsWeeksDaysAndActions(
+      final String protocolName, final String protocolVersion)
+      throws ProtocolAdapterException, IOException, FunctionalException {
     // SETUP
-    this.mockCosemObject();
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocolName);
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocolVersion);
+
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
-    when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
+    when(this.activationExecutor.execute(this.conn, this.dlmsDevice, null, this.messageMetadata))
         .thenReturn(MethodResultCode.SUCCESS);
 
     final List<Short> dayIds = Arrays.asList((short) 1, (short) 2, (short) 3);
@@ -265,7 +271,7 @@ class SetActivityCalendarCommandExecutorTest {
 
     // CALL
     final AccessResultCode resultCode =
-        this.executor.execute(this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata);
+        this.executor.execute(this.conn, this.dlmsDevice, activityCalendar, this.messageMetadata);
 
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
@@ -279,8 +285,9 @@ class SetActivityCalendarCommandExecutorTest {
   }
 
   @Test
-  void testSetActivityCalendarWithValidationFailure() throws IOException {
+  void testSetActivityCalendarWithValidationFailure() {
     // SETUP
+
     this.activityCalendarValidator
         .when(() -> ActivityCalendarValidator.validate(any()))
         .thenThrow(
@@ -293,17 +300,20 @@ class SetActivityCalendarCommandExecutorTest {
         catchThrowable(
             () ->
                 this.executor.execute(
-                    this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata));
+                    this.conn, this.dlmsDevice, activityCalendar, this.messageMetadata));
 
     // VERIFY
     assertThat(thrown).isInstanceOf(FunctionalException.class);
   }
 
-  @Test
-  void testSetActivityCalendarWithOneOfTheSetRequestsFailing()
-      throws IOException, ObjectConfigException {
+  @ParameterizedTest
+  @CsvSource({"DSMR,2.2", "DSMR,4.2.2", "SMR,5.0.0", "SMR,5.1", "SMR,5.2", "SMR,5.5"})
+  void testSetActivityCalendarWithOneOfTheSetRequestsFailing(
+      final String protocolName, final String protocolVersion) throws IOException {
     // SETUP
-    this.mockCosemObject();
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocolName);
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocolVersion);
+
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class)))
@@ -319,7 +329,7 @@ class SetActivityCalendarCommandExecutorTest {
         catchThrowable(
             () ->
                 this.executor.execute(
-                    this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata));
+                    this.conn, this.dlmsDevice, activityCalendar, this.messageMetadata));
 
     // VERIFY
     assertThat(thrown)
@@ -329,16 +339,20 @@ class SetActivityCalendarCommandExecutorTest {
         () -> ActivityCalendarValidator.validate(activityCalendar), times(1));
   }
 
-  @Test
-  void testSetActivityCalendarWithActivationFailure()
-      throws ProtocolAdapterException, IOException, ObjectConfigException {
+  @ParameterizedTest
+  @CsvSource({"DSMR,2.2", "DSMR,4.2.2", "SMR,5.0.0", "SMR,5.1", "SMR,5.2", "SMR,5.5"})
+  void testSetActivityCalendarWithActivationFailure(
+      final String protocolName, final String protocolVersion)
+      throws ProtocolAdapterException, IOException {
     // SETUP
-    this.mockCosemObject();
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocolName);
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocolVersion);
+
     final String errorMessage = "Activation failure";
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
-    when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
+    when(this.activationExecutor.execute(this.conn, this.dlmsDevice, null, this.messageMetadata))
         .thenThrow(new ProtocolAdapterException(errorMessage));
 
     final ActivityCalendarDto activityCalendar = this.createDefaultActivityCalendar();
@@ -348,7 +362,7 @@ class SetActivityCalendarCommandExecutorTest {
         catchThrowable(
             () ->
                 this.executor.execute(
-                    this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata));
+                    this.conn, this.dlmsDevice, activityCalendar, this.messageMetadata));
 
     // VERIFY
     assertThat(thrown)
