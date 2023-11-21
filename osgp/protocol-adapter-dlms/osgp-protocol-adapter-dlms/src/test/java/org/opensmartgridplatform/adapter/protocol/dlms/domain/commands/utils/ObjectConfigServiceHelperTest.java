@@ -15,13 +15,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AttributeAddress;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 
 @ExtendWith(MockitoExtension.class)

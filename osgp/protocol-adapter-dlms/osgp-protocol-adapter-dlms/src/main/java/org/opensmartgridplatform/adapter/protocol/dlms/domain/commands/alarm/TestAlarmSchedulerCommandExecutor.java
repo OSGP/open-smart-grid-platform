@@ -17,7 +17,6 @@ import org.openmuc.jdlms.datatypes.CosemDate;
 import org.openmuc.jdlms.datatypes.CosemTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -26,12 +25,12 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.SingleActionScheduleAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.TestAlarmSchedulerRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.TestAlarmTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -39,10 +38,11 @@ import org.springframework.stereotype.Component;
 public class TestAlarmSchedulerCommandExecutor
     extends AbstractCommandExecutor<TestAlarmSchedulerRequestDto, AccessResultCode> {
 
-  @Autowired private ObjectConfigServiceHelper objectConfigServiceHelper;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  public TestAlarmSchedulerCommandExecutor() {
+  public TestAlarmSchedulerCommandExecutor(final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(TestAlarmSchedulerRequestDto.class);
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override

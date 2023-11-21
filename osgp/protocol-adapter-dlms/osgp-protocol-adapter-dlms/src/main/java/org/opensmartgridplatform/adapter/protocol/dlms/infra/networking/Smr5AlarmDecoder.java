@@ -17,9 +17,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigSmr50;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigSmr55;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

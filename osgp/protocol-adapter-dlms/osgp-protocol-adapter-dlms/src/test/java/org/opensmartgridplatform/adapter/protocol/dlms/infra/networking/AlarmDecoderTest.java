@@ -25,8 +25,8 @@ import java.io.InputStream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 
 @ExtendWith(MockitoExtension.class)
 class AlarmDecoderTest {

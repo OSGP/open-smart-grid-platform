@@ -33,7 +33,6 @@ import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
@@ -45,6 +44,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.LoggingDl
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;

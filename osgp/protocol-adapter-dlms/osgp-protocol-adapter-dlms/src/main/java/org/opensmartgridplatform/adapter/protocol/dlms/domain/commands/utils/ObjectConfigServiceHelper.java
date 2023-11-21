@@ -7,13 +7,13 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 import java.util.Optional;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.springframework.stereotype.Component;
 
@@ -46,8 +46,7 @@ public class ObjectConfigServiceHelper {
    *     else Optional.empty()
    */
   public Optional<AttributeAddress> findOptionalDefaultAttributeAddress(
-      final Protocol protocol, final DlmsObjectType dlmsObjectType, final Integer channel)
-      throws ProtocolAdapterException {
+      final Protocol protocol, final DlmsObjectType dlmsObjectType, final Integer channel) {
 
     return this.findOptionalAttributeAddress(
         protocol, dlmsObjectType, channel, DEFAULT_ATTRIBUTE_ID);
@@ -63,8 +62,7 @@ public class ObjectConfigServiceHelper {
    *     else Optional.empty()
    */
   public Optional<AttributeAddress> findOptionalDefaultAttributeAddress(
-      final Protocol protocol, final DlmsObjectType dlmsObjectType)
-      throws ProtocolAdapterException {
+      final Protocol protocol, final DlmsObjectType dlmsObjectType) {
 
     return this.findOptionalAttributeAddress(protocol, dlmsObjectType, null, DEFAULT_ATTRIBUTE_ID);
   }
@@ -85,8 +83,7 @@ public class ObjectConfigServiceHelper {
       final Protocol protocol,
       final DlmsObjectType dlmsObjectType,
       final Integer channel,
-      final int attributeId)
-      throws ProtocolAdapterException {
+      final int attributeId) {
 
     final Optional<CosemObject> optObject =
         this.getOptionalCosemObject(protocol.getName(), protocol.getVersion(), dlmsObjectType);
@@ -105,12 +102,10 @@ public class ObjectConfigServiceHelper {
   }
 
   private Optional<CosemObject> getOptionalCosemObject(
-      final String protocol, final String protocolVersion, final DlmsObjectType objectType)
-      throws ProtocolAdapterException {
+      final String protocol, final String protocolVersion, final DlmsObjectType objectType) {
 
     try {
-      return this.objectConfigService.getOptionalCosemObject(
-          protocol, protocolVersion, translateDlmsObjectType(objectType));
+      return this.objectConfigService.getOptionalCosemObject(protocol, protocolVersion, objectType);
     } catch (final ObjectConfigException e) {
       return Optional.empty();
     }
@@ -137,6 +132,7 @@ public class ObjectConfigServiceHelper {
     return this.findAttributeAddress(
         dlmsDevice, protocol, dlmsObjectType, channel, DEFAULT_ATTRIBUTE_ID);
   }
+
   /**
    * Find a required attribute from the ObjectConfigService based on the protocol and
    * protocolVersion and a DlmsObjectType name. When not found a ProtocolAdapterException is thrown.
@@ -168,17 +164,6 @@ public class ObjectConfigServiceHelper {
                   dlmsObjectType, dlmsDevice.getDeviceId(), channel);
           return new ProtocolAdapterException(message);
         });
-  }
-
-  private static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType translateDlmsObjectType(
-      final DlmsObjectType objectType) throws ProtocolAdapterException {
-    try {
-      return org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.valueOf(objectType.name());
-    } catch (final IllegalArgumentException e) {
-      final String message =
-          String.format("Cannot translate the DlmsObjectType with name %s", objectType);
-      throw new ProtocolAdapterException(message, e);
-    }
   }
 
   private ObisCode replaceChannel(String obisCode, final Integer channel) {
