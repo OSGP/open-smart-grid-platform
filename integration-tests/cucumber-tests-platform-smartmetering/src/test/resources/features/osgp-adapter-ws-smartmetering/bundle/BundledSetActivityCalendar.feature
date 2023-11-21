@@ -7,14 +7,14 @@ Feature: SmartMetering Bundle - SetActivityCalendar
   As a grid operator 
   I want to be able to set activity calendar on a meter via a bundle request
 
-  Background: 
+  Scenario Outline: Set activity calendar on a device in a bundle request
     Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
-
-  Scenario: Set activity calendar on a device in a bundle request
-    Given a bundle request
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | <deviceIdentification> |
+      | DeviceType           | SMART_METER_E          |
+      | Protocol             | <protocol>             |
+      | ProtocolVersion      | <version>              |
+    And a bundle request
+      | DeviceIdentification | <deviceIdentification> |
     And an activity calendar
       | ActivityCalendarName        | CALENDAR                 |
       | ActivatePassiveCalendarTime | FFFFFFFEFFFFFFFFFF000000 |
@@ -71,3 +71,11 @@ Feature: SmartMetering Bundle - SetActivityCalendar
     When the bundle request is received
     Then the bundle response should contain a set special days response with values
       | Result | OK |
+
+    Examples:
+      | deviceIdentification  | protocol | version |
+      | TEST1024000000002     | DSMR     | 2.2     |
+      | TEST1024000000002     | DSMR     | 4.2.2   |
+      | TEST1031000000002     | SMR      | 4.3     |
+      | TEST1027000000002     | SMR      | 5.0.0   |
+      | TEST1028000000002     | SMR      | 5.1     |

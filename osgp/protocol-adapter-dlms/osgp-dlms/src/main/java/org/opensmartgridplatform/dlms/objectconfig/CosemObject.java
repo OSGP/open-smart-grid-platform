@@ -24,19 +24,12 @@ import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.Register;
 
 @Getter
 @NoArgsConstructor
-@JsonTypeInfo(use = Id.NAME, property = "class-id", visible = true)
+@JsonTypeInfo(use = Id.NAME, property = "class-id", visible = true, defaultImpl = CosemObject.class)
 @JsonSubTypes({
   @JsonSubTypes.Type(value = Data.class, name = "1"),
   @JsonSubTypes.Type(value = Register.class, name = "3"),
   @JsonSubTypes.Type(value = ExtendedRegister.class, name = "4"),
   @JsonSubTypes.Type(value = ProfileGeneric.class, name = "7"),
-  @JsonSubTypes.Type(value = CosemObject.class, name = "8"),
-  @JsonSubTypes.Type(value = CosemObject.class, name = "20"),
-  @JsonSubTypes.Type(value = CosemObject.class, name = "22"),
-  @JsonSubTypes.Type(value = CosemObject.class, name = "40"),
-  @JsonSubTypes.Type(value = CosemObject.class, name = "47"),
-  @JsonSubTypes.Type(value = CosemObject.class, name = "72"),
-  @JsonSubTypes.Type(value = CosemObject.class, name = "77")
 })
 public class CosemObject {
   protected String tag;

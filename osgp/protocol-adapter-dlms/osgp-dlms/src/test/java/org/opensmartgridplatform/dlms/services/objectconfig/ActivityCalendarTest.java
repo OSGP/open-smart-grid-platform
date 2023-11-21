@@ -29,7 +29,7 @@ class ActivityCalendarTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"DSMR,2.2", "DSMR,4.2.2", "SMR,4.3", "SMR,5.1", "SMR,5.2", "SMR,5.5"})
+  @CsvSource({"DSMR,2.2", "DSMR,4.2.2", "SMR,4.3", "SMR,5.0.0", "SMR,5.1", "SMR,5.2", "SMR,5.5"})
   void shouldHaveActivityCalendarAttributes(final String protocol, final String version)
       throws ObjectConfigException {
 
