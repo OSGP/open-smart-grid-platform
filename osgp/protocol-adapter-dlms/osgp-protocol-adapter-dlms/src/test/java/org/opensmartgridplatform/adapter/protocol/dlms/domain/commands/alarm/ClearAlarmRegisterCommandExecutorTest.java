@@ -307,8 +307,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   private void mockAlarmCosemObject(
-      final DlmsDevice dlmsDevice, final String obisCode, final String dlmsObjectTypeName)
-      throws ProtocolAdapterException {
+      final DlmsDevice dlmsDevice, final String obisCode, final String dlmsObjectTypeName) {
 
     final ObisCode newObisCode = new ObisCode(obisCode);
 

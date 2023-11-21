@@ -4,7 +4,6 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -142,7 +141,7 @@ class SetAlarmNotificationsCommandExecutorTest {
         new AttributeAddress(1, "0.0.97.98.11.255", 2), DataObject.newInteger32Data(0));
 
     final List<AlarmTypeDto> alarmTypes =
-        Arrays.stream(alarmTypesInput.split(";")).map(AlarmTypeDto::valueOf).collect(toList());
+        Arrays.stream(alarmTypesInput.split(";")).map(AlarmTypeDto::valueOf).toList();
     final AccessResultCode res =
         this.execute(
             device,
@@ -176,7 +175,7 @@ class SetAlarmNotificationsCommandExecutorTest {
         new AttributeAddress(1, "0.0.97.98.11.255", 2), DataObject.newInteger32Data(0x3F));
 
     final List<AlarmTypeDto> alarmTypes =
-        Arrays.stream(alarmTypesInput.split(";")).map(AlarmTypeDto::valueOf).collect(toList());
+        Arrays.stream(alarmTypesInput.split(";")).map(AlarmTypeDto::valueOf).toList();
     final AccessResultCode res =
         this.execute(
             device,

@@ -126,7 +126,7 @@ class ObjectConfigServiceHelperTest {
 
   @Test
   void findOptionalDefaultAttributeAddressShouldReturnAnAttributeAddress()
-      throws ObjectConfigException, ProtocolAdapterException {
+      throws ObjectConfigException {
 
     when(this.attribute.getId()).thenReturn(2);
     when(this.cosemObject.getObis()).thenReturn("0.1.24.1.0.255");
@@ -147,8 +147,7 @@ class ObjectConfigServiceHelperTest {
   }
 
   @Test
-  void findOptionalAttributeAddressShouldReturnAnAttributeAddress()
-      throws ObjectConfigException, ProtocolAdapterException {
+  void findOptionalAttributeAddressShouldReturnAnAttributeAddress() throws ObjectConfigException {
 
     when(this.attribute.getId()).thenReturn(2);
     when(this.cosemObject.getObis()).thenReturn("0.1.24.1.0.255");
@@ -170,7 +169,7 @@ class ObjectConfigServiceHelperTest {
 
   @Test
   void findOptionalDefaultAttributeAddressShouldReturnAEmptyOptional()
-      throws ObjectConfigException, ProtocolAdapterException {
+      throws ObjectConfigException {
 
     when(this.objectConfigService.getOptionalCosemObject(
             Protocol.SMR_5_1.getName(),
@@ -186,8 +185,7 @@ class ObjectConfigServiceHelperTest {
   }
 
   @Test
-  void findOptionalAttributeAddressShouldReturnAEmptyOptional()
-      throws ObjectConfigException, ProtocolAdapterException {
+  void findOptionalAttributeAddressShouldReturnAEmptyOptional() throws ObjectConfigException {
 
     when(this.objectConfigService.getOptionalCosemObject(
             Protocol.SMR_5_1.getName(),

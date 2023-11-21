@@ -31,8 +31,6 @@ import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 @ExtendWith(MockitoExtension.class)
 class AlarmDecoderTest {
 
-  static final int NUMBER_OF_BYTES_FOR_ALARM = 4;
-
   private final AlarmDecoder decoder = new AlarmDecoder();
 
   @Test
