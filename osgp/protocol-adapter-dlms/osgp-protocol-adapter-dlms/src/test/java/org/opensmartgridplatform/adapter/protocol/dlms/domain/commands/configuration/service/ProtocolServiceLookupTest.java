@@ -10,43 +10,53 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 public class ProtocolServiceLookupTest {
 
   private ProtocolServiceLookup instance;
-  private GetConfigurationObjectServiceDsmr4 getService;
+  private GetConfigurationObjectServiceDsmr4 getDsmr4Service;
+  private GetConfigurationObjectServiceSmr5 getSmr5Service;
 
   @BeforeEach
   public void setUp() {
-    this.getService = new GetConfigurationObjectServiceDsmr4(null, null);
+    this.getDsmr4Service = new GetConfigurationObjectServiceDsmr4(null, null);
+    this.getSmr5Service = new GetConfigurationObjectServiceSmr5(null, null);
     final List<ProtocolService> services = new ArrayList<>();
-    services.add(this.getService);
+    services.add(this.getDsmr4Service);
+    services.add(this.getSmr5Service);
     this.instance = new ProtocolServiceLookup(services);
   }
 
-  @Test
-  public void lookupGetService() throws ProtocolAdapterException {
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  @NullSource
+  public void lookupGetService(final Protocol protocol) throws ProtocolAdapterException {
 
-    // SETUP
-    final Protocol protocol = Protocol.DSMR_4_2_2;
-
-    // CALL
-    final GetConfigurationObjectService result = this.instance.lookupGetService(protocol);
-
-    // VERIFY
-    assertThat(result).isSameAs(this.getService);
+    if (protocol == null || (!protocol.isDsmr4() && !protocol.isSmr5())) {
+      this.assertGetServiceNotFound(protocol);
+    } else {
+      this.assertGetServiceFound(protocol);
+    }
   }
 
-  @Test
-  public void lookupGetServiceNotFound() {
+  private void assertGetServiceFound(final Protocol protocol) throws ProtocolAdapterException {
 
-    // SETUP
-    final Protocol protocol = Protocol.OTHER_PROTOCOL;
+    final GetConfigurationObjectService result = this.instance.lookupGetService(protocol);
 
-    // CALL
+    if (protocol.isDsmr4()) {
+      assertThat(result).isSameAs(this.getDsmr4Service);
+    } else if (protocol.isSmr5()) {
+      assertThat(result).isSameAs(this.getSmr5Service);
+    }
+  }
+
+  private void assertGetServiceNotFound(final Protocol protocol) {
+
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(() -> this.instance.lookupSetService(protocol));
   }
