@@ -33,7 +33,7 @@ public class SetConfigurationObjectServiceDsmr4 extends SetConfigurationObjectSe
 
   @Override
   public boolean handles(final Protocol protocol) {
-    return protocol == Protocol.DSMR_4_2_2;
+    return protocol != null && protocol.isDsmr4();
   }
 
   @Override
