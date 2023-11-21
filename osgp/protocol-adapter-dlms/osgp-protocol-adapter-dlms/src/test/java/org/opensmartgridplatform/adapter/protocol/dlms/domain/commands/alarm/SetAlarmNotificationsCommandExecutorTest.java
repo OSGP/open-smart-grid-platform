@@ -260,12 +260,11 @@ class SetAlarmNotificationsCommandExecutorTest {
   }
 
   private AttributeAddress getAttributeAddress(final String obisCode) {
-    final AttributeAddress attributeAddress =
-        new AttributeAddress(
-            InterfaceClass.REGISTER.id(),
-            new ObisCode(obisCode),
-            RegisterAttribute.VALUE.attributeId());
-    return attributeAddress;
+
+    return  new AttributeAddress(
+        InterfaceClass.REGISTER.id(),
+        new ObisCode(obisCode),
+        RegisterAttribute.VALUE.attributeId());
   }
 
   private DlmsDevice createDevice(final Protocol protocol) {
