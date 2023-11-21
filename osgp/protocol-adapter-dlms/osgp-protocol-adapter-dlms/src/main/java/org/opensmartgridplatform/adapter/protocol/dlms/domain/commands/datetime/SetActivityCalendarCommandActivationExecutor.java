@@ -22,7 +22,6 @@ import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -34,7 +33,7 @@ public class SetActivityCalendarCommandActivationExecutor
 
   private static final int METHOD_ID_ACTIVATE_PASSIVE_CALENDAR = 1;
 
-  @Autowired private ObjectConfigService objectConfigService;
+  private final ObjectConfigService objectConfigService;
 
   SetActivityCalendarCommandActivationExecutor(final ObjectConfigService objectConfigService) {
     this.objectConfigService = objectConfigService;
@@ -57,7 +56,7 @@ public class SetActivityCalendarCommandActivationExecutor
               device.getProtocolVersion(),
               DlmsObjectType.ACTIVITY_CALENDAR);
     } catch (final ObjectConfigException e) {
-      throw new ProtocolAdapterException(this.ERROR_IN_OBJECT_CONFIG, e);
+      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
     }
 
     final MethodParameter method =

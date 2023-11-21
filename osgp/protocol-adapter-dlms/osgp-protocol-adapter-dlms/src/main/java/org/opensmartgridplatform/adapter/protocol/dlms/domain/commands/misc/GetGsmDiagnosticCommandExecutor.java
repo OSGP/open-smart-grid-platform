@@ -141,7 +141,7 @@ public class GetGsmDiagnosticCommandExecutor
           device.getProtocolName(), device.getProtocolVersion(), dlmsObjectType);
 
     } catch (final ObjectConfigException e) {
-      throw new ProtocolAdapterException(this.ERROR_IN_OBJECT_CONFIG, e);
+      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
     }
   }
 

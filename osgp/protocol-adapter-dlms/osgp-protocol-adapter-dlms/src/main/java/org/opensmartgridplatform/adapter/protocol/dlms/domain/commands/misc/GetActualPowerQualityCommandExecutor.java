@@ -213,7 +213,7 @@ public class GetActualPowerQualityCommandExecutor
       allPQObjects.addAll(pqObjects);
       return allPQObjects;
     } catch (final ObjectConfigException e) {
-      throw new ProtocolAdapterException(this.ERROR_IN_OBJECT_CONFIG, e);
+      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
     }
   }
 

@@ -117,7 +117,7 @@ public class SetActivityCalendarCommandExecutor
               device.getProtocolVersion(),
               DlmsObjectType.ACTIVITY_CALENDAR);
     } catch (final ObjectConfigException e) {
-      throw new ProtocolAdapterException(this.ERROR_IN_OBJECT_CONFIG, e);
+      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
     }
 
     final DataObjectAttrExecutors dataObjectExecutors =
