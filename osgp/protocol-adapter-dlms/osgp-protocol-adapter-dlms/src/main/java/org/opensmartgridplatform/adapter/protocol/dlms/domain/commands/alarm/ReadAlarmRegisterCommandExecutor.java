@@ -43,7 +43,8 @@ public class ReadAlarmRegisterCommandExecutor
   private final AlarmHelperService alarmHelperService;
 
   public ReadAlarmRegisterCommandExecutor(
-      final ObjectConfigServiceHelper objectConfigServiceHelper, final AlarmHelperService alarmHelperService) {
+      final ObjectConfigServiceHelper objectConfigServiceHelper,
+      final AlarmHelperService alarmHelperService) {
     super(ReadAlarmRegisterDataDto.class);
     this.objectConfigServiceHelper = objectConfigServiceHelper;
     this.alarmHelperService = alarmHelperService;

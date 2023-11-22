@@ -40,7 +40,8 @@ public class TestAlarmSchedulerCommandExecutor
 
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  public TestAlarmSchedulerCommandExecutor(final ObjectConfigServiceHelper objectConfigServiceHelper) {
+  public TestAlarmSchedulerCommandExecutor(
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(TestAlarmSchedulerRequestDto.class);
     this.objectConfigServiceHelper = objectConfigServiceHelper;
   }

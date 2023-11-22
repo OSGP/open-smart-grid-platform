@@ -261,7 +261,7 @@ class SetAlarmNotificationsCommandExecutorTest {
 
   private AttributeAddress getAttributeAddress(final String obisCode) {
 
-    return  new AttributeAddress(
+    return new AttributeAddress(
         InterfaceClass.REGISTER.id(),
         new ObisCode(obisCode),
         RegisterAttribute.VALUE.attributeId());
