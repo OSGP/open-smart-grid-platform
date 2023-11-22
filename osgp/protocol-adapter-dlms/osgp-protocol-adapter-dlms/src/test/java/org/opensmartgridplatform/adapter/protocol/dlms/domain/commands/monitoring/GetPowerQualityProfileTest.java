@@ -73,24 +73,18 @@ public abstract class GetPowerQualityProfileTest {
       final boolean polyphase,
       final String publicOrPrivate) {
 
-    final CosemObject object =
-        ObjectConfigServiceHelper.createObject(classId, obis, tag, scalerUnitValue, polyphase);
-
     final Map<ObjectProperty, Object> properties = new HashMap<>();
     properties.put(ObjectProperty.PQ_PROFILE, publicOrPrivate);
     properties.put(
         ObjectProperty.PQ_REQUEST,
         List.of(PowerQualityRequest.PERIODIC_SP.name(), PowerQualityRequest.PERIODIC_PP.name()));
-    object.setProperties(properties);
 
-    return object;
+    return ObjectConfigServiceHelper.createObject(
+        classId, obis, tag, scalerUnitValue, polyphase, properties);
   }
 
   protected Optional<CosemObject> createProfile(
       final String obis, final String tag, final int intervalInMinutes) {
-
-    final CosemObject object =
-        ObjectConfigServiceHelper.createObject(CLASS_ID_PROFILE, obis, tag, null, true);
 
     final Map<ObjectProperty, Object> properties = new HashMap<>();
     final List<String> stringProperties =
@@ -98,18 +92,19 @@ public abstract class GetPowerQualityProfileTest {
             .map(DlmsObjectType::toString)
             .collect(Collectors.toList());
     properties.put(ObjectProperty.SELECTABLE_OBJECTS, stringProperties);
-    object.setProperties(properties);
 
     final List<Attribute> attributeList = new ArrayList<>();
-    final Attribute attribute = new Attribute();
-    attribute.setId(PROFILE_CAPTURE_OBJECTS_ATTR_ID);
-    attribute.setValue("1");
+    final Attribute attribute =
+        ObjectConfigServiceHelper.createAttribute(PROFILE_CAPTURE_OBJECTS_ATTR_ID, "1");
     attributeList.add(attribute);
-    final Attribute attributeInterval = new Attribute();
-    attributeInterval.setId(PROFILE_INTERVAL_ATTR_ID);
-    attributeInterval.setValue(String.valueOf(intervalInMinutes * SECONDS_PER_MINUTE));
+    final Attribute attributeInterval =
+        ObjectConfigServiceHelper.createAttribute(
+            PROFILE_INTERVAL_ATTR_ID, String.valueOf(intervalInMinutes * SECONDS_PER_MINUTE));
     attributeList.add(attributeInterval);
-    object.setAttributes(attributeList);
+
+    final CosemObject object =
+        ObjectConfigServiceHelper.createObject(
+            CLASS_ID_PROFILE, obis, tag, true, properties, attributeList);
 
     return Optional.of(object);
   }

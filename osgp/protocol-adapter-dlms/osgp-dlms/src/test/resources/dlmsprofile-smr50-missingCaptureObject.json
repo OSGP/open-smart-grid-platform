@@ -1,0 +1,584 @@
+{
+  "profile": "SMR",
+  "version": "5.0.0",
+  "description": "Profile for Smart Meter Requirements 5.0.0",
+  "properties": [],
+  "objects": [
+    {
+      "tag": "CLOCK",
+      "description": "Clock",
+      "class-id": 8,
+      "version": 0,
+      "obis": "0.0.1.0.0.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "time",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "value": "CURRENT_LOCAL_DATE_AND_TIME",
+          "access": "RW"
+        },
+        {
+          "id": 3,
+          "description": "time_zone",
+          "datatype": "long",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "-60",
+          "access": "RW"
+        },
+        {
+          "id": 4,
+          "description": "status",
+          "datatype": "clock_status",
+          "valuetype": "DYNAMIC",
+          "value": "OK",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "DEFINABLE_LOAD_PROFILE",
+      "description": "Definable load profile",
+      "class-id": 7,
+      "version": 1,
+      "obis": "0.1.94.31.6.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {
+        "SELECTABLE_OBJECTS": [
+          "CLOCK",
+          "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
+          "NUMBER_OF_VOLTAGE_SAGS_FOR_L2",
+          "NUMBER_OF_VOLTAGE_SAGS_FOR_L3"
+        ]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "buffer",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture objects",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 4,
+          "description": "capture period in sec",
+          "datatype": "double-long-unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "value": "86400",
+          "access": "RW"
+        },
+        {
+          "id": 5,
+          "description": "sort method",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_METER",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "sort object",
+          "datatype": "object_definition",
+          "valuetype": "FIXED_IN_METER",
+          "value": "NONE",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "entries in use",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "profile entries",
+          "datatype": "double-long-unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "value": "960",
+          "access": "RW"
+        }
+      ]
+    },
+    {
+      "tag": "POWER_QUALITY_PROFILE_1",
+      "description": "Power Quality profile 1, 15 min power quality values",
+      "class-id": 7,
+      "version": 1,
+      "obis": "0.1.99.1.1.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {
+        "SELECTABLE_OBJECTS": [
+          "CLOCK",
+          "AVERAGE_ACTIVE_POWER_IMPORT_L1",
+          "AVERAGE_ACTIVE_POWER_IMPORT_L2",
+          "AVERAGE_ACTIVE_POWER_IMPORT_L3"
+        ]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "buffer",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture objects",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 4,
+          "description": "capture period in sec",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "900",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "sort method",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "sort object",
+          "datatype": "object_definition",
+          "valuetype": "FIXED_IN_METER",
+          "value": "NONE",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "entries in use",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "profile entries",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "960",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "POWER_QUALITY_PROFILE_2",
+      "description": "Power Quality profile 2, 10 min power quality values",
+      "class-id": 7,
+      "version": 1,
+      "obis": "0.1.99.1.2.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {
+        "SELECTABLE_OBJECTS": [
+          "CLOCK",
+          "AVERAGE_VOLTAGE_L1",
+          "AVERAGE_VOLTAGE_L2",
+          "AVERAGE_VOLTAGE_L3"
+        ]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "buffer",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture objects",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 4,
+          "description": "capture period in sec",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "600",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "sort method",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "sort object",
+          "datatype": "object_definition",
+          "valuetype": "FIXED_IN_METER",
+          "value": "NONE",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "entries in use",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "profile entries",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "1440",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "AVERAGE_ACTIVE_POWER_IMPORT_L1",
+      "description": "Average active power (+P) L1",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.21.4.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": []
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, W",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "AVERAGE_ACTIVE_POWER_IMPORT_L2",
+      "description": "Average active power (+P) L2",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.41.4.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": []
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, W",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "AVERAGE_ACTIVE_POWER_IMPORT_L3",
+      "description": "Average active power (+P) L3",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.61.4.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PRIVATE",
+        "PQ_REQUEST": []
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, W",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "AVERAGE_VOLTAGE_L1",
+      "description": "Average voltage L1",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.32.24.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": []
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "-1, V",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "AVERAGE_VOLTAGE_L2",
+      "description": "Average voltage L2",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.52.24.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": []
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "-1, V",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "AVERAGE_VOLTAGE_L3",
+      "description": "Average voltage L3",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.72.24.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": []
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "-1, V",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
+      "description": "Number of voltage sags in phase L1",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.0.32.32.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": []
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L2",
+      "description": "Number of voltage sags in phase L2",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.0.52.32.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": []
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L3",
+      "description": "Number of voltage sags in phase L3",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.0.72.32.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": []
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MONTHLY_VALUES_G",
+      "description": "Monthly billing values of M-Bus device",
+      "class-id": 7,
+      "version": 1,
+      "obis": "0.x.24.3.2.255",
+      "group": "GAS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "buffer",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture objects",
+          "datatype": "array",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "CLOCK,2|MBUS_MASTER_VALUE,2",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "capture period in sec",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "sort method",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_METER",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "sort object",
+          "datatype": "object_definition",
+          "valuetype": "FIXED_IN_METER",
+          "value": "NONE",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "entries in use",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "profile entries",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "13",
+          "access": "R"
+        }
+      ]
+    }
+  ]
+}

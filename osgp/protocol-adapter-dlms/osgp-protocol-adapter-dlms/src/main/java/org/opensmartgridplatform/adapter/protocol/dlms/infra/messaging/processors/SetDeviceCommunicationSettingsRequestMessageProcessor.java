@@ -26,7 +26,7 @@ public class SetDeviceCommunicationSettingsRequestMessageProcessor
   }
 
   @Override
-  protected boolean usesDeviceConnection() {
+  protected boolean usesDeviceConnection(final Serializable messageObject) {
     return false;
   }
 

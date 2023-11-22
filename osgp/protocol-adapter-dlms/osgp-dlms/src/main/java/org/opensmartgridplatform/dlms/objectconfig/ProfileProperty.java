@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.dlms.objectconfig;
 
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class ProfileProperty {}

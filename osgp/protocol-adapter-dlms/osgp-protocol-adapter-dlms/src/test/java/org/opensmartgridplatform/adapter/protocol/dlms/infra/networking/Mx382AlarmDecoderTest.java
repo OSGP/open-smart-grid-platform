@@ -6,6 +6,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.networking;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -13,6 +14,8 @@ import java.nio.ByteBuffer;
 import javax.xml.bind.DatatypeConverter;
 import lombok.Builder;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 
@@ -24,12 +27,14 @@ class Mx382AlarmDecoderTest {
   private final byte preconfiguredClient = 0x66;
   private final byte apduType = (byte) 0xC2;
 
-  @Test
-  void decodeWithoutDate() throws UnrecognizedMessageDataException {
+  @ParameterizedTest
+  @ValueSource(strings = {"KA6P005039021110", "KAL70005088116712"})
+  void decodeWithoutDate(final String deviceIdentification)
+      throws UnrecognizedMessageDataException {
 
     final byte[] mx382message =
         Mx382AlarmMessage.builder()
-            .equipmentIdentifier(this.equipmentIdentifier)
+            .equipmentIdentifier(deviceIdentification)
             .obiscode(this.obiscode)
             .client(this.preconfiguredClient)
             .apduType(this.apduType)
@@ -37,12 +42,13 @@ class Mx382AlarmDecoderTest {
             .encode();
     final Mx382AlarmDecoder decoder = new Mx382AlarmDecoder();
     final InputStream is = new ByteArrayInputStream(mx382message);
-    final DlmsPushNotification dlmsPushNotification = decoder.decodeMx382alarm(is);
+    final DlmsPushNotification dlmsPushNotification =
+        decoder.decodeMx382alarm(is, ConnectionProtocol.TCP);
     assertThat(dlmsPushNotification.getAlarms()).hasSize(1);
     assertThat(dlmsPushNotification.getAlarms().iterator().next())
         .isEqualTo(AlarmTypeDto.LAST_GASP);
     assertThat(dlmsPushNotification.getTriggerType()).isEqualTo(AlarmDecoder.PUSH_ALARM_TRIGGER);
-    assertThat(dlmsPushNotification.getEquipmentIdentifier()).isEqualTo(this.equipmentIdentifier);
+    assertThat(dlmsPushNotification.getEquipmentIdentifier()).isEqualTo(deviceIdentification);
   }
 
   /*
@@ -71,12 +77,59 @@ class Mx382AlarmDecoderTest {
 
     final Mx382AlarmDecoder decoder = new Mx382AlarmDecoder();
     final InputStream is = new ByteArrayInputStream(mx382message);
-    final DlmsPushNotification dlmsPushNotification = decoder.decodeMx382alarm(is);
+    final DlmsPushNotification dlmsPushNotification =
+        decoder.decodeMx382alarm(is, ConnectionProtocol.TCP);
     assertThat(dlmsPushNotification.getAlarms()).hasSize(1);
     assertThat(dlmsPushNotification.getAlarms().iterator().next())
         .isEqualTo(AlarmTypeDto.LAST_GASP);
     assertThat(dlmsPushNotification.getTriggerType()).isEqualTo(AlarmDecoder.PUSH_ALARM_TRIGGER);
     assertThat(dlmsPushNotification.getEquipmentIdentifier()).isEqualTo(this.equipmentIdentifier);
+  }
+
+  @Test
+  void decodeWakeupAlarm() throws UnrecognizedMessageDataException {
+    final String deviceIdentification = "KAL7005088116712";
+    final String message =
+        "000100670066002ac2090c07e70a19030b122900ff888000010000600101ff0209104b414c37303035303838313136373132";
+
+    final byte[] mx382message =
+        Mx382AlarmMessage.builder() //
+            .message(message)
+            .build()
+            .encode();
+
+    final Mx382AlarmDecoder decoder = new Mx382AlarmDecoder();
+    final InputStream is = new ByteArrayInputStream(mx382message);
+    final DlmsPushNotification dlmsPushNotification =
+        decoder.decodeMx382alarm(is, ConnectionProtocol.UDP);
+    assertThat(dlmsPushNotification.getAlarms()).isEmpty();
+    assertThat(dlmsPushNotification.getTriggerType()).isEqualTo(AlarmDecoder.PUSH_SMS_TRIGGER);
+    assertThat(dlmsPushNotification.getEquipmentIdentifier()).isEqualTo(deviceIdentification);
+  }
+
+  @Test
+  void invalidDeviceIdentificationLength() throws UnrecognizedMessageDataException {
+    final String deviceIdentification = "KAL123";
+
+    final byte[] mx382message =
+        Mx382AlarmMessage.builder()
+            .equipmentIdentifier(deviceIdentification)
+            .obiscode(this.obiscode)
+            .client(this.preconfiguredClient)
+            .apduType(this.apduType)
+            .build()
+            .encode();
+    final Mx382AlarmDecoder decoder = new Mx382AlarmDecoder();
+    final InputStream is = new ByteArrayInputStream(mx382message);
+    final UnrecognizedMessageDataException exception =
+        assertThrows(
+            UnrecognizedMessageDataException.class,
+            () -> {
+              decoder.decodeMx382alarm(is, ConnectionProtocol.TCP);
+            });
+    assertThat(exception.getMessage())
+        .contains(
+            "Data in DLMS Push Notification cannot be decoded. Reason: Expected length value of 29,30,42 or 43, but found length of 19");
   }
 
   @Test
@@ -127,7 +180,8 @@ class Mx382AlarmDecoderTest {
     final Mx382AlarmDecoder decoder = new Mx382AlarmDecoder();
     final InputStream is = new ByteArrayInputStream(mx382message);
 
-    final Throwable actual = catchThrowable(() -> decoder.decodeMx382alarm(is));
+    final Throwable actual =
+        catchThrowable(() -> decoder.decodeMx382alarm(is, ConnectionProtocol.TCP));
     assertThat(actual).isInstanceOf(UnrecognizedMessageDataException.class);
   }
 

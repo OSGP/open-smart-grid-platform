@@ -5,12 +5,9 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.networking;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -131,17 +128,7 @@ class DlmsPushNotificationReplayingDecoderTest {
   }
 
   private ByteBuf newByteBuf(final byte[] byteArray) {
-    final ByteBuf byteBuf = mock(ByteBuf.class);
-    when(byteBuf.readableBytes()).thenReturn(byteArray.length);
-    doAnswer(
-            invocation -> {
-              final byte[] outputValue = (byte[]) invocation.getArguments()[0];
-              System.arraycopy(byteArray, 0, outputValue, 0, byteArray.length);
-              return null;
-            })
-        .when(byteBuf)
-        .readBytes(any(byte[].class));
-    return byteBuf;
+    return Unpooled.copiedBuffer(byteArray);
   }
 
   private void assertPushNotification(

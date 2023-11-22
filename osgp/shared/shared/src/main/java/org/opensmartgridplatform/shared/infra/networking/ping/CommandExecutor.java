@@ -25,6 +25,8 @@ public class CommandExecutor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CommandExecutor.class);
 
+  private static final long AWAIT_TERMINATION_IN_SEC = 5;
+
   public List<String> execute(final List<String> commands, final Duration timeout)
       throws IOException, TimeoutException, ExecutionException {
 
@@ -32,25 +34,47 @@ public class CommandExecutor {
     final Process process = this.start(commands);
 
     final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    final Future<List<String>> inputLines =
+        executorService.submit(() -> this.readLinesFromInput(process));
     try {
-      final Future<List<String>> inputLines =
-          executorService.submit(() -> this.readLinesFromInput(process));
       return inputLines.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+    } catch (final TimeoutException e) {
+      inputLines.cancel(true);
+      throw e;
     } catch (final InterruptedException e) {
-      Thread.currentThread().interrupt();
       LOGGER.warn(
           "Reading input lines from executed process was interrupted: \"{}\"", commandLine, e);
     } finally {
-      executorService.shutdownNow();
-      if (process.isAlive()) {
-        LOGGER.debug("Destroy the process running \"{}\"", commandLine);
-        process.destroyForcibly();
-      } else {
-        LOGGER.debug(
-            "Process running \"{}\" ended with exit value: {}", commands, process.exitValue());
-      }
+      this.shutdownAndAwaitTermination(executorService);
+      this.destroyProcess(process, commands);
     }
     return Collections.emptyList();
+  }
+
+  private void destroyProcess(final Process process, final List<String> commands) {
+    process.destroy();
+    if (process.isAlive()) {
+      LOGGER.debug("Destroy the process running \"{}\"", commands);
+      process.destroyForcibly();
+    } else {
+      LOGGER.debug(
+          "Process running \"{}\" ended with exit value: {}", commands, process.exitValue());
+    }
+  }
+
+  void shutdownAndAwaitTermination(final ExecutorService executorService) {
+    executorService.shutdown();
+    try {
+      if (!executorService.awaitTermination(AWAIT_TERMINATION_IN_SEC, TimeUnit.SECONDS)) {
+        executorService.shutdownNow();
+        if (!executorService.awaitTermination(AWAIT_TERMINATION_IN_SEC, TimeUnit.SECONDS)) {
+          LOGGER.error("Pool did not terminate");
+        }
+      }
+    } catch (final InterruptedException ex) {
+      executorService.shutdownNow();
+      Thread.currentThread().interrupt();
+    }
   }
 
   private String commandLine(final List<String> commands) {

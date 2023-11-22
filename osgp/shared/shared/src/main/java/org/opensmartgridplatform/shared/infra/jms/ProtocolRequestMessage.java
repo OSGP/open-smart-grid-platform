@@ -21,6 +21,8 @@ public class ProtocolRequestMessage extends RequestMessage {
   private final boolean bypassRetry;
   private final int retryCount;
 
+  private final String deviceModelCode;
+
   private ProtocolRequestMessage(final Builder builder) {
     super(
         builder.correlationUid,
@@ -40,6 +42,7 @@ public class ProtocolRequestMessage extends RequestMessage {
     this.maxScheduleTime = builder.maxScheduleTime;
     this.bypassRetry = builder.bypassRetry;
     this.retryCount = builder.retryCount;
+    this.deviceModelCode = builder.deviceModelCode;
   }
 
   public String getDomain() {
@@ -78,6 +81,10 @@ public class ProtocolRequestMessage extends RequestMessage {
     return this.bypassRetry;
   }
 
+  public String getDeviceModelCode() {
+    return this.deviceModelCode;
+  }
+
   @Override
   public MessageMetadata messageMetadata() {
     return super.messageMetadata()
@@ -90,6 +97,7 @@ public class ProtocolRequestMessage extends RequestMessage {
         .withMaxScheduleTime(this.maxScheduleTime)
         .withBypassRetry(this.bypassRetry)
         .withRetryCount(this.retryCount)
+        .withDeviceModelCode(this.deviceModelCode)
         .build();
   }
 
@@ -116,6 +124,8 @@ public class ProtocolRequestMessage extends RequestMessage {
     private int retryCount;
     private Serializable request;
 
+    private String deviceModelCode;
+
     public Builder messageMetadata(final MessageMetadata messageMetadata) {
       this.deviceIdentification = messageMetadata.getDeviceIdentification();
       this.organisationIdentification = messageMetadata.getOrganisationIdentification();
@@ -131,6 +141,8 @@ public class ProtocolRequestMessage extends RequestMessage {
       this.maxScheduleTime = messageMetadata.getMaxScheduleTime();
       this.bypassRetry = messageMetadata.isBypassRetry();
       this.retryCount = messageMetadata.getRetryCount();
+      this.deviceModelCode = messageMetadata.getDeviceModelCode();
+
       return this;
     }
 

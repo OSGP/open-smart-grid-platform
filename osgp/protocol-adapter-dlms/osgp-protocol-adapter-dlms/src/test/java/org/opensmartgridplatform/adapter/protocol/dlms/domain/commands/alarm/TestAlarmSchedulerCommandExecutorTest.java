@@ -32,14 +32,16 @@ import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.CosemDate;
 import org.openmuc.jdlms.datatypes.CosemTime;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DateTimeParserUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.SingleActionScheduleAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.TestAlarmSchedulerRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.TestAlarmTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -59,11 +61,7 @@ class TestAlarmSchedulerCommandExecutorTest {
 
   @Mock private MessageMetadata messageMetadata;
 
-  @Mock private DlmsObjectConfigService dlmsObjectConfigService;
-
-  @Mock private DlmsObject dlmsObject;
-
-  @Mock private ObisCode obisCode;
+  @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
 
   private DlmsConnectionManagerStub connectionManagerStub;
   private DlmsConnectionStub connectionStub;
@@ -189,14 +187,24 @@ class TestAlarmSchedulerCommandExecutorTest {
 
   private void setupConfigService(final String alarmType, final String obisCodeString)
       throws ProtocolAdapterException {
-    when(this.dlmsObjectConfigService.getDlmsObject(
-            this.device,
-            TestAlarmSchedulerCommandExecutor.toAlarmObjectType(
-                TestAlarmTypeDto.valueOf(alarmType))))
-        .thenReturn(this.dlmsObject);
+    final AttributeAddress attributeAddress =
+        new AttributeAddress(
+            InterfaceClass.SINGLE_ACTION_SCHEDULE.id(),
+            new ObisCode(obisCodeString),
+            SingleActionScheduleAttribute.EXECUTION_TIME.attributeId());
 
-    when(this.obisCode.toString()).thenReturn(obisCodeString);
-    when(this.dlmsObject.getClassId()).thenReturn(SINGLE_ACTION_CLASS_ID);
-    when(this.dlmsObject.getObisCode()).thenReturn(this.obisCode);
+    when(this.objectConfigServiceHelper.findAttributeAddress(
+            this.device,
+            Protocol.OTHER_PROTOCOL,
+            toAlarmObjectType(TestAlarmTypeDto.valueOf(alarmType)),
+            null,
+            SingleActionScheduleAttribute.EXECUTION_TIME.attributeId()))
+        .thenReturn(attributeAddress);
+  }
+
+  protected static DlmsObjectType toAlarmObjectType(final TestAlarmTypeDto alarmTypeDto) {
+    return TestAlarmTypeDto.PARTIAL_POWER_OUTAGE.equals(alarmTypeDto)
+        ? DlmsObjectType.PHASE_OUTAGE_TEST
+        : DlmsObjectType.LAST_GASP_TEST;
   }
 }

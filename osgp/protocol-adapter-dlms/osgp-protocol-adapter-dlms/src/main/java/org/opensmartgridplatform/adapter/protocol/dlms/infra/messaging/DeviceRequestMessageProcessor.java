@@ -91,7 +91,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       } else {
         device = null;
       }
-      if (this.usesDeviceConnection()) {
+      if (this.usesDeviceConnection(messageObject)) {
         /*
          * Set up a consumer to be called back with a DlmsConnectionManager for which the connection
          * with the device has been created. Note that when usesDeviceConnection is true, in this
@@ -111,15 +111,16 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
        * Throttling permit for network access not granted, send the request back to the queue to be
        * picked up again a little later by the message listener for device requests.
        */
+      final Duration permitRejectDelay =
+          this.throttlingClientConfig.permitRejectedDelay(messageMetadata.getMessagePriority());
       log.info(
           "Throttling permit was denied for deviceIdentification {} for network segment ({}, {}) for {}. retry message in {} ms",
           messageMetadata.getDeviceIdentification(),
           exception.getBaseTransceiverStationId(),
           exception.getCellId(),
           exception.getConfigurationName(),
-          this.throttlingClientConfig.permitRejectedDelay().toMillis());
-      this.deviceRequestMessageSender.send(
-          messageObject, messageMetadata, this.throttlingClientConfig.permitRejectedDelay());
+          permitRejectDelay.toMillis());
+      this.deviceRequestMessageSender.send(messageObject, messageMetadata, permitRejectDelay);
 
     } catch (final DeviceKeyProcessAlreadyRunningException exception) {
 
@@ -239,7 +240,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       final MessageMetadata messageMetadata)
       throws OsgpException {
     throw new UnsupportedOperationException(
-        "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return"
+        "handleMessage(Serializable) should be overridden by a subclass, or usesDeviceConnection should return"
             + " true.");
   }
 
@@ -249,7 +250,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
    *
    * @return Use device connection in handleMessage.
    */
-  protected boolean usesDeviceConnection() {
+  protected boolean usesDeviceConnection(final Serializable messageObject) {
     return true;
   }
 
