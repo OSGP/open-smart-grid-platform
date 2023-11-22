@@ -17,6 +17,7 @@ import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
 import org.opensmartgridplatform.dlms.objectconfig.ValueType;
 
 public class ObjectConfigServiceHelper {
+
   private static final int ATTRIBUTE_ID_SCALER_UNIT = 3;
 
   public static CosemObject createObject(
