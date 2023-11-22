@@ -25,7 +25,7 @@ public class GetKeysRequestMessageProcessor extends DeviceRequestMessageProcesso
   }
 
   @Override
-  protected boolean usesDeviceConnection() {
+  protected boolean usesDeviceConnection(final Serializable messageObject) {
     return false;
   }
 

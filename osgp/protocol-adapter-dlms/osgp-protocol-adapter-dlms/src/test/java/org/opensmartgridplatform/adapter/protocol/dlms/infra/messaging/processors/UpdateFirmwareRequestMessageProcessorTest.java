@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.ArgumentMatchers.same;
@@ -19,6 +20,8 @@ import javax.jms.ObjectMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -109,8 +112,7 @@ class UpdateFirmwareRequestMessageProcessorTest {
     when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(false);
 
     // Act
-    this.processor.processMessageTasks(
-        message.getObject(), messageMetadata, this.dlmsConnectionManagerMock, this.device);
+    this.processor.processMessageTasks(message.getObject(), messageMetadata, null, this.device);
 
     // Assert
     verify(this.osgpRequestMessageSender, times(1))
@@ -200,5 +202,39 @@ class UpdateFirmwareRequestMessageProcessorTest {
             same(this.device),
             same(updateFirmwareRequestDto),
             any(MessageMetadata.class));
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void testUsesDeviceConnection(final boolean isFirmwareFileAvailable) {
+    final String firmwareIdentification = "unavailable";
+    final String deviceIdentification = "unavailableEither";
+    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
+        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+
+    when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification))
+        .thenReturn(isFirmwareFileAvailable);
+
+    assertThat(this.processor.usesDeviceConnection(updateFirmwareRequestDto))
+        .isEqualTo(isFirmwareFileAvailable);
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void testProcessMessage(final boolean isFirmwareFileAvailable) throws JMSException {
+    final String firmwareIdentification = "unavailable";
+    final String deviceIdentification = "unavailableEither";
+    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
+        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+    final ObjectMessage message =
+        new ObjectMessageBuilder()
+            .withObject(updateFirmwareRequestDto)
+            .withCorrelationUid("123456")
+            .build();
+
+    when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification))
+        .thenReturn(isFirmwareFileAvailable);
+
+    this.processor.processMessage(message);
   }
 }

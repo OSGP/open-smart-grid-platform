@@ -58,6 +58,8 @@ public enum DlmsDataType {
   TIME,
   @JsonProperty("dont-care")
   DONT_CARE,
+  @JsonProperty("script")
+  SCRIPT,
 
   // Data types for specific classes
 

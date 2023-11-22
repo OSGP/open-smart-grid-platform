@@ -24,6 +24,7 @@ public class Constants {
 
   /** JMS constant for message field: BtsId. */
   public static final String BASE_TRANSCEIVER_STATION_ID = "BtsId";
+
   /** JMS constant for message field: CellId. */
   public static final String CELL_ID = "CellId";
 
@@ -137,6 +138,9 @@ public class Constants {
 
   /** JMS constant for a topic associated with the message. */
   public static final String TOPIC = "Topic";
+
+  /** JMS constant for message field: DeviceModelCode. */
+  public static final String DEVICE_MODEL_CODE = "DeviceModelCode";
 
   // === DEPRECATED ===
 

@@ -5,8 +5,10 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.networking;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
+import java.io.IOException;
 import java.util.List;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.slf4j.Logger;
@@ -42,12 +44,19 @@ public class DlmsPushNotificationReplayingDecoder
   protected void decode(
       final ChannelHandlerContext ctx, final ByteBuf byteBuf, final List<Object> out)
       throws UnrecognizedMessageDataException {
-    final byte[] byteArray = new byte[byteBuf.readableBytes()];
-    byteBuf.readBytes(byteArray);
-
-    final DlmsPushNotification dlmsPushNotification = this.decoder.decode(byteArray);
+    final byte[] byteArray = getBytes(byteBuf);
+    final DlmsPushNotification dlmsPushNotification =
+        this.decoder.decode(byteArray, ConnectionProtocol.TCP);
 
     LOGGER.info("Decoded push notification: {}", dlmsPushNotification);
     out.add(dlmsPushNotification);
+  }
+
+  private static byte[] getBytes(final ByteBuf byteBuf) throws UnrecognizedMessageDataException {
+    try (final ByteBufInputStream inputStream = new ByteBufInputStream(byteBuf)) {
+      return inputStream.readAllBytes();
+    } catch (final IOException e) {
+      throw new UnrecognizedMessageDataException(e.getMessage(), e);
+    }
   }
 }

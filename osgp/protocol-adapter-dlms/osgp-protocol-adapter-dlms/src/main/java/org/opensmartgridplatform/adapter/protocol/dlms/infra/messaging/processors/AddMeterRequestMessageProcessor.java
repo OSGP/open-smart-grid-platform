@@ -26,7 +26,7 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
   }
 
   @Override
-  protected boolean usesDeviceConnection() {
+  protected boolean usesDeviceConnection(final Serializable messageObject) {
     return false;
   }
 

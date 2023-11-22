@@ -29,6 +29,8 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
 
   @Autowired private CommandExecutorMap bundleCommandExecutorMap;
 
+  protected static final String ERROR_IN_OBJECT_CONFIG = "Error in object config";
+
   private final Class<? extends ActionRequestDto> bundleExecutorMapKey;
 
   /**

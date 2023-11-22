@@ -33,7 +33,6 @@ import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
@@ -42,9 +41,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionExce
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.LoggingDlmsMessageListener;
-import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -96,14 +95,12 @@ class ReadAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void shouldExecuteForProtocolSmr52()
-      throws ProtocolAdapterException, IOException, ObjectConfigException {
+  void shouldExecuteForProtocolSmr52() throws ProtocolAdapterException, IOException {
     this.assertForTwoRegisters("SMR", "5.2");
   }
 
   @Test
-  void shouldExecuteForProtocolSmr55()
-      throws ProtocolAdapterException, IOException, ObjectConfigException {
+  void shouldExecuteForProtocolSmr55() throws ProtocolAdapterException, IOException {
     this.assertForTwoRegisters("SMR", "5.5");
   }
 
@@ -191,8 +188,7 @@ class ReadAlarmRegisterCommandExecutorTest {
   }
 
   private void mockAlarmCosemObject(
-      final DlmsDevice dlmsDevice, final String obisCode, final String dlmsObjectTypeName)
-      throws ProtocolAdapterException {
+      final DlmsDevice dlmsDevice, final String obisCode, final String dlmsObjectTypeName) {
 
     final AttributeAddress attributeAddress =
         new AttributeAddress(

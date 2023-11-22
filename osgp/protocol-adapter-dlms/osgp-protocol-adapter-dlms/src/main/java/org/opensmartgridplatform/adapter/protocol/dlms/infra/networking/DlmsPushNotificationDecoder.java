@@ -20,7 +20,9 @@ public class DlmsPushNotificationDecoder {
   private static final byte DATA_NOTIFICATION = 0x0F;
   private static final byte EVENT_NOTIFICATION_REQUEST = (byte) 0xC2;
 
-  public DlmsPushNotification decode(final byte[] message) throws UnrecognizedMessageDataException {
+  public DlmsPushNotification decode(
+      final byte[] message, final ConnectionProtocol connectionProtocol)
+      throws UnrecognizedMessageDataException {
     /**
      * MX382 alarm examples (in HEX bytes):
      *
@@ -83,7 +85,7 @@ public class DlmsPushNotificationDecoder {
       pushNotification = alarmDecoder.decodeSmr5alarm(inputStream);
     } else if (mx382alarm) {
       final Mx382AlarmDecoder alarmDecoder = new Mx382AlarmDecoder();
-      pushNotification = alarmDecoder.decodeMx382alarm(inputStream);
+      pushNotification = alarmDecoder.decodeMx382alarm(inputStream, connectionProtocol);
     } else {
       final Dsmr4AlarmDecoder alarmDecoder = new Dsmr4AlarmDecoder();
       pushNotification = alarmDecoder.decodeDsmr4alarm(inputStream);

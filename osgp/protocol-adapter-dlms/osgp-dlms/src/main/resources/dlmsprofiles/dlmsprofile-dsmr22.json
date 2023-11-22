@@ -41,6 +41,126 @@
       ]
     },
     {
+      "tag": "ACTIVE_ENERGY_IMPORT_RATE_1",
+      "description": "Active energy import (+A) rate 1",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.1.8.1.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, WH",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ACTIVE_ENERGY_IMPORT_RATE_2",
+      "description": "Active energy import (+A) rate 2",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.1.8.2.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, WH",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ACTIVE_ENERGY_EXPORT_RATE_1",
+      "description": "Active energy export (-A) rate 1",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.2.8.1.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, WH",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ACTIVE_ENERGY_EXPORT_RATE_2",
+      "description": "Active energy export (-A) rate 2",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.2.8.2.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, WH",
+          "access": "R"
+        }
+      ]
+    },
+    {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
       "description": "Number of voltage swells in phase L1",
       "note": null,
@@ -573,6 +693,374 @@
           "description": "value",
           "datatype": "double-long-unsigned",
           "valuetype": "DYNAMIC",
+          "access": "RW"
+        }
+      ]
+    },
+    {
+      "tag": "INTERVAL_VALUES_G",
+      "description": "Hourly interval readings of M-Bus device",
+      "class-id": 7,
+      "version": 1,
+      "obis": "0.x.24.3.0.255",
+      "group": "GAS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "buffer",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture objects",
+          "datatype": "array",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "CLOCK,2|AMR_PROFILE_STATUS_HOURLY_G,2|MBUS_MASTER_VALUE,2",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "capture period in sec",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "3600",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "sort method",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_METER",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "sort object",
+          "datatype": "object_definition",
+          "valuetype": "FIXED_IN_METER",
+          "value": "NONE",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "entries in use",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "profile entries",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "240",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "DAILY_VALUES_COMBINED",
+      "description": "Daily combined billing",
+      "note": "To support MT382 meter, G values are added to this profile. DSMR2.2 spec for this profile is E values only.",
+      "class-id": 7,
+      "version": 1,
+      "obis": "1.0.99.2.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "buffer",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture objects",
+          "datatype": "array",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "CLOCK,2|AMR_PROFILE_STATUS,2|ACTIVE_ENERGY_IMPORT_RATE_1,2|ACTIVE_ENERGY_IMPORT_RATE_2,2|ACTIVE_ENERGY_EXPORT_RATE_1,2|ACTIVE_ENERGY_EXPORT_RATE_1,2|MBUS_MASTER_VALUE,2",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "capture period in sec",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "86400",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "sort method",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_METER",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "sort object",
+          "datatype": "object_definition",
+          "valuetype": "FIXED_IN_METER",
+          "value": "NONE",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "entries in use",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "profile entries",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "40",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MONTHLY_VALUES_COMBINED",
+      "description": "Monthly billing values",
+      "class-id": 7,
+      "version": 1,
+      "obis": "0.0.98.1.0.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "buffer",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture objects",
+          "datatype": "array",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "CLOCK,2|ACTIVE_ENERGY_IMPORT_RATE_1,2|ACTIVE_ENERGY_IMPORT_RATE_2,2|ACTIVE_ENERGY_EXPORT_RATE_1,2|ACTIVE_ENERGY_EXPORT_RATE_1,2|MBUS_MASTER_VALUE,2",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "capture period in sec",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "sort method",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_METER",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "sort object",
+          "datatype": "object_definition",
+          "valuetype": "FIXED_IN_METER",
+          "value": "NONE",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "entries in use",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "profile entries",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "13",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "AMR_PROFILE_STATUS_HOURLY_G",
+      "description": "AMR Profile Status Code M-Bus",
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.x.96.10.3.255",
+      "group": "GAS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "AMR_PROFILE_STATUS",
+      "description": "AMR Profile Status Code E meter",
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.96.10.2.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_MASTER_VALUE",
+      "description": "M-Bus volume hourly",
+      "note": null,
+      "class-id": 4,
+      "version": 0,
+      "obis": "0.x.24.2.1.255",
+      "group": "GAS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "BASED_ON_MODEL",
+          "valuebasedonmodel": {
+            "type": "GAS_METER_TYPE",
+            "values": [
+              {
+                "types": ["G4-G6"],
+                "value": "-3, M3"
+              },
+              {
+                "types": ["G10-G25"],
+                "value": "-2, M3"
+              }
+            ]
+          },
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "status",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "capture_time",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ACTIVITY_CALENDAR",
+      "description": "Activity calendar",
+      "note": null,
+      "class-id": 20,
+      "version": 0,
+      "obis": "0.0.13.0.0.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "calendar_name_active",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "season_profile_active",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "week_profile_table_active",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "day_profile_table_active",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "calendar_name_passive",
+          "datatype": "octet-string",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 7,
+          "description": "season_profile_passive",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 8,
+          "description": "week_profile_table_passive",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 9,
+          "description": "day_profile_table_passive",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 10,
+          "description": "activate_passive_calendar_time",
+          "datatype": "octet-string",
+          "valuetype": "SET_BY_CLIENT",
           "access": "RW"
         }
       ]

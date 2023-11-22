@@ -34,6 +34,7 @@ public class MessageMetadata implements Serializable {
   private int retryCount;
   private int jmsxDeliveryCount;
   private String topic;
+  private String deviceModelCode;
 
   private MessageMetadata() {
     // Default private constructor.
@@ -57,6 +58,7 @@ public class MessageMetadata implements Serializable {
     this.retryCount = builder.retryCount;
     this.jmsxDeliveryCount = builder.jmsxDeliveryCount;
     this.topic = builder.topic;
+    this.deviceModelCode = builder.deviceModelCode;
   }
 
   public static MessageMetadata fromMessage(final Message message) throws JMSException {
@@ -92,6 +94,9 @@ public class MessageMetadata implements Serializable {
     metadata.jmsxDeliveryCount = metadata.getIntProperty(message, Constants.DELIVERY_COUNT, 0);
 
     metadata.topic = metadata.getStringProperty(message, Constants.TOPIC, StringUtils.EMPTY);
+
+    metadata.deviceModelCode =
+        metadata.getStringProperty(message, Constants.DEVICE_MODEL_CODE, StringUtils.EMPTY);
 
     return metadata;
   }
@@ -143,6 +148,10 @@ public class MessageMetadata implements Serializable {
       message.setStringProperty(Constants.TOPIC, this.topic);
     }
 
+    if (StringUtils.isNotBlank(this.deviceModelCode)) {
+      message.setStringProperty(Constants.DEVICE_MODEL_CODE, this.deviceModelCode);
+    }
+
     /*
      * Not setting the jmsxDeliveryCount as int property named Constants.DELIVERY_COUNT, because
      * this is not some metadata to be transferred over to new JMS messages. This delivery count is
@@ -192,6 +201,9 @@ public class MessageMetadata implements Serializable {
   }
 
   public static class Builder {
+
+    private String deviceModelCode;
+
     private String correlationUid;
     private String organisationIdentification;
     private String deviceIdentification;
@@ -229,6 +241,7 @@ public class MessageMetadata implements Serializable {
       this.retryCount = otherMetadata.getRetryCount();
       this.jmsxDeliveryCount = otherMetadata.getJmsxDeliveryCount();
       this.topic = otherMetadata.getTopic();
+      this.deviceModelCode = otherMetadata.getDeviceModelCode();
     }
 
     public Builder(
@@ -324,6 +337,11 @@ public class MessageMetadata implements Serializable {
 
     public Builder withTopic(final String topic) {
       this.topic = topic;
+      return this;
+    }
+
+    public Builder withDeviceModelCode(final String deviceModelCode) {
+      this.deviceModelCode = deviceModelCode;
       return this;
     }
 

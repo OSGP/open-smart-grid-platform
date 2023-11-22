@@ -24,7 +24,7 @@ public class DisableDebuggingRequestMessageProcessor extends DeviceRequestMessag
   }
 
   @Override
-  protected boolean usesDeviceConnection() {
+  protected boolean usesDeviceConnection(final Serializable messageObject) {
     return false;
   }
 

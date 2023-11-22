@@ -8,5 +8,6 @@ public enum ValueType {
   FIXED_IN_PROFILE,
   FIXED_IN_METER,
   DYNAMIC,
-  SET_BY_CLIENT
+  SET_BY_CLIENT,
+  BASED_ON_MODEL
 }

@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-dlms</artifactId>
-    <version>5.47.0-SNAPSHOT</version>
+    <version>5.48.0-SNAPSHOT</version>
     <relativePath>../parent-pa-dlms/pom.xml</relativePath>
   </parent>
 
@@ -304,6 +304,14 @@ SPDX-License-Identifier: Apache-2.0
 
     <!-- Testing dependencies -->
     <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-dlms</artifactId>
+      <version>${osgp.dlms.version}</version>
+      <classifier>tests</classifier>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <scope>test</scope>
@@ -342,7 +350,7 @@ SPDX-License-Identifier: Apache-2.0
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <scope>test</scope>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
