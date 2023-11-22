@@ -304,6 +304,14 @@ SPDX-License-Identifier: Apache-2.0
 
     <!-- Testing dependencies -->
     <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-dlms</artifactId>
+      <version>${osgp.dlms.version}</version>
+      <classifier>tests</classifier>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <scope>test</scope>

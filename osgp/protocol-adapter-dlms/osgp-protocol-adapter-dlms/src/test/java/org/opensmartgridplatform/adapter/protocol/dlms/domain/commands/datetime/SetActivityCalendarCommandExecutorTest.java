@@ -27,7 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -51,6 +51,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
+import org.opensmartgridplatform.dlms.services.Protocol;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
@@ -120,12 +121,12 @@ class SetActivityCalendarCommandExecutorTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"DSMR,2.2", "DSMR,4.2.2", "SMR,5.0.0", "SMR,5.1", "SMR,5.2", "SMR,5.5"})
-  void testSetActivityCalendarEmpty(final String protocolName, final String protocolVersion)
+  @EnumSource(Protocol.class)
+  void testSetActivityCalendarEmpty(final Protocol protocol)
       throws ProtocolAdapterException, IOException, FunctionalException {
 
-    when(this.dlmsDevice.getProtocolName()).thenReturn(protocolName);
-    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocolVersion);
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocol.getName());
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocol.getVersion());
 
     // SETUP
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
@@ -159,13 +160,12 @@ class SetActivityCalendarCommandExecutorTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"DSMR,2.2", "DSMR,4.2.2", "SMR,5.0.0", "SMR,5.1", "SMR,5.2", "SMR,5.5"})
-  void testSetActivityCalendarWithSingleSeason(
-      final String protocolName, final String protocolVersion)
+  @EnumSource(Protocol.class)
+  void testSetActivityCalendarWithSingleSeason(final Protocol protocol)
       throws ProtocolAdapterException, IOException, FunctionalException {
     // SETUP
-    when(this.dlmsDevice.getProtocolName()).thenReturn(protocolName);
-    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocolVersion);
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocol.getName());
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocol.getVersion());
 
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
@@ -200,13 +200,12 @@ class SetActivityCalendarCommandExecutorTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"DSMR,2.2", "DSMR,4.2.2", "SMR,5.0.0", "SMR,5.1", "SMR,5.2", "SMR,5.5"})
-  void testSetActivityCalendarWithMultipleSeasons(
-      final String protocolName, final String protocolVersion)
+  @EnumSource(Protocol.class)
+  void testSetActivityCalendarWithMultipleSeasons(final Protocol protocol)
       throws ProtocolAdapterException, IOException, FunctionalException {
     // SETUP
-    when(this.dlmsDevice.getProtocolName()).thenReturn(protocolName);
-    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocolVersion);
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocol.getName());
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocol.getVersion());
 
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
@@ -241,13 +240,12 @@ class SetActivityCalendarCommandExecutorTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"DSMR,2.2", "DSMR,4.2.2", "SMR,5.0.0", "SMR,5.1", "SMR,5.2", "SMR,5.5"})
-  void testSetActivityCalendarWithMultipleSeasonsWeeksDaysAndActions(
-      final String protocolName, final String protocolVersion)
+  @EnumSource(Protocol.class)
+  void testSetActivityCalendarWithMultipleSeasonsWeeksDaysAndActions(final Protocol protocol)
       throws ProtocolAdapterException, IOException, FunctionalException {
     // SETUP
-    when(this.dlmsDevice.getProtocolName()).thenReturn(protocolName);
-    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocolVersion);
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocol.getName());
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocol.getVersion());
 
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
@@ -307,12 +305,12 @@ class SetActivityCalendarCommandExecutorTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"DSMR,2.2", "DSMR,4.2.2", "SMR,5.0.0", "SMR,5.1", "SMR,5.2", "SMR,5.5"})
-  void testSetActivityCalendarWithOneOfTheSetRequestsFailing(
-      final String protocolName, final String protocolVersion) throws IOException {
+  @EnumSource(Protocol.class)
+  void testSetActivityCalendarWithOneOfTheSetRequestsFailing(final Protocol protocol)
+      throws IOException {
     // SETUP
-    when(this.dlmsDevice.getProtocolName()).thenReturn(protocolName);
-    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocolVersion);
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocol.getName());
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocol.getVersion());
 
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
@@ -340,13 +338,12 @@ class SetActivityCalendarCommandExecutorTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"DSMR,2.2", "DSMR,4.2.2", "SMR,5.0.0", "SMR,5.1", "SMR,5.2", "SMR,5.5"})
-  void testSetActivityCalendarWithActivationFailure(
-      final String protocolName, final String protocolVersion)
+  @EnumSource(Protocol.class)
+  void testSetActivityCalendarWithActivationFailure(final Protocol protocol)
       throws ProtocolAdapterException, IOException {
     // SETUP
-    when(this.dlmsDevice.getProtocolName()).thenReturn(protocolName);
-    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocolVersion);
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocol.getName());
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocol.getVersion());
 
     final String errorMessage = "Activation failure";
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
