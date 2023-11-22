@@ -4,7 +4,6 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -27,7 +26,6 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
@@ -37,6 +35,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificationDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
@@ -102,7 +101,7 @@ class SetAlarmNotificationsCommandExecutorRegister3Test {
         new AttributeAddress(1, "0.0.97.98.12.255", 2), DataObject.newInteger32Data(0));
 
     final List<AlarmTypeDto> alarmTypes =
-        Arrays.stream(alarmTypesInput.split(";")).map(AlarmTypeDto::valueOf).collect(toList());
+        Arrays.stream(alarmTypesInput.split(";")).map(AlarmTypeDto::valueOf).toList();
     final AccessResultCode res =
         this.execute(
             device,
@@ -132,7 +131,7 @@ class SetAlarmNotificationsCommandExecutorRegister3Test {
         new AttributeAddress(1, "0.0.97.98.12.255", 2), DataObject.newInteger32Data(3));
 
     final List<AlarmTypeDto> alarmTypes =
-        Arrays.stream(alarmTypesInput.split(";")).map(AlarmTypeDto::valueOf).collect(toList());
+        Arrays.stream(alarmTypesInput.split(";")).map(AlarmTypeDto::valueOf).toList();
     final AccessResultCode res =
         this.execute(
             device,
@@ -229,11 +228,9 @@ class SetAlarmNotificationsCommandExecutorRegister3Test {
   }
 
   private AttributeAddress getAttributeAddress(final String obisCode) {
-    final AttributeAddress attributeAddress =
-        new AttributeAddress(
-            InterfaceClass.REGISTER.id(),
-            new ObisCode(obisCode),
-            RegisterAttribute.VALUE.attributeId());
-    return attributeAddress;
+    return new AttributeAddress(
+        InterfaceClass.REGISTER.id(),
+        new ObisCode(obisCode),
+        RegisterAttribute.VALUE.attributeId());
   }
 }
