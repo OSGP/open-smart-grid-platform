@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface WritableDeviceModelRepository extends JpaRepository<DeviceModel, Long> {
-  DeviceModel findByManufacturerAndModelCode(Manufacturer manufacturer, String modelCode);
+  DeviceModel findByManufacturerAndModelCodeIgnoreCase(Manufacturer manufacturer, String modelCode);
 
   DeviceModel findByManufacturerCodeAndModelCode(String string, String modelCode);
 
