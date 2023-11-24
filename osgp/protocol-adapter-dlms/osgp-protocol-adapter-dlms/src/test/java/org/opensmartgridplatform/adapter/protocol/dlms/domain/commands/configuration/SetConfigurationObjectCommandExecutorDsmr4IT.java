@@ -64,15 +64,15 @@ public class SetConfigurationObjectCommandExecutorDsmr4IT
             this.createFlagDto(ConfigurationFlagTypeDto.DISCOVER_ON_POWER_ON, true),
             this.createFlagDto(ConfigurationFlagTypeDto.DYNAMIC_MBUS_ADDRESS, true),
             this.createFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true),
-            this.createFlagDto(ConfigurationFlagTypeDto.HLS_5_ON_PO_ENABLE, true));
+            this.createFlagDto(ConfigurationFlagTypeDto.HLS_5_ON_P0_ENABLE, true));
 
     // flagsOnDevice: 1000101010000000
     final byte[] flagsOnDevice =
         this.createFlagBytes(
             ConfigurationFlagTypeDto.DISCOVER_ON_OPEN_COVER,
-            ConfigurationFlagTypeDto.HLS_3_ON_P_3_ENABLE,
-            ConfigurationFlagTypeDto.HLS_5_ON_P_3_ENABLE,
-            ConfigurationFlagTypeDto.HLS_4_ON_PO_ENABLE);
+            ConfigurationFlagTypeDto.HLS_3_ON_P3_ENABLE,
+            ConfigurationFlagTypeDto.HLS_5_ON_P3_ENABLE,
+            ConfigurationFlagTypeDto.HLS_4_ON_P0_ENABLE);
 
     // result of merging configurationToSet and flagsOnDevice
     final byte firstExpectedByte = this.asByte("01111010");

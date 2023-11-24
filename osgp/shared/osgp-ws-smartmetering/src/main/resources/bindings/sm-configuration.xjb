@@ -11,7 +11,36 @@
     <jxb:schemaBindings>
       <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration"></jxb:package>
     </jxb:schemaBindings>
-
+    <jxb:bindings node="//xs:simpleType[@name='ConfigurationFlagType']/xs:restriction/xs:enumeration[@value='HLS_3_ON_P3_ENABLE']">
+      <jxb:typesafeEnumMember name="HLS_3_ON_P3_ENABLE"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='ConfigurationFlagType']/xs:restriction/xs:enumeration[@value='HLS_4_ON_P3_ENABLE']">
+      <jxb:typesafeEnumMember name="HLS_4_ON_P3_ENABLE"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='ConfigurationFlagType']/xs:restriction/xs:enumeration[@value='HLS_5_ON_P3_ENABLE']">
+      <jxb:typesafeEnumMember name="HLS_5_ON_P3_ENABLE"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='ConfigurationFlagType']/xs:restriction/xs:enumeration[@value='HLS_6_ON_P3_ENABLE']">
+      <jxb:typesafeEnumMember name="HLS_6_ON_P3_ENABLE"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='ConfigurationFlagType']/xs:restriction/xs:enumeration[@value='HLS_7_ON_P3_ENABLE']">
+      <jxb:typesafeEnumMember name="HLS_7_ON_P3_ENABLE"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='ConfigurationFlagType']/xs:restriction/xs:enumeration[@value='HLS_3_ON_P0_ENABLE']">
+      <jxb:typesafeEnumMember name="HLS_3_ON_P0_ENABLE"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='ConfigurationFlagType']/xs:restriction/xs:enumeration[@value='HLS_4_ON_P0_ENABLE']">
+      <jxb:typesafeEnumMember name="HLS_4_ON_P0_ENABLE"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='ConfigurationFlagType']/xs:restriction/xs:enumeration[@value='HLS_5_ON_P0_ENABLE']">
+      <jxb:typesafeEnumMember name="HLS_5_ON_P0_ENABLE"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='ConfigurationFlagType']/xs:restriction/xs:enumeration[@value='HLS_6_ON_P0_ENABLE']">
+      <jxb:typesafeEnumMember name="HLS_6_ON_P0_ENABLE"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='ConfigurationFlagType']/xs:restriction/xs:enumeration[@value='HLS_7_ON_P0_ENABLE']">
+      <jxb:typesafeEnumMember name="HLS_7_ON_P0_ENABLE"/>
+    </jxb:bindings>
   </jxb:bindings>
 
 </jxb:bindings>

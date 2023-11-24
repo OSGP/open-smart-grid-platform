@@ -57,7 +57,7 @@ public class SetConfigurationObjectCommandExecutorSmr5IT
     final ConfigurationObjectDto configurationToSet =
         this.createConfigurationObjectDto(
             gprsMode,
-            this.createFlagDto(ConfigurationFlagTypeDto.HLS_5_ON_P_3_ENABLE, true),
+            this.createFlagDto(ConfigurationFlagTypeDto.HLS_5_ON_P3_ENABLE, true),
             this.createFlagDto(ConfigurationFlagTypeDto.DIRECT_ATTACH_AT_POWER_ON, true),
             this.createFlagDto(ConfigurationFlagTypeDto.HLS_6_ON_P3_ENABLE, false),
             this.createFlagDto(ConfigurationFlagTypeDto.HLS_7_ON_P3_ENABLE, true),
@@ -67,7 +67,7 @@ public class SetConfigurationObjectCommandExecutorSmr5IT
     // flagsOnDevice: 0000000001110100
     final byte[] flagsOnDevice =
         this.createFlagBytes(
-            ConfigurationFlagTypeDto.HLS_5_ON_PO_ENABLE,
+            ConfigurationFlagTypeDto.HLS_5_ON_P0_ENABLE,
             ConfigurationFlagTypeDto.DIRECT_ATTACH_AT_POWER_ON,
             ConfigurationFlagTypeDto.HLS_6_ON_P3_ENABLE,
             ConfigurationFlagTypeDto.HLS_6_ON_P0_ENABLE);
