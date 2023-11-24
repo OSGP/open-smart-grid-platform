@@ -2060,7 +2060,7 @@
     {
       "tag": "RANDOMISATION_SETTINGS",
       "description": "PHY Randomisation Object",
-      "note": null,
+      "note": "This object configuration is supported by DSMR4 devices but not presented in de DSMR4 specification. This object configuration is added according to the SMR 5.0.0 specification",
       "class-id": 1,
       "version": 0,
       "obis": "0.1.94.31.12.255",
