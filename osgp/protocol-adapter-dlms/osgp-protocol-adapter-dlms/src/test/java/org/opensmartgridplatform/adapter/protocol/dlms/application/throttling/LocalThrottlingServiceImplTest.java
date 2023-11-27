@@ -1,8 +1,10 @@
-// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
-//
-// SPDX-License-Identifier: Apache-2.0
+/*
+ * SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
-package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
+package org.opensmartgridplatform.adapter.protocol.dlms.application.throttling;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,18 +19,20 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = ThrottlingService.class)
+@ContextConfiguration(classes = LocalThrottlingServiceImpl.class)
 @TestPropertySource(
     properties = {
+      "throttling.type=local",
       "throttling.max.open.connections=10",
       "throttling.max.new.connection.requests=30",
       "throttling.reset.time=2000"
     })
-public class ThrottlingServiceTest {
+public class LocalThrottlingServiceImplTest {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ThrottlingServiceTest.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(LocalThrottlingServiceImplTest.class);
 
-  @Autowired ThrottlingService throttlingService;
+  @Autowired LocalThrottlingServiceImpl throttlingService;
 
   AtomicBoolean openingThreadDone;
   AtomicBoolean closingThreadDone;
@@ -50,12 +54,14 @@ public class ThrottlingServiceTest {
   }
 
   private Thread openingThread() {
+    final int btsId = 1;
+    final int cellId = 2;
     return new Thread(
         () -> {
           for (int i = 0; i < 100; i++) {
 
             LOGGER.info("Incoming request {}", i);
-            this.throttlingService.openConnection();
+            this.throttlingService.openConnection(btsId, cellId);
           }
 
           LOGGER.info("Opening Connection Thread done");
@@ -68,7 +74,7 @@ public class ThrottlingServiceTest {
         () -> {
           for (int i = 0; i < 100; i++) {
             LOGGER.info("Closing Connection {}", i);
-            this.throttlingService.closeConnection();
+            this.throttlingService.closeConnection(null);
             try {
               Thread.sleep(200);
             } catch (final InterruptedException e) {

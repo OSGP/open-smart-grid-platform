@@ -1,8 +1,10 @@
-// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
-//
-// SPDX-License-Identifier: Apache-2.0
+/*
+ * SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
-package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
+package org.opensmartgridplatform.adapter.protocol.dlms.application.throttling;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -10,7 +12,8 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingServiceEnabledCondition;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.annotation.LocalThrottlingServiceCondition;
+import org.opensmartgridplatform.throttling.api.Permit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,10 +21,10 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
 @Component
-@Conditional(ThrottlingServiceEnabledCondition.class)
-public class ThrottlingService {
+@Conditional(LocalThrottlingServiceCondition.class)
+public class LocalThrottlingServiceImpl implements ThrottlingService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ThrottlingService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LocalThrottlingServiceImpl.class);
 
   @Value("${throttling.max.open.connections}")
   private int maxOpenConnections;
@@ -58,7 +61,8 @@ public class ThrottlingService {
     }
   }
 
-  public void openConnection() {
+  @Override
+  public Permit openConnection(final Integer baseTransceiverStationId, final Integer cellId) {
 
     this.newConnectionRequest();
 
@@ -75,9 +79,11 @@ public class ThrottlingService {
       LOGGER.warn("Unable to acquire Open Connection", e);
       Thread.currentThread().interrupt();
     }
+    return null;
   }
 
-  public void closeConnection() {
+  @Override
+  public void closeConnection(final Permit permit) {
 
     LOGGER.debug(
         "closeConnection(). available = {} ", this.openConnectionsSemaphore.availablePermits());
@@ -120,22 +126,23 @@ public class ThrottlingService {
     public void run() {
 
       try {
-        ThrottlingService.this.resetTimerLock.lock();
+        LocalThrottlingServiceImpl.this.resetTimerLock.lock();
 
         final int nrOfPermitsToBeReleased =
-            ThrottlingService.this.maxNewConnectionRequests
-                - ThrottlingService.this.newConnectionRequestsSemaphore.availablePermits();
+            LocalThrottlingServiceImpl.this.maxNewConnectionRequests
+                - LocalThrottlingServiceImpl.this.newConnectionRequestsSemaphore.availablePermits();
 
         LOGGER.debug(
             "releasing {} permits on newConnectionRequestsSemaphore", nrOfPermitsToBeReleased);
 
-        ThrottlingService.this.newConnectionRequestsSemaphore.release(nrOfPermitsToBeReleased);
+        LocalThrottlingServiceImpl.this.newConnectionRequestsSemaphore.release(
+            nrOfPermitsToBeReleased);
 
         LOGGER.debug(
             "ThrottlingService - Timer Reset and Unlocking, newConnectionRequests available = {}  ",
-            ThrottlingService.this.newConnectionRequestsSemaphore.availablePermits());
+            LocalThrottlingServiceImpl.this.newConnectionRequestsSemaphore.availablePermits());
       } finally {
-        ThrottlingService.this.resetTimerLock.unlock();
+        LocalThrottlingServiceImpl.this.resetTimerLock.unlock();
       }
     }
   }

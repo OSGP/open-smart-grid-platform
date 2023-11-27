@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -31,7 +30,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.config.Thrott
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DeviceKeyProcessingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.throttling.LocalThrottlingServiceImpl;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
@@ -41,6 +40,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.throttling.api.Permit;
 
 @ExtendWith(MockitoExtension.class)
 class RecoverKeyProcessTest {
@@ -52,7 +52,7 @@ class RecoverKeyProcessTest {
   @Mock DomainHelperService domainHelperService;
   @Mock Hls5Connector hls5Connector;
   @Mock SecretManagementService secretManagementService;
-  @Mock ThrottlingService throttlingService;
+  @Mock LocalThrottlingServiceImpl throttlingService;
   @Mock DlmsDeviceRepository dlmsDeviceRepository;
   @Mock ThrottlingClientConfig throttlingClientConfig;
   @Mock DeviceKeyProcessingService deviceKeyProcessingService;
@@ -64,7 +64,6 @@ class RecoverKeyProcessTest {
   public void before() {
     this.recoverKeyProcess.setDeviceIdentification(DEVICE_IDENTIFICATION);
     this.recoverKeyProcess.setMessageMetadata(this.messageMetadata);
-    lenient().when(this.throttlingClientConfig.clientEnabled()).thenReturn(false);
   }
 
   @Test
@@ -82,6 +81,8 @@ class RecoverKeyProcessTest {
 
   @Test
   void testWhenHasNoNewKeysToConnectWith() throws OsgpException, IOException {
+    final int btsId = 1;
+    final int cellId = 1;
 
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION))
         .thenReturn(this.dlmsDevice);
@@ -95,7 +96,7 @@ class RecoverKeyProcessTest {
     verify(this.secretManagementService, times(1))
         .hasNewSecret(this.messageMetadata, DEVICE_IDENTIFICATION);
     verify(this.domainHelperService).findDlmsDevice(DEVICE_IDENTIFICATION);
-    verify(this.throttlingService, never()).openConnection();
+    verify(this.throttlingService, never()).openConnection(btsId, cellId);
   }
 
   @Test
@@ -121,6 +122,9 @@ class RecoverKeyProcessTest {
 
   @Test
   void testThrottlingServiceCalledAndKeysActivated() throws Exception {
+    final int btsId = 1;
+    final int cellId = 1;
+    final Permit permit = mock(Permit.class);
 
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION))
         .thenReturn(this.dlmsDevice);
@@ -133,15 +137,19 @@ class RecoverKeyProcessTest {
             eq(this.messageMetadata), eq(DEVICE_IDENTIFICATION)))
         .thenReturn(true);
 
+    when(this.messageMetadata.getBaseTransceiverStationId()).thenReturn(btsId);
+    when(this.messageMetadata.getCellId()).thenReturn(cellId);
+    when(this.throttlingService.openConnection(btsId, cellId)).thenReturn(permit);
+
     this.recoverKeyProcess.run();
 
     final InOrder inOrder = inOrder(this.throttlingService, this.hls5Connector);
 
-    inOrder.verify(this.throttlingService).openConnection();
+    inOrder.verify(this.throttlingService).openConnection(btsId, cellId);
     inOrder
         .verify(this.hls5Connector)
         .connectUnchecked(eq(this.messageMetadata), eq(this.dlmsDevice), any(), any());
-    inOrder.verify(this.throttlingService).closeConnection();
+    inOrder.verify(this.throttlingService).closeConnection(permit);
 
     verify(this.secretManagementService)
         .activateNewKeys(
@@ -155,10 +163,17 @@ class RecoverKeyProcessTest {
 
   @Test
   void testWhenConnectionFailedThenConnectionClosedAtThrottlingService() throws Exception {
+    final int btsId = 1;
+    final int cellId = 1;
+    final Permit permit = mock(Permit.class);
 
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION))
         .thenReturn(this.dlmsDevice);
     when(this.hls5Connector.connectUnchecked(any(), any(), any(), any())).thenReturn(null);
+
+    when(this.messageMetadata.getBaseTransceiverStationId()).thenReturn(btsId);
+    when(this.messageMetadata.getCellId()).thenReturn(cellId);
+    when(this.throttlingService.openConnection(btsId, cellId)).thenReturn(permit);
 
     when(this.secretManagementService.hasNewSecret(
             eq(this.messageMetadata), eq(DEVICE_IDENTIFICATION)))
@@ -168,9 +183,9 @@ class RecoverKeyProcessTest {
 
     final InOrder inOrder = inOrder(this.throttlingService, this.hls5Connector);
 
-    inOrder.verify(this.throttlingService).openConnection();
+    inOrder.verify(this.throttlingService).openConnection(btsId, cellId);
     inOrder.verify(this.hls5Connector).connectUnchecked(any(), any(), any(), any());
-    inOrder.verify(this.throttlingService).closeConnection();
+    inOrder.verify(this.throttlingService).closeConnection(permit);
 
     verify(this.secretManagementService, never()).activateNewKeys(any(), any(), any());
   }
