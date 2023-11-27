@@ -84,7 +84,8 @@ public enum DlmsObjectType {
   PHASE_OUTAGE_TEST,
   LAST_GASP_TEST,
   CONFIGURATION_OBJECT,
-  RANDOMISATION_SETTINGS;
+  RANDOMISATION_SETTINGS,
+  ACTIVITY_CALENDAR;
 
   public String value() {
     return this.name();

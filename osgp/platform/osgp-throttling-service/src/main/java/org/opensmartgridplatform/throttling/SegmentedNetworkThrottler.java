@@ -4,19 +4,23 @@
 
 package org.opensmartgridplatform.throttling;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SegmentedNetworkThrottler {
 
   private final MaxConcurrencyByThrottlingConfig maxConcurrencyByThrottlingConfig;
+  private final MaxConcurrencyByBtsCellConfig maxConcurrencyByBtsCellConfig;
   private final PermitsByThrottlingConfig permitsByThrottlingConfig;
 
   public SegmentedNetworkThrottler(
       final MaxConcurrencyByThrottlingConfig maxConcurrencyByThrottlingConfig,
+      final MaxConcurrencyByBtsCellConfig maxConcurrencyByBtsCellConfig,
       final PermitsByThrottlingConfig permitsByThrottlingConfig) {
 
     this.maxConcurrencyByThrottlingConfig = maxConcurrencyByThrottlingConfig;
+    this.maxConcurrencyByBtsCellConfig = maxConcurrencyByBtsCellConfig;
     this.permitsByThrottlingConfig = permitsByThrottlingConfig;
   }
 
@@ -27,8 +31,11 @@ public class SegmentedNetworkThrottler {
       final int cellId,
       final int requestId) {
 
+    final Optional<Integer> maxConcurrencyBtsCell =
+        this.maxConcurrencyByBtsCellConfig.getMaxConcurrency(baseTransceiverStationId, cellId);
     final int maxConcurrency =
-        this.maxConcurrencyByThrottlingConfig.getMaxConcurrency(throttlingConfigId);
+        maxConcurrencyBtsCell.orElse(
+            this.maxConcurrencyByThrottlingConfig.getMaxConcurrency(throttlingConfigId));
     if (maxConcurrency < 1) {
       return false;
     }
