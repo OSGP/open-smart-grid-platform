@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
+package org.opensmartgridplatform.adapter.protocol.dlms.application.throttling;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,24 +17,26 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = ThrottlingService.class)
+@ContextConfiguration(classes = LocalThrottlingServiceImpl.class)
 @TestPropertySource(
     properties = {
+      "throttling.type=local",
       "throttling.max.open.connections=10",
       "throttling.max.new.connection.requests=30",
       "throttling.reset.time=2000"
     })
-public class ThrottlingServiceTest {
+class LocalThrottlingServiceImplTest {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ThrottlingServiceTest.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(LocalThrottlingServiceImplTest.class);
 
-  @Autowired ThrottlingService throttlingService;
+  @Autowired LocalThrottlingServiceImpl throttlingService;
 
   AtomicBoolean openingThreadDone;
   AtomicBoolean closingThreadDone;
 
   @Test
-  public void testThrottling() throws InterruptedException {
+  void testThrottling() throws InterruptedException {
 
     this.openingThreadDone = new AtomicBoolean(false);
     this.closingThreadDone = new AtomicBoolean(false);
@@ -42,20 +44,26 @@ public class ThrottlingServiceTest {
     this.openingThread().start();
     this.closingThread().start();
 
-    assertThat(true).isEqualTo(true);
+    assertThat(this.openingThreadDone.get()).isFalse();
+    assertThat(this.closingThreadDone.get()).isFalse();
 
-    while (!this.openingThreadDone.get() && !this.closingThreadDone.get()) {
+    while (!this.openingThreadDone.get() || !this.closingThreadDone.get()) {
       Thread.sleep(1000);
     }
+
+    assertThat(this.openingThreadDone.get()).isTrue();
+    assertThat(this.closingThreadDone.get()).isTrue();
   }
 
   private Thread openingThread() {
+    final int btsId = 1;
+    final int cellId = 2;
     return new Thread(
         () -> {
           for (int i = 0; i < 100; i++) {
 
             LOGGER.info("Incoming request {}", i);
-            this.throttlingService.openConnection();
+            this.throttlingService.openConnection(btsId, cellId);
           }
 
           LOGGER.info("Opening Connection Thread done");
@@ -68,9 +76,9 @@ public class ThrottlingServiceTest {
         () -> {
           for (int i = 0; i < 100; i++) {
             LOGGER.info("Closing Connection {}", i);
-            this.throttlingService.closeConnection();
+            this.throttlingService.closeConnection(null);
             try {
-              Thread.sleep(200);
+              Thread.sleep(50);
             } catch (final InterruptedException e) {
               this.closingThreadDone.set(true);
             }
