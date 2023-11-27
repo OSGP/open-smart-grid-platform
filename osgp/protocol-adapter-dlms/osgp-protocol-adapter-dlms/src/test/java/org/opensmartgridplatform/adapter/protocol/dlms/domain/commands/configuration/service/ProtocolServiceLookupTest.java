@@ -20,14 +20,17 @@ public class ProtocolServiceLookupTest {
 
   private ProtocolServiceLookup instance;
   private GetConfigurationObjectServiceDsmr4 getDsmr4Service;
+  private GetConfigurationObjectServiceDsmr43 getDsmr43Service;
   private GetConfigurationObjectServiceSmr5 getSmr5Service;
 
   @BeforeEach
   public void setUp() {
     this.getDsmr4Service = new GetConfigurationObjectServiceDsmr4(null, null);
+    this.getDsmr43Service = new GetConfigurationObjectServiceDsmr43(null, null);
     this.getSmr5Service = new GetConfigurationObjectServiceSmr5(null, null);
     final List<ProtocolService> services = new ArrayList<>();
     services.add(this.getDsmr4Service);
+    services.add(this.getDsmr43Service);
     services.add(this.getSmr5Service);
     this.instance = new ProtocolServiceLookup(services);
   }
@@ -49,7 +52,11 @@ public class ProtocolServiceLookupTest {
     final GetConfigurationObjectService result = this.instance.lookupGetService(protocol);
 
     if (protocol.isDsmr4()) {
-      assertThat(result).isSameAs(this.getDsmr4Service);
+      if ("4.3".equals(protocol.getVersion())) {
+        assertThat(result).isSameAs(this.getDsmr43Service);
+      } else {
+        assertThat(result).isSameAs(this.getDsmr4Service);
+      }
     } else if (protocol.isSmr5()) {
       assertThat(result).isSameAs(this.getSmr5Service);
     }
