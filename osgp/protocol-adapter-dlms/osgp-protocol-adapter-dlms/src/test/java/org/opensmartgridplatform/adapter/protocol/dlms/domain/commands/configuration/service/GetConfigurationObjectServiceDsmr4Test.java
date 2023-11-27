@@ -38,7 +38,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.instance =
         new GetConfigurationObjectServiceDsmr4(this.dlmsHelper, this.objectConfigServiceHelper);
   }
@@ -46,13 +46,13 @@ public class GetConfigurationObjectServiceDsmr4Test {
   @ParameterizedTest
   @EnumSource(Protocol.class)
   @NullSource
-  public void handles(final Protocol protocol) {
+  void handles(final Protocol protocol) {
     assertThat(this.instance.handles(protocol))
         .isEqualTo(protocol != null && protocol.isDsmr4() && !"4.3".equals(protocol.getVersion()));
   }
 
   @Test
-  public void getFlagType() {
+  void getFlagType() {
     for (final ConfigurationFlagTypeDto flagTypeDto : ConfigurationFlagTypeDto.values()) {
       flagTypeDto
           .getBitPositionDsmr4()
@@ -67,7 +67,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectResultDataNull() throws ProtocolAdapterException {
+  void getConfigurationObjectResultDataNull() throws ProtocolAdapterException {
     // SETUP
     when(this.getResult.getResultData()).thenReturn(null);
 
@@ -80,7 +80,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectResultDataNotComplex() throws ProtocolAdapterException {
+  void getConfigurationObjectResultDataNotComplex() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject nonComplex = mock(DataObject.class);
@@ -96,7 +96,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectElementsNull() throws ProtocolAdapterException {
+  void getConfigurationObjectElementsNull() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);
@@ -114,7 +114,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectElementsSizeNotTwo() throws ProtocolAdapterException {
+  void getConfigurationObjectElementsSizeNotTwo() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);
@@ -133,7 +133,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectGprsModeNull() throws ProtocolAdapterException {
+  void getConfigurationObjectGprsModeNull() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);
@@ -154,7 +154,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectGprsModeNotNumber() throws ProtocolAdapterException {
+  void getConfigurationObjectGprsModeNotNumber() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);
@@ -177,7 +177,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectFlagsNull() throws ProtocolAdapterException {
+  void getConfigurationObjectFlagsNull() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);
@@ -201,7 +201,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectFlagsNotBitString() throws ProtocolAdapterException {
+  void getConfigurationObjectFlagsNotBitString() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);

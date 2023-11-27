@@ -36,20 +36,20 @@ public class SetConfigurationObjectServiceDsmr43Test {
   @Mock ConfigurationObjectDto configurationOnDevice;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.instance = new SetConfigurationObjectServiceDsmr43(null, null);
   }
 
   @ParameterizedTest
   @EnumSource(Protocol.class)
   @NullSource
-  public void handles(final Protocol protocol) {
+  void handles(final Protocol protocol) {
     assertThat(this.instance.handles(protocol))
         .isEqualTo(protocol != null && protocol.isDsmr4() && "4.3".equals(protocol.getVersion()));
   }
 
   @Test
-  public void getBitPosition() {
+  void getBitPosition() {
     for (final ConfigurationFlagTypeDto flagTypeDto : ConfigurationFlagTypeDto.values()) {
       flagTypeDto
           .getBitPositionDsmr43()

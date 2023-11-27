@@ -38,7 +38,7 @@ public class SetConfigurationObjectCommandExecutorSmr5IT
   @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
 
   @BeforeEach
-  public void setUp() throws IOException {
+  void setUp() throws IOException {
     final DlmsHelper dlmsHelper = new DlmsHelper();
     final GetConfigurationObjectService getService =
         new GetConfigurationObjectServiceSmr5(dlmsHelper, this.objectConfigServiceHelper);
@@ -48,7 +48,7 @@ public class SetConfigurationObjectCommandExecutorSmr5IT
   }
 
   @Test
-  public void execute() throws IOException, ProtocolAdapterException {
+  void execute() throws IOException, ProtocolAdapterException {
 
     // SETUP
     // configurationToSet: ------1---10101-

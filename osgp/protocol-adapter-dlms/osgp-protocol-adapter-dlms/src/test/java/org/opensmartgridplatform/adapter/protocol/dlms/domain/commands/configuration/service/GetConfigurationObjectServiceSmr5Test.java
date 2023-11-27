@@ -34,7 +34,7 @@ public class GetConfigurationObjectServiceSmr5Test {
   @Mock private DataObject nonBitString;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.instance = new GetConfigurationObjectServiceSmr5(null, null);
     when(this.nonBitString.isBitString()).thenReturn(false);
   }
@@ -42,12 +42,12 @@ public class GetConfigurationObjectServiceSmr5Test {
   @ParameterizedTest
   @EnumSource(Protocol.class)
   @NullSource
-  public void handles(final Protocol protocol) {
+  void handles(final Protocol protocol) {
     assertThat(this.instance.handles(protocol)).isEqualTo(protocol != null && protocol.isSmr5());
   }
 
   @Test
-  public void getFlagType() {
+  void getFlagType() {
     for (final ConfigurationFlagTypeDto flagTypeDto : ConfigurationFlagTypeDto.values()) {
       flagTypeDto
           .getBitPositionSmr5()
@@ -62,7 +62,7 @@ public class GetConfigurationObjectServiceSmr5Test {
   }
 
   @Test
-  public void getConfigurationObjectResultDataNull() throws ProtocolAdapterException {
+  void getConfigurationObjectResultDataNull() throws ProtocolAdapterException {
     // SETUP
     when(this.getResult.getResultData()).thenReturn(null);
 
@@ -75,7 +75,7 @@ public class GetConfigurationObjectServiceSmr5Test {
   }
 
   @Test
-  public void getConfigurationObjectResultDataNotBitString() throws ProtocolAdapterException {
+  void getConfigurationObjectResultDataNotBitString() throws ProtocolAdapterException {
 
     // SETUP
     when(this.getResult.getResultData()).thenReturn(this.nonBitString);

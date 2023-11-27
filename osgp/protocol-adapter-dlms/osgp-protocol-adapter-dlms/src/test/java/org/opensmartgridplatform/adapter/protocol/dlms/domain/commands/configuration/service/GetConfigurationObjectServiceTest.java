@@ -65,13 +65,13 @@ public class GetConfigurationObjectServiceTest {
   @Mock Protocol protocol;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
   }
 
   @Test
-  public void getConfigurationObjectIOException() throws Exception {
+  void getConfigurationObjectIOException() throws Exception {
 
     // SETUP
     when(this.dlmsConnection.get(any(AttributeAddress.class))).thenThrow(new IOException());
@@ -85,7 +85,7 @@ public class GetConfigurationObjectServiceTest {
   }
 
   @Test
-  public void getConfigurationObjectGetResultNull() throws Exception {
+  void getConfigurationObjectGetResultNull() throws Exception {
 
     // SETUP
     when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
@@ -99,7 +99,7 @@ public class GetConfigurationObjectServiceTest {
   }
 
   @Test
-  public void getConfigurationObjectGetResultUnsuccessful() throws Exception {
+  void getConfigurationObjectGetResultUnsuccessful() throws Exception {
 
     // SETUP
     when(this.getResult.getResultCode()).thenReturn(AccessResultCode.READ_WRITE_DENIED);

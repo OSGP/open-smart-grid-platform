@@ -105,8 +105,7 @@ public class SetRandomisationSettingsCommandExecutorTest {
   @EnumSource(
       value = Protocol.class,
       names = {"DSMR_4_2_2", "SMR_5_0_0"})
-  public void testExecuteSuccess(final Protocol protocol)
-      throws ProtocolAdapterException, IOException {
+  void testExecuteSuccess(final Protocol protocol) throws ProtocolAdapterException, IOException {
 
     this.init(protocol);
     // CALL
@@ -122,7 +121,7 @@ public class SetRandomisationSettingsCommandExecutorTest {
   @EnumSource(
       value = Protocol.class,
       names = {"DSMR_4_2_2", "SMR_5_0_0"})
-  public void testExecuteFailConfiguration(final Protocol protocol)
+  void testExecuteFailConfiguration(final Protocol protocol)
       throws ProtocolAdapterException, IOException {
     // SETUP
     this.init(protocol);
@@ -147,7 +146,7 @@ public class SetRandomisationSettingsCommandExecutorTest {
   @EnumSource(
       value = Protocol.class,
       names = {"DSMR_4_2_2", "SMR_5_0_0"})
-  public void testExecuteFailSetRandomisationSettings(final Protocol protocol)
+  void testExecuteFailSetRandomisationSettings(final Protocol protocol)
       throws ProtocolAdapterException, IOException {
 
     // SETUP
@@ -169,8 +168,7 @@ public class SetRandomisationSettingsCommandExecutorTest {
   @EnumSource(
       value = Protocol.class,
       names = {"DSMR_4_2_2", "SMR_5_0_0"})
-  public void testUnknownAttribute(final Protocol protocol)
-      throws ProtocolAdapterException, IOException {
+  void testUnknownAttribute(final Protocol protocol) throws ProtocolAdapterException, IOException {
 
     // SETUP
     this.init(protocol);

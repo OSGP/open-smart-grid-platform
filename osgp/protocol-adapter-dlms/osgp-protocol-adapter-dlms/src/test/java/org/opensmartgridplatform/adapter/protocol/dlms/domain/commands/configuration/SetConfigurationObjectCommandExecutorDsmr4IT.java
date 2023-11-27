@@ -42,7 +42,7 @@ public class SetConfigurationObjectCommandExecutorDsmr4IT
   @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
 
   @BeforeEach
-  public void setUp() throws IOException {
+  void setUp() throws IOException {
     final DlmsHelper dlmsHelper = new DlmsHelper();
     final GetConfigurationObjectService getService =
         new GetConfigurationObjectServiceDsmr4(dlmsHelper, this.objectConfigServiceHelper);
@@ -52,7 +52,7 @@ public class SetConfigurationObjectCommandExecutorDsmr4IT
   }
 
   @Test
-  public void execute() throws IOException, ProtocolAdapterException {
+  void execute() throws IOException, ProtocolAdapterException {
 
     // SETUP
     // configurationToSet: 0111-----1------

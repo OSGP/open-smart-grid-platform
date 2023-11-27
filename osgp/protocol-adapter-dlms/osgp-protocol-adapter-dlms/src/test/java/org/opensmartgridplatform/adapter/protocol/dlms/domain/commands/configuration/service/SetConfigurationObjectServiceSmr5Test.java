@@ -26,19 +26,19 @@ public class SetConfigurationObjectServiceSmr5Test {
   @Mock private GetResult getResult;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.instance = new SetConfigurationObjectServiceSmr5(null, null);
   }
 
   @ParameterizedTest
   @EnumSource(Protocol.class)
   @NullSource
-  public void handles(final Protocol protocol) {
+  void handles(final Protocol protocol) {
     assertThat(this.instance.handles(protocol)).isEqualTo(protocol != null && protocol.isSmr5());
   }
 
   @Test
-  public void getBitPosition() {
+  void getBitPosition() {
     for (final ConfigurationFlagTypeDto flagTypeDto : ConfigurationFlagTypeDto.values()) {
       flagTypeDto
           .getBitPositionSmr5()

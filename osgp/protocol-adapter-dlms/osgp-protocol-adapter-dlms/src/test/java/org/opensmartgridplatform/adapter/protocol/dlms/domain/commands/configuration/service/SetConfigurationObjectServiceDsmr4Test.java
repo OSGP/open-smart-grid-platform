@@ -42,7 +42,7 @@ public class SetConfigurationObjectServiceDsmr4Test {
   @Mock ConfigurationObjectDto configurationOnDevice;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.instance = new SetConfigurationObjectServiceDsmr4(null, null);
     when(this.configurationToSet.getConfigurationFlags()).thenReturn(this.emptyFlags());
     when(this.configurationOnDevice.getConfigurationFlags()).thenReturn(this.emptyFlags());
@@ -51,13 +51,13 @@ public class SetConfigurationObjectServiceDsmr4Test {
   @ParameterizedTest
   @EnumSource(Protocol.class)
   @NullSource
-  public void handles(final Protocol protocol) {
+  void handles(final Protocol protocol) {
     assertThat(this.instance.handles(protocol))
         .isEqualTo(protocol != null && protocol.isDsmr4() && !"4.3".equals(protocol.getVersion()));
   }
 
   @Test
-  public void getBitPosition() {
+  void getBitPosition() {
     for (final ConfigurationFlagTypeDto flagTypeDto : ConfigurationFlagTypeDto.values()) {
       flagTypeDto
           .getBitPositionDsmr4()
@@ -72,7 +72,7 @@ public class SetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void buildSetParameterDataGprsModeToSet() throws ProtocolAdapterException {
+  void buildSetParameterDataGprsModeToSet() throws ProtocolAdapterException {
 
     // SETUP
     when(this.configurationToSet.getGprsOperationMode()).thenReturn(GPRS_OPERATION_MODE);
@@ -89,7 +89,7 @@ public class SetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void buildSetParameterDataGprsModeOnDevice() throws ProtocolAdapterException {
+  void buildSetParameterDataGprsModeOnDevice() throws ProtocolAdapterException {
 
     // SETUP
     when(this.configurationToSet.getGprsOperationMode()).thenReturn(null);

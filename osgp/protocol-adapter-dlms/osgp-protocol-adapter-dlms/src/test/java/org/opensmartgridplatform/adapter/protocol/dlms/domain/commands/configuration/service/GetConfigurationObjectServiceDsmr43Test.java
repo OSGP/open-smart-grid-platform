@@ -30,7 +30,7 @@ public class GetConfigurationObjectServiceDsmr43Test {
   @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.instance =
         new GetConfigurationObjectServiceDsmr43(this.dlmsHelper, this.objectConfigServiceHelper);
   }
@@ -38,13 +38,13 @@ public class GetConfigurationObjectServiceDsmr43Test {
   @ParameterizedTest
   @EnumSource(Protocol.class)
   @NullSource
-  public void handles(final Protocol protocol) {
+  void handles(final Protocol protocol) {
     assertThat(this.instance.handles(protocol))
         .isEqualTo(protocol != null && protocol.isDsmr4() && "4.3".equals(protocol.getVersion()));
   }
 
   @Test
-  public void getFlagType() {
+  void getFlagType() {
     for (final ConfigurationFlagTypeDto flagTypeDto : ConfigurationFlagTypeDto.values()) {
       flagTypeDto
           .getBitPositionDsmr43()

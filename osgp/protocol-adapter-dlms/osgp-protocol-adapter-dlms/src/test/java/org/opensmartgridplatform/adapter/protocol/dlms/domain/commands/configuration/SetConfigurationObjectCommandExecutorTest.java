@@ -40,7 +40,7 @@ public class SetConfigurationObjectCommandExecutorTest {
   @EnumSource(
       value = Protocol.class,
       names = {"DSMR_4_2_2", "SMR_5_0_0"})
-  public void execute(final Protocol protocol) throws ProtocolAdapterException {
+  void execute(final Protocol protocol) throws ProtocolAdapterException {
 
     // SETUP
     final DlmsDevice device = new DlmsDevice();

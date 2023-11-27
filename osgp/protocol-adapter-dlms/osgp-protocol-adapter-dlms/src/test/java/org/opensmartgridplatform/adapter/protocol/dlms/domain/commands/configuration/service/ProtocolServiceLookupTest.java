@@ -24,7 +24,7 @@ public class ProtocolServiceLookupTest {
   private GetConfigurationObjectServiceSmr5 getSmr5Service;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.getDsmr4Service = new GetConfigurationObjectServiceDsmr4(null, null);
     this.getDsmr43Service = new GetConfigurationObjectServiceDsmr43(null, null);
     this.getSmr5Service = new GetConfigurationObjectServiceSmr5(null, null);
@@ -38,7 +38,7 @@ public class ProtocolServiceLookupTest {
   @ParameterizedTest
   @EnumSource(Protocol.class)
   @NullSource
-  public void lookupGetService(final Protocol protocol) throws ProtocolAdapterException {
+  void lookupGetService(final Protocol protocol) throws ProtocolAdapterException {
 
     if (protocol == null || (!protocol.isDsmr4() && !protocol.isSmr5())) {
       this.assertGetServiceNotFound(protocol);

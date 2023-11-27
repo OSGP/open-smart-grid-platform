@@ -30,9 +30,6 @@ public enum ConfigurationFlagTypeDto {
   private final Integer bitPositionSmr5;
   private final boolean readOnly;
 
-  /* TODO Should be able to set Configration Flag.DIRECT_ATTACH_AT_POWER_ON
-   *      on bitposition 10 for DSMR 4.3 meters should
-   */
   ConfigurationFlagTypeDto(
       final Integer bitPositionDsmr4,
       final Integer bitPositionDsmr43,
