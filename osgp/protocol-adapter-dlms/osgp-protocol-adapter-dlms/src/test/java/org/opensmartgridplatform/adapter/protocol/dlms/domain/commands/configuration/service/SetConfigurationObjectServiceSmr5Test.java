@@ -19,7 +19,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 
 @ExtendWith(MockitoExtension.class)
-public class SetConfigurationObjectServiceSmr5Test {
+class SetConfigurationObjectServiceSmr5Test {
 
   private SetConfigurationObjectServiceSmr5 instance;
 

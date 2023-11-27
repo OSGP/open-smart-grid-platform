@@ -30,7 +30,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationMod
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class SetConfigurationObjectServiceDsmr4Test {
+class SetConfigurationObjectServiceDsmr4Test {
 
   private static final GprsOperationModeTypeDto GPRS_OPERATION_MODE =
       GprsOperationModeTypeDto.ALWAYS_ON;

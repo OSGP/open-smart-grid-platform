@@ -33,7 +33,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObj
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 
 @ExtendWith(MockitoExtension.class)
-public class SetConfigurationObjectCommandExecutorDsmr4IT
+class SetConfigurationObjectCommandExecutorDsmr4IT
     extends SetConfigurationObjectCommandExecutorITBase {
 
   private static final int INDEX_OF_GPRS_OPERATION_MODE = 0;

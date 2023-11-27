@@ -32,7 +32,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObj
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 
 @ExtendWith(MockitoExtension.class)
-public class SetConfigurationObjectCommandExecutorSmr5IT
+class SetConfigurationObjectCommandExecutorSmr5IT
     extends SetConfigurationObjectCommandExecutorITBase {
 
   @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;

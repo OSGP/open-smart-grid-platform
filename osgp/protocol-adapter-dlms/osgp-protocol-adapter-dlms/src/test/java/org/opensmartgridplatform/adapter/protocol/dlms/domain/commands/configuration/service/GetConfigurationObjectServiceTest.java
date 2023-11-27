@@ -30,7 +30,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFla
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 
 @ExtendWith(MockitoExtension.class)
-public class GetConfigurationObjectServiceTest {
+class GetConfigurationObjectServiceTest {
 
   private final GetConfigurationObjectService instance =
       new GetConfigurationObjectService() {

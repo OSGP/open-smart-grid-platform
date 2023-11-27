@@ -28,7 +28,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 
 @ExtendWith(MockitoExtension.class)
-public class GetConfigurationObjectServiceDsmr4Test {
+class GetConfigurationObjectServiceDsmr4Test {
 
   private GetConfigurationObjectServiceDsmr4 instance;
 

@@ -46,7 +46,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class SetRandomisationSettingsCommandExecutorTest {
+class SetRandomisationSettingsCommandExecutorTest {
 
   @Mock private ProtocolServiceLookup protocolServiceLookup;
 

@@ -23,7 +23,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObj
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-public class GetConfigurationObjectCommandExecutorTest {
+class GetConfigurationObjectCommandExecutorTest {
 
   @InjectMocks private GetConfigurationObjectCommandExecutor instance;
   @Mock private ProtocolServiceLookup protocolServiceLookup;

@@ -26,7 +26,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFla
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class GetConfigurationObjectServiceSmr5Test {
+class GetConfigurationObjectServiceSmr5Test {
 
   private GetConfigurationObjectServiceSmr5 instance;
 
