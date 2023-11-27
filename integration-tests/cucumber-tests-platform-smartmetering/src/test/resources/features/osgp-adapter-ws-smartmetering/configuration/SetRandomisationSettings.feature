@@ -26,3 +26,5 @@ Feature: SmartMetering Configuration - SetRandomisationSettings
       | TEST1027000000001    | SMR      | 5.1     |  0 |   5 |  3 |   1 | should be set     |
       | TEST1024000000001    | DSMR     | 4.2.2   |  1 |   1 |  1 |   1 | should not be set |
       | TEST1024000000001    | DSMR     | 4.2.2   |  0 |  10 |  4 |   1 | should be set     |
+      | TEST1022000000001    | DSMR     | 2.2     |  1 |   1 |  1 |   1 | should not be set |
+      | TEST1022000000001    | DSMR     | 2.2     |  0 |  10 |  4 |   1 | should not be set |

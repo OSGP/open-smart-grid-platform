@@ -51,6 +51,17 @@ public class SetConfigurationObject {
   @Then("^the configuration object should be set on the device$")
   public void theConfigurationObjectShouldBeSetOnTheDevice(final Map<String, String> settings)
       throws Throwable {
+    this.theConfigurationObjectShouldBeSetOrNotOnTheDevice(settings, OsgpResultType.OK);
+  }
+
+  @Then("^the configuration object should not be set on the device$")
+  public void theConfigurationObjectShouldNotBeSetOnTheDevice(final Map<String, String> settings)
+      throws Throwable {
+    this.theConfigurationObjectShouldBeSetOrNotOnTheDevice(settings, OsgpResultType.NOT_OK);
+  }
+
+  public void theConfigurationObjectShouldBeSetOrNotOnTheDevice(
+      final Map<String, String> settings, final OsgpResultType result) throws Throwable {
     final SetConfigurationObjectAsyncRequest setConfigurationObjectAsyncRequest =
         SetConfigurationObjectRequestFactory.fromScenarioContext();
     final SetConfigurationObjectResponse setConfigurationObjectResponse =
@@ -59,6 +70,6 @@ public class SetConfigurationObject {
 
     assertThat(setConfigurationObjectResponse.getResult())
         .as("Set configuration object result")
-        .isEqualTo(OsgpResultType.OK);
+        .isEqualTo(result);
   }
 }
