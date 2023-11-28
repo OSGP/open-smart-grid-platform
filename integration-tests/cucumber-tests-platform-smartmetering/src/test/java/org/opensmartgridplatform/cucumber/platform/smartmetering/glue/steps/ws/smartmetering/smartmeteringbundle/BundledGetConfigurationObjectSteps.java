@@ -19,6 +19,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.C
 
 public class BundledGetConfigurationObjectSteps extends BaseBundleSteps {
 
+  static final String GPRS_OPERATION_MODE = "GprsOperationMode";
+
   @Given("^the bundle request contains a get configuration object action$")
   public void theBundleRequestContainsAGetConfigurationObject() throws Throwable {
 
@@ -50,11 +52,11 @@ public class BundledGetConfigurationObjectSteps extends BaseBundleSteps {
     final ConfigurationObject configurationObject =
         ((GetConfigurationObjectResponse) response).getConfigurationObject();
 
-    if (values.containsKey("GprsOperationMode")
-        && StringUtils.isNotBlank(values.get("GprsOperationMode"))) {
+    if (values.containsKey(GPRS_OPERATION_MODE)
+        && StringUtils.isNotBlank(values.get(GPRS_OPERATION_MODE))) {
       assertThat(configurationObject.getGprsOperationMode().toString())
           .as("The gprs operation mode is not equal")
-          .isEqualTo(values.get("GprsOperationMode"));
+          .isEqualTo(values.get(GPRS_OPERATION_MODE));
     } else {
       assertThat(configurationObject.getGprsOperationMode()).isNull();
     }

@@ -32,9 +32,7 @@ class GetConfigurationObjectCommandExecutorTest {
   @Mock private GetConfigurationObjectService getService;
 
   @ParameterizedTest
-  @EnumSource(
-      value = Protocol.class,
-      names = {"DSMR_4_2_2", "SMR_5_0_0"})
+  @EnumSource(value = Protocol.class)
   void execute(final Protocol protocol) throws ProtocolAdapterException {
 
     // SETUP

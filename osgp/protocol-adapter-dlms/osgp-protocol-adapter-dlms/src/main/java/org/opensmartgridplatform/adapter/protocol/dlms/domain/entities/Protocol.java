@@ -55,6 +55,14 @@ public enum Protocol {
     return this.version.startsWith("4.");
   }
 
+  public boolean isDsmr42() {
+    return this.version.startsWith("4.2");
+  }
+
+  public boolean isDsmr43() {
+    return this.version.startsWith("4.3");
+  }
+
   public boolean isSmr5() {
     return this.version.startsWith("5.");
   }

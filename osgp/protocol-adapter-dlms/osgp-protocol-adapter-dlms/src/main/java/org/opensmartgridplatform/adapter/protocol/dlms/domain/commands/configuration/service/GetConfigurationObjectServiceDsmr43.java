@@ -21,7 +21,7 @@ public class GetConfigurationObjectServiceDsmr43 extends GetConfigurationObjectS
 
   @Override
   public boolean handles(final Protocol protocol) {
-    return protocol != null && protocol.isDsmr4() && "4.3".equals(protocol.getVersion());
+    return protocol != null && protocol.isDsmr43();
   }
 
   @Override

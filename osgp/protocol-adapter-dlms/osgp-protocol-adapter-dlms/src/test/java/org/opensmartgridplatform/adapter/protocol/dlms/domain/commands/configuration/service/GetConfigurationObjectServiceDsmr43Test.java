@@ -39,8 +39,7 @@ class GetConfigurationObjectServiceDsmr43Test {
   @EnumSource(Protocol.class)
   @NullSource
   void handles(final Protocol protocol) {
-    assertThat(this.instance.handles(protocol))
-        .isEqualTo(protocol != null && protocol.isDsmr4() && "4.3".equals(protocol.getVersion()));
+    assertThat(this.instance.handles(protocol)).isEqualTo(protocol != null && protocol.isDsmr43());
   }
 
   @Test

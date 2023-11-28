@@ -22,8 +22,10 @@ Feature: SmartMetering Configuration - SetRandomisationSettings
     Then the randomisation settings <shouldBeSetOrNot> on the device
     Examples:
       | deviceIdentification | protocol | version | da | rsw | mf | nor | shouldBeSetOrNot  |
-      | TEST1027000000001    | SMR      | 5.1     |  1 |   1 |  1 |   1 | should be set     |
-      | TEST1027000000001    | SMR      | 5.1     |  0 |   5 |  3 |   1 | should be set     |
+      | TEST1028000000001    | SMR      | 5.1     |  1 |   1 |  1 |   1 | should be set     |
+      | TEST1028000000001    | SMR      | 5.1     |  0 |   5 |  3 |   1 | should be set     |
+      | TEST1027000000001    | SMR      | 5.0.0   |  1 |   1 |  1 |   1 | should be set     |
+      | TEST1027000000001    | SMR      | 5.0.0   |  0 |   5 |  3 |   1 | should be set     |
       | TEST1024000000001    | DSMR     | 4.2.2   |  1 |   1 |  1 |   1 | should not be set |
       | TEST1024000000001    | DSMR     | 4.2.2   |  0 |  10 |  4 |   1 | should be set     |
       | TEST1022000000001    | DSMR     | 2.2     |  1 |   1 |  1 |   1 | should not be set |

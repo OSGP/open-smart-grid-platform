@@ -51,12 +51,10 @@ public class ProtocolServiceLookupTest {
 
     final GetConfigurationObjectService result = this.instance.lookupGetService(protocol);
 
-    if (protocol.isDsmr4()) {
-      if ("4.3".equals(protocol.getVersion())) {
-        assertThat(result).isSameAs(this.getDsmr43Service);
-      } else {
-        assertThat(result).isSameAs(this.getDsmr4Service);
-      }
+    if (protocol.isDsmr43()) {
+      assertThat(result).isSameAs(this.getDsmr43Service);
+    } else if (protocol.isDsmr42()) {
+      assertThat(result).isSameAs(this.getDsmr4Service);
     } else if (protocol.isSmr5()) {
       assertThat(result).isSameAs(this.getSmr5Service);
     }
