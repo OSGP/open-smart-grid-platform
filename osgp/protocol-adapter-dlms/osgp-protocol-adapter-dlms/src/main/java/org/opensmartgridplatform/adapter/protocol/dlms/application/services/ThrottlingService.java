@@ -106,6 +106,7 @@ public class ThrottlingService {
   private synchronized void awaitReset() {
     while (this.resetTimerLock.isLocked()) {
       try {
+        LOGGER.debug("awaitReset() wait: {}", this.resetTime);
         this.resetTimerLock.wait(this.resetTime);
       } catch (final InterruptedException e) {
         LOGGER.warn("Unable to acquire New Connection Request Lock", e);
