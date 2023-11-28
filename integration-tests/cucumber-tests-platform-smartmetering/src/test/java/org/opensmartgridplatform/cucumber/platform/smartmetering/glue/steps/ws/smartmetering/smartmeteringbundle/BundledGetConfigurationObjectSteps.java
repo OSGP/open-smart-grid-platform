@@ -54,9 +54,9 @@ public class BundledGetConfigurationObjectSteps extends BaseBundleSteps {
 
     if (values.containsKey(GPRS_OPERATION_MODE)
         && StringUtils.isNotBlank(values.get(GPRS_OPERATION_MODE))) {
-      assertThat(configurationObject.getGprsOperationMode().toString())
+      assertThat(configurationObject.getGprsOperationMode())
           .as("The gprs operation mode is not equal")
-          .isEqualTo(values.get(GPRS_OPERATION_MODE));
+          .hasToString(values.get(GPRS_OPERATION_MODE));
     } else {
       assertThat(configurationObject.getGprsOperationMode()).isNull();
     }

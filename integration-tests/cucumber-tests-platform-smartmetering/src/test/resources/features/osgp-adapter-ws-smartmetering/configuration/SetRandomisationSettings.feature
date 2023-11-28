@@ -7,7 +7,7 @@ Feature: SmartMetering Configuration - SetRandomisationSettings
   As a grid operator
   I want to be able to set randomisation settings on a device
 
-  Scenario Outline: Set set randomisation settings on a <protocol> <version> device with direct attach <da>
+  Scenario Outline: Set randomisation settings on a <protocol> <version> device with direct attach <da>
     Given a dlms device
       | DeviceIdentification | <deviceIdentification> |
       | DeviceType           | SMART_METER_E          |
