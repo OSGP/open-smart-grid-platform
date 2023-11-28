@@ -35,7 +35,7 @@ SPDX-License-Identifier: Apache-2.0
   <!-- TRACE, DEBUG, INFO, WARN, ERROR -->
   <logger name="org.opensmartgridplatform.secretmanagement.application" level="DEBUG"/>
   <logger name="org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService" level="TRACE"/>
-  <logger name="org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService" level="WARN"/>
+  <logger name="org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService" level="DEBUG"/>
   <logger name="org.opensmartgridplatform.shared.security.providers" level="DEBUG"/>
 
   <logger name="org.opensmartgridplatform.adapter.ws.endpointinterceptors" level="TRACE"/>
