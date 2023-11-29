@@ -7,9 +7,8 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 import java.io.Serializable;
 import java.util.function.Consumer;
 import javax.jms.JMSException;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SystemEventService;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.throttling.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -47,10 +46,7 @@ public abstract class DlmsConnectionMessageProcessor {
 
   @Autowired protected DlmsDeviceRepository deviceRepository;
 
-  @Autowired(required = false)
-  protected ThrottlingService throttlingService;
-
-  @Autowired protected ThrottlingClientConfig throttlingClientConfig;
+  @Autowired protected ThrottlingService throttlingService;
 
   @Autowired private SystemEventService systemEventService;
 
@@ -60,16 +56,9 @@ public abstract class DlmsConnectionMessageProcessor {
       final Consumer<DlmsConnectionManager> taskForConnectionManager)
       throws OsgpException {
 
-    Permit permit = null;
-    if (this.throttlingClientConfig.clientEnabled()) {
-      permit =
-          this.throttlingClientConfig
-              .throttlingClient()
-              .requestPermitUsingNetworkSegmentIfIdsAreAvailable(
-                  messageMetadata.getBaseTransceiverStationId(), messageMetadata.getCellId());
-    } else {
-      this.throttlingService.openConnection();
-    }
+    final Permit permit =
+        this.throttlingService.requestPermit(
+            messageMetadata.getBaseTransceiverStationId(), messageMetadata.getCellId());
 
     final DlmsMessageListener dlmsMessageListener =
         this.createMessageListenerForDeviceConnection(device, messageMetadata);
@@ -95,11 +84,7 @@ public abstract class DlmsConnectionMessageProcessor {
        * DeviceRequestMessageProcessor.processMessageTasks(), where
        * this.doConnectionPostProcessing() is called in a finally block.
        */
-      if (this.throttlingClientConfig.clientEnabled()) {
-        this.throttlingClientConfig.throttlingClient().releasePermit(permit);
-      } else {
-        this.throttlingService.closeConnection();
-      }
+      this.throttlingService.releasePermit(permit);
       throw e;
     }
   }
@@ -136,11 +121,7 @@ public abstract class DlmsConnectionMessageProcessor {
 
     this.setClosingDlmsConnectionMessageListener(device, conn);
 
-    if (this.throttlingClientConfig.clientEnabled()) {
-      this.throttlingClientConfig.throttlingClient().releasePermit(conn.getPermit());
-    } else {
-      this.throttlingService.closeConnection();
-    }
+    this.throttlingService.releasePermit(conn.getPermit());
 
     if (device.needsInvocationCounter()) {
       this.updateInvocationCounterForDevice(device, conn);
@@ -178,6 +159,7 @@ public abstract class DlmsConnectionMessageProcessor {
     this.deviceRepository.updateInvocationCounter(
         device.getDeviceIdentification(), device.getInvocationCounter());
   }
+
   /**
    * @param logger the logger from the calling subClass
    * @param exception the exception to be logged

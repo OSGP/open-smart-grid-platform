@@ -28,8 +28,8 @@ public class Permit {
 
   public Permit() {}
 
-  public Permit(final short throttlingConfigId, final int clientId, final Integer requestId) {
-    this(throttlingConfigId, clientId, requestId, null, null, null);
+  public Permit(final Integer requestId) {
+    this((short) 0, 0, requestId, null, null, Instant.now());
   }
 
   public Permit(

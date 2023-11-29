@@ -21,9 +21,9 @@ import javax.inject.Provider;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DeviceKeyProcessingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.throttling.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Lls0Connector;
@@ -37,7 +37,6 @@ import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.infra.networking.DisposableNioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -167,8 +166,8 @@ public class DlmsConfig extends AbstractConfig {
       final DomainHelperService domainHelperService,
       final Hls5Connector hls5Connector,
       final SecretManagementService secretManagementService,
-      @Autowired(required = false) final ThrottlingService throttlingService,
-      final ThrottlingClientConfig throttlingClientConfig,
+      final ThrottlingService throttlingService,
+      final ThrottlingConfig throttlingConfig,
       final DlmsDeviceRepository deviceRepository,
       final DeviceKeyProcessingService deviceKeyProcessingService) {
     return new RecoverKeyProcess(
@@ -176,7 +175,7 @@ public class DlmsConfig extends AbstractConfig {
         hls5Connector,
         secretManagementService,
         throttlingService,
-        throttlingClientConfig,
+        throttlingConfig,
         deviceRepository,
         deviceKeyProcessingService);
   }

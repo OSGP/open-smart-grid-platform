@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -56,6 +57,8 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
   @Autowired protected DomainHelperService domainHelperService;
 
   @Autowired private DeviceRequestMessageSender deviceRequestMessageSender;
+
+  @Autowired private ThrottlingConfig throttlingConfig;
 
   protected final MessageType messageType;
 
@@ -112,7 +115,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
        * picked up again a little later by the message listener for device requests.
        */
       final Duration permitRejectDelay =
-          this.throttlingClientConfig.permitRejectedDelay(messageMetadata.getMessagePriority());
+          this.throttlingConfig.permitRejectedDelay(messageMetadata.getMessagePriority());
       log.info(
           "Throttling permit was denied for deviceIdentification {} for network segment ({}, {}) for {}. retry message in {} ms",
           messageMetadata.getDeviceIdentification(),
