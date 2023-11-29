@@ -1,6 +1,8 @@
-// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
-//
-// SPDX-License-Identifier: Apache-2.0
+/*
+ * SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
@@ -12,7 +14,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.springframework.test.util.ReflectionTestUtils;
 
-class ThrottlingClientConfigTest {
+class ThrottlingConfigTest {
   private final Duration permitRejectedMinDelay = Duration.parse("PT50S");
   private final Duration permitRejectedMaxDelay = Duration.parse("PT70S");
   private final Duration permitRejectedHighPrioDelay = Duration.parse("PT2S");
@@ -20,26 +22,19 @@ class ThrottlingClientConfigTest {
   @ParameterizedTest
   @EnumSource(MessagePriorityEnum.class)
   void testHttpComponentsMessageSender(final MessagePriorityEnum messagePriority) {
-    final ThrottlingClientConfig throttlingClientConfig = new ThrottlingClientConfig();
+    final ThrottlingConfig throttlingConfig = new ThrottlingConfig();
 
     ReflectionTestUtils.setField(
-        throttlingClientConfig,
-        "permitRejectedMinDelay",
-        this.permitRejectedMinDelay,
-        Duration.class);
+        throttlingConfig, "permitRejectedMinDelay", this.permitRejectedMinDelay, Duration.class);
     ReflectionTestUtils.setField(
-        throttlingClientConfig,
-        "permitRejectedMaxDelay",
-        this.permitRejectedMaxDelay,
-        Duration.class);
+        throttlingConfig, "permitRejectedMaxDelay", this.permitRejectedMaxDelay, Duration.class);
     ReflectionTestUtils.setField(
-        throttlingClientConfig,
+        throttlingConfig,
         "permitRejectedHighPrioDelay",
         this.permitRejectedHighPrioDelay,
         Duration.class);
 
-    final Duration result =
-        throttlingClientConfig.permitRejectedDelay(messagePriority.getPriority());
+    final Duration result = throttlingConfig.permitRejectedDelay(messagePriority.getPriority());
     if (messagePriority.getPriority() > MessagePriorityEnum.DEFAULT.getPriority()) {
       assertThat(result).isEqualTo(this.permitRejectedHighPrioDelay);
     } else {

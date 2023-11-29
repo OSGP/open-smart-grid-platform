@@ -11,14 +11,14 @@ import javax.jms.Destination;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.mockito.Mockito;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundLogItemRequestsMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundOsgpCoreResponsesMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MonitoringService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SystemEventService;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.throttling.LocalThrottlingServiceImpl;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
@@ -193,13 +193,13 @@ public class MessagingTestConfiguration extends AbstractConfig {
   }
 
   @Bean
-  public ThrottlingService throttlingService() {
-    return new ThrottlingService();
+  public LocalThrottlingServiceImpl throttlingService() {
+    return new LocalThrottlingServiceImpl();
   }
 
   @Bean
-  public ThrottlingClientConfig throttlingClientConfig() {
-    return new ThrottlingClientConfig();
+  public ThrottlingConfig throttlingConfig() {
+    return new ThrottlingConfig();
   }
 
   @Bean
