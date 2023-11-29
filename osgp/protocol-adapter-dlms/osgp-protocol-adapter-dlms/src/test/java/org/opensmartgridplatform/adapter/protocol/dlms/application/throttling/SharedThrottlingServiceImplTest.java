@@ -38,7 +38,7 @@ class SharedThrottlingServiceImplTest {
             this.BTS_ID, this.CELL_ID))
         .thenReturn(permit);
 
-    final Permit result = this.throttlingService.openConnection(this.BTS_ID, this.CELL_ID);
+    final Permit result = this.throttlingService.requestPermit(this.BTS_ID, this.CELL_ID);
 
     assertThat(result).isEqualTo(permit);
   }
@@ -48,7 +48,7 @@ class SharedThrottlingServiceImplTest {
     final Permit permit = mock(Permit.class);
     when(this.throttlingClientConfig.throttlingClient()).thenReturn(this.throttlingClient);
 
-    this.throttlingService.closeConnection(permit);
+    this.throttlingService.releasePermit(permit);
 
     verify(this.throttlingClient).releasePermit(permit);
   }

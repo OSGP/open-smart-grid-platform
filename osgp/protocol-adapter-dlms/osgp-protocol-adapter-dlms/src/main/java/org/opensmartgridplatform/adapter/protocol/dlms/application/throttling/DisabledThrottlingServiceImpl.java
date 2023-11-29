@@ -18,13 +18,13 @@ import org.springframework.stereotype.Component;
 public class DisabledThrottlingServiceImpl implements ThrottlingService {
 
   @Override
-  public Permit openConnection(final Integer baseTransceiverStationId, final Integer cellId) {
+  public Permit requestPermit(final Integer baseTransceiverStationId, final Integer cellId) {
     log.debug("Throttling is disabled, do nothing on openConnection");
     return null;
   }
 
   @Override
-  public void closeConnection(final Permit permit) {
+  public void releasePermit(final Permit permit) {
     log.debug("Throttling is disabled, do nothing on closeConnection");
   }
 }

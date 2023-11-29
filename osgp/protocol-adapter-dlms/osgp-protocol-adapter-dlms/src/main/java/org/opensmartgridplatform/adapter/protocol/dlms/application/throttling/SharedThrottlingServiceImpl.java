@@ -23,14 +23,14 @@ public class SharedThrottlingServiceImpl implements ThrottlingService {
   }
 
   @Override
-  public Permit openConnection(final Integer baseTransceiverStationId, final Integer cellId) {
+  public Permit requestPermit(final Integer baseTransceiverStationId, final Integer cellId) {
     return this.throttlingClientConfig
         .throttlingClient()
         .requestPermitUsingNetworkSegmentIfIdsAreAvailable(baseTransceiverStationId, cellId);
   }
 
   @Override
-  public void closeConnection(final Permit permit) {
+  public void releasePermit(final Permit permit) {
     this.throttlingClientConfig.throttlingClient().releasePermit(permit);
   }
 }

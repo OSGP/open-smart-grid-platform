@@ -198,7 +198,7 @@ public class RecoverKeyProcess implements Runnable {
       }
 
       permit =
-          this.throttlingService.openConnection(
+          this.throttlingService.requestPermit(
               this.messageMetadata.getBaseTransceiverStationId(), this.messageMetadata.getCellId());
 
       if (device.needsInvocationCounter()) {
@@ -233,7 +233,7 @@ public class RecoverKeyProcess implements Runnable {
         }
       }
 
-      this.throttlingService.closeConnection(permit);
+      this.throttlingService.releasePermit(permit);
 
       if (dlmsMessageListener != null) {
         final int numberOfSentMessages = dlmsMessageListener.getNumberOfSentMessages();

@@ -96,7 +96,7 @@ class RecoverKeyProcessTest {
     verify(this.secretManagementService, times(1))
         .hasNewSecret(this.messageMetadata, DEVICE_IDENTIFICATION);
     verify(this.domainHelperService).findDlmsDevice(DEVICE_IDENTIFICATION);
-    verify(this.throttlingService, never()).openConnection(btsId, cellId);
+    verify(this.throttlingService, never()).requestPermit(btsId, cellId);
   }
 
   @Test
@@ -139,17 +139,17 @@ class RecoverKeyProcessTest {
 
     when(this.messageMetadata.getBaseTransceiverStationId()).thenReturn(btsId);
     when(this.messageMetadata.getCellId()).thenReturn(cellId);
-    when(this.throttlingService.openConnection(btsId, cellId)).thenReturn(permit);
+    when(this.throttlingService.requestPermit(btsId, cellId)).thenReturn(permit);
 
     this.recoverKeyProcess.run();
 
     final InOrder inOrder = inOrder(this.throttlingService, this.hls5Connector);
 
-    inOrder.verify(this.throttlingService).openConnection(btsId, cellId);
+    inOrder.verify(this.throttlingService).requestPermit(btsId, cellId);
     inOrder
         .verify(this.hls5Connector)
         .connectUnchecked(eq(this.messageMetadata), eq(this.dlmsDevice), any(), any());
-    inOrder.verify(this.throttlingService).closeConnection(permit);
+    inOrder.verify(this.throttlingService).releasePermit(permit);
 
     verify(this.secretManagementService)
         .activateNewKeys(
@@ -173,7 +173,7 @@ class RecoverKeyProcessTest {
 
     when(this.messageMetadata.getBaseTransceiverStationId()).thenReturn(btsId);
     when(this.messageMetadata.getCellId()).thenReturn(cellId);
-    when(this.throttlingService.openConnection(btsId, cellId)).thenReturn(permit);
+    when(this.throttlingService.requestPermit(btsId, cellId)).thenReturn(permit);
 
     when(this.secretManagementService.hasNewSecret(
             eq(this.messageMetadata), eq(DEVICE_IDENTIFICATION)))
@@ -183,9 +183,9 @@ class RecoverKeyProcessTest {
 
     final InOrder inOrder = inOrder(this.throttlingService, this.hls5Connector);
 
-    inOrder.verify(this.throttlingService).openConnection(btsId, cellId);
+    inOrder.verify(this.throttlingService).requestPermit(btsId, cellId);
     inOrder.verify(this.hls5Connector).connectUnchecked(any(), any(), any(), any());
-    inOrder.verify(this.throttlingService).closeConnection(permit);
+    inOrder.verify(this.throttlingService).releasePermit(permit);
 
     verify(this.secretManagementService, never()).activateNewKeys(any(), any(), any());
   }

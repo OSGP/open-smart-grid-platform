@@ -57,7 +57,7 @@ public abstract class DlmsConnectionMessageProcessor {
       throws OsgpException {
 
     final Permit permit =
-        this.throttlingService.openConnection(
+        this.throttlingService.requestPermit(
             messageMetadata.getBaseTransceiverStationId(), messageMetadata.getCellId());
 
     final DlmsMessageListener dlmsMessageListener =
@@ -84,7 +84,7 @@ public abstract class DlmsConnectionMessageProcessor {
        * DeviceRequestMessageProcessor.processMessageTasks(), where
        * this.doConnectionPostProcessing() is called in a finally block.
        */
-      this.throttlingService.closeConnection(permit);
+      this.throttlingService.releasePermit(permit);
       throw e;
     }
   }
@@ -121,7 +121,7 @@ public abstract class DlmsConnectionMessageProcessor {
 
     this.setClosingDlmsConnectionMessageListener(device, conn);
 
-    this.throttlingService.closeConnection(conn.getPermit());
+    this.throttlingService.releasePermit(conn.getPermit());
 
     if (device.needsInvocationCounter()) {
       this.updateInvocationCounterForDevice(device, conn);
@@ -159,6 +159,7 @@ public abstract class DlmsConnectionMessageProcessor {
     this.deviceRepository.updateInvocationCounter(
         device.getDeviceIdentification(), device.getInvocationCounter());
   }
+
   /**
    * @param logger the logger from the calling subClass
    * @param exception the exception to be logged
