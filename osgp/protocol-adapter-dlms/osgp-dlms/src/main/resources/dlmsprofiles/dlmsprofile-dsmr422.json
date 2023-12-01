@@ -2036,6 +2036,81 @@
           "access": "R"
         }
       ]
+    },
+    {
+      "tag": "ACTIVITY_CALENDAR",
+      "description": "Activity calendar",
+      "note": null,
+      "class-id": 20,
+      "version": 0,
+      "obis": "0.0.13.0.0.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "calendar_name_active",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "season_profile_active",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "week_profile_table_active",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "day_profile_table_active",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "calendar_name_passive",
+          "datatype": "octet-string",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 7,
+          "description": "season_profile_passive",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 8,
+          "description": "week_profile_table_passive",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 9,
+          "description": "day_profile_table_passive",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 10,
+          "description": "activate_passive_calendar_time",
+          "datatype": "octet-string",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        }
+      ]
     }
   ]
 }

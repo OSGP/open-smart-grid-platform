@@ -13,7 +13,6 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -21,6 +20,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
@@ -29,7 +29,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegiste
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -41,12 +40,14 @@ public class ReadAlarmRegisterCommandExecutor
 
   final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  @Autowired private AlarmHelperService alarmHelperService;
+  private final AlarmHelperService alarmHelperService;
 
   public ReadAlarmRegisterCommandExecutor(
-      final ObjectConfigServiceHelper objectConfigServiceHelper) {
+      final ObjectConfigServiceHelper objectConfigServiceHelper,
+      final AlarmHelperService alarmHelperService) {
     super(ReadAlarmRegisterDataDto.class);
     this.objectConfigServiceHelper = objectConfigServiceHelper;
+    this.alarmHelperService = alarmHelperService;
   }
 
   @Override

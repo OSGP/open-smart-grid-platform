@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface WritableManufacturerRepository extends JpaRepository<Manufacturer, Long> {
-  Manufacturer findByCode(String code);
+  Manufacturer findByCodeIgnoreCase(String code);
 
   Manufacturer findByName(String manufacturerName);
 }

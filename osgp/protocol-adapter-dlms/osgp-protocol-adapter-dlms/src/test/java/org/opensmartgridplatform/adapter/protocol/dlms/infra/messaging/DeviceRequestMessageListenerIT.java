@@ -27,11 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /** Tests the incoming JMS messages and processors. Verifies that response messages were sent. */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = MessagingTestConfiguration.class)
+@TestPropertySource(properties = {"throttling.max.new.connection.requests=200"})
 class DeviceRequestMessageListenerIT {
 
   private static final Logger LOGGER =
