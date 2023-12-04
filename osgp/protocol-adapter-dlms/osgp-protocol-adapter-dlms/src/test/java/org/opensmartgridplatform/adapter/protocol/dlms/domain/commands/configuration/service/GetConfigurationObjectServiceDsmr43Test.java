@@ -14,43 +14,46 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openmuc.jdlms.GetResult;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 
 @ExtendWith(MockitoExtension.class)
-class SetConfigurationObjectServiceSmr5Test {
+class GetConfigurationObjectServiceDsmr43Test {
 
-  private SetConfigurationObjectServiceSmr5 instance;
+  private GetConfigurationObjectServiceDsmr43 instance;
 
-  @Mock private GetResult getResult;
+  //  @Mock private GetResult getResult;
+  @Mock private DlmsHelper dlmsHelper;
+
+  @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
 
   @BeforeEach
   void setUp() {
-    this.instance = new SetConfigurationObjectServiceSmr5(null, null);
+    this.instance =
+        new GetConfigurationObjectServiceDsmr43(this.dlmsHelper, this.objectConfigServiceHelper);
   }
 
   @ParameterizedTest
   @EnumSource(Protocol.class)
   @NullSource
   void handles(final Protocol protocol) {
-    assertThat(this.instance.handles(protocol)).isEqualTo(protocol != null && protocol.isSmr5());
+    assertThat(this.instance.handles(protocol)).isEqualTo(protocol != null && protocol.isDsmr43());
   }
 
   @Test
-  void getBitPosition() {
+  void getFlagType() {
     for (final ConfigurationFlagTypeDto flagTypeDto : ConfigurationFlagTypeDto.values()) {
       flagTypeDto
-          .getBitPositionSmr5()
+          .getBitPositionDsmr43()
           .ifPresent(
               bitPosition ->
                   assertThat(
                           this.instance
-                              .getBitPosition(flagTypeDto)
+                              .getFlagType(bitPosition)
                               .orElseThrow(IllegalArgumentException::new))
-                      .isEqualTo(bitPosition));
+                      .isEqualTo(flagTypeDto));
     }
   }
-
-  // happy flows covered in IT's
 }

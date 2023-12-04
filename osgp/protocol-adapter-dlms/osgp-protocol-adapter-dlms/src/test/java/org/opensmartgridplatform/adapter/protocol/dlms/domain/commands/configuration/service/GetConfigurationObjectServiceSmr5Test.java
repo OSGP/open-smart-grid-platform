@@ -11,6 +11,9 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -23,7 +26,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFla
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class GetConfigurationObjectServiceSmr5Test {
+class GetConfigurationObjectServiceSmr5Test {
 
   private GetConfigurationObjectServiceSmr5 instance;
 
@@ -31,23 +34,20 @@ public class GetConfigurationObjectServiceSmr5Test {
   @Mock private DataObject nonBitString;
 
   @BeforeEach
-  public void setUp() {
-    this.instance = new GetConfigurationObjectServiceSmr5(null);
+  void setUp() {
+    this.instance = new GetConfigurationObjectServiceSmr5(null, null);
     when(this.nonBitString.isBitString()).thenReturn(false);
   }
 
-  @Test
-  public void handles() {
-    assertThat(this.instance.handles(Protocol.SMR_5_0_0)).isTrue();
-    assertThat(this.instance.handles(Protocol.SMR_5_1)).isTrue();
-    assertThat(this.instance.handles(Protocol.SMR_5_2)).isTrue();
-    assertThat(this.instance.handles(Protocol.DSMR_4_2_2)).isFalse();
-    assertThat(this.instance.handles(Protocol.OTHER_PROTOCOL)).isFalse();
-    assertThat(this.instance.handles(null)).isFalse();
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  @NullSource
+  void handles(final Protocol protocol) {
+    assertThat(this.instance.handles(protocol)).isEqualTo(protocol != null && protocol.isSmr5());
   }
 
   @Test
-  public void getFlagType() {
+  void getFlagType() {
     for (final ConfigurationFlagTypeDto flagTypeDto : ConfigurationFlagTypeDto.values()) {
       flagTypeDto
           .getBitPositionSmr5()
@@ -62,7 +62,7 @@ public class GetConfigurationObjectServiceSmr5Test {
   }
 
   @Test
-  public void getConfigurationObjectResultDataNull() throws ProtocolAdapterException {
+  void getConfigurationObjectResultDataNull() throws ProtocolAdapterException {
     // SETUP
     when(this.getResult.getResultData()).thenReturn(null);
 
@@ -75,7 +75,7 @@ public class GetConfigurationObjectServiceSmr5Test {
   }
 
   @Test
-  public void getConfigurationObjectResultDataNotBitString() throws ProtocolAdapterException {
+  void getConfigurationObjectResultDataNotBitString() throws ProtocolAdapterException {
 
     // SETUP
     when(this.getResult.getResultData()).thenReturn(this.nonBitString);

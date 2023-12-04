@@ -7,47 +7,26 @@ Feature: SmartMetering Configuration - SetRandomisationSettings
   As a grid operator
   I want to be able to set randomisation settings on a device
 
-  Scenario: Set direct attach on a SMR5 device
+  Scenario Outline: Set randomisation settings on a <protocol> <version> device with direct attach <da>
     Given a dlms device
-      | DeviceIdentification | TEST1027000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | Protocol             | SMR               |
-      | ProtocolVersion      | 5.1               |
-      | Port                 | 1027              |
+      | DeviceIdentification | <deviceIdentification> |
+      | DeviceType           | SMART_METER_E          |
+      | Protocol             | <protocol>             |
+      | ProtocolVersion      | <version>              |
     When the set randomisation settings request is received
-      | DeviceIdentification     | TEST1027000000001 |
-      | directAttach             | 1                 |
-      | randomisationStartWindow | 1                 |
-      | multiplicationFactor     | 1                 |
-      | numberOfRetries          | 1                 |
-    Then the randomisation settings should be set on the device
-
-  Scenario: Set randomisation settings on a SMR5 device
-    Given a dlms device
-      | DeviceIdentification | TEST1027000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | Protocol             | SMR               |
-      | ProtocolVersion      | 5.1               |
-      | Port                 | 1027              |
-    When the set randomisation settings request is received
-      | DeviceIdentification     | TEST1027000000001 |
-      | directAttach             | 0                 |
-      | randomisationStartWindow | 5                 |
-      | multiplicationFactor     | 3                 |
-      | numberOfRetries          | 1                 |
-    Then the randomisation settings should be set on the device
-
-  Scenario: Set randomisation settings on a DSMR4 device
-    Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | Protocol             | DSMR              |
-      | ProtocolVersion      | 4.2.2             |
-      | Port                 | 1024              |
-    When the set randomisation settings request is received
-      | DeviceIdentification     | TEST1024000000001 |
-      | directAttach             | 0                 |
-      | randomisationStartWindow | 10                |
-      | multiplicationFactor     | 4                 |
-      | numberOfRetries          | 1                 |
-    Then the randomisation settings should be set on the device
+      | DeviceIdentification     | <deviceIdentification> |
+      | directAttach             | <da>                   |
+      | randomisationStartWindow | <rsw>                  |
+      | multiplicationFactor     | <mf>                   |
+      | numberOfRetries          | <nor>                  |
+    Then the randomisation settings <shouldBeSetOrNot> on the device
+    Examples:
+      | deviceIdentification | protocol | version | da | rsw | mf | nor | shouldBeSetOrNot  |
+      | TEST1028000000001    | SMR      | 5.1     |  1 |   1 |  1 |   1 | should be set     |
+      | TEST1028000000001    | SMR      | 5.1     |  0 |   5 |  3 |   1 | should be set     |
+      | TEST1027000000001    | SMR      | 5.0.0   |  1 |   1 |  1 |   1 | should be set     |
+      | TEST1027000000001    | SMR      | 5.0.0   |  0 |   5 |  3 |   1 | should be set     |
+      | TEST1024000000001    | DSMR     | 4.2.2   |  1 |   1 |  1 |   1 | should not be set |
+      | TEST1024000000001    | DSMR     | 4.2.2   |  0 |  10 |  4 |   1 | should be set     |
+      | TEST1022000000001    | DSMR     | 2.2     |  1 |   1 |  1 |   1 | should not be set |
+      | TEST1022000000001    | DSMR     | 2.2     |  0 |  10 |  4 |   1 | should not be set |

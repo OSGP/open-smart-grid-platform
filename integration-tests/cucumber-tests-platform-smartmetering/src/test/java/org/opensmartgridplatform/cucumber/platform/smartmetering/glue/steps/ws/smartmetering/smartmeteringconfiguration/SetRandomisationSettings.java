@@ -41,12 +41,22 @@ public class SetRandomisationSettings {
 
   @Then("the randomisation settings should be set on the device")
   public void theRandomisationSettingsShouldBeSetOnTheDevice() throws Throwable {
+    this.theRandomisationSettingsShouldResultIn(OsgpResultType.OK);
+  }
+
+  @Then("the randomisation settings should not be set on the device")
+  public void theRandomisationSettingsShouldNotBeSetOnTheDevice() throws Throwable {
+    this.theRandomisationSettingsShouldResultIn(OsgpResultType.NOT_OK);
+  }
+
+  private void theRandomisationSettingsShouldResultIn(final OsgpResultType result)
+      throws Throwable {
     final SetRandomisationSettingsAsyncRequest asyncRequest =
         SetRandomisationSettingsFactory.fromScenarioContext();
     final SetRandomisationSettingsResponse response =
         this.smartMeteringConfigurationClient.retrieveSetRandomisationSettingsResponse(
             asyncRequest);
 
-    assertThat(response.getResult()).isEqualTo(OsgpResultType.OK);
+    assertThat(response.getResult()).isEqualTo(result);
   }
 }

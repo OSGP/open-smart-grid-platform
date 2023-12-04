@@ -12,6 +12,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.SetParameter;
@@ -22,6 +23,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configura
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.SetConfigurationObjectService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.SetConfigurationObjectServiceSmr5;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -30,21 +32,23 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObj
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 
 @ExtendWith(MockitoExtension.class)
-public class SetConfigurationObjectCommandExecutorSmr5IT
+class SetConfigurationObjectCommandExecutorSmr5IT
     extends SetConfigurationObjectCommandExecutorITBase {
 
+  @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
+
   @BeforeEach
-  public void setUp() throws IOException {
+  void setUp() throws IOException {
     final DlmsHelper dlmsHelper = new DlmsHelper();
     final GetConfigurationObjectService getService =
-        new GetConfigurationObjectServiceSmr5(dlmsHelper);
+        new GetConfigurationObjectServiceSmr5(dlmsHelper, this.objectConfigServiceHelper);
     final SetConfigurationObjectService setService =
-        new SetConfigurationObjectServiceSmr5(dlmsHelper);
+        new SetConfigurationObjectServiceSmr5(dlmsHelper, this.objectConfigServiceHelper);
     super.setUp(getService, setService);
   }
 
   @Test
-  public void execute() throws IOException, ProtocolAdapterException {
+  void execute() throws IOException, ProtocolAdapterException {
 
     // SETUP
     // configurationToSet: ------1---10101-
@@ -53,7 +57,7 @@ public class SetConfigurationObjectCommandExecutorSmr5IT
     final ConfigurationObjectDto configurationToSet =
         this.createConfigurationObjectDto(
             gprsMode,
-            this.createFlagDto(ConfigurationFlagTypeDto.HLS_5_ON_P_3_ENABLE, true),
+            this.createFlagDto(ConfigurationFlagTypeDto.HLS_5_ON_P3_ENABLE, true),
             this.createFlagDto(ConfigurationFlagTypeDto.DIRECT_ATTACH_AT_POWER_ON, true),
             this.createFlagDto(ConfigurationFlagTypeDto.HLS_6_ON_P3_ENABLE, false),
             this.createFlagDto(ConfigurationFlagTypeDto.HLS_7_ON_P3_ENABLE, true),
@@ -63,7 +67,7 @@ public class SetConfigurationObjectCommandExecutorSmr5IT
     // flagsOnDevice: 0000000001110100
     final byte[] flagsOnDevice =
         this.createFlagBytes(
-            ConfigurationFlagTypeDto.HLS_5_ON_PO_ENABLE,
+            ConfigurationFlagTypeDto.HLS_5_ON_P0_ENABLE,
             ConfigurationFlagTypeDto.DIRECT_ATTACH_AT_POWER_ON,
             ConfigurationFlagTypeDto.HLS_6_ON_P3_ENABLE,
             ConfigurationFlagTypeDto.HLS_6_ON_P0_ENABLE);

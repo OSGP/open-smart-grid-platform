@@ -6,12 +6,15 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configur
 
 import java.util.List;
 import java.util.Optional;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
@@ -33,13 +36,17 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
 
   private final DlmsHelper dlmsHelper;
 
-  public GetConfigurationObjectServiceDsmr4(final DlmsHelper dlmsHelper) {
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
+
+  public GetConfigurationObjectServiceDsmr4(
+      final DlmsHelper dlmsHelper, final ObjectConfigServiceHelper objectConfigServiceHelper) {
     this.dlmsHelper = dlmsHelper;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
   public boolean handles(final Protocol protocol) {
-    return protocol == Protocol.DSMR_4_2_2;
+    return protocol != null && protocol.isDsmr42();
   }
 
   @Override
@@ -114,5 +121,12 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
   @Override
   Optional<ConfigurationFlagTypeDto> getFlagType(final int bitPosition) {
     return ConfigurationFlagTypeDto.getDsmr4FlagType(bitPosition);
+  }
+
+  @Override
+  AttributeAddress getAttributeAddress(final Protocol protocol) throws ProtocolAdapterException {
+    return this.objectConfigServiceHelper
+        .findOptionalDefaultAttributeAddress(protocol, DlmsObjectType.CONFIGURATION_OBJECT)
+        .orElseThrow();
   }
 }
