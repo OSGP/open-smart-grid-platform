@@ -13,6 +13,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.SetParameter;
@@ -23,6 +24,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configura
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.SetConfigurationObjectService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.SetConfigurationObjectServiceDsmr4;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -31,24 +33,26 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObj
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 
 @ExtendWith(MockitoExtension.class)
-public class SetConfigurationObjectCommandExecutorDsmr4IT
+class SetConfigurationObjectCommandExecutorDsmr4IT
     extends SetConfigurationObjectCommandExecutorITBase {
 
   private static final int INDEX_OF_GPRS_OPERATION_MODE = 0;
   private static final int INDEX_OF_CONFIGURATION_FLAGS = 1;
 
+  @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
+
   @BeforeEach
-  public void setUp() throws IOException {
+  void setUp() throws IOException {
     final DlmsHelper dlmsHelper = new DlmsHelper();
     final GetConfigurationObjectService getService =
-        new GetConfigurationObjectServiceDsmr4(dlmsHelper);
+        new GetConfigurationObjectServiceDsmr4(dlmsHelper, this.objectConfigServiceHelper);
     final SetConfigurationObjectService setService =
-        new SetConfigurationObjectServiceDsmr4(dlmsHelper);
+        new SetConfigurationObjectServiceDsmr4(dlmsHelper, this.objectConfigServiceHelper);
     super.setUp(getService, setService);
   }
 
   @Test
-  public void execute() throws IOException, ProtocolAdapterException {
+  void execute() throws IOException, ProtocolAdapterException {
 
     // SETUP
     // configurationToSet: 0111-----1------
@@ -60,15 +64,15 @@ public class SetConfigurationObjectCommandExecutorDsmr4IT
             this.createFlagDto(ConfigurationFlagTypeDto.DISCOVER_ON_POWER_ON, true),
             this.createFlagDto(ConfigurationFlagTypeDto.DYNAMIC_MBUS_ADDRESS, true),
             this.createFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true),
-            this.createFlagDto(ConfigurationFlagTypeDto.HLS_5_ON_PO_ENABLE, true));
+            this.createFlagDto(ConfigurationFlagTypeDto.HLS_5_ON_P0_ENABLE, true));
 
     // flagsOnDevice: 1000101010000000
     final byte[] flagsOnDevice =
         this.createFlagBytes(
             ConfigurationFlagTypeDto.DISCOVER_ON_OPEN_COVER,
-            ConfigurationFlagTypeDto.HLS_3_ON_P_3_ENABLE,
-            ConfigurationFlagTypeDto.HLS_5_ON_P_3_ENABLE,
-            ConfigurationFlagTypeDto.HLS_4_ON_PO_ENABLE);
+            ConfigurationFlagTypeDto.HLS_3_ON_P3_ENABLE,
+            ConfigurationFlagTypeDto.HLS_5_ON_P3_ENABLE,
+            ConfigurationFlagTypeDto.HLS_4_ON_P0_ENABLE);
 
     // result of merging configurationToSet and flagsOnDevice
     final byte firstExpectedByte = this.asByte("01111010");
