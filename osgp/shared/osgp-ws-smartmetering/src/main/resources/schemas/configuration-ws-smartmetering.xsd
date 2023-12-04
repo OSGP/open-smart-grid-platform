@@ -1079,9 +1079,9 @@
       <xsd:enumeration value="HLS_3_ON_P3_ENABLE" />
       <xsd:enumeration value="HLS_4_ON_P3_ENABLE" />
       <xsd:enumeration value="HLS_5_ON_P3_ENABLE" />
-      <xsd:enumeration value="HLS_3_ON_PO_ENABLE" />
-      <xsd:enumeration value="HLS_4_ON_PO_ENABLE" />
-      <xsd:enumeration value="HLS_5_ON_PO_ENABLE" />
+      <xsd:enumeration value="HLS_3_ON_P0_ENABLE" />
+      <xsd:enumeration value="HLS_4_ON_P0_ENABLE" />
+      <xsd:enumeration value="HLS_5_ON_P0_ENABLE" />
       <xsd:enumeration value="DIRECT_ATTACH_AT_POWER_ON" />
       <xsd:enumeration value="HLS_6_ON_P3_ENABLE" />
       <xsd:enumeration value="HLS_7_ON_P3_ENABLE" />

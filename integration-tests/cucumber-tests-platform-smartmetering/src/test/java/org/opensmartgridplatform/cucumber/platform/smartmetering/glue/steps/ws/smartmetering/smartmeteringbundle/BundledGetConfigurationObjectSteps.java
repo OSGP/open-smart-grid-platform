@@ -10,6 +10,7 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBool
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
@@ -17,6 +18,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.C
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationObject;
 
 public class BundledGetConfigurationObjectSteps extends BaseBundleSteps {
+
+  static final String GPRS_OPERATION_MODE = "GprsOperationMode";
 
   @Given("^the bundle request contains a get configuration object action$")
   public void theBundleRequestContainsAGetConfigurationObject() throws Throwable {
@@ -49,9 +52,14 @@ public class BundledGetConfigurationObjectSteps extends BaseBundleSteps {
     final ConfigurationObject configurationObject =
         ((GetConfigurationObjectResponse) response).getConfigurationObject();
 
-    assertThat(configurationObject.getGprsOperationMode().toString())
-        .as("The gprs operation mode is not equal")
-        .isEqualTo(values.get("GprsOperationMode"));
+    if (values.containsKey(GPRS_OPERATION_MODE)
+        && StringUtils.isNotBlank(values.get(GPRS_OPERATION_MODE))) {
+      assertThat(configurationObject.getGprsOperationMode())
+          .as("The gprs operation mode is not equal")
+          .hasToString(values.get(GPRS_OPERATION_MODE));
+    } else {
+      assertThat(configurationObject.getGprsOperationMode()).isNull();
+    }
 
     configurationObject
         .getConfigurationFlags()

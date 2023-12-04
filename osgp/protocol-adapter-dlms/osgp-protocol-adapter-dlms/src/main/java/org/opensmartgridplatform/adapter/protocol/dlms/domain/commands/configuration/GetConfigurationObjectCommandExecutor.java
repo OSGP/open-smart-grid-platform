@@ -49,8 +49,9 @@ public class GetConfigurationObjectCommandExecutor
       final Void object,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
+    final Protocol protocol = Protocol.forDevice(device);
     return this.protocolServiceLookup
-        .lookupGetService(Protocol.forDevice(device))
-        .getConfigurationObject(conn);
+        .lookupGetService(protocol)
+        .getConfigurationObject(conn, protocol);
   }
 }
