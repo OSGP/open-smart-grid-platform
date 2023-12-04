@@ -350,6 +350,11 @@ SPDX-License-Identifier: Apache-2.0
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-jasper-interface-shared</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>cucumber-tests-core</artifactId>
         <version>${osgp.version}</version>
         <type>test-jar</type>
