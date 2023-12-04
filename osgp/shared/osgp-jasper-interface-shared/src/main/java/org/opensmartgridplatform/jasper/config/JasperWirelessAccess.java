@@ -2,20 +2,20 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package org.opensmartgridplatform.adapter.protocol.jasper.config;
+package org.opensmartgridplatform.jasper.config;
 
 import lombok.Getter;
 
 @Getter
 public class JasperWirelessAccess {
 
-  private String uri;
-  private String licenseKey;
-  private String apiKey;
-  private String username;
-  private String password;
-  private String apiVersion;
-  private String apiType;
+  private final String uri;
+  private final String licenseKey;
+  private final String apiKey;
+  private final String username;
+  private final String password;
+  private final String apiVersion;
+  private final String apiType;
 
   public JasperWirelessAccess(
       final String uri,

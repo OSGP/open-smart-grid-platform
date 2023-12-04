@@ -5,9 +5,9 @@
 package org.opensmartgridplatform.adapter.protocol.jasper.rest.client;
 
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessTerminalClient;
-import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
-import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
 import org.opensmartgridplatform.adapter.protocol.jasper.response.GetSessionInfoResponse;
+import org.opensmartgridplatform.jasper.config.JasperWirelessAccess;
+import org.opensmartgridplatform.jasper.exceptions.OsgpJasperException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

@@ -172,6 +172,10 @@ SPDX-License-Identifier: Apache-2.0
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>shared</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-jasper-interface-shared</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.postgresql</groupId>

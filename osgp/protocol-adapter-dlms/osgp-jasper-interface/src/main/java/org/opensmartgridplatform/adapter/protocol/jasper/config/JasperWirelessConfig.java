@@ -12,7 +12,6 @@ import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPException;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessTerminalClient;
-import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
 import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.CorrelationIdProviderService;
 import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWirelessSmsSoapClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.JasperWirelessTerminalSoapClient;
@@ -23,6 +22,8 @@ import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.Sessio
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProviderKpnPollJasper;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProviderKpnPushAlarm;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProviderMap;
+import org.opensmartgridplatform.jasper.config.JasperWirelessAccess;
+import org.opensmartgridplatform.jasper.exceptions.OsgpJasperException;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package org.opensmartgridplatform.adapter.protocol.jasper.exceptions;
+package org.opensmartgridplatform.jasper.exceptions;
 
-import org.opensmartgridplatform.adapter.protocol.jasper.rest.JasperError;
+import org.opensmartgridplatform.jasper.rest.JasperError;
 
 public class OsgpJasperException extends Exception {
 
