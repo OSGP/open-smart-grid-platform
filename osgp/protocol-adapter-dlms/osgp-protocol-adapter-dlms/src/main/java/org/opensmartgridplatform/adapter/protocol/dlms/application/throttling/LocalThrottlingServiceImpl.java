@@ -89,9 +89,10 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
   }
 
   @Override
-  public Permit requestPermit(final Integer baseTransceiverStationId, final Integer cellId) {
+  public Permit requestPermit(
+      final Integer baseTransceiverStationId, final Integer cellId, final Integer priority) {
 
-    this.newConnectionRequest();
+    this.newConnectionRequest(priority);
 
     LOGGER.debug(
         "Requesting openConnection. available = {} ",
@@ -99,7 +100,7 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
 
     try {
       if (this.openConnectionsSemaphore.availablePermits() == 0) {
-        this.handlePermitDenied("Local: max open connections reached");
+        throw new ThrottlingPermitDeniedException("Local: max open connections reached", priority);
       }
       this.openConnectionsSemaphore.acquire();
       LOGGER.debug(
@@ -124,7 +125,7 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
     this.permitsByRequestId.remove(permit.getRequestId());
   }
 
-  private void newConnectionRequest() {
+  private void newConnectionRequest(final int priority) {
     LOGGER.debug(
         "Await reset for newConnection. available = {} ",
         this.newConnectionRequestsSemaphore.availablePermits());
@@ -137,7 +138,8 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
 
     try {
       if (this.newConnectionRequestsSemaphore.availablePermits() == 0) {
-        this.handlePermitDenied("Local: max new connection requests reached");
+        throw new ThrottlingPermitDeniedException(
+            "Local: max new connection requests reached", priority);
       }
       this.newConnectionRequestsSemaphore.acquire();
       LOGGER.debug(
@@ -220,11 +222,6 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
     return String.format(
         "ThrottlingService. maxOpenConnections = %d, maxNewConnectionRequests=%d, resetTime=%d",
         this.maxOpenConnections, this.maxNewConnectionRequests, this.resetTime);
-  }
-
-  private void handlePermitDenied(final String message) {
-
-    throw new ThrottlingPermitDeniedException(message);
   }
 
   private Permit createPermit() {

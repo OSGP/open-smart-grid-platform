@@ -10,7 +10,8 @@ import org.opensmartgridplatform.throttling.api.Permit;
 
 public interface ThrottlingService {
 
-  Permit requestPermit(final Integer baseTransceiverStationId, final Integer cellId);
+  Permit requestPermit(
+      final Integer baseTransceiverStationId, final Integer cellId, Integer priority);
 
   void releasePermit(Permit permit);
 }

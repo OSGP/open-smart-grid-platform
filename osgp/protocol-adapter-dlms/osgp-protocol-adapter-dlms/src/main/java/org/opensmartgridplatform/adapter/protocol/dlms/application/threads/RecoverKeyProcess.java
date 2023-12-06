@@ -199,7 +199,9 @@ public class RecoverKeyProcess implements Runnable {
 
       permit =
           this.throttlingService.requestPermit(
-              this.messageMetadata.getBaseTransceiverStationId(), this.messageMetadata.getCellId());
+              this.messageMetadata.getBaseTransceiverStationId(),
+              this.messageMetadata.getCellId(),
+              this.messageMetadata.getMessagePriority());
 
       if (device.needsInvocationCounter()) {
         dlmsMessageListener = new InvocationCountingDlmsMessageListener();

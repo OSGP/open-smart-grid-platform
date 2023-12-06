@@ -96,6 +96,7 @@ public class PermitsPerNetworkSegment {
       final int baseTransceiverStationId,
       final int cellId,
       final int requestId,
+      final int priority,
       final int maxConcurrency) {
 
     final AtomicInteger permitCounter =

@@ -23,7 +23,8 @@ import org.opensmartgridplatform.throttling.api.Permit;
 @ExtendWith(MockitoExtension.class)
 class SharedThrottlingServiceImplTest {
   private final Integer BTS_ID = 2;
-  private final Integer CELL_ID = 2;
+  private final Integer CELL_ID = 3;
+  private final Integer PRIORITY = 4;
 
   @Mock private ThrottlingClientConfig throttlingClientConfig;
   @Mock private ThrottlingClient throttlingClient;
@@ -35,10 +36,11 @@ class SharedThrottlingServiceImplTest {
     final Permit permit = mock(Permit.class);
     when(this.throttlingClientConfig.throttlingClient()).thenReturn(this.throttlingClient);
     when(this.throttlingClient.requestPermitUsingNetworkSegmentIfIdsAreAvailable(
-            this.BTS_ID, this.CELL_ID))
+            this.BTS_ID, this.CELL_ID, this.PRIORITY))
         .thenReturn(permit);
 
-    final Permit result = this.throttlingService.requestPermit(this.BTS_ID, this.CELL_ID);
+    final Permit result =
+        this.throttlingService.requestPermit(this.BTS_ID, this.CELL_ID, this.PRIORITY);
 
     assertThat(result).isEqualTo(permit);
   }

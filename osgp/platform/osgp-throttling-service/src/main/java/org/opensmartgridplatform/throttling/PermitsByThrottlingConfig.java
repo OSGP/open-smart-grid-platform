@@ -76,6 +76,7 @@ public class PermitsByThrottlingConfig {
       final int baseTransceiverStationId,
       final int cellId,
       final int requestId,
+      final int priority,
       final int maxConcurrency) {
 
     final PermitsPerNetworkSegment permitsPerNetworkSegment =
@@ -83,7 +84,13 @@ public class PermitsByThrottlingConfig {
             throttlingConfigId, this::createAndInitialize);
 
     return permitsPerNetworkSegment.requestPermit(
-        throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId, maxConcurrency);
+        throttlingConfigId,
+        clientId,
+        baseTransceiverStationId,
+        cellId,
+        requestId,
+        priority,
+        maxConcurrency);
   }
 
   private PermitsPerNetworkSegment createAndInitialize(final short throttlingConfigId) {

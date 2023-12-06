@@ -91,8 +91,9 @@ public class NetworkUser {
     final int baseTransceiverStationId = networkTask.baseTransceiverStationId;
     final int cellId = networkTask.cellId;
     final int clientRequestId = this.requestCounter.incrementAndGet();
+    final int priority = networkTask.priority;
 
-    final boolean granted = this.requestPermit(baseTransceiverStationId, cellId, clientRequestId);
+    final boolean granted = this.requestPermit(baseTransceiverStationId, cellId, clientRequestId, priority);
 
     if (!granted) {
       actionIfPermitDenied.run();
@@ -151,17 +152,18 @@ public class NetworkUser {
   }
 
   private boolean requestPermit(
-      final int baseTransceiverStationId, final int cellId, final int requestId) {
+      final int baseTransceiverStationId, final int cellId, final int requestId, final int priority) {
 
     final ResponseEntity<Integer> permitRequestResponse =
         this.restTemplate.postForEntity(
-            "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
+            "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}?priority={priority}",
             requestId,
             Integer.class,
             this.throttlingConfigId,
             this.clientId,
             baseTransceiverStationId,
-            cellId);
+            cellId,
+            priority);
 
     return permitRequestResponse.getStatusCode().is2xxSuccessful()
         && permitRequestResponse.getBody() != null

@@ -136,11 +136,12 @@ class LocalThrottlingServiceImplTest {
   private List<Permit> requestPermit(final int requests) {
     final int btsId = 1;
     final int cellId = 2;
+    final int priority = 3;
 
     final List<Permit> permits = new ArrayList<>();
     for (int i = 0; i < requests; i++) {
       LOGGER.info("Incoming request {}", i);
-      final Permit permit = this.throttlingService.requestPermit(btsId, cellId);
+      final Permit permit = this.throttlingService.requestPermit(btsId, cellId, priority);
       permits.add(permit);
     }
 
