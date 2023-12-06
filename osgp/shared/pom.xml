@@ -96,7 +96,7 @@ SPDX-License-Identifier: Apache-2.0
     <module>osgp-ws-admin</module>
     <module>osgp-throttling-api</module>
     <module>osgp-throttling-client</module>
-    <module>osgp-jasper-interface-shared</module>
+    <module>osgp-jasper-shared</module>
   </modules>
 
   <profiles>
