@@ -21,7 +21,10 @@ public class NetworkTask {
   public volatile Throwable throwable = null;
 
   public NetworkTask(
-      final int baseTransceiverStationId, final int cellId, final int priority, final int maxDurationInMillis) {
+      final int baseTransceiverStationId,
+      final int cellId,
+      final int priority,
+      final int maxDurationInMillis) {
 
     this.baseTransceiverStationId = baseTransceiverStationId;
     this.cellId = cellId;

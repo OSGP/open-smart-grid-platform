@@ -16,9 +16,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -48,11 +51,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+@Slf4j
 @SpringBootTest(
     classes = ThrottlingServiceApplication.class,
     webEnvironment = WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(initializers = ThrottlingServiceApplicationIT.Initializer.class)
 class ThrottlingServiceApplicationIT {
+  private static final int MAX_WAIT_FOR_HIGH_PRIO = 1000;
 
   @ClassRule
   private static final PostgreSQLContainer<?> postgreSQLContainer =
@@ -72,7 +77,8 @@ class ThrottlingServiceApplicationIT {
               "spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
               "spring.datasource.username=" + postgreSQLContainer.getUsername(),
               "spring.datasource.password=" + postgreSQLContainer.getPassword(),
-              "spring.jpa.show-sql=false")
+              "spring.jpa.show-sql=false",
+              "max.wait.for.high.prio.in.ms=" + MAX_WAIT_FOR_HIGH_PRIO)
           .applyTo(configurableApplicationContext.getEnvironment());
     }
   }
@@ -391,6 +397,144 @@ class ThrottlingServiceApplicationIT {
         cellId,
         requestId,
         priority);
+  }
+
+  @Test
+  void highPrioDenyManyRequests() {
+    this.maxConcurrencyByBtsCellConfig.reset();
+
+    final int baseTransceiverStationId = 123;
+    final int cellId = 1;
+    final int maxConcurrency = 1;
+    final int priority = 7;
+
+    this.btsCellConfigRepository.save(
+        new BtsCellConfig(baseTransceiverStationId, cellId, maxConcurrency));
+
+    assertThat(this.permitRepository.count()).isZero();
+
+    final int nrOfPermits = 100;
+    for (int i = 0; i < nrOfPermits - 1; i++) {
+      log.debug("successfullyReleasePermitWithDelay");
+      this.successfullyReleasePermitWithDelay(
+          this.existingThrottlingConfigId,
+          this.registeredClientId,
+          baseTransceiverStationId,
+          cellId,
+          (100 + i * 50));
+    }
+
+    for (int i = 0; i < nrOfPermits; i++) {
+      this.successfullyRequestPermit(
+          this.existingThrottlingConfigId,
+          this.registeredClientId,
+          baseTransceiverStationId,
+          cellId,
+          priority);
+    }
+    // release last permit
+    this.successfullyReleasePermit(
+        this.existingThrottlingConfigId, this.registeredClientId, baseTransceiverStationId, cellId);
+
+    assertThat(this.permitRepository.count()).isZero();
+  }
+
+  @Test
+  void highPrioDenyPermit() {
+    this.maxConcurrencyByBtsCellConfig.reset();
+
+    final int baseTransceiverStationId = 123;
+    final int cellId = 1;
+    final int maxConcurrency = 1;
+    final int priority = 7;
+
+    this.btsCellConfigRepository.save(
+        new BtsCellConfig(baseTransceiverStationId, cellId, maxConcurrency));
+
+    this.successfullyRequestPermit(
+        this.existingThrottlingConfigId,
+        this.registeredClientId,
+        baseTransceiverStationId,
+        cellId,
+        priority);
+
+    // low prio not possible
+    this.unsuccessfullyRequestPermit(
+        this.existingThrottlingConfigId,
+        this.registeredClientId,
+        baseTransceiverStationId,
+        cellId,
+        requestIdCounter.incrementAndGet(),
+        4);
+
+    final int delay = 100;
+    final long startTime = System.currentTimeMillis();
+    // release after delay
+    this.successfullyReleasePermitWithDelay(
+        this.existingThrottlingConfigId,
+        this.registeredClientId,
+        baseTransceiverStationId,
+        cellId,
+        delay);
+
+    // high prio not possible after delay
+    this.successfullyRequestPermit(
+        this.existingThrottlingConfigId,
+        this.registeredClientId,
+        baseTransceiverStationId,
+        cellId,
+        priority);
+    assertThat(System.currentTimeMillis() - startTime).isGreaterThanOrEqualTo(delay);
+  }
+
+  @Test
+  void highPrioDenyPermitMaxTime() {
+    this.maxConcurrencyByBtsCellConfig.reset();
+
+    final int baseTransceiverStationId = 123;
+    final int cellId = 1;
+    final int maxConcurrency = 1;
+    final int priority = 7;
+
+    this.btsCellConfigRepository.save(
+        new BtsCellConfig(baseTransceiverStationId, cellId, maxConcurrency));
+
+    this.successfullyRequestPermit(
+        this.existingThrottlingConfigId,
+        this.registeredClientId,
+        baseTransceiverStationId,
+        cellId,
+        priority);
+
+    final long startTime = System.currentTimeMillis();
+    // high prio not possible
+    this.unsuccessfullyRequestPermit(
+        this.existingThrottlingConfigId,
+        this.registeredClientId,
+        baseTransceiverStationId,
+        cellId,
+        requestIdCounter.incrementAndGet(),
+        priority);
+    assertThat(System.currentTimeMillis() - startTime)
+        .isGreaterThanOrEqualTo(MAX_WAIT_FOR_HIGH_PRIO);
+  }
+
+  private void successfullyReleasePermitWithDelay(
+      final short existingThrottlingConfigId,
+      final int registeredClientId,
+      final int baseTransceiverStationId,
+      final int cellId,
+      final long delay) {
+    final Timer timer = new Timer();
+    final TimerTask task =
+        new TimerTask() {
+          @Override
+          public void run() {
+            ThrottlingServiceApplicationIT.this.successfullyReleasePermit(
+                existingThrottlingConfigId, registeredClientId, baseTransceiverStationId, cellId);
+          }
+        }; // creating timer task
+    timer.schedule(task, delay); // scheduling the task after the delay
   }
 
   private void successfullyRequestPermit(
@@ -717,6 +861,9 @@ class ThrottlingServiceApplicationIT {
         this.releasePermit(
             throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
 
+    if (responseEntity.getStatusCode().series() != HttpStatus.Series.SUCCESSFUL) {
+      log.error(responseEntity.toString());
+    }
     assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
   }
 

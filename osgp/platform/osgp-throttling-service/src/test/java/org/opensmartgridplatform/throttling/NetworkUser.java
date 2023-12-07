@@ -93,7 +93,8 @@ public class NetworkUser {
     final int clientRequestId = this.requestCounter.incrementAndGet();
     final int priority = networkTask.priority;
 
-    final boolean granted = this.requestPermit(baseTransceiverStationId, cellId, clientRequestId, priority);
+    final boolean granted =
+        this.requestPermit(baseTransceiverStationId, cellId, clientRequestId, priority);
 
     if (!granted) {
       actionIfPermitDenied.run();
@@ -152,7 +153,10 @@ public class NetworkUser {
   }
 
   private boolean requestPermit(
-      final int baseTransceiverStationId, final int cellId, final int requestId, final int priority) {
+      final int baseTransceiverStationId,
+      final int cellId,
+      final int requestId,
+      final int priority) {
 
     final ResponseEntity<Integer> permitRequestResponse =
         this.restTemplate.postForEntity(

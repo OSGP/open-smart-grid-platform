@@ -12,9 +12,9 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.util.Lists;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.throttling.entities.ThrottlingConfig;
@@ -23,10 +23,18 @@ import org.opensmartgridplatform.throttling.repositories.ThrottlingConfigReposit
 
 @ExtendWith(MockitoExtension.class)
 class PermitsByThrottlingConfigTest {
+  private static final int MAX_WAIT_FOR_HIGH_PRIO = 1000;
 
   @Mock private ThrottlingConfigRepository throttlingConfigRepository;
   @Mock private PermitRepository permitRepository;
-  @InjectMocks private PermitsByThrottlingConfig permitsByThrottlingConfig;
+  private PermitsByThrottlingConfig permitsByThrottlingConfig;
+
+  @BeforeEach
+  void setUp() {
+    this.permitsByThrottlingConfig =
+        new PermitsByThrottlingConfig(
+            this.throttlingConfigRepository, this.permitRepository, this.MAX_WAIT_FOR_HIGH_PRIO);
+  }
 
   @Test
   void testInitializeEmpty() {

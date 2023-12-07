@@ -10,9 +10,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.assertj.core.util.Lists;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
@@ -20,9 +20,15 @@ import org.opensmartgridplatform.throttling.repositories.PermitRepository.Permit
 
 @ExtendWith(MockitoExtension.class)
 class PermitsPerNetworkSegmentTest {
-
+  private static final int MAX_WAIT_FOR_HIGH_PRIO = 1000;
   @Mock private PermitRepository permitRepository;
-  @InjectMocks private PermitsPerNetworkSegment permitsPerNetworkSegment;
+  private PermitsPerNetworkSegment permitsPerNetworkSegment;
+
+  @BeforeEach
+  void setUp() {
+    this.permitsPerNetworkSegment =
+        new PermitsPerNetworkSegment(this.permitRepository, this.MAX_WAIT_FOR_HIGH_PRIO);
+  }
 
   @Test
   void testInitializeEmpty() {

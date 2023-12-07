@@ -22,13 +22,18 @@ public class PermitsPerNetworkSegment {
       new ConcurrentHashMap<>();
   private static final AtomicInteger NO_PERMITS_FOR_CELL = new AtomicInteger(0);
 
+  private static final int MINIMAL_HIGH_PRIO = 5;
+
   private final ConcurrentMap<Integer, ConcurrentMap<Integer, AtomicInteger>> permitsPerSegment =
       new ConcurrentHashMap<>();
 
   private final PermitRepository permitRepository;
+  private final int maxWaitForHighPrioInMs;
 
-  public PermitsPerNetworkSegment(final PermitRepository permitRepository) {
+  public PermitsPerNetworkSegment(
+      final PermitRepository permitRepository, final int maxWaitForHighPrioInMs) {
     this.permitRepository = permitRepository;
+    this.maxWaitForHighPrioInMs = maxWaitForHighPrioInMs;
   }
 
   public void initialize(final short throttlingConfigId) {
@@ -99,14 +104,7 @@ public class PermitsPerNetworkSegment {
       final int priority,
       final int maxConcurrency) {
 
-    final AtomicInteger permitCounter =
-        this.permitsPerSegment
-            .computeIfAbsent(baseTransceiverStationId, key -> new ConcurrentHashMap<>())
-            .computeIfAbsent(cellId, key -> new AtomicInteger(0));
-
-    final int numberOfPermitsIfGranted = permitCounter.incrementAndGet();
-    if (numberOfPermitsIfGranted > maxConcurrency) {
-      permitCounter.decrementAndGet();
+    if (!this.isPermitAvailable(baseTransceiverStationId, cellId, priority, maxConcurrency)) {
       return false;
     }
 
@@ -121,10 +119,12 @@ public class PermitsPerNetworkSegment {
       final int cellId,
       final int requestId) {
 
-    final AtomicInteger permitCounter =
-        this.permitsPerSegment
-            .getOrDefault(baseTransceiverStationId, NO_PERMITS_FOR_STATION)
-            .getOrDefault(cellId, NO_PERMITS_FOR_CELL);
+    final AtomicInteger permitCounter = this.getPermitCounter(baseTransceiverStationId, cellId);
+
+    // Notify that permit is released
+    synchronized (permitCounter) {
+      permitCounter.notifyAll();
+    }
 
     final int numberOfPermitsIfReleased = permitCounter.decrementAndGet();
     if (numberOfPermitsIfReleased < 0) {
@@ -136,6 +136,62 @@ public class PermitsPerNetworkSegment {
             throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
 
     return numberOfReleasedPermits == 1;
+  }
+
+  private boolean isPermitAvailable(
+      final int baseTransceiverStationId,
+      final int cellId,
+      final int priority,
+      final int maxConcurrency) {
+    final AtomicInteger permitCounter = this.getPermitCounter(baseTransceiverStationId, cellId);
+
+    final int numberOfPermitsIfGranted = permitCounter.incrementAndGet();
+    if (numberOfPermitsIfGranted > maxConcurrency) {
+      permitCounter.decrementAndGet();
+
+      if (priority < MINIMAL_HIGH_PRIO) {
+        return false;
+      }
+
+      // Wait until permit is released
+      return this.waitUntilPermitIsAvailable(
+          baseTransceiverStationId, cellId, maxConcurrency, this.maxWaitForHighPrioInMs);
+    }
+    return true;
+  }
+
+  private boolean waitUntilPermitIsAvailable(
+      final int baseTransceiverStationId,
+      final int cellId,
+      final int maxConcurrency,
+      final int maxWaitForHighPrioInMs) {
+    final AtomicInteger permitCounter = this.getPermitCounter(baseTransceiverStationId, cellId);
+
+    synchronized (permitCounter) {
+      try {
+        final long startTime = System.currentTimeMillis();
+        final int wait = 10;
+        while (System.currentTimeMillis() - startTime < maxWaitForHighPrioInMs) {
+          permitCounter.wait(wait);
+
+          final int numberOfPermitsIfGranted = permitCounter.incrementAndGet();
+          if (numberOfPermitsIfGranted > maxConcurrency) {
+            permitCounter.decrementAndGet();
+          } else {
+            return true;
+          }
+        }
+      } catch (final InterruptedException e) {
+        Thread.currentThread().interrupt();
+      }
+    }
+    return false;
+  }
+
+  private AtomicInteger getPermitCounter(final int baseTransceiverStationId, final int cellId) {
+    return this.permitsPerSegment
+        .computeIfAbsent(baseTransceiverStationId, key -> NO_PERMITS_FOR_STATION)
+        .computeIfAbsent(cellId, key -> NO_PERMITS_FOR_CELL);
   }
 
   @Override
