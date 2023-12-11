@@ -12,7 +12,7 @@ import com.jasperwireless.api.ws.service.SendSMSResponse;
 import java.util.List;
 import org.apache.ws.security.WSConstants;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
-import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
+import org.opensmartgridplatform.jasper.config.JasperWirelessAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;

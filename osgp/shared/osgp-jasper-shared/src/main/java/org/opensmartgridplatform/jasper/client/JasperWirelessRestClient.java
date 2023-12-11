@@ -2,15 +2,15 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package org.opensmartgridplatform.adapter.protocol.jasper.rest.client;
+package org.opensmartgridplatform.jasper.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Base64;
-import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
-import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
-import org.opensmartgridplatform.adapter.protocol.jasper.response.JasperErrorResponse;
-import org.opensmartgridplatform.adapter.protocol.jasper.rest.JasperError;
+import org.opensmartgridplatform.jasper.config.JasperWirelessAccess;
+import org.opensmartgridplatform.jasper.exceptions.OsgpJasperException;
+import org.opensmartgridplatform.jasper.response.JasperErrorResponse;
+import org.opensmartgridplatform.jasper.rest.JasperError;
 import org.springframework.web.client.HttpStatusCodeException;
 
 public class JasperWirelessRestClient {

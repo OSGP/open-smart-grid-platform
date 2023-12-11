@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package org.opensmartgridplatform.adapter.protocol.jasper.rest;
+package org.opensmartgridplatform.jasper.rest;
 
 import java.util.Arrays;
 import lombok.Getter;

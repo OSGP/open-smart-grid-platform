@@ -20,8 +20,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessTerminalClient;
-import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
 import org.opensmartgridplatform.adapter.protocol.jasper.response.GetSessionInfoResponse;
+import org.opensmartgridplatform.jasper.exceptions.OsgpJasperException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 

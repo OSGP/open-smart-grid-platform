@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.jasper.client;
 
-import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
 import org.opensmartgridplatform.adapter.protocol.jasper.response.GetSessionInfoResponse;
+import org.opensmartgridplatform.jasper.exceptions.OsgpJasperException;
 
 public interface JasperWirelessTerminalClient {
 
