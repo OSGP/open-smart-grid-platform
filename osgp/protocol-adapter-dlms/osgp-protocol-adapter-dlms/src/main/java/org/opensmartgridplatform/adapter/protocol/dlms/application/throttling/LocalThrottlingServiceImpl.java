@@ -13,6 +13,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.PostConstruct;
@@ -29,15 +30,16 @@ import org.springframework.stereotype.Component;
 @Component
 @Conditional(LocalThrottlingServiceCondition.class)
 public class LocalThrottlingServiceImpl implements ThrottlingService {
+  private static final int MINIMAL_HIGH_PRIO = 5;
   private final AtomicInteger requestIdCounter = new AtomicInteger(0);
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalThrottlingServiceImpl.class);
 
-  @Value("${throttling.max.open.connections}")
-  private int maxOpenConnections;
+  private final int maxOpenConnections;
+  private final int maxNewConnectionRequests;
 
-  @Value("${throttling.max.new.connection.requests}")
-  private int maxNewConnectionRequests;
+  @Value("${throttling.max.wait.high.prio}")
+  private int maxWaitForHighPrioInMs;
 
   @Value("${throttling.reset.time}")
   private int resetTime;
@@ -48,44 +50,47 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
   @Value("#{T(java.time.Duration).parse('${cleanup.permits.time-to-live:PT1H}')}")
   private Duration timeToLive;
 
-  private Semaphore openConnectionsSemaphore;
-  private Semaphore newConnectionRequestsSemaphore;
-  private Timer resetNewConnectionRequestsTimer;
-  private Timer cleanupExpiredPermitsTimer;
-  private ReentrantLock resetTimerLock;
+  private final Semaphore openConnectionsSemaphore;
+  private final Semaphore newConnectionRequestsSemaphore;
+  private final Timer resetNewConnectionRequestsTimer;
+  private final Timer cleanupExpiredPermitsTimer;
+  private final ReentrantLock resetTimerLock;
 
-  private ConcurrentHashMap<Integer, Permit> permitsByRequestId;
+  private final ConcurrentHashMap<Integer, Permit> permitsByRequestId;
+
+  public LocalThrottlingServiceImpl(
+      @Value("${throttling.max.open.connections}") final int maxOpenConnections,
+      @Value("${throttling.max.new.connection.requests}") final int maxNewConnectionRequests) {
+    this.maxOpenConnections = maxOpenConnections;
+    this.maxNewConnectionRequests = maxNewConnectionRequests;
+    this.openConnectionsSemaphore = new Semaphore(maxOpenConnections);
+    this.newConnectionRequestsSemaphore = new Semaphore(maxNewConnectionRequests);
+
+    this.resetNewConnectionRequestsTimer = new Timer();
+    this.cleanupExpiredPermitsTimer = new Timer();
+
+    this.resetTimerLock = new ReentrantLock();
+    this.permitsByRequestId = new ConcurrentHashMap<>();
+  }
 
   @PostConstruct
   public void postConstruct() {
-    this.openConnectionsSemaphore = new Semaphore(this.maxOpenConnections);
-    this.newConnectionRequestsSemaphore = new Semaphore(this.maxNewConnectionRequests);
-
-    this.resetTimerLock = new ReentrantLock();
-
-    this.resetNewConnectionRequestsTimer = new Timer();
-    this.resetNewConnectionRequestsTimer.scheduleAtFixedRate(
+    this.resetNewConnectionRequestsTimer.schedule(
         new ResetNewConnectionRequestsTask(), this.resetTime, this.resetTime);
 
-    this.cleanupExpiredPermitsTimer = new Timer();
-    this.cleanupExpiredPermitsTimer.scheduleAtFixedRate(
+    this.cleanupExpiredPermitsTimer.schedule(
         new CleanupExpiredPermitsTask(),
         this.cleanupExpiredPermitsInterval,
         this.cleanupExpiredPermitsInterval);
-
-    this.permitsByRequestId = new ConcurrentHashMap<>();
-
     LOGGER.info("Initialized ThrottlingService. {}", this);
   }
 
   @PreDestroy
   public void preDestroy() {
-    if (this.resetNewConnectionRequestsTimer != null) {
-      this.resetNewConnectionRequestsTimer.cancel();
-    }
-    if (this.cleanupExpiredPermitsTimer != null) {
-      this.cleanupExpiredPermitsTimer.cancel();
-    }
+    this.resetNewConnectionRequestsTimer.cancel();
+    this.cleanupExpiredPermitsTimer.cancel();
+    this.resetNewConnectionRequestsTimer.purge();
+    this.cleanupExpiredPermitsTimer.purge();
   }
 
   @Override
@@ -100,9 +105,19 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
 
     try {
       if (this.openConnectionsSemaphore.availablePermits() == 0) {
-        throw new ThrottlingPermitDeniedException("Local: max open connections reached", priority);
+        if (priority < MINIMAL_HIGH_PRIO) {
+          throw new ThrottlingPermitDeniedException(
+              "Local: max open connections reached", priority);
+        } else {
+          LOGGER.debug("Wait for open connection for request with priority {}", priority);
+        }
       }
-      this.openConnectionsSemaphore.acquire();
+      if (!this.openConnectionsSemaphore.tryAcquire(
+          this.maxWaitForHighPrioInMs, TimeUnit.MILLISECONDS)) {
+        throw new ThrottlingPermitDeniedException(
+            "Local: max open connections could not acquire connection for request with priority {}",
+            priority);
+      }
       LOGGER.debug(
           "openConnection granted. available = {} ",
           this.openConnectionsSemaphore.availablePermits());
@@ -138,10 +153,19 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
 
     try {
       if (this.newConnectionRequestsSemaphore.availablePermits() == 0) {
-        throw new ThrottlingPermitDeniedException(
-            "Local: max new connection requests reached", priority);
+        if (priority < MINIMAL_HIGH_PRIO) {
+          throw new ThrottlingPermitDeniedException(
+              "Local: max new connection requests reached", priority);
+        } else {
+          LOGGER.debug("Wait for new connection for request with priority {}", priority);
+        }
       }
-      this.newConnectionRequestsSemaphore.acquire();
+      if (!this.newConnectionRequestsSemaphore.tryAcquire(
+          this.maxWaitForHighPrioInMs, TimeUnit.MILLISECONDS)) {
+        throw new ThrottlingPermitDeniedException(
+            "Local: max new connections could not acquire connection for request with priority {}",
+            priority);
+      }
       LOGGER.debug(
           "Request newConnection granted. available = {} ",
           this.newConnectionRequestsSemaphore.availablePermits());
@@ -209,7 +233,7 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
         }
 
         LOGGER.debug(
-            "ThrottlingService - Timer Reset and Unlocking, openConnections available = {}  ",
+            "ThrottlingService - Timer Cleanup and Unlocking, openConnections available = {}  ",
             LocalThrottlingServiceImpl.this.openConnectionsSemaphore.availablePermits());
       } finally {
         LocalThrottlingServiceImpl.this.resetTimerLock.unlock();
