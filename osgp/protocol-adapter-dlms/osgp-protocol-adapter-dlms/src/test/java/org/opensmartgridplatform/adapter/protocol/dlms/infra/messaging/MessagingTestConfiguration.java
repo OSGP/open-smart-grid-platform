@@ -18,7 +18,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Doma
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MonitoringService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SystemEventService;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.throttling.LocalThrottlingServiceImpl;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
@@ -190,11 +189,6 @@ public class MessagingTestConfiguration extends AbstractConfig {
   @Bean
   public OsgpExceptionConverter osgpExceptionConverter() {
     return new OsgpExceptionConverter();
-  }
-
-  @Bean
-  public LocalThrottlingServiceImpl throttlingService() {
-    return new LocalThrottlingServiceImpl();
   }
 
   @Bean

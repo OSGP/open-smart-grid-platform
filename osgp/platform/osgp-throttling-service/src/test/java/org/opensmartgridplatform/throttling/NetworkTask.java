@@ -10,20 +10,25 @@ import java.util.concurrent.TimeUnit;
 
 public class NetworkTask {
 
-  private Random random = new SecureRandom();
+  private final Random random = new SecureRandom();
 
   public final int baseTransceiverStationId;
   public final int cellId;
+  public final int priority;
   public final int maxDurationInMillis;
 
   public volatile boolean finished = false;
   public volatile Throwable throwable = null;
 
   public NetworkTask(
-      final int baseTransceiverStationId, final int cellId, final int maxDurationInMillis) {
+      final int baseTransceiverStationId,
+      final int cellId,
+      final int priority,
+      final int maxDurationInMillis) {
 
     this.baseTransceiverStationId = baseTransceiverStationId;
     this.cellId = cellId;
+    this.priority = priority;
     this.maxDurationInMillis = maxDurationInMillis;
   }
 

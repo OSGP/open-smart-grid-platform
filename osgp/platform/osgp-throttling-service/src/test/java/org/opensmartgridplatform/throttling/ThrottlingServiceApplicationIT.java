@@ -16,9 +16,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -48,11 +51,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+@Slf4j
 @SpringBootTest(
     classes = ThrottlingServiceApplication.class,
     webEnvironment = WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(initializers = ThrottlingServiceApplicationIT.Initializer.class)
 class ThrottlingServiceApplicationIT {
+  private static final int MAX_WAIT_FOR_HIGH_PRIO = 1000;
 
   @ClassRule
   private static final PostgreSQLContainer<?> postgreSQLContainer =
@@ -72,7 +77,8 @@ class ThrottlingServiceApplicationIT {
               "spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
               "spring.datasource.username=" + postgreSQLContainer.getUsername(),
               "spring.datasource.password=" + postgreSQLContainer.getPassword(),
-              "spring.jpa.show-sql=false")
+              "spring.jpa.show-sql=false",
+              "max.wait.for.high.prio.in.ms=" + MAX_WAIT_FOR_HIGH_PRIO)
           .applyTo(configurableApplicationContext.getEnvironment());
     }
   }
@@ -101,11 +107,17 @@ class ThrottlingServiceApplicationIT {
   private static final String THROTTLING_AND_CLIENT_PATH = "/{throttlingConfigId}/{clientId}";
   private static final String NETWORK_SEGMENT_PATH = "/{baseTransceiverStationId}/{cellId}";
   private static final String DISCARD_PATH = "/discard/{clientId}/{requestId}";
+  private static final String PRIORITY_PARAM = "?priority={priority}";
 
   private static final String PERMITS_URL_FOR_THROTTLING_AND_CLIENT =
       PERMITS_URL + THROTTLING_AND_CLIENT_PATH;
+  private static final String PERMITS_URL_FOR_THROTTLING_AND_CLIENT_FOR_REQUEST =
+      PERMITS_URL_FOR_THROTTLING_AND_CLIENT + PRIORITY_PARAM;
   private static final String PERMITS_URL_FOR_THROTTLING_AND_CLIENT_AND_NETWORK_SEGMENT =
       PERMITS_URL_FOR_THROTTLING_AND_CLIENT + NETWORK_SEGMENT_PATH;
+  private static final String
+      PERMITS_URL_FOR_THROTTLING_AND_CLIENT_AND_NETWORK_SEGMENT_FOR_REQUEST =
+          PERMITS_URL_FOR_THROTTLING_AND_CLIENT_AND_NETWORK_SEGMENT + PRIORITY_PARAM;
   private static final String PERMITS_URL_FOR_DISCARD = PERMITS_URL + DISCARD_PATH;
 
   private static final AtomicInteger requestIdCounter = new AtomicInteger(0);
@@ -318,9 +330,13 @@ class ThrottlingServiceApplicationIT {
   void requestPermitForNetworkSegment() {
     final int baseTransceiverStationId = 98549874;
     final int cellId = 0;
-
+    final int priority = 4;
     this.successfullyRequestPermit(
-        this.existingThrottlingConfigId, this.registeredClientId, baseTransceiverStationId, cellId);
+        this.existingThrottlingConfigId,
+        this.registeredClientId,
+        baseTransceiverStationId,
+        cellId,
+        priority);
   }
 
   @ParameterizedTest
@@ -331,6 +347,7 @@ class ThrottlingServiceApplicationIT {
     final int baseTransceiverStationId = 123;
     final int cellId = 1;
     final int requestId = 2;
+    final int priority = 4;
 
     this.btsCellConfigRepository.save(
         new BtsCellConfig(baseTransceiverStationId, cellId, maxConcurrency));
@@ -341,24 +358,183 @@ class ThrottlingServiceApplicationIT {
           this.registeredClientId,
           baseTransceiverStationId,
           cellId,
-          requestId);
+          requestId,
+          priority);
     } else {
       this.successfullyRequestPermit(
           this.existingThrottlingConfigId,
           this.registeredClientId,
           baseTransceiverStationId,
-          cellId);
+          cellId,
+          priority);
     }
   }
 
-  private void successfullyRequestPermit(
-      final short throttlingConfigId,
-      final int clientId,
-      final int baseTransceiverStationId,
-      final int cellId) {
+  @Test
+  void lowPrioDenyPermit() {
+    this.maxConcurrencyByBtsCellConfig.reset();
+
+    final int baseTransceiverStationId = 123;
+    final int cellId = 1;
+    final int requestId = 2;
+    final int maxConcurrency = 1;
+    final int priority = 4;
+
+    this.btsCellConfigRepository.save(
+        new BtsCellConfig(baseTransceiverStationId, cellId, maxConcurrency));
 
     this.successfullyRequestPermit(
-        throttlingConfigId, clientId, baseTransceiverStationId, cellId, null);
+        this.existingThrottlingConfigId,
+        this.registeredClientId,
+        baseTransceiverStationId,
+        cellId,
+        priority);
+
+    this.unsuccessfullyRequestPermit(
+        this.existingThrottlingConfigId,
+        this.registeredClientId,
+        baseTransceiverStationId,
+        cellId,
+        requestId,
+        priority);
+  }
+
+  @Test
+  void highPrioDenyManyRequests() {
+    this.maxConcurrencyByBtsCellConfig.reset();
+
+    final int baseTransceiverStationId = 123;
+    final int cellId = 1;
+    final int maxConcurrency = 1;
+    final int priority = 7;
+
+    this.btsCellConfigRepository.save(
+        new BtsCellConfig(baseTransceiverStationId, cellId, maxConcurrency));
+
+    assertThat(this.permitRepository.count()).isZero();
+
+    final int nrOfPermits = 100;
+    for (int i = 0; i < nrOfPermits - 1; i++) {
+      log.debug("successfullyReleasePermitWithDelay");
+      this.successfullyReleasePermitWithDelay(
+          this.existingThrottlingConfigId,
+          this.registeredClientId,
+          baseTransceiverStationId,
+          cellId,
+          (100 + i * 50));
+    }
+
+    for (int i = 0; i < nrOfPermits; i++) {
+      this.successfullyRequestPermit(
+          this.existingThrottlingConfigId,
+          this.registeredClientId,
+          baseTransceiverStationId,
+          cellId,
+          priority);
+    }
+    // release last permit
+    this.successfullyReleasePermit(
+        this.existingThrottlingConfigId, this.registeredClientId, baseTransceiverStationId, cellId);
+
+    assertThat(this.permitRepository.count()).isZero();
+  }
+
+  @Test
+  void highPrioDenyPermit() {
+    this.maxConcurrencyByBtsCellConfig.reset();
+
+    final int baseTransceiverStationId = 123;
+    final int cellId = 1;
+    final int maxConcurrency = 1;
+    final int priority = 7;
+
+    this.btsCellConfigRepository.save(
+        new BtsCellConfig(baseTransceiverStationId, cellId, maxConcurrency));
+
+    this.successfullyRequestPermit(
+        this.existingThrottlingConfigId,
+        this.registeredClientId,
+        baseTransceiverStationId,
+        cellId,
+        priority);
+
+    // low prio not possible
+    this.unsuccessfullyRequestPermit(
+        this.existingThrottlingConfigId,
+        this.registeredClientId,
+        baseTransceiverStationId,
+        cellId,
+        requestIdCounter.incrementAndGet(),
+        4);
+
+    final int delay = 100;
+    final long startTime = System.currentTimeMillis();
+    // release after delay
+    this.successfullyReleasePermitWithDelay(
+        this.existingThrottlingConfigId,
+        this.registeredClientId,
+        baseTransceiverStationId,
+        cellId,
+        delay);
+
+    // high prio not possible after delay
+    this.successfullyRequestPermit(
+        this.existingThrottlingConfigId,
+        this.registeredClientId,
+        baseTransceiverStationId,
+        cellId,
+        priority);
+    assertThat(System.currentTimeMillis() - startTime).isGreaterThanOrEqualTo(delay);
+  }
+
+  @Test
+  void highPrioDenyPermitMaxTime() {
+    this.maxConcurrencyByBtsCellConfig.reset();
+
+    final int baseTransceiverStationId = 123;
+    final int cellId = 1;
+    final int maxConcurrency = 1;
+    final int priority = 7;
+
+    this.btsCellConfigRepository.save(
+        new BtsCellConfig(baseTransceiverStationId, cellId, maxConcurrency));
+
+    this.successfullyRequestPermit(
+        this.existingThrottlingConfigId,
+        this.registeredClientId,
+        baseTransceiverStationId,
+        cellId,
+        priority);
+
+    final long startTime = System.currentTimeMillis();
+    // high prio not possible
+    this.unsuccessfullyRequestPermit(
+        this.existingThrottlingConfigId,
+        this.registeredClientId,
+        baseTransceiverStationId,
+        cellId,
+        requestIdCounter.incrementAndGet(),
+        priority);
+    assertThat(System.currentTimeMillis() - startTime)
+        .isGreaterThanOrEqualTo(MAX_WAIT_FOR_HIGH_PRIO);
+  }
+
+  private void successfullyReleasePermitWithDelay(
+      final short existingThrottlingConfigId,
+      final int registeredClientId,
+      final int baseTransceiverStationId,
+      final int cellId,
+      final long delay) {
+    final Timer timer = new Timer();
+    final TimerTask task =
+        new TimerTask() {
+          @Override
+          public void run() {
+            ThrottlingServiceApplicationIT.this.successfullyReleasePermit(
+                existingThrottlingConfigId, registeredClientId, baseTransceiverStationId, cellId);
+          }
+        }; // creating timer task
+    timer.schedule(task, delay); // scheduling the task after the delay
   }
 
   private void successfullyRequestPermit(
@@ -366,11 +542,23 @@ class ThrottlingServiceApplicationIT {
       final int clientId,
       final int baseTransceiverStationId,
       final int cellId,
-      final Integer requestId) {
+      final int priority) {
+
+    this.successfullyRequestPermit(
+        throttlingConfigId, clientId, baseTransceiverStationId, cellId, null, priority);
+  }
+
+  private void successfullyRequestPermit(
+      final short throttlingConfigId,
+      final int clientId,
+      final int baseTransceiverStationId,
+      final int cellId,
+      final Integer requestId,
+      final int priority) {
 
     final ResponseEntity<Integer> responseEntity =
         this.requestPermit(
-            throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
+            throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId, priority);
 
     assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
     assertThat(this.numberOfGrantedPermits(responseEntity)).isOne();
@@ -381,11 +569,12 @@ class ThrottlingServiceApplicationIT {
       final int clientId,
       final int baseTransceiverStationId,
       final int cellId,
-      final Integer requestId) {
+      final Integer requestId,
+      final int priority) {
 
     final ResponseEntity<Integer> responseEntity =
         this.requestPermit(
-            throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
+            throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId, priority);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
     assertThat(this.numberOfGrantedPermits(responseEntity)).isZero();
@@ -396,17 +585,19 @@ class ThrottlingServiceApplicationIT {
       final int clientId,
       final int baseTransceiverStationId,
       final int cellId,
-      final Integer requestId) {
+      final Integer requestId,
+      final int priority) {
 
     final ResponseEntity<JsonNode> responseEntity =
         this.testRestTemplate.<JsonNode>postForEntity(
-            PERMITS_URL_FOR_THROTTLING_AND_CLIENT_AND_NETWORK_SEGMENT,
+            PERMITS_URL_FOR_THROTTLING_AND_CLIENT_AND_NETWORK_SEGMENT_FOR_REQUEST,
             requestId,
             JsonNode.class,
             throttlingConfigId,
             clientId,
             baseTransceiverStationId,
-            cellId);
+            cellId,
+            priority);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
     final JsonNode errorBody = responseEntity.getBody();
@@ -428,9 +619,11 @@ class ThrottlingServiceApplicationIT {
   void requestPermitForUnknownNetworkSegment() {
 
     final int requestId = 5534879;
+    final int priority = 4;
 
     final ResponseEntity<Integer> responseEntity =
-        this.requestPermit(this.existingThrottlingConfigId, this.registeredClientId, requestId);
+        this.requestPermit(
+            this.existingThrottlingConfigId, this.registeredClientId, requestId, priority);
 
     assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
   }
@@ -443,13 +636,24 @@ class ThrottlingServiceApplicationIT {
     final int cellId1 = 1;
     final int baseTransceiverStationId2 = 45;
     final int cellId2 = 3;
+    final int priority = 4;
 
     final int reusedRequestId = requestIdCounter.incrementAndGet();
 
     this.successfullyRequestPermit(
-        throttlingConfigId, clientId, baseTransceiverStationId1, cellId1, reusedRequestId);
+        throttlingConfigId,
+        clientId,
+        baseTransceiverStationId1,
+        cellId1,
+        reusedRequestId,
+        priority);
     this.nonUniqueRequestIdOnRequestPermit(
-        throttlingConfigId, clientId, baseTransceiverStationId2, cellId2, reusedRequestId);
+        throttlingConfigId,
+        clientId,
+        baseTransceiverStationId2,
+        cellId2,
+        reusedRequestId,
+        priority);
   }
 
   @Test
@@ -462,6 +666,7 @@ class ThrottlingServiceApplicationIT {
 
     final int baseTransceiverStationId = 45910;
     final int cellId = 2;
+    final int priority = 4;
 
     this.requestPermitsThatAreGranted(
         throttlingConfigId, clientId, baseTransceiverStationId, cellId, maxConcurrency);
@@ -471,7 +676,8 @@ class ThrottlingServiceApplicationIT {
         clientId,
         baseTransceiverStationId,
         cellId,
-        requestIdCounter.incrementAndGet());
+        requestIdCounter.incrementAndGet(),
+        priority);
   }
 
   private void requestPermitsThatAreGranted(
@@ -498,8 +704,11 @@ class ThrottlingServiceApplicationIT {
     final int baseTransceiverStationId = 846574;
     final int cellId = 1;
     final int requestId = 299164;
+    final int priority = 4;
 
-    this.requestPermit(throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
+    final ResponseEntity<Integer> resp =
+        this.requestPermit(
+            throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId, priority);
 
     final ResponseEntity<Void> responseEntity =
         this.releasePermit(
@@ -513,8 +722,9 @@ class ThrottlingServiceApplicationIT {
     final short throttlingConfigId = this.existingThrottlingConfigId;
     final int clientId = this.registeredClientId;
     final Integer requestId = null;
+    final int priority = 4;
 
-    this.requestPermit(throttlingConfigId, clientId, requestId);
+    this.requestPermit(throttlingConfigId, clientId, requestId, priority);
 
     final ResponseEntity<Void> responseEntity =
         this.releasePermit(throttlingConfigId, clientId, requestId);
@@ -542,8 +752,10 @@ class ThrottlingServiceApplicationIT {
     final int clientId = this.registeredClientId;
     final int baseTransceiverStationId = 59;
     final int cellId = 1;
+    final int priority = 4;
 
-    this.successfullyRequestPermit(throttlingConfigId, clientId, baseTransceiverStationId, cellId);
+    this.successfullyRequestPermit(
+        throttlingConfigId, clientId, baseTransceiverStationId, cellId, priority);
     this.successfullyReleasePermit(throttlingConfigId, clientId, baseTransceiverStationId, cellId);
     this.unsuccessfullyReleasePermit(
         throttlingConfigId, clientId, baseTransceiverStationId, cellId);
@@ -556,10 +768,12 @@ class ThrottlingServiceApplicationIT {
     final int baseTransceiverStationId = 59;
     final int cellId = 1;
     final int requestId = requestIdCounter.incrementAndGet();
+    final int priority = 4;
     final double secondsSinceEpoch = System.currentTimeMillis() / 1000.0;
 
     // First do one successful request/release, so config exist
-    this.successfullyRequestPermit(throttlingConfigId, clientId, baseTransceiverStationId, cellId);
+    this.successfullyRequestPermit(
+        throttlingConfigId, clientId, baseTransceiverStationId, cellId, priority);
     this.successfullyReleasePermit(throttlingConfigId, clientId, baseTransceiverStationId, cellId);
     assertThat(this.permitRepository.findAll()).isEmpty();
 
@@ -587,9 +801,10 @@ class ThrottlingServiceApplicationIT {
     final int baseTransceiverStationId = 4375;
     final int cellId = 3;
     final int requestId = requestIdCounter.incrementAndGet();
+    final int priority = 4;
 
     this.successfullyRequestPermit(
-        throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
+        throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId, priority);
 
     this.discardPermitThatWasGranted(clientId, requestId);
 
@@ -646,6 +861,9 @@ class ThrottlingServiceApplicationIT {
         this.releasePermit(
             throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
 
+    if (responseEntity.getStatusCode().series() != HttpStatus.Series.SUCCESSFUL) {
+      log.error(responseEntity.toString());
+    }
     assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
   }
 
@@ -674,14 +892,18 @@ class ThrottlingServiceApplicationIT {
   }
 
   private ResponseEntity<Integer> requestPermit(
-      final short throttlingConfigId, final int clientId, final Integer requestId) {
+      final short throttlingConfigId,
+      final int clientId,
+      final Integer requestId,
+      final int priority) {
 
     return this.testRestTemplate.postForEntity(
-        PERMITS_URL_FOR_THROTTLING_AND_CLIENT,
+        PERMITS_URL_FOR_THROTTLING_AND_CLIENT_FOR_REQUEST,
         requestId,
         Integer.class,
         throttlingConfigId,
-        clientId);
+        clientId,
+        priority);
   }
 
   private ResponseEntity<Integer> requestPermit(
@@ -689,16 +911,18 @@ class ThrottlingServiceApplicationIT {
       final int clientId,
       final int baseTransceiverStationId,
       final int cellId,
-      final Integer requestId) {
+      final Integer requestId,
+      final int priority) {
 
     return this.testRestTemplate.postForEntity(
-        PERMITS_URL_FOR_THROTTLING_AND_CLIENT_AND_NETWORK_SEGMENT,
+        PERMITS_URL_FOR_THROTTLING_AND_CLIENT_AND_NETWORK_SEGMENT_FOR_REQUEST,
         requestId,
         Integer.class,
         throttlingConfigId,
         clientId,
         baseTransceiverStationId,
-        cellId);
+        cellId,
+        priority);
   }
 
   private ResponseEntity<Void> releasePermit(
@@ -859,6 +1083,7 @@ class ThrottlingServiceApplicationIT {
     final int maximumBaseTransceiverStationId = 4;
     final int minimumCellId = 1;
     final int maximumCellId = 2;
+    final int priority = 4;
     final FakeConcurrencyRestrictedNetwork network =
         new FakeConcurrencyRestrictedNetwork(maxConcurrency);
     final List<NetworkTask> networkTasks =
@@ -868,7 +1093,8 @@ class ThrottlingServiceApplicationIT {
             minimumBaseTransceiverStationId,
             maximumBaseTransceiverStationId,
             minimumCellId,
-            maximumCellId);
+            maximumCellId,
+            priority);
     final NetworkTaskQueue networkTaskQueue = new NetworkTaskQueue();
     for (final NetworkTask networkTask : networkTasks) {
       networkTaskQueue.add(networkTask);
@@ -929,7 +1155,8 @@ class ThrottlingServiceApplicationIT {
       final int minimumBaseTransceiverStationId,
       final int maximumBaseTransceiverStationId,
       final int minimumCellId,
-      final int maximumCellId) {
+      final int maximumCellId,
+      final int priority) {
 
     final List<NetworkTask> networkTasks = new ArrayList<>(numberOfNetworkTasks);
     for (int i = 0; i < numberOfNetworkTasks; i++) {
@@ -939,6 +1166,7 @@ class ThrottlingServiceApplicationIT {
                   + this.random.nextInt(
                       1 + maximumBaseTransceiverStationId - minimumBaseTransceiverStationId),
               minimumCellId + this.random.nextInt(1 + maximumCellId - minimumCellId),
+              priority,
               maxDurationInMillis));
     }
     return networkTasks;

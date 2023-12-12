@@ -29,7 +29,8 @@ public class SegmentedNetworkThrottler {
       final int clientId,
       final int baseTransceiverStationId,
       final int cellId,
-      final int requestId) {
+      final int requestId,
+      final int priority) {
 
     final Optional<Integer> maxConcurrencyBtsCell =
         this.maxConcurrencyByBtsCellConfig.getMaxConcurrency(baseTransceiverStationId, cellId);
@@ -41,7 +42,13 @@ public class SegmentedNetworkThrottler {
     }
 
     return this.permitsByThrottlingConfig.requestPermit(
-        throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId, maxConcurrency);
+        throttlingConfigId,
+        clientId,
+        baseTransceiverStationId,
+        cellId,
+        requestId,
+        priority,
+        maxConcurrency);
   }
 
   public boolean releasePermit(

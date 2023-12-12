@@ -58,7 +58,9 @@ public abstract class DlmsConnectionMessageProcessor {
 
     final Permit permit =
         this.throttlingService.requestPermit(
-            messageMetadata.getBaseTransceiverStationId(), messageMetadata.getCellId());
+            messageMetadata.getBaseTransceiverStationId(),
+            messageMetadata.getCellId(),
+            messageMetadata.getMessagePriority());
 
     final DlmsMessageListener dlmsMessageListener =
         this.createMessageListenerForDeviceConnection(device, messageMetadata);

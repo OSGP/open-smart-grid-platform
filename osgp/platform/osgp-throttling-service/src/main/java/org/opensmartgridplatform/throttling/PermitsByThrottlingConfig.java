@@ -15,6 +15,7 @@ import org.opensmartgridplatform.throttling.repositories.PermitRepository;
 import org.opensmartgridplatform.throttling.repositories.ThrottlingConfigRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
@@ -27,13 +28,16 @@ public class PermitsByThrottlingConfig {
 
   private final ThrottlingConfigRepository throttlingConfigRepository;
   private final PermitRepository permitRepository;
+  private final int maxWaitForHighPrioInMs;
 
   public PermitsByThrottlingConfig(
       final ThrottlingConfigRepository throttlingConfigRepository,
-      final PermitRepository permitRepository) {
+      final PermitRepository permitRepository,
+      @Value("${max.wait.for.high.prio.in.ms:5000}") final int maxWaitForHighPrioInMs) {
 
     this.throttlingConfigRepository = throttlingConfigRepository;
     this.permitRepository = permitRepository;
+    this.maxWaitForHighPrioInMs = maxWaitForHighPrioInMs;
   }
 
   /** Clears all cached permit counts and initializes the cached information from the database. */
@@ -49,7 +53,8 @@ public class PermitsByThrottlingConfig {
     throttlingConfigIdsInDb.forEach(
         throttlingConfigId ->
             this.permitsPerSegmentByConfig.putIfAbsent(
-                throttlingConfigId, new PermitsPerNetworkSegment(this.permitRepository)));
+                throttlingConfigId,
+                new PermitsPerNetworkSegment(this.permitRepository, this.maxWaitForHighPrioInMs)));
 
     /* Update config */
     this.permitsPerSegmentByConfig.entrySet().parallelStream()
@@ -76,6 +81,7 @@ public class PermitsByThrottlingConfig {
       final int baseTransceiverStationId,
       final int cellId,
       final int requestId,
+      final int priority,
       final int maxConcurrency) {
 
     final PermitsPerNetworkSegment permitsPerNetworkSegment =
@@ -83,12 +89,18 @@ public class PermitsByThrottlingConfig {
             throttlingConfigId, this::createAndInitialize);
 
     return permitsPerNetworkSegment.requestPermit(
-        throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId, maxConcurrency);
+        throttlingConfigId,
+        clientId,
+        baseTransceiverStationId,
+        cellId,
+        requestId,
+        priority,
+        maxConcurrency);
   }
 
   private PermitsPerNetworkSegment createAndInitialize(final short throttlingConfigId) {
     final PermitsPerNetworkSegment permitsPerNetworkSegment =
-        new PermitsPerNetworkSegment(this.permitRepository);
+        new PermitsPerNetworkSegment(this.permitRepository, this.maxWaitForHighPrioInMs);
     permitsPerNetworkSegment.initialize(throttlingConfigId);
     return permitsPerNetworkSegment;
   }
@@ -100,7 +112,8 @@ public class PermitsByThrottlingConfig {
      * throttling configuration.
      */
     this.permitsPerSegmentByConfig.putIfAbsent(
-        throttlingConfigId, new PermitsPerNetworkSegment(this.permitRepository));
+        throttlingConfigId,
+        new PermitsPerNetworkSegment(this.permitRepository, this.maxWaitForHighPrioInMs));
   }
 
   public boolean releasePermit(

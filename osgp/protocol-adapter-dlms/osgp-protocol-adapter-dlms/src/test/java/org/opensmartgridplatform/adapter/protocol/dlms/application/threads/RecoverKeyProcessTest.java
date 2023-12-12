@@ -82,7 +82,8 @@ class RecoverKeyProcessTest {
   @Test
   void testWhenHasNoNewKeysToConnectWith() throws OsgpException, IOException {
     final int btsId = 1;
-    final int cellId = 1;
+    final int cellId = 2;
+    final int priority = 3;
 
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION))
         .thenReturn(this.dlmsDevice);
@@ -96,7 +97,7 @@ class RecoverKeyProcessTest {
     verify(this.secretManagementService, times(1))
         .hasNewSecret(this.messageMetadata, DEVICE_IDENTIFICATION);
     verify(this.domainHelperService).findDlmsDevice(DEVICE_IDENTIFICATION);
-    verify(this.throttlingService, never()).requestPermit(btsId, cellId);
+    verify(this.throttlingService, never()).requestPermit(btsId, cellId, priority);
   }
 
   @Test
@@ -123,7 +124,8 @@ class RecoverKeyProcessTest {
   @Test
   void testThrottlingServiceCalledAndKeysActivated() throws Exception {
     final int btsId = 1;
-    final int cellId = 1;
+    final int cellId = 2;
+    final int priority = 3;
     final Permit permit = mock(Permit.class);
 
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION))
@@ -139,13 +141,14 @@ class RecoverKeyProcessTest {
 
     when(this.messageMetadata.getBaseTransceiverStationId()).thenReturn(btsId);
     when(this.messageMetadata.getCellId()).thenReturn(cellId);
-    when(this.throttlingService.requestPermit(btsId, cellId)).thenReturn(permit);
+    when(this.messageMetadata.getMessagePriority()).thenReturn(priority);
+    when(this.throttlingService.requestPermit(btsId, cellId, priority)).thenReturn(permit);
 
     this.recoverKeyProcess.run();
 
     final InOrder inOrder = inOrder(this.throttlingService, this.hls5Connector);
 
-    inOrder.verify(this.throttlingService).requestPermit(btsId, cellId);
+    inOrder.verify(this.throttlingService).requestPermit(btsId, cellId, priority);
     inOrder
         .verify(this.hls5Connector)
         .connectUnchecked(eq(this.messageMetadata), eq(this.dlmsDevice), any(), any());
@@ -164,7 +167,8 @@ class RecoverKeyProcessTest {
   @Test
   void testWhenConnectionFailedThenConnectionClosedAtThrottlingService() throws Exception {
     final int btsId = 1;
-    final int cellId = 1;
+    final int cellId = 2;
+    final int priority = 3;
     final Permit permit = mock(Permit.class);
 
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION))
@@ -173,7 +177,8 @@ class RecoverKeyProcessTest {
 
     when(this.messageMetadata.getBaseTransceiverStationId()).thenReturn(btsId);
     when(this.messageMetadata.getCellId()).thenReturn(cellId);
-    when(this.throttlingService.requestPermit(btsId, cellId)).thenReturn(permit);
+    when(this.messageMetadata.getMessagePriority()).thenReturn(priority);
+    when(this.throttlingService.requestPermit(btsId, cellId, priority)).thenReturn(permit);
 
     when(this.secretManagementService.hasNewSecret(
             eq(this.messageMetadata), eq(DEVICE_IDENTIFICATION)))
@@ -183,7 +188,7 @@ class RecoverKeyProcessTest {
 
     final InOrder inOrder = inOrder(this.throttlingService, this.hls5Connector);
 
-    inOrder.verify(this.throttlingService).requestPermit(btsId, cellId);
+    inOrder.verify(this.throttlingService).requestPermit(btsId, cellId, priority);
     inOrder.verify(this.hls5Connector).connectUnchecked(any(), any(), any(), any());
     inOrder.verify(this.throttlingService).releasePermit(permit);
 

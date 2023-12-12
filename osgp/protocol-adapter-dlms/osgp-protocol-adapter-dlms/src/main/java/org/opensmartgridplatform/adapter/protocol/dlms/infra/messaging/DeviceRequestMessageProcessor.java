@@ -117,10 +117,11 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       final Duration permitRejectDelay =
           this.throttlingConfig.permitRejectedDelay(messageMetadata.getMessagePriority());
       log.info(
-          "Throttling permit was denied for deviceIdentification {} for network segment ({}, {}) for {}. retry message in {} ms",
+          "Throttling permit was denied for deviceIdentification {} for network segment ({}, {}) with priority {} for {}. retry message in {} ms",
           messageMetadata.getDeviceIdentification(),
           exception.getBaseTransceiverStationId(),
           exception.getCellId(),
+          exception.getPriority(),
           exception.getConfigurationName(),
           permitRejectDelay.toMillis());
       this.deviceRequestMessageSender.send(messageObject, messageMetadata, permitRejectDelay);
