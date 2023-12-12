@@ -134,7 +134,7 @@ SPDX-License-Identifier: Apache-2.0
     <postgresql.version>42.6.0</postgresql.version>
     <javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
     <!-- to avoid conflicts with spring-kafka-test the older kafka version 2.4.1 is used-->
-    <kafka.version>2.4.1</kafka.version>
+    <kafka.version>3.6.1</kafka.version>
     <avro.version>1.11.3</avro.version>
     <spring.kafka.version>2.4.7.RELEASE</spring.kafka.version>
     <!-- spring-kafka-test needs a 2.12 version of the scala libraries -->
