@@ -99,40 +99,19 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
   public Permit requestPermit(
       final Integer baseTransceiverStationId, final Integer cellId, final Integer priority) {
 
-    this.newConnectionRequest(priority);
+    this.awaitReset();
 
-    LOGGER.debug(
-        "Requesting openConnection. available = {} ",
-        this.openConnectionsSemaphore.availablePermits());
+    // newConnectionRequest will be released by ResetNewConnectionRequestsTask
+    this.requestPermit(this.newConnectionRequestsSemaphore, priority, "newConnectionRequest");
 
-    try {
-      if (this.openConnectionsSemaphore.availablePermits() == 0) {
-        if (priority <= MessagePriorityEnum.DEFAULT.getPriority()) {
-          throw new ThrottlingPermitDeniedException(
-              "Local: max open connections reached", priority);
-        } else {
-          LOGGER.debug("Wait for open connection for request with priority {}", priority);
-        }
-      }
-      if (!this.openConnectionsSemaphore.tryAcquire(
-          this.maxWaitForHighPrioInMs, TimeUnit.MILLISECONDS)) {
-        throw new ThrottlingPermitDeniedException(
-            "Local: max open connections could not acquire connection for request with priority {}",
-            priority);
-      }
-      LOGGER.debug(
-          "openConnection granted. available = {} ",
-          this.openConnectionsSemaphore.availablePermits());
-    } catch (final InterruptedException e) {
-      LOGGER.warn("Unable to acquire Open Connection", e);
-      Thread.currentThread().interrupt();
-    }
+    // openConnection will be released releasePermit method or CleanupExpiredPermitsTask
+    this.requestPermit(this.openConnectionsSemaphore, priority, "openConnection");
+
     return this.createPermit();
   }
 
   @Override
   public void releasePermit(final Permit permit) {
-
     LOGGER.debug(
         "closeConnection(). available = {}", this.openConnectionsSemaphore.availablePermits());
     if (this.openConnectionsSemaphore.availablePermits() < this.maxOpenConnections) {
@@ -142,42 +121,39 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
     this.permitsByRequestId.remove(permit.getRequestId());
   }
 
-  private void newConnectionRequest(final int priority) {
-    LOGGER.debug(
-        "Await reset for newConnection. available = {} ",
-        this.newConnectionRequestsSemaphore.availablePermits());
-
-    this.awaitReset();
-
-    LOGGER.debug(
-        "newConnectionRequest(). available = {} ",
-        this.newConnectionRequestsSemaphore.availablePermits());
+  private void requestPermit(
+      final Semaphore semaphore, final int priority, final String permitDescription) {
+    LOGGER.debug("{}. available = {} ", permitDescription, semaphore.availablePermits());
 
     try {
-      if (this.newConnectionRequestsSemaphore.availablePermits() == 0) {
+      if (semaphore.availablePermits() == 0) {
         if (priority <= MessagePriorityEnum.DEFAULT.getPriority()) {
           throw new ThrottlingPermitDeniedException(
-              "Local: max new connection requests reached", priority);
+              permitDescription + ": no available permits", priority);
         } else {
-          LOGGER.debug("Wait for new connection for request with priority {}", priority);
+          LOGGER.debug(
+              "{} wait for available permit for request with priority {}",
+              permitDescription,
+              priority);
         }
       }
-      if (!this.newConnectionRequestsSemaphore.tryAcquire(
-          this.maxWaitForHighPrioInMs, TimeUnit.MILLISECONDS)) {
+      if (!semaphore.tryAcquire(this.maxWaitForHighPrioInMs, TimeUnit.MILLISECONDS)) {
         throw new ThrottlingPermitDeniedException(
-            "Local: max new connections could not acquire connection for request with priority {}",
+            permitDescription + ": could not acquire permit for request with priority " + priority,
             priority);
       }
-      LOGGER.debug(
-          "Request newConnection granted. available = {} ",
-          this.newConnectionRequestsSemaphore.availablePermits());
+      LOGGER.debug("{} granted. available = {} ", permitDescription, semaphore.availablePermits());
     } catch (final InterruptedException e) {
-      LOGGER.warn("Unable to acquire New Connection Request", e);
+      LOGGER.warn(permitDescription + ": unable to acquire permit", e);
       Thread.currentThread().interrupt();
     }
   }
 
   private synchronized void awaitReset() {
+    LOGGER.debug(
+        "Await reset for newConnection. available = {} ",
+        this.newConnectionRequestsSemaphore.availablePermits());
+
     while (this.resetTimerLock.isLocked()) {
       try {
         LOGGER.info("Wait {}ms while reset timer is locked", this.maxNewConnectionResetTime);
