@@ -41,8 +41,8 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
   @Value("${throttling.max.wait.high.prio}")
   private int maxWaitForHighPrioInMs;
 
-  @Value("${throttling.reset.time}")
-  private int resetTime;
+  @Value("${throttling.max.new.connection.reset.time}")
+  private int maxNewConnectionResetTime;
 
   @Value("${cleanup.permits.interval}")
   private int cleanupExpiredPermitsInterval;
@@ -76,7 +76,9 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
   @PostConstruct
   public void postConstruct() {
     this.resetNewConnectionRequestsTimer.schedule(
-        new ResetNewConnectionRequestsTask(), this.resetTime, this.resetTime);
+        new ResetNewConnectionRequestsTask(),
+        this.maxNewConnectionResetTime,
+        this.maxNewConnectionResetTime);
 
     this.cleanupExpiredPermitsTimer.schedule(
         new CleanupExpiredPermitsTask(),
@@ -178,8 +180,8 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
   private synchronized void awaitReset() {
     while (this.resetTimerLock.isLocked()) {
       try {
-        LOGGER.info("Wait {}ms while reset timer is locked", this.resetTime);
-        this.resetTimerLock.wait(this.resetTime);
+        LOGGER.info("Wait {}ms while reset timer is locked", this.maxNewConnectionResetTime);
+        this.resetTimerLock.wait(this.maxNewConnectionResetTime);
       } catch (final InterruptedException e) {
         LOGGER.warn("Unable to acquire New Connection Request Lock", e);
         Thread.currentThread().interrupt();
@@ -244,8 +246,8 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
   @Override
   public String toString() {
     return String.format(
-        "ThrottlingService. maxOpenConnections = %d, maxNewConnectionRequests=%d, resetTime=%d",
-        this.maxOpenConnections, this.maxNewConnectionRequests, this.resetTime);
+        "ThrottlingService. maxOpenConnections = %d, maxNewConnectionRequests=%d, maxNewConnectionResetTime=%d",
+        this.maxOpenConnections, this.maxNewConnectionRequests, this.maxNewConnectionResetTime);
   }
 
   private Permit createPermit() {

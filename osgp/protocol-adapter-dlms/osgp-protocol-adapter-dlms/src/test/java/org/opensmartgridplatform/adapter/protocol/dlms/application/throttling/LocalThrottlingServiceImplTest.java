@@ -36,7 +36,7 @@ class LocalThrottlingServiceImplTest {
 
   private static final Integer MAX_NEW_CONNECTION_REQUESTS = 10;
   private static final Integer MAX_OPEN_CONNECTIONS = MAX_NEW_CONNECTION_REQUESTS * 2;
-  private static final Integer RESET_TIME = 200;
+  private static final Integer MAX_NEW_CONNECTION_RESET_TIME = 200;
   private static final Integer MAX_WAIT_FOR_HIGH_PRIO = 500;
   private static final Integer CLEANUP_PERMITS_INTERVAL = 200;
   private static final Duration PERMIT_TTL = Duration.of(2, ChronoUnit.SECONDS);
@@ -47,7 +47,8 @@ class LocalThrottlingServiceImplTest {
   void setUp() {
     this.throttlingService =
         new LocalThrottlingServiceImpl(MAX_OPEN_CONNECTIONS, MAX_NEW_CONNECTION_REQUESTS);
-    ReflectionTestUtils.setField(this.throttlingService, "resetTime", RESET_TIME);
+    ReflectionTestUtils.setField(
+        this.throttlingService, "maxNewConnectionResetTime", MAX_NEW_CONNECTION_RESET_TIME);
     ReflectionTestUtils.setField(
         this.throttlingService, "maxWaitForHighPrioInMs", MAX_WAIT_FOR_HIGH_PRIO);
     ReflectionTestUtils.setField(
@@ -62,11 +63,11 @@ class LocalThrottlingServiceImplTest {
     // Claim 10
     final List<Permit> firstBatch = this.requestPermitLowPrio(MAX_NEW_CONNECTION_REQUESTS);
     // Sleep longer than reset time
-    Thread.sleep(RESET_TIME + 100);
+    Thread.sleep(MAX_NEW_CONNECTION_RESET_TIME + 100);
     // Next 10
     this.requestPermitLowPrio(MAX_NEW_CONNECTION_REQUESTS);
     // Sleep longer than reset time
-    Thread.sleep(RESET_TIME + 100);
+    Thread.sleep(MAX_NEW_CONNECTION_RESET_TIME + 100);
     this.assertPermitsInMemory(MAX_OPEN_CONNECTIONS);
 
     assertThrows(ThrottlingPermitDeniedException.class, () -> this.requestPermit(1, priority));
