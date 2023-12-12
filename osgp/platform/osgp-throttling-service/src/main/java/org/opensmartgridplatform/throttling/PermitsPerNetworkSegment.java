@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository.PermitCountByNetworkSegment;
 import org.slf4j.Logger;
@@ -21,8 +22,6 @@ public class PermitsPerNetworkSegment {
   private static final ConcurrentMap<Integer, AtomicInteger> NO_PERMITS_FOR_STATION =
       new ConcurrentHashMap<>();
   private static final AtomicInteger NO_PERMITS_FOR_CELL = new AtomicInteger(0);
-
-  private static final int MINIMAL_HIGH_PRIO = 5;
 
   private final ConcurrentMap<Integer, ConcurrentMap<Integer, AtomicInteger>> permitsPerSegment =
       new ConcurrentHashMap<>();
@@ -149,7 +148,7 @@ public class PermitsPerNetworkSegment {
     if (numberOfPermitsIfGranted > maxConcurrency) {
       permitCounter.decrementAndGet();
 
-      if (priority < MINIMAL_HIGH_PRIO) {
+      if (priority <= MessagePriorityEnum.DEFAULT.getPriority()) {
         return false;
       }
 

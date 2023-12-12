@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.throttling.web.api;
 
 import java.util.Optional;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.opensmartgridplatform.throttling.SegmentedNetworkThrottler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PermitController {
 
   private static final int NO_ID_PROVIDED = -1;
-  private static final int NO_PRIORITY_PROVIDED = 4;
+  private static final int NO_PRIORITY_PROVIDED = MessagePriorityEnum.DEFAULT.getPriority();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PermitController.class);
 

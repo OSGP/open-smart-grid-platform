@@ -19,6 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.annotation.LocalThrottlingServiceCondition;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.opensmartgridplatform.throttling.ThrottlingPermitDeniedException;
 import org.opensmartgridplatform.throttling.api.Permit;
 import org.slf4j.Logger;
@@ -30,7 +31,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Conditional(LocalThrottlingServiceCondition.class)
 public class LocalThrottlingServiceImpl implements ThrottlingService {
-  private static final int MINIMAL_HIGH_PRIO = 5;
   private final AtomicInteger requestIdCounter = new AtomicInteger(0);
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalThrottlingServiceImpl.class);
@@ -107,7 +107,7 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
 
     try {
       if (this.openConnectionsSemaphore.availablePermits() == 0) {
-        if (priority < MINIMAL_HIGH_PRIO) {
+        if (priority <= MessagePriorityEnum.DEFAULT.getPriority()) {
           throw new ThrottlingPermitDeniedException(
               "Local: max open connections reached", priority);
         } else {
@@ -155,7 +155,7 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
 
     try {
       if (this.newConnectionRequestsSemaphore.availablePermits() == 0) {
-        if (priority < MINIMAL_HIGH_PRIO) {
+        if (priority <= MessagePriorityEnum.DEFAULT.getPriority()) {
           throw new ThrottlingPermitDeniedException(
               "Local: max new connection requests reached", priority);
         } else {

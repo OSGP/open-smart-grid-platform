@@ -21,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.opensmartgridplatform.throttling.ThrottlingPermitDeniedException;
 import org.opensmartgridplatform.throttling.api.Permit;
 import org.slf4j.Logger;
@@ -32,7 +33,6 @@ class LocalThrottlingServiceImplTest {
 
   private static final Logger LOGGER =
       LoggerFactory.getLogger(LocalThrottlingServiceImplTest.class);
-  private static final int MINIMAL_HIGH_PRIO = 5;
 
   private static final Integer MAX_NEW_CONNECTION_REQUESTS = 10;
   private static final Integer MAX_OPEN_CONNECTIONS = MAX_NEW_CONNECTION_REQUESTS * 2;
@@ -96,7 +96,7 @@ class LocalThrottlingServiceImplTest {
     this.releasePermitWithDelay(permits, MAX_WAIT_FOR_HIGH_PRIO / 2);
 
     final int nrOfOpenConnections;
-    if (priority < MINIMAL_HIGH_PRIO) {
+    if (priority <= MessagePriorityEnum.DEFAULT.getPriority()) {
       assertThrows(
           ThrottlingPermitDeniedException.class,
           () -> this.requestPermit(MAX_NEW_CONNECTION_REQUESTS, priority));

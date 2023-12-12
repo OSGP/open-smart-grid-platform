@@ -34,9 +34,9 @@ public class ThrottlingPermitDeniedException extends RuntimeException {
 
     super(String.format("Permit denied for network with configuration \"%s\"", configurationName));
     this.configurationName = configurationName;
+    this.priority = priority;
     this.baseTransceiverStationId = null;
     this.cellId = null;
-    this.priority = null;
   }
 
   public String getConfigurationName() {
@@ -49,5 +49,9 @@ public class ThrottlingPermitDeniedException extends RuntimeException {
 
   public Optional<Integer> getCellId() {
     return Optional.ofNullable(this.cellId);
+  }
+
+  public Integer getPriority() {
+    return this.priority;
   }
 }
