@@ -11,11 +11,15 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.throttling.ThrottlingPermitDeniedException;
 import org.opensmartgridplatform.throttling.api.Permit;
@@ -32,6 +36,7 @@ class LocalThrottlingServiceImplTest {
   private static final Integer MAX_NEW_CONNECTION_REQUESTS = 10;
   private static final Integer MAX_OPEN_CONNECTIONS = MAX_NEW_CONNECTION_REQUESTS * 2;
   private static final Integer RESET_TIME = 500;
+  private static final Integer MAX_WAIT_FOR_PERMIT = 1000;
 
   private static final Integer CLEANUP_PERMITS_INTERVAL = 1500;
 
@@ -50,11 +55,13 @@ class LocalThrottlingServiceImplTest {
     ReflectionTestUtils.setField(
         this.throttlingService, "cleanupExpiredPermitsInterval", CLEANUP_PERMITS_INTERVAL);
     ReflectionTestUtils.setField(this.throttlingService, "timeToLive", PERMIT_TTL);
+    ReflectionTestUtils.setField(this.throttlingService, "maxWaitForPermit", MAX_WAIT_FOR_PERMIT);
     this.throttlingService.postConstruct();
   }
 
   @Test
   void testThrottlingOpenConnections() throws InterruptedException {
+    ReflectionTestUtils.setField(this.throttlingService, "maxWaitForPermit", 0);
 
     // Claim 10
     final List<Permit> firstBatch = this.requestPermit(MAX_NEW_CONNECTION_REQUESTS);
@@ -79,6 +86,8 @@ class LocalThrottlingServiceImplTest {
 
   @Test
   void testThrottlingMaxNewConnections() {
+    ReflectionTestUtils.setField(this.throttlingService, "maxWaitForPermit", 0);
+
     this.assertAvailableNewConnections(MAX_NEW_CONNECTION_REQUESTS);
     // Claim max new
     this.requestPermit(MAX_NEW_CONNECTION_REQUESTS);
@@ -111,6 +120,42 @@ class LocalThrottlingServiceImplTest {
 
     this.assertPermitsInMemory(2);
     this.assertAvailablePermits(MAX_OPEN_CONNECTIONS - 2);
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {0, 600, 1200})
+  void testPermitMaxWait(final int releaseDelay) throws InterruptedException {
+    // Claim 10
+    final List<Permit> firstBatch = this.requestPermit(MAX_NEW_CONNECTION_REQUESTS);
+    // Sleep longer than reset time
+    Thread.sleep(RESET_TIME + 100);
+    // Next 10
+    this.requestPermit(MAX_NEW_CONNECTION_REQUESTS);
+    // Sleep longer than reset time
+    Thread.sleep(RESET_TIME + 100);
+
+    final long startTime = System.currentTimeMillis();
+    if (releaseDelay == 0) {
+      this.releasePermit(List.of(firstBatch.get(0)));
+      this.assertPermitsInMemory(MAX_OPEN_CONNECTIONS - 1);
+      this.assertAvailablePermits(1);
+    } else {
+      this.releasePermitWithDelay(List.of(firstBatch.get(0)), releaseDelay);
+      this.assertPermitsInMemory(MAX_OPEN_CONNECTIONS);
+      this.assertAvailablePermits(0);
+    }
+
+    if (releaseDelay > MAX_WAIT_FOR_PERMIT) {
+      assertThrows(ThrottlingPermitDeniedException.class, () -> this.requestPermit(1));
+      assertThat(System.currentTimeMillis() - startTime)
+          .isGreaterThanOrEqualTo(MAX_WAIT_FOR_PERMIT);
+    } else {
+      this.requestPermit(1);
+      assertThat(System.currentTimeMillis() - startTime).isGreaterThanOrEqualTo(releaseDelay);
+    }
+
+    this.assertPermitsInMemory(MAX_OPEN_CONNECTIONS);
+    this.assertAvailablePermits(0);
   }
 
   @Test
@@ -152,6 +197,18 @@ class LocalThrottlingServiceImplTest {
       LOGGER.info("Closing Connection for permit {}", permit);
       this.throttlingService.releasePermit(permit);
     }
+  }
+
+  private void releasePermitWithDelay(final List<Permit> permits, final long delay) {
+    final Timer timer = new Timer();
+    final TimerTask task =
+        new TimerTask() {
+          @Override
+          public void run() {
+            LocalThrottlingServiceImplTest.this.releasePermit(permits);
+          }
+        }; // creating timer task
+    timer.schedule(task, delay); // scheduling the task after the delay
   }
 
   private void assertPermitsInMemory(final Integer nrOfPermitsInMemory) {
