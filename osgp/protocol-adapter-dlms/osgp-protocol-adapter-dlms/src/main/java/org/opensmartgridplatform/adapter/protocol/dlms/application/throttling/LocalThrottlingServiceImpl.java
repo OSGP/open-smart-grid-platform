@@ -19,7 +19,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.annotation.LocalThrottlingServiceCondition;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.opensmartgridplatform.throttling.ThrottlingPermitDeniedException;
 import org.opensmartgridplatform.throttling.api.Permit;
 import org.slf4j.Logger;
@@ -38,8 +37,8 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
   private final int maxOpenConnections;
   private final int maxNewConnectionRequests;
 
-  @Value("${throttling.max.wait.high.prio}")
-  private int maxWaitForHighPrioInMs;
+  @Value("${throttling.max.wait.for.permit}")
+  private int maxWaitForPermitInMs;
 
   @Value("${throttling.max.new.connection.reset.time}")
   private int maxNewConnectionResetTime;
@@ -126,18 +125,7 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
     LOGGER.debug("{}. available = {} ", permitDescription, semaphore.availablePermits());
 
     try {
-      if (semaphore.availablePermits() == 0) {
-        if (priority <= MessagePriorityEnum.DEFAULT.getPriority()) {
-          throw new ThrottlingPermitDeniedException(
-              permitDescription + ": no available permits", priority);
-        } else {
-          LOGGER.debug(
-              "{} wait for available permit for request with priority {}",
-              permitDescription,
-              priority);
-        }
-      }
-      if (!semaphore.tryAcquire(this.maxWaitForHighPrioInMs, TimeUnit.MILLISECONDS)) {
+      if (!semaphore.tryAcquire(this.maxWaitForPermitInMs, TimeUnit.MILLISECONDS)) {
         throw new ThrottlingPermitDeniedException(
             permitDescription + ": could not acquire permit for request with priority " + priority,
             priority);
