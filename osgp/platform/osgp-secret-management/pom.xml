@@ -22,7 +22,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <properties>
     <java.version>17</java.version>
-    <spring.boot.version>2.7.15</spring.boot.version>
+    <spring.boot.version>2.7.18</spring.boot.version>
     <spring.data.commons.version>2.7.15</spring.data.commons.version>
     <jaxb.plugin.version>2.5.0</jaxb.plugin.version>
     <build.helper.maven.plugin.version>3.0.0</build.helper.maven.plugin.version>

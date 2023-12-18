@@ -23,7 +23,7 @@ SPDX-License-Identifier: Apache-2.0
   <properties>
     <display.version>${project.version}-${BUILD_TAG}</display.version>
     <commons.collections.version>4.4</commons.collections.version>
-    <spring.boot.version>2.7.15</spring.boot.version>
+    <spring.boot.version>2.7.18</spring.boot.version>
 
     <skipITs>true</skipITs>
   </properties>
