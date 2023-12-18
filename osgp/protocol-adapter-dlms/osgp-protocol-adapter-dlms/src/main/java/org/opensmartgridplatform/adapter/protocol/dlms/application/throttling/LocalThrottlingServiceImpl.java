@@ -13,6 +13,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.PostConstruct;
@@ -41,6 +42,9 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
 
   @Value("${throttling.reset.time}")
   private int resetTime;
+
+  @Value("${throttling.max.wait.for.permit:60000}")
+  private int maxWaitForPermit;
 
   @Value("${cleanup.permits.interval}")
   private int cleanupExpiredPermitsInterval;
@@ -98,10 +102,10 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
         this.openConnectionsSemaphore.availablePermits());
 
     try {
-      if (this.openConnectionsSemaphore.availablePermits() == 0) {
-        this.handlePermitDenied("Local: max open connections reached");
+      if (!this.openConnectionsSemaphore.tryAcquire(this.maxWaitForPermit, TimeUnit.MILLISECONDS)) {
+        throw new ThrottlingPermitDeniedException(
+            "could not acquire openConnection permit for request");
       }
-      this.openConnectionsSemaphore.acquire();
       LOGGER.debug(
           "openConnection granted. available = {} ",
           this.openConnectionsSemaphore.availablePermits());
@@ -136,10 +140,11 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
         this.newConnectionRequestsSemaphore.availablePermits());
 
     try {
-      if (this.newConnectionRequestsSemaphore.availablePermits() == 0) {
-        this.handlePermitDenied("Local: max new connection requests reached");
+      if (!this.newConnectionRequestsSemaphore.tryAcquire(
+          this.maxWaitForPermit, TimeUnit.MILLISECONDS)) {
+        throw new ThrottlingPermitDeniedException(
+            "could not acquire newConnectionRequest permit for request");
       }
-      this.newConnectionRequestsSemaphore.acquire();
       LOGGER.debug(
           "Request newConnection granted. available = {} ",
           this.newConnectionRequestsSemaphore.availablePermits());
@@ -220,11 +225,6 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
     return String.format(
         "ThrottlingService. maxOpenConnections = %d, maxNewConnectionRequests=%d, resetTime=%d",
         this.maxOpenConnections, this.maxNewConnectionRequests, this.resetTime);
-  }
-
-  private void handlePermitDenied(final String message) {
-
-    throw new ThrottlingPermitDeniedException(message);
   }
 
   private Permit createPermit() {
