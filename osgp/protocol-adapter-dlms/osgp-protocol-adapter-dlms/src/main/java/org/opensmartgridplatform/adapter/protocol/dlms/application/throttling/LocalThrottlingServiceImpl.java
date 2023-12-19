@@ -30,6 +30,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Conditional(LocalThrottlingServiceCondition.class)
 public class LocalThrottlingServiceImpl implements ThrottlingService {
+
+  private static final long WAIT_FOR_LOCK = 10;
+
   private final AtomicInteger requestIdCounter = new AtomicInteger(0);
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalThrottlingServiceImpl.class);
@@ -137,15 +140,17 @@ public class LocalThrottlingServiceImpl implements ThrottlingService {
     }
   }
 
-  private synchronized void awaitReset() {
+  private void awaitReset() {
     LOGGER.debug(
         "Await reset for newConnection. available = {} ",
         this.newConnectionRequestsSemaphore.availablePermits());
 
     while (this.resetTimerLock.isLocked()) {
       try {
-        LOGGER.info("Wait {}ms while reset timer is locked", this.maxNewConnectionResetTime);
-        this.resetTimerLock.wait(this.maxNewConnectionResetTime);
+        LOGGER.info("Wait {}ms while reset timer is locked", WAIT_FOR_LOCK);
+        synchronized (this.requestIdCounter) {
+          this.requestIdCounter.wait(WAIT_FOR_LOCK);
+        }
       } catch (final InterruptedException e) {
         LOGGER.warn("Unable to acquire New Connection Request Lock", e);
         Thread.currentThread().interrupt();
