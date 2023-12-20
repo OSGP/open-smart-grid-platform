@@ -21,7 +21,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.opensmartgridplatform.throttling.ThrottlingPermitDeniedException;
 import org.opensmartgridplatform.throttling.api.Permit;
 import org.slf4j.Logger;
@@ -37,7 +36,7 @@ class LocalThrottlingServiceImplTest {
   private static final Integer MAX_NEW_CONNECTION_REQUESTS = 10;
   private static final Integer MAX_OPEN_CONNECTIONS = MAX_NEW_CONNECTION_REQUESTS * 2;
   private static final Integer MAX_NEW_CONNECTION_RESET_TIME = 200;
-  private static final Integer MAX_WAIT_FOR_HIGH_PRIO = 500;
+  private static final Integer MAX_WAIT_FOR_PERMIT = 500;
   private static final Integer CLEANUP_PERMITS_INTERVAL = 200;
   private static final Duration PERMIT_TTL = Duration.of(2, ChronoUnit.SECONDS);
 
@@ -50,7 +49,7 @@ class LocalThrottlingServiceImplTest {
     ReflectionTestUtils.setField(
         this.throttlingService, "maxNewConnectionResetTime", MAX_NEW_CONNECTION_RESET_TIME);
     ReflectionTestUtils.setField(
-        this.throttlingService, "maxWaitForHighPrioInMs", MAX_WAIT_FOR_HIGH_PRIO);
+        this.throttlingService, "maxWaitForPermitInMs", MAX_WAIT_FOR_PERMIT);
     ReflectionTestUtils.setField(
         this.throttlingService, "cleanupExpiredPermitsInterval", CLEANUP_PERMITS_INTERVAL);
     ReflectionTestUtils.setField(this.throttlingService, "timeToLive", PERMIT_TTL);
@@ -60,6 +59,8 @@ class LocalThrottlingServiceImplTest {
   @ParameterizedTest
   @ValueSource(ints = {4, 5})
   void testThrottlingOpenConnections(final int priority) throws InterruptedException {
+    ReflectionTestUtils.setField(this.throttlingService, "maxWaitForPermitInMs", 0);
+
     // Claim 10
     final List<Permit> firstBatch = this.requestPermitLowPrio(MAX_NEW_CONNECTION_REQUESTS);
     // Sleep longer than reset time
@@ -93,19 +94,10 @@ class LocalThrottlingServiceImplTest {
     final List<Permit> permits = this.requestPermit(MAX_NEW_CONNECTION_REQUESTS, priority);
     this.assertAvailableNewConnections(0);
 
-    this.releasePermitWithDelay(permits, MAX_WAIT_FOR_HIGH_PRIO / 2);
+    this.releasePermitWithDelay(permits, MAX_WAIT_FOR_PERMIT / 2);
 
-    final int nrOfOpenConnections;
-    if (priority <= MessagePriorityEnum.DEFAULT.getPriority()) {
-      assertThrows(
-          ThrottlingPermitDeniedException.class,
-          () -> this.requestPermit(MAX_NEW_CONNECTION_REQUESTS, priority));
-      nrOfOpenConnections = MAX_NEW_CONNECTION_REQUESTS;
-    } else {
-      // high prio will wait for connection
-      this.requestPermit(MAX_NEW_CONNECTION_REQUESTS, priority);
-      nrOfOpenConnections = MAX_NEW_CONNECTION_REQUESTS * 2;
-    }
+    this.requestPermit(MAX_NEW_CONNECTION_REQUESTS, priority);
+    final int nrOfOpenConnections = MAX_NEW_CONNECTION_REQUESTS * 2;
 
     this.assertPermitsInMemory(nrOfOpenConnections);
     this.assertAvailablePermits(MAX_OPEN_CONNECTIONS - nrOfOpenConnections);
@@ -152,6 +144,43 @@ class LocalThrottlingServiceImplTest {
     // First 5 are cleaned
     this.assertPermitsInMemory(1);
     this.assertAvailablePermits(MAX_OPEN_CONNECTIONS - 1);
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {0, 600, 1200})
+  void testPermitMaxWait(final int releaseDelay) throws InterruptedException {
+    final int priority = 4;
+    // Claim 10
+    final List<Permit> firstBatch = this.requestPermit(MAX_NEW_CONNECTION_REQUESTS, priority);
+    // Sleep longer than reset time
+    Thread.sleep(MAX_NEW_CONNECTION_RESET_TIME + 100);
+    // Next 10
+    this.requestPermit(MAX_NEW_CONNECTION_REQUESTS, priority);
+    // Sleep longer than reset time
+    Thread.sleep(MAX_NEW_CONNECTION_RESET_TIME + 100);
+
+    final long startTime = System.currentTimeMillis();
+    if (releaseDelay == 0) {
+      this.releasePermit(List.of(firstBatch.get(0)));
+      this.assertPermitsInMemory(MAX_OPEN_CONNECTIONS - 1);
+      this.assertAvailablePermits(1);
+    } else {
+      this.releasePermitWithDelay(List.of(firstBatch.get(0)), releaseDelay);
+      this.assertPermitsInMemory(MAX_OPEN_CONNECTIONS);
+      this.assertAvailablePermits(0);
+    }
+
+    if (releaseDelay > MAX_WAIT_FOR_PERMIT) {
+      assertThrows(ThrottlingPermitDeniedException.class, () -> this.requestPermit(1, priority));
+      assertThat(System.currentTimeMillis() - startTime)
+          .isGreaterThanOrEqualTo(MAX_WAIT_FOR_PERMIT);
+    } else {
+      this.requestPermit(1, priority);
+      assertThat(System.currentTimeMillis() - startTime).isGreaterThanOrEqualTo(releaseDelay);
+    }
+
+    this.assertPermitsInMemory(MAX_OPEN_CONNECTIONS);
+    this.assertAvailablePermits(0);
   }
 
   private List<Permit> requestPermitLowPrio(final int requests) {
