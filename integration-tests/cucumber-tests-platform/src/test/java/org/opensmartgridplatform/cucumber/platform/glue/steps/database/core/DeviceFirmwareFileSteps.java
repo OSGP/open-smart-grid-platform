@@ -10,11 +10,11 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -54,9 +54,10 @@ public class DeviceFirmwareFileSteps {
     final FirmwareFile firmwareFile =
         this.getFirmwareFile(getString(settings, PlatformKeys.FIRMWARE_FILE_FILENAME));
 
-    final Date installationDate =
-        getDateTime2(getString(settings, PlatformKeys.FIRMWARE_INSTALLATION_DATE), DateTime.now())
-            .toDate();
+    final Instant installationDate =
+        getDateTime2(
+                getString(settings, PlatformKeys.FIRMWARE_INSTALLATION_DATE), ZonedDateTime.now())
+            .toInstant();
     final String installedBy =
         getString(
             settings, PlatformKeys.FIRMWARE_INSTALLED_BY, PlatformDefaults.FIRMWARE_INSTALLED_BY);
@@ -67,7 +68,7 @@ public class DeviceFirmwareFileSteps {
   }
 
   private FirmwareFile getFirmwareFile(final String firmwareFileName) {
-    FirmwareFile firmwareFile;
+    final FirmwareFile firmwareFile;
     if (StringUtils.isEmpty(firmwareFileName)) {
       final List<FirmwareFile> firmwareFiles = this.firmwareFileRepository.findAll();
       firmwareFile = firmwareFiles.get(firmwareFiles.size() - 1);

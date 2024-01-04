@@ -12,6 +12,7 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -25,10 +26,11 @@ public abstract class GetConfigurationObjectService implements ProtocolService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GetConfigurationObjectService.class);
 
-  public ConfigurationObjectDto getConfigurationObject(final DlmsConnectionManager conn)
-      throws ProtocolAdapterException {
-    final AttributeAddress attributeAddress =
-        AttributeAddressFactory.getConfigurationObjectAddress();
+  public ConfigurationObjectDto getConfigurationObject(
+      final DlmsConnectionManager conn, final Protocol protocol) throws ProtocolAdapterException {
+
+    final AttributeAddress attributeAddress = this.getAttributeAddress(protocol);
+
     conn.getDlmsMessageListener()
         .setDescription(
             String.format(
@@ -36,6 +38,9 @@ public abstract class GetConfigurationObjectService implements ProtocolService {
                 JdlmsObjectToStringUtil.describeAttributes(attributeAddress)));
     return this.getConfigurationObject(this.getGetResult(conn, attributeAddress));
   }
+
+  abstract AttributeAddress getAttributeAddress(final Protocol protocol)
+      throws ProtocolAdapterException;
 
   private GetResult getGetResult(
       final DlmsConnectionManager conn, final AttributeAddress attributeAddress)

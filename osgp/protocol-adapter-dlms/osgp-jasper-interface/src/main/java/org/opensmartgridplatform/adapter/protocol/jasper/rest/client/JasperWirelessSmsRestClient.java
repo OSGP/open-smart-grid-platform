@@ -5,10 +5,11 @@
 package org.opensmartgridplatform.adapter.protocol.jasper.rest.client;
 
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
-import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
-import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
 import org.opensmartgridplatform.adapter.protocol.jasper.rest.json.SendSMSRequest;
 import org.opensmartgridplatform.adapter.protocol.jasper.rest.json.SendSMSResponse;
+import org.opensmartgridplatform.jasper.client.JasperWirelessRestClient;
+import org.opensmartgridplatform.jasper.config.JasperWirelessAccess;
+import org.opensmartgridplatform.jasper.exceptions.OsgpJasperException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

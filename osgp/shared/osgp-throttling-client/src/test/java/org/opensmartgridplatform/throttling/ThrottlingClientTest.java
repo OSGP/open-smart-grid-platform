@@ -145,17 +145,18 @@ class ThrottlingClientTest {
     final int baseTransceiverStationId = 983745;
     final int cellId = 2;
     final int requestId = 894;
+    final int priority = 8;
     this.whenTheThrottlingConfigIsIdentifiedById(throttlingConfigId);
     this.whenTheThrottlingClientHasRegisteredWithId(clientId);
     this.whenTheThrottlingClientUsesNextRequestId(requestId);
     this.whenTheThrottlingServiceGrantsTheRequestedPermit(
-        throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
+        throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId, priority);
 
     final Permit expectedPermit =
         new Permit(throttlingConfigId, clientId, requestId, baseTransceiverStationId, cellId, null);
 
     final Optional<Permit> requestedPermit =
-        this.throttlingClient.requestPermit(baseTransceiverStationId, cellId);
+        this.throttlingClient.requestPermit(baseTransceiverStationId, cellId, priority);
 
     assertThat(requestedPermit)
         .usingRecursiveComparison()
@@ -170,15 +171,16 @@ class ThrottlingClientTest {
     final int baseTransceiverStationId = 983745;
     final int cellId = 2;
     final int requestId = 894;
+    final int priority = 7;
     this.whenTheThrottlingClientUsesNextRequestId(requestId);
     this.whenTheThrottlingServiceGrantsTheRequestedPermit(
-        throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
+        throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId, priority);
 
     final Permit expectedPermit =
         new Permit(throttlingConfigId, clientId, requestId, baseTransceiverStationId, cellId, null);
 
     final Optional<Permit> requestedPermit =
-        this.throttlingClient.requestPermit(baseTransceiverStationId, cellId);
+        this.throttlingClient.requestPermit(baseTransceiverStationId, cellId, priority);
 
     assertThat(requestedPermit)
         .usingRecursiveComparison()
@@ -190,10 +192,11 @@ class ThrottlingClientTest {
   void registerFailureClientRequestsPermitByNetworkSegment() {
     final int baseTransceiverStationId = 983745;
     final int cellId = 2;
+    final int priority = 7;
     this.whenTheThrottlingServiceReturnsFailureOnRegistration();
 
     final Optional<Permit> requestedPermit =
-        this.throttlingClient.requestPermit(baseTransceiverStationId, cellId);
+        this.throttlingClient.requestPermit(baseTransceiverStationId, cellId, priority);
 
     assertThat(requestedPermit).isNotPresent();
   }
@@ -215,6 +218,24 @@ class ThrottlingClientTest {
         && method.equals(request.getMethod());
   }
 
+  private boolean isPermitRequestForNetworkSegment(
+      final RecordedRequest request,
+      final String method,
+      final short throttlingConfigId,
+      final int clientId,
+      final int baseTransceiverStationId,
+      final int cellId,
+      final int requestId,
+      final int priority) {
+
+    return String.format(
+                "/permits/%d/%d/%d/%d?priority=%d",
+                throttlingConfigId, clientId, baseTransceiverStationId, cellId, priority)
+            .equals(request.getPath())
+        && requestId == Integer.parseInt(request.getBody().readUtf8())
+        && method.equals(request.getMethod());
+  }
+
   private boolean isPermitRequestForUnknownNetworkSegment(
       final RecordedRequest request,
       final String method,
@@ -227,12 +248,27 @@ class ThrottlingClientTest {
         && method.equals(request.getMethod());
   }
 
+  private boolean isPermitRequestForUnknownNetworkSegment(
+      final RecordedRequest request,
+      final String method,
+      final short throttlingConfigId,
+      final int clientId,
+      final int requestId,
+      final int priority) {
+
+    return String.format("/permits/%d/%d?priority=%d", throttlingConfigId, clientId, priority)
+            .equals(request.getPath())
+        && requestId == Integer.parseInt(request.getBody().readUtf8())
+        && method.equals(request.getMethod());
+  }
+
   private void whenTheThrottlingServiceGrantsTheRequestedPermit(
       final short throttlingConfigId,
       final int clientId,
       final int baseTransceiverStationId,
       final int cellId,
-      final int requestId) {
+      final int requestId,
+      final int priority) {
 
     this.mockWebServer.setDispatcher(
         new Dispatcher() {
@@ -252,7 +288,8 @@ class ThrottlingClientTest {
                 clientId,
                 baseTransceiverStationId,
                 cellId,
-                requestId)) {
+                requestId,
+                priority)) {
 
               return ThrottlingClientTest.this.permitRequestGrantedResponse();
             }
@@ -263,7 +300,7 @@ class ThrottlingClientTest {
   }
 
   private void whenTheThrottlingServiceGrantsTheRequestedPermit(
-      final short throttlingConfigId, final int clientId, final int requestId) {
+      final short throttlingConfigId, final int clientId, final int requestId, final int priority) {
 
     this.mockWebServer.setDispatcher(
         new Dispatcher() {
@@ -277,7 +314,7 @@ class ThrottlingClientTest {
             }
 
             if (ThrottlingClientTest.this.isPermitRequestForUnknownNetworkSegment(
-                request, "POST", throttlingConfigId, clientId, requestId)) {
+                request, "POST", throttlingConfigId, clientId, requestId, priority)) {
 
               return ThrottlingClientTest.this.permitRequestGrantedResponse();
             }
@@ -299,15 +336,17 @@ class ThrottlingClientTest {
     final short throttlingConfigId = 5456;
     final int clientId = 573467;
     final int requestId = 946585809;
+    final int priority = 8;
     this.whenTheThrottlingConfigIsIdentifiedById(throttlingConfigId);
     this.whenTheThrottlingClientHasRegisteredWithId(clientId);
     this.whenTheThrottlingClientUsesNextRequestId(requestId);
-    this.whenTheThrottlingServiceGrantsTheRequestedPermit(throttlingConfigId, clientId, requestId);
+    this.whenTheThrottlingServiceGrantsTheRequestedPermit(
+        throttlingConfigId, clientId, requestId, priority);
 
     final Permit expectedPermit =
         new Permit(throttlingConfigId, clientId, requestId, null, null, null);
 
-    final Optional<Permit> requestedPermit = this.throttlingClient.requestPermit();
+    final Optional<Permit> requestedPermit = this.throttlingClient.requestPermit(priority);
 
     assertThat(requestedPermit)
         .usingRecursiveComparison()
@@ -320,13 +359,15 @@ class ThrottlingClientTest {
     final short throttlingConfigId = 5456;
     final int clientId = 573467;
     final int requestId = 946585809;
+    final int priority = 4;
     this.whenTheThrottlingClientUsesNextRequestId(requestId);
-    this.whenTheThrottlingServiceGrantsTheRequestedPermit(throttlingConfigId, clientId, requestId);
+    this.whenTheThrottlingServiceGrantsTheRequestedPermit(
+        throttlingConfigId, clientId, requestId, priority);
 
     final Permit expectedPermit =
         new Permit(throttlingConfigId, clientId, requestId, null, null, null);
 
-    final Optional<Permit> requestedPermit = this.throttlingClient.requestPermit();
+    final Optional<Permit> requestedPermit = this.throttlingClient.requestPermit(priority);
 
     assertThat(requestedPermit)
         .usingRecursiveComparison()
@@ -336,9 +377,10 @@ class ThrottlingClientTest {
 
   @Test
   void registerFailureClientRequestsPermitForUnknownNetworkSegment() {
+    final int priority = 8;
     this.whenTheThrottlingServiceReturnsFailureOnRegistration();
 
-    final Optional<Permit> requestedPermit = this.throttlingClient.requestPermit();
+    final Optional<Permit> requestedPermit = this.throttlingClient.requestPermit(priority);
 
     assertThat(requestedPermit).isNotPresent();
   }
@@ -350,14 +392,15 @@ class ThrottlingClientTest {
     final int baseTransceiverStationId = 3498;
     final int cellId = 3;
     final int requestId = 311;
+    final int priority = 8;
     this.whenTheThrottlingConfigIsIdentifiedById(throttlingConfigId);
     this.whenTheThrottlingClientHasRegisteredWithId(clientId);
     this.whenTheThrottlingClientUsesNextRequestId(requestId);
     this.whenTheThrottlingServiceRejectsTheRequestedPermit(
-        throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
+        throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId, priority);
 
     final Optional<Permit> requestedPermit =
-        this.throttlingClient.requestPermit(baseTransceiverStationId, cellId);
+        this.throttlingClient.requestPermit(baseTransceiverStationId, cellId, priority);
 
     assertThat(requestedPermit).isEmpty();
   }
@@ -367,14 +410,18 @@ class ThrottlingClientTest {
     final short throttlingConfigId = 32;
     final int clientId = 43;
     final int requestId = 54;
+    final int priority = 8;
     this.whenTheThrottlingConfigIsIdentifiedById(throttlingConfigId);
     this.whenTheThrottlingClientHasRegisteredWithId(clientId);
     this.whenTheThrottlingClientUsesNextRequestId(requestId);
-    this.whenTheThrottlingServiceRejectsTheRequestedPermit(throttlingConfigId, clientId, requestId);
+    this.whenTheThrottlingServiceRejectsTheRequestedPermit(
+        throttlingConfigId, clientId, requestId, priority);
 
     assertThrows(
         ThrottlingPermitDeniedException.class,
-        () -> this.throttlingClient.requestPermitUsingNetworkSegmentIfIdsAreAvailable(null, null));
+        () ->
+            this.throttlingClient.requestPermitUsingNetworkSegmentIfIdsAreAvailable(
+                null, null, priority));
   }
 
   private void whenTheThrottlingServiceRejectsTheRequestedPermit(
@@ -382,7 +429,8 @@ class ThrottlingClientTest {
       final int clientId,
       final int baseTransceiverStationId,
       final int cellId,
-      final int requestId) {
+      final int requestId,
+      final int priority) {
 
     this.mockWebServer.setDispatcher(
         new Dispatcher() {
@@ -396,7 +444,8 @@ class ThrottlingClientTest {
                 clientId,
                 baseTransceiverStationId,
                 cellId,
-                requestId)) {
+                requestId,
+                priority)) {
 
               return ThrottlingClientTest.this.permitRequestRejectedResponse();
             }
@@ -407,7 +456,7 @@ class ThrottlingClientTest {
   }
 
   private void whenTheThrottlingServiceRejectsTheRequestedPermit(
-      final short throttlingConfigId, final int clientId, final int requestId) {
+      final short throttlingConfigId, final int clientId, final int requestId, final int priority) {
 
     this.mockWebServer.setDispatcher(
         new Dispatcher() {
@@ -415,7 +464,7 @@ class ThrottlingClientTest {
           public MockResponse dispatch(final RecordedRequest request) {
 
             if (ThrottlingClientTest.this.isPermitRequestForUnknownNetworkSegment(
-                request, "POST", throttlingConfigId, clientId, requestId)) {
+                request, "POST", throttlingConfigId, clientId, requestId, priority)) {
 
               return ThrottlingClientTest.this.permitRequestRejectedResponse();
             }
@@ -439,6 +488,7 @@ class ThrottlingClientTest {
     final int baseTransceiverStationId = 10029;
     final int cellId = 1;
     final int requestId = 23938477;
+    final int priority = 4;
     this.whenTheThrottlingConfigIsIdentifiedById(throttlingConfigId);
     this.whenTheThrottlingClientHasRegisteredWithId(clientId);
     this.whenTheThrottlingServiceReleasesThePermit(
@@ -465,6 +515,7 @@ class ThrottlingClientTest {
     final int baseTransceiverStationId = 10029;
     final int cellId = 1;
     final int requestId = 23938477;
+    final int priority = 7;
     this.whenTheThrottlingServiceReleasesThePermit(
         throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId, true);
 
@@ -509,9 +560,11 @@ class ThrottlingClientTest {
     final short throttlingConfigId = 11;
     final int clientId = 18;
     final int requestId = 21;
+    final int priority = 4;
     this.whenTheThrottlingConfigIsIdentifiedById(throttlingConfigId);
     this.whenTheThrottlingClientHasRegisteredWithId(clientId);
-    this.whenTheThrottlingServiceReleasesThePermit(throttlingConfigId, clientId, requestId, false);
+    this.whenTheThrottlingServiceReleasesThePermit(
+        throttlingConfigId, clientId, requestId, priority, false);
 
     final Permit permitToBeReleased =
         new Permit(
@@ -564,6 +617,7 @@ class ThrottlingClientTest {
       final short throttlingConfigId,
       final int clientId,
       final int requestId,
+      final int priority,
       final boolean permitIsHeld) {
 
     this.mockWebServer.setDispatcher(

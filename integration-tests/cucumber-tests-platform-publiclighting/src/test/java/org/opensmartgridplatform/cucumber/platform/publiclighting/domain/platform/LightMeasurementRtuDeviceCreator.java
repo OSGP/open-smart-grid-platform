@@ -21,7 +21,7 @@ public class LightMeasurementRtuDeviceCreator extends AbstractPlatformDeviceCrea
   public RtuDevice apply(final Protocol protocol, final Map<String, String> settings) {
     RtuDevice device = new RtuDevice(this.deviceIdentification(settings));
     device.setDeviceType(DeviceType.LIGHT_MEASUREMENT_RTU.getPlatformDeviceType());
-    device.setNetworkAddress(this.networkAddress(settings));
+    device.setNetworkAddress(this.networkAddress(settings).getHostAddress());
     device.setDeviceLifecycleStatus(this.deviceLifecycleStatus(settings));
     device.setActivated(this.activated(settings));
     device.updateProtocol(this.protocolInfo(protocol));

@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -97,7 +98,7 @@ class FirmwareConverter
     output.setFirmwareModuleData(firmwareModuleData);
 
     final GregorianCalendar gCalendar = new GregorianCalendar();
-    gCalendar.setTime(source.getCreationTime());
+    gCalendar.setTime(Date.from(source.getCreationTime()));
 
     try {
       output.setCreationTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar));

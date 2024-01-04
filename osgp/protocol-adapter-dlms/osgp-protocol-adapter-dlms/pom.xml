@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-dlms</artifactId>
-    <version>5.45.0-SNAPSHOT</version>
+    <version>5.49.0-SNAPSHOT</version>
     <relativePath>../parent-pa-dlms/pom.xml</relativePath>
   </parent>
 
@@ -27,7 +27,7 @@ SPDX-License-Identifier: Apache-2.0
     <display.version>${project.version}-${BUILD_TAG}</display.version>
     <osgp-ws-secret-management-version>${project.version}</osgp-ws-secret-management-version>
     <skipITs>true</skipITs>
-    <openmuc.jdlms.version>1.7.2.2-SNAPSHOT</openmuc.jdlms.version>
+    <openmuc.jdlms.version>1.8.0</openmuc.jdlms.version>
   </properties>
 
   <build>
@@ -192,6 +192,12 @@ SPDX-License-Identifier: Apache-2.0
     <dependency>
       <groupId>org.springframework.ws</groupId>
       <artifactId>spring-ws-security</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bcprov-jdk15on</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework.ws</groupId>
@@ -298,6 +304,14 @@ SPDX-License-Identifier: Apache-2.0
 
     <!-- Testing dependencies -->
     <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-dlms</artifactId>
+      <version>${osgp.dlms.version}</version>
+      <classifier>tests</classifier>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <scope>test</scope>
@@ -336,7 +350,7 @@ SPDX-License-Identifier: Apache-2.0
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <scope>test</scope>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>

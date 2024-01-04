@@ -19,6 +19,7 @@ import static org.opensmartgridplatform.cucumber.platform.smartmetering.Platform
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_FIRMWARE_UPDATE_KEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.LLS1_ACTIVE;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_FIRMWARE_UPDATE_AUTHENTICATION_KEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_P0_KEY;
@@ -34,10 +35,11 @@ import static org.opensmartgridplatform.secretmanagement.application.domain.Secr
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -241,6 +243,12 @@ public class DlmsDeviceSteps {
     assertThat(device.getTimezone())
         .as(PlatformKeys.DLMS_DEVICE_TIMEZONE)
         .isEqualTo(dlmsDeviceAttributes.get(DLMS_DEVICE_TIMEZONE));
+
+    if (dlmsDeviceAttributes.containsKey(LLS1_ACTIVE)) {
+      assertThat(device.isLls1Active())
+          .as(LLS1_ACTIVE)
+          .isEqualTo(Boolean.valueOf(dlmsDeviceAttributes.get(LLS1_ACTIVE)));
+    }
   }
 
   @Then("^the smart meter is registered in the core database$")
@@ -702,8 +710,7 @@ public class DlmsDeviceSteps {
     final String deviceType =
         inputSettings.getOrDefault(PlatformSmartmeteringKeys.DEVICE_TYPE, SMART_METER_E);
     final List<SecretBuilder> secretBuilders = new ArrayList<>();
-    if (inputSettings.containsKey(PlatformSmartmeteringKeys.LLS1_ACTIVE)
-        && "true".equals(inputSettings.get(PlatformSmartmeteringKeys.LLS1_ACTIVE))) {
+    if (inputSettings.containsKey(LLS1_ACTIVE) && "true".equals(inputSettings.get(LLS1_ACTIVE))) {
       secretBuilders.add(
           this.getAppropriateSecretBuilder(PlatformSmartmeteringKeys.PASSWORD, inputSettings));
       secretBuilders.add(this.getAppropriateSecretBuilder(KEY_DEVICE_ENCRYPTIONKEY, inputSettings));
@@ -736,7 +743,7 @@ public class DlmsDeviceSteps {
     }
     final DbEncryptionKeyReference encryptionKeyRef =
         this.encryptionKeyRepository
-            .findByTypeAndValid(EncryptionProviderType.JRE, new Date())
+            .findByTypeAndValid(EncryptionProviderType.JRE, Instant.now())
             .iterator()
             .next();
     secretBuilders.stream()
@@ -852,7 +859,7 @@ public class DlmsDeviceSteps {
 
       final DbEncryptionKeyReference encryptionKeyRef =
           this.encryptionKeyRepository
-              .findByTypeAndValid(EncryptionProviderType.JRE, new Date())
+              .findByTypeAndValid(EncryptionProviderType.JRE, Instant.now())
               .iterator()
               .next();
       final DbEncryptedSecret secret =
@@ -862,7 +869,7 @@ public class DlmsDeviceSteps {
               .withKey(key)
               .withSecretStatus(SecretStatus.ACTIVE)
               .withEncryptionKeyReference(encryptionKeyRef)
-              .withCreationTime(new Date())
+              .withCreationTime(Instant.now())
               .build();
       this.encryptedSecretRepository.save(secret);
     }
@@ -896,7 +903,7 @@ public class DlmsDeviceSteps {
     }
     final DbEncryptionKeyReference encryptionKeyRef =
         this.encryptionKeyRepository
-            .findByTypeAndValid(EncryptionProviderType.JRE, new Date())
+            .findByTypeAndValid(EncryptionProviderType.JRE, Instant.now())
             .iterator()
             .next();
     for (int i = 0; i < secretTypesToCreate.size(); i++) {
@@ -910,7 +917,7 @@ public class DlmsDeviceSteps {
                 .withKey(key)
                 .withSecretStatus(SecretStatus.NEW)
                 .withEncryptionKeyReference(encryptionKeyRef)
-                .withCreationTime(new Date(System.currentTimeMillis() - (minutesAgo * 60000L)))
+                .withCreationTime(Instant.now().minus(minutesAgo * 60000L, ChronoUnit.MILLIS))
                 .build();
         this.encryptedSecretRepository.save(secret);
       }

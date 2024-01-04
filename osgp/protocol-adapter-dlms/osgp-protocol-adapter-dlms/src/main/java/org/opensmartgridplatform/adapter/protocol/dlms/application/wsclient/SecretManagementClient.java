@@ -99,7 +99,7 @@ public class SecretManagementClient {
   public HasNewSecretResponse hasNewSecretRequest(
       final MessageMetadata messageMetadata, final HasNewSecretRequest request) {
     log.info(
-        "Calling SecretManagement.hasNewSecretsRequest over SOAP for device {}",
+        "Calling SecretManagement.hasNewSecretRequest over SOAP for device {}",
         request.getDeviceId());
 
     return (HasNewSecretResponse)

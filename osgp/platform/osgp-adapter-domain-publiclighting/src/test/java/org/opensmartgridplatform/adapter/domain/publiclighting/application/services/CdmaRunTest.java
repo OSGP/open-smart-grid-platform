@@ -34,7 +34,7 @@ public class CdmaRunTest {
 
   @Mock private DomainPublicLightingMapper domainCoreMapper;
 
-  private final InetAddress loopbackAddress = InetAddress.getLoopbackAddress();
+  private final String loopbackAddress = InetAddress.getLoopbackAddress().getHostAddress();
 
   private static final String IP_ADDRESS = "127.0.0.1";
   private static final String SET_TRANSITION = "SET_TRANSITION";

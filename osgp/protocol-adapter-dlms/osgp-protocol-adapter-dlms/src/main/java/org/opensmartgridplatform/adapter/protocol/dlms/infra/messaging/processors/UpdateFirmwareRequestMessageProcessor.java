@@ -38,12 +38,62 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
   }
 
   @Override
+  protected boolean usesDeviceConnection(final Serializable messageObject) {
+    if (messageObject instanceof final UpdateFirmwareRequestDto requestDto) {
+      final String firmwareIdentification = requestDto.getFirmwareIdentification();
+      final boolean usesDeviceConnection =
+          this.firmwareService.isFirmwareFileAvailable(firmwareIdentification);
+      if (!usesDeviceConnection) {
+        LOGGER.info(
+            "Firmware file [{}] not available for device {}. So no device connection required for sending GetFirmwareFile request to core.",
+            firmwareIdentification,
+            requestDto.getDeviceIdentification());
+      }
+      return usesDeviceConnection;
+    }
+    return super.usesDeviceConnection(messageObject);
+  }
+
+  @Override
+  protected Serializable handleMessage(
+      final DlmsDevice device,
+      final Serializable requestObject,
+      final MessageMetadata messageMetadata)
+      throws OsgpException {
+    // This method will be invoked when usesDeviceConnection returns false (firmwareFile is not
+    // available)
+    final String deviceIdentification = messageMetadata.getDeviceIdentification();
+    final String organisationIdentification = messageMetadata.getOrganisationIdentification();
+    final String correlationUid = messageMetadata.getCorrelationUid();
+
+    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
+        (UpdateFirmwareRequestDto) requestObject;
+    final String firmwareIdentification = updateFirmwareRequestDto.getFirmwareIdentification();
+
+    LOGGER.info(
+        "[{}] - Firmware file [{}] not available. Sending GetFirmwareFile request to core.",
+        correlationUid,
+        firmwareIdentification);
+    final RequestMessage message =
+        new RequestMessage(
+            correlationUid,
+            organisationIdentification,
+            deviceIdentification,
+            updateFirmwareRequestDto);
+    this.osgpRequestMessageSender.sendWithReplyToThisInstance(
+        message, MessageType.GET_FIRMWARE_FILE.name(), messageMetadata);
+    return NO_RESPONSE;
+  }
+
+  @Override
   protected Serializable handleMessage(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
       final Serializable requestObject,
       final MessageMetadata messageMetadata)
       throws OsgpException {
+    // This method will be invoked when usesDeviceConnection returns true (firmwareFile is
+    // available)
     final String deviceIdentification = messageMetadata.getDeviceIdentification();
     final String organisationIdentification = messageMetadata.getOrganisationIdentification();
     final String correlationUid = messageMetadata.getCorrelationUid();
@@ -61,28 +111,12 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
         (UpdateFirmwareRequestDto) requestObject;
     final String firmwareIdentification = updateFirmwareRequestDto.getFirmwareIdentification();
 
-    if (this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)) {
-      LOGGER.info(
-          "[{}] - Firmware file [{}] available. Updating firmware on device [{}]",
-          correlationUid,
-          firmwareIdentification,
-          deviceIdentification);
-      return this.configurationService.updateFirmware(
-          conn, device, updateFirmwareRequestDto, messageMetadata);
-    } else {
-      LOGGER.info(
-          "[{}] - Firmware file [{}] not available. Sending GetFirmwareFile request to core.",
-          correlationUid,
-          firmwareIdentification);
-      final RequestMessage message =
-          new RequestMessage(
-              correlationUid,
-              organisationIdentification,
-              deviceIdentification,
-              updateFirmwareRequestDto);
-      this.osgpRequestMessageSender.sendWithReplyToThisInstance(
-          message, MessageType.GET_FIRMWARE_FILE.name(), messageMetadata);
-      return NO_RESPONSE;
-    }
+    LOGGER.info(
+        "[{}] - Firmware file [{}] available. Updating firmware on device [{}]",
+        correlationUid,
+        firmwareIdentification,
+        deviceIdentification);
+    return this.configurationService.updateFirmware(
+        conn, device, updateFirmwareRequestDto, messageMetadata);
   }
 }

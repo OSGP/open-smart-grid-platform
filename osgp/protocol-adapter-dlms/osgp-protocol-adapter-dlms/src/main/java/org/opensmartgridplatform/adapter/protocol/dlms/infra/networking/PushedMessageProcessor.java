@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessage;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
+import org.opensmartgridplatform.adapter.protocol.jasper.service.DeviceSessionService;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushNotificationAlarmDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushNotificationSmsDto;
@@ -17,6 +18,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -28,6 +30,10 @@ public class PushedMessageProcessor {
 
   @Autowired private OsgpRequestMessageSender osgpRequestMessageSender;
   @Autowired private DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
+  @Autowired private DeviceSessionService deviceSessionService;
+
+  @Value("${push.wakeup.alarm.to.core}")
+  private boolean pushWakeupAlarmToCore;
 
   public void process(
       final DlmsPushNotification message,
@@ -94,9 +100,14 @@ public class PushedMessageProcessor {
             null,
             pushNotificationSms);
 
-    log.info("Sending push notification sms wakeup to GXF with correlation ID: {}", correlationId);
-    this.osgpRequestMessageSender.send(
-        requestMessage, MessageType.PUSH_NOTIFICATION_SMS.name(), null);
+    if (this.pushWakeupAlarmToCore) {
+      log.info(
+          "Sending push notification sms wakeup to GXF with correlation ID: {}", correlationId);
+      this.osgpRequestMessageSender.send(
+          requestMessage, MessageType.PUSH_NOTIFICATION_SMS.name(), null);
+    }
+
+    this.deviceSessionService.notifyIpAddress(deviceIdentification, ipAddress);
   }
 
   protected void logMessage(final DlmsPushNotification message) {

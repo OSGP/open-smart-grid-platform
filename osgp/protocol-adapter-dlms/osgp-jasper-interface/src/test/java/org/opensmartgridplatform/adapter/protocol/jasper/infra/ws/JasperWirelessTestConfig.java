@@ -5,7 +5,7 @@
 package org.opensmartgridplatform.adapter.protocol.jasper.infra.ws;
 
 import javax.annotation.Resource;
-import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
+import org.opensmartgridplatform.jasper.config.JasperWirelessAccess;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;

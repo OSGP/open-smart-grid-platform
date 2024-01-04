@@ -12,7 +12,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>super-osgp</artifactId>
-  <version>5.45.0-SNAPSHOT</version>
+  <version>5.49.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
   <!-- Description, Organization, Licences, URL and Distribution Management
@@ -44,15 +44,15 @@ SPDX-License-Identifier: Apache-2.0
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>5.45.0-SNAPSHOT</osgp.version>
-    <osgp.dlms.version>5.45.0-SNAPSHOT</osgp.dlms.version>
-    <osgp.shared.version>5.45.0-SNAPSHOT</osgp.shared.version>
-    <osgp.jasper-interface.version>5.45.0-SNAPSHOT</osgp.jasper-interface.version>
-    <spring.version>5.3.27</spring.version>
-    <spring.data.version>2.2.9.RELEASE</spring.data.version>
-    <spring.data.commons.version>2.2.9.RELEASE</spring.data.commons.version>
-    <spring.security.version>5.5.8</spring.security.version>
-    <spring.ws.version>3.0.12.RELEASE</spring.ws.version>
+    <osgp.version>5.49.0-SNAPSHOT</osgp.version>
+    <osgp.dlms.version>5.49.0-SNAPSHOT</osgp.dlms.version>
+    <osgp.shared.version>5.49.0-SNAPSHOT</osgp.shared.version>
+    <osgp.jasper-interface.version>5.49.0-SNAPSHOT</osgp.jasper-interface.version>
+    <spring.version>5.3.29</spring.version>
+    <spring.data.version>2.7.15</spring.data.version>
+    <spring.data.commons.version>2.7.15</spring.data.commons.version>
+    <spring.security.version>5.8.6</spring.security.version>
+    <spring.ws.version>3.1.6</spring.ws.version>
     <reactor.version>2020.0.22</reactor.version>
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
@@ -75,7 +75,7 @@ SPDX-License-Identifier: Apache-2.0
     <apache.commons.text.version>1.10.0</apache.commons.text.version>
     <apache.httpcomponents.version>4.5.13</apache.httpcomponents.version>
     <apache.httpcomponents.httpcore.version>4.4.13</apache.httpcomponents.httpcore.version>
-    <commons.codec.version>1.14</commons.codec.version>
+    <commons.codec.version>1.16.0</commons.codec.version>
     <orika.version>1.5.4</orika.version>
     <msal.version>1.13.0</msal.version>
     <jxr.version>3.1.1</jxr.version>
@@ -90,7 +90,7 @@ SPDX-License-Identifier: Apache-2.0
     <maven.assembly.plugin.version>3.3.0</maven.assembly.plugin.version>
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.exec.plugin.version>1.6.0</maven.exec.plugin.version>
-    <maven.enforcer.plugin.version>3.0.0</maven.enforcer.plugin.version>
+    <maven.enforcer.plugin.version>3.4.1</maven.enforcer.plugin.version>
     <maven.enforcer.maven.version>3.8.5</maven.enforcer.maven.version>
     <jaxb2.maven.plugin.version>2.5.0</jaxb2.maven.plugin.version>
     <jaxb.api.version>2.3.1</jaxb.api.version>
@@ -101,14 +101,14 @@ SPDX-License-Identifier: Apache-2.0
     <dependency-check.maven.plugin.version>7.0.2</dependency-check.maven.plugin.version>
     <versions.maven.plugin.version>2.10.0</versions.maven.plugin.version>
     <fmt-maven-plugin.version>2.19</fmt-maven-plugin.version>
-    <apache.activemq.version>5.17.2</apache.activemq.version>
-    <logback.version>1.2.11</logback.version>
+    <apache.activemq.version>5.18.3</apache.activemq.version>
+    <logback.version>1.2.13</logback.version>
     <apache.commons.schema>2.2.5</apache.commons.schema>
     <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
     <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
-    <netty.version>4.1.80.Final</netty.version>
-    <openmuc.jdlms.version>1.7.2.2-SNAPSHOT</openmuc.jdlms.version>
-    <openmuc.jdlms-annotation.version>1.7.2</openmuc.jdlms-annotation.version>
+    <netty.version>4.1.101.Final</netty.version>
+    <openmuc.jdlms.version>1.8.0</openmuc.jdlms.version>
+    <openmuc.jdlms-annotation.version>1.8.0</openmuc.jdlms-annotation.version>
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
     <openmuc.j60870.version>1.4.0</openmuc.j60870.version>
     <javax.inject.version>1</javax.inject.version>
@@ -116,12 +116,12 @@ SPDX-License-Identifier: Apache-2.0
     <license.maven.plugin>3.0</license.maven.plugin>
     <jackson.version>2.13.4</jackson.version>
     <jackson-databind.version>2.13.4.2</jackson-databind.version>
-    <cxf.version>3.4.8</cxf.version>
+    <cxf.version>3.5.7</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
     <micrometer.version>1.10.0</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
-    <guava.version>31.1-jre</guava.version>
+    <guava.version>32.1.2-jre</guava.version>
     <spotbugs.version>4.6.0</spotbugs.version>
     <jacoco.version>0.8.8</jacoco.version>
     <selenium.java.version>3.141.59</selenium.java.version>
@@ -131,11 +131,11 @@ SPDX-License-Identifier: Apache-2.0
     <cucumber.version>5.7.0</cucumber.version>
     <testcontainers.version>1.16.2</testcontainers.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
-    <postgresql.version>42.5.0</postgresql.version>
+    <postgresql.version>42.6.0</postgresql.version>
     <javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
     <!-- to avoid conflicts with spring-kafka-test the older kafka version 2.4.1 is used-->
     <kafka.version>2.4.1</kafka.version>
-    <avro.version>1.9.2</avro.version>
+    <avro.version>1.11.3</avro.version>
     <spring.kafka.version>2.4.7.RELEASE</spring.kafka.version>
     <!-- spring-kafka-test needs a 2.12 version of the scala libraries -->
     <scala.lang.version>2.12.11</scala.lang.version>
@@ -154,6 +154,15 @@ SPDX-License-Identifier: Apache-2.0
     <!-- Command-line option to pass arguments for surefire -->
     <surefireArgLine/>
   </properties>
+
+  <dependencies>
+    <!-- Runtime postgres -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
 
   <dependencyManagement>
     <dependencies>
@@ -337,6 +346,11 @@ SPDX-License-Identifier: Apache-2.0
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-core-db-api-iec61850</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-jasper-shared</artifactId>
         <version>${osgp.version}</version>
       </dependency>
       <dependency>
@@ -876,13 +890,6 @@ SPDX-License-Identifier: Apache-2.0
         <groupId>org.openmuc</groupId>
         <artifactId>jdlms</artifactId>
         <version>${openmuc.jdlms.version}</version>
-        <exclusions>
-          <exclusion>
-            <!-- Exclude to ensure compatibility with (older) 1.51 users -->
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <!-- Google Protocol Buffers -->

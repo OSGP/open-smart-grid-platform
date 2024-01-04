@@ -4,9 +4,8 @@
 
 package org.opensmartgridplatform.domain.core.repositories;
 
-import java.net.InetAddress;
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -44,7 +43,7 @@ public interface DeviceRepository
   Device findByDeviceIdentificationWithFirmwareModules(
       @Param("deviceIdentification") String deviceIdentification);
 
-  List<Device> findByNetworkAddress(InetAddress address);
+  List<Device> findByNetworkAddress(String address);
 
   @Query(
       "SELECT d "
@@ -80,7 +79,7 @@ public interface DeviceRepository
           + "         auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.INSTALLATION)"
           + ") AND "
           + "d.modificationTime >= ?2")
-  List<Device> findRecentDevices(Organisation organisation, Date fromDate);
+  List<Device> findRecentDevices(Organisation organisation, Instant fromDate);
 
   /*
    * We need these native queries below because these entities don't have an

@@ -52,7 +52,7 @@ public class WsSmartMeteringResponseDataSteps extends BaseDeviceSteps {
         fld.setAccessible(true);
         fld.set(
             responseData,
-            DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
+            DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toInstant());
         this.smartMeteringResponseDataRepository.saveAndFlush(responseData);
       }
     } catch (final Exception e) {

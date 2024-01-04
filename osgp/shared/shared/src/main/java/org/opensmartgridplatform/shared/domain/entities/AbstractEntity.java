@@ -6,7 +6,6 @@ package org.opensmartgridplatform.shared.domain.entities;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,10 +30,10 @@ public abstract class AbstractEntity implements Serializable {
   protected Long id;
 
   @Column(nullable = false)
-  private Date creationTime = new Date();
+  protected Instant creationTime = Instant.now();
 
   @Column(nullable = false)
-  private Date modificationTime = new Date();
+  protected Instant modificationTime = Instant.now();
 
   @Version private Long version = -1L;
 
@@ -56,29 +55,29 @@ public abstract class AbstractEntity implements Serializable {
   /**
    * @return the creation time
    */
-  public Date getCreationTime() {
-    return (Date) this.creationTime.clone();
+  public Instant getCreationTime() {
+    return this.creationTime;
   }
 
   /**
    * @return the creation time
    */
   public Instant getCreationTimeInstant() {
-    return this.creationTime.toInstant();
+    return this.creationTime;
   }
 
   /**
    * @return the modification time
    */
-  public Date getModificationTime() {
-    return (Date) this.modificationTime.clone();
+  public Instant getModificationTime() {
+    return this.modificationTime;
   }
 
   /**
    * @return the modification time
    */
   public Instant getModificationTimeInstant() {
-    return this.modificationTime.toInstant();
+    return this.modificationTime;
   }
 
   /**
@@ -99,7 +98,7 @@ public abstract class AbstractEntity implements Serializable {
   /** Method for actions to be taken before inserting. */
   @PrePersist
   private void prePersist() {
-    final Date now = new Date();
+    final Instant now = Instant.now();
     this.creationTime = now;
     this.modificationTime = now;
   }
@@ -107,7 +106,7 @@ public abstract class AbstractEntity implements Serializable {
   /** Method for actions to be taken before updating. */
   @PreUpdate
   private void preUpdate() {
-    this.modificationTime = new Date();
+    this.modificationTime = Instant.now();
   }
 
   // === METHODS [END] ===

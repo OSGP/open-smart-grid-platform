@@ -11,14 +11,13 @@ import javax.jms.Destination;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.mockito.Mockito;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundLogItemRequestsMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundOsgpCoreResponsesMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MonitoringService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SystemEventService;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
@@ -29,9 +28,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processor
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
+import org.opensmartgridplatform.shared.application.config.messaging.JmsBrokerType;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderUUIDService;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.JmsMessageCreator;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.networking.ping.Pinger;
 import org.springframework.context.annotation.Bean;
@@ -51,7 +52,6 @@ import stub.DlmsPersistenceConfigStub;
 /** Test Configuration for JMS Listener triggered tests. */
 @Configuration
 @ComponentScan(
-    basePackages = {},
     excludeFilters =
         @ComponentScan.Filter(
             type = FilterType.CUSTOM,
@@ -71,6 +71,11 @@ public class MessagingTestConfiguration extends AbstractConfig {
   @Bean
   public DefaultJmsConfiguration defaultJmsConfiguration() {
     return new DefaultJmsConfiguration();
+  }
+
+  @Bean
+  public JmsMessageCreator jmsMessageCreator() {
+    return new JmsMessageCreator(JmsBrokerType.ACTIVE_MQ);
   }
 
   @Bean("protocolDlmsInboundOsgpCoreRequestsMessageListener")
@@ -187,13 +192,8 @@ public class MessagingTestConfiguration extends AbstractConfig {
   }
 
   @Bean
-  public ThrottlingService throttlingService() {
-    return new ThrottlingService();
-  }
-
-  @Bean
-  public ThrottlingClientConfig throttlingClientConfig() {
-    return new ThrottlingClientConfig();
+  public ThrottlingConfig throttlingConfig() {
+    return new ThrottlingConfig();
   }
 
   @Bean

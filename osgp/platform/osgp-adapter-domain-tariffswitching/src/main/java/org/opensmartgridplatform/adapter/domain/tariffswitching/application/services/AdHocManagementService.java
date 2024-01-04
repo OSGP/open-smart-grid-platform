@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.domain.tariffswitching.application.services;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +78,7 @@ public class AdHocManagementService extends AbstractService {
             correlationUid, organisationIdentification, deviceIdentification, allowedDomainTypeDto),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   public void handleGetStatusResponse(
@@ -154,12 +154,12 @@ public class AdHocManagementService extends AbstractService {
       final RelayStatus oldRelayStatus = device.getRelayStatusByIndex(externalIndex);
       if (oldRelayStatus != null) {
         // Update the old relay status value
-        oldRelayStatus.updateLastKnownState(state, new Date());
+        oldRelayStatus.updateLastKnownState(state, Instant.now());
       } else {
         // Create a new relay status value
         final RelayStatus newRelayStatus =
             new RelayStatus.Builder(device, externalIndex)
-                .withLastKnownState(state, new Date())
+                .withLastKnownState(state, Instant.now())
                 .build();
         relayStatuses.add(newRelayStatus);
       }

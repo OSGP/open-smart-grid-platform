@@ -14,8 +14,9 @@ import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_AUTHENTICATION_KEY;
 import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_MASTER_KEY;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.apache.tomcat.util.buf.HexUtils;
@@ -182,7 +183,7 @@ public class SecretManagementServiceTest {
     secret.setDeviceIdentification(SOME_DEVICE);
     secret.setSecretStatus(SecretStatus.NEW);
     secret.setSecretType(secretType);
-    secret.setCreationTime(new Date(System.currentTimeMillis() - (minutesOld * 60000L)));
+    secret.setCreationTime(Instant.now().minus(minutesOld * 60000L, ChronoUnit.MILLIS));
     secret.setEncodedSecret("1234567890abcdef");
     final DbEncryptionKeyReference encryptionKeyReference = new DbEncryptionKeyReference();
     encryptionKeyReference.setEncryptionProviderType(EncryptionProviderType.HSM);
@@ -303,7 +304,7 @@ public class SecretManagementServiceTest {
     final EncryptedSecret encryptedSecret =
         new EncryptedSecret(ENCRYPTION_PROVIDER_TYPE, "n3w$3cr3t0000001".getBytes());
     final DbEncryptedSecret existingDbSecret = new DbEncryptedSecret();
-    existingDbSecret.setCreationTime(new Date());
+    existingDbSecret.setCreationTime(Instant.now());
     existingDbSecret.setSecretType(E_METER_MASTER_KEY);
     existingDbSecret.setEncodedSecret("1234567890ABCDEF");
     existingDbSecret.setDeviceIdentification(SOME_DEVICE);
@@ -428,7 +429,7 @@ public class SecretManagementServiceTest {
 
   @Test
   public void generateAndStoreSecrets() throws EncrypterException {
-    final Date now = new Date();
+    final Instant now = Instant.now();
     final String reference = "1";
     final byte[] aesSecret = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     final byte[] secret = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
@@ -455,7 +456,7 @@ public class SecretManagementServiceTest {
   @Test
   public void generateAndStoreSecretWhenNewSecretAlreadyExists() throws Exception {
 
-    final Date now = new Date();
+    final Instant now = Instant.now();
     final String reference = "1";
     final byte[] aesSecret = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     final byte[] secret = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
@@ -463,7 +464,7 @@ public class SecretManagementServiceTest {
 
     final DbEncryptedSecret dbEncryptedSecret =
         this.getSecret(SecretType.E_METER_ENCRYPTION_KEY_UNICAST, 100);
-    final Date originalCreationTime = dbEncryptedSecret.getCreationTime();
+    final Instant originalCreationTime = dbEncryptedSecret.getCreationTime();
     final DbEncryptionKeyReference keyReference = new DbEncryptionKeyReference();
     keyReference.setReference(reference);
     keyReference.setEncryptionProviderType(ENCRYPTION_PROVIDER_TYPE);
@@ -500,7 +501,7 @@ public class SecretManagementServiceTest {
   @Test
   public void generateAndStoreSecretsWhenNewSecretsAlreadyExists() throws Exception {
 
-    final Date now = new Date();
+    final Instant now = Instant.now();
     final String reference = "1";
     final byte[] aesSecret = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     final byte[] secret = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
@@ -514,9 +515,9 @@ public class SecretManagementServiceTest {
         this.getSecret(SecretType.E_METER_ENCRYPTION_KEY_UNICAST, 100);
     final DbEncryptedSecret secretOlderEncryption =
         this.getSecret(SecretType.E_METER_ENCRYPTION_KEY_UNICAST, 1000);
-    final Date originalCreationTimeEncryptionSecret = secretOldEncryption.getCreationTime();
+    final Instant originalCreationTimeEncryptionSecret = secretOldEncryption.getCreationTime();
 
-    final Date olderCreationTime = secretOlderEncryption.getCreationTime();
+    final Instant olderCreationTime = secretOlderEncryption.getCreationTime();
 
     final SecretType encryptionSecretType = SecretType.E_METER_ENCRYPTION_KEY_UNICAST;
     final SecretType authenticationSecretType = E_METER_AUTHENTICATION_KEY;
@@ -544,8 +545,8 @@ public class SecretManagementServiceTest {
     assertThat(secretOldEncryption.getCreationTime())
         .isEqualTo(originalCreationTimeEncryptionSecret);
     assertThat(secretOldEncryption.getSecretStatus()).isEqualTo(SecretStatus.WITHDRAWN);
-    assertThat(secretOlderEncryption.getCreationTime().getTime())
-        .isEqualTo(olderCreationTime.getTime());
+    assertThat(secretOlderEncryption.getCreationTime().toEpochMilli())
+        .isEqualTo(olderCreationTime.toEpochMilli());
     assertThat(secretOlderEncryption.getSecretStatus()).isEqualTo(SecretStatus.WITHDRAWN);
   }
 }

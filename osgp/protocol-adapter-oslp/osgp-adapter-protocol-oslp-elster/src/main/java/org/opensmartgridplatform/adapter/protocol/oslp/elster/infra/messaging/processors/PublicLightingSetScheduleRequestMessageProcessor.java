@@ -5,8 +5,8 @@
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.processors;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
@@ -337,11 +337,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         this.oslpDeviceSettingsService.getDeviceByDeviceIdentification(deviceIdentification);
     final String deviceUid = oslpDevice.getDeviceUid();
 
-    final Date expireDateTime =
-        Date.from(
-            ZonedDateTime.now()
-                .plusMinutes(this.pendingSetScheduleRequestExpiresInMinutes)
-                .toInstant());
+    final Instant expireDateTime =
+        ZonedDateTime.now().plusMinutes(this.pendingSetScheduleRequestExpiresInMinutes).toInstant();
 
     final PendingSetScheduleRequest pendingSetScheduleRequest =
         PendingSetScheduleRequest.builder()
@@ -365,7 +362,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         .domainVersion(deviceRequest.getDomainVersion())
         .messageType(deviceRequest.getMessageType())
         .messagePriority(deviceRequest.getMessagePriority())
-        .ipAddress(deviceRequest.getIpAddress())
+        .ipAddress(deviceRequest.getNetworkAddress())
         .retryCount(deviceRequest.getRetryCount())
         .isScheduled(deviceRequest.isScheduled());
   }

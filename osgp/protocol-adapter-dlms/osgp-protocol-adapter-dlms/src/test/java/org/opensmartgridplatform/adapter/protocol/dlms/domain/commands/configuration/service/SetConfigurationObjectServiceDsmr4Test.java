@@ -12,6 +12,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -27,7 +30,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationMod
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class SetConfigurationObjectServiceDsmr4Test {
+class SetConfigurationObjectServiceDsmr4Test {
 
   private static final GprsOperationModeTypeDto GPRS_OPERATION_MODE =
       GprsOperationModeTypeDto.ALWAYS_ON;
@@ -39,24 +42,21 @@ public class SetConfigurationObjectServiceDsmr4Test {
   @Mock ConfigurationObjectDto configurationOnDevice;
 
   @BeforeEach
-  public void setUp() {
-    this.instance = new SetConfigurationObjectServiceDsmr4(null);
+  void setUp() {
+    this.instance = new SetConfigurationObjectServiceDsmr4(null, null);
     when(this.configurationToSet.getConfigurationFlags()).thenReturn(this.emptyFlags());
     when(this.configurationOnDevice.getConfigurationFlags()).thenReturn(this.emptyFlags());
   }
 
-  @Test
-  public void handles() {
-    assertThat(this.instance.handles(Protocol.SMR_5_0_0)).isFalse();
-    assertThat(this.instance.handles(Protocol.SMR_5_1)).isFalse();
-    assertThat(this.instance.handles(Protocol.SMR_5_2)).isFalse();
-    assertThat(this.instance.handles(Protocol.DSMR_4_2_2)).isTrue();
-    assertThat(this.instance.handles(Protocol.OTHER_PROTOCOL)).isFalse();
-    assertThat(this.instance.handles(null)).isFalse();
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  @NullSource
+  void handles(final Protocol protocol) {
+    assertThat(this.instance.handles(protocol)).isEqualTo(protocol != null && protocol.isDsmr42());
   }
 
   @Test
-  public void getBitPosition() {
+  void getBitPosition() {
     for (final ConfigurationFlagTypeDto flagTypeDto : ConfigurationFlagTypeDto.values()) {
       flagTypeDto
           .getBitPositionDsmr4()
@@ -71,7 +71,7 @@ public class SetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void buildSetParameterDataGprsModeToSet() throws ProtocolAdapterException {
+  void buildSetParameterDataGprsModeToSet() throws ProtocolAdapterException {
 
     // SETUP
     when(this.configurationToSet.getGprsOperationMode()).thenReturn(GPRS_OPERATION_MODE);
@@ -88,7 +88,7 @@ public class SetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void buildSetParameterDataGprsModeOnDevice() throws ProtocolAdapterException {
+  void buildSetParameterDataGprsModeOnDevice() throws ProtocolAdapterException {
 
     // SETUP
     when(this.configurationToSet.getGprsOperationMode()).thenReturn(null);

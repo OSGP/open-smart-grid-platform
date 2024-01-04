@@ -6,6 +6,7 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,24 +61,26 @@ public class PlatformSmartmeteringDefaults
   public static final String PROTOCOL = "DSMR";
   public static final String PROTOCOL_VERSION = "4.2.2";
 
-  public static final Map<Long, ProtocolInfo> PORT_MAPPING = new HashMap<>();
+  public static final Map<ProtocolInfo, Long> PORT_MAPPING = new HashMap<>();
 
   static {
+    // for DSMR 2.2 we will use the DSMR 4.2.2 simulator port, so we can test the config developed
+    // for DSMR 2.2
     PORT_MAPPING.put(
-        1024L,
-        new ProtocolInfo.Builder().withProtocol("DSMR").withProtocolVersion("4.2.2").build());
+        new ProtocolInfo.Builder().withProtocol("DSMR").withProtocolVersion("2.2").build(), 1024L);
     PORT_MAPPING.put(
-        1026L, new ProtocolInfo.Builder().withProtocol("DSMR").withProtocolVersion("2.2").build());
+        new ProtocolInfo.Builder().withProtocol("DSMR").withProtocolVersion("4.2.2").build(),
+        1024L);
     PORT_MAPPING.put(
-        1027L, new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.0.0").build());
+        new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.0.0").build(), 1027L);
     PORT_MAPPING.put(
-        1028L, new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.1").build());
+        new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.1").build(), 1028L);
     PORT_MAPPING.put(
-        1029L, new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.2").build());
+        new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.2").build(), 1029L);
     PORT_MAPPING.put(
-        1030L, new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.5").build());
+        new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.5").build(), 1030L);
     PORT_MAPPING.put(
-        1031L, new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("4.3").build());
+        new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("4.3").build(), 1031L);
   }
 
   public static final Long INVOCATION_COUNTER = 12345L;
@@ -89,7 +92,7 @@ public class PlatformSmartmeteringDefaults
   public static final boolean SELECTIVE_ACCESS_SUPPORTED = false;
   public static final String SMART_METER_E = "SMART_METER_E";
   public static final String SMART_METER_G = "SMART_METER_G";
-  public static final Date TECHNICAL_INSTALLATION_DATE = new Date();
+  public static final Instant TECHNICAL_INSTALLATION_DATE = Instant.now();
   public static final Date VALID_TO = null;
   public static final Long VERSION = 0L;
   public static final boolean WITH_LIST_SUPPORTED = false;

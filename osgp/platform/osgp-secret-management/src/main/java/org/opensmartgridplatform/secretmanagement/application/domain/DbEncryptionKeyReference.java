@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.secretmanagement.application.domain;
 
-import java.util.Date;
+import java.time.Instant;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -30,15 +30,15 @@ public class DbEncryptionKeyReference {
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "encryption_key_seq_gen")
   private Long id;
 
-  private Date creationTime;
-  private Date modificationTime;
+  private Instant creationTime;
+  private Instant modificationTime;
   private Long version; // for optimistic locking
 
   @Enumerated(EnumType.STRING)
   private EncryptionProviderType encryptionProviderType;
 
   private String reference;
-  private Date validFrom;
-  private Date validTo;
+  private Instant validFrom;
+  private Instant validTo;
   private String modifiedBy;
 }

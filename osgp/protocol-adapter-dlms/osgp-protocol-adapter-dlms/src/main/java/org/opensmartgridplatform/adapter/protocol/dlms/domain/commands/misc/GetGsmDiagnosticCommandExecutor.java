@@ -34,7 +34,6 @@ import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdjacentCellInfoDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.BitErrorRateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CellInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CircuitSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
@@ -142,7 +141,7 @@ public class GetGsmDiagnosticCommandExecutor
           device.getProtocolName(), device.getProtocolVersion(), dlmsObjectType);
 
     } catch (final ObjectConfigException e) {
-      throw new ProtocolAdapterException("Error in object config", e);
+      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
     }
   }
 
@@ -251,8 +250,7 @@ public class GetGsmDiagnosticCommandExecutor
           cellInfoDataObjects.get(CELL_INFO_LOCATION_ID_INDEX).getValue(),
           SignalQualityDto.fromIndexValue(
               (short) cellInfoDataObjects.get(CELL_INFO_SIGNAL_QUALITY_INDEX).getValue()),
-          BitErrorRateDto.fromIndexValue(
-              (short) cellInfoDataObjects.get(CELL_INFO_BIT_ERROR_RATE_INDEX).getValue()),
+          (short) cellInfoDataObjects.get(CELL_INFO_BIT_ERROR_RATE_INDEX).getValue(),
           cellInfoDataObjects.get(CELL_INFO_MOBILE_COUNTRY_CODE_INDEX).getValue(),
           cellInfoDataObjects.get(CELL_INFO_MOBILE_NETWORK_CODE_INDEX).getValue(),
           cellInfoDataObjects.get(CELL_INFO_CHANNEL_NUMBER_INDEX).getValue());

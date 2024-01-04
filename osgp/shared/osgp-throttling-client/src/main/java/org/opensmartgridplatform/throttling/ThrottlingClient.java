@@ -186,22 +186,24 @@ public class ThrottlingClient {
    *
    * @param baseTransceiverStationId ID of the BTS
    * @param cellId Cell ID within the BTS
+   * @param priority Priority of the request
    * @return a permit granting access to a network or network segment
    * @throws ThrottlingPermitDeniedException if a permit is not granted
    */
   public Permit requestPermitUsingNetworkSegmentIfIdsAreAvailable(
-      final Integer baseTransceiverStationId, final Integer cellId) {
+      final Integer baseTransceiverStationId, final Integer cellId, final Integer priority) {
 
     if (baseTransceiverStationId != null && cellId != null) {
-      return this.requestPermit(baseTransceiverStationId, cellId)
+      return this.requestPermit(baseTransceiverStationId, cellId, priority)
           .orElseThrow(
               () ->
                   new ThrottlingPermitDeniedException(
-                      this.throttlingConfig.getName(), baseTransceiverStationId, cellId));
+                      this.throttlingConfig.getName(), baseTransceiverStationId, cellId, priority));
     }
 
-    return this.requestPermit()
-        .orElseThrow(() -> new ThrottlingPermitDeniedException(this.throttlingConfig.getName()));
+    return this.requestPermit(priority)
+        .orElseThrow(
+            () -> new ThrottlingPermitDeniedException(this.throttlingConfig.getName(), priority));
   }
 
   /**
@@ -214,16 +216,17 @@ public class ThrottlingClient {
    * @return a permit granting access to the network, containing a locally (this client) unique
    *     request ID, or an empty response if no permit was available.
    */
-  public Optional<Permit> requestPermit() {
+  public Optional<Permit> requestPermit(final int priority) {
     final int requestId = this.requestIdCounter.incrementAndGet();
 
     LOGGER.debug(
-        "Requesting permit using requestId {} for clientId {} on {}",
+        "Requesting permit using requestId {} with priority {} for clientId {} on {}",
         requestId,
+        priority,
         this.clientId,
         this.throttlingConfig);
 
-    final Integer numberOfGrantedPermits = this.numberOfGrantedPermits(requestId);
+    final Integer numberOfGrantedPermits = this.numberOfGrantedPermits(requestId, priority);
 
     if (numberOfGrantedPermits == null) {
       this.discardPermitLogExceptionOnFailure(requestId);
@@ -251,22 +254,25 @@ public class ThrottlingClient {
    *
    * @param baseTransceiverStationId BTS for which a permit is requested
    * @param cellId Cell of the BTS for which a permit is requested
+   * @param priority Priority of request
    * @return a permit granting access to the given network and network segment, containing a locally
    *     (this client) unique request ID, or an empty response if no permit was available.
    */
-  public Optional<Permit> requestPermit(final int baseTransceiverStationId, final int cellId) {
+  public Optional<Permit> requestPermit(
+      final int baseTransceiverStationId, final int cellId, final int priority) {
     final int requestId = this.requestIdCounter.incrementAndGet();
 
     LOGGER.debug(
-        "Requesting permit for network segment ({}, {}) using requestId {} for clientId {} on {}",
+        "Requesting permit for network segment ({}, {}) using requestId {} with priority {} for clientId {} on {}",
         baseTransceiverStationId,
         cellId,
         requestId,
+        priority,
         this.clientId,
         this.throttlingConfig);
 
     final Integer numberOfGrantedPermits =
-        this.numberOfGrantedPermits(requestId, baseTransceiverStationId, cellId);
+        this.numberOfGrantedPermits(requestId, baseTransceiverStationId, cellId, priority);
 
     if (numberOfGrantedPermits == null) {
       this.discardPermitLogExceptionOnFailure(requestId);
@@ -290,7 +296,7 @@ public class ThrottlingClient {
         : Optional.empty();
   }
 
-  private Integer numberOfGrantedPermits(final int requestId) {
+  private Integer numberOfGrantedPermits(final int requestId, final int priority) {
     if (!this.register()) {
       LOGGER.error("Client is not registered when requesting permit using requestId {}", requestId);
       return null;
@@ -298,11 +304,12 @@ public class ThrottlingClient {
 
     try {
       return this.restTemplate.postForObject(
-          "/permits/{throttlingConfigId}/{clientId}",
+          "/permits/{throttlingConfigId}/{clientId}?priority={priority}",
           requestId,
           Integer.class,
           this.throttlingConfig.getId(),
-          this.clientId);
+          this.clientId,
+          priority);
     } catch (final Exception e) {
       LOGGER.error(
           "Unexpected exception requesting permit using requestId {} for {} on {}",
@@ -314,31 +321,37 @@ public class ThrottlingClient {
   }
 
   private Integer numberOfGrantedPermits(
-      final int requestId, final int baseTransceiverStationId, final int cellId) {
+      final int requestId,
+      final int baseTransceiverStationId,
+      final int cellId,
+      final int priority) {
     if (!this.register()) {
       LOGGER.error(
-          "Client is not registered when requesting permit for network segment ({}, {}) using requestId {}",
+          "Client is not registered when requesting permit for network segment ({}, {}) using requestId {} with priority {}",
           baseTransceiverStationId,
           cellId,
-          requestId);
+          requestId,
+          priority);
       return null;
     }
 
     try {
       return this.restTemplate.postForObject(
-          "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
+          "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}?priority={priority}",
           requestId,
           Integer.class,
           this.throttlingConfig.getId(),
           this.clientId,
           baseTransceiverStationId,
-          cellId);
+          cellId,
+          priority);
     } catch (final Exception e) {
       LOGGER.error(
-          "Unexpected exception requesting permit for network segment ({}, {}) using requestId {} for {} on {}",
+          "Unexpected exception requesting permit for network segment ({}, {}) using requestId {} with priority {} for {} on {}",
           baseTransceiverStationId,
           cellId,
           requestId,
+          priority,
           this.clientId,
           this.throttlingConfig,
           e);

@@ -12,23 +12,29 @@ public class ThrottlingPermitDeniedException extends RuntimeException {
   private final String configurationName;
   private final Integer baseTransceiverStationId;
   private final Integer cellId;
+  private final Integer priority;
 
   public ThrottlingPermitDeniedException(
-      final String configurationName, final int baseTransceiverStationId, final int cellId) {
+      final String configurationName,
+      final int baseTransceiverStationId,
+      final int cellId,
+      final int priority) {
 
     super(
         String.format(
-            "Permit denied for network segment (bts_id=%d, cell_id=%d) and configuration \"%s\"",
-            baseTransceiverStationId, cellId, configurationName));
+            "Permit denied for network segment (bts_id=%d, cell_id=%d) with priority %d and configuration \"%s\"",
+            baseTransceiverStationId, cellId, priority, configurationName));
     this.configurationName = configurationName;
     this.baseTransceiverStationId = baseTransceiverStationId;
     this.cellId = cellId;
+    this.priority = priority;
   }
 
-  public ThrottlingPermitDeniedException(final String configurationName) {
+  public ThrottlingPermitDeniedException(final String configurationName, final int priority) {
 
     super(String.format("Permit denied for network with configuration \"%s\"", configurationName));
     this.configurationName = configurationName;
+    this.priority = priority;
     this.baseTransceiverStationId = null;
     this.cellId = null;
   }
@@ -43,5 +49,9 @@ public class ThrottlingPermitDeniedException extends RuntimeException {
 
   public Optional<Integer> getCellId() {
     return Optional.ofNullable(this.cellId);
+  }
+
+  public Integer getPriority() {
+    return this.priority;
   }
 }

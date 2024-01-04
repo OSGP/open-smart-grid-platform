@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -62,6 +63,7 @@ import org.opensmartgridplatform.oslp.Oslp.SetScheduleRequest;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1646,7 +1648,9 @@ public class OslpDeviceService implements DeviceService {
                     org.opensmartgridplatform.oslp.Oslp.TransitionType.class));
     if (deviceRequest.getTransitionTypeContainer().getDateTime() != null) {
       setTransitionBuilder.setTime(
-          deviceRequest.getTransitionTypeContainer().getDateTime().toString(TIME_FORMAT));
+          JavaTimeHelpers.formatDate(
+              deviceRequest.getTransitionTypeContainer().getDateTime(),
+              DateTimeFormatter.ofPattern(DATE_FORMAT)));
     }
 
     this.buildAndSignEnvelope(
@@ -2331,7 +2335,7 @@ public class OslpDeviceService implements DeviceService {
     final String deviceIdentification = deviceRequest.getDeviceIdentification();
     final String organisationIdentification = deviceRequest.getOrganisationIdentification();
     final String correlationUid = deviceRequest.getCorrelationUid();
-    final String ipAddress = deviceRequest.getIpAddress();
+    final String networkAddress = deviceRequest.getNetworkAddress();
     final String domain = deviceRequest.getDomain();
     final String domainVersion = deviceRequest.getDomainVersion();
     final String messageType = deviceRequest.getMessageType();
@@ -2357,7 +2361,7 @@ public class OslpDeviceService implements DeviceService {
         correlationUid,
         deviceId,
         sequenceNumber,
-        ipAddress,
+        networkAddress,
         domain,
         domainVersion,
         messageType,

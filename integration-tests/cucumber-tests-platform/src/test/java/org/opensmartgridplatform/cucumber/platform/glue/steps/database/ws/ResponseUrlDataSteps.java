@@ -39,7 +39,7 @@ public abstract class ResponseUrlDataSteps {
       fld.setAccessible(true);
       fld.set(
           responseUrlData,
-          DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
+          DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toInstant());
       this.responseUrlDataRepository.saveAndFlush(responseUrlData);
     }
   }

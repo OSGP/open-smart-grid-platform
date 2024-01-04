@@ -100,7 +100,7 @@ class ConfigurationManagementServiceTest {
     when(this.ssldRepository.findById(any())).thenReturn(java.util.Optional.of(this.ssld));
     when(this.domainCoreMapper.map(any(), any())).thenReturn(this.configurationDto);
     doNothing().when(this.ssld).updateOutputSettings(any());
-    when(this.device.getIpAddress()).thenReturn(IP_ADDRESS);
+    when(this.device.getNetworkAddress()).thenReturn(IP_ADDRESS);
 
     this.configurationManagementService.setConfiguration(
         this.correlationIds, this.configuration, SCHEDULE_TIME, MESSAGE_TYPE, MESSAGE_PRIORITY);
@@ -159,7 +159,7 @@ class ConfigurationManagementServiceTest {
     when(this.organisationDomainService.searchOrganisation(any(String.class)))
         .thenReturn(new Organisation());
     when(this.deviceDomainService.searchActiveDevice(any(), any())).thenReturn(this.device);
-    when(this.device.getIpAddress()).thenReturn(IP_ADDRESS);
+    when(this.device.getNetworkAddress()).thenReturn(IP_ADDRESS);
 
     this.configurationManagementService.getConfiguration(
         ORG_IDENTIFICATION, DEVICE_IDENTIFICATION, CORRELATION_UID, MESSAGE_TYPE, MESSAGE_PRIORITY);
@@ -224,7 +224,7 @@ class ConfigurationManagementServiceTest {
     when(this.organisationDomainService.searchOrganisation(any(String.class)))
         .thenReturn(new Organisation());
     when(this.deviceDomainService.searchActiveDevice(any(), any())).thenReturn(this.device);
-    when(this.device.getIpAddress()).thenReturn(IP_ADDRESS);
+    when(this.device.getNetworkAddress()).thenReturn(IP_ADDRESS);
 
     this.configurationManagementService.switchConfiguration(
         ORG_IDENTIFICATION,

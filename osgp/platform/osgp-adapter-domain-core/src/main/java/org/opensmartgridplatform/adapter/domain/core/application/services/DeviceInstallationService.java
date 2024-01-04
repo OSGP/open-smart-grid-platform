@@ -67,7 +67,7 @@ public class DeviceInstallationService extends AbstractService {
         new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null),
         actualMessageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   public void handleGetStatusResponse(
@@ -218,7 +218,7 @@ public class DeviceInstallationService extends AbstractService {
         new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   // === STOP DEVICE TEST ===
@@ -243,6 +243,6 @@ public class DeviceInstallationService extends AbstractService {
         new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 }

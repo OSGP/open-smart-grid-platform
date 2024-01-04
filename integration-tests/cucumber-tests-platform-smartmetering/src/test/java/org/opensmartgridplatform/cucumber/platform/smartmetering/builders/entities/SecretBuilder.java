@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities;
 
-import java.util.Date;
+import java.time.Instant;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.cucumber.platform.core.builders.Builder;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.SecurityKey;
@@ -19,7 +19,7 @@ public class SecretBuilder implements Builder<DbEncryptedSecret> {
   private String key = SecurityKey.SECURITY_KEY_A.getDatabaseKey();
   private SecretStatus status;
   private String deviceIdentification;
-  private Date creationTime;
+  private Instant creationTime;
   private DbEncryptionKeyReference encryptionKeyReference;
 
   public SecretBuilder withSecretType(final SecretType secretType) {
@@ -57,7 +57,7 @@ public class SecretBuilder implements Builder<DbEncryptedSecret> {
     return this;
   }
 
-  public SecretBuilder withCreationTime(final Date creationTime) {
+  public SecretBuilder withCreationTime(final Instant creationTime) {
     this.creationTime = creationTime;
     return this;
   }
@@ -75,7 +75,7 @@ public class SecretBuilder implements Builder<DbEncryptedSecret> {
     securityKey.setSecretType(this.secretType);
     securityKey.setEncodedSecret(this.key);
     securityKey.setSecretStatus(this.status == null ? SecretStatus.ACTIVE : this.status);
-    securityKey.setCreationTime(this.creationTime == null ? new Date() : this.creationTime);
+    securityKey.setCreationTime(this.creationTime == null ? Instant.now() : this.creationTime);
     securityKey.setEncryptionKeyReference(this.encryptionKeyReference);
     return securityKey;
   }

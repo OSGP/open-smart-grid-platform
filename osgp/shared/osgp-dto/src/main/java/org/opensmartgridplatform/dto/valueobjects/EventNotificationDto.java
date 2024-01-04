@@ -5,7 +5,7 @@
 package org.opensmartgridplatform.dto.valueobjects;
 
 import java.io.Serializable;
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 
 public class EventNotificationDto implements Serializable {
 
@@ -13,14 +13,14 @@ public class EventNotificationDto implements Serializable {
   private static final long serialVersionUID = 5665838352689024852L;
 
   private final String deviceUid;
-  private final DateTime dateTime;
+  private final ZonedDateTime dateTime;
   private final EventTypeDto eventType;
   private final String description;
   private final Integer index;
 
   public EventNotificationDto(
       final String deviceUid,
-      final DateTime dateTime,
+      final ZonedDateTime dateTime,
       final EventTypeDto eventType,
       final String description,
       final Integer index) {
@@ -42,7 +42,7 @@ public class EventNotificationDto implements Serializable {
     return this.deviceUid;
   }
 
-  public DateTime getDateTime() {
+  public ZonedDateTime getDateTime() {
     return this.dateTime;
   }
 

@@ -4,19 +4,23 @@
 
 package org.opensmartgridplatform.throttling;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SegmentedNetworkThrottler {
 
   private final MaxConcurrencyByThrottlingConfig maxConcurrencyByThrottlingConfig;
+  private final MaxConcurrencyByBtsCellConfig maxConcurrencyByBtsCellConfig;
   private final PermitsByThrottlingConfig permitsByThrottlingConfig;
 
   public SegmentedNetworkThrottler(
       final MaxConcurrencyByThrottlingConfig maxConcurrencyByThrottlingConfig,
+      final MaxConcurrencyByBtsCellConfig maxConcurrencyByBtsCellConfig,
       final PermitsByThrottlingConfig permitsByThrottlingConfig) {
 
     this.maxConcurrencyByThrottlingConfig = maxConcurrencyByThrottlingConfig;
+    this.maxConcurrencyByBtsCellConfig = maxConcurrencyByBtsCellConfig;
     this.permitsByThrottlingConfig = permitsByThrottlingConfig;
   }
 
@@ -25,16 +29,26 @@ public class SegmentedNetworkThrottler {
       final int clientId,
       final int baseTransceiverStationId,
       final int cellId,
-      final int requestId) {
+      final int requestId,
+      final int priority) {
 
+    final Optional<Integer> maxConcurrencyBtsCell =
+        this.maxConcurrencyByBtsCellConfig.getMaxConcurrency(baseTransceiverStationId, cellId);
     final int maxConcurrency =
-        this.maxConcurrencyByThrottlingConfig.getMaxConcurrency(throttlingConfigId);
+        maxConcurrencyBtsCell.orElse(
+            this.maxConcurrencyByThrottlingConfig.getMaxConcurrency(throttlingConfigId));
     if (maxConcurrency < 1) {
       return false;
     }
 
     return this.permitsByThrottlingConfig.requestPermit(
-        throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId, maxConcurrency);
+        throttlingConfigId,
+        clientId,
+        baseTransceiverStationId,
+        cellId,
+        requestId,
+        priority,
+        maxConcurrency);
   }
 
   public boolean releasePermit(

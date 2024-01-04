@@ -9,8 +9,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Set;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.AlarmHelperService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 
 public class AlarmDecoder {
@@ -64,6 +64,15 @@ public class AlarmDecoder {
       final byte[] byteArray = new byte[length];
       inputStream.read(byteArray, 0, length);
       return byteArray;
+    } catch (final IOException io) {
+      throw new UnrecognizedMessageDataException(io.getMessage(), io);
+    }
+  }
+
+  byte[] resetAndReadAllBytes(final InputStream inputStream)
+      throws UnrecognizedMessageDataException {
+    try {
+      return inputStream.readAllBytes();
     } catch (final IOException io) {
       throw new UnrecognizedMessageDataException(io.getMessage(), io);
     }

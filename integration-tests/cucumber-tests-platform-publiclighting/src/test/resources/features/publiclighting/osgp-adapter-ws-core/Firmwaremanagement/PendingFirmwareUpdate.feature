@@ -42,7 +42,7 @@ Feature: FirmwareManagement pending firmware update
     When the device sends a register device request to the platform over "<Protocol>"
       | DeviceIdentification | TEST1024010101010 |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
-      | IpAddress            | 127.0.0.2         |
+      | NetworkAddress       | 127.0.0.2         |
       | DeviceType           | SSLD              |
       | HasSchedule          | false             |
     Then the register device response contains
@@ -57,7 +57,7 @@ Feature: FirmwareManagement pending firmware update
       | DeviceType           | SSLD              |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
       | HasSchedule          | false             |
-      | IpAddress            | 127.0.0.2         |
+      | NetworkAddress       | 127.0.0.2         |
     And a get firmware version "<Protocol>" message is sent to device "TEST1024010101010" with deviceUid "eHW0eEFzN0R2Okd5"
     And the device firmware file exists
       | DeviceIdentification | TEST1024010101010 |

@@ -101,10 +101,10 @@ class JasperWirelessSmsClientTest {
                 + "<ns2:sentToIccid>"
                 + ICC_ID
                 + "</ns2:sentToIccid>"
+                + "<ns2:messageText/>"
                 + "<ns2:tpvp>"
                 + VALIDITY_PERIOD
                 + "</ns2:tpvp>"
-                + "<ns2:messageText/>"
                 + "</ns2:SendSMSRequest>");
 
     final Source responsePayload =

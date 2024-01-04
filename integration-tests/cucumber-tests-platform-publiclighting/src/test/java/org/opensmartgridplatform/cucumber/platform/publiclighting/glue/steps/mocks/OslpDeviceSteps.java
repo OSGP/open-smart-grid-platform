@@ -20,6 +20,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.text.ParseException;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
@@ -70,6 +71,7 @@ import org.opensmartgridplatform.oslp.Oslp.Weekday;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.oslp.OslpUtils;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
@@ -78,6 +80,8 @@ import org.springframework.util.CollectionUtils;
  * for the automatic test.
  */
 public class OslpDeviceSteps {
+
+  public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
   @Autowired private CoreDeviceConfiguration configuration;
 
@@ -639,17 +643,19 @@ public class OslpDeviceSteps {
       if (StringUtils.isNotBlank(
           expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_STARTDAY))) {
         final String startDay =
-            getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_STARTDAY)
-                .toDateTime(DateTimeZone.UTC)
-                .toString("yyyyMMdd");
+            JavaTimeHelpers.formatDate(
+                getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_STARTDAY)
+                    .withZoneSameInstant(ZoneId.of("UTC")),
+                FORMATTER);
 
         assertThat(schedule.getStartDay()).isEqualTo(startDay);
       }
       if (StringUtils.isNotBlank(expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_ENDDAY))) {
         final String endDay =
-            getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_ENDDAY)
-                .toDateTime(DateTimeZone.UTC)
-                .toString("yyyyMMdd");
+            JavaTimeHelpers.formatDate(
+                getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_ENDDAY)
+                    .withZoneSameInstant(ZoneId.of("UTC")),
+                DateTimeFormatter.ofPattern("yyyyMMdd"));
 
         assertThat(schedule.getEndDay()).isEqualTo(endDay);
       }
@@ -1211,7 +1217,7 @@ public class OslpDeviceSteps {
                                       InetAddress.getByName(
                                               getString(
                                                   settings,
-                                                  PlatformPubliclightingKeys.IP_ADDRESS,
+                                                  PlatformPubliclightingKeys.NETWORK_ADDRESS,
                                                   PlatformPubliclightingDefaults.LOCALHOST))
                                           .getAddress()))
                               .setDeviceType(

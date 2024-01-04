@@ -8,9 +8,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,8 +34,6 @@ class DomainHelperServiceTest {
   @Mock private SessionProviderService sessionProviderService;
   @Mock private SessionProvider sessionProvider;
   @Mock private JasperWirelessSmsRestClient jasperWirelessSmsRestClient;
-  private final int jasperGetSessionRetries = 1;
-  private final int jasperGetSessionSleepBetweenRetries = 2;
 
   private DomainHelperService domainHelperService;
 
@@ -45,12 +43,7 @@ class DomainHelperServiceTest {
   @BeforeEach
   void setUp() {
     this.domainHelperService =
-        new DomainHelperService(
-            this.dlmsDeviceRepository,
-            this.sessionProviderService,
-            this.jasperWirelessSmsRestClient,
-            this.jasperGetSessionRetries,
-            this.jasperGetSessionSleepBetweenRetries);
+        new DomainHelperService(this.dlmsDeviceRepository, this.sessionProviderService);
   }
 
   @Test
@@ -81,6 +74,7 @@ class DomainHelperServiceTest {
     this.whenSessionProviderReturnsIpAddress(communicationProvider, iccId, ipAddress);
     final DlmsDevice dlmsDevice =
         new DlmsDeviceBuilder()
+            .withDeviceIdentification(DEVICE_IDENTIFICATION)
             .withCommunicationProvider(communicationProvider)
             .setIccId(iccId)
             .build();
@@ -97,37 +91,8 @@ class DomainHelperServiceTest {
 
     when(this.sessionProviderService.getSessionProvider(communicationProvider))
         .thenReturn(this.sessionProvider);
-    when(this.sessionProvider.getIpAddress(iccId)).thenReturn(IP_ADDRESS);
-  }
-
-  @Test
-  void getDeviceIpAddressFromSessionProviderReturnsIpAddressOnlyAfterWakeUp() throws Exception {
-
-    final String communicationProvider = "comm-prov";
-    final String iccId = "icc-id";
-    final String ipAddress = IP_ADDRESS;
-    this.whenSessionProviderReturnsIpAddressAfterWakeUp(communicationProvider, iccId, ipAddress);
-    final DlmsDevice dlmsDevice =
-        new DlmsDeviceBuilder()
-            .withCommunicationProvider(communicationProvider)
-            .setIccId(iccId)
-            .build();
-
-    final String actualIpAddress =
-        this.domainHelperService.getDeviceIpAddressFromSessionProvider(dlmsDevice);
-
-    assertThat(actualIpAddress).isEqualTo(ipAddress);
-
-    verify(this.jasperWirelessSmsRestClient).sendWakeUpSMS(iccId);
-  }
-
-  private void whenSessionProviderReturnsIpAddressAfterWakeUp(
-      final String communicationProvider, final String iccId, final String ipAddress)
-      throws Exception {
-
-    when(this.sessionProviderService.getSessionProvider(communicationProvider))
-        .thenReturn(this.sessionProvider);
-    when(this.sessionProvider.getIpAddress(iccId)).thenReturn(null).thenReturn(IP_ADDRESS);
+    when(this.sessionProvider.getIpAddress(DEVICE_IDENTIFICATION, iccId))
+        .thenReturn(Optional.of(IP_ADDRESS));
   }
 
   @Test
@@ -136,7 +101,7 @@ class DomainHelperServiceTest {
     final DlmsDevice dlmsDevice =
         new DlmsDeviceBuilder().withIpAddress(null).withIpAddressStatic(true).build();
     final MessageMetadata messageMetadata =
-        MessageMetadata.newBuilder().withIpAddress(ipAddress).build();
+        MessageMetadata.newBuilder().withNetworkAddress(ipAddress).build();
 
     this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider(
         dlmsDevice, messageMetadata);
@@ -149,15 +114,21 @@ class DomainHelperServiceTest {
     final String communicationProvider = "comm-prov";
     final String iccId = "icc-id";
     final String ipAddress = IP_ADDRESS;
-    this.whenSessionProviderReturnsIpAddressAfterWakeUp(communicationProvider, iccId, ipAddress);
+
+    when(this.sessionProviderService.getSessionProvider(communicationProvider))
+        .thenReturn(this.sessionProvider);
+    when(this.sessionProvider.getIpAddress(DEVICE_IDENTIFICATION, iccId))
+        .thenReturn(Optional.of(ipAddress));
+
     final DlmsDevice dlmsDevice =
         new DlmsDeviceBuilder()
+            .withDeviceIdentification(DEVICE_IDENTIFICATION)
             .withIpAddressStatic(false)
             .withCommunicationProvider(communicationProvider)
             .setIccId(iccId)
             .build();
     final MessageMetadata messageMetadata =
-        MessageMetadata.newBuilder().withIpAddress(null).build();
+        MessageMetadata.newBuilder().withNetworkAddress(null).build();
 
     this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider(
         dlmsDevice, messageMetadata);
@@ -171,7 +142,7 @@ class DomainHelperServiceTest {
     final DlmsDevice dlmsDevice =
         new DlmsDeviceBuilder().withIpAddress(IP_ADDRESS).withIpAddressStatic(true).build();
     final MessageMetadata messageMetadata =
-        MessageMetadata.newBuilder().withIpAddress(ipAddressInMessageMetaData).build();
+        MessageMetadata.newBuilder().withNetworkAddress(ipAddressInMessageMetaData).build();
 
     this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider(
         dlmsDevice, messageMetadata);

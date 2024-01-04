@@ -5,7 +5,6 @@
 package org.opensmartgridplatform.cucumber.platform;
 
 import java.time.ZonedDateTime;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
 
@@ -124,7 +123,8 @@ public class PlatformDefaults {
   public static final String DEFAULT_SMART_METER_DEVICE_IDENTIFICATION = "TEST1024000000001";
   public static final String DEFAULT_SMART_METER_GAS_DEVICE_IDENTIFICATION = "TESTG102400000001";
   public static final String DEFAULT_SUPPLIER = "Kaifa";
-  public static final DateTime DEFAULT_TECHNICAL_INSTALLATION_DATE = DateTime.now().minusDays(1);
+  public static final ZonedDateTime DEFAULT_TECHNICAL_INSTALLATION_DATE =
+      ZonedDateTime.now().minusDays(1);
   public static final ZonedDateTime DEFAULT_TECHNICAL_INSTALLATION_DATE_ZONED =
       ZonedDateTime.now().minusDays(1);
   public static final Integer DEFAULT_TOTAL_LIGHTING_HOURS = 144;
@@ -136,6 +136,7 @@ public class PlatformDefaults {
   public static final String DLMS_DEFAULT_COMMUNICATION_METHOD = "GPRS";
   public static final String DLMS_DEFAULT_DEVICE_TYPE = "SMART_METER_E";
 
+  public static final Boolean DLMS_DEFAULT_LLS1_ACTIVE = false;
   public static final Boolean DLMS_DEFAULT_HSL3_ACTIVE = false;
   public static final Boolean DLMS_DEFAULT_HSL4_ACTIVE = false;
   public static final Boolean DLMS_DEFAULT_HSL5_ACTIVE = true;
@@ -148,7 +149,7 @@ public class PlatformDefaults {
   public static final String EMAIL = "someone@somewhere.nl";
   public static final Boolean EVENTS_NODELIST_EXPECTED = false;
   public static final String EXPECTED_RESULT_OK = "OK";
-  public static final DateTime EXPIRYDATECONTRACT = DateTime.now().plusWeeks(1);
+  public static final ZonedDateTime EXPIRYDATECONTRACT = ZonedDateTime.now().plusWeeks(1);
   public static final String PHONENUMBER = "+31 43 1234567";
   public static final org.opensmartgridplatform.domain.core.valueobjects.PlatformFunctionGroup
       PLATFORM_FUNCTION_GROUP =
@@ -206,7 +207,7 @@ public class PlatformDefaults {
   public static final Boolean LAST_SWITCHING_EVENT_STATE = false;
   public static final Boolean LAST_KNOWN_STATE = false;
 
-  public static final DateTime DATE_NOW = DateTime.now();
+  public static final ZonedDateTime DATE_NOW = ZonedDateTime.now();
   public static final String TODAY = "today";
   public static final String DEVICE_UID = "dGVzdDEyMzQ1Njc4";
 

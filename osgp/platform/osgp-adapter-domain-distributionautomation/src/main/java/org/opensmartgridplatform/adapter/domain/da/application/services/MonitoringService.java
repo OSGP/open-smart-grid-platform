@@ -57,7 +57,7 @@ public class MonitoringService extends BaseService {
         this.mapper.map(getPQValuesRequest, GetPQValuesRequestDto.class);
 
     this.osgpCoreRequestMessageSender.send(
-        new RequestMessage(ids, dto), messageType, device.getIpAddress());
+        new RequestMessage(ids, dto), messageType, device.getNetworkAddress());
   }
 
   public void getPQValuesPeriodic(
@@ -78,7 +78,7 @@ public class MonitoringService extends BaseService {
         this.mapper.map(getPQValuesPeriodicRequest, GetPQValuesPeriodicRequestDto.class);
 
     this.osgpCoreRequestMessageSender.send(
-        new RequestMessage(ids, dto), messageType, device.getIpAddress());
+        new RequestMessage(ids, dto), messageType, device.getNetworkAddress());
   }
 
   public void handleGetPQValuesResponse(

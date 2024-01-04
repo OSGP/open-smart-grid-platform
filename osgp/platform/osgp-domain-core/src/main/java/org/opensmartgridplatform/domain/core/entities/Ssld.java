@@ -4,7 +4,6 @@
 
 package org.opensmartgridplatform.domain.core.entities;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -83,7 +82,7 @@ public class Ssld extends Device {
   public Ssld(
       final String deviceIdentification,
       final String deviceType,
-      final InetAddress networkAddress,
+      final String networkAddress,
       final boolean activated,
       final boolean hasSchedule) {
     this.deviceIdentification = deviceIdentification;
@@ -258,7 +257,7 @@ public class Ssld extends Device {
       final RelayStatus newStatus = unhandledStatusesByIndex.remove(r.getIndex());
       if (newStatus != null
           && (r.getLastSwitchingEventTime() == null
-              || newStatus.getLastSwitchingEventTime().after(r.getLastSwitchingEventTime()))) {
+              || newStatus.getLastSwitchingEventTime().isAfter(r.getLastSwitchingEventTime()))) {
         r.updateLastSwitchingEventState(
             newStatus.isLastSwitchingEventState(), newStatus.getLastSwitchingEventTime());
       }

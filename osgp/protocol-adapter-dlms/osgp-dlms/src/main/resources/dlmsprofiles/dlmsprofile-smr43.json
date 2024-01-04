@@ -7,114 +7,124 @@
     "version": "4.2.2"
   },
   "properties": [],
-  "objects": [{
-    "tag": "DEFINABLE_LOAD_PROFILE",
-    "description": "Definable load profile",
-    "class-id": 7,
-    "version": 1,
-    "obis": "0.1.94.31.6.255",
-    "group": "ELECTRICITY",
-    "meterTypes": ["SP","PP"],
-    "properties": {
-      "SELECTABLE_OBJECTS": [
-        "CLOCK",
-        "CDMA_DIAGNOSTIC",
-        "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
-        "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
-        "NUMBER_OF_POWER_FAILURES",
-        "INSTANTANEOUS_VOLTAGE_L1",
-        "INSTANTANEOUS_VOLTAGE_L2",
-        "INSTANTANEOUS_VOLTAGE_L3",
-        "AVERAGE_VOLTAGE_L1",
-        "AVERAGE_VOLTAGE_L2",
-        "AVERAGE_VOLTAGE_L3",
-        "INSTANTANEOUS_CURRENT_L1",
-        "AVERAGE_CURRENT_L1",
-        "INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES",
-        "AVERAGE_ACTIVE_POWER_IMPORT_L1",
-        "AVERAGE_ACTIVE_POWER_IMPORT_L2",
-        "AVERAGE_ACTIVE_POWER_IMPORT_L3",
-        "AVERAGE_ACTIVE_POWER_EXPORT_L1",
-        "AVERAGE_ACTIVE_POWER_EXPORT_L2",
-        "AVERAGE_ACTIVE_POWER_EXPORT_L3",
-        "AVERAGE_REACTIVE_POWER_IMPORT_L1",
-        "AVERAGE_REACTIVE_POWER_IMPORT_L2",
-        "AVERAGE_REACTIVE_POWER_IMPORT_L3",
-        "AVERAGE_REACTIVE_POWER_EXPORT_L1",
-        "AVERAGE_REACTIVE_POWER_EXPORT_L2",
-        "AVERAGE_REACTIVE_POWER_EXPORT_L3"
+  "objects": [
+    {
+      "tag": "DEFINABLE_LOAD_PROFILE",
+      "description": "Definable load profile",
+      "note": "Attribute 4 (capture period in sec) is overridden in factory with value 900 (default in spec: 86400)",
+      "class-id": 7,
+      "version": 1,
+      "obis": "0.1.94.31.6.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "properties": {
+        "SELECTABLE_OBJECTS": [
+          "CLOCK",
+          "CDMA_DIAGNOSTIC",
+          "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
+          "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
+          "NUMBER_OF_POWER_FAILURES",
+          "INSTANTANEOUS_VOLTAGE_L1",
+          "INSTANTANEOUS_VOLTAGE_L2",
+          "INSTANTANEOUS_VOLTAGE_L3",
+          "AVERAGE_VOLTAGE_L1",
+          "AVERAGE_VOLTAGE_L2",
+          "AVERAGE_VOLTAGE_L3",
+          "INSTANTANEOUS_CURRENT_L1",
+          "AVERAGE_CURRENT_L1",
+          "INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES",
+          "AVERAGE_ACTIVE_POWER_IMPORT_L1",
+          "AVERAGE_ACTIVE_POWER_IMPORT_L2",
+          "AVERAGE_ACTIVE_POWER_IMPORT_L3",
+          "AVERAGE_ACTIVE_POWER_EXPORT_L1",
+          "AVERAGE_ACTIVE_POWER_EXPORT_L2",
+          "AVERAGE_ACTIVE_POWER_EXPORT_L3",
+          "AVERAGE_REACTIVE_POWER_IMPORT_L1",
+          "AVERAGE_REACTIVE_POWER_IMPORT_L2",
+          "AVERAGE_REACTIVE_POWER_IMPORT_L3",
+          "AVERAGE_REACTIVE_POWER_EXPORT_L1",
+          "AVERAGE_REACTIVE_POWER_EXPORT_L2",
+          "AVERAGE_REACTIVE_POWER_EXPORT_L3"
+        ]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "buffer",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture objects",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 4,
+          "description": "capture period in sec",
+          "note": "Attribute 4 (capture period in sec) is overridden in factory with value 900 (default in spec: 86400)",
+          "datatype": "double-long-unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "value": "900",
+          "access": "RW"
+        },
+        {
+          "id": 5,
+          "description": "sort method",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_METER",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "sort object",
+          "datatype": "object_definition",
+          "valuetype": "FIXED_IN_METER",
+          "value": "NONE",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "entries in use",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "profile entries",
+          "datatype": "double-long-unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "value": "960",
+          "access": "RW"
+        }
       ]
     },
-    "attributes": [
-      {
-        "id": 2,
-        "description": "buffer",
-        "datatype": "array",
-        "valuetype": "DYNAMIC",
-        "value": "EMPTY",
-        "access": "R"
-      },
-      {
-        "id": 3,
-        "description": "capture objects",
-        "datatype": "array",
-        "valuetype": "SET_BY_CLIENT",
-        "value": "EMPTY",
-        "access": "RW"
-      },
-      {
-        "id": 4,
-        "description": "capture period in sec",
-        "datatype": "double-long-unsigned",
-        "valuetype": "SET_BY_CLIENT",
-        "value": "86400",
-        "access": "RW"
-      },
-      {
-        "id": 5,
-        "description": "sort method",
-        "datatype": "enum",
-        "valuetype": "FIXED_IN_METER",
-        "value": "1",
-        "access": "R"
-      },
-      {
-        "id": 6,
-        "description": "sort object",
-        "datatype": "object_definition",
-        "valuetype": "FIXED_IN_METER",
-        "value": "NONE",
-        "access": "R"
-      },
-      {
-        "id": 7,
-        "description": "entries in use",
-        "datatype": "double-long-unsigned",
-        "valuetype": "DYNAMIC",
-        "value": "0",
-        "access": "R"
-      },
-      {
-        "id": 8,
-        "description": "profile entries",
-        "datatype": "double-long-unsigned",
-        "valuetype": "SET_BY_CLIENT",
-        "value": "960",
-        "access": "RW"
-      }
-    ]
-  },
     {
       "tag": "CDMA_DIAGNOSTIC",
       "description": "CDMA Diagnostic",
+      "note": null,
       "class-id": 47,
       "version": 0,
       "obis": "0.1.25.6.0.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
       "properties": {
         "PQ_PROFILE": "PUBLIC",
-        "PQ_REQUEST": "PERIODIC"
+        "PQ_REQUEST": [
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
       },
       "attributes": [
         {
@@ -122,7 +132,6 @@
           "description": "operator",
           "datatype": "visible-string",
           "valuetype": "DYNAMIC",
-          "value": "EMPTY",
           "access": "R"
         },
         {
@@ -130,7 +139,6 @@
           "description": "status",
           "datatype": "enum",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -138,7 +146,6 @@
           "description": "cs attachment",
           "datatype": "enum",
           "valuetype": "DYNAMIC",
-          "value": "0",
           "access": "R"
         },
         {
@@ -154,7 +161,6 @@
           "description": "cell info",
           "datatype": "cell_info_type",
           "valuetype": "DYNAMIC",
-          "value": "EMPTY",
           "access": "R"
         },
         {
@@ -162,7 +168,6 @@
           "description": "adjacent cells",
           "datatype": "array",
           "valuetype": "DYNAMIC",
-          "value": "EMPTY",
           "access": "R"
         },
         {
@@ -170,7 +175,6 @@
           "description": "capture time",
           "datatype": "date-time",
           "valuetype": "DYNAMIC",
-          "value": "EMPTY",
           "access": "R"
         }
       ]

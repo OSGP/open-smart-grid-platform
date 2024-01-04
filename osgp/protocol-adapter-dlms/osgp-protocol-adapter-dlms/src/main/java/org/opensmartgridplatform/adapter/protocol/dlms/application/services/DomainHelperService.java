@@ -4,14 +4,12 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
+import java.util.Optional;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
-import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProvider;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProviderService;
-import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -28,23 +26,11 @@ public class DomainHelperService {
 
   private final SessionProviderService sessionProviderService;
 
-  private final JasperWirelessSmsClient jasperWirelessSmsClient;
-
-  private final int jasperGetSessionRetries;
-
-  private final int jasperGetSessionSleepBetweenRetries;
-
   public DomainHelperService(
       final DlmsDeviceRepository dlmsDeviceRepository,
-      final SessionProviderService sessionProviderService,
-      final JasperWirelessSmsClient jasperWirelessSmsClient,
-      final int jasperGetSessionRetries,
-      final int jasperGetSessionSleepBetweenRetries) {
+      final SessionProviderService sessionProviderService) {
     this.dlmsDeviceRepository = dlmsDeviceRepository;
     this.sessionProviderService = sessionProviderService;
-    this.jasperWirelessSmsClient = jasperWirelessSmsClient;
-    this.jasperGetSessionRetries = jasperGetSessionRetries;
-    this.jasperGetSessionSleepBetweenRetries = jasperGetSessionSleepBetweenRetries;
   }
 
   /**
@@ -86,7 +72,7 @@ public class DomainHelperService {
     }
 
     if (dlmsDevice.isIpAddressIsStatic()) {
-      dlmsDevice.setIpAddress(messageMetadata.getIpAddress());
+      dlmsDevice.setIpAddress(messageMetadata.getNetworkAddress());
     } else {
       final String ipAddressFromSessionProvider =
           this.getDeviceIpAddressFromSessionProvider(dlmsDevice);
@@ -99,55 +85,29 @@ public class DomainHelperService {
 
     final SessionProvider sessionProvider =
         this.sessionProviderService.getSessionProvider(dlmsDevice.getCommunicationProvider());
-    String deviceIpAddress;
-    try {
-      deviceIpAddress = sessionProvider.getIpAddress(dlmsDevice.getIccId());
-      if (deviceIpAddress != null) {
-        return deviceIpAddress;
-      }
 
-      // If the result is null then the meter is not in session (not
-      // awake).
-      // So wake up the meter and start polling for the session
-      this.jasperWirelessSmsClient.sendWakeUpSMS(dlmsDevice.getIccId());
-      deviceIpAddress = this.pollForSession(sessionProvider, dlmsDevice);
-
-    } catch (final OsgpJasperException e) {
-      throw new FunctionalException(
-          FunctionalExceptionType.INVALID_ICCID, ComponentType.PROTOCOL_DLMS, e);
-    }
-    if ((deviceIpAddress == null) || "".equals(deviceIpAddress)) {
+    if (sessionProvider == null) {
       throw new ProtocolAdapterException(
-          "Session provider: "
-              + dlmsDevice.getCommunicationProvider()
-              + " did not return an IP address for device: "
+          "Session provider: Cannot find SessionProvider for device: "
               + dlmsDevice.getDeviceIdentification()
               + " and iccId: "
-              + dlmsDevice.getIccId());
+              + dlmsDevice.getIccId()
+              + " and communicationProvider: "
+              + dlmsDevice.getCommunicationProvider());
     }
-    return deviceIpAddress;
-  }
 
-  private String pollForSession(final SessionProvider sessionProvider, final DlmsDevice dlmsDevice)
-      throws OsgpException {
+    final Optional<String> deviceIpAddress =
+        sessionProvider.getIpAddress(dlmsDevice.getDeviceIdentification(), dlmsDevice.getIccId());
 
-    String deviceIpAddress = null;
-    try {
-      for (int i = 0; i < this.jasperGetSessionRetries; i++) {
-        Thread.sleep(this.jasperGetSessionSleepBetweenRetries);
-        deviceIpAddress = sessionProvider.getIpAddress(dlmsDevice.getIccId());
-        if (deviceIpAddress != null) {
-          return deviceIpAddress;
-        }
-      }
-    } catch (final InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ProtocolAdapterException(
-          "Interrupted while sleeping before calling the sessionProvider.getIpAddress", e);
-    } catch (final SessionProviderException e) {
-      throw new ProtocolAdapterException("", e);
-    }
-    return deviceIpAddress;
+    return deviceIpAddress.orElseThrow(
+        () ->
+            new ProtocolAdapterException(
+                "Session provider: No IP address was returned for device: "
+                    + dlmsDevice.getDeviceIdentification()
+                    + " and iccId: "
+                    + dlmsDevice.getIccId()
+                    + " and communicationProvider: "
+                    + dlmsDevice.getCommunicationProvider()));
   }
 
   public DlmsDevice findMbusDevice(

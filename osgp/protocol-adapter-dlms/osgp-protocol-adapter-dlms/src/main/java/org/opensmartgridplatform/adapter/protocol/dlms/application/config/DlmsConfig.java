@@ -21,23 +21,22 @@ import javax.inject.Provider;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DeviceKeyProcessingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.throttling.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Lls0Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Lls1Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsChannelHandlerServer;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsPushNotificationDecoder;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsPushNotificationReplayingDecoder;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.infra.networking.DisposableNioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -102,7 +101,8 @@ public class DlmsConfig extends AbstractConfig {
     final ChannelPipeline pipeline = channel.pipeline();
 
     pipeline.addLast("loggingHandler", new LoggingHandler(LogLevel.INFO));
-    pipeline.addLast("dlmsPushNotificationDecoder", new DlmsPushNotificationDecoder());
+    pipeline.addLast(
+        "dlmsPushNotificationReplayingDecoder", new DlmsPushNotificationReplayingDecoder());
     pipeline.addLast("dlmsChannelHandler", handler);
 
     return pipeline;
@@ -166,8 +166,8 @@ public class DlmsConfig extends AbstractConfig {
       final DomainHelperService domainHelperService,
       final Hls5Connector hls5Connector,
       final SecretManagementService secretManagementService,
-      @Autowired(required = false) final ThrottlingService throttlingService,
-      final ThrottlingClientConfig throttlingClientConfig,
+      final ThrottlingService throttlingService,
+      final ThrottlingConfig throttlingConfig,
       final DlmsDeviceRepository deviceRepository,
       final DeviceKeyProcessingService deviceKeyProcessingService) {
     return new RecoverKeyProcess(
@@ -175,7 +175,7 @@ public class DlmsConfig extends AbstractConfig {
         hls5Connector,
         secretManagementService,
         throttlingService,
-        throttlingClientConfig,
+        throttlingConfig,
         deviceRepository,
         deviceKeyProcessingService);
   }
@@ -199,7 +199,7 @@ public class DlmsConfig extends AbstractConfig {
   @Bean
   public ObjectConfigService objectConfigService() {
     try {
-      return new ObjectConfigService(null);
+      return new ObjectConfigService();
     } catch (final ObjectConfigException | IOException e) {
       throw new IllegalStateException("Could not load object config", e);
     }

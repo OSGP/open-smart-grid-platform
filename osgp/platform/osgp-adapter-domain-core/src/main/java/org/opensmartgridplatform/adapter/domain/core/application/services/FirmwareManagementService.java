@@ -5,10 +5,10 @@
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -117,7 +117,7 @@ public class FirmwareManagementService extends AbstractService {
                     .class)),
         messageType,
         messagePriority,
-        device.getIpAddress(),
+        device.getNetworkAddress(),
         scheduleTime);
   }
 
@@ -292,7 +292,7 @@ public class FirmwareManagementService extends AbstractService {
         new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null),
         messageType,
         messagePriority,
-        device.getIpAddress(),
+        device.getNetworkAddress(),
         delay);
   }
 
@@ -470,7 +470,7 @@ public class FirmwareManagementService extends AbstractService {
     for (final DeviceFirmwareFile firmwareFile : deviceFirmwareFiles) {
 
       final Map<FirmwareModule, String> fwms = firmwareFile.getFirmwareFile().getModuleVersions();
-      final Date installationDate = firmwareFile.getInstallationDate();
+      final Instant installationDate = firmwareFile.getInstallationDate();
 
       for (final Map.Entry<FirmwareModule, String> entry : fwms.entrySet()) {
         final String version = entry.getValue();
@@ -481,7 +481,7 @@ public class FirmwareManagementService extends AbstractService {
             && currentlyInstalledFirmwareVersionsPerType
                 .get(fwm.getDescription())
                 .getInstallationDate()
-                .before(installationDate)) {
+                .isBefore(installationDate)) {
           currentlyInstalledFirmwareVersionsPerType.replace(
               fwm.getDescription(),
               new FirmwareVersionWithInstallationDate(
@@ -518,16 +518,16 @@ public class FirmwareManagementService extends AbstractService {
 
   // Helper class to keep track of InstallationDate and FirmwareVersion
   private static class FirmwareVersionWithInstallationDate {
-    private final Date installationDate;
+    private final Instant installationDate;
     private final FirmwareVersion firmwareVersion;
 
     public FirmwareVersionWithInstallationDate(
-        final Date installationDate, final FirmwareVersion firmwareVersion) {
+        final Instant installationDate, final FirmwareVersion firmwareVersion) {
       this.installationDate = installationDate;
       this.firmwareVersion = firmwareVersion;
     }
 
-    public Date getInstallationDate() {
+    public Instant getInstallationDate() {
       return this.installationDate;
     }
 
@@ -558,7 +558,7 @@ public class FirmwareManagementService extends AbstractService {
       if (firmwareFileContainsAllOfTheseModules(file, firmwareVersionsNotCurrent)) {
         // file found, insert a record into the history
         final DeviceFirmwareFile deviceFirmwareFile =
-            new DeviceFirmwareFile(device, file, new Date(), INSTALLER);
+            new DeviceFirmwareFile(device, file, Instant.now(), INSTALLER);
         this.deviceFirmwareFileRepository.save(deviceFirmwareFile);
 
         if (LOGGER.isInfoEnabled()) {
@@ -659,6 +659,6 @@ public class FirmwareManagementService extends AbstractService {
             correlationUid, organisationIdentification, deviceIdentification, version),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 }

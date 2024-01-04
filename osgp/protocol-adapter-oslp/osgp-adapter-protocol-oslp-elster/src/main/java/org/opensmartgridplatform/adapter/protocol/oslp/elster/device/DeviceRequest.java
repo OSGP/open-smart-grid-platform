@@ -4,11 +4,14 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.device;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 public class DeviceRequest implements Serializable {
+
+  @Serial private static final long serialVersionUID = -9137084878269344459L;
 
   private final String organisationIdentification;
   private final String deviceIdentification;
@@ -17,7 +20,7 @@ public class DeviceRequest implements Serializable {
   private String domainVersion = null;
   private String messageType = null;
   private final int messagePriority;
-  private String ipAddress = null;
+  private String networkAddress = null;
   private int retryCount = 0;
   private boolean isScheduled = false;
 
@@ -40,7 +43,7 @@ public class DeviceRequest implements Serializable {
     this.domainVersion = builder.domainVersion;
     this.messageType = builder.messageType;
     this.messagePriority = builder.messagePriority;
-    this.ipAddress = builder.ipAddress;
+    this.networkAddress = builder.ipAddress;
     this.retryCount = builder.retryCount;
     this.isScheduled = builder.isScheduled;
   }
@@ -65,7 +68,7 @@ public class DeviceRequest implements Serializable {
       this.domainVersion = messageMetadata.getDomainVersion();
       this.messageType = messageMetadata.getMessageType();
       this.messagePriority = messageMetadata.getMessagePriority();
-      this.ipAddress = messageMetadata.getIpAddress();
+      this.ipAddress = messageMetadata.getNetworkAddress();
       this.retryCount = messageMetadata.getRetryCount();
       this.isScheduled = messageMetadata.isScheduled();
       return this;
@@ -158,8 +161,8 @@ public class DeviceRequest implements Serializable {
     return this.messagePriority;
   }
 
-  public String getIpAddress() {
-    return this.ipAddress;
+  public String getNetworkAddress() {
+    return this.networkAddress;
   }
 
   public int getRetryCount() {

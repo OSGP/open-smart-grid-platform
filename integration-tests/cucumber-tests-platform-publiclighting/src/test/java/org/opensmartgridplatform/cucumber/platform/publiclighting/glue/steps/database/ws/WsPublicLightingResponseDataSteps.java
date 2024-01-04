@@ -53,7 +53,7 @@ public class WsPublicLightingResponseDataSteps {
         fld.setAccessible(true);
         fld.set(
             responseData,
-            DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
+            DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toInstant());
         responseDataRepository.saveAndFlush(responseData);
       }
     } catch (final Exception e) {

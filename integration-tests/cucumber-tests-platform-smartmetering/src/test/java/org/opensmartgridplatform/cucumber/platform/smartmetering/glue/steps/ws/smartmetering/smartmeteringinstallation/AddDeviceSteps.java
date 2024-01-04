@@ -166,7 +166,7 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
      * This call also sets the device to be IN_USE and activated.
      */
     device.updateRegistrationData(
-        PlatformSmartmeteringDefaults.NETWORK_ADDRESS, device.getDeviceType());
+        PlatformSmartmeteringDefaults.NETWORK_ADDRESS.getHostAddress(), device.getDeviceType());
 
     final DlmsDevice dlmsDevice =
         this.dlmsDeviceRepository.findByDeviceIdentification(device.getDeviceIdentification());

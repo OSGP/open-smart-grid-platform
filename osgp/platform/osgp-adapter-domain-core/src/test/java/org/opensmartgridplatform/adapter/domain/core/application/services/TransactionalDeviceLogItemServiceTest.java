@@ -7,10 +7,9 @@ package org.opensmartgridplatform.adapter.domain.core.application.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -26,7 +25,7 @@ import org.springframework.data.domain.Sort;
 
 public class TransactionalDeviceLogItemServiceTest {
 
-  private final Date now = DateTime.now().toDate();
+  private final Instant now = Instant.now();
 
   @InjectMocks private TransactionalDeviceLogItemService transactionalDeviceLogItemService;
 

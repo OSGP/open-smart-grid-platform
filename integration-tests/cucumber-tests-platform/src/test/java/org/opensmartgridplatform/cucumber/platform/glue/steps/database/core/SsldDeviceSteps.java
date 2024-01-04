@@ -14,11 +14,11 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -124,7 +124,8 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
       final String[] relayStatus = rs.split(PlatformKeys.SEPARATOR_COMMA);
       final int index = Integer.parseInt(relayStatus[0]);
       final boolean lastSwitchingEventState = Boolean.parseBoolean(relayStatus[1]);
-      final Date lastSwitchingEventTime = getDateTime2(relayStatus[2], DateTime.now()).toDate();
+      final Instant lastSwitchingEventTime =
+          getDateTime2(relayStatus[2], ZonedDateTime.now()).toInstant();
 
       final RelayStatus currentRelayStatus = ssld.getRelayStatusByIndex(index);
       if (currentRelayStatus == null) {
@@ -198,9 +199,9 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
             PlatformKeys.KEY_FAILED_CONNECTION_COUNT,
             PlatformDefaults.DEFAULT_FAILED_CONNECTION_COUNT));
 
-    final DateTime lastSuccessfulConnectionTimestamp =
-        getDate(settings, PlatformKeys.KEY_LAST_COMMUNICATION_TIME, DateTime.now());
-    ssld.setLastSuccessfulConnectionTimestamp(lastSuccessfulConnectionTimestamp.toDate());
+    final ZonedDateTime lastSuccessfulConnectionTimestamp =
+        getDate(settings, PlatformKeys.KEY_LAST_COMMUNICATION_TIME, ZonedDateTime.now());
+    ssld.setLastSuccessfulConnectionTimestamp(lastSuccessfulConnectionTimestamp.toInstant());
 
     if (settings.containsKey(PlatformKeys.KEY_LIGHTMEASUREMENT_DEVICE_IDENTIFICATION)) {
       final LightMeasurementDevice lmd =

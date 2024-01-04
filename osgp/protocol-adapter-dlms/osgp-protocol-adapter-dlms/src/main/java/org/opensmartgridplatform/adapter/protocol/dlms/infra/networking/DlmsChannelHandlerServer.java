@@ -9,6 +9,7 @@ import io.netty.channel.ChannelHandlerContext;
 import java.net.InetSocketAddress;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,6 +25,13 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
     final String deviceIdentification = message.getEquipmentIdentifier();
     final String ipAddress = this.retrieveIpAddress(ctx, deviceIdentification);
 
+    if (StringUtils.isEmpty(deviceIdentification)) {
+      log.warn(
+          "Skip pushed message [{}] without a device identification from IP address {}",
+          message.toString(),
+          ipAddress);
+      return;
+    }
     this.pushedMessageProcessor.process(message, correlationId, deviceIdentification, ipAddress);
   }
 

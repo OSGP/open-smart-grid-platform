@@ -42,16 +42,6 @@ public class Permit {
   }
 
   public Permit(
-      final short throttlingConfigId,
-      final int clientId,
-      final int baseTransceiverStationId,
-      final int cellId,
-      final int requestId) {
-
-    this(null, null, throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
-  }
-
-  public Permit(
       final Long id,
       final Instant createdAt,
       final short throttlingConfigId,

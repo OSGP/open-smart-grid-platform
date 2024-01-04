@@ -1,0 +1,43 @@
+[
+  {
+    "name": "GAS_METER_TYPE",
+    "configlookuptypes": [
+      {
+        "type": "G4-G6",
+        "match": [
+          "G4",
+          "G6"
+        ]
+      },
+      {
+        "type": "G10-G25",
+        "match": [
+          "G10",
+          "G16",
+          "G25"
+        ]
+      },
+      {
+        "type": "unknown gas meter type",
+        "match": [
+          "elster-instromet",
+          "flonidan-gasmeter",
+          "G4SRT 1.2L"
+        ]
+      }
+    ],
+    "defaulttype": "unknown gas meter type"
+  },
+  {
+    "name": "INSTANTANEOUS_VOLTAGE_DSMR4",
+    "configlookuptypes": [
+      {
+        "type": "Scaler -1",
+        "match": [
+          "Kaifa"
+        ]
+      }
+    ],
+    "defaulttype": "Scaler 0"
+  }
+]

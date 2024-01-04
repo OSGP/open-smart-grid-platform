@@ -35,7 +35,7 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
 
   @SuppressWarnings("unchecked")
   T initEntity(final Device source) {
-    T destination;
+    final T destination;
 
     final Address containerAddress = this.mapper.map(source.getContainerAddress(), Address.class);
 
@@ -74,11 +74,11 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
           DeviceLifecycleStatus.valueOf(source.getDeviceLifecycleStatus().name()));
     }
 
-    destination.updateRegistrationData(destination.getNetworkAddress(), source.getDeviceType());
+    destination.updateRegistrationData(source.getNetworkAddress(), source.getDeviceType());
 
     if (source.getTechnicalInstallationDate() != null) {
       destination.setTechnicalInstallationDate(
-          source.getTechnicalInstallationDate().toGregorianCalendar().getTime());
+          source.getTechnicalInstallationDate().toGregorianCalendar().toInstant());
     }
 
     destination.setDeviceModel(
@@ -119,8 +119,7 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
       }
     }
 
-    destination.setNetworkAddress(
-        source.getNetworkAddress() == null ? null : source.getNetworkAddress().toString());
+    destination.setNetworkAddress(source.getNetworkAddress());
     destination.setOwner(source.getOwner() == null ? "" : source.getOwner().getName());
     destination.getOrganisations().addAll(source.getOrganisations());
 

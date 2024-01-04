@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlag;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlagType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlags;
@@ -85,7 +86,12 @@ public class ConfigurationObjectFactory {
     final int numberOfFlags =
         Integer.parseInt(requestParameters.get(PlatformSmartmeteringKeys.CONFIGURATION_FLAG_COUNT));
     for (int i = 1; i <= numberOfFlags; i++) {
-      configurationFlagList.add(getConfigurationFlag(requestParameters, i));
+      if (isConfigurationFlagDefined(requestParameters, i)) {
+        configurationFlagList.add(getConfigurationFlag(requestParameters, i));
+      }
+    }
+    if (configurationFlagList.isEmpty()) {
+      return;
     }
     configurationFlags.getConfigurationFlag().addAll(configurationFlagList);
     configurationObject.setConfigurationFlags(configurationFlags);
@@ -93,9 +99,10 @@ public class ConfigurationObjectFactory {
 
   private static ConfigurationFlag getConfigurationFlag(
       final Map<String, String> parameters, final int index) {
+    final Boolean configurationFlagEnabled = getConfigurationFlagEnabled(parameters, index);
     final ConfigurationFlag configurationFlag = new ConfigurationFlag();
     configurationFlag.setConfigurationFlagType(getConfigurationFlagType(parameters, index));
-    configurationFlag.setEnabled(getConfigurationFlagEnabled(parameters, index));
+    configurationFlag.setEnabled(configurationFlagEnabled);
     return configurationFlag;
   }
 
@@ -112,5 +119,12 @@ public class ConfigurationObjectFactory {
     final String key =
         SettingsHelper.makeKey(PlatformSmartmeteringKeys.CONFIGURATION_FLAG_ENABLED, index);
     return ReadSettingsHelper.getBoolean(parameters, key);
+  }
+
+  private static boolean isConfigurationFlagDefined(
+      final Map<String, String> parameters, final int index) {
+    final String key =
+        SettingsHelper.makeKey(PlatformSmartmeteringKeys.CONFIGURATION_FLAG_ENABLED, index);
+    return StringUtils.isNotBlank(parameters.get(key));
   }
 }

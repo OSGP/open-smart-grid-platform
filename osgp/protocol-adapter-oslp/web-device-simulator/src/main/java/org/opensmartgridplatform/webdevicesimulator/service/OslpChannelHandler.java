@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.PrivateKey;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.codec.binary.Base64;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.Oslp.ConfirmRegisterDeviceResponse;
 import org.opensmartgridplatform.oslp.Oslp.DaliConfiguration;
@@ -518,7 +518,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     if (Math.abs(expectedSequenceNumber - sequenceNumber) > this.sequenceNumberWindow) {
       this.outOfSequenceList.add(
           new OutOfSequenceEvent(
-              device.getId(), message.getPayloadMessage().toString(), DateTime.now()));
+              device.getId(), message.getPayloadMessage().toString(), ZonedDateTime.now()));
 
       throw new DeviceSimulatorException(
           "SequenceNumber incorrect for device: "
@@ -1128,9 +1128,10 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
   public static class OutOfSequenceEvent {
     private final Long deviceId;
     private final String request;
-    private final DateTime timestamp;
+    private final ZonedDateTime timestamp;
 
-    public OutOfSequenceEvent(final Long deviceId, final String request, final DateTime timestamp) {
+    public OutOfSequenceEvent(
+        final Long deviceId, final String request, final ZonedDateTime timestamp) {
       this.deviceId = deviceId;
       this.request = request;
       this.timestamp = timestamp;
@@ -1144,7 +1145,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
       return this.request;
     }
 
-    public DateTime getTimestamp() {
+    public ZonedDateTime getTimestamp() {
       return this.timestamp;
     }
   }

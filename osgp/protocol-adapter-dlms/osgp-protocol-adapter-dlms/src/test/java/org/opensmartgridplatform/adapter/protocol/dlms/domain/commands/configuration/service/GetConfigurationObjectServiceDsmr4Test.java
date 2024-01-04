@@ -14,39 +14,44 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 
 @ExtendWith(MockitoExtension.class)
-public class GetConfigurationObjectServiceDsmr4Test {
+class GetConfigurationObjectServiceDsmr4Test {
 
   private GetConfigurationObjectServiceDsmr4 instance;
 
   @Mock private GetResult getResult;
   @Mock private DlmsHelper dlmsHelper;
 
+  @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
+
   @BeforeEach
-  public void setUp() {
-    this.instance = new GetConfigurationObjectServiceDsmr4(this.dlmsHelper);
+  void setUp() {
+    this.instance =
+        new GetConfigurationObjectServiceDsmr4(this.dlmsHelper, this.objectConfigServiceHelper);
+  }
+
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  @NullSource
+  void handles(final Protocol protocol) {
+    assertThat(this.instance.handles(protocol)).isEqualTo(protocol != null && protocol.isDsmr42());
   }
 
   @Test
-  public void handles() {
-    assertThat(this.instance.handles(Protocol.SMR_5_0_0)).isFalse();
-    assertThat(this.instance.handles(Protocol.SMR_5_1)).isFalse();
-    assertThat(this.instance.handles(Protocol.DSMR_4_2_2)).isTrue();
-    assertThat(this.instance.handles(Protocol.OTHER_PROTOCOL)).isFalse();
-    assertThat(this.instance.handles(null)).isFalse();
-  }
-
-  @Test
-  public void getFlagType() {
+  void getFlagType() {
     for (final ConfigurationFlagTypeDto flagTypeDto : ConfigurationFlagTypeDto.values()) {
       flagTypeDto
           .getBitPositionDsmr4()
@@ -61,7 +66,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectResultDataNull() throws ProtocolAdapterException {
+  void getConfigurationObjectResultDataNull() throws ProtocolAdapterException {
     // SETUP
     when(this.getResult.getResultData()).thenReturn(null);
 
@@ -74,7 +79,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectResultDataNotComplex() throws ProtocolAdapterException {
+  void getConfigurationObjectResultDataNotComplex() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject nonComplex = mock(DataObject.class);
@@ -90,7 +95,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectElementsNull() throws ProtocolAdapterException {
+  void getConfigurationObjectElementsNull() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);
@@ -108,7 +113,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectElementsSizeNotTwo() throws ProtocolAdapterException {
+  void getConfigurationObjectElementsSizeNotTwo() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);
@@ -127,7 +132,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectGprsModeNull() throws ProtocolAdapterException {
+  void getConfigurationObjectGprsModeNull() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);
@@ -148,7 +153,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectGprsModeNotNumber() throws ProtocolAdapterException {
+  void getConfigurationObjectGprsModeNotNumber() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);
@@ -171,7 +176,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectFlagsNull() throws ProtocolAdapterException {
+  void getConfigurationObjectFlagsNull() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);
@@ -195,7 +200,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectFlagsNotBitString() throws ProtocolAdapterException {
+  void getConfigurationObjectFlagsNotBitString() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);

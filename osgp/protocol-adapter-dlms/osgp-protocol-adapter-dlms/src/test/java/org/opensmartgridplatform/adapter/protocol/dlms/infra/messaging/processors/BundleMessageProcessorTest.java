@@ -22,10 +22,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.BundleService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.throttling.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
@@ -66,8 +65,6 @@ class BundleMessageProcessorTest {
 
   @Mock private DlmsMessageListener messageListener;
 
-  @Mock private ThrottlingClientConfig throttlingClientConfig;
-
   private DlmsDevice dlmsDevice;
   private MessageMetadata messageMetadata;
 
@@ -77,7 +74,6 @@ class BundleMessageProcessorTest {
   void setUp() throws OsgpException, JMSException {
     this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
     this.messageMetadata = MessageMetadata.fromMessage(this.message);
-    when(this.throttlingClientConfig.clientEnabled()).thenReturn(false);
   }
 
   @Test

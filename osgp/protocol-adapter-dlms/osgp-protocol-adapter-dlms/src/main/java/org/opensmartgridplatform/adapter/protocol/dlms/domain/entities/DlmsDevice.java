@@ -28,7 +28,7 @@ public class DlmsDevice extends AbstractEntity {
 
   @Column private String iccId;
 
-  @Column private boolean lls1Active = true;
+  @Column private boolean lls1Active;
 
   @Column private boolean hls3Active;
 
@@ -41,6 +41,8 @@ public class DlmsDevice extends AbstractEntity {
   @Column private boolean withListSupported;
 
   @Column private boolean selectiveAccessSupported;
+
+  @Column private boolean selectiveAccessPeriodicMeterReadsSupported = true;
 
   @Column private boolean ipAddressIsStatic;
 
@@ -88,6 +90,9 @@ public class DlmsDevice extends AbstractEntity {
   // After each session with the device it is incremented with the number of invocations in the
   // session.
   @Column private Long invocationCounter = 0L;
+
+  @Column(length = 64)
+  private String firmwareHash;
 
   public DlmsDevice() {
     // Default constructor
@@ -238,6 +243,15 @@ public class DlmsDevice extends AbstractEntity {
 
   public void setSelectiveAccessSupported(final boolean selectiveAccessSupported) {
     this.selectiveAccessSupported = selectiveAccessSupported;
+  }
+
+  public boolean isSelectiveAccessPeriodicMeterReadsSupported() {
+    return this.selectiveAccessPeriodicMeterReadsSupported;
+  }
+
+  public void setSelectiveAccessPeriodicMeterReadsSupported(
+      final boolean selectiveAccessPeriodicMeterReadsSupported) {
+    this.selectiveAccessPeriodicMeterReadsSupported = selectiveAccessPeriodicMeterReadsSupported;
   }
 
   public void setDeviceIdentification(final String deviceIdentification) {
@@ -402,5 +416,13 @@ public class DlmsDevice extends AbstractEntity {
 
   public void setTimezone(final String timezone) {
     this.timezone = timezone;
+  }
+
+  public String getFirmwareHash() {
+    return this.firmwareHash;
+  }
+
+  public void setFirmwareHash(final String firmwareHash) {
+    this.firmwareHash = firmwareHash;
   }
 }

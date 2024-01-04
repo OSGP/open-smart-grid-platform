@@ -7,10 +7,10 @@ package org.opensmartgridplatform.adapter.domain.core.application.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -27,7 +27,7 @@ import org.springframework.data.domain.Sort;
 
 public class TransactionalEventServiceTest {
 
-  private final Date now = DateTime.now().toDate();
+  private final Instant now = Instant.now();
 
   @InjectMocks private TransactionalEventService transactionalEventService;
 
@@ -72,7 +72,7 @@ public class TransactionalEventServiceTest {
   }
 
   private Slice<Event> mockSliceOfEvents(final int numberOfEvents) {
-    final Date oneMonthAgo = DateTime.now().minusMonths(1).toDate();
+    final Instant oneMonthAgo = ZonedDateTime.now().minusMonths(1).toInstant();
 
     final List<Event> events = new ArrayList<>();
     for (int i = 0; i < numberOfEvents; i++) {

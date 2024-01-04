@@ -10,7 +10,8 @@ import static org.springframework.ws.test.server.RequestCreators.withSoapEnvelop
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -338,15 +339,15 @@ public class SoapServiceSecretManagementIT {
    */
   private void createTestData() {
     final DbEncryptionKeyReference encryptionKey = new DbEncryptionKeyReference();
-    encryptionKey.setCreationTime(new Date());
+    encryptionKey.setCreationTime(Instant.now());
     encryptionKey.setReference("1");
     encryptionKey.setEncryptionProviderType(EncryptionProviderType.JRE);
-    encryptionKey.setValidFrom(new Date(System.currentTimeMillis() - 60000));
+    encryptionKey.setValidFrom(Instant.now().minus(60000, ChronoUnit.MILLIS));
     encryptionKey.setVersion(1L);
     this.testEntityManager.persist(encryptionKey);
 
     final DbEncryptedSecret encryptedSecret = new DbEncryptedSecret();
-    encryptedSecret.setCreationTime(new Date());
+    encryptedSecret.setCreationTime(Instant.now());
     encryptedSecret.setDeviceIdentification(DEVICE_IDENTIFICATION);
     encryptedSecret.setSecretType(
         org.opensmartgridplatform.secretmanagement.application.domain.SecretType
@@ -358,7 +359,7 @@ public class SoapServiceSecretManagementIT {
     this.testEntityManager.persist(encryptedSecret);
 
     final DbEncryptedSecret encryptedSecret2 = new DbEncryptedSecret();
-    encryptedSecret2.setCreationTime(new Date());
+    encryptedSecret2.setCreationTime(Instant.now());
     encryptedSecret2.setDeviceIdentification(DEVICE_IDENTIFICATION);
     encryptedSecret2.setSecretType(
         org.opensmartgridplatform.secretmanagement.application.domain.SecretType

@@ -7,5 +7,210 @@
     "version": "5.1"
   },
   "properties": [],
-  "objects": []
+  "objects": [
+    {
+      "tag": "DEFINABLE_LOAD_PROFILE",
+      "description": "Definable load profile",
+      "note": "Attribute 4 (capture period in sec) is overridden in factory with value 900 (default in spec: 86400)",
+      "class-id": 7,
+      "version": 1,
+      "obis": "0.1.94.31.6.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "properties": {
+        "SELECTABLE_OBJECTS": [
+          "CLOCK",
+          "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
+          "NUMBER_OF_VOLTAGE_SAGS_FOR_L2",
+          "NUMBER_OF_VOLTAGE_SAGS_FOR_L3",
+          "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
+          "NUMBER_OF_VOLTAGE_SWELLS_FOR_L2",
+          "NUMBER_OF_VOLTAGE_SWELLS_FOR_L3",
+          "NUMBER_OF_POWER_FAILURES",
+          "INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES",
+          "CDMA_DIAGNOSTIC",
+          "GPRS_DIAGNOSTIC",
+          "LTE_DIAGNOSTIC",
+          "MBUS_CLIENT_SETUP",
+          "MBUS_DIAGNOSTIC"
+        ]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "buffer",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture objects",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 4,
+          "description": "capture period in sec",
+          "note": "Attribute 4 (capture period in sec) is overridden in factory with value 900 (default in spec: 86400)",
+          "datatype": "double-long-unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "value": "900",
+          "access": "RW"
+        },
+        {
+          "id": 5,
+          "description": "sort method",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_METER",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "sort object",
+          "datatype": "object_definition",
+          "valuetype": "FIXED_IN_METER",
+          "value": "NONE",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "entries in use",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "profile entries",
+          "datatype": "double-long-unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "value": "960",
+          "access": "RW"
+        }
+      ]
+    },
+    {
+      "tag": "LTE_DIAGNOSTIC",
+      "description": "LTE Diagnostic",
+      "note": null,
+      "class-id": 47,
+      "version": 0,
+      "obis": "0.2.25.6.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "properties": {
+        "PQ_PROFILE": "PUBLIC",
+        "PQ_REQUEST": [
+          "PERIODIC_SP",
+          "PERIODIC_PP"
+        ]
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "operator",
+          "datatype": "visible-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "status",
+          "datatype": "enum",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "cs attachment",
+          "datatype": "enum",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "ps status",
+          "datatype": "enum",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "cell info",
+          "datatype": "cell_info_type",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "adjacent cells",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "capture time",
+          "datatype": "date-time",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ALARM_REGISTER_2",
+      "description": "Alarm register 2",
+      "note": "Specified in addendum for SMR5.2",
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.97.98.1.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "RW"
+        }
+      ]
+    },
+    {
+      "tag": "ALARM_FILTER_2",
+      "description": "Alarm filter 2",
+      "note": "Specified in addendum for SMR5.2",
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.97.98.11.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "RW"
+        }
+      ]
+    }
+  ]
 }

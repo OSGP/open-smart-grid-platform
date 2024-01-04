@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
 import java.time.Duration;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.annotation.SharedThrottlingServiceCondition;
 import org.opensmartgridplatform.throttling.ThrottlingClient;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,9 +37,6 @@ public class ThrottlingClientConfig {
   @Value("#{T(java.time.Duration).parse('${throttling.service.timeout:PT30S}')}")
   private Duration timeout;
 
-  @Value("#{T(java.time.Duration).parse('${throttling.rejected.delay:PT10S}')}")
-  private Duration permitRejectedDelay;
-
   public boolean clientEnabled() {
     return this.clientEnabled;
   }
@@ -48,7 +46,7 @@ public class ThrottlingClientConfig {
   }
 
   @Bean(destroyMethod = "unregister")
-  @Conditional(ThrottlingClientEnabledCondition.class)
+  @Conditional(SharedThrottlingServiceCondition.class)
   public ThrottlingClient throttlingClient() {
     return new ThrottlingClient(
         new ThrottlingConfig(this.configurationName, this.configurationMaxConcurrency),
@@ -56,14 +54,5 @@ public class ThrottlingClientConfig {
         this.timeout,
         this.maxConnPerRoute,
         this.maxConnTotal);
-  }
-
-  /**
-   * Delay to be applied before retrying some action when a requested permit was not granted.
-   *
-   * @return delay
-   */
-  public Duration permitRejectedDelay() {
-    return this.permitRejectedDelay;
   }
 }
