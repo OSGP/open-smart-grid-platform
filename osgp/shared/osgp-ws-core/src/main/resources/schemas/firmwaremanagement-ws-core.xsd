@@ -345,7 +345,7 @@
   <xsd:element name="ChangeFirmwareRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Firmware" type="tns:Firmware" />
+        <xsd:element name="Firmware" type="tns:ChangeableFirmware" />
         <xsd:element name="Id" type="xsd:int" />
       </xsd:sequence>
     </xsd:complexType>
@@ -469,6 +469,21 @@
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ChangeableFirmware">
+    <xsd:sequence>
+      <xsd:element name="Description" minOccurs="0">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="255" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="PushToNewDevices" type="xsd:boolean" minOccurs="0" />
+      <xsd:element name="Active" type="xsd:boolean" minOccurs="0" />
+      <xsd:element name="FirmwareModuleData" type="tns:FirmwareModuleData" />
     </xsd:sequence>
   </xsd:complexType>
 

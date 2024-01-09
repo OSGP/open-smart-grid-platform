@@ -37,6 +37,7 @@ import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddMa
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeableFirmware;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
@@ -335,12 +336,11 @@ public class AuthorizePlatformFunctionsSteps {
       throws WebServiceSecurityException, GeneralSecurityException, IOException {
     final ChangeFirmwareRequest request = new ChangeFirmwareRequest();
     request.setId(PlatformCommonDefaults.FIRMWARE_ID);
-    final Firmware firmware = new Firmware();
+    final ChangeableFirmware firmware = new ChangeableFirmware();
     firmware.setDescription(PlatformCommonDefaults.FIRMWARE_DESCRIPTION);
     final DeviceModel deviceModel = new DeviceModel();
     deviceModel.setModelCode(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
     deviceModel.setManufacturer(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
-    firmware.getDeviceModels().add(deviceModel);
     firmware.setPushToNewDevices(PlatformCommonDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE);
     request.setFirmware(firmware);
     ScenarioContext.current()

@@ -16,56 +16,7 @@ import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddFirmwareResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddManufacturerRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddManufacturerResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddOrChangeFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddOrChangeFirmwareResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceFirmwareHistory;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllFirmwaresRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllFirmwaresResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindDeviceModelRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindDeviceModelResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindFirmwareResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleType;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.GetDeviceFirmwareHistoryRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.GetDeviceFirmwareHistoryResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveDeviceModelRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveDeviceModelResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveFirmwareResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.SaveCurrentDeviceFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.SaveCurrentDeviceFirmwareResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.SwitchFirmwareAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.SwitchFirmwareAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.SwitchFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.SwitchFirmwareResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.*;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -919,27 +870,15 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
       @OrganisationIdentification final String organisationIdentification,
       @RequestPayload final ChangeFirmwareRequest request)
       throws OsgpException {
-    final Firmware firmware = request.getFirmware();
-
-    LOGGER.info("Changing firmware:{}.", firmware.getFilename());
+    final ChangeableFirmware firmware = request.getFirmware();
 
     final FirmwareModuleData firmwareModuleData =
         this.firmwareManagementMapper.map(
             firmware.getFirmwareModuleData(), FirmwareModuleData.class);
 
-    // The ChangeFirmwareRequest accepts multiple DeviceModels to be related to a Firmware.
-    // This FirmwareManagementService only accepts ONE for now
-    final String manufacturer = this.getManufacturerFromFirmware(firmware);
-    final String modelCode = this.getModelCodeFromFirmware(firmware);
-
     try {
       this.firmwareManagementService.changeFirmware(
-          organisationIdentification,
-          request.getId(),
-          this.firmwareFileRequestFor(firmware),
-          manufacturer,
-          modelCode,
-          firmwareModuleData);
+          organisationIdentification, request.getId(), request.getFirmware(), firmwareModuleData);
     } catch (final ConstraintViolationException e) {
       LOGGER.error("Exception Changing firmware", e);
       this.handleException(e);
@@ -947,7 +886,7 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
       LOGGER.error(
           "Exception: {} while Changing firmware: {} for organisation {}",
           e.getMessage(),
-          firmware.getFilename(),
+          request.getId(),
           organisationIdentification,
           e);
       this.handleException(e);

@@ -21,6 +21,7 @@ import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeableFirmware;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceFirmwareFileRepository;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
@@ -805,9 +806,7 @@ public class FirmwareManagementService {
   public void changeFirmware(
       @Identification final String organisationIdentification,
       final int id,
-      final FirmwareFileRequest firmwareFileRequest,
-      final String manufacturer,
-      final String modelCode,
+      final ChangeableFirmware firmwareFileRequest,
       final FirmwareModuleData firmwareModuleData)
       throws FunctionalException {
 
@@ -818,82 +817,22 @@ public class FirmwareManagementService {
     FirmwareFile changedFirmwareFile =
         this.firmwareFileRepository
             .findById((long) id)
-            .orElseThrow(
-                supplyFirmwareFileNotFoundException(id, firmwareFileRequest.getFileName()));
+            .orElseThrow(supplyFirmwareFileNotFoundException(id));
 
-    final Manufacturer databaseManufacturer =
-        this.manufacturerRepository.findByCodeIgnoreCase(manufacturer);
-
-    if (databaseManufacturer == null) {
-      LOGGER.info("Manufacturer {} doesn't exist.", manufacturer);
-      throw new FunctionalException(
-          FunctionalExceptionType.UNKNOWN_MANUFACTURER,
-          ComponentType.WS_CORE,
-          new UnknownEntityException(Manufacturer.class, manufacturer));
-    }
-
-    final DeviceModel databaseDeviceModel =
-        this.deviceModelRepository.findByManufacturerAndModelCodeIgnoreCase(
-            databaseManufacturer, modelCode);
-
-    if (databaseDeviceModel == null) {
-      LOGGER.info(
-          "DeviceModel unknown for manufacturer {} and model code {}.", manufacturer, modelCode);
-      throw new FunctionalException(
-          FunctionalExceptionType.UNKNOWN_DEVICEMODEL,
-          ComponentType.WS_CORE,
-          new UnknownEntityException(DeviceModel.class, modelCode));
-    }
-
-    changedFirmwareFile.setDescription(firmwareFileRequest.getDescription());
-    /*
-     * A firmware file has been changed to be related to (possibly) multiple
-     * device models to be usable across different value streams for all
-     * kinds of devices.
-     *
-     * This code mimics the earlier behavior with a single device model
-     * linked to the firmware file, where the device model is changed.
-     *
-     * If multiple device models are related, it is not clear what to do,
-     * and which if the device models (if any) should be removed. In such
-     * case the device model will be added for now.
-     *
-     * 2021-06-02: In case of multiple DeviceModels all existing must be deleted
-     * and all new DeviceModels in the request must be added
-     */
-    final Set<DeviceModel> existingDeviceModels = changedFirmwareFile.getDeviceModels();
-    if (existingDeviceModels.size() > 1) {
-      LOGGER.warn(
-          "Change Firmware (FirmwareFile id={}) with {} existing DeviceModels, adding {}",
-          changedFirmwareFile.getId(),
-          existingDeviceModels.size(),
-          databaseDeviceModel);
-    } else {
-      LOGGER.warn(
-          "Change Firmware (FirmwareFile id={}) with {} existing DeviceModel(s), replacing by {}",
-          changedFirmwareFile.getId(),
-          existingDeviceModels.size(),
-          databaseDeviceModel);
-    }
-    existingDeviceModels.clear();
-
-    changedFirmwareFile.addDeviceModel(databaseDeviceModel);
-    changedFirmwareFile.setFilename(firmwareFileRequest.getFileName());
     changedFirmwareFile.updateFirmwareModuleData(
         firmwareModuleData.getVersionsByModule(this.firmwareModuleRepository, false));
-    changedFirmwareFile.setPushToNewDevices(firmwareFileRequest.isPushToNewDevices());
-    changedFirmwareFile.setActive(firmwareFileRequest.isActive());
+    if (!firmwareFileRequest.getDescription().isEmpty()) {
+      changedFirmwareFile.setDescription(firmwareFileRequest.getDescription());
+    }
+    if (firmwareFileRequest.isPushToNewDevices() != null) {
+      changedFirmwareFile.setPushToNewDevices(firmwareFileRequest.isPushToNewDevices());
+    }
+    if (firmwareFileRequest.isActive() != null) {
+      changedFirmwareFile.setActive(firmwareFileRequest.isActive());
+    }
 
     // Save the changed firmware entity
     changedFirmwareFile = this.firmwareFileRepository.save(changedFirmwareFile);
-
-    // Set all devicefirmwares.pushToNewDevices on false
-    if (firmwareFileRequest.isPushToNewDevices()) {
-      final List<FirmwareFile> firmwareFiles =
-          this.firmwareFileRepository.findByDeviceModel(databaseDeviceModel);
-      firmwareFiles.remove(changedFirmwareFile);
-      this.setPushToNewDevicesToFalse(firmwareFiles);
-    }
 
     this.firmwareFileRepository.save(changedFirmwareFile);
   }

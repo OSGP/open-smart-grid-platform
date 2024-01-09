@@ -13,7 +13,7 @@ import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeableFirmware;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
@@ -49,8 +49,7 @@ public class ChangeFirmwareSteps extends FirmwareSteps {
 
     request.setId((int) firmwareFileId);
 
-    final Firmware firmware = this.createAndGetFirmware(requestParameters);
-    firmware.setId((int) firmwareFileId);
+    final ChangeableFirmware firmware = this.createAndGetChangeableFirmware(requestParameters);
     request.setFirmware(firmware);
 
     try {
