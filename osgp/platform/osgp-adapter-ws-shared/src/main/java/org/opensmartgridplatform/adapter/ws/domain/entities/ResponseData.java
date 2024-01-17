@@ -40,7 +40,6 @@ public class ResponseData extends AbstractEntity {
   @Enumerated(EnumType.STRING)
   private ResponseMessageResultType resultType;
 
-  // GKR: Double check
   @JdbcTypeCode(SqlTypes.BINARY)
   private Serializable messageData;
 

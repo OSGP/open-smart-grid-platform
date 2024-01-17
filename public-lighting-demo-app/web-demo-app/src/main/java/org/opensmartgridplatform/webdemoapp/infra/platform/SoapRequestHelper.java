@@ -149,7 +149,6 @@ public class SoapRequestHelper {
     return messageSender;
   }
 
-  // GKR: Double check
   private HttpComponentsClientHttpRequestFactory createRequestFactory()
       throws GeneralSecurityException {
     final SSLContext sslContext =

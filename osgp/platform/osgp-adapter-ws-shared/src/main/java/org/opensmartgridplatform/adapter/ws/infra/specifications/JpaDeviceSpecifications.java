@@ -66,7 +66,8 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
     final Root<DeviceAuthorization> deviceAuthorizationRoot =
         subquery.from(DeviceAuthorization.class);
     subquery.select(deviceAuthorizationRoot.get(DEVICE).get(ID).as(Long.class));
-    subquery.where(cb.equal(deviceAuthorizationRoot.get(ORGANISATION), organisation.getId()));
+    subquery.where(
+        cb.equal(deviceAuthorizationRoot.get(ORGANISATION).get(ID), organisation.getId()));
 
     return cb.in(deviceRoot.get(ID)).value(subquery);
   }

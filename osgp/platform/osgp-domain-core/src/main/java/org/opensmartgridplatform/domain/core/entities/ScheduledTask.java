@@ -18,7 +18,6 @@ public class ScheduledTask extends AbstractScheduledTask {
 
   private static final long serialVersionUID = 1L;
 
-  // GKR: Double check
   @JdbcTypeCode(SqlTypes.BINARY)
   private Serializable messageData;
 
