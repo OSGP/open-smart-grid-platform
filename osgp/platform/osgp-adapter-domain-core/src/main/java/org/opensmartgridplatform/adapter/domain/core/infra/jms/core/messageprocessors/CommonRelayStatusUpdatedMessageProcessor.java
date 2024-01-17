@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.core.infra.jms.core.messageprocessors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.DomainCoreDeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -35,7 +35,7 @@ public class CommonRelayStatusUpdatedMessageProcessor
   @Override
   public void processMessage(final ObjectMessage message) throws JMSException {
 
-    MessageMetadata messageMetadata;
+    final MessageMetadata messageMetadata;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
     } catch (final JMSException e) {

@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.opensmartgridplatform.adapter.domain.core.application.mapping.DomainCoreMapper;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
@@ -46,7 +46,7 @@ public class AbstractService {
 
   protected Organisation findOrganisation(final String organisationIdentification)
       throws FunctionalException {
-    Organisation organisation;
+    final Organisation organisation;
     try {
       organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
     } catch (final UnknownEntityException e) {

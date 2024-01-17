@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.ws.messageprocessors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.tariffswitching.application.services.ScheduleManagementService;
 import org.opensmartgridplatform.domain.core.valueobjects.Schedule;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -55,7 +55,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends BaseMessa
     String organisationIdentification = null;
     String deviceIdentification = null;
     Long scheduleTime = null;
-    Object dataObject;
+    final Object dataObject;
 
     try {
       correlationUid = message.getJMSCorrelationID();

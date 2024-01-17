@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.webdevicesimulator.application.config;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import org.opensmartgridplatform.webdevicesimulator.application.tasks.EventNotificationTransition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

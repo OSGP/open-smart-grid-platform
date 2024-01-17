@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.adapter.ws.core.infra.jms;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
+import jakarta.jms.ObjectMessage;
 import java.io.Serializable;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.shared.infra.jms.Constants;

@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.shared.infra.jms;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.util.Map;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 
 public interface MessageProcessorMap {
 

@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
+import jakarta.annotation.PostConstruct;
 import java.util.Objects;
-import javax.annotation.PostConstruct;
 import ma.glasnost.orika.Mapper;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;

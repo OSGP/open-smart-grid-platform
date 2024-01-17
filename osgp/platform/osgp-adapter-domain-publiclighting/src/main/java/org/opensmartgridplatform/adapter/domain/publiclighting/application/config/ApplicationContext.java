@@ -6,7 +6,7 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.application.conf
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.SetTransitionService;
 import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.springframework.context.annotation.Bean;

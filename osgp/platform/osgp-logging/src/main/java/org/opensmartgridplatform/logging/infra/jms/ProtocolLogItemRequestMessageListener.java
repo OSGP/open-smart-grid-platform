@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.logging.infra.jms;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.ObjectMessage;
-import javax.jms.TextMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.TextMessage;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
 import org.opensmartgridplatform.shared.infra.jms.Constants;

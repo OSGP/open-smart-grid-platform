@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.adapter.ws.tariffswitching.infra.jms.messageprocessor;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.io.Serializable;
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;

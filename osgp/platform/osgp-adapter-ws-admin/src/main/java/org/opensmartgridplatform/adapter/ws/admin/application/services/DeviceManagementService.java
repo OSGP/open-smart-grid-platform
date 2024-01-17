@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceException;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceException;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.ws.admin.application.specifications.DeviceLogItemSpecifications;
 import org.opensmartgridplatform.adapter.ws.admin.application.valueobjects.WsMessageLogFilter;

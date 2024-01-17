@@ -4,12 +4,12 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;

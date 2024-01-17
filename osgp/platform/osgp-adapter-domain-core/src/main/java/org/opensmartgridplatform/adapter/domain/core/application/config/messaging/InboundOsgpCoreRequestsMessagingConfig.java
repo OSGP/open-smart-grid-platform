@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.domain.core.application.config.messaging;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.OsgpCoreRequestMessageListener;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;

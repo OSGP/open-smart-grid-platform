@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.da.infra.jms.core.messageprocessors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.da.application.services.MonitoringService;
 import org.opensmartgridplatform.dto.da.GetPQValuesResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;

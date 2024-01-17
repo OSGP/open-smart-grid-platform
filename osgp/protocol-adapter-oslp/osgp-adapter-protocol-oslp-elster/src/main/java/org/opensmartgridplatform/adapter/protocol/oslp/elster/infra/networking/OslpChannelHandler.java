@@ -6,13 +6,13 @@ package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import jakarta.annotation.Resource;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
-import javax.annotation.Resource;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.slf4j.Logger;
 

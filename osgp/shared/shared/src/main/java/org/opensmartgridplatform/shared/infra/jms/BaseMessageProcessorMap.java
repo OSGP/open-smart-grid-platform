@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.shared.infra.jms;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.util.EnumMap;
 import java.util.Map;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

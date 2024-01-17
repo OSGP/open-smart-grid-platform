@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.cucumber.platform.config;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.springframework.beans.factory.annotation.Qualifier;

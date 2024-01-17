@@ -4,12 +4,12 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.processors;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponseHandler;

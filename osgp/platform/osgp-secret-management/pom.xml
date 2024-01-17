@@ -22,14 +22,14 @@ SPDX-License-Identifier: Apache-2.0
 
   <properties>
     <java.version>17</java.version>
-    <spring.boot.version>2.7.18</spring.boot.version>
-    <spring.data.commons.version>2.7.15</spring.data.commons.version>
+    <spring.boot.version>3.2.0</spring.boot.version>
+    <spring.data.commons.version>3.2.0</spring.data.commons.version>
     <jaxb.plugin.version>2.5.0</jaxb.plugin.version>
     <build.helper.maven.plugin.version>3.0.0</build.helper.maven.plugin.version>
     <apache.ws.xlmschema.version>2.0.1</apache.ws.xlmschema.version>
     <wsdl4j.version>1.6.3</wsdl4j.version>
     <maven.failsafe.plugin.version>3.0.0-M5</maven.failsafe.plugin.version>
-    <spring.boot.maven.plugin.version>2.7.15</spring.boot.maven.plugin.version>
+    <spring.boot.maven.plugin.version>3.2.0</spring.boot.maven.plugin.version>
     <osgp-ws-secret-management-version>${project.parent.version}</osgp-ws-secret-management-version>
     <h2database.version>2.2.222</h2database.version>
     <failOnMissingWebXml>false</failOnMissingWebXml>

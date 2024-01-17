@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.simulator.protocol.iec60870.domain.defaultcontrolledstation;
 
+import jakarta.annotation.PostConstruct;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;

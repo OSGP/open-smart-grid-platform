@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.core.messageprocessors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.tariffswitching.application.services.DefaultDeviceResponseService;
 import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;

@@ -5,10 +5,10 @@
 package org.opensmartgridplatform.logging.domain.config;
 
 import com.zaxxer.hikari.HikariDataSource;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.Properties;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;

@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.config;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataCleanupJob;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.ResponseUrlDataCleanupJob;
 import org.opensmartgridplatform.shared.application.scheduling.OsgpScheduler;

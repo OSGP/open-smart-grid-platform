@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.eventproducers.ServerSapEventProducer;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Battery;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.Boiler;

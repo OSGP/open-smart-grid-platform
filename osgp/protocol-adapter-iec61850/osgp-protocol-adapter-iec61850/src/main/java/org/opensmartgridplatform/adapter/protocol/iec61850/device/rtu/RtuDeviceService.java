@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu;
 
-import javax.jms.JMSException;
+import jakarta.jms.JMSException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.requests.GetDataDeviceRequest;

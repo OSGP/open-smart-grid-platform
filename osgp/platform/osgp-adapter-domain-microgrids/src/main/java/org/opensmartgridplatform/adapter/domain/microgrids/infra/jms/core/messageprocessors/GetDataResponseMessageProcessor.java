@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.microgrids.infra.jms.core.messageprocessors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.microgrids.application.services.AdHocManagementService;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -51,10 +51,10 @@ public class GetDataResponseMessageProcessor extends BaseNotificationMessageProc
     String organisationIdentification = null;
     String deviceIdentification = null;
 
-    ResponseMessage responseMessage;
+    final ResponseMessage responseMessage;
     ResponseMessageResultType responseMessageResultType = null;
     OsgpException osgpException = null;
-    Object dataObject;
+    final Object dataObject;
 
     try {
       correlationUid = message.getJMSCorrelationID();

@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.domain.core.entities;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 

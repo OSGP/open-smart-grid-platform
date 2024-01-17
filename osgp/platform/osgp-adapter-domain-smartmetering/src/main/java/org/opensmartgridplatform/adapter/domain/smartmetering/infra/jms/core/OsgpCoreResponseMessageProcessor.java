@@ -6,9 +6,9 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.annotation.PostConstruct;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;

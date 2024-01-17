@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms;
 
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.annotation.PostConstruct;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;

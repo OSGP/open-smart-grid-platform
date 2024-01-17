@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.processors;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.io.Serializable;
 import java.util.List;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetFirmwareVersionDeviceResponse;

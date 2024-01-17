@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.signing.server.application.config.messaging;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.MessageListener;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.MessageListener;
 import javax.net.ssl.SSLException;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement()
 public class InboundRequestsMessagingConfig {
 
-  private JmsConfigurationFactory jmsConfigurationFactory;
+  private final JmsConfigurationFactory jmsConfigurationFactory;
 
   public InboundRequestsMessagingConfig(
       final Environment environment, final JmsConfiguration defaultJmsConfiguration)

@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
+import jakarta.jms.JMSException;
 import java.io.Serializable;
 import java.util.function.Consumer;
-import javax.jms.JMSException;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SystemEventService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.throttling.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;

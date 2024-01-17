@@ -6,9 +6,9 @@ package org.opensmartgridplatform.webdevicesimulator.application.config;
 
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Slf4JLoggerFactory;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRegistration;
 import org.opensmartgridplatform.shared.application.config.AbstractApplicationInitializer;
 import org.springframework.web.servlet.DispatcherServlet;
 

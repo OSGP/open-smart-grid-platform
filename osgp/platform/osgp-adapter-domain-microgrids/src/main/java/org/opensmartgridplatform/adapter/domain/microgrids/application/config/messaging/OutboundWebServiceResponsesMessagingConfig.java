@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.domain.microgrids.application.config.messaging;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
@@ -24,7 +24,7 @@ public class OutboundWebServiceResponsesMessagingConfig {
 
   private static final String PROPERTY_PREFIX = "jms.microgrids.outbound.ws.responses";
 
-  private JmsConfigurationFactory jmsConfigurationFactory;
+  private final JmsConfigurationFactory jmsConfigurationFactory;
 
   public OutboundWebServiceResponsesMessagingConfig(
       final Environment environment, final DefaultJmsConfiguration defaultJmsConfiguration)

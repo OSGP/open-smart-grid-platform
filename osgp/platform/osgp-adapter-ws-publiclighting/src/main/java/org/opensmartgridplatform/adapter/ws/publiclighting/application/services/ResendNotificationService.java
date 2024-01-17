@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.services;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.AbstractResendNotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;

@@ -5,8 +5,8 @@
 package org.opensmartgridplatform.domain.core.valueobjects;
 
 import java.io.Serializable;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.opensmartgridplatform.domain.core.validation.PageInfoConstraints;
 
 @PageInfoConstraints

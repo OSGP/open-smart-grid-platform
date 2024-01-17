@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.ws.tariffswitching.endpoints;
 
+import jakarta.validation.ConstraintViolationException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import javax.validation.ConstraintViolationException;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;

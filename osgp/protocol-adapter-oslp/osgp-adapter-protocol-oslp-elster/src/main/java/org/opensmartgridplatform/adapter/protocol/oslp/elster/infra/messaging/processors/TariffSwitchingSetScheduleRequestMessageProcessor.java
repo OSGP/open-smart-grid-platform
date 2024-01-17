@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.processors;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.io.IOException;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
@@ -41,8 +41,8 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
   public void processMessage(final ObjectMessage message) {
     LOGGER.debug("Processing tariff switching set schedule request message");
 
-    MessageMetadata messageMetadata;
-    ScheduleDto schedule;
+    final MessageMetadata messageMetadata;
+    final ScheduleDto schedule;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
       schedule = (ScheduleDto) message.getObject();

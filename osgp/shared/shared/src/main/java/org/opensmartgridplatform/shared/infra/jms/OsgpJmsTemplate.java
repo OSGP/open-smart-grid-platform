@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.shared.infra.jms;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageProducer;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageProducer;
 import org.springframework.jms.core.JmsTemplate;
 
 /**

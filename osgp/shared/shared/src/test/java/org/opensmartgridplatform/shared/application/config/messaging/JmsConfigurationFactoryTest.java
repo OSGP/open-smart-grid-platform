@@ -37,10 +37,10 @@ import static org.opensmartgridplatform.shared.application.config.messaging.JmsP
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_TRUST_ALL_PACKAGES;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_USE_EXPONENTIAL_BACK_OFF;
 
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.Destination;
+import jakarta.jms.MessageListener;
 import java.util.Map;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.MessageListener;
 import javax.net.ssl.SSLException;
 import org.apache.activemq.ActiveMQSslConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;

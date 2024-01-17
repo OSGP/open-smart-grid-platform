@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.iec60870;
 
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
-import javax.annotation.PostConstruct;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.Connection;

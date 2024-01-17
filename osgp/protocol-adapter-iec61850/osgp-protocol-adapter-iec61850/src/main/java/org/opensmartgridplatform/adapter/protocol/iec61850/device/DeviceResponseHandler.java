@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.device;
 
-import javax.jms.JMSException;
+import jakarta.jms.JMSException;
 
 public interface DeviceResponseHandler {
 

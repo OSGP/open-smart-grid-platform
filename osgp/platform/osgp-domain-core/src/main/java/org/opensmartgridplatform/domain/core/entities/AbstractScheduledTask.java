@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.domain.core.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.domain.core.valueobjects.ScheduledTaskStatusType;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;

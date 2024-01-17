@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
-import javax.jms.ObjectMessage;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;

@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.processors;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.io.IOException;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
@@ -38,8 +38,8 @@ public class CommonSetDeviceVerificationKeyRequestMessageProcessor
   public void processMessage(final ObjectMessage message) {
     LOGGER.debug("Processing common Set device verification key message");
 
-    MessageMetadata messageMetadata;
-    String verificationKey;
+    final MessageMetadata messageMetadata;
+    final String verificationKey;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
       verificationKey = (String) message.getObject();

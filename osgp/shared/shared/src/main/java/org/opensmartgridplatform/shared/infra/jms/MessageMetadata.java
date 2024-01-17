@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.shared.infra.jms;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
 import java.io.Serializable;
-import javax.jms.JMSException;
-import javax.jms.Message;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;

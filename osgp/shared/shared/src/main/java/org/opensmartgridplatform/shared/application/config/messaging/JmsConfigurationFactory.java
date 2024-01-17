@@ -19,9 +19,9 @@ import static org.opensmartgridplatform.shared.application.config.messaging.JmsP
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_QUEUE;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_TIME_TO_LIVE;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.MessageListener;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.Destination;
+import jakarta.jms.MessageListener;
 import javax.net.ssl.SSLException;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.jms.pool.PooledConnectionFactory;

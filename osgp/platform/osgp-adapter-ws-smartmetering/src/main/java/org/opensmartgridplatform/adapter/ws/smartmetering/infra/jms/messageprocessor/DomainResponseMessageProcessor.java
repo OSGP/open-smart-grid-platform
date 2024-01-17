@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.io.Serializable;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;

@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.ws.da.application.services;
 
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
-import javax.validation.constraints.NotNull;
 import org.opensmartgridplatform.adapter.ws.da.application.exceptionhandling.ResponseNotFoundException;
 import org.opensmartgridplatform.adapter.ws.da.infra.jms.DistributionAutomationRequestMessage;
 import org.opensmartgridplatform.adapter.ws.da.infra.jms.DistributionAutomationRequestMessageSender;

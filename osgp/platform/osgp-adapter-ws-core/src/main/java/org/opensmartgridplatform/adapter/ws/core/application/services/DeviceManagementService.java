@@ -7,10 +7,10 @@ package org.opensmartgridplatform.adapter.ws.core.application.services;
 import static org.opensmartgridplatform.shared.utils.SearchUtil.replaceAndEscapeWildcards;
 import static org.springframework.data.jpa.domain.Specification.where;
 
+import jakarta.validation.Valid;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.QueryException;
 import org.opensmartgridplatform.adapter.ws.core.application.criteria.SearchEventsCriteria;

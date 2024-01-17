@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.requests.SetDataDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.RtuDeviceRequestMessageProcessor;
@@ -33,8 +33,8 @@ public class MicrogridsSetDataRequestMessageProcessor extends RtuDeviceRequestMe
   public void processMessage(final ObjectMessage message) throws JMSException {
     LOGGER.info("Processing microgrids set data request message");
 
-    MessageMetadata messageMetadata;
-    SetDataRequestDto setDataRequest;
+    final MessageMetadata messageMetadata;
+    final SetDataRequestDto setDataRequest;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
       setDataRequest = (SetDataRequestDto) message.getObject();

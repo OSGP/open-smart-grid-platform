@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.adapter.ws.publiclighting.endpoints;
 
+import jakarta.validation.ConstraintViolationException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-import javax.validation.ConstraintViolationException;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;

@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
+import jakarta.annotation.PreDestroy;
 import java.util.Collection;
 import java.util.function.Supplier;
-import javax.annotation.PreDestroy;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.ClientConnectionAlreadyInCacheException;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;

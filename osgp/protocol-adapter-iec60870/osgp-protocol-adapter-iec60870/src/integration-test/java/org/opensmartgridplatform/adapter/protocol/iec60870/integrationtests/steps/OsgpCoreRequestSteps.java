@@ -13,11 +13,11 @@ import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.Test
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.mockito.ArgumentCaptor;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceRequestMessageListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.OsgpRequestMessageSender;

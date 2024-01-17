@@ -13,7 +13,7 @@ import com.beanit.openiec61850.ServerModel;
 import com.beanit.openiec61850.ServiceError;
 import java.io.IOException;
 import java.net.InetAddress;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ConnectionFailureException;

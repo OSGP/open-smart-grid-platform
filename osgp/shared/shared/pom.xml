@@ -51,6 +51,14 @@ SPDX-License-Identifier: Apache-2.0
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -138,12 +146,8 @@ SPDX-License-Identifier: Apache-2.0
 
     <!-- Hibernate -->
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-entitymanager</artifactId>
     </dependency>
 
     <!-- Hibernate validator -->
@@ -169,8 +173,7 @@ SPDX-License-Identifier: Apache-2.0
     </dependency>
     <dependency>
       <groupId>org.apache.activemq</groupId>
-      <artifactId>artemis-jms-client</artifactId>
-      <version>2.27.1</version>
+      <artifactId>artemis-jakarta-client</artifactId>
     </dependency>
 
     <!-- Hikari connection pooling -->

@@ -9,8 +9,8 @@ import java.net.UnknownHostException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
-import org.hibernate.type.TextType;
 import org.hibernate.usertype.UserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +21,8 @@ public class InetAddressUserType extends ImmutableUserType {
   private static final Logger LOGGER = LoggerFactory.getLogger(InetAddressUserType.class);
 
   @Override
-  public int[] sqlTypes() {
-    return new int[] {TextType.INSTANCE.sqlType()};
+  public int getSqlType() {
+    return Types.VARCHAR;
   }
 
   @Override
@@ -33,12 +33,12 @@ public class InetAddressUserType extends ImmutableUserType {
   @Override
   public Object nullSafeGet(
       final ResultSet rs,
-      final String[] names,
+      final int position,
       final SharedSessionContractImplementor session,
       final Object owner)
       throws SQLException {
     try {
-      final String value = (String) TextType.INSTANCE.nullSafeGet(rs, names, session, owner);
+      final String value = rs.getString(position);
       if (value == null) {
         return null;
       } else {
@@ -59,9 +59,9 @@ public class InetAddressUserType extends ImmutableUserType {
       throws SQLException {
     if (value != null) {
       final InetAddress address = (InetAddress) value;
-      TextType.INSTANCE.nullSafeSet(st, address.getHostAddress(), index, session);
+      st.setString(index, address.getHostAddress());
     } else {
-      TextType.INSTANCE.nullSafeSet(st, null, index, session);
+      st.setNull(index, Types.VARCHAR);
     }
   }
 }

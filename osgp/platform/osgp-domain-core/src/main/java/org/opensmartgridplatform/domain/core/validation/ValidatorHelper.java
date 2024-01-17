@@ -6,7 +6,7 @@ package org.opensmartgridplatform.domain.core.validation;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 
 /**
  * Helper class for validators which require multiple validation messages.

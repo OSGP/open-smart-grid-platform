@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.shared.infra.jms;
 
+import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
@@ -24,6 +24,7 @@ public abstract class BaseNotificationMessageProcessor implements MessageProcess
   /** Logger for this class. */
   private static final Logger LOGGER =
       LoggerFactory.getLogger(BaseNotificationMessageProcessor.class);
+
   /**
    * This is the message sender needed for the message processor implementation to handle an error.
    */

@@ -7,7 +7,7 @@ package org.opensmartgridplatform.domain.core.valueobjects;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.opensmartgridplatform.domain.core.validation.LightTypeAndConfiguration;
 import org.opensmartgridplatform.domain.core.validation.TlsConfiguration;
 

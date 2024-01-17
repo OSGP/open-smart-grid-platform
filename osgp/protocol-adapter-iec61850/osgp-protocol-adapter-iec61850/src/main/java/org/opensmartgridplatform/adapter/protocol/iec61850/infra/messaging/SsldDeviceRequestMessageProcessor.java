@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.SsldDeviceService;

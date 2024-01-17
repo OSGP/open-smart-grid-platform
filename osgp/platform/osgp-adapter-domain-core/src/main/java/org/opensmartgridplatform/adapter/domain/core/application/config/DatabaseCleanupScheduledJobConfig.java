@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.domain.core.application.config;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.domain.core.application.tasks.DeviceMessageCleanupJob;
 import org.opensmartgridplatform.adapter.domain.core.application.tasks.EventCleanupJob;
 import org.opensmartgridplatform.shared.application.scheduling.OsgpScheduler;

@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.core.application.config;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.opensmartgridplatform.core.application.tasks.ScheduledTaskExecutorJob;
 import org.opensmartgridplatform.shared.application.scheduling.OsgpScheduler;
 import org.quartz.SchedulerException;

@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.domain.core.validation;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import org.opensmartgridplatform.domain.core.valueobjects.DaliConfiguration;
 
 public class NumberOfLightsAndIndexAddressMapValidator

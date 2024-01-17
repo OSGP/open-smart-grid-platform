@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.cucumber.platform.publiclighting.config;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 import org.opensmartgridplatform.cucumber.platform.config.ApplicationPersistenceConfiguration;

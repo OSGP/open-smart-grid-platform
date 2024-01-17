@@ -12,10 +12,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.util.Arrays;
 import java.util.function.Consumer;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

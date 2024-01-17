@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.tariffswitching.infra.jms;
 
-import javax.jms.ObjectMessage;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.shared.infra.jms.BaseResponseMessageFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

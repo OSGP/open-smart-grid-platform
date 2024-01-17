@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.cucumber.protocol.iec60870.config;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.cucumber.platform.config.ApplicationPersistenceConfiguration;

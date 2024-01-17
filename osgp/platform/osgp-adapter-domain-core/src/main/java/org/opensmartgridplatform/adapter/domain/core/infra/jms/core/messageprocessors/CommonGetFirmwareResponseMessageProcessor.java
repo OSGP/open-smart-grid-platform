@@ -5,8 +5,8 @@
 package org.opensmartgridplatform.adapter.domain.core.infra.jms.core.messageprocessors;
 
 import java.util.List;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.core.application.services.FirmwareManagementService;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;

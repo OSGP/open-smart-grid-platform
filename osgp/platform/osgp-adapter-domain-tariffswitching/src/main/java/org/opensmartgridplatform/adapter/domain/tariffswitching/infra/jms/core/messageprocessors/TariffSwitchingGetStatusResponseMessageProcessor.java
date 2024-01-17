@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.core.messageprocessors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.tariffswitching.application.services.AdHocManagementService;
 import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
@@ -59,10 +59,10 @@ public class TariffSwitchingGetStatusResponseMessageProcessor extends BaseMessag
     String organisationIdentification = null;
     String deviceIdentification = null;
 
-    ResponseMessage responseMessage;
+    final ResponseMessage responseMessage;
     ResponseMessageResultType responseMessageResultType = null;
     OsgpException osgpException = null;
-    Object dataObject;
+    final Object dataObject;
 
     try {
       correlationUid = message.getJMSCorrelationID();

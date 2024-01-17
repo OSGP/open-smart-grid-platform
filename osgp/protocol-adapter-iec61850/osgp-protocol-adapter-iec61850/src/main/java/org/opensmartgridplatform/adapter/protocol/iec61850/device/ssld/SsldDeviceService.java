@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld;
 
-import javax.jms.JMSException;
+import jakarta.jms.JMSException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponseHandler;

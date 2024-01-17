@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Session;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;

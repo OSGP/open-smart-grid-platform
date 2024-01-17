@@ -5,7 +5,7 @@
 package org.opensmartgridplatform.domain.core.exceptions;
 
 import java.util.Set;
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 import org.opensmartgridplatform.domain.core.valueobjects.ScheduleEntry;
 import org.springframework.ws.soap.server.endpoint.annotation.FaultCode;
 import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;

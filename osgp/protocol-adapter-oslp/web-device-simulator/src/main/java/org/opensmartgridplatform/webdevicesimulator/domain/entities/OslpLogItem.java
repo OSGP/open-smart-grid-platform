@@ -5,8 +5,8 @@
 package org.opensmartgridplatform.webdevicesimulator.domain.entities;
 
 import com.google.protobuf.Message;
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;

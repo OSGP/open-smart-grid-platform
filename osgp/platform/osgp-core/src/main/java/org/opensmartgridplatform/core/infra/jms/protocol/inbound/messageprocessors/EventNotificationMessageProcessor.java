@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.core.infra.jms.protocol.inbound.messageprocessors;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.util.List;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.core.application.services.EventNotificationMessageService;
 import org.opensmartgridplatform.core.infra.jms.protocol.inbound.AbstractProtocolRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;

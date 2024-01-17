@@ -6,9 +6,9 @@ package org.opensmartgridplatform.adapter.ws.domain.entities;
 
 import static org.opensmartgridplatform.shared.utils.StacktraceUtils.currentStacktrace;
 
+import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
-import javax.persistence.Embeddable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

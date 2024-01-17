@@ -6,11 +6,11 @@ package org.opensmartgridplatform.shared.health;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import org.opensmartgridplatform.shared.config.AppHealthEnabledCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

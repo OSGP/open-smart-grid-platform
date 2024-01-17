@@ -7,7 +7,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.j60870.ClientConnectionBuilder;
 import org.openmuc.j60870.Connection;

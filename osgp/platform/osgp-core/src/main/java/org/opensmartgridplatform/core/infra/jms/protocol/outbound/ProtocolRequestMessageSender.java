@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.core.infra.jms.protocol.outbound;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Session;
 import org.opensmartgridplatform.core.domain.model.protocol.ProtocolRequestService;
 import org.opensmartgridplatform.core.infra.messaging.CoreLogItemRequestMessage;
 import org.opensmartgridplatform.core.infra.messaging.CoreLogItemRequestMessageSender;

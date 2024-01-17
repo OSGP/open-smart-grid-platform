@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.specifications;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.springframework.data.jpa.domain.Specification;

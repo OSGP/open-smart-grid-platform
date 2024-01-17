@@ -6,8 +6,8 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.ser
 
 import com.beanit.openiec61850.ClientAssociation;
 import com.beanit.openiec61850.ServerModel;
+import jakarta.jms.JMSException;
 import java.io.Serializable;
-import javax.jms.JMSException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponseHandler;

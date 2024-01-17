@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.throttling.config;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.opensmartgridplatform.shared.application.scheduling.OsgpScheduler;
 import org.opensmartgridplatform.throttling.cleanup.PermitCleanUpJob;
 import org.opensmartgridplatform.throttling.cleanup.ReinitializeStateJob;

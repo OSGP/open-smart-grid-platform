@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.da.infra.jms;
 
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Session;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.springframework.jms.core.JmsTemplate;

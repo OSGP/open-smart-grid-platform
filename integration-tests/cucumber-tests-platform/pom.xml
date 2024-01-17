@@ -116,8 +116,8 @@ SPDX-License-Identifier: Apache-2.0
     </dependency>
 
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-entitymanager</artifactId>
+      <groupId>org.hibernate.orm</groupId>
+      <artifactId>hibernate-core</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.persistence</groupId>

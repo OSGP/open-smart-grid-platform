@@ -13,7 +13,7 @@ import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.text.MessageFormat;
 import java.util.Random;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;

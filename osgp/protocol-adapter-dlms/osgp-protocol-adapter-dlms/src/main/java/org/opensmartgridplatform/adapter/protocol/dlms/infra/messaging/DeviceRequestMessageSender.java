@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
+import jakarta.jms.ObjectMessage;
 import java.io.Serializable;
 import java.time.Duration;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.shared.infra.jms.JmsMessageCreator;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;

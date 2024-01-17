@@ -5,7 +5,7 @@
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.config;
 
 import com.zaxxer.hikari.HikariDataSource;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;

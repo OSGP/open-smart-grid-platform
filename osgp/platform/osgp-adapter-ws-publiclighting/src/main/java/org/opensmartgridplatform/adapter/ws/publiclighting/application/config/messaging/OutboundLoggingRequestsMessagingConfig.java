@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.config.messaging;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
 import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingMessageSender;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
@@ -26,7 +26,7 @@ public class OutboundLoggingRequestsMessagingConfig {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(OutboundLoggingRequestsMessagingConfig.class);
 
-  private JmsConfigurationFactory jmsConfigurationFactory;
+  private final JmsConfigurationFactory jmsConfigurationFactory;
 
   public OutboundLoggingRequestsMessagingConfig(
       final Environment environment, final DefaultJmsConfiguration defaultJmsConfiguration)

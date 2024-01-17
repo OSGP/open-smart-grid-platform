@@ -10,9 +10,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.util.Date;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;

@@ -14,7 +14,7 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.7.18</version>
+    <version>3.2.0</version>
     <relativePath />
   </parent>
 
@@ -74,12 +74,8 @@ SPDX-License-Identifier: Apache-2.0
           <artifactId>HikariCP</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.hibernate</groupId>
+          <groupId>org.hibernate.orm</groupId>
           <artifactId>hibernate-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.hibernate</groupId>
-          <artifactId>hibernate-entitymanager</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.hibernate.validator</groupId>

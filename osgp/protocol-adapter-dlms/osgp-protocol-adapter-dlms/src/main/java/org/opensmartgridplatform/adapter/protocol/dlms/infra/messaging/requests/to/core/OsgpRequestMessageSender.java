@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core;
 
-import javax.jms.Destination;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
+import jakarta.jms.Destination;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Session;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;

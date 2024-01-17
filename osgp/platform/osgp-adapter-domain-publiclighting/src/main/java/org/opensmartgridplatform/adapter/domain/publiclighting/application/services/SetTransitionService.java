@@ -4,6 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.services;
 
+import jakarta.annotation.PreDestroy;
+import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -11,8 +13,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.PreDestroy;
-import javax.validation.constraints.NotNull;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatch;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatchDevice;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaMastSegment;

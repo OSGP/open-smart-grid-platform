@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.core.infra.jms.protocol.inbound.messageprocessors;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.net.UnknownHostException;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.core.application.services.DeviceRegistrationMessageService;
 import org.opensmartgridplatform.core.infra.jms.protocol.inbound.AbstractProtocolRequestMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.DeviceRegistrationDataDto;

@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.domain.microgrids.application.services;
 
+import jakarta.persistence.OptimisticLockException;
 import java.time.Duration;
 import java.time.Instant;
-import javax.persistence.OptimisticLockException;
 import org.opensmartgridplatform.adapter.domain.microgrids.application.mapping.DomainMicrogridsMapper;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;

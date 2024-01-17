@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.messageprocessors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.SetTransitionService;
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionMessageDataContainer;
@@ -46,7 +46,7 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends BaseMess
     LOGGER.debug("Processing public lighting set transition request message");
 
     final MessageMetadata metadata;
-    Object dataObject;
+    final Object dataObject;
 
     try {
       metadata = MessageMetadata.fromMessage(message);
