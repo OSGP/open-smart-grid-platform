@@ -10,6 +10,7 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
@@ -98,6 +99,8 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
     final HttpServer httpServer =
         HttpServer.create(new InetSocketAddress(this.notificationPort), 1024);
     httpServer.createContext(this.notificationContextPath, httpHandler);
+    httpServer.setExecutor(Executors.newCachedThreadPool());
+    httpServer.start();
 
     return httpServer;
   }
