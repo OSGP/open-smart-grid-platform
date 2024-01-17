@@ -97,7 +97,7 @@ SPDX-License-Identifier: Apache-2.0
     <maven.enforcer.maven.version>3.8.5</maven.enforcer.maven.version>
     <jaxb2.maven.plugin.version>3.1.0</jaxb2.maven.plugin.version>
     <jaxb.api.version>4.0.1</jaxb.api.version>
-    <jaxb.core.version>2.3.0.1</jaxb.core.version>
+    <jaxb.core.version>4.0.4</jaxb.core.version>
     <spotbugs.maven.plugin.version>4.6.0.0</spotbugs.maven.plugin.version>
     <pmd.maven.plugin.version>3.16.0</pmd.maven.plugin.version>
     <checkstyle.maven.plugin.version>3.1.2</checkstyle.maven.plugin.version>
@@ -117,7 +117,7 @@ SPDX-License-Identifier: Apache-2.0
     <jakarta.inject.version>2.0.1</jakarta.inject.version>
     <jakarta.annotation.version>2.1.1</jakarta.annotation.version>
     <license.maven.plugin>3.0</license.maven.plugin>
-    <jackson.version>2.16.0</jackson.version>
+    <jackson.version>2.15.3</jackson.version>
     <cxf.version>4.0.3</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
@@ -664,8 +664,8 @@ SPDX-License-Identifier: Apache-2.0
         <version>${jackson.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.fasterxml.jackson.jaxrs</groupId>
-        <artifactId>jackson-jaxrs-json-provider</artifactId>
+        <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+        <artifactId>jackson-jakarta-rs-json-provider</artifactId>
         <version>${jackson.version}</version>
         <exclusions>
           <exclusion>
@@ -1463,6 +1463,7 @@ SPDX-License-Identifier: Apache-2.0
           <fork>true</fork>
           <source>${java.version}</source>
           <target>${java.version}</target>
+          <parameters>true</parameters>
         </configuration>
       </plugin>
 

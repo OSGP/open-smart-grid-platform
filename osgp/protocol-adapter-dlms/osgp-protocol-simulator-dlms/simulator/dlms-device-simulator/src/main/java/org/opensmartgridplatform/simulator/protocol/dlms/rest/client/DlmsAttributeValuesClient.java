@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.node.DecimalNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -401,7 +401,7 @@ public class DlmsAttributeValuesClient {
   private WebClient configureWebClient(final String baseAddress) {
 
     final List<Object> providers = new ArrayList<>();
-    providers.add(new JacksonJaxbJsonProvider());
+    providers.add(new JacksonJsonProvider());
 
     final WebClient client = WebClient.create(baseAddress, providers);
 

@@ -14,7 +14,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -27,7 +26,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
-import org.hibernate.annotations.SortNatural;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
@@ -56,8 +54,6 @@ public class FirmwareFile extends AbstractEntity {
       name = "device_model_firmware_file",
       joinColumns = @JoinColumn(name = "firmware_file_id"),
       inverseJoinColumns = @JoinColumn(name = "device_model_id"))
-  @OrderBy("modelCode")
-  @SortNatural
   private final SortedSet<DeviceModel> deviceModels = new TreeSet<>();
 
   @OneToMany(

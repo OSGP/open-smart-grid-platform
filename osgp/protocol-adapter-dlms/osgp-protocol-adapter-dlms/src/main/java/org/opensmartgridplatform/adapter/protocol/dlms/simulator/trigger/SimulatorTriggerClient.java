@@ -5,7 +5,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.simulator.trigger;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.io.FileInputStream;
@@ -63,7 +63,7 @@ public class SimulatorTriggerClient extends AbstractClient {
 
       // Create Apache CXF WebClient with JSON provider.
       final List<Object> providers = new ArrayList<>();
-      providers.add(new JacksonJaxbJsonProvider());
+      providers.add(new JacksonJsonProvider());
 
       this.webClient = WebClient.create(baseAddress, providers);
       if (this.webClient == null) {
@@ -92,7 +92,7 @@ public class SimulatorTriggerClient extends AbstractClient {
   private WebClient configureInsecureWebClient(final String baseAddress) {
 
     final List<Object> providers = new ArrayList<>();
-    providers.add(new JacksonJaxbJsonProvider());
+    providers.add(new JacksonJsonProvider());
 
     final WebClient client = WebClient.create(baseAddress, providers);
 
