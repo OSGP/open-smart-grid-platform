@@ -121,7 +121,7 @@ SPDX-License-Identifier: Apache-2.0
     <cxf.version>4.0.3</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
-    <micrometer.version>1.10.0</micrometer.version>
+    <micrometer.version>1.12.1</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
     <guava.version>32.1.2-jre</guava.version>
     <spotbugs.version>4.6.0</spotbugs.version>
@@ -470,6 +470,11 @@ SPDX-License-Identifier: Apache-2.0
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-oxm</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.integration</groupId>
+        <artifactId>spring-integration-ip</artifactId>
         <version>${spring.version}</version>
       </dependency>
       <dependency>
@@ -854,12 +859,16 @@ SPDX-License-Identifier: Apache-2.0
             <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-pool</artifactId>
         <version>${apache.activemq.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
     <dependency>

@@ -175,7 +175,6 @@ SPDX-License-Identifier: Apache-2.0
     <dependency>
       <groupId>org.springframework.integration</groupId>
       <artifactId>spring-integration-ip</artifactId>
-      <version>5.5.14</version>
     </dependency>
 
     <!-- Spring Data -->
