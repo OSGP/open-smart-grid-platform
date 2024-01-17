@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.signing.server.application.services;
 
+import jakarta.annotation.Resource;
 import jakarta.jms.Destination;
 import java.security.PrivateKey;
-import jakarta.annotation.Resource;
 import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;

@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging;
 
-import java.io.IOException;
 import jakarta.annotation.PostConstruct;
+import java.io.IOException;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.responses.EmptyDeviceResponse;

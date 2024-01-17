@@ -4,12 +4,12 @@
 
 package org.opensmartgridplatform.domain.core.valueobjects;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RelayConfiguration implements Serializable {
 

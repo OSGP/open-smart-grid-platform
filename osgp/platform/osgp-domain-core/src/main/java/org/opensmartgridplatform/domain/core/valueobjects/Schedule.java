@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.domain.core.valueobjects;
 
+import jakarta.validation.Valid;
 import java.io.Serializable;
 import java.util.List;
-import jakarta.validation.Valid;
 
 public class Schedule implements Serializable {
 

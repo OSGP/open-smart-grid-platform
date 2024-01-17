@@ -4,12 +4,12 @@
 
 package org.opensmartgridplatform.core.infra.jms.domain.inbound;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 import jakarta.jms.ObjectMessage;
+import java.io.Serializable;
+import java.sql.Timestamp;
 import org.opensmartgridplatform.core.application.services.DeviceRequestMessageService;
 import org.opensmartgridplatform.domain.core.entities.DomainInfo;
 import org.opensmartgridplatform.domain.core.entities.ScheduledTask;

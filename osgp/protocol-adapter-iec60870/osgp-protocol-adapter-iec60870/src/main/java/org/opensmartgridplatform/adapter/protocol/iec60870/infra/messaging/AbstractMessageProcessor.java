@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.jms.JMSException;
 import jakarta.jms.ObjectMessage;
-import jakarta.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;

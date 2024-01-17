@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions;
 
-import java.util.Set;
 import jakarta.validation.ConstraintViolation;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 public class ValidationException extends ProtocolAdapterException {

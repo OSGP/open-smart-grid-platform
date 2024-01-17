@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging;
 
-import java.io.Serializable;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 import jakarta.jms.ObjectMessage;
+import java.io.Serializable;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.NotSupportedException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;

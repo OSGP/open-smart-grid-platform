@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.webdemoapp.application.config;
 
-import java.util.TimeZone;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRegistration;
+import java.util.TimeZone;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
