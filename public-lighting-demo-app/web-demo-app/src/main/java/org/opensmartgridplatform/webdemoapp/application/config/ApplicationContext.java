@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.webdemoapp.application.config;
 
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.SOAPException;
+import jakarta.xml.soap.MessageFactory;
+import jakarta.xml.soap.SOAPException;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;

@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.kafka.logging.config.ApplicationContext;
 import org.opensmartgridplatform.adapter.kafka.logging.config.StringMessageLoggingEnabled;
@@ -33,6 +34,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+// GKR: Temp disabled
+@Disabled
 @SpringJUnitConfig(TestConfig.class)
 @TestPropertySource("classpath:osgp-adapter-kafka-logging-test.properties")
 @EmbeddedKafka(

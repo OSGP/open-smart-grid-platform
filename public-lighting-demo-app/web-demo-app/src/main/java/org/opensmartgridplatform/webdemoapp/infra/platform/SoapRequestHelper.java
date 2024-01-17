@@ -7,21 +7,23 @@ package org.opensmartgridplatform.webdemoapp.infra.platform;
 import java.security.GeneralSecurityException;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import org.apache.http.conn.ssl.DefaultHostnameVerifier;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContexts;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
+import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.TrustSelfSignedStrategy;
+import org.apache.hc.core5.ssl.SSLContexts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
-import org.springframework.ws.transport.http.HttpComponentsMessageSender;
+import org.springframework.ws.transport.http.ClientHttpRequestMessageSender;
 
 /** Helper class to create WebServiceTemplates for each specific domain. */
 public class SoapRequestHelper {
@@ -137,31 +139,38 @@ public class SoapRequestHelper {
    *
    * @return HttpComponentsMessageSender
    */
-  private HttpComponentsMessageSender createHttpMessageSender() {
-
-    final HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
-
-    final HttpClientBuilder builder = HttpClients.custom();
-    builder.addInterceptorFirst(new ContentLengthHeaderRemoveInterceptor());
+  private ClientHttpRequestMessageSender createHttpMessageSender() {
+    final ClientHttpRequestMessageSender messageSender = new ClientHttpRequestMessageSender();
     try {
-      final SSLContext sslContext =
-          SSLContexts.custom()
-              .loadKeyMaterial(
-                  this.keyStoreHelper.getKeyStore(), this.keyStoreHelper.getKeyStorePwAsChar())
-              .loadTrustMaterial(this.keyStoreHelper.getTrustStore(), new TrustSelfSignedStrategy())
-              .build();
-
-      final HostnameVerifier hostnameVerifier = this.getHostnameVerifier();
-
-      final SSLConnectionSocketFactory sslConnectionFactory =
-          new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
-      builder.setSSLSocketFactory(sslConnectionFactory);
-      sender.setHttpClient(builder.build());
+      messageSender.setRequestFactory(this.createRequestFactory());
     } catch (final GeneralSecurityException e) {
       LOGGER.error("Unbale to create SSL context", e);
     }
+    return messageSender;
+  }
 
-    return sender;
+  // GKR: Double check
+  private HttpComponentsClientHttpRequestFactory createRequestFactory()
+      throws GeneralSecurityException {
+    final SSLContext sslContext =
+        SSLContexts.custom()
+            .loadKeyMaterial(
+                this.keyStoreHelper.getKeyStore(), this.keyStoreHelper.getKeyStorePwAsChar())
+            .loadTrustMaterial(this.keyStoreHelper.getTrustStore(), new TrustSelfSignedStrategy())
+            .build();
+    final HostnameVerifier hostnameVerifier = this.getHostnameVerifier();
+    final SSLConnectionSocketFactory sslConnectionFactory =
+        new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
+    final HttpClientConnectionManager connectionManager =
+        PoolingHttpClientConnectionManagerBuilder.create()
+            .setSSLSocketFactory(sslConnectionFactory)
+            .build();
+
+    return new HttpComponentsClientHttpRequestFactory(
+        HttpClients.custom()
+            .setConnectionManager(connectionManager)
+            .addRequestInterceptorFirst(new ContentLengthHeaderRemoveInterceptor())
+            .build());
   }
 
   public HostnameVerifier getHostnameVerifier() throws GeneralSecurityException {

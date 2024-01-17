@@ -4,16 +4,17 @@
 
 package org.opensmartgridplatform.simulator.protocol.mqtt;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+public class CustomWebSecurityConfigurerAdapter {
 
-  @Override
-  protected void configure(final HttpSecurity http) throws Exception {
-    // This is a simulator, used only in test environment. No security needed.
-    http.authorizeRequests().anyRequest().permitAll(); // NOSONAR
+  @Bean
+  public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
+    http.authorizeHttpRequests((authz) -> authz.anyRequest().permitAll());
+    return http.build();
   }
 }

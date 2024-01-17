@@ -5,11 +5,11 @@
 package org.opensmartgridplatform.simulator.protocol.dlms.triggered.config;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.core.Application;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.Application;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.interceptor.AbstractLoggingInterceptor;

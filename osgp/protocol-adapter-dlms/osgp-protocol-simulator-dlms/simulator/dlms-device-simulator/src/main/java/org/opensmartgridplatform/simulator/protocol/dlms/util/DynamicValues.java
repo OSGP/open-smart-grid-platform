@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.simulator.protocol.dlms.util;
 
+import jakarta.ws.rs.WebApplicationException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.ws.rs.WebApplicationException;
 import org.openmuc.jdlms.CosemClass;
 import org.openmuc.jdlms.CosemInterfaceObject;
 import org.openmuc.jdlms.ObisCode;

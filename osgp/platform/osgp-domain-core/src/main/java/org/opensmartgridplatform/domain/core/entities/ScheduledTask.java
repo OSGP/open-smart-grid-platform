@@ -8,7 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @Entity
@@ -17,7 +18,8 @@ public class ScheduledTask extends AbstractScheduledTask {
 
   private static final long serialVersionUID = 1L;
 
-  @Type(type = "java.io.Serializable")
+  // GKR: Double check
+  @JdbcTypeCode(SqlTypes.BINARY)
   private Serializable messageData;
 
   public ScheduledTask() {

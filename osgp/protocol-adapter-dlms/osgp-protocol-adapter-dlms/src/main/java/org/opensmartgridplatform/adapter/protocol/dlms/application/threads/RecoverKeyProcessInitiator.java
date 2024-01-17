@@ -4,17 +4,17 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.application.threads;
 
+import jakarta.inject.Provider;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import javax.inject.Provider;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 public class RecoverKeyProcessInitiator {
-  private ScheduledExecutorService executorService;
+  private final ScheduledExecutorService executorService;
 
-  private Provider<RecoverKeyProcess> recoverKeyProcessProvider;
+  private final Provider<RecoverKeyProcess> recoverKeyProcessProvider;
 
-  private int recoverKeyDelay;
+  private final int recoverKeyDelay;
 
   public RecoverKeyProcessInitiator(
       final ScheduledExecutorService executorService,

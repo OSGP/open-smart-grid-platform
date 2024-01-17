@@ -5,27 +5,28 @@
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging;
 
 import com.google.protobuf.Message;
+import jakarta.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.StringUtils;
 
 public class OslpLogItemRequestMessage {
 
   private static final int MAX_MESSAGE_LENGTH = 8000;
 
-  private boolean incoming;
+  private final boolean incoming;
 
-  private String deviceUid;
+  private final String deviceUid;
 
-  private String encodedMessage;
+  private final String encodedMessage;
 
-  private String decodedMessage;
+  private final String decodedMessage;
 
-  private String deviceIdentification;
+  private final String deviceIdentification;
 
-  private String organisationIdentification;
+  private final String organisationIdentification;
 
-  private boolean valid;
+  private final boolean valid;
 
-  private int payloadMessageSerializedSize;
+  private final int payloadMessageSerializedSize;
 
   public OslpLogItemRequestMessage(
       final String organisationIdentification,
@@ -75,7 +76,7 @@ public class OslpLogItemRequestMessage {
   private static String bytesToCArray(final byte[] bytes) {
     String s = "";
     if (bytes.length > 0) {
-      s = javax.xml.bind.DatatypeConverter.printHexBinary(bytes);
+      s = DatatypeConverter.printHexBinary(bytes);
       // Split every two chars with
       // ', ' to create a C array.
       s = s.replaceAll("(.{2})", ", 0x$1");
