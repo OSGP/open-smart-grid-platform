@@ -215,8 +215,8 @@ SPDX-License-Identifier: Apache-2.0
 
     <!-- javax inject -->
     <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
     </dependency>
 
     <!-- Apache ws support -->
@@ -269,8 +269,8 @@ SPDX-License-Identifier: Apache-2.0
 
     <!-- Servlet API -->
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
 

@@ -86,13 +86,13 @@ SPDX-License-Identifier: Apache-2.0
 
     <!-- Servlet API 3.0 -->
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
+      <groupId>jakarta.servlet.jsp.jstl</groupId>
+      <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
     </dependency>
 
     <!-- Apache HTTP client -->
@@ -108,8 +108,8 @@ SPDX-License-Identifier: Apache-2.0
     </dependency>
 
     <dependency>
-      <groupId>javax.xml.soap</groupId>
-      <artifactId>javax.xml.soap-api</artifactId>
+      <groupId>jakarta.xml.soap</groupId>
+      <artifactId>jakarta.xml.soap-api</artifactId>
     </dependency>
   </dependencies>
 
