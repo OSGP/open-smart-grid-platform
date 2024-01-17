@@ -10,6 +10,7 @@ import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.util.HashMap;
 import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncResponse;
@@ -237,5 +238,10 @@ public class FunctionalExceptionsSteps {
     } catch (final Exception exception) {
       ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
     }
+  }
+
+  @When("^the bundle request generating an error is received$")
+  public void theBundleRequestGeneratingAnErrorIsReceived() throws Throwable {
+    this.theBundleRequestGeneratingAnErrorIsReceivedWithHeaders(new HashMap<>());
   }
 }
