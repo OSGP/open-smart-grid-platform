@@ -6,6 +6,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.time.Duration;
 import java.time.Instant;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceKeyProcessAlreadyRunningException;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(value = "transactionManager")
 @Component
+@Slf4j
 public class DeviceKeyProcessingService {
 
   @Value("#{T(java.time.Duration).parse('${device.key.processing.timeout:PT5M}')}")
@@ -34,6 +36,8 @@ public class DeviceKeyProcessingService {
 
   public void startProcessing(final String deviceIdentification)
       throws DeviceKeyProcessAlreadyRunningException, FunctionalException {
+
+    log.info("Attempt to start key changing process for {}", deviceIdentification);
 
     final DlmsDevice dlmsDevice =
         this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
@@ -53,6 +57,8 @@ public class DeviceKeyProcessingService {
     if (updatedRecords == 0) {
       throw new DeviceKeyProcessAlreadyRunningException();
     }
+
+    log.info("Started key changing process for {}", deviceIdentification);
   }
 
   public void stopProcessing(final String deviceIdentification) {
@@ -60,6 +66,8 @@ public class DeviceKeyProcessingService {
         this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
     dlmsDevice.setKeyProcessingStartTime(null);
     this.dlmsDeviceRepository.saveAndFlush(dlmsDevice);
+
+    log.info("Stopped key changing process for {}", deviceIdentification);
   }
 
   public Duration getDeviceKeyProcessingTimeout() {
