@@ -7,11 +7,9 @@ package org.opensmartgridplatform.adapter.kafka.logging.infra.kafka.in;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.kafka.logging.config.ApplicationContext;
 import org.opensmartgridplatform.adapter.kafka.logging.config.StringMessageLoggingEnabled;
@@ -34,8 +32,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-// GKR: Temp disabled
-@Disabled
 @SpringJUnitConfig(TestConfig.class)
 @TestPropertySource("classpath:osgp-adapter-kafka-logging-test.properties")
 @EmbeddedKafka(
@@ -93,18 +89,18 @@ class StringMessageConsumerTest {
   }
 
   private void whenDistributionAutomationDataIsSentToTheTopic() {
-    final Map<String, Object> producerProps = KafkaTestUtils.producerProps(this.broker);
+    final var producerProps = KafkaTestUtils.producerProps(this.broker);
     final ProducerFactory<String, String> producerFactory =
         new DefaultKafkaProducerFactory<>(
             producerProps, new StringSerializer(), new StringSerializer());
-    final KafkaTemplate<String, String> template = new KafkaTemplate<>(producerFactory);
+    final var template = new KafkaTemplate<>(producerFactory);
     template.setDefaultTopic(this.topic);
     template.send(this.topic, LocalDateTime.now().toString(), this.distributionAutomationMessage);
   }
 
   private void theKafkaLoggerLogsTheDistributionAutomationData() throws Exception {
-    final long timeout = 30;
-    final TimeUnit timeUnit = TimeUnit.SECONDS;
+    final var timeout = 30L;
+    final var timeUnit = TimeUnit.SECONDS;
     assertThat(this.countDownLatch.await(timeout, timeUnit))
         .overridingErrorMessage(
             "KafkaLogger did not receive a record to log within " + timeout + " " + timeUnit)
