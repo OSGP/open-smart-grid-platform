@@ -59,7 +59,7 @@ public abstract class AbstractReplaceKeyCommandExecutor<T>
       final SetKeysRequestDto setKeysRequestDto,
       final MessageMetadata messageMetadata)
       throws OsgpException {
-    log.info("Keys set on device :{}", device.getDeviceIdentification());
+    log.info("Keys will be set on device :{}", device.getDeviceIdentification());
 
     SetKeysRequestDto setDecryptedKeysRequestDto = setKeysRequestDto;
     if (!setKeysRequestDto.isGeneratedKeys()) {
@@ -78,6 +78,8 @@ public abstract class AbstractReplaceKeyCommandExecutor<T>
                 setDecryptedKeysRequestDto.isGeneratedKeys()),
             messageMetadata);
 
+    log.info("Authentication key successfully set on device :{}", device.getDeviceIdentification());
+
     this.storeAndSendToDevice(
         conn,
         devicePostSave,
@@ -87,6 +89,8 @@ public abstract class AbstractReplaceKeyCommandExecutor<T>
             SecurityKeyType.E_METER_ENCRYPTION,
             setDecryptedKeysRequestDto.isGeneratedKeys()),
         messageMetadata);
+
+    log.info("Encryption key successfully set on device :{}", device.getDeviceIdentification());
 
     return new ActionResponseDto(
         String.format(
@@ -129,11 +133,25 @@ public abstract class AbstractReplaceKeyCommandExecutor<T>
           device.getDeviceIdentification(),
           keyWrapper.getSecurityKeyType(),
           keyWrapper.getBytes());
+      log.info(
+          "Key {} stored in database for device :{}",
+          keyWrapper.getSecurityKeyType().name(),
+          device.getDeviceIdentification());
     }
 
     this.sendToDevice(conn, device.getDeviceIdentification(), keyWrapper, messageMetadata);
+    log.info(
+        "Key {} sent to device :{}",
+        keyWrapper.getSecurityKeyType().name(),
+        device.getDeviceIdentification());
+
     this.secretManagementService.activateNewKey(
         messageMetadata, device.getDeviceIdentification(), keyWrapper.getSecurityKeyType());
+    log.info(
+        "Key {} activated for device :{}",
+        keyWrapper.getSecurityKeyType().name(),
+        device.getDeviceIdentification());
+
     return device;
   }
 
