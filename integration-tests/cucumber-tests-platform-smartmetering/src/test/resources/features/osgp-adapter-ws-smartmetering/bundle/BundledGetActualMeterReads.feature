@@ -94,3 +94,36 @@ Feature: SmartMetering Bundle - GetActualMeterReads
       | Message      | VALIDATION_ERROR                                      |
       | InnerMessage | Meter for gas reads should have a channel configured. |
 
+  Scenario: Get actual meter reads of a G device without a gateway device
+    Given a dlms device
+      | DeviceIdentification        | TESTG102400000001 |
+      | DeviceType                  | SMART_METER_G     |
+      | Channel                     |                 1 |
+    And a bundle request
+      | DeviceIdentification | TESTG102400000001 |
+    And the bundle request contains a get actual meter reads gas action
+      | DeviceIdentification | TESTG102400000001 |
+    When the bundle request is received
+    When the bundle request generating an error is received
+    Then a SOAP fault should have been returned
+      | Code         |                                         401 |
+      | Message      | VALIDATION_ERROR                            |
+      | Component    | DOMAIN_SMART_METERING                       |
+      | InnerMessage | Bundle request is not allowed for gas meter |
+
+  Scenario: Get actual meter reads of a G device without a gateway device and bundle device is E meter
+    Given a dlms device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
+    And a dlms device
+      | DeviceIdentification        | TESTG102400000001 |
+      | DeviceType                  | SMART_METER_G     |
+      | Channel                     |                 1 |
+    And a bundle request
+      | DeviceIdentification | TEST1024000000001 |
+    And the bundle request contains a get actual meter reads gas action
+      | DeviceIdentification | TESTG102400000001 |
+    When the bundle request is received
+    Then the bundle response should contain a fault response
+      | Message      | VALIDATION_ERROR                                                   |
+      | InnerMessage | Meter for gas reads should have an energy meter as gateway device. |

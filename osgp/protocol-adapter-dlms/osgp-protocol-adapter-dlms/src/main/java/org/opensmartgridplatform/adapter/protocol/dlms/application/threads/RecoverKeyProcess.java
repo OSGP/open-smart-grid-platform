@@ -131,11 +131,17 @@ public class RecoverKeyProcess implements Runnable {
       return;
     }
 
+    log.info(
+        "Connection with new keys was successful. Now activating new keys for device {}",
+        this.deviceIdentification);
+
     try {
       this.secretManagementService.activateNewKeys(
           this.messageMetadata,
           this.deviceIdentification,
           Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION));
+
+      log.info("Activated keys for device {}", this.deviceIdentification);
     } catch (final Exception e) {
       throw new RecoverKeyException(e);
     } finally {
@@ -196,6 +202,7 @@ public class RecoverKeyProcess implements Runnable {
             this.deviceIdentification);
         return false;
       }
+      log.info("New keys found in key recovery process for device {}", this.deviceIdentification);
 
       permit =
           this.throttlingService.requestPermit(

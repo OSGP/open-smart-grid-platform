@@ -336,11 +336,22 @@ public class SecretManagementService {
     requestAKey.setSecretType(SecretType.E_METER_AUTHENTICATION_KEY);
     final HasNewSecretResponse responseAKey =
         this.secretManagementClient.hasNewSecretRequest(messageMetadata, requestAKey);
+    this.logResult(deviceIdentification, responseAKey.isHasNewSecret(), "Authentication");
     requestEKey.setDeviceId(deviceIdentification);
     requestEKey.setSecretType(SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
     final HasNewSecretResponse responseEKey =
         this.secretManagementClient.hasNewSecretRequest(messageMetadata, requestEKey);
+    this.logResult(deviceIdentification, responseEKey.isHasNewSecret(), "Encryption");
     return responseAKey.isHasNewSecret() || responseEKey.isHasNewSecret();
+  }
+
+  private void logResult(
+      final String deviceIdentification, final boolean result, final String keyType) {
+    if (result) {
+      LOGGER.info("{} key with status New found for device {}", keyType, deviceIdentification);
+    } else {
+      LOGGER.info("No {} key with status New found for device {}", keyType, deviceIdentification);
+    }
   }
 
   public byte[] generate128BitsKeyAndStoreAsNewKey(
