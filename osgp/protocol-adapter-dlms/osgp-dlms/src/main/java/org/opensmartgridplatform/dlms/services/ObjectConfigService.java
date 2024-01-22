@@ -371,10 +371,11 @@ public class ObjectConfigService {
             originalAttribute.copyWithNewValueAndType(value, ValueType.FIXED_IN_METER);
         return cosemObject.copyWithNewAttribute(newAttribute);
       } else {
-        // If no value was found for this device model, then set the value to Dynamic and log a
-        // warning. The command executor should get the value from the meter.
-        log.warn(
-            "Could not find value for devicemodel {} for {}",
+        // If no value was found for this device model, then set the value to Dynamic and log the
+        // message
+        // The command executor should get the value from the meter.
+        log.info(
+            "Could not find value for devicemodel {} for {}, set the value to Dynamic and get the value from the meter",
             deviceModel,
             originalAttribute.getValuebasedonmodel().getType());
         final Attribute newAttribute =

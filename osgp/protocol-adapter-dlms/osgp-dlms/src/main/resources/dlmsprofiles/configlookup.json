@@ -18,15 +18,19 @@
         ]
       },
       {
-        "type": "unknown gas meter type",
+        "type": "value in meter is not like in specification",
+        "match": [
+          "G4SRT 1.2L"
+        ]
+      },      {
+      "type": "unknown gas meter type",
         "match": [
           "elster-instromet",
-          "flonidan-gasmeter",
-          "G4SRT 1.2L"
+          "flonidan-gasmeter"
         ]
       }
     ],
-    "defaulttype": "unknown gas meter type"
+    "defaulttype": "gas meter type could not be determined"
   },
   {
     "name": "INSTANTANEOUS_VOLTAGE_DSMR4",
