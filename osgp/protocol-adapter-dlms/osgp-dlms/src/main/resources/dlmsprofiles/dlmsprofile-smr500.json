@@ -564,7 +564,7 @@
           "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "FIXED_IN_PROFILE",
-          "value": "0, A",
+          "value": "-2, A",
           "access": "R"
         }
       ]
