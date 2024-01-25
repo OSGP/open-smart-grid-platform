@@ -83,6 +83,9 @@ public class WebServiceConfig extends AbstractConfig {
   @Value("${web.service.notification.application.name:DISTRIBUTION_AUTOMATION}")
   private String webserviceNotificationApplicationName;
 
+  @Value("${web.service.notification.supported.tls.protocols:TLSv1.2}")
+  private String[] webserviceNotificationSupportedTlsProtocols;
+
   // === DISTRIBUTION AUTOMATION MARSHALLERS ===
 
   /**
@@ -255,7 +258,10 @@ public class WebServiceConfig extends AbstractConfig {
             .build();
 
     return new NotificationWebServiceTemplateFactory(
-        configRepository, this.messageFactory(), Arrays.asList(addOsgpHeadersInterceptor));
+        configRepository,
+        this.messageFactory(),
+        Arrays.asList(addOsgpHeadersInterceptor),
+        this.webserviceNotificationSupportedTlsProtocols);
   }
 
   @Bean

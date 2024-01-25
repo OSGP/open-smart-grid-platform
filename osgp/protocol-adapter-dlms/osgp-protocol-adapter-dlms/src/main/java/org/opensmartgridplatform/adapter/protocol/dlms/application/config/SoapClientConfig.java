@@ -78,6 +78,9 @@ public class SoapClientConfig {
   @Value("${soapclient.max-conn-total:100}")
   private int maxConnTotal;
 
+  @Value("${soapclient.supported.tls.protocols:TLSv1.2}")
+  private String[] supportedTlsProtocols;
+
   @Bean
   Jaxb2Marshaller soapClientJaxb2Marshaller() {
     final Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
@@ -125,9 +128,14 @@ public class SoapClientConfig {
       throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException,
           KeyStoreException, KeyManagementException {
     if (!Boolean.parseBoolean(this.useHostNameVerifier)) {
-      return new SSLConnectionSocketFactory(this.sslContext(), NoopHostnameVerifier.INSTANCE);
+      return new SSLConnectionSocketFactory(
+          this.sslContext(), this.supportedTlsProtocols, null, NoopHostnameVerifier.INSTANCE);
     } else {
-      return new SSLConnectionSocketFactory(this.sslContext());
+      return new SSLConnectionSocketFactory(
+          this.sslContext(),
+          this.supportedTlsProtocols,
+          null,
+          SSLConnectionSocketFactory.getDefaultHostnameVerifier());
     }
   }
 

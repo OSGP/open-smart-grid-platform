@@ -80,6 +80,9 @@ public class WebServiceConfig extends AbstractConfig {
   @Value("${web.service.notification.application.name}")
   private String webserviceNotificationApplicationName;
 
+  @Value("${web.service.notification.supported.tls.protocols:TLSv1.2}")
+  private String[] webserviceNotificationSupportedTlsProtocols;
+
   private static final String SERVER = "SERVER";
 
   // === MICROGRIDS MARSHALLERS ===
@@ -236,7 +239,10 @@ public class WebServiceConfig extends AbstractConfig {
             .build();
 
     return new NotificationWebServiceTemplateFactory(
-        configRepository, this.messageFactory(), Arrays.asList(addOsgpHeadersInterceptor));
+        configRepository,
+        this.messageFactory(),
+        Arrays.asList(addOsgpHeadersInterceptor),
+        this.webserviceNotificationSupportedTlsProtocols);
   }
 
   @Bean

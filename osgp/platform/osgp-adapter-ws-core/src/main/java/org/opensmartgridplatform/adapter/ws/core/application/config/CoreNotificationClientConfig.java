@@ -40,6 +40,9 @@ public class CoreNotificationClientConfig extends AbstractConfig {
   @Value("${web.service.notification.application.name}")
   private String webserviceNotificationApplicationName;
 
+  @Value("${web.service.notification.supported.tls.protocols:TLSv1.2}")
+  private String[] webserviceNotificationSupportedTlsProtocols;
+
   @Bean
   public String webserviceNotificationApplicationName() {
     return this.webserviceNotificationApplicationName;
@@ -77,7 +80,8 @@ public class CoreNotificationClientConfig extends AbstractConfig {
     return new NotificationWebServiceTemplateFactory(
         configRepository,
         this.messageFactory(),
-        Collections.singletonList(addOsgpHeadersInterceptor));
+        Collections.singletonList(addOsgpHeadersInterceptor),
+        this.webserviceNotificationSupportedTlsProtocols);
   }
 
   @Bean

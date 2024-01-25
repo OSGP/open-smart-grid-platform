@@ -49,6 +49,9 @@ public class SoapRequestHelper {
   @Value("${web.service.template.default.uri.publiclighting.adhocmanagement}")
   private String publicLightingWebServiceAdHocManagementUri;
 
+  @Value("${web.service.template.default.supported.tls.protocols:TLSv1.2}")
+  private String[] supportedTlsProtocols;
+
   @Value("${web.service.hostname.verification.strategy}")
   private String webServiceHostnameVerificationStrategy;
 
@@ -154,7 +157,8 @@ public class SoapRequestHelper {
       final HostnameVerifier hostnameVerifier = this.getHostnameVerifier();
 
       final SSLConnectionSocketFactory sslConnectionFactory =
-          new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
+          new SSLConnectionSocketFactory(
+              sslContext, this.supportedTlsProtocols, null, hostnameVerifier);
       builder.setSSLSocketFactory(sslConnectionFactory);
       sender.setHttpClient(builder.build());
     } catch (final GeneralSecurityException e) {
