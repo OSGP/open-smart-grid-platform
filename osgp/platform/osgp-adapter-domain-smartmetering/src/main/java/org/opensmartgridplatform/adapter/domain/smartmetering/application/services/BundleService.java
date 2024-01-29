@@ -180,7 +180,8 @@ public class BundleService {
       throw new FunctionalException(
           FunctionalExceptionType.VALIDATION_ERROR,
           ComponentType.DOMAIN_SMART_METERING,
-          new AssertionError("Bundle request is not allowed for gas meter"));
+          new AssertionError(
+              "Bundle request is not allowed for gas meter (possible cause: gateway not defined for gas meter)"));
     }
   }
 

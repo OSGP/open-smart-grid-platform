@@ -109,7 +109,7 @@ Feature: SmartMetering Bundle - GetActualMeterReads
       | Code         |                                         401 |
       | Message      | VALIDATION_ERROR                            |
       | Component    | DOMAIN_SMART_METERING                       |
-      | InnerMessage | Bundle request is not allowed for gas meter |
+      | InnerMessage | Bundle request is not allowed for gas meter (possible cause: gateway not defined for gas meter) |
 
   Scenario: Get actual meter reads of a G device without a gateway device and bundle device is E meter
     Given a dlms device
