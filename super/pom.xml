@@ -607,6 +607,11 @@ SPDX-License-Identifier: Apache-2.0
         <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
         <version>${servlet.jstl.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.glassfish.web</groupId>
+        <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+        <version>${servlet.jstl.version}</version>
+      </dependency>
 
       <!--  Jaxb xml bind -->
       <dependency>
