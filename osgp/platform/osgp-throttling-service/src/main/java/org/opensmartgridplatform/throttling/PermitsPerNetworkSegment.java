@@ -121,8 +121,10 @@ public class PermitsPerNetworkSegment {
     final AtomicInteger permitCounter = this.getPermitCounter(baseTransceiverStationId, cellId);
 
     // Notify that permit is released
-    synchronized (permitCounter) {
-      permitCounter.notifyAll();
+    if (this.useHighPrioPool()) {
+      synchronized (permitCounter) {
+        permitCounter.notifyAll();
+      }
     }
 
     final int numberOfPermitsIfReleased = permitCounter.decrementAndGet();
@@ -137,6 +139,10 @@ public class PermitsPerNetworkSegment {
     return numberOfReleasedPermits == 1;
   }
 
+  private boolean useHighPrioPool() {
+    return this.maxWaitForHighPrioInMs != 0;
+  }
+
   private boolean isPermitAvailable(
       final int baseTransceiverStationId,
       final int cellId,
@@ -147,6 +153,10 @@ public class PermitsPerNetworkSegment {
     final int numberOfPermitsIfGranted = permitCounter.incrementAndGet();
     if (numberOfPermitsIfGranted > maxConcurrency) {
       permitCounter.decrementAndGet();
+
+      if (!this.useHighPrioPool()) {
+        return false;
+      }
 
       if (priority <= MessagePriorityEnum.DEFAULT.getPriority()) {
         return false;
