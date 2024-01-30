@@ -120,13 +120,6 @@ public class PermitsPerNetworkSegment {
 
     final AtomicInteger permitCounter = this.getPermitCounter(baseTransceiverStationId, cellId);
 
-    // Notify that permit is released
-    if (this.useHighPrioPool()) {
-      synchronized (permitCounter) {
-        permitCounter.notifyAll();
-      }
-    }
-
     final int numberOfPermitsIfReleased = permitCounter.decrementAndGet();
     if (numberOfPermitsIfReleased < 0) {
       permitCounter.incrementAndGet();
@@ -135,6 +128,13 @@ public class PermitsPerNetworkSegment {
     final int numberOfReleasedPermits =
         this.permitRepository.releasePermit(
             throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
+
+    if (this.useHighPrioPool()) {
+      // Notify that permit is released
+      synchronized (permitCounter) {
+        permitCounter.notifyAll();
+      }
+    }
 
     return numberOfReleasedPermits == 1;
   }
