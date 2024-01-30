@@ -31,4 +31,14 @@ public class OsgpJasperException extends Exception {
   public JasperError getJasperError() {
     return this.jasperError;
   }
+
+  /**
+   * Returns the error message from the JasperError if it is not null, otherwise the message from
+   * this exception.
+   *
+   * @return the error message
+   */
+  public String getErrorMessage() {
+    return this.jasperError != null ? this.jasperError.getMessage() : this.getMessage();
+  }
 }
