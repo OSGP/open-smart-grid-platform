@@ -55,7 +55,7 @@ Feature: SmartMetering - Configuration - M-Bus encryption key status by channel
       | Channel              |                     1 |
       | EncryptionKeyStatus  | NO_ENCRYPTION_KEY     |
 
-  Scenario: Get M-Bus encryption key status from coupled M-Bus device by using Channel id and Gateway device id
+  Scenario: Get M-Bus encryption key status from coupled M-Bus device with multiple channels and one channel is empty
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
