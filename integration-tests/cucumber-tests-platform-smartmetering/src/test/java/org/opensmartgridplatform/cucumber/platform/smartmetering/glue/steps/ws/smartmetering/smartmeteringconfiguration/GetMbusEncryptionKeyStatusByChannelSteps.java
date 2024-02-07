@@ -66,8 +66,9 @@ public class GetMbusEncryptionKeyStatusByChannelSteps {
     final GetMbusEncryptionKeyStatusByChannelResponse response =
         this.smartMeterConfigurationClient.retrieveGetMbusEncryptionKeyStatusByChannelResponse(
             asyncRequest);
-    final EncryptionKeyStatus expectedEncryptionKeyStatus = EncryptionKeyStatus.valueOf(
-        settings.get(PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTION_KEY_STATUS));
+    final EncryptionKeyStatus expectedEncryptionKeyStatus =
+        EncryptionKeyStatus.valueOf(
+            settings.get(PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTION_KEY_STATUS));
 
     assertThat(response.getResult())
         .as(OPERATION + ", Checking result:")
