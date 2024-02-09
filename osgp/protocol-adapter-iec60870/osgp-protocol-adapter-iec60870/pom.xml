@@ -147,6 +147,10 @@ SPDX-License-Identifier: Apache-2.0
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-spring</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-jms-pool</artifactId>
+    </dependency>
 
     <!-- OpenIEC60870 -->
     <dependency>
