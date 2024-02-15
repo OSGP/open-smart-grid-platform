@@ -42,7 +42,7 @@ public class TariffSwitchingNotificationClientConfig extends AbstractConfig {
   @Value("${web.service.notification.application.name:OSGP}")
   private String webserviceNotificationApplicationName;
 
-  @Value("${web.service.notification.supported.tls.protocols:TLSv1.2}")
+  @Value("${web.service.notification.supported.tls.protocols:TLSv1.2,TLSv1.3}")
   private String[] webserviceNotificationSupportedTlsProtocols;
 
   @Bean

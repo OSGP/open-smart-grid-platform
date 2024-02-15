@@ -78,7 +78,7 @@ public class SoapClientConfig {
   @Value("${soapclient.max-conn-total:100}")
   private int maxConnTotal;
 
-  @Value("${soapclient.supported.tls.protocols:TLSv1.2}")
+  @Value("${soapclient.supported.tls.protocols:TLSv1.2,TLSv1.3}")
   private String[] supportedTlsProtocols;
 
   @Bean

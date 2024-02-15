@@ -83,7 +83,7 @@ public class WebServiceConfig extends AbstractConfig {
   @Value("${web.service.notification.application.name:DISTRIBUTION_AUTOMATION}")
   private String webserviceNotificationApplicationName;
 
-  @Value("${web.service.notification.supported.tls.protocols:TLSv1.2}")
+  @Value("${web.service.notification.supported.tls.protocols:TLSv1.2,TLSv1.3}")
   private String[] webserviceNotificationSupportedTlsProtocols;
 
   // === DISTRIBUTION AUTOMATION MARSHALLERS ===

@@ -80,7 +80,7 @@ public class WebServiceConfig extends AbstractConfig {
   @Value("${web.service.notification.application.name}")
   private String webserviceNotificationApplicationName;
 
-  @Value("${web.service.notification.supported.tls.protocols:TLSv1.2}")
+  @Value("${web.service.notification.supported.tls.protocols:TLSv1.2,TLSv1.3}")
   private String[] webserviceNotificationSupportedTlsProtocols;
 
   private static final String SERVER = "SERVER";

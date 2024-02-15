@@ -49,7 +49,7 @@ public class SoapRequestHelper {
   @Value("${web.service.template.default.uri.publiclighting.adhocmanagement}")
   private String publicLightingWebServiceAdHocManagementUri;
 
-  @Value("${web.service.template.default.supported.tls.protocols:TLSv1.2}")
+  @Value("${web.service.template.default.supported.tls.protocols:TLSv1.2,TLSv1.3}")
   private String[] supportedTlsProtocols;
 
   @Value("${web.service.hostname.verification.strategy}")

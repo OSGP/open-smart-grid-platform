@@ -91,7 +91,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
     private String keyStoreLocation;
     private String keyStorePassword;
     private KeyStoreFactoryBean trustStoreFactory;
-    private String[] supportedTlsProtocols = new String[] {"TLSv1.2"};
+    private String[] supportedTlsProtocols = new String[] {"TLSv1.2", "TLSv1.3"};
     private int maxConnectionsPerRoute = 2;
     private int maxConnectionsTotal = 20;
     private int connectionTimeout = 120000;
