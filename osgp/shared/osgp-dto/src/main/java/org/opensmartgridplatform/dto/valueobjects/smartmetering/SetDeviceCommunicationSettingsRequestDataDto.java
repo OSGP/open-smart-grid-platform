@@ -9,7 +9,7 @@ public class SetDeviceCommunicationSettingsRequestDataDto implements ActionReque
   private static final long serialVersionUID = 3283815451328003248L;
 
   private final int challengeLength;
-  private final boolean withListSupported;
+  private final int withListMax;
   private final boolean selectiveAccessSupported;
   private final boolean ipAddressIsStatic;
   private final boolean useSn;
@@ -18,14 +18,14 @@ public class SetDeviceCommunicationSettingsRequestDataDto implements ActionReque
 
   public SetDeviceCommunicationSettingsRequestDataDto(
       final int challengeLength,
-      final boolean withListSupported,
+      final int withListMax,
       final boolean selectiveAccessSupported,
       final boolean ipAddressIsStatic,
       final boolean useSn,
       final boolean useHdlc,
       final boolean polyphase) {
     this.challengeLength = challengeLength;
-    this.withListSupported = withListSupported;
+    this.withListMax = withListMax;
     this.selectiveAccessSupported = selectiveAccessSupported;
     this.ipAddressIsStatic = ipAddressIsStatic;
     this.useSn = useSn;
@@ -37,8 +37,8 @@ public class SetDeviceCommunicationSettingsRequestDataDto implements ActionReque
     return this.challengeLength;
   }
 
-  public boolean isWithListSupported() {
-    return this.withListSupported;
+  public int getWithListMax() {
+    return this.withListMax;
   }
 
   public boolean isSelectiveAccessSupported() {

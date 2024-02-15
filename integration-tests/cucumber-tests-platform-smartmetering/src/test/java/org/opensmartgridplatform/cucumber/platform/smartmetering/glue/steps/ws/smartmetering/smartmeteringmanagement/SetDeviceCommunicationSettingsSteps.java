@@ -83,18 +83,24 @@ public class SetDeviceCommunicationSettingsSteps {
     final DlmsDevice device =
         this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
 
-    final int expectedResult =
+    final int expectedResultChallengeLength =
         getInteger(
             settings,
             PlatformSmartmeteringKeys.CHALLENGE_LENGTH,
             PlatformSmartmeteringDefaults.CHALLENGE_LENGTH);
 
+    final int expectedResultGetWithListMax =
+        getInteger(
+            settings,
+            PlatformSmartmeteringKeys.WITH_LIST_MAX,
+            PlatformSmartmeteringDefaults.WITH_LIST_MAX);
+
     assertThat(device.getChallengeLength().intValue())
         .as("Number of challenge length should match")
-        .isEqualTo(expectedResult);
-    assertThat(device.isWithListSupported())
-        .as("With list supported should match")
-        .isEqualTo(getBoolean(settings, PlatformSmartmeteringKeys.WITH_LIST_SUPPORTED));
+        .isEqualTo(expectedResultChallengeLength);
+    assertThat(device.getWithListMax().intValue())
+        .as("With list max should match")
+        .isEqualTo(expectedResultGetWithListMax);
     assertThat(device.isSelectiveAccessSupported())
         .as("Selective access supported should match")
         .isEqualTo(getBoolean(settings, PlatformSmartmeteringKeys.SELECTIVE_ACCESS_SUPPORTED));

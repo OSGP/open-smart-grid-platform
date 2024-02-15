@@ -195,25 +195,22 @@ public class DlmsHelper {
       final DlmsConnectionManager conn, final DlmsDevice device, final AttributeAddress... params)
       throws ProtocolAdapterException {
     try {
-      if (device.isWithListSupported()) {
-        // Getting a too large list of attribute addresses in one get
-        // from the DlmsConnection
-        // might result in a SCOPE_OF_ACCESS_VIOLATED error
-        final List<GetResult> getResults = new ArrayList<>();
-        final List<AttributeAddress[]> maximizedSubsetsOfParams =
-            this.getMaximizedSubsetsOfParams(params);
-        for (final AttributeAddress[] maximizedSubsetOfParams : maximizedSubsetsOfParams) {
-          getResults.addAll(conn.getConnection().get(Arrays.asList(maximizedSubsetOfParams)));
-        }
-        return getResults;
-      } else {
-        return this.getWithListWorkaround(conn, params);
+      // Getting a too large list of attribute addresses in one get from the DlmsConnection
+      // might result in a SCOPE_OF_ACCESS_VIOLATED error
+      Integer maxItemsInRequest = device.getWithListMax();
+      if (maxItemsInRequest == null || maxItemsInRequest < 1) {
+        maxItemsInRequest = 1;
       }
+      final List<GetResult> getResults = new ArrayList<>();
+      final List<AttributeAddress[]> maximizedSubsetsOfParams =
+          this.getMaximizedSubsetsOfParams(maxItemsInRequest, params);
+      for (final AttributeAddress[] maximizedSubsetOfParams : maximizedSubsetsOfParams) {
+        getResults.addAll(conn.getConnection().get(Arrays.asList(maximizedSubsetOfParams)));
+      }
+      return getResults;
     } catch (final IOException | NullPointerException e) {
-      // The jDMLS code throws a NullPointerException instead of a
-      // ResponseTimeoutException
-      // (specific type of IOException via NonFatalJDlmsException and
-      // JDlmsException).
+      // The jDMLS code throws a NullPointerException instead of a ResponseTimeoutException
+      // (specific type of IOException via NonFatalJDlmsException and JDlmsException).
       throw new ConnectionException(
           "Connection error retrieving values with-list for device: "
               + device.getDeviceIdentification(),
@@ -222,15 +219,14 @@ public class DlmsHelper {
       throw new ProtocolAdapterException(
           "Error retrieving values with-list for device: "
               + device.getDeviceIdentification()
-              + ", with-list: "
-              + (device.isWithListSupported() ? "supported" : "not supported"),
+              + ", with-list max: "
+              + device.getWithListMax(),
           e);
     }
   }
 
   private List<AttributeAddress[]> getMaximizedSubsetsOfParams(
-      final AttributeAddress[] attributeAddresses) {
-    final int chunk = MAX_CONCURRENT_ATTRIBUTE_ADDRESSES;
+      final int chunk, final AttributeAddress[] attributeAddresses) {
     final List<AttributeAddress[]> maximizedCurrentSets = new ArrayList<>();
     for (int i = 0; i < attributeAddresses.length; i += chunk) {
       maximizedCurrentSets.add(
@@ -373,21 +369,6 @@ public class DlmsHelper {
 
   public DataObject getAMRProfileDefinition() {
     return DataObjectDefinitions.getAMRProfileDefinition();
-  }
-
-  /**
-   * Workaround method mimicking a Get-Request with-list for devices that do not support the actual
-   * functionality from DLMS.
-   *
-   * @see #getWithList(DlmsConnectionManager, DlmsDevice, AttributeAddress...)
-   */
-  private List<GetResult> getWithListWorkaround(
-      final DlmsConnectionManager conn, final AttributeAddress... params) throws IOException {
-    final List<GetResult> getResultList = new ArrayList<>();
-    for (final AttributeAddress param : params) {
-      getResultList.add(conn.getConnection().get(param));
-    }
-    return getResultList;
   }
 
   private void checkResultCode(final GetResult getResult, final String description)

@@ -64,6 +64,6 @@ public class SmartMeteringDeviceDto implements Serializable {
   private Long port;
   private Integer challengeLength;
   private boolean ipAddressIsStatic;
-  private boolean withListSupported;
+  private Integer withListMax;
   private boolean selectiveAccessSupported;
 }
