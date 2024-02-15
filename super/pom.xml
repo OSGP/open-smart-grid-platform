@@ -714,12 +714,6 @@ SPDX-License-Identifier: Apache-2.0
         <groupId>org.hibernate.orm</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>${hibernate.version}</version>
-<!--        <exclusions>-->
-<!--          <exclusion>-->
-<!--            <groupId>org.glassfish.jaxb</groupId>-->
-<!--            <artifactId>jaxb-runtime</artifactId>-->
-<!--          </exclusion>-->
-<!--        </exclusions>-->
       </dependency>
       <dependency>
           <groupId>jakarta.persistence</groupId>
