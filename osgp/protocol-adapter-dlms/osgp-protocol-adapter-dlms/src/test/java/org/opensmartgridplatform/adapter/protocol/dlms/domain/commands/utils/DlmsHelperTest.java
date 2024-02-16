@@ -83,23 +83,56 @@ public class DlmsHelperTest {
 
   private final DlmsHelper dlmsHelper = new DlmsHelper();
 
-  @Test
-  void testGetWithList() throws ProtocolAdapterException, IOException {
+  @ParameterizedTest
+  @CsvSource({"2", "5", "32"})
+  void testGetWithList(final int getWithListMax) throws ProtocolAdapterException, IOException {
     final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
     final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
-    final int withListMax = 5;
-    when(dlmsDevice.getWithListMax()).thenReturn(withListMax);
+    when(dlmsDevice.getWithListMax()).thenReturn(getWithListMax);
     when(connectionManager.getConnection()).thenReturn(dlmsConnection);
 
-    final AttributeAddress[] attrAddresses = new AttributeAddress[withListMax + 1];
-    for (int i = 0; i <= withListMax; i++) {
+    // Add one more address to the request than the maximum
+    final AttributeAddress[] attrAddresses = new AttributeAddress[getWithListMax + 1];
+    for (int i = 0; i <= getWithListMax; i++) {
       attrAddresses[i] = mock(AttributeAddress.class);
     }
 
     this.dlmsHelper.getWithList(connectionManager, dlmsDevice, attrAddresses);
-    verify(dlmsConnection).get(Arrays.asList(attrAddresses).subList(0, withListMax));
-    verify(dlmsConnection).get(Collections.singletonList(attrAddresses[withListMax]));
+
+    // We expect 2 calls:
+    // - one call with all addresses up to the maximum amount
+    // - one call with the remaining address
+    verify(dlmsConnection).get(Arrays.asList(attrAddresses).subList(0, getWithListMax));
+    verify(dlmsConnection).get(Collections.singletonList(attrAddresses[getWithListMax]));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"2", "5", "32"})
+  void testGetWithListWithMoreThanTwiceTheMaximum(final int getWithListMax)
+      throws ProtocolAdapterException, IOException {
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+    when(dlmsDevice.getWithListMax()).thenReturn(getWithListMax);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+    // Add one more address to the request than twice the maximum
+    final AttributeAddress[] attrAddresses = new AttributeAddress[(getWithListMax * 2) + 1];
+    for (int i = 0; i <= (getWithListMax * 2); i++) {
+      attrAddresses[i] = mock(AttributeAddress.class);
+    }
+
+    this.dlmsHelper.getWithList(connectionManager, dlmsDevice, attrAddresses);
+
+    // We expect 3 calls:
+    // - one call with all addresses up to the maximum amount
+    // - another call with the maximum amount of addresses
+    // - one call with the remaining address
+    verify(dlmsConnection).get(Arrays.asList(attrAddresses).subList(0, getWithListMax));
+    verify(dlmsConnection)
+        .get(Arrays.asList(attrAddresses).subList(getWithListMax, getWithListMax * 2));
+    verify(dlmsConnection).get(Collections.singletonList(attrAddresses[getWithListMax * 2]));
   }
 
   @ParameterizedTest
@@ -109,6 +142,8 @@ public class DlmsHelperTest {
     final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
     final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+
+    // Set the maximum to 0 or 1. When the max is 0, then it will be handled as a max of 1.
     when(dlmsDevice.getWithListMax()).thenReturn(getWithListMax);
     when(connectionManager.getConnection()).thenReturn(dlmsConnection);
 
@@ -118,6 +153,7 @@ public class DlmsHelperTest {
 
     this.dlmsHelper.getWithList(connectionManager, dlmsDevice, attrAddresses);
 
+    // When the maximum is 1, then each address is in a separate request.
     verify(dlmsConnection).get(List.of(attrAddresses[0]));
     verify(dlmsConnection).get(List.of(attrAddresses[1]));
   }
@@ -137,6 +173,8 @@ public class DlmsHelperTest {
 
     this.dlmsHelper.getWithList(connectionManager, dlmsDevice, attrAddresses);
 
+    // When there is only 1 address to be requested, then it doesn't matter what the maximum is:
+    // always expect a single request.
     verify(dlmsConnection).get(List.of(attrAddresses[0]));
   }
 

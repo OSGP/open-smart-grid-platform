@@ -70,8 +70,6 @@ public class DlmsHelper {
   private static final Map<Integer, TransportServiceTypeDto> TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE =
       new TreeMap<>();
 
-  private static final int MAX_CONCURRENT_ATTRIBUTE_ADDRESSES = 32;
-
   static {
     TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(0, TransportServiceTypeDto.TCP);
     TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(1, TransportServiceTypeDto.UDP);
