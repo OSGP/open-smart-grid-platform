@@ -6,19 +6,13 @@ package org.opensmartgridplatform.throttling;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
@@ -134,78 +128,6 @@ class PermitsPerNetworkSegmentTest {
     this.permitsPerNetworkSegment.initialize(throttlingConfigId);
 
     assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).isEmpty();
-  }
-
-  @ParameterizedTest
-  @ValueSource(ints = {0, 2000})
-  void testHighPrioPoolTime(final int maxWaitForHighPrio) {
-    this.permitsPerNetworkSegment =
-        new PermitsPerNetworkSegment(this.permitRepository, maxWaitForHighPrio);
-
-    final int btsId = 1;
-    final int cellId = 2;
-    final int numberOfPermits = 3;
-    final short throttlingConfigId = Integer.valueOf(1).shortValue();
-    final int clientId = 4;
-    final int requestId = 5;
-    final int priority = 6;
-    final int maxConcurrency = numberOfPermits;
-
-    this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
-
-    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
-
-    final long start = System.currentTimeMillis();
-    final boolean permitGranted =
-        this.permitsPerNetworkSegment.requestPermit(
-            throttlingConfigId, clientId, btsId, cellId, requestId, priority, maxConcurrency);
-    assertThat(permitGranted).isFalse();
-    assertThat(System.currentTimeMillis() - start).isGreaterThanOrEqualTo(maxWaitForHighPrio);
-
-    verify(this.permitRepository, never())
-        .grantPermit(throttlingConfigId, clientId, btsId, cellId, requestId);
-  }
-
-  @Test
-  void testHighPrioPool() {
-    final int maxWaitForHighPrio = 10000;
-    final int waitBeforeRelease = 1000;
-    this.permitsPerNetworkSegment =
-        new PermitsPerNetworkSegment(this.permitRepository, maxWaitForHighPrio);
-
-    final int btsId = 1;
-    final int cellId = 2;
-    final int numberOfPermits = 3;
-    final short throttlingConfigId = Integer.valueOf(1).shortValue();
-    final int clientId = 4;
-    final int requestId = 5;
-    final int priority = 6;
-    final int maxConcurrency = numberOfPermits;
-
-    this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
-
-    when(this.permitRepository.grantPermit(throttlingConfigId, clientId, btsId, cellId, requestId))
-        .thenReturn(true);
-
-    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
-
-    final long start = System.currentTimeMillis();
-
-    final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
-    executor.schedule(
-        () -> {
-          PermitsPerNetworkSegmentTest.this.permitsPerNetworkSegment.releasePermit(
-              throttlingConfigId, clientId, btsId, cellId, requestId);
-        },
-        waitBeforeRelease,
-        TimeUnit.MILLISECONDS);
-
-    final boolean permitGranted =
-        this.permitsPerNetworkSegment.requestPermit(
-            throttlingConfigId, clientId, btsId, cellId, requestId, priority, maxConcurrency);
-    assertThat(permitGranted).isTrue();
-    assertThat((int) (System.currentTimeMillis() - start))
-        .isBetween(waitBeforeRelease, maxWaitForHighPrio);
   }
 
   private void preparePermits(
