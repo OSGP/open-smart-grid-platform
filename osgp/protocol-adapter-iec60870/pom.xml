@@ -12,7 +12,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>protocol-adapter-iec60870</artifactId>
-  <version>5.50.0-SNAPSHOT</version>
+  <version>5.50.0</version>
   <packaging>pom</packaging>
   <name>protocol-adapter-iec60870</name>
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->

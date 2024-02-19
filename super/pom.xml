@@ -12,7 +12,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>super-osgp</artifactId>
-  <version>5.50.0-SNAPSHOT</version>
+  <version>5.50.0</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
   <!-- Description, Organization, Licences, URL and Distribution Management
@@ -44,10 +44,10 @@ SPDX-License-Identifier: Apache-2.0
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>5.50.0-SNAPSHOT</osgp.version>
-    <osgp.dlms.version>5.50.0-SNAPSHOT</osgp.dlms.version>
-    <osgp.shared.version>5.50.0-SNAPSHOT</osgp.shared.version>
-    <osgp.jasper-interface.version>5.50.0-SNAPSHOT</osgp.jasper-interface.version>
+    <osgp.version>5.50.0</osgp.version>
+    <osgp.dlms.version>5.50.0</osgp.dlms.version>
+    <osgp.shared.version>5.50.0</osgp.shared.version>
+    <osgp.jasper-interface.version>5.50.0</osgp.jasper-interface.version>
     <spring.version>5.3.29</spring.version>
     <spring.data.version>2.7.15</spring.data.version>
     <spring.data.commons.version>2.7.15</spring.data.commons.version>
