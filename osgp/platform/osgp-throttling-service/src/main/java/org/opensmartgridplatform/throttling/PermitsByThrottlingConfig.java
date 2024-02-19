@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import org.opensmartgridplatform.throttling.entities.ThrottlingConfig;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
 import org.opensmartgridplatform.throttling.repositories.ThrottlingConfigRepository;
+import org.opensmartgridplatform.throttling.service.PermitReleasedNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,15 +29,18 @@ public class PermitsByThrottlingConfig {
 
   private final ThrottlingConfigRepository throttlingConfigRepository;
   private final PermitRepository permitRepository;
+  private final PermitReleasedNotifier permitReleasedNotifier;
   private final int maxWaitForHighPrioInMs;
 
   public PermitsByThrottlingConfig(
       final ThrottlingConfigRepository throttlingConfigRepository,
       final PermitRepository permitRepository,
+      final PermitReleasedNotifier permitReleasedNotifier,
       @Value("${max.wait.for.high.prio.in.ms:5000}") final int maxWaitForHighPrioInMs) {
 
     this.throttlingConfigRepository = throttlingConfigRepository;
     this.permitRepository = permitRepository;
+    this.permitReleasedNotifier = permitReleasedNotifier;
     this.maxWaitForHighPrioInMs = maxWaitForHighPrioInMs;
   }
 
@@ -54,7 +58,10 @@ public class PermitsByThrottlingConfig {
         throttlingConfigId ->
             this.permitsPerSegmentByConfig.putIfAbsent(
                 throttlingConfigId,
-                new PermitsPerNetworkSegment(this.permitRepository, this.maxWaitForHighPrioInMs)));
+                new PermitsPerNetworkSegment(
+                    this.permitRepository,
+                    this.permitReleasedNotifier,
+                    this.maxWaitForHighPrioInMs)));
 
     /* Update config */
     this.permitsPerSegmentByConfig.entrySet().parallelStream()
@@ -100,7 +107,8 @@ public class PermitsByThrottlingConfig {
 
   private PermitsPerNetworkSegment createAndInitialize(final short throttlingConfigId) {
     final PermitsPerNetworkSegment permitsPerNetworkSegment =
-        new PermitsPerNetworkSegment(this.permitRepository, this.maxWaitForHighPrioInMs);
+        new PermitsPerNetworkSegment(
+            this.permitRepository, this.permitReleasedNotifier, this.maxWaitForHighPrioInMs);
     permitsPerNetworkSegment.initialize(throttlingConfigId);
     return permitsPerNetworkSegment;
   }
@@ -113,7 +121,8 @@ public class PermitsByThrottlingConfig {
      */
     this.permitsPerSegmentByConfig.putIfAbsent(
         throttlingConfigId,
-        new PermitsPerNetworkSegment(this.permitRepository, this.maxWaitForHighPrioInMs));
+        new PermitsPerNetworkSegment(
+            this.permitRepository, this.permitReleasedNotifier, this.maxWaitForHighPrioInMs));
   }
 
   public boolean releasePermit(

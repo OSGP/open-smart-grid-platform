@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.throttling.entities.ThrottlingConfig;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
 import org.opensmartgridplatform.throttling.repositories.ThrottlingConfigRepository;
+import org.opensmartgridplatform.throttling.service.PermitReleasedNotifier;
 
 @ExtendWith(MockitoExtension.class)
 class PermitsByThrottlingConfigTest {
@@ -27,13 +28,17 @@ class PermitsByThrottlingConfigTest {
 
   @Mock private ThrottlingConfigRepository throttlingConfigRepository;
   @Mock private PermitRepository permitRepository;
+  @Mock private PermitReleasedNotifier permitReleasedNotifier;
   private PermitsByThrottlingConfig permitsByThrottlingConfig;
 
   @BeforeEach
   void setUp() {
     this.permitsByThrottlingConfig =
         new PermitsByThrottlingConfig(
-            this.throttlingConfigRepository, this.permitRepository, this.MAX_WAIT_FOR_HIGH_PRIO);
+            this.throttlingConfigRepository,
+            this.permitRepository,
+            this.permitReleasedNotifier,
+            this.MAX_WAIT_FOR_HIGH_PRIO);
   }
 
   @Test
