@@ -42,6 +42,9 @@ public class TariffSwitchingNotificationClientConfig extends AbstractConfig {
   @Value("${web.service.notification.application.name:OSGP}")
   private String webserviceNotificationApplicationName;
 
+  @Value("${web.service.notification.supported.tls.protocols:TLSv1.2,TLSv1.3}")
+  private String[] webserviceNotificationSupportedTlsProtocols;
+
   @Bean
   public NotificationService tariffSwitchingNotificationService(
       final NotificationWebServiceTemplateFactory templateFactory,
@@ -72,7 +75,10 @@ public class TariffSwitchingNotificationClientConfig extends AbstractConfig {
             .build();
 
     return new NotificationWebServiceTemplateFactory(
-        configRepository, this.messageFactory(), Arrays.asList(addOsgpHeadersInterceptor));
+        configRepository,
+        this.messageFactory(),
+        Arrays.asList(addOsgpHeadersInterceptor),
+        this.webserviceNotificationSupportedTlsProtocols);
   }
 
   @Bean

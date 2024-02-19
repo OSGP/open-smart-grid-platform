@@ -50,6 +50,8 @@ public class NotificationWebServiceTemplateFactory {
   private final WebServiceMessageFactory messageFactory;
   private final List<ClientInterceptor> fixedInterceptors = new ArrayList<>();
 
+  private final String[] supportedTlsProtocols;
+
   /**
    * Web service template factory that creates web service templates based on configuration from the
    * database.
@@ -62,7 +64,8 @@ public class NotificationWebServiceTemplateFactory {
   public NotificationWebServiceTemplateFactory(
       final NotificationWebServiceConfigurationRepository configRepository,
       final WebServiceMessageFactory messageFactory,
-      final List<ClientInterceptor> fixedInterceptors) {
+      final List<ClientInterceptor> fixedInterceptors,
+      final String[] supportedTlsProtocols) {
 
     this.configRepository =
         Objects.requireNonNull(configRepository, "configRepository must not be null");
@@ -70,6 +73,7 @@ public class NotificationWebServiceTemplateFactory {
     if (fixedInterceptors != null) {
       this.fixedInterceptors.addAll(fixedInterceptors);
     }
+    this.supportedTlsProtocols = supportedTlsProtocols;
   }
 
   public WebServiceTemplate getTemplate(final ApplicationDataLookupKey templateKey) {
@@ -184,7 +188,10 @@ public class NotificationWebServiceTemplateFactory {
     this.loadTrustMaterial(sslContextBuilder, config);
     try {
       return new SSLConnectionSocketFactory(
-          sslContextBuilder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+          sslContextBuilder.build(),
+          this.supportedTlsProtocols,
+          null,
+          SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
     } catch (final GeneralSecurityException e) {
       LOGGER.error("Exception creating SSL connection socket factory", e);
       throw new WebServiceSecurityException("Unable to build SSL context", e);
