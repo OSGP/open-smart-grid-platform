@@ -17,6 +17,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,6 +59,8 @@ public class ScheduledTaskExecutorServiceTest {
   @Mock private ScheduledTaskExecutorJobConfig scheduledTaskExecutorJobConfig;
 
   @Captor private ArgumentCaptor<List<ScheduledTask>> scheduledTaskCaptor;
+
+  @Captor private ArgumentCaptor<ProtocolRequestMessage> protocolRequestMessageCaptor;
 
   /**
    * Test the scheduled task runner for the case when the deviceRequestMessageService gives a
@@ -125,6 +128,41 @@ public class ScheduledTaskExecutorServiceTest {
     assertThat(deleteScheduledTasks).hasSize(3);
   }
 
+  @Test
+  void testMetadataOfScheduledTaskToRetryRequest() throws FunctionalException {
+    final String deviceIdentification = "device-1";
+    final String deviceModelCode = "E,M1,M2,M3,M4";
+    final MessageMetadata messageMetadata =
+        this.createMessageMetadata(deviceIdentification, deviceModelCode);
+    final ScheduledTask scheduledTask =
+        new ScheduledTask(messageMetadata, DOMAIN, DOMAIN, DATA_OBJECT, INITIAL_SCHEDULED_TIME);
+    final Device device = new Device();
+
+    when(this.scheduledTaskExecutorJobConfig.scheduledTaskPendingDurationMaxSeconds())
+        .thenReturn(-1L);
+    when(this.scheduledTaskExecutorJobConfig.scheduledTaskPageSize()).thenReturn(30);
+    when(this.scheduledTaskRepository.save(scheduledTask)).thenReturn(scheduledTask);
+    when(this.deviceRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(device);
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.PENDING), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(new ArrayList<>());
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.NEW), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(List.of(scheduledTask), Collections.emptyList());
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.RETRY), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(new ArrayList<>());
+    this.scheduledTaskExecutorService.processScheduledTasks();
+
+    verify(this.deviceRequestMessageService)
+        .processMessage(this.protocolRequestMessageCaptor.capture());
+    final ProtocolRequestMessage protocolRequestMessage =
+        this.protocolRequestMessageCaptor.getValue();
+    assertThat(protocolRequestMessage).isNotNull();
+    assertThat(protocolRequestMessage.getDeviceIdentification()).isEqualTo(deviceIdentification);
+    assertThat(protocolRequestMessage.getDeviceModelCode()).isEqualTo(deviceModelCode);
+  }
+
   private void whenFindByStatusAndScheduledTime(
       final List<ScheduledTask> pendingTasks,
       final List<ScheduledTask> newTasks,
@@ -179,7 +217,15 @@ public class ScheduledTaskExecutorServiceTest {
   }
 
   private MessageMetadata createMessageMetadata() {
-    return this.createMessageMetadataBuilder().withDeviceIdentification("retryable").build();
+    return this.createMessageMetadata("retryable", null);
+  }
+
+  private MessageMetadata createMessageMetadata(
+      final String deviceIdentification, final String deviceModelCode) {
+    return this.createMessageMetadataBuilder()
+        .withDeviceIdentification(deviceIdentification)
+        .withDeviceModelCode(deviceModelCode)
+        .build();
   }
 
   private MessageMetadata.Builder createMessageMetadataBuilder() {

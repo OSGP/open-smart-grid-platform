@@ -24,6 +24,7 @@ public class ResponseMessage implements Serializable {
   private final int messagePriority;
   private final boolean scheduled;
   private final Long maxScheduleTime;
+  private final String deviceModelCode;
   private final boolean bypassRetry;
 
   private final RetryHeader retryHeader;
@@ -42,6 +43,7 @@ public class ResponseMessage implements Serializable {
     this.messagePriority = builder.messagePriority;
     this.scheduled = builder.scheduled;
     this.maxScheduleTime = builder.maxScheduleTime;
+    this.deviceModelCode = builder.deviceModelCode;
     this.bypassRetry = builder.bypassRetry;
     this.retryHeader = builder.retryHeader;
     this.result = builder.result;
@@ -85,6 +87,7 @@ public class ResponseMessage implements Serializable {
         .withMessagePriority(this.messagePriority)
         .withScheduled(this.scheduled)
         .withMaxScheduleTime(this.maxScheduleTime)
+        .withDeviceModelCode(this.deviceModelCode)
         .withBypassRetry(this.bypassRetry)
         .withTopic(this.topic)
         .build();
@@ -106,6 +109,7 @@ public class ResponseMessage implements Serializable {
     private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
     private boolean scheduled = false;
     private Long maxScheduleTime = null;
+    private String deviceModelCode = null;
     private boolean bypassRetry = DEFAULT_BYPASS_RETRY;
     private RetryHeader retryHeader;
     private String topic = null;
@@ -172,6 +176,11 @@ public class ResponseMessage implements Serializable {
       return this;
     }
 
+    public Builder withDeviceModelCode(final String deviceModelCode) {
+      this.deviceModelCode = deviceModelCode;
+      return this;
+    }
+
     public Builder withRetryHeader(final RetryHeader retryHeader) {
       this.retryHeader = retryHeader;
       return this;
@@ -190,6 +199,7 @@ public class ResponseMessage implements Serializable {
       this.messagePriority = messageMetadata.getMessagePriority();
       this.scheduled = messageMetadata.isScheduled();
       this.maxScheduleTime = messageMetadata.getMaxScheduleTime();
+      this.deviceModelCode = messageMetadata.getDeviceModelCode();
       this.bypassRetry = messageMetadata.isBypassRetry();
       this.retryHeader = new RetryHeader();
       this.topic = messageMetadata.getTopic();
