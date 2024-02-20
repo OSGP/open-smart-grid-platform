@@ -6,7 +6,6 @@ package org.opensmartgridplatform.webdemoapp.infra.platform;
 
 import java.security.GeneralSecurityException;
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
@@ -78,9 +77,9 @@ public class SoapRequestHelper {
 
     // Example URI:
     // "https://localhost/osgp-adapter-ws-admin/admin/deviceManagementService/DeviceManagement";
-    final String uri = this.baseUri + this.adminWebServiceDeviceManagementUri;
+    final var uri = this.baseUri + this.adminWebServiceDeviceManagementUri;
 
-    final WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
+    final var webServiceTemplate = new WebServiceTemplate(this.messageFactory);
 
     webServiceTemplate.setDefaultUri(uri);
     webServiceTemplate.setMarshaller(this.marshaller);
@@ -110,9 +109,9 @@ public class SoapRequestHelper {
 
     // Example URI:
     // "https://localhost/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/AdHocManagement";
-    final String uri = this.baseUri + this.publicLightingWebServiceAdHocManagementUri;
+    final var uri = this.baseUri + this.publicLightingWebServiceAdHocManagementUri;
 
-    final WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
+    final var webServiceTemplate = new WebServiceTemplate(this.messageFactory);
 
     webServiceTemplate.setDefaultUri(uri);
     webServiceTemplate.setMarshaller(this.marshaller);
@@ -143,7 +142,7 @@ public class SoapRequestHelper {
    * @return HttpComponentsMessageSender
    */
   private ClientHttpRequestMessageSender createHttpMessageSender() {
-    final ClientHttpRequestMessageSender messageSender = new ClientHttpRequestMessageSender();
+    final var messageSender = new ClientHttpRequestMessageSender();
     try {
       messageSender.setRequestFactory(this.createRequestFactory());
     } catch (final GeneralSecurityException e) {
@@ -154,15 +153,16 @@ public class SoapRequestHelper {
 
   private HttpComponentsClientHttpRequestFactory createRequestFactory()
       throws GeneralSecurityException {
-    final SSLContext sslContext =
+    final var sslContext =
         SSLContexts.custom()
             .loadKeyMaterial(
                 this.keyStoreHelper.getKeyStore(), this.keyStoreHelper.getKeyStorePwAsChar())
             .loadTrustMaterial(this.keyStoreHelper.getTrustStore(), new TrustSelfSignedStrategy())
             .build();
-    final HostnameVerifier hostnameVerifier = this.getHostnameVerifier();
-    final SSLConnectionSocketFactory sslConnectionFactory =
-        new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
+    final var hostnameVerifier = this.getHostnameVerifier();
+    final var sslConnectionFactory =
+        new SSLConnectionSocketFactory(
+            sslContext, this.supportedTlsProtocols, null, hostnameVerifier);
     final HttpClientConnectionManager connectionManager =
         PoolingHttpClientConnectionManagerBuilder.create()
             .setSSLSocketFactory(sslConnectionFactory)
@@ -178,7 +178,8 @@ public class SoapRequestHelper {
   public HostnameVerifier getHostnameVerifier() throws GeneralSecurityException {
     if (ALLOW_ALL_HOSTNAMES.equals(this.webServiceHostnameVerificationStrategy)) {
       return new NoopHostnameVerifier();
-    } else if (BROWSER_COMPATIBLE_HOSTNAMES.equals(this.webServiceHostnameVerificationStrategy)) {
+    }
+    if (BROWSER_COMPATIBLE_HOSTNAMES.equals(this.webServiceHostnameVerificationStrategy)) {
       return new DefaultHostnameVerifier();
     } else {
       throw new GeneralSecurityException("No hostname verification strategy set!");
