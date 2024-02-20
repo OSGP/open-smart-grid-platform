@@ -30,17 +30,20 @@ public class PermitsByThrottlingConfig {
   private final ThrottlingConfigRepository throttlingConfigRepository;
   private final PermitRepository permitRepository;
   private final PermitReleasedNotifier permitReleasedNotifier;
+  private final boolean highPrioPoolEnabled;
   private final int maxWaitForHighPrioInMs;
 
   public PermitsByThrottlingConfig(
       final ThrottlingConfigRepository throttlingConfigRepository,
       final PermitRepository permitRepository,
       final PermitReleasedNotifier permitReleasedNotifier,
-      @Value("${max.wait.for.high.prio.in.ms:5000}") final int maxWaitForHighPrioInMs) {
+      @Value("${wait.for.high.prio.enabled:true}") final boolean highPrioPoolEnabled,
+      @Value("${wait.for.high.prio.max.in.ms:10000}") final int maxWaitForHighPrioInMs) {
 
     this.throttlingConfigRepository = throttlingConfigRepository;
     this.permitRepository = permitRepository;
     this.permitReleasedNotifier = permitReleasedNotifier;
+    this.highPrioPoolEnabled = highPrioPoolEnabled;
     this.maxWaitForHighPrioInMs = maxWaitForHighPrioInMs;
   }
 
@@ -61,6 +64,7 @@ public class PermitsByThrottlingConfig {
                 new PermitsPerNetworkSegment(
                     this.permitRepository,
                     this.permitReleasedNotifier,
+                    this.highPrioPoolEnabled,
                     this.maxWaitForHighPrioInMs)));
 
     /* Update config */
@@ -108,7 +112,10 @@ public class PermitsByThrottlingConfig {
   private PermitsPerNetworkSegment createAndInitialize(final short throttlingConfigId) {
     final PermitsPerNetworkSegment permitsPerNetworkSegment =
         new PermitsPerNetworkSegment(
-            this.permitRepository, this.permitReleasedNotifier, this.maxWaitForHighPrioInMs);
+            this.permitRepository,
+            this.permitReleasedNotifier,
+            this.highPrioPoolEnabled,
+            this.maxWaitForHighPrioInMs);
     permitsPerNetworkSegment.initialize(throttlingConfigId);
     return permitsPerNetworkSegment;
   }
@@ -122,7 +129,10 @@ public class PermitsByThrottlingConfig {
     this.permitsPerSegmentByConfig.putIfAbsent(
         throttlingConfigId,
         new PermitsPerNetworkSegment(
-            this.permitRepository, this.permitReleasedNotifier, this.maxWaitForHighPrioInMs));
+            this.permitRepository,
+            this.permitReleasedNotifier,
+            this.highPrioPoolEnabled,
+            this.maxWaitForHighPrioInMs));
   }
 
   public boolean releasePermit(

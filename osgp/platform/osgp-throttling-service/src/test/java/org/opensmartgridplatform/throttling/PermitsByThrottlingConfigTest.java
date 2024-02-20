@@ -24,6 +24,7 @@ import org.opensmartgridplatform.throttling.service.PermitReleasedNotifier;
 
 @ExtendWith(MockitoExtension.class)
 class PermitsByThrottlingConfigTest {
+  private static final boolean WAIT_FOR_HIGH_PRIO_ENABLED = true;
   private static final int MAX_WAIT_FOR_HIGH_PRIO = 1000;
 
   @Mock private ThrottlingConfigRepository throttlingConfigRepository;
@@ -38,6 +39,7 @@ class PermitsByThrottlingConfigTest {
             this.throttlingConfigRepository,
             this.permitRepository,
             this.permitReleasedNotifier,
+            WAIT_FOR_HIGH_PRIO_ENABLED,
             this.MAX_WAIT_FOR_HIGH_PRIO);
   }
 

@@ -27,14 +27,17 @@ public class PermitsPerNetworkSegment {
 
   private final PermitRepository permitRepository;
   private final PermitReleasedNotifier permitReleasedNotifier;
+  private final boolean highPrioPoolEnabled;
   private final int maxWaitForHighPrioInMs;
 
   public PermitsPerNetworkSegment(
       final PermitRepository permitRepository,
       final PermitReleasedNotifier permitReleasedNotifier,
+      final boolean highPrioPoolEnabled,
       final int maxWaitForHighPrioInMs) {
     this.permitRepository = permitRepository;
     this.permitReleasedNotifier = permitReleasedNotifier;
+    this.highPrioPoolEnabled = highPrioPoolEnabled;
     this.maxWaitForHighPrioInMs = maxWaitForHighPrioInMs;
   }
 
@@ -131,15 +134,11 @@ public class PermitsPerNetworkSegment {
         this.permitRepository.releasePermit(
             throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
 
-    if (this.useHighPrioPool()) {
+    if (this.highPrioPoolEnabled) {
       this.permitReleasedNotifier.notifyPermitReleased(baseTransceiverStationId, cellId);
     }
 
     return numberOfReleasedPermits == 1;
-  }
-
-  private boolean useHighPrioPool() {
-    return this.maxWaitForHighPrioInMs != 0;
   }
 
   private boolean isPermitAvailable(
@@ -153,7 +152,7 @@ public class PermitsPerNetworkSegment {
     if (numberOfPermitsIfGranted > maxConcurrency) {
       permitCounter.decrementAndGet();
 
-      if (!this.useHighPrioPool()) {
+      if (!this.highPrioPoolEnabled) {
         return false;
       }
 

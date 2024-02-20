@@ -28,6 +28,7 @@ import org.opensmartgridplatform.throttling.service.PermitReleasedNotifier;
 
 @ExtendWith(MockitoExtension.class)
 class PermitsPerNetworkSegmentTest {
+  private static final boolean WAIT_FOR_HIGH_PRIO_ENABLED = true;
   private static final int MAX_WAIT_FOR_HIGH_PRIO = 1000;
   @Mock private PermitRepository permitRepository;
   @Mock private PermitReleasedNotifier permitReleasedNotifier;
@@ -37,7 +38,10 @@ class PermitsPerNetworkSegmentTest {
   void setUp() {
     this.permitsPerNetworkSegment =
         new PermitsPerNetworkSegment(
-            this.permitRepository, this.permitReleasedNotifier, this.MAX_WAIT_FOR_HIGH_PRIO);
+            this.permitRepository,
+            this.permitReleasedNotifier,
+            WAIT_FOR_HIGH_PRIO_ENABLED,
+            this.MAX_WAIT_FOR_HIGH_PRIO);
   }
 
   @Test
@@ -145,7 +149,10 @@ class PermitsPerNetworkSegmentTest {
   void testHighPrioPoolTime(final int maxWaitForHighPrio) {
     this.permitsPerNetworkSegment =
         new PermitsPerNetworkSegment(
-            this.permitRepository, this.permitReleasedNotifier, maxWaitForHighPrio);
+            this.permitRepository,
+            this.permitReleasedNotifier,
+            WAIT_FOR_HIGH_PRIO_ENABLED,
+            maxWaitForHighPrio);
 
     final int btsId = 1;
     final int cellId = 2;
@@ -177,7 +184,10 @@ class PermitsPerNetworkSegmentTest {
     final int waitBeforeRelease = 1000;
     this.permitsPerNetworkSegment =
         new PermitsPerNetworkSegment(
-            this.permitRepository, this.permitReleasedNotifier, maxWaitForHighPrio);
+            this.permitRepository,
+            this.permitReleasedNotifier,
+            WAIT_FOR_HIGH_PRIO_ENABLED,
+            maxWaitForHighPrio);
 
     final int btsId = 1;
     final int cellId = 2;

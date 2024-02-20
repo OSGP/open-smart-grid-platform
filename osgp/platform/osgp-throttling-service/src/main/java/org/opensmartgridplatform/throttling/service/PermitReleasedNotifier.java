@@ -98,7 +98,7 @@ public class PermitReleasedNotifier {
       }
     } catch (final SQLException e) {
       log.error(
-          "SQLException occurred while listening for notification for btsId: {}, cellId: {}",
+          "SQLException occurred while trying to close the connection that is listening for notification for btsId: {}, cellId: {}",
           baseTransceiverStationId,
           cellId,
           e);
