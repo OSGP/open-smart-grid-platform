@@ -13,7 +13,7 @@ public class SetDeviceCommunicationSettingsData implements Serializable, ActionR
   private static final long serialVersionUID = -6825967173128763377L;
 
   private final int challengeLength;
-  private final boolean withListSupported;
+  private final int withListMax;
   private final boolean selectiveAccessSupported;
   private final boolean ipAddressIsStatic;
   private final boolean useSn;
@@ -22,14 +22,14 @@ public class SetDeviceCommunicationSettingsData implements Serializable, ActionR
 
   public SetDeviceCommunicationSettingsData(
       final int challengeLength,
-      final boolean withListSupported,
+      final int withListMax,
       final boolean selectiveAccessSupported,
       final boolean ipAddressIsStatic,
       final boolean useSn,
       final boolean useHdlc,
       final boolean polyphase) {
     this.challengeLength = challengeLength;
-    this.withListSupported = withListSupported;
+    this.withListMax = withListMax;
     this.selectiveAccessSupported = selectiveAccessSupported;
     this.ipAddressIsStatic = ipAddressIsStatic;
     this.useSn = useSn;
@@ -41,8 +41,8 @@ public class SetDeviceCommunicationSettingsData implements Serializable, ActionR
     return this.challengeLength;
   }
 
-  public boolean isWithListSupported() {
-    return this.withListSupported;
+  public int getWithListMax() {
+    return this.withListMax;
   }
 
   public boolean isSelectiveAccessSupported() {

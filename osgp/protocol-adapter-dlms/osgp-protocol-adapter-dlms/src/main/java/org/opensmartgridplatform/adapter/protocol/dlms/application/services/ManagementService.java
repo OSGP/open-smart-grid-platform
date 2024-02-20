@@ -107,7 +107,7 @@ public class ManagementService {
       final DlmsDevice device,
       final SetDeviceCommunicationSettingsRequestDataDto setCommunicationSettingsDataDto) {
     device.setChallengeLength(setCommunicationSettingsDataDto.getChallengeLength());
-    device.setWithListSupported(setCommunicationSettingsDataDto.isWithListSupported());
+    device.setWithListMax(setCommunicationSettingsDataDto.getWithListMax());
     device.setSelectiveAccessSupported(
         setCommunicationSettingsDataDto.isSelectiveAccessSupported());
     device.setIpAddressIsStatic(setCommunicationSettingsDataDto.isIpAddressIsStatic());

@@ -95,7 +95,7 @@ public class PlatformSmartmeteringDefaults
   public static final Instant TECHNICAL_INSTALLATION_DATE = Instant.now();
   public static final Date VALID_TO = null;
   public static final Long VERSION = 0L;
-  public static final boolean WITH_LIST_SUPPORTED = false;
+  public static final Integer WITH_LIST_MAX = 32;
 
   public static final String DAYLIGHT_SAVINGS_BEGIN = "FFFF03FE0702000000FFC400";
   public static final String DAYLIGHT_SAVINGS_END = "FFFF0AFE0703000000FF8880";

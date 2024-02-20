@@ -998,8 +998,7 @@
   <xsd:complexType name="SetDeviceCommunicationSettingsData">
     <xsd:sequence>
       <xsd:element type="xsd:integer" name="ChallengeLength"/>
-      <xsd:element type="xsd:boolean" name="WithListSupported"
-                   default="false"/>
+      <xsd:element type="xsd:integer" name="WithListMax"/>
       <xsd:element type="xsd:boolean" name="SelectiveAccessSupported"
                    default="false"/>
       <xsd:element type="xsd:boolean" name="IpAddressIsStatic"
