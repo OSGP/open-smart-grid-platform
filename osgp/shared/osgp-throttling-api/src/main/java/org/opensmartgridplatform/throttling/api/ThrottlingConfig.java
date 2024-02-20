@@ -22,19 +22,32 @@ public class ThrottlingConfig {
   @NotBlank private String name;
 
   @NotNull @PositiveOrZero private Integer maxConcurrency;
+  @NotNull @PositiveOrZero private int maxNewConnectionRequests;
+  @NotNull private long maxNewConnectionResetTimeInMs;
 
   public ThrottlingConfig() {
-    this(UUID.randomUUID().toString(), 0);
+    this(UUID.randomUUID().toString(), 0, 0, 0);
   }
 
-  public ThrottlingConfig(final String name, final int maxConcurrency) {
-    this(null, name, maxConcurrency);
+  public ThrottlingConfig(
+      final String name,
+      final int maxConcurrency,
+      final int maxNewConnectionRequests,
+      final long maxNewConnectionResetTimeInMs) {
+    this(null, name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
   }
 
-  public ThrottlingConfig(final Short id, final String name, final int maxConcurrency) {
+  public ThrottlingConfig(
+      final Short id,
+      final String name,
+      final int maxConcurrency,
+      final int maxNewConnectionRequests,
+      final long maxNewConnectionResetTimeInMs) {
     this.id = id;
     this.name = name;
     this.maxConcurrency = maxConcurrency;
+    this.maxNewConnectionRequests = maxNewConnectionRequests;
+    this.maxNewConnectionResetTimeInMs = maxNewConnectionResetTimeInMs;
   }
 
   public Short getId() {
@@ -61,10 +74,31 @@ public class ThrottlingConfig {
     this.maxConcurrency = maxConcurrency;
   }
 
+  public int getMaxNewConnectionRequests() {
+    return this.maxNewConnectionRequests;
+  }
+
+  public void setMaxNewConnectionRequests(final int maxNewConnectionRequests) {
+    this.maxNewConnectionRequests = maxNewConnectionRequests;
+  }
+
+  public long getMaxNewConnectionResetTimeInMs() {
+    return this.maxNewConnectionResetTimeInMs;
+  }
+
+  public void setMaxNewConnectionResetTimeInMs(final long maxNewConnectionResetTimeInMs) {
+    this.maxNewConnectionResetTimeInMs = maxNewConnectionResetTimeInMs;
+  }
+
   @Override
   public String toString() {
     return String.format(
-        "%s[id=%s, name=%s, maxConcurrency=%s]",
-        ThrottlingConfig.class.getSimpleName(), this.id, this.name, this.maxConcurrency);
+        "%s[id=%s, name=%s, maxConcurrency=%s, maxNewConnectionRequests=%s, maxNewConnectionResetTime=%s]",
+        ThrottlingConfig.class.getSimpleName(),
+        this.id,
+        this.name,
+        this.maxConcurrency,
+        this.maxNewConnectionRequests,
+        this.maxNewConnectionResetTimeInMs);
   }
 }

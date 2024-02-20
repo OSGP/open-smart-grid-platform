@@ -21,6 +21,9 @@ public class NetworkUser {
   private final String throttlingIdentity;
 
   private final int initialMaxConcurrency;
+  private final int initialMaxOpenConnections;
+  private final int initialMaxNewConnectionRequests;
+  private final long initialMaxNewConnectionResetTimeInMs;
   private short throttlingConfigId = -1;
   private final String clientIdentity = "client-" + clientNumber.incrementAndGet();
   private int clientId = -1;
@@ -33,12 +36,18 @@ public class NetworkUser {
   public NetworkUser(
       final String throttlingIdentity,
       final int initialMaxConcurrency,
+      final int initialMaxOpenConnections,
+      final int initialMaxNewConnectionRequests,
+      final long initialMaxNewConnectionResetTimeInMs,
       final FakeConcurrencyRestrictedNetwork network,
       final RestTemplate restTemplate,
       final NetworkTaskQueue networkTaskQueue) {
 
     this.throttlingIdentity = throttlingIdentity;
     this.initialMaxConcurrency = initialMaxConcurrency;
+    this.initialMaxOpenConnections = initialMaxOpenConnections;
+    this.initialMaxNewConnectionRequests = initialMaxNewConnectionRequests;
+    this.initialMaxNewConnectionResetTimeInMs = initialMaxNewConnectionResetTimeInMs;
     this.network = network;
     this.restTemplate = restTemplate;
     this.networkTaskQueue = networkTaskQueue;
@@ -116,7 +125,11 @@ public class NetworkUser {
     final ResponseEntity<Short> throttlingConfigResponse =
         this.restTemplate.postForEntity(
             "/throttling-configs",
-            new ThrottlingConfig(this.throttlingIdentity, this.initialMaxConcurrency),
+            new ThrottlingConfig(
+                this.throttlingIdentity,
+                this.initialMaxConcurrency,
+                this.initialMaxNewConnectionRequests,
+                this.initialMaxNewConnectionResetTimeInMs),
             Short.class);
 
     if (throttlingConfigResponse.getStatusCode().series() != HttpStatus.Series.SUCCESSFUL

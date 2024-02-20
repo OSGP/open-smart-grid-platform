@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.security.SecureRandom;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -95,6 +97,9 @@ class ThrottlingServiceApplicationIT {
 
   private static final String EXISTING_THROTTLING_CONFIG_NAME = "pre-added-config";
   private static final int EXISTING_THROTTLING_CONFIG_INITIAL_MAX_CONCURRENCY = 8;
+  private static final int EXISTING_THROTTLING_CONFIG_INITIAL_MAX_NEW_CONNECTION_REQUESTS = 10;
+  private static final long EXISTING_THROTTLING_CONFIG_INITIAL_MAX_NEW_CONNECTION_RESET_TIME_IN_MS =
+      1000;
 
   private static final String PAGING_PARAMETERS = "?page={page}&size={size}";
   private static final String ID_PATH = "/{id}";
@@ -133,7 +138,7 @@ class ThrottlingServiceApplicationIT {
 
   @Autowired private PermitRepository permitRepository;
 
-  @Autowired private MaxConcurrencyByThrottlingConfig maxConcurrencyByThrottlingConfig;
+  @Autowired private ThrottlingConfigCache throttlingConfigCache;
   @Autowired private MaxConcurrencyByBtsCellConfig maxConcurrencyByBtsCellConfig;
 
   @Autowired private PermitsByThrottlingConfig permitsByThrottlingConfig;
@@ -148,7 +153,9 @@ class ThrottlingServiceApplicationIT {
             .save(
                 new org.opensmartgridplatform.throttling.entities.ThrottlingConfig(
                     EXISTING_THROTTLING_CONFIG_NAME,
-                    EXISTING_THROTTLING_CONFIG_INITIAL_MAX_CONCURRENCY))
+                    EXISTING_THROTTLING_CONFIG_INITIAL_MAX_CONCURRENCY,
+                    EXISTING_THROTTLING_CONFIG_INITIAL_MAX_NEW_CONNECTION_REQUESTS,
+                    EXISTING_THROTTLING_CONFIG_INITIAL_MAX_NEW_CONNECTION_RESET_TIME_IN_MS))
             .getId();
   }
 
@@ -163,14 +170,23 @@ class ThrottlingServiceApplicationIT {
   void registerNewConfiguration() {
     final String name = "register-config";
     final int maxConcurrency = 99;
+    final int maxNewConnectionRequests = 98;
+    final long maxNewConnectionResetTimeInMs = Duration.of(1, ChronoUnit.HOURS).toMillis();
 
-    final short id = this.idForNewThrottlingConfig(name, maxConcurrency);
+    final short id =
+        this.idForNewThrottlingConfig(
+            name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
     this.assertThrottlingConfigEntityExistsWithValues(id, name, maxConcurrency);
   }
 
-  private short idForNewThrottlingConfig(final String name, final int maxConcurrency) {
+  private short idForNewThrottlingConfig(
+      final String name,
+      final int maxConcurrency,
+      final int maxNewConnectionRequests,
+      final long maxNewConnectionResetTimeInMs) {
     final ResponseEntity<Short> responseEntity =
-        this.registerThrottlingConfig(name, maxConcurrency);
+        this.registerThrottlingConfig(
+            name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
     return this.validThrottlingConfigId(responseEntity);
   }
 
@@ -180,9 +196,17 @@ class ThrottlingServiceApplicationIT {
     final org.opensmartgridplatform.throttling.entities.ThrottlingConfig throttlingConfigEntity =
         this.findExistingThrottlingConfigByName(name);
     final int updatedMaxConcurrency = throttlingConfigEntity.getMaxConcurrency() + 3;
+    final int updatedMaxNewConnectionRequests =
+        throttlingConfigEntity.getMaxNewConnectionRequests() + 3;
+    final long updatedMaxNewConnectionResetTimeInMs =
+        throttlingConfigEntity.getMaxNewConnectionResetTimeInMs() + 1000;
 
     final ResponseEntity<Short> responseEntity =
-        this.registerThrottlingConfig(name, updatedMaxConcurrency);
+        this.registerThrottlingConfig(
+            name,
+            updatedMaxConcurrency,
+            updatedMaxNewConnectionRequests,
+            updatedMaxNewConnectionResetTimeInMs);
 
     final short id = this.validThrottlingConfigId(responseEntity);
     assertThat(id).isEqualTo(this.existingThrottlingConfigId);
@@ -195,7 +219,7 @@ class ThrottlingServiceApplicationIT {
     final int maxConcurrency = -29;
 
     final ResponseEntity<Short> responseEntity =
-        this.registerThrottlingConfig(name, maxConcurrency);
+        this.registerThrottlingConfig(name, maxConcurrency, 0, Duration.ZERO.toMillis());
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(this.throttlingConfigRepository.findOneByName(name)).isEmpty();
@@ -214,7 +238,11 @@ class ThrottlingServiceApplicationIT {
 
     for (int i = 0; i < numberOfThrottlingConfigs - 1; i++) {
       final ThrottlingConfig addedApiThrottlingConfig =
-          this.apiThrottlingConfig("additional-config-" + i, i + 2);
+          this.apiThrottlingConfig(
+              "additional-config-" + i,
+              i + 2,
+              i + 3,
+              Duration.of(i, ChronoUnit.SECONDS).toMillis());
       apiThrottlingConfigs.add(addedApiThrottlingConfig);
       final ResponseEntity<Short> response =
           this.registerThrottlingConfig(addedApiThrottlingConfig);
@@ -240,8 +268,13 @@ class ThrottlingServiceApplicationIT {
     }
   }
 
-  private ThrottlingConfig apiThrottlingConfig(final String name, final int maxConcurrency) {
-    return new ThrottlingConfig(name, maxConcurrency);
+  private ThrottlingConfig apiThrottlingConfig(
+      final String name,
+      final int maxConcurrency,
+      final int maxNewConnectionRequests,
+      final long maxNewConnectionResetTimeInMs) {
+    return new ThrottlingConfig(
+        name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
   }
 
   private org.opensmartgridplatform.throttling.entities.ThrottlingConfig
@@ -254,9 +287,14 @@ class ThrottlingServiceApplicationIT {
   }
 
   private ResponseEntity<Short> registerThrottlingConfig(
-      final String name, final int maxConcurrency) {
+      final String name,
+      final int maxConcurrency,
+      final int maxNewConnectionRequests,
+      final long maxNewConnectionResetTimeInMs) {
 
-    return this.registerThrottlingConfig(this.apiThrottlingConfig(name, maxConcurrency));
+    return this.registerThrottlingConfig(
+        this.apiThrottlingConfig(
+            name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs));
   }
 
   private ResponseEntity<Short> registerThrottlingConfig(final ThrottlingConfig throttlingConfig) {
@@ -661,7 +699,8 @@ class ThrottlingServiceApplicationIT {
 
     final int maxConcurrency = 2;
     final short throttlingConfigId =
-        this.idForNewThrottlingConfig("at-most-2-concurrent-permits", maxConcurrency);
+        this.idForNewThrottlingConfig(
+            "at-most-2-concurrent-permits", maxConcurrency, 0, Duration.ZERO.toMillis());
     final int clientId = this.registeredClientId;
 
     final int baseTransceiverStationId = 45910;
@@ -976,21 +1015,32 @@ class ThrottlingServiceApplicationIT {
   @Test
   @Sql(scripts = "/max-concurrency-by-throttling-config-initializes-from-database.sql")
   void initializesMaxConcurrencyByThrottlingConfigFromDatabase() {
-    this.maxConcurrencyByThrottlingConfig.reset();
+    this.throttlingConfigCache.reset();
 
-    final Map<Short, Integer> expected = new TreeMap<>();
+    final Map<Short, org.opensmartgridplatform.throttling.entities.ThrottlingConfig> expected =
+        new TreeMap<>();
     // values added by the SQL script
-    expected.put((short) 1, 3);
-    expected.put((short) 2, 7123);
-    expected.put((short) 3, 2);
-    expected.put((short) 4, 3);
-    expected.put((short) 5, 383);
-    // value added before each test
-    expected.put((short) 6, EXISTING_THROTTLING_CONFIG_INITIAL_MAX_CONCURRENCY);
+    expected.put((short) 1, this.newThrottlingConfig(3));
+    expected.put((short) 2, this.newThrottlingConfig(7123));
+    expected.put((short) 3, this.newThrottlingConfig(2));
+    expected.put((short) 4, this.newThrottlingConfig(3));
+    expected.put((short) 5, this.newThrottlingConfig(383));
+    expected.put(
+        (short) 6, this.newThrottlingConfig(EXISTING_THROTTLING_CONFIG_INITIAL_MAX_CONCURRENCY));
 
-    final Map<Short, Integer> actualMaxConcurrencyByConfigId =
-        this.maxConcurrencyByThrottlingConfig.maxConcurrencyByConfigId();
-    assertThat(actualMaxConcurrencyByConfigId).containsExactlyEntriesOf(expected);
+    final Map<Short, org.opensmartgridplatform.throttling.entities.ThrottlingConfig>
+        actualThrottlingConfigByConfigId = this.throttlingConfigCache.throttlingConfigByConfigId();
+    assertThat(actualThrottlingConfigByConfigId).containsExactlyEntriesOf(expected);
+  }
+
+  private org.opensmartgridplatform.throttling.entities.ThrottlingConfig newThrottlingConfig(
+      final int startValue) {
+    final org.opensmartgridplatform.throttling.entities.ThrottlingConfig throttlingConfig =
+        new org.opensmartgridplatform.throttling.entities.ThrottlingConfig();
+    throttlingConfig.setMaxConcurrency(startValue);
+    throttlingConfig.setMaxNewConnectionRequests(startValue + 1);
+    throttlingConfig.setMaxNewConnectionResetTimeInMs(startValue + 2);
+    return throttlingConfig;
   }
 
   @Test
@@ -1076,6 +1126,11 @@ class ThrottlingServiceApplicationIT {
 
     final String throttlingIdentity = "shared-throttling-used-by-multiple-workers";
     final int maxConcurrency = 3;
+    final int maxOpenConnections = 4;
+    final int maxNewConnectionRequests = 5;
+    final Duration maxNewConnectionResetTime = Duration.of(1, ChronoUnit.SECONDS);
+    final long maxNewConnectionResetTimeInMs = maxNewConnectionResetTime.toMillis();
+
     final int numberOfWorkers = 50;
     final int numberOfNetworkTasks = 2000;
     final int maxTaskDurationMillis = 20;
@@ -1105,6 +1160,9 @@ class ThrottlingServiceApplicationIT {
           new NetworkUser(
               throttlingIdentity,
               maxConcurrency,
+              maxOpenConnections,
+              maxNewConnectionRequests,
+              maxNewConnectionResetTimeInMs,
               network,
               this.testRestTemplate.getRestTemplate(),
               networkTaskQueue);

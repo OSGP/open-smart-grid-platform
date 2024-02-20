@@ -25,6 +25,15 @@ public class ThrottlingClientConfig {
   @Value("${throttling.configuration.max.concurrency:1000}")
   private int configurationMaxConcurrency;
 
+  @Value("${throttling.configuration.max.open.connections:1000}")
+  private int configurationMaxOpenConnections;
+
+  @Value("${throttling.configuration.max.new.connection.requests:30}")
+  private int configurationMaxNewConnectionRequests;
+
+  @Value("${throttling.configuration.max.new.connection.reset.time.in.ms:1000}")
+  private long configurationMaxNewConnectionResetTimeInMs;
+
   @Value("${throttling.service.url:http://localhost:9090}")
   private String throttlingServiceUrl;
 
@@ -49,7 +58,12 @@ public class ThrottlingClientConfig {
   @Conditional(SharedThrottlingServiceCondition.class)
   public ThrottlingClient throttlingClient() {
     return new ThrottlingClient(
-        new ThrottlingConfig(this.configurationName, this.configurationMaxConcurrency),
+        new ThrottlingConfig(
+            this.configurationName,
+            this.configurationMaxConcurrency,
+            this.configurationMaxOpenConnections,
+            this.configurationMaxNewConnectionRequests,
+            this.configurationMaxNewConnectionResetTimeInMs),
         this.throttlingServiceUrl,
         this.timeout,
         this.maxConnPerRoute,
