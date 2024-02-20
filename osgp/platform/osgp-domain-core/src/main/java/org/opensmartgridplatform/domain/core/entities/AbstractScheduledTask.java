@@ -57,6 +57,9 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
   @Column(name = "retry")
   protected int retry;
 
+  @Column(name = "device_model_code", length = 1279)
+  protected String deviceModelCode;
+
   AbstractScheduledTask() {
     // Default empty constructor for Hibernate.
   }
@@ -73,6 +76,7 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
     this.deviceIdentification = messageMetadata.getDeviceIdentification();
     this.messageType = messageMetadata.getMessageType();
     this.messagePriority = messageMetadata.getMessagePriority();
+    this.deviceModelCode = messageMetadata.getDeviceModelCode();
     this.domain = domain;
     this.domainVersion = domainVersion;
     this.scheduledTime = (Timestamp) scheduledTime.clone();
@@ -103,6 +107,10 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
 
   public String getDeviceIdentification() {
     return this.deviceIdentification;
+  }
+
+  public String getDeviceModelCode() {
+    return this.deviceModelCode;
   }
 
   public String getErrorLog() {

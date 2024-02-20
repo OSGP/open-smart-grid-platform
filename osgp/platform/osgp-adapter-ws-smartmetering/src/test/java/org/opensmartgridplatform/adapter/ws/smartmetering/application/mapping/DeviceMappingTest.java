@@ -30,6 +30,7 @@ class DeviceMappingTest {
   private static final String SUPPLIER = "supplier1";
   private static final Long PORT = 3000L;
   private static final int CHALLENGE_LENGTH = 15;
+  private static final int WITH_LIST_MAX = 32;
   private static final boolean IS_ACTIVE = true;
   private static final boolean LLS1_ACTIVE = true;
 
@@ -62,7 +63,7 @@ class DeviceMappingTest {
     assertThat(smartMeteringDevice.isPolyphase()).isEqualTo(IS_ACTIVE);
     assertThat(smartMeteringDevice.isIpAddressIsStatic()).isEqualTo(IS_ACTIVE);
     assertThat(smartMeteringDevice.isSelectiveAccessSupported()).isEqualTo(IS_ACTIVE);
-    assertThat(smartMeteringDevice.isWithListSupported()).isEqualTo(IS_ACTIVE);
+    assertThat(smartMeteringDevice.getWithListMax()).isEqualTo(WITH_LIST_MAX);
     assertThat(smartMeteringDevice.getChallengeLength()).isEqualTo(CHALLENGE_LENGTH);
 
     // convert a Date object to a joda DateTime object, because the
@@ -136,7 +137,7 @@ class DeviceMappingTest {
     device.setChallengeLength(CHALLENGE_LENGTH);
     device.setIpAddressIsStatic(IS_ACTIVE);
     device.setSelectiveAccessSupported(IS_ACTIVE);
-    device.setWithListSupported(IS_ACTIVE);
+    device.setWithListMax(WITH_LIST_MAX);
     return device;
   }
 
@@ -165,7 +166,7 @@ class DeviceMappingTest {
     smartMeteringDevice.setPort(PORT);
     smartMeteringDevice.setChallengeLength(CHALLENGE_LENGTH);
     smartMeteringDevice.setIpAddressIsStatic(IS_ACTIVE);
-    smartMeteringDevice.setWithListSupported(IS_ACTIVE);
+    smartMeteringDevice.setWithListMax(WITH_LIST_MAX);
     smartMeteringDevice.setSelectiveAccessSupported(IS_ACTIVE);
 
     return smartMeteringDevice;

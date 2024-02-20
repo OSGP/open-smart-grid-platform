@@ -31,7 +31,7 @@ public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceD
     dlmsDevice.setProtocol(source.getProtocolName(), source.getProtocolVersion());
     dlmsDevice.setTimezone(source.getTimezone());
     dlmsDevice.setIpAddressIsStatic(source.isIpAddressIsStatic());
-    dlmsDevice.setWithListSupported(source.isWithListSupported());
+    dlmsDevice.setWithListMax(source.getWithListMax());
     dlmsDevice.setSelectiveAccessSupported(source.isSelectiveAccessSupported());
     dlmsDevice.setPolyphase(source.isPolyphase());
     if (source.getPort() != null) {

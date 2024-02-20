@@ -7,6 +7,7 @@ package org.opensmartgridplatform.throttling;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,17 +24,24 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository.PermitCountByNetworkSegment;
+import org.opensmartgridplatform.throttling.service.PermitReleasedNotifier;
 
 @ExtendWith(MockitoExtension.class)
 class PermitsPerNetworkSegmentTest {
+  private static final boolean WAIT_FOR_HIGH_PRIO_ENABLED = true;
   private static final int MAX_WAIT_FOR_HIGH_PRIO = 1000;
   @Mock private PermitRepository permitRepository;
+  @Mock private PermitReleasedNotifier permitReleasedNotifier;
   private PermitsPerNetworkSegment permitsPerNetworkSegment;
 
   @BeforeEach
   void setUp() {
     this.permitsPerNetworkSegment =
-        new PermitsPerNetworkSegment(this.permitRepository, this.MAX_WAIT_FOR_HIGH_PRIO);
+        new PermitsPerNetworkSegment(
+            this.permitRepository,
+            this.permitReleasedNotifier,
+            WAIT_FOR_HIGH_PRIO_ENABLED,
+            this.MAX_WAIT_FOR_HIGH_PRIO);
   }
 
   @Test
@@ -140,7 +148,11 @@ class PermitsPerNetworkSegmentTest {
   @ValueSource(ints = {0, 2000})
   void testHighPrioPoolTime(final int maxWaitForHighPrio) {
     this.permitsPerNetworkSegment =
-        new PermitsPerNetworkSegment(this.permitRepository, maxWaitForHighPrio);
+        new PermitsPerNetworkSegment(
+            this.permitRepository,
+            this.permitReleasedNotifier,
+            WAIT_FOR_HIGH_PRIO_ENABLED,
+            maxWaitForHighPrio);
 
     final int btsId = 1;
     final int cellId = 2;
@@ -171,10 +183,15 @@ class PermitsPerNetworkSegmentTest {
     final int maxWaitForHighPrio = 10000;
     final int waitBeforeRelease = 1000;
     this.permitsPerNetworkSegment =
-        new PermitsPerNetworkSegment(this.permitRepository, maxWaitForHighPrio);
+        new PermitsPerNetworkSegment(
+            this.permitRepository,
+            this.permitReleasedNotifier,
+            WAIT_FOR_HIGH_PRIO_ENABLED,
+            maxWaitForHighPrio);
 
     final int btsId = 1;
     final int cellId = 2;
+    final int otherCellId = cellId + 1;
     final int numberOfPermits = 3;
     final short throttlingConfigId = Integer.valueOf(1).shortValue();
     final int clientId = 4;
@@ -186,19 +203,32 @@ class PermitsPerNetworkSegmentTest {
 
     when(this.permitRepository.grantPermit(throttlingConfigId, clientId, btsId, cellId, requestId))
         .thenReturn(true);
+    when(this.permitRepository.grantPermit(
+            throttlingConfigId, clientId, btsId, otherCellId, requestId))
+        .thenReturn(true);
 
     this.permitsPerNetworkSegment.initialize(throttlingConfigId);
 
     final long start = System.currentTimeMillis();
 
-    final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+    final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(2);
     executor.schedule(
         () -> {
           PermitsPerNetworkSegmentTest.this.permitsPerNetworkSegment.releasePermit(
               throttlingConfigId, clientId, btsId, cellId, requestId);
+          when(this.permitReleasedNotifier.waitForAvailablePermit(btsId, cellId, 1000))
+              .thenReturn(false)
+              .thenReturn(true);
+          verify(this.permitReleasedNotifier, times(1)).notifyPermitReleased(btsId, cellId);
         },
         waitBeforeRelease,
         TimeUnit.MILLISECONDS);
+
+    final boolean permitGrantedOtherCell =
+        this.permitsPerNetworkSegment.requestPermit(
+            throttlingConfigId, clientId, btsId, otherCellId, requestId, priority, maxConcurrency);
+    assertThat(permitGrantedOtherCell).isTrue();
+    assertThat((int) (System.currentTimeMillis() - start)).isBetween(0, waitBeforeRelease);
 
     final boolean permitGranted =
         this.permitsPerNetworkSegment.requestPermit(

@@ -29,7 +29,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
   private boolean useHdlc = PlatformSmartmeteringDefaults.USE_HDLC;
   private boolean polyphase = PlatformSmartmeteringDefaults.POLYPHASE;
   private Integer challengeLength = PlatformSmartmeteringDefaults.CHALLENGE_LENGTH;
-  private boolean withListSupported = PlatformSmartmeteringDefaults.WITH_LIST_SUPPORTED;
+  private Integer withListMax = PlatformSmartmeteringDefaults.WITH_LIST_MAX;
   private boolean selectiveAccessSupported =
       PlatformSmartmeteringDefaults.SELECTIVE_ACCESS_SUPPORTED;
   private boolean ipAddressIsStatic = PlatformSmartmeteringDefaults.IP_ADDRESS_IS_STATIC;
@@ -111,8 +111,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     return this;
   }
 
-  public DlmsDeviceBuilder setWithListSupported(final boolean withListSupported) {
-    this.withListSupported = withListSupported;
+  public DlmsDeviceBuilder setWithListMax(final Integer withListMax) {
+    this.withListMax = withListMax;
     return this;
   }
 
@@ -222,9 +222,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
       this.setChallengeLength(
           Integer.parseInt(inputSettings.get(PlatformSmartmeteringKeys.CHALLENGE_LENGTH)));
     }
-    if (inputSettings.containsKey(PlatformSmartmeteringKeys.WITH_LIST_SUPPORTED)) {
-      this.setWithListSupported(
-          Boolean.parseBoolean(inputSettings.get(PlatformSmartmeteringKeys.WITH_LIST_SUPPORTED)));
+    if (inputSettings.containsKey(PlatformSmartmeteringKeys.WITH_LIST_MAX)) {
+      this.setWithListMax(
+          Integer.parseInt(inputSettings.get(PlatformSmartmeteringKeys.WITH_LIST_MAX)));
     }
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.SELECTIVE_ACCESS_SUPPORTED)) {
       this.setSelectiveAccessSupported(
@@ -311,7 +311,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     dlmsDevice.setUseSn(this.useSn);
     dlmsDevice.setPolyphase(this.polyphase);
     dlmsDevice.setChallengeLength(this.challengeLength);
-    dlmsDevice.setWithListSupported(this.withListSupported);
+    dlmsDevice.setWithListMax(this.withListMax);
     dlmsDevice.setSelectiveAccessSupported(this.selectiveAccessSupported);
     dlmsDevice.setIpAddressIsStatic(this.ipAddressIsStatic);
     dlmsDevice.setPort(this.port);

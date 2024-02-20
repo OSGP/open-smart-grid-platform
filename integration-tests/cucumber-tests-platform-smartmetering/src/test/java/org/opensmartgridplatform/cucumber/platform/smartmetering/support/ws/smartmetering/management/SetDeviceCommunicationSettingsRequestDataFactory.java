@@ -22,11 +22,12 @@ public class SetDeviceCommunicationSettingsRequestDataFactory {
 
     setDeviceCommunicationSettingsData.setChallengeLength(
         BigInteger.valueOf(getInteger(parameters, PlatformSmartmeteringKeys.CHALLENGE_LENGTH)));
-    setDeviceCommunicationSettingsData.setWithListSupported(
-        getBoolean(
-            parameters,
-            PlatformSmartmeteringKeys.WITH_LIST_SUPPORTED,
-            PlatformSmartmeteringDefaults.WITH_LIST_SUPPORTED));
+    setDeviceCommunicationSettingsData.setWithListMax(
+        BigInteger.valueOf(
+            getInteger(
+                parameters,
+                PlatformSmartmeteringKeys.WITH_LIST_MAX,
+                PlatformSmartmeteringDefaults.WITH_LIST_MAX)));
     setDeviceCommunicationSettingsData.setSelectiveAccessSupported(
         getBoolean(
             parameters,

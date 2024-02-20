@@ -178,7 +178,6 @@ public class DeviceChannelsHelperTest {
                 this.manufacturerIdentification,
                 this.version,
                 this.deviceType));
-    when(this.device.isWithListSupported()).thenReturn(true);
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.get(anyList())).thenReturn(resultList);
@@ -206,7 +205,6 @@ public class DeviceChannelsHelperTest {
                 this.manufacturerIdentification,
                 this.version,
                 this.deviceType));
-    when(this.device.isWithListSupported()).thenReturn(true);
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.get(anyList())).thenReturn(resultList);
@@ -238,7 +236,6 @@ public class DeviceChannelsHelperTest {
                 manufacturerIdentificationInvalid,
                 this.version,
                 this.deviceType));
-    when(this.device.isWithListSupported()).thenReturn(true);
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.get(anyList())).thenReturn(resultList);
@@ -263,7 +260,6 @@ public class DeviceChannelsHelperTest {
                 this.manufacturerIdentification,
                 this.version,
                 this.deviceType));
-    when(this.device.isWithListSupported()).thenReturn(true);
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.get(anyList())).thenReturn(resultList);

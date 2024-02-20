@@ -97,6 +97,11 @@ public class ProtocolResponseMessage extends ResponseMessage {
       return this;
     }
 
+    public Builder deviceModelCode(final String deviceModelCode) {
+      this.superBuilder.withDeviceModelCode(deviceModelCode);
+      return this;
+    }
+
     public Builder retryCount(final int retryCount) {
       this.retryCount = retryCount;
       return this;

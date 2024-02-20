@@ -13,25 +13,31 @@ import java.util.stream.Collectors;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository.PermitCountByNetworkSegment;
+import org.opensmartgridplatform.throttling.service.PermitReleasedNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PermitsPerNetworkSegment {
   private static final Logger LOGGER = LoggerFactory.getLogger(PermitsPerNetworkSegment.class);
 
-  private static final ConcurrentMap<Integer, AtomicInteger> NO_PERMITS_FOR_STATION =
-      new ConcurrentHashMap<>();
-  private static final AtomicInteger NO_PERMITS_FOR_CELL = new AtomicInteger(0);
+  private static final int WAIT_TIME = 1000;
 
   private final ConcurrentMap<Integer, ConcurrentMap<Integer, AtomicInteger>> permitsPerSegment =
       new ConcurrentHashMap<>();
 
   private final PermitRepository permitRepository;
+  private final PermitReleasedNotifier permitReleasedNotifier;
+  private final boolean highPrioPoolEnabled;
   private final int maxWaitForHighPrioInMs;
 
   public PermitsPerNetworkSegment(
-      final PermitRepository permitRepository, final int maxWaitForHighPrioInMs) {
+      final PermitRepository permitRepository,
+      final PermitReleasedNotifier permitReleasedNotifier,
+      final boolean highPrioPoolEnabled,
+      final int maxWaitForHighPrioInMs) {
     this.permitRepository = permitRepository;
+    this.permitReleasedNotifier = permitReleasedNotifier;
+    this.highPrioPoolEnabled = highPrioPoolEnabled;
     this.maxWaitForHighPrioInMs = maxWaitForHighPrioInMs;
   }
 
@@ -102,7 +108,6 @@ public class PermitsPerNetworkSegment {
       final int requestId,
       final int priority,
       final int maxConcurrency) {
-
     if (!this.isPermitAvailable(baseTransceiverStationId, cellId, priority, maxConcurrency)) {
       return false;
     }
@@ -129,18 +134,11 @@ public class PermitsPerNetworkSegment {
         this.permitRepository.releasePermit(
             throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
 
-    if (this.useHighPrioPool()) {
-      // Notify that permit is released
-      synchronized (permitCounter) {
-        permitCounter.notifyAll();
-      }
+    if (this.highPrioPoolEnabled) {
+      this.permitReleasedNotifier.notifyPermitReleased(baseTransceiverStationId, cellId);
     }
 
     return numberOfReleasedPermits == 1;
-  }
-
-  private boolean useHighPrioPool() {
-    return this.maxWaitForHighPrioInMs != 0;
   }
 
   private boolean isPermitAvailable(
@@ -154,7 +152,7 @@ public class PermitsPerNetworkSegment {
     if (numberOfPermitsIfGranted > maxConcurrency) {
       permitCounter.decrementAndGet();
 
-      if (!this.useHighPrioPool()) {
+      if (!this.highPrioPoolEnabled) {
         return false;
       }
 
@@ -174,24 +172,21 @@ public class PermitsPerNetworkSegment {
       final int cellId,
       final int maxConcurrency,
       final int maxWaitForHighPrioInMs) {
-    final AtomicInteger permitCounter = this.getPermitCounter(baseTransceiverStationId, cellId);
 
-    synchronized (permitCounter) {
-      try {
-        final long startTime = System.currentTimeMillis();
-        final int wait = 10;
-        while (System.currentTimeMillis() - startTime < maxWaitForHighPrioInMs) {
-          permitCounter.wait(wait);
-
-          final int numberOfPermitsIfGranted = permitCounter.incrementAndGet();
-          if (numberOfPermitsIfGranted > maxConcurrency) {
-            permitCounter.decrementAndGet();
-          } else {
-            return true;
-          }
-        }
-      } catch (final InterruptedException e) {
-        Thread.currentThread().interrupt();
+    final long startTime = System.currentTimeMillis();
+    while (System.currentTimeMillis() - startTime < maxWaitForHighPrioInMs) {
+      final boolean permitAvailable =
+          this.permitReleasedNotifier.waitForAvailablePermit(
+              baseTransceiverStationId, cellId, WAIT_TIME);
+      if (!permitAvailable) {
+        continue;
+      }
+      final AtomicInteger permitCounter = this.getPermitCounter(baseTransceiverStationId, cellId);
+      final int numberOfPermitsIfGranted = permitCounter.incrementAndGet();
+      if (numberOfPermitsIfGranted > maxConcurrency) {
+        permitCounter.decrementAndGet();
+      } else {
+        return true;
       }
     }
     return false;
@@ -199,8 +194,8 @@ public class PermitsPerNetworkSegment {
 
   private AtomicInteger getPermitCounter(final int baseTransceiverStationId, final int cellId) {
     return this.permitsPerSegment
-        .computeIfAbsent(baseTransceiverStationId, key -> NO_PERMITS_FOR_STATION)
-        .computeIfAbsent(cellId, key -> NO_PERMITS_FOR_CELL);
+        .computeIfAbsent(baseTransceiverStationId, key -> new ConcurrentHashMap<>())
+        .computeIfAbsent(cellId, key -> new AtomicInteger(0));
   }
 
   @Override

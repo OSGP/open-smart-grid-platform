@@ -172,6 +172,7 @@ public class ScheduledTaskExecutorService {
         .withNetworkAddress(getIpAddress(device))
         .withNetworkSegmentIds(device.getBtsId(), device.getCellId())
         .withMessagePriority(scheduledTask.getMessagePriority())
+        .withDeviceModelCode(scheduledTask.getDeviceModelCode())
         .withScheduled(true)
         .withMaxScheduleTime(
             scheduledTask.getMaxScheduleTime() == null
