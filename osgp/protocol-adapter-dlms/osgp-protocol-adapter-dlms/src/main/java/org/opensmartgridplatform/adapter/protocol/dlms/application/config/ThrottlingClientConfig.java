@@ -25,9 +25,6 @@ public class ThrottlingClientConfig {
   @Value("${throttling.configuration.max.concurrency:1000}")
   private int configurationMaxConcurrency;
 
-  @Value("${throttling.configuration.max.open.connections:1000}")
-  private int configurationMaxOpenConnections;
-
   @Value("${throttling.configuration.max.new.connection.requests:30}")
   private int configurationMaxNewConnectionRequests;
 
@@ -61,7 +58,6 @@ public class ThrottlingClientConfig {
         new ThrottlingConfig(
             this.configurationName,
             this.configurationMaxConcurrency,
-            this.configurationMaxOpenConnections,
             this.configurationMaxNewConnectionRequests,
             this.configurationMaxNewConnectionResetTimeInMs),
         this.throttlingServiceUrl,

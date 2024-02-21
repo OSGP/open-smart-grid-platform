@@ -1126,7 +1126,6 @@ class ThrottlingServiceApplicationIT {
 
     final String throttlingIdentity = "shared-throttling-used-by-multiple-workers";
     final int maxConcurrency = 3;
-    final int maxOpenConnections = 4;
     final int maxNewConnectionRequests = 5;
     final Duration maxNewConnectionResetTime = Duration.of(1, ChronoUnit.SECONDS);
     final long maxNewConnectionResetTimeInMs = maxNewConnectionResetTime.toMillis();
@@ -1160,7 +1159,6 @@ class ThrottlingServiceApplicationIT {
           new NetworkUser(
               throttlingIdentity,
               maxConcurrency,
-              maxOpenConnections,
               maxNewConnectionRequests,
               maxNewConnectionResetTimeInMs,
               network,
