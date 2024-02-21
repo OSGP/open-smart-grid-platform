@@ -19,15 +19,26 @@ class ThrottlingMapperTest {
     final Short id = null;
     final String name = "test-config-new-entity";
     final int maxConcurrency = 91;
-    final int maxNewConnectionRequests = 351;
-    final long maxNewConnectionResetTimeInMs = 3000;
+    final int maxNewConnections = 351;
+    final long maxNewConnectionsResetTimeInMs = 3000;
+    final long maxNewConnectionsWaitTimeInMs = 4000;
 
     final org.opensmartgridplatform.throttling.entities.ThrottlingConfig expected =
         this.throttlingConfigEntity(
-            id, name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
+            id,
+            name,
+            maxConcurrency,
+            maxNewConnections,
+            maxNewConnectionsResetTimeInMs,
+            maxNewConnectionsWaitTimeInMs);
     final ThrottlingConfig source =
         this.throttlingConfigApi(
-            id, name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
+            id,
+            name,
+            maxConcurrency,
+            maxNewConnections,
+            maxNewConnectionsResetTimeInMs,
+            maxNewConnectionsWaitTimeInMs);
 
     final org.opensmartgridplatform.throttling.entities.ThrottlingConfig actual =
         this.throttlingMapper.map(
@@ -43,19 +54,26 @@ class ThrottlingMapperTest {
     final Short idEntity = null;
     final String name = "test-config-no-id-on-new";
     final int maxConcurrency = 3;
-    final int maxNewConnectionRequests = 351;
-    final long maxNewConnectionResetTimeInMs = 3000;
+    final int maxNewConnections = 351;
+    final long maxNewConnectionsResetTimeInMs = 3000;
+    final long maxNewConnectionsWaitTimeInMs = 2000;
 
     final org.opensmartgridplatform.throttling.entities.ThrottlingConfig expected =
         this.throttlingConfigEntity(
             idEntity,
             name,
             maxConcurrency,
-            maxNewConnectionRequests,
-            maxNewConnectionResetTimeInMs);
+            maxNewConnections,
+            maxNewConnectionsResetTimeInMs,
+            maxNewConnectionsWaitTimeInMs);
     final ThrottlingConfig source =
         this.throttlingConfigApi(
-            idApi, name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
+            idApi,
+            name,
+            maxConcurrency,
+            maxNewConnections,
+            maxNewConnectionsResetTimeInMs,
+            maxNewConnectionsWaitTimeInMs);
 
     final org.opensmartgridplatform.throttling.entities.ThrottlingConfig actual =
         this.throttlingMapper.map(
@@ -70,15 +88,26 @@ class ThrottlingMapperTest {
     final Short id = 489;
     final String name = "test-config-entity-to-api";
     final int maxConcurrency = 349;
-    final int maxNewConnectionRequests = 351;
-    final long maxNewConnectionResetTimeInMs = 3000;
+    final int maxNewConnections = 351;
+    final long maxNewConnectionsResetTimeInMs = 3000;
+    final long maxNewConnectionsWaitTimeInMs = 2000;
 
     final ThrottlingConfig expected =
         this.throttlingConfigApi(
-            id, name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
+            id,
+            name,
+            maxConcurrency,
+            maxNewConnections,
+            maxNewConnectionsResetTimeInMs,
+            maxNewConnectionsWaitTimeInMs);
     final org.opensmartgridplatform.throttling.entities.ThrottlingConfig source =
         this.throttlingConfigEntity(
-            id, name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
+            id,
+            name,
+            maxConcurrency,
+            maxNewConnections,
+            maxNewConnectionsResetTimeInMs,
+            maxNewConnectionsWaitTimeInMs);
 
     final ThrottlingConfig actual = this.throttlingMapper.map(source, ThrottlingConfig.class);
 
@@ -92,34 +121,39 @@ class ThrottlingMapperTest {
     final Short idEntity = 3479;
     final String name = "test-config-update-entity";
     final int maxConcurrencyApi = 10;
-    final int maxNewConnectionRequestsApi = 12;
-    final long maxNewConnectionResetTimeInMsApi = 1000;
+    final int maxNewConnectionsApi = 12;
+    final long maxNewConnectionsResetTimeInMsApi = 1000;
+    final long maxNewConnectionsWaitTimeInMsApi = 1200;
 
     final int maxConcurrencyEntity = 15;
-    final int maxNewConnectionRequestsEntity = 8;
-    final long maxNewConnectionResetTimeInMsEntity = 2000;
+    final int maxNewConnectionsEntity = 8;
+    final long maxNewConnectionsResetTimeInMsEntity = 2000;
+    final long maxNewConnectionsWaitTimeInMsEntity = 2200;
 
     final org.opensmartgridplatform.throttling.entities.ThrottlingConfig destination =
         this.throttlingConfigEntity(
             idEntity,
             name,
             maxConcurrencyEntity,
-            maxNewConnectionRequestsEntity,
-            maxNewConnectionResetTimeInMsEntity);
+            maxNewConnectionsEntity,
+            maxNewConnectionsResetTimeInMsEntity,
+            maxNewConnectionsWaitTimeInMsEntity);
     final org.opensmartgridplatform.throttling.entities.ThrottlingConfig expected =
         this.throttlingConfigEntity(
             idEntity,
             name,
             maxConcurrencyApi,
-            maxNewConnectionRequestsApi,
-            maxNewConnectionResetTimeInMsApi);
+            maxNewConnectionsApi,
+            maxNewConnectionsResetTimeInMsApi,
+            maxNewConnectionsWaitTimeInMsApi);
     final ThrottlingConfig source =
         this.throttlingConfigApi(
             idApi,
             name,
             maxConcurrencyApi,
-            maxNewConnectionRequestsApi,
-            maxNewConnectionResetTimeInMsApi);
+            maxNewConnectionsApi,
+            maxNewConnectionsResetTimeInMsApi,
+            maxNewConnectionsWaitTimeInMsApi);
 
     this.throttlingMapper.map(source, destination);
 
@@ -134,34 +168,39 @@ class ThrottlingMapperTest {
     final String nameApi = "test-config-update-entity-ignore-id-api";
     final String nameEntity = "test-config-update-entity-ignore-id";
     final int maxConcurrencyApi = 5;
-    final int maxNewConnectionRequestsApi = 12;
-    final long maxNewConnectionResetTimeInMsApi = 1000;
+    final int maxNewConnectionsApi = 12;
+    final long maxNewConnectionsResetTimeInMsApi = 1000;
+    final long maxNewConnectionsWaitTimeInMsApi = 1200;
 
     final int maxConcurrencyEntity = 3;
-    final int maxNewConnectionRequestsEntity = 8;
-    final long maxNewConnectionResetTimeInMsEntity = 2000;
+    final int maxNewConnectionsEntity = 8;
+    final long maxNewConnectionsResetTimeInMsEntity = 2000;
+    final long maxNewConnectionsWaitTimeInMsEntity = 2200;
 
     final org.opensmartgridplatform.throttling.entities.ThrottlingConfig destination =
         this.throttlingConfigEntity(
             idEntity,
             nameEntity,
             maxConcurrencyEntity,
-            maxNewConnectionRequestsEntity,
-            maxNewConnectionResetTimeInMsEntity);
+            maxNewConnectionsEntity,
+            maxNewConnectionsResetTimeInMsEntity,
+            maxNewConnectionsWaitTimeInMsEntity);
     final org.opensmartgridplatform.throttling.entities.ThrottlingConfig expected =
         this.throttlingConfigEntity(
             idEntity,
             nameEntity,
             maxConcurrencyApi,
-            maxNewConnectionRequestsApi,
-            maxNewConnectionResetTimeInMsApi);
+            maxNewConnectionsApi,
+            maxNewConnectionsResetTimeInMsApi,
+            maxNewConnectionsWaitTimeInMsApi);
     final ThrottlingConfig source =
         this.throttlingConfigApi(
             idApi,
             nameApi,
             maxConcurrencyApi,
-            maxNewConnectionRequestsApi,
-            maxNewConnectionResetTimeInMsApi);
+            maxNewConnectionsApi,
+            maxNewConnectionsResetTimeInMsApi,
+            maxNewConnectionsWaitTimeInMsApi);
 
     this.throttlingMapper.map(source, destination);
 
@@ -172,21 +211,33 @@ class ThrottlingMapperTest {
       final Short id,
       final String name,
       final int maxConcurrency,
-      final int maxNewConnectionRequests,
-      final long maxNewConnectionResetTimeInMs) {
+      final int maxNewConnections,
+      final long maxNewConnectionsResetTimeInMs,
+      final long maxNewConnectionsWaitTimeInMs) {
 
     return new ThrottlingConfig(
-        id, name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
+        id,
+        name,
+        maxConcurrency,
+        maxNewConnections,
+        maxNewConnectionsResetTimeInMs,
+        maxNewConnectionsWaitTimeInMs);
   }
 
   private org.opensmartgridplatform.throttling.entities.ThrottlingConfig throttlingConfigEntity(
       final Short id,
       final String name,
       final int maxConcurrency,
-      final int maxNewConnectionRequests,
-      final long maxNewConnectionResetTimeInMs) {
+      final int maxNewConnections,
+      final long maxNewConnectionsResetTimeInMs,
+      final long maxNewConnectionsWaitTimeInMs) {
 
     return new org.opensmartgridplatform.throttling.entities.ThrottlingConfig(
-        id, name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
+        id,
+        name,
+        maxConcurrency,
+        maxNewConnections,
+        maxNewConnectionsResetTimeInMs,
+        maxNewConnectionsWaitTimeInMs);
   }
 }

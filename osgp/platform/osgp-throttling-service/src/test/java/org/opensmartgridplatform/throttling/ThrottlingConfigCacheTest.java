@@ -40,8 +40,9 @@ class ThrottlingConfigCacheTest {
     final int cachedMaxConcurrency = 9;
     final short nonCachedConfigId = 4;
     final int nonCachedMaxConcurrency = 11;
-    final int nonCachedMaxNewConnectionRequests = 12;
-    final long nonCachedMaxNewConnectionResetTimeInMs = 1000;
+    final int nonCachedMaxNewConnections = 12;
+    final long nonCachedMaxNewConnectionsResetTimeInMs = 1000;
+    final long nonCachedMaxNewConnectionsWaitTimeInMs = 2000;
 
     final ThrottlingConfig cachedThrottlingConfig = new ThrottlingConfig();
     cachedThrottlingConfig.setMaxConcurrency(cachedMaxConcurrency);
@@ -54,8 +55,9 @@ class ThrottlingConfigCacheTest {
                     nonCachedConfigId,
                     "config from db",
                     nonCachedMaxConcurrency,
-                    nonCachedMaxNewConnectionRequests,
-                    nonCachedMaxNewConnectionResetTimeInMs)));
+                    nonCachedMaxNewConnections,
+                    nonCachedMaxNewConnectionsResetTimeInMs,
+                    nonCachedMaxNewConnectionsWaitTimeInMs)));
 
     assertThat(this.throttlingConfig.getThrottlingConfig(nonCachedConfigId).getMaxConcurrency())
         .isEqualTo(nonCachedMaxConcurrency);

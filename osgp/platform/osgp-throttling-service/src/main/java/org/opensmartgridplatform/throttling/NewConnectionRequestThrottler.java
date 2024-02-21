@@ -12,20 +12,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NewConnectionRequestThrottler {
   private final Semaphore semaphore;
-  private final int maxNewConnectionRequests;
+  private final int maxNewConnections;
   private final long resetTimeInMs;
-  private final long maxWaitForNewConnectionRequestInMs;
+  private final long maxWaitForNewConnectionsInMs;
   private final Timer resetNewConnectionRequestsTimer;
 
   public NewConnectionRequestThrottler(
-      final int maxNewConnectionRequests,
+      final int maxNewConnections,
       final long resetTimeInMs,
-      final long maxWaitForNewConnectionRequestInMs) {
-    this.maxNewConnectionRequests = maxNewConnectionRequests;
+      final long maxWaitForNewConnectionsInMs) {
+    this.maxNewConnections = maxNewConnections;
     this.resetTimeInMs = resetTimeInMs;
-    this.maxWaitForNewConnectionRequestInMs = maxWaitForNewConnectionRequestInMs;
+    this.maxWaitForNewConnectionsInMs = maxWaitForNewConnectionsInMs;
 
-    this.semaphore = new Semaphore(maxNewConnectionRequests);
+    this.semaphore = new Semaphore(this.maxNewConnections);
 
     this.resetNewConnectionRequestsTimer = new Timer();
     this.resetNewConnectionRequestsTimer.schedule(
@@ -35,12 +35,11 @@ public class NewConnectionRequestThrottler {
   public boolean isNewConnectionRequestAllowed(final int priority) {
     log.debug("isNewRequestAllowed: available = {} ", this.semaphore.availablePermits());
     try {
-      if (!this.semaphore.tryAcquire(
-          this.maxWaitForNewConnectionRequestInMs, TimeUnit.MILLISECONDS)) {
+      if (!this.semaphore.tryAcquire(this.maxWaitForNewConnectionsInMs, TimeUnit.MILLISECONDS)) {
         log.debug(
             "isNewRequestAllowed: could not acquire permit for request with priority {} within {} ms",
             priority,
-            this.maxWaitForNewConnectionRequestInMs);
+            this.maxWaitForNewConnectionsInMs);
         return false;
       }
       log.debug(
@@ -56,7 +55,7 @@ public class NewConnectionRequestThrottler {
     @Override
     public void run() {
       final int nrOfPermitsToBeReleased =
-          NewConnectionRequestThrottler.this.maxNewConnectionRequests
+          NewConnectionRequestThrottler.this.maxNewConnections
               - NewConnectionRequestThrottler.this.semaphore.availablePermits();
 
       log.debug("releasing {} permits on newConnectionRequests semaphore", nrOfPermitsToBeReleased);

@@ -31,7 +31,7 @@ import org.opensmartgridplatform.throttling.service.PermitReleasedNotifier;
 class PermitsPerNetworkSegmentTest {
   private static final boolean WAIT_FOR_HIGH_PRIO_ENABLED = true;
   private static final int MAX_WAIT_FOR_HIGH_PRIO = 1000;
-  private static final int MAX_WAIT_FOR_NEW_CONNECTION_REQUEST = 1200;
+  private static final int MAX_WAIT_FOR_NEW_CONNECTIONS = 1200;
 
   @Mock private PermitRepository permitRepository;
   @Mock private PermitReleasedNotifier permitReleasedNotifier;
@@ -44,8 +44,7 @@ class PermitsPerNetworkSegmentTest {
             this.permitRepository,
             this.permitReleasedNotifier,
             WAIT_FOR_HIGH_PRIO_ENABLED,
-            MAX_WAIT_FOR_HIGH_PRIO,
-            MAX_WAIT_FOR_NEW_CONNECTION_REQUEST);
+            MAX_WAIT_FOR_HIGH_PRIO);
   }
 
   @Test
@@ -156,8 +155,7 @@ class PermitsPerNetworkSegmentTest {
             this.permitRepository,
             this.permitReleasedNotifier,
             WAIT_FOR_HIGH_PRIO_ENABLED,
-            maxWaitForHighPrio,
-            MAX_WAIT_FOR_NEW_CONNECTION_REQUEST);
+            maxWaitForHighPrio);
 
     final int btsId = 1;
     final int cellId = 2;
@@ -168,7 +166,7 @@ class PermitsPerNetworkSegmentTest {
     final int priority = 6;
     final int maxConcurrency = numberOfPermits;
     final ThrottlingSettings throttlingSettings =
-        this.newThrottlingSettings(maxConcurrency, 1000, 1000);
+        this.newThrottlingSettings(maxConcurrency, 1000, 1000, 1000);
     this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
 
     this.permitsPerNetworkSegment.initialize(throttlingConfigId);
@@ -193,8 +191,7 @@ class PermitsPerNetworkSegmentTest {
             this.permitRepository,
             this.permitReleasedNotifier,
             WAIT_FOR_HIGH_PRIO_ENABLED,
-            maxWaitForHighPrio,
-            MAX_WAIT_FOR_NEW_CONNECTION_REQUEST);
+            maxWaitForHighPrio);
 
     final int btsId = 1;
     final int cellId = 2;
@@ -206,7 +203,7 @@ class PermitsPerNetworkSegmentTest {
     final int priority = 6;
     final int maxConcurrency = numberOfPermits;
     final ThrottlingSettings throttlingSettings =
-        this.newThrottlingSettings(maxConcurrency, 1000, 1000);
+        this.newThrottlingSettings(maxConcurrency, 1000, 1000, 1000);
 
     this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
 
@@ -257,31 +254,30 @@ class PermitsPerNetworkSegmentTest {
   void testMaxNewRequestsClearedInTime() {
     final long start = System.currentTimeMillis();
 
-    this.assertMaxNewRequests(MAX_WAIT_FOR_NEW_CONNECTION_REQUEST - 200, true);
+    this.assertMaxNewRequests(MAX_WAIT_FOR_NEW_CONNECTIONS - 200, true);
 
     assertThat((int) (System.currentTimeMillis() - start))
-        .isBetween(0, MAX_WAIT_FOR_NEW_CONNECTION_REQUEST);
+        .isBetween(0, MAX_WAIT_FOR_NEW_CONNECTIONS);
   }
 
   @Test
   void testMaxNewRequestsReached() {
     final long start = System.currentTimeMillis();
 
-    this.assertMaxNewRequests(MAX_WAIT_FOR_NEW_CONNECTION_REQUEST + 200, false);
+    this.assertMaxNewRequests(MAX_WAIT_FOR_NEW_CONNECTIONS + 200, false);
 
     assertThat((int) (System.currentTimeMillis() - start))
-        .isGreaterThanOrEqualTo(MAX_WAIT_FOR_NEW_CONNECTION_REQUEST);
+        .isGreaterThanOrEqualTo(MAX_WAIT_FOR_NEW_CONNECTIONS);
   }
 
   private void assertMaxNewRequests(
-      final int maxNewConnectionResetTimeInMs, final boolean expectPermitGranted) {
+      final int maxNewConnectionsResetTimeInMs, final boolean expectPermitGranted) {
     this.permitsPerNetworkSegment =
         new PermitsPerNetworkSegment(
             this.permitRepository,
             this.permitReleasedNotifier,
             WAIT_FOR_HIGH_PRIO_ENABLED,
-            MAX_WAIT_FOR_HIGH_PRIO,
-            MAX_WAIT_FOR_NEW_CONNECTION_REQUEST);
+            MAX_WAIT_FOR_HIGH_PRIO);
 
     final int btsId = 1;
     final int cellId = 2;
@@ -291,10 +287,13 @@ class PermitsPerNetworkSegmentTest {
     final int requestId = 5;
     final int priority = 6;
     final int maxConcurrency = 99;
-    final int maxNewConnectionRequests = numberOfPermits;
+    final int maxNewConnections = numberOfPermits;
     final ThrottlingSettings throttlingSettings =
         this.newThrottlingSettings(
-            maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
+            maxConcurrency,
+            maxNewConnections,
+            maxNewConnectionsResetTimeInMs,
+            MAX_WAIT_FOR_NEW_CONNECTIONS);
 
     this.permitsPerNetworkSegment.initialize(throttlingConfigId);
 
@@ -350,8 +349,9 @@ class PermitsPerNetworkSegmentTest {
 
   private ThrottlingSettings newThrottlingSettings(
       final int maxConcurrency,
-      final int maxNewConnectionRequests,
-      final long maxNewConnectionResetTimeInMs) {
+      final int maxNewConnections,
+      final long maxNewConnectionsResetTimeInMs,
+      final long maxNewConnectionsWaitTimeInMs) {
     return new ThrottlingSettings() {
       @Override
       public int getMaxConcurrency() {
@@ -359,13 +359,18 @@ class PermitsPerNetworkSegmentTest {
       }
 
       @Override
-      public int getMaxNewConnectionRequests() {
-        return maxNewConnectionRequests;
+      public int getMaxNewConnections() {
+        return maxNewConnections;
       }
 
       @Override
-      public long getMaxNewConnectionResetTimeInMs() {
-        return maxNewConnectionResetTimeInMs;
+      public long getMaxNewConnectionsResetTimeInMs() {
+        return maxNewConnectionsResetTimeInMs;
+      }
+
+      @Override
+      public long getMaxNewConnectionsWaitTimeInMs() {
+        return maxNewConnectionsWaitTimeInMs;
       }
     };
   }

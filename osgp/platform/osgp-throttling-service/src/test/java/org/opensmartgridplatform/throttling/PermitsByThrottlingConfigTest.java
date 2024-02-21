@@ -26,7 +26,6 @@ import org.opensmartgridplatform.throttling.service.PermitReleasedNotifier;
 class PermitsByThrottlingConfigTest {
   private static final boolean WAIT_FOR_HIGH_PRIO_ENABLED = true;
   private static final int MAX_WAIT_FOR_HIGH_PRIO = 1000;
-  private static final int MAX_WAIT_FOR_NEW_CONNECTION_REQUEST = 2000;
 
   @Mock private ThrottlingConfigRepository throttlingConfigRepository;
   @Mock private PermitRepository permitRepository;
@@ -41,8 +40,7 @@ class PermitsByThrottlingConfigTest {
             this.permitRepository,
             this.permitReleasedNotifier,
             WAIT_FOR_HIGH_PRIO_ENABLED,
-            this.MAX_WAIT_FOR_HIGH_PRIO,
-            this.MAX_WAIT_FOR_NEW_CONNECTION_REQUEST);
+            this.MAX_WAIT_FOR_HIGH_PRIO);
   }
 
   @Test
@@ -61,8 +59,9 @@ class PermitsByThrottlingConfigTest {
     final short configId = Integer.valueOf(1).shortValue();
     final String name = "config1";
     final int maxConcurrency = 10;
-    final int maxNewConnectionRequests = 12;
-    final long maxNewConnectionResetTimeInMs = 1000;
+    final int maxNewConnections = 12;
+    final long maxNewConnectionsResetTimeInMs = 1000;
+    final long maxNewConnectionsWaitTimeInMs = 1000;
 
     final List<ThrottlingConfig> throttlingConfigs =
         List.of(
@@ -70,8 +69,9 @@ class PermitsByThrottlingConfigTest {
                 configId,
                 name,
                 maxConcurrency,
-                maxNewConnectionRequests,
-                maxNewConnectionResetTimeInMs));
+                maxNewConnections,
+                maxNewConnectionsResetTimeInMs,
+                maxNewConnectionsWaitTimeInMs));
     when(this.throttlingConfigRepository.findAll()).thenReturn(throttlingConfigs);
     when(this.permitRepository.permitsByNetworkSegment(configId)).thenReturn(Lists.emptyList());
 
@@ -88,11 +88,17 @@ class PermitsByThrottlingConfigTest {
     final short configId = Integer.valueOf(1).shortValue();
     final String name = "config1";
     final int maxConcurrency = 10;
-    final int maxNewConnectionRequests = 12;
-    final long maxNewConnectionResetTimeInMs = 1000;
+    final int maxNewConnections = 12;
+    final long maxNewConnectionsResetTimeInMs = 1000;
+    final long maxNewConnectionsWaitTimeInMs = 1000;
 
     this.prepare(
-        configId, name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
+        configId,
+        name,
+        maxConcurrency,
+        maxNewConnections,
+        maxNewConnectionsResetTimeInMs,
+        maxNewConnectionsWaitTimeInMs);
 
     final short newConfigId = Integer.valueOf(1).shortValue();
 
@@ -102,8 +108,9 @@ class PermitsByThrottlingConfigTest {
                 newConfigId,
                 name,
                 maxConcurrency,
-                maxNewConnectionRequests,
-                maxNewConnectionResetTimeInMs));
+                maxNewConnections,
+                maxNewConnectionsResetTimeInMs,
+                maxNewConnectionsWaitTimeInMs));
     when(this.throttlingConfigRepository.findAll()).thenReturn(throttlingConfigs);
     when(this.permitRepository.permitsByNetworkSegment(newConfigId)).thenReturn(Lists.emptyList());
 
@@ -120,11 +127,17 @@ class PermitsByThrottlingConfigTest {
     final short configId = Integer.valueOf(1).shortValue();
     final String name = "config1";
     final int maxConcurrency = 10;
-    final int maxNewConnectionRequests = 12;
-    final long maxNewConnectionResetTimeInMs = 1000;
+    final int maxNewConnections = 12;
+    final long maxNewConnectionsResetTimeInMs = 1000;
+    final long maxNewConnectionsWaitTimeInMs = 1000;
 
     this.prepare(
-        configId, name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
+        configId,
+        name,
+        maxConcurrency,
+        maxNewConnections,
+        maxNewConnectionsResetTimeInMs,
+        maxNewConnectionsWaitTimeInMs);
 
     final List<ThrottlingConfig> throttlingConfigs =
         List.of(
@@ -132,8 +145,9 @@ class PermitsByThrottlingConfigTest {
                 configId,
                 name,
                 maxConcurrency,
-                maxNewConnectionRequests,
-                maxNewConnectionResetTimeInMs));
+                maxNewConnections,
+                maxNewConnectionsResetTimeInMs,
+                maxNewConnectionsWaitTimeInMs));
     when(this.throttlingConfigRepository.findAll()).thenReturn(throttlingConfigs);
     when(this.permitRepository.permitsByNetworkSegment(configId)).thenReturn(Lists.emptyList());
 
@@ -150,12 +164,17 @@ class PermitsByThrottlingConfigTest {
     final short configId = Integer.valueOf(1).shortValue();
     final String name = "config1";
     final int maxConcurrency = 10;
-    final int maxOpenonnections = 11;
-    final int maxNewConnectionRequests = 12;
-    final long maxNewConnectionResetTimeInMs = 1000;
+    final int maxNewConnections = 12;
+    final long maxNewConnectionsResetTimeInMs = 1000;
+    final long maxNewConnectionsWaitTimeInMs = 1000;
 
     this.prepare(
-        configId, name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
+        configId,
+        name,
+        maxConcurrency,
+        maxNewConnections,
+        maxNewConnectionsResetTimeInMs,
+        maxNewConnectionsWaitTimeInMs);
     reset(this.permitRepository);
 
     when(this.throttlingConfigRepository.findAll()).thenReturn(Lists.emptyList());
@@ -172,16 +191,18 @@ class PermitsByThrottlingConfigTest {
       final short configId,
       final String name,
       final int maxConcurrency,
-      final int maxNewConnectionRequests,
-      final long maxNewConnectionResetTimeInMs) {
+      final int maxNewConnections,
+      final long maxNewConnectionsResetTimeInMs,
+      final long maxNewConnectionsWaitTimeInMs) {
     final List<ThrottlingConfig> throttlingConfigs =
         List.of(
             new ThrottlingConfig(
                 configId,
                 name,
                 maxConcurrency,
-                maxNewConnectionRequests,
-                maxNewConnectionResetTimeInMs));
+                maxNewConnections,
+                maxNewConnectionsResetTimeInMs,
+                maxNewConnectionsWaitTimeInMs));
     when(this.throttlingConfigRepository.findAll()).thenReturn(throttlingConfigs);
     when(this.permitRepository.permitsByNetworkSegment(configId)).thenReturn(Lists.emptyList());
 

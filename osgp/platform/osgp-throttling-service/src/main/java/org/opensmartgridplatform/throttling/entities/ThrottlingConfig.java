@@ -29,10 +29,13 @@ public class ThrottlingConfig {
   private int maxConcurrency;
 
   @Column(nullable = false)
-  private int maxNewConnectionRequests;
+  private int maxNewConnections;
 
   @Column(nullable = false)
-  private long maxNewConnectionResetTimeInMs;
+  private long maxNewConnectionsResetTimeInMs;
+
+  @Column(nullable = false)
+  private long maxNewConnectionsWaitTimeInMs;
 
   public ThrottlingConfig() {
     // no-arg constructor required by JPA specification
@@ -41,24 +44,33 @@ public class ThrottlingConfig {
   public ThrottlingConfig(
       final String name,
       final int maxConcurrency,
-      final int maxNewConnectionRequests,
-      final long maxNewConnectionResetTimeInMs) {
-    this(null, name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
+      final int maxNewConnections,
+      final long maxNewConnectionsResetTimeInMs,
+      final long maxNewConnectionsWaitTimeInMs) {
+    this(
+        null,
+        name,
+        maxConcurrency,
+        maxNewConnections,
+        maxNewConnectionsResetTimeInMs,
+        maxNewConnectionsWaitTimeInMs);
   }
 
   public ThrottlingConfig(
       final Short id,
       final String name,
       final int maxConcurrency,
-      final int maxNewConnectionRequests,
-      final long maxNewConnectionResetTimeInMs) {
+      final int maxNewConnections,
+      final long maxNewConnectionsResetTimeInMs,
+      final long maxNewConnectionsWaitTimeInMs) {
     this.id = id;
     this.name = Objects.requireNonNull(name, "name must not be null");
     this.maxConcurrency = this.requireNonNegative("maxConcurrency", maxConcurrency);
-    this.maxNewConnectionRequests =
-        this.requireNonNegative("maxNewConnectionRequests", maxNewConnectionRequests);
-    this.maxNewConnectionResetTimeInMs =
-        this.requireNonNegative("maxNewConnectionResetTimeInMs", maxNewConnectionResetTimeInMs);
+    this.maxNewConnections = this.requireNonNegative("maxNewConnections", maxNewConnections);
+    this.maxNewConnectionsResetTimeInMs =
+        this.requireNonNegative("maxNewConnectionsResetTimeInMs", maxNewConnectionsResetTimeInMs);
+    this.maxNewConnectionsWaitTimeInMs =
+        this.requireNonNegative("maxNewConnectionsWaitTimeInMs", maxNewConnectionsWaitTimeInMs);
   }
 
   private int requireNonNegative(final String fieldName, final int value) {
@@ -79,25 +91,29 @@ public class ThrottlingConfig {
     this.maxConcurrency = this.requireNonNegative("maxConcurrency", maxConcurrency);
   }
 
-  public void setMaxNewConnectionRequests(final int maxNewConnectionRequests) {
-    this.maxNewConnectionRequests =
-        this.requireNonNegative("maxNewConnectionRequests", maxNewConnectionRequests);
+  public void setMaxNewConnections(final int maxNewConnections) {
+    this.maxNewConnections = this.requireNonNegative("maxNewConnections", maxNewConnections);
   }
 
-  public void setMaxNewConnectionResetTimeInMs(final long maxNewConnectionResetTimeInMs) {
-    this.maxNewConnectionResetTimeInMs = maxNewConnectionResetTimeInMs;
+  public void setMaxNewConnectionsResetTimeInMs(final long maxNewConnectionsResetTimeInMs) {
+    this.maxNewConnectionsResetTimeInMs = maxNewConnectionsResetTimeInMs;
+  }
+
+  public void setMaxNewConnectionsWaitTimeInMs(final long maxNewConnectionsWaitTimeInMs) {
+    this.maxNewConnectionsWaitTimeInMs = maxNewConnectionsWaitTimeInMs;
   }
 
   @Override
   public String toString() {
     return String.format(
-        "%s[id=%s, name=%s, maxConcurrency=%d, maxNewConnectionRequests=%d, maxNewConnectionResetTimeInMs=%s]",
+        "%s[id=%s, name=%s, maxConcurrency=%d, maxNewConnections=%d, maxNewConnectionsResetTimeInMs=%s, maxNewConnectionsWaitTimeInMs=%s]",
         ThrottlingConfig.class.getSimpleName(),
         this.id,
         this.name,
         this.maxConcurrency,
-        this.maxNewConnectionRequests,
-        this.maxNewConnectionResetTimeInMs);
+        this.maxNewConnections,
+        this.maxNewConnectionsResetTimeInMs,
+        this.maxNewConnectionsWaitTimeInMs);
   }
 
   @Override

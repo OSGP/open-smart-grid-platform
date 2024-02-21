@@ -22,32 +22,42 @@ public class ThrottlingConfig {
   @NotBlank private String name;
 
   @NotNull @PositiveOrZero private Integer maxConcurrency;
-  @NotNull @PositiveOrZero private int maxNewConnectionRequests;
-  @NotNull private long maxNewConnectionResetTimeInMs;
+  @NotNull @PositiveOrZero private int maxNewConnections;
+  @NotNull @PositiveOrZero private long maxNewConnectionsResetTimeInMs;
+  @NotNull @PositiveOrZero private long maxNewConnectionsWaitTimeInMs;
 
   public ThrottlingConfig() {
-    this(UUID.randomUUID().toString(), 0, 0, 0);
+    this(UUID.randomUUID().toString(), 0, 0, 0, 0);
   }
 
   public ThrottlingConfig(
       final String name,
       final int maxConcurrency,
-      final int maxNewConnectionRequests,
-      final long maxNewConnectionResetTimeInMs) {
-    this(null, name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
+      final int maxNewConnections,
+      final long maxNewConnectionsResetTimeInMs,
+      final long maxNewConnectionsWaitTimeInMs) {
+    this(
+        null,
+        name,
+        maxConcurrency,
+        maxNewConnections,
+        maxNewConnectionsResetTimeInMs,
+        maxNewConnectionsWaitTimeInMs);
   }
 
   public ThrottlingConfig(
       final Short id,
       final String name,
       final int maxConcurrency,
-      final int maxNewConnectionRequests,
-      final long maxNewConnectionResetTimeInMs) {
+      final int maxNewConnections,
+      final long maxNewConnectionsResetTimeInMs,
+      final long maxNewConnectionsWaitTimeInMs) {
     this.id = id;
     this.name = name;
     this.maxConcurrency = maxConcurrency;
-    this.maxNewConnectionRequests = maxNewConnectionRequests;
-    this.maxNewConnectionResetTimeInMs = maxNewConnectionResetTimeInMs;
+    this.maxNewConnections = maxNewConnections;
+    this.maxNewConnectionsResetTimeInMs = maxNewConnectionsResetTimeInMs;
+    this.maxNewConnectionsWaitTimeInMs = maxNewConnectionsWaitTimeInMs;
   }
 
   public Short getId() {
@@ -74,31 +84,40 @@ public class ThrottlingConfig {
     this.maxConcurrency = maxConcurrency;
   }
 
-  public int getMaxNewConnectionRequests() {
-    return this.maxNewConnectionRequests;
+  public int getMaxNewConnections() {
+    return this.maxNewConnections;
   }
 
-  public void setMaxNewConnectionRequests(final int maxNewConnectionRequests) {
-    this.maxNewConnectionRequests = maxNewConnectionRequests;
+  public void setMaxNewConnections(final int maxNewConnections) {
+    this.maxNewConnections = maxNewConnections;
   }
 
-  public long getMaxNewConnectionResetTimeInMs() {
-    return this.maxNewConnectionResetTimeInMs;
+  public long getMaxNewConnectionsResetTimeInMs() {
+    return this.maxNewConnectionsResetTimeInMs;
   }
 
-  public void setMaxNewConnectionResetTimeInMs(final long maxNewConnectionResetTimeInMs) {
-    this.maxNewConnectionResetTimeInMs = maxNewConnectionResetTimeInMs;
+  public void setMaxNewConnectionsResetTimeInMs(final long maxNewConnectionsResetTimeInMs) {
+    this.maxNewConnectionsResetTimeInMs = maxNewConnectionsResetTimeInMs;
+  }
+
+  public long getMaxNewConnectionsWaitTimeInMs() {
+    return this.maxNewConnectionsWaitTimeInMs;
+  }
+
+  public void setMaxNewConnectionsWaitTimeInMs(final long maxNewConnectionsWaitTimeInMs) {
+    this.maxNewConnectionsWaitTimeInMs = maxNewConnectionsWaitTimeInMs;
   }
 
   @Override
   public String toString() {
     return String.format(
-        "%s[id=%s, name=%s, maxConcurrency=%s, maxNewConnectionRequests=%s, maxNewConnectionResetTime=%s]",
+        "%s[id=%s, name=%s, maxConcurrency=%s, maxNewConnections=%s, maxNewConnectionsResetTime=%s, maxNewConnectionsWaitTime=%s]",
         ThrottlingConfig.class.getSimpleName(),
         this.id,
         this.name,
         this.maxConcurrency,
-        this.maxNewConnectionRequests,
-        this.maxNewConnectionResetTimeInMs);
+        this.maxNewConnections,
+        this.maxNewConnectionsResetTimeInMs,
+        this.maxNewConnectionsWaitTimeInMs);
   }
 }

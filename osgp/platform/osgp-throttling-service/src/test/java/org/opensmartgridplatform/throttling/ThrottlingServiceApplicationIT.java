@@ -97,9 +97,11 @@ class ThrottlingServiceApplicationIT {
 
   private static final String EXISTING_THROTTLING_CONFIG_NAME = "pre-added-config";
   private static final int EXISTING_THROTTLING_CONFIG_INITIAL_MAX_CONCURRENCY = 8;
-  private static final int EXISTING_THROTTLING_CONFIG_INITIAL_MAX_NEW_CONNECTION_REQUESTS = 10;
-  private static final long EXISTING_THROTTLING_CONFIG_INITIAL_MAX_NEW_CONNECTION_RESET_TIME_IN_MS =
-      1000;
+  private static final int EXISTING_THROTTLING_CONFIG_INITIAL_MAX_NEW_CONNECTIONS = 10;
+  private static final long
+      EXISTING_THROTTLING_CONFIG_INITIAL_MAX_NEW_CONNECTIONS_RESET_TIME_IN_MS = 500;
+  private static final long EXISTING_THROTTLING_CONFIG_INITIAL_MAX_NEW_CONNECTIONS_WAIT_TIME_IN_MS =
+      800;
 
   private static final String PAGING_PARAMETERS = "?page={page}&size={size}";
   private static final String ID_PATH = "/{id}";
@@ -154,8 +156,9 @@ class ThrottlingServiceApplicationIT {
                 new org.opensmartgridplatform.throttling.entities.ThrottlingConfig(
                     EXISTING_THROTTLING_CONFIG_NAME,
                     EXISTING_THROTTLING_CONFIG_INITIAL_MAX_CONCURRENCY,
-                    EXISTING_THROTTLING_CONFIG_INITIAL_MAX_NEW_CONNECTION_REQUESTS,
-                    EXISTING_THROTTLING_CONFIG_INITIAL_MAX_NEW_CONNECTION_RESET_TIME_IN_MS))
+                    EXISTING_THROTTLING_CONFIG_INITIAL_MAX_NEW_CONNECTIONS,
+                    EXISTING_THROTTLING_CONFIG_INITIAL_MAX_NEW_CONNECTIONS_RESET_TIME_IN_MS,
+                    EXISTING_THROTTLING_CONFIG_INITIAL_MAX_NEW_CONNECTIONS_WAIT_TIME_IN_MS))
             .getId();
   }
 
@@ -170,23 +173,33 @@ class ThrottlingServiceApplicationIT {
   void registerNewConfiguration() {
     final String name = "register-config";
     final int maxConcurrency = 99;
-    final int maxNewConnectionRequests = 98;
-    final long maxNewConnectionResetTimeInMs = Duration.of(1, ChronoUnit.HOURS).toMillis();
+    final int maxNewConnections = 98;
+    final long maxNewConnectionsResetTimeInMs = Duration.of(1, ChronoUnit.HOURS).toMillis();
+    final long maxNewConnectionsWaitTimeInMs = Duration.of(2, ChronoUnit.HOURS).toMillis();
 
     final short id =
         this.idForNewThrottlingConfig(
-            name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
+            name,
+            maxConcurrency,
+            maxNewConnections,
+            maxNewConnectionsResetTimeInMs,
+            maxNewConnectionsWaitTimeInMs);
     this.assertThrottlingConfigEntityExistsWithValues(id, name, maxConcurrency);
   }
 
   private short idForNewThrottlingConfig(
       final String name,
       final int maxConcurrency,
-      final int maxNewConnectionRequests,
-      final long maxNewConnectionResetTimeInMs) {
+      final int maxNewConnections,
+      final long maxNewConnectionsResetTimeInMs,
+      final long maxNewConnectionsWaitTimeInMs) {
     final ResponseEntity<Short> responseEntity =
         this.registerThrottlingConfig(
-            name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
+            name,
+            maxConcurrency,
+            maxNewConnections,
+            maxNewConnectionsResetTimeInMs,
+            maxNewConnectionsWaitTimeInMs);
     return this.validThrottlingConfigId(responseEntity);
   }
 
@@ -196,17 +209,19 @@ class ThrottlingServiceApplicationIT {
     final org.opensmartgridplatform.throttling.entities.ThrottlingConfig throttlingConfigEntity =
         this.findExistingThrottlingConfigByName(name);
     final int updatedMaxConcurrency = throttlingConfigEntity.getMaxConcurrency() + 3;
-    final int updatedMaxNewConnectionRequests =
-        throttlingConfigEntity.getMaxNewConnectionRequests() + 3;
-    final long updatedMaxNewConnectionResetTimeInMs =
-        throttlingConfigEntity.getMaxNewConnectionResetTimeInMs() + 1000;
+    final int updatedMaxNewConnections = throttlingConfigEntity.getMaxNewConnections() + 3;
+    final long updatedMaxNewConnectionsResetTimeInMs =
+        throttlingConfigEntity.getMaxNewConnectionsResetTimeInMs() + 1000;
+    final long updatedMaxNewConnectionsWaitTimeInMs =
+        throttlingConfigEntity.getMaxNewConnectionsWaitTimeInMs() + 1500;
 
     final ResponseEntity<Short> responseEntity =
         this.registerThrottlingConfig(
             name,
             updatedMaxConcurrency,
-            updatedMaxNewConnectionRequests,
-            updatedMaxNewConnectionResetTimeInMs);
+            updatedMaxNewConnections,
+            updatedMaxNewConnectionsResetTimeInMs,
+            updatedMaxNewConnectionsWaitTimeInMs);
 
     final short id = this.validThrottlingConfigId(responseEntity);
     assertThat(id).isEqualTo(this.existingThrottlingConfigId);
@@ -219,7 +234,7 @@ class ThrottlingServiceApplicationIT {
     final int maxConcurrency = -29;
 
     final ResponseEntity<Short> responseEntity =
-        this.registerThrottlingConfig(name, maxConcurrency, 0, Duration.ZERO.toMillis());
+        this.registerThrottlingConfig(name, maxConcurrency, 0, 0, 0);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(this.throttlingConfigRepository.findOneByName(name)).isEmpty();
@@ -238,11 +253,7 @@ class ThrottlingServiceApplicationIT {
 
     for (int i = 0; i < numberOfThrottlingConfigs - 1; i++) {
       final ThrottlingConfig addedApiThrottlingConfig =
-          this.apiThrottlingConfig(
-              "additional-config-" + i,
-              i + 2,
-              i + 3,
-              Duration.of(i, ChronoUnit.SECONDS).toMillis());
+          this.apiThrottlingConfig("additional-config-" + i, i + 2, i + 3, i + 3, i + 4);
       apiThrottlingConfigs.add(addedApiThrottlingConfig);
       final ResponseEntity<Short> response =
           this.registerThrottlingConfig(addedApiThrottlingConfig);
@@ -271,10 +282,15 @@ class ThrottlingServiceApplicationIT {
   private ThrottlingConfig apiThrottlingConfig(
       final String name,
       final int maxConcurrency,
-      final int maxNewConnectionRequests,
-      final long maxNewConnectionResetTimeInMs) {
+      final int maxNewConnections,
+      final long maxNewConnectionsResetTimeInMs,
+      final long maxNewConnectionsWaitTimeInMs) {
     return new ThrottlingConfig(
-        name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs);
+        name,
+        maxConcurrency,
+        maxNewConnections,
+        maxNewConnectionsResetTimeInMs,
+        maxNewConnectionsWaitTimeInMs);
   }
 
   private org.opensmartgridplatform.throttling.entities.ThrottlingConfig
@@ -289,12 +305,17 @@ class ThrottlingServiceApplicationIT {
   private ResponseEntity<Short> registerThrottlingConfig(
       final String name,
       final int maxConcurrency,
-      final int maxNewConnectionRequests,
-      final long maxNewConnectionResetTimeInMs) {
+      final int maxNewConnections,
+      final long maxNewConnectionsResetTimeInMs,
+      final long maxNewConnectionsWaitTimeInMs) {
 
     return this.registerThrottlingConfig(
         this.apiThrottlingConfig(
-            name, maxConcurrency, maxNewConnectionRequests, maxNewConnectionResetTimeInMs));
+            name,
+            maxConcurrency,
+            maxNewConnections,
+            maxNewConnectionsResetTimeInMs,
+            maxNewConnectionsWaitTimeInMs));
   }
 
   private ResponseEntity<Short> registerThrottlingConfig(final ThrottlingConfig throttlingConfig) {
@@ -699,8 +720,7 @@ class ThrottlingServiceApplicationIT {
 
     final int maxConcurrency = 2;
     final short throttlingConfigId =
-        this.idForNewThrottlingConfig(
-            "at-most-2-concurrent-permits", maxConcurrency, 0, Duration.ZERO.toMillis());
+        this.idForNewThrottlingConfig("at-most-2-concurrent-permits", maxConcurrency, 0, 0, 0);
     final int clientId = this.registeredClientId;
 
     final int baseTransceiverStationId = 45910;
@@ -1038,8 +1058,9 @@ class ThrottlingServiceApplicationIT {
     final org.opensmartgridplatform.throttling.entities.ThrottlingConfig throttlingConfig =
         new org.opensmartgridplatform.throttling.entities.ThrottlingConfig();
     throttlingConfig.setMaxConcurrency(startValue);
-    throttlingConfig.setMaxNewConnectionRequests(startValue + 1);
-    throttlingConfig.setMaxNewConnectionResetTimeInMs(startValue + 2);
+    throttlingConfig.setMaxNewConnections(startValue + 1);
+    throttlingConfig.setMaxNewConnectionsResetTimeInMs(startValue + 2);
+    throttlingConfig.setMaxNewConnectionsWaitTimeInMs(startValue + 3);
     return throttlingConfig;
   }
 
@@ -1126,9 +1147,10 @@ class ThrottlingServiceApplicationIT {
 
     final String throttlingIdentity = "shared-throttling-used-by-multiple-workers";
     final int maxConcurrency = 3;
-    final int maxNewConnectionRequests = 5;
-    final Duration maxNewConnectionResetTime = Duration.of(1, ChronoUnit.SECONDS);
-    final long maxNewConnectionResetTimeInMs = maxNewConnectionResetTime.toMillis();
+    final int maxNewConnections = 5;
+    final Duration maxNewConnectionsResetTime = Duration.of(1, ChronoUnit.SECONDS);
+    final long maxNewConnectionsResetTimeInMs = maxNewConnectionsResetTime.toMillis();
+    final long maxNewConnectionsWaitTimeInMs = maxNewConnectionsResetTimeInMs + 500;
 
     final int numberOfWorkers = 50;
     final int numberOfNetworkTasks = 2000;
@@ -1159,8 +1181,9 @@ class ThrottlingServiceApplicationIT {
           new NetworkUser(
               throttlingIdentity,
               maxConcurrency,
-              maxNewConnectionRequests,
-              maxNewConnectionResetTimeInMs,
+              maxNewConnections,
+              maxNewConnectionsResetTimeInMs,
+              maxNewConnectionsWaitTimeInMs,
               network,
               this.testRestTemplate.getRestTemplate(),
               networkTaskQueue);

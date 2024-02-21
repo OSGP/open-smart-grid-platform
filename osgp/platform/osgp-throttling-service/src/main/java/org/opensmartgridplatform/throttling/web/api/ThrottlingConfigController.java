@@ -144,10 +144,11 @@ public class ThrottlingConfigController {
       final org.opensmartgridplatform.throttling.entities.ThrottlingConfig throttlingConfigEntity,
       final ThrottlingConfig throttlingConfig) {
     return throttlingConfigEntity.getMaxConcurrency() != throttlingConfig.getMaxConcurrency()
-        || throttlingConfigEntity.getMaxNewConnectionRequests()
-            != throttlingConfig.getMaxNewConnectionRequests()
-        || throttlingConfigEntity.getMaxNewConnectionResetTimeInMs()
-            != throttlingConfig.getMaxNewConnectionResetTimeInMs();
+        || throttlingConfigEntity.getMaxNewConnections() != throttlingConfig.getMaxNewConnections()
+        || throttlingConfigEntity.getMaxNewConnectionsResetTimeInMs()
+            != throttlingConfig.getMaxNewConnectionsResetTimeInMs()
+        || throttlingConfigEntity.getMaxNewConnectionsWaitTimeInMs()
+            != throttlingConfig.getMaxNewConnectionsWaitTimeInMs();
   }
 
   private void updateThrottlingConfig(

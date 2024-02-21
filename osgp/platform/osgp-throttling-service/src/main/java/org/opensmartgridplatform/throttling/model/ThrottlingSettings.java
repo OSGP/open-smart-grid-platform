@@ -8,7 +8,9 @@ public interface ThrottlingSettings {
 
   int getMaxConcurrency();
 
-  int getMaxNewConnectionRequests();
+  int getMaxNewConnections();
 
-  long getMaxNewConnectionResetTimeInMs();
+  long getMaxNewConnectionsResetTimeInMs();
+
+  long getMaxNewConnectionsWaitTimeInMs();
 }

@@ -59,8 +59,10 @@ public class SegmentedNetworkThrottler {
         this.maxConcurrencyByBtsCellConfig.getMaxConcurrency(baseTransceiverStationId, cellId);
     final int maxConcurrency = maxConcurrencyBtsCell.orElse(throttlingConfig.getMaxConcurrency());
 
-    final int maxNewConnectionRequests = throttlingConfig.getMaxNewConnectionRequests();
-    final long maxNewConnectionResetTimeInMs = throttlingConfig.getMaxNewConnectionResetTimeInMs();
+    final int maxNewConnections = throttlingConfig.getMaxNewConnections();
+    final long maxNewConnectionsResetTimeInMs =
+        throttlingConfig.getMaxNewConnectionsResetTimeInMs();
+    final long maxNewConnectionsWaitTimeInMs = throttlingConfig.getMaxNewConnectionsWaitTimeInMs();
 
     return new ThrottlingSettings() {
       @Override
@@ -69,13 +71,18 @@ public class SegmentedNetworkThrottler {
       }
 
       @Override
-      public int getMaxNewConnectionRequests() {
-        return maxNewConnectionRequests;
+      public int getMaxNewConnections() {
+        return maxNewConnections;
       }
 
       @Override
-      public long getMaxNewConnectionResetTimeInMs() {
-        return maxNewConnectionResetTimeInMs;
+      public long getMaxNewConnectionsResetTimeInMs() {
+        return maxNewConnectionsResetTimeInMs;
+      }
+
+      @Override
+      public long getMaxNewConnectionsWaitTimeInMs() {
+        return maxNewConnectionsWaitTimeInMs;
       }
     };
   }

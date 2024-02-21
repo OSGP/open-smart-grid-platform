@@ -66,7 +66,7 @@ class NewConnectionRequestThrottlerTest {
 
   @Test
   void resetManyTimesAndFast() {
-    final NewConnectionRequestThrottler throttler = new NewConnectionRequestThrottler(1, 1, 10);
+    final NewConnectionRequestThrottler throttler = new NewConnectionRequestThrottler(1, 1, 100);
 
     for (int i = 0; i < 1000; i++) {
       final long startTime = System.currentTimeMillis();

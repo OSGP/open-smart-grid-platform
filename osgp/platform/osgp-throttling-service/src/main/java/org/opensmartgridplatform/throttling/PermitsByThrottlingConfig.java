@@ -33,23 +33,19 @@ public class PermitsByThrottlingConfig {
   private final PermitReleasedNotifier permitReleasedNotifier;
   private final boolean highPrioPoolEnabled;
   private final int maxWaitForHighPrioInMs;
-  private final int maxWaitForNewConnectionRequestInMs;
 
   public PermitsByThrottlingConfig(
       final ThrottlingConfigRepository throttlingConfigRepository,
       final PermitRepository permitRepository,
       final PermitReleasedNotifier permitReleasedNotifier,
       @Value("${wait.for.high.prio.enabled:true}") final boolean highPrioPoolEnabled,
-      @Value("${wait.for.high.prio.max.in.ms:10000}") final int maxWaitForHighPrioInMs,
-      @Value("${wait.for.new.connection.request.max.in.ms:60000}")
-          final int maxWaitForNewConnectionRequestInMs) {
+      @Value("${wait.for.high.prio.max.in.ms:10000}") final int maxWaitForHighPrioInMs) {
 
     this.throttlingConfigRepository = throttlingConfigRepository;
     this.permitRepository = permitRepository;
     this.permitReleasedNotifier = permitReleasedNotifier;
     this.highPrioPoolEnabled = highPrioPoolEnabled;
     this.maxWaitForHighPrioInMs = maxWaitForHighPrioInMs;
-    this.maxWaitForNewConnectionRequestInMs = maxWaitForNewConnectionRequestInMs;
   }
 
   /** Clears all cached permit counts and initializes the cached information from the database. */
@@ -70,8 +66,7 @@ public class PermitsByThrottlingConfig {
                     this.permitRepository,
                     this.permitReleasedNotifier,
                     this.highPrioPoolEnabled,
-                    this.maxWaitForHighPrioInMs,
-                    this.maxWaitForNewConnectionRequestInMs)));
+                    this.maxWaitForHighPrioInMs)));
 
     /* Update config */
     this.permitsPerSegmentByConfig.entrySet().parallelStream()
@@ -121,8 +116,7 @@ public class PermitsByThrottlingConfig {
             this.permitRepository,
             this.permitReleasedNotifier,
             this.highPrioPoolEnabled,
-            this.maxWaitForHighPrioInMs,
-            this.maxWaitForNewConnectionRequestInMs);
+            this.maxWaitForHighPrioInMs);
     permitsPerNetworkSegment.initialize(throttlingConfigId);
     return permitsPerNetworkSegment;
   }
@@ -139,8 +133,7 @@ public class PermitsByThrottlingConfig {
             this.permitRepository,
             this.permitReleasedNotifier,
             this.highPrioPoolEnabled,
-            this.maxWaitForHighPrioInMs,
-            this.maxWaitForNewConnectionRequestInMs));
+            this.maxWaitForHighPrioInMs));
   }
 
   public boolean releasePermit(

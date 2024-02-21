@@ -32,19 +32,16 @@ public class PermitsPerNetworkSegment {
   private final PermitReleasedNotifier permitReleasedNotifier;
   private final boolean highPrioPoolEnabled;
   private final int maxWaitForHighPrioInMs;
-  private final int maxWaitForNewConnectionRequestInMs;
 
   public PermitsPerNetworkSegment(
       final PermitRepository permitRepository,
       final PermitReleasedNotifier permitReleasedNotifier,
       final boolean highPrioPoolEnabled,
-      final int maxWaitForHighPrioInMs,
-      final int maxWaitForNewConnectionRequestInMs) {
+      final int maxWaitForHighPrioInMs) {
     this.permitRepository = permitRepository;
     this.permitReleasedNotifier = permitReleasedNotifier;
     this.highPrioPoolEnabled = highPrioPoolEnabled;
     this.maxWaitForHighPrioInMs = maxWaitForHighPrioInMs;
-    this.maxWaitForNewConnectionRequestInMs = maxWaitForNewConnectionRequestInMs;
   }
 
   public void initialize(final short throttlingConfigId) {
@@ -140,9 +137,9 @@ public class PermitsPerNetworkSegment {
                 cellId,
                 key ->
                     new NewConnectionRequestThrottler(
-                        throttlingSettings.getMaxNewConnectionRequests(),
-                        throttlingSettings.getMaxNewConnectionResetTimeInMs(),
-                        this.maxWaitForNewConnectionRequestInMs));
+                        throttlingSettings.getMaxNewConnections(),
+                        throttlingSettings.getMaxNewConnectionsResetTimeInMs(),
+                        throttlingSettings.getMaxNewConnectionsWaitTimeInMs()));
 
     return newConnectionRequestThrottler.isNewConnectionRequestAllowed(priority);
   }
