@@ -26,6 +26,7 @@ import org.opensmartgridplatform.throttling.service.PermitReleasedNotifier;
 class PermitsByThrottlingConfigTest {
   private static final boolean WAIT_FOR_HIGH_PRIO_ENABLED = true;
   private static final int MAX_WAIT_FOR_HIGH_PRIO = 1000;
+  private static final int MAX_WAIT_FOR_NEW_CONNECTION_REQUEST = 2000;
 
   @Mock private ThrottlingConfigRepository throttlingConfigRepository;
   @Mock private PermitRepository permitRepository;
@@ -40,7 +41,8 @@ class PermitsByThrottlingConfigTest {
             this.permitRepository,
             this.permitReleasedNotifier,
             WAIT_FOR_HIGH_PRIO_ENABLED,
-            this.MAX_WAIT_FOR_HIGH_PRIO);
+            this.MAX_WAIT_FOR_HIGH_PRIO,
+            this.MAX_WAIT_FOR_NEW_CONNECTION_REQUEST);
   }
 
   @Test

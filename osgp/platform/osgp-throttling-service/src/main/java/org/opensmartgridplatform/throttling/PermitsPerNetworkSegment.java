@@ -25,21 +25,26 @@ public class PermitsPerNetworkSegment {
 
   private final ConcurrentMap<Integer, ConcurrentMap<Integer, AtomicInteger>> permitsPerSegment =
       new ConcurrentHashMap<>();
+  private final ConcurrentMap<Integer, ConcurrentMap<Integer, NewConnectionRequestThrottler>>
+      newConnectionRequestThrottlerPerSegment = new ConcurrentHashMap<>();
 
   private final PermitRepository permitRepository;
   private final PermitReleasedNotifier permitReleasedNotifier;
   private final boolean highPrioPoolEnabled;
   private final int maxWaitForHighPrioInMs;
+  private final int maxWaitForNewConnectionRequestInMs;
 
   public PermitsPerNetworkSegment(
       final PermitRepository permitRepository,
       final PermitReleasedNotifier permitReleasedNotifier,
       final boolean highPrioPoolEnabled,
-      final int maxWaitForHighPrioInMs) {
+      final int maxWaitForHighPrioInMs,
+      final int maxWaitForNewConnectionRequestInMs) {
     this.permitRepository = permitRepository;
     this.permitReleasedNotifier = permitReleasedNotifier;
     this.highPrioPoolEnabled = highPrioPoolEnabled;
     this.maxWaitForHighPrioInMs = maxWaitForHighPrioInMs;
+    this.maxWaitForNewConnectionRequestInMs = maxWaitForNewConnectionRequestInMs;
   }
 
   public void initialize(final short throttlingConfigId) {
@@ -109,6 +114,11 @@ public class PermitsPerNetworkSegment {
       final int requestId,
       final int priority,
       final ThrottlingSettings throttlingSettings) {
+    if (!this.isNewConnectionRequestAllowed(
+        baseTransceiverStationId, cellId, priority, throttlingSettings)) {
+      return false;
+    }
+
     if (!this.isPermitAvailable(
         baseTransceiverStationId, cellId, priority, throttlingSettings.getMaxConcurrency())) {
       return false;
@@ -116,6 +126,25 @@ public class PermitsPerNetworkSegment {
 
     return this.permitRepository.grantPermit(
         throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
+  }
+
+  private boolean isNewConnectionRequestAllowed(
+      final int baseTransceiverStationId,
+      final int cellId,
+      final int priority,
+      final ThrottlingSettings throttlingSettings) {
+    final NewConnectionRequestThrottler newConnectionRequestThrottler =
+        this.newConnectionRequestThrottlerPerSegment
+            .computeIfAbsent(baseTransceiverStationId, key -> new ConcurrentHashMap<>())
+            .computeIfAbsent(
+                cellId,
+                key ->
+                    new NewConnectionRequestThrottler(
+                        throttlingSettings.getMaxNewConnectionRequests(),
+                        throttlingSettings.getMaxNewConnectionResetTimeInMs(),
+                        this.maxWaitForNewConnectionRequestInMs));
+
+    return newConnectionRequestThrottler.isNewConnectionRequestAllowed(priority);
   }
 
   public boolean releasePermit(
