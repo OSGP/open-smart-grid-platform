@@ -6,6 +6,7 @@ package org.opensmartgridplatform.throttling;
 
 import java.util.Optional;
 import org.opensmartgridplatform.throttling.entities.ThrottlingConfig;
+import org.opensmartgridplatform.throttling.model.ThrottlingSettings;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -33,18 +34,11 @@ public class SegmentedNetworkThrottler {
       final int requestId,
       final int priority) {
 
-    final ThrottlingConfig throttlingConfig =
-        this.throttlingConfigCache.getThrottlingConfig(throttlingConfigId);
-
-    final Optional<Integer> maxConcurrencyBtsCell =
-        this.maxConcurrencyByBtsCellConfig.getMaxConcurrency(baseTransceiverStationId, cellId);
-    final int maxConcurrency = maxConcurrencyBtsCell.orElse(throttlingConfig.getMaxConcurrency());
-    if (maxConcurrency < 1) {
+    final ThrottlingSettings throttlingSettings =
+        this.getThrottlingSettings(throttlingConfigId, baseTransceiverStationId, cellId);
+    if (throttlingSettings.getMaxConcurrency() < 1) {
       return false;
     }
-
-    final int maxNewConnectionRequests = throttlingConfig.getMaxNewConnectionRequests();
-    final long maxNewConnectionResetTimeInMs = throttlingConfig.getMaxNewConnectionResetTimeInMs();
 
     return this.permitsByThrottlingConfig.requestPermit(
         throttlingConfigId,
@@ -53,7 +47,37 @@ public class SegmentedNetworkThrottler {
         cellId,
         requestId,
         priority,
-        maxConcurrency);
+        throttlingSettings);
+  }
+
+  private ThrottlingSettings getThrottlingSettings(
+      final short throttlingConfigId, final int baseTransceiverStationId, final int cellId) {
+    final ThrottlingConfig throttlingConfig =
+        this.throttlingConfigCache.getThrottlingConfig(throttlingConfigId);
+
+    final Optional<Integer> maxConcurrencyBtsCell =
+        this.maxConcurrencyByBtsCellConfig.getMaxConcurrency(baseTransceiverStationId, cellId);
+    final int maxConcurrency = maxConcurrencyBtsCell.orElse(throttlingConfig.getMaxConcurrency());
+
+    final int maxNewConnectionRequests = throttlingConfig.getMaxNewConnectionRequests();
+    final long maxNewConnectionResetTimeInMs = throttlingConfig.getMaxNewConnectionResetTimeInMs();
+
+    return new ThrottlingSettings() {
+      @Override
+      public int getMaxConcurrency() {
+        return maxConcurrency;
+      }
+
+      @Override
+      public int getMaxNewConnectionRequests() {
+        return maxNewConnectionRequests;
+      }
+
+      @Override
+      public long getMaxNewConnectionResetTimeInMs() {
+        return maxNewConnectionResetTimeInMs;
+      }
+    };
   }
 
   public boolean releasePermit(

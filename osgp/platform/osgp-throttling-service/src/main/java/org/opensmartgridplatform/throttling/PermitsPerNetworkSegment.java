@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.opensmartgridplatform.throttling.model.ThrottlingSettings;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository.PermitCountByNetworkSegment;
 import org.opensmartgridplatform.throttling.service.PermitReleasedNotifier;
@@ -107,8 +108,9 @@ public class PermitsPerNetworkSegment {
       final int cellId,
       final int requestId,
       final int priority,
-      final int maxConcurrency) {
-    if (!this.isPermitAvailable(baseTransceiverStationId, cellId, priority, maxConcurrency)) {
+      final ThrottlingSettings throttlingSettings) {
+    if (!this.isPermitAvailable(
+        baseTransceiverStationId, cellId, priority, throttlingSettings.getMaxConcurrency())) {
       return false;
     }
 

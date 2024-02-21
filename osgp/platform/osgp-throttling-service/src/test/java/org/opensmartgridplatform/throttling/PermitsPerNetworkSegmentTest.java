@@ -22,6 +22,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.throttling.model.ThrottlingSettings;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository.PermitCountByNetworkSegment;
 import org.opensmartgridplatform.throttling.service.PermitReleasedNotifier;
@@ -162,7 +163,7 @@ class PermitsPerNetworkSegmentTest {
     final int requestId = 5;
     final int priority = 6;
     final int maxConcurrency = numberOfPermits;
-
+    final ThrottlingSettings throttlingSettings = this.newThrottlingSettings(maxConcurrency);
     this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
 
     this.permitsPerNetworkSegment.initialize(throttlingConfigId);
@@ -170,12 +171,31 @@ class PermitsPerNetworkSegmentTest {
     final long start = System.currentTimeMillis();
     final boolean permitGranted =
         this.permitsPerNetworkSegment.requestPermit(
-            throttlingConfigId, clientId, btsId, cellId, requestId, priority, maxConcurrency);
+            throttlingConfigId, clientId, btsId, cellId, requestId, priority, throttlingSettings);
     assertThat(permitGranted).isFalse();
     assertThat(System.currentTimeMillis() - start).isGreaterThanOrEqualTo(maxWaitForHighPrio);
 
     verify(this.permitRepository, never())
         .grantPermit(throttlingConfigId, clientId, btsId, cellId, requestId);
+  }
+
+  private ThrottlingSettings newThrottlingSettings(final int maxConcurrency) {
+    return new ThrottlingSettings() {
+      @Override
+      public int getMaxConcurrency() {
+        return maxConcurrency;
+      }
+
+      @Override
+      public int getMaxNewConnectionRequests() {
+        return 0;
+      }
+
+      @Override
+      public long getMaxNewConnectionResetTimeInMs() {
+        return 0;
+      }
+    };
   }
 
   @Test
@@ -198,6 +218,7 @@ class PermitsPerNetworkSegmentTest {
     final int requestId = 5;
     final int priority = 6;
     final int maxConcurrency = numberOfPermits;
+    final ThrottlingSettings throttlingSettings = this.newThrottlingSettings(maxConcurrency);
 
     this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
 
@@ -226,13 +247,19 @@ class PermitsPerNetworkSegmentTest {
 
     final boolean permitGrantedOtherCell =
         this.permitsPerNetworkSegment.requestPermit(
-            throttlingConfigId, clientId, btsId, otherCellId, requestId, priority, maxConcurrency);
+            throttlingConfigId,
+            clientId,
+            btsId,
+            otherCellId,
+            requestId,
+            priority,
+            throttlingSettings);
     assertThat(permitGrantedOtherCell).isTrue();
     assertThat((int) (System.currentTimeMillis() - start)).isBetween(0, waitBeforeRelease);
 
     final boolean permitGranted =
         this.permitsPerNetworkSegment.requestPermit(
-            throttlingConfigId, clientId, btsId, cellId, requestId, priority, maxConcurrency);
+            throttlingConfigId, clientId, btsId, cellId, requestId, priority, throttlingSettings);
     assertThat(permitGranted).isTrue();
     assertThat((int) (System.currentTimeMillis() - start))
         .isBetween(waitBeforeRelease, maxWaitForHighPrio);
