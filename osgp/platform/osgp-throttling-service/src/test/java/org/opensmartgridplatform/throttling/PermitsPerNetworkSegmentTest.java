@@ -270,6 +270,89 @@ class PermitsPerNetworkSegmentTest {
         .isGreaterThanOrEqualTo(MAX_WAIT_FOR_NEW_CONNECTIONS);
   }
 
+  @Test
+  void tesMaxNewRequestsDisabled() {
+    this.assertDisabledFunctions(10000, -1, true);
+
+    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).isNotEmpty();
+    assertThat(this.permitsPerNetworkSegment.newConnectionRequestThrottlerPerSegment()).isEmpty();
+  }
+
+  @Test
+  void tesMaxConcurrencyDisabled() {
+    this.assertDisabledFunctions(-1, 10000, true);
+
+    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).isEmpty();
+    assertThat(this.permitsPerNetworkSegment.newConnectionRequestThrottlerPerSegment())
+        .isNotEmpty();
+  }
+
+  @Test
+  void tesMaxNewRequestsZero() {
+    this.assertDisabledFunctions(10000, 0, false);
+
+    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).isEmpty();
+    assertThat(this.permitsPerNetworkSegment.newConnectionRequestThrottlerPerSegment()).isEmpty();
+  }
+
+  @Test
+  void tesMaxConcurrencyZero() {
+    this.assertDisabledFunctions(0, 10000, false);
+
+    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).isEmpty();
+  }
+
+  void assertDisabledFunctions(
+      final int maxConcurrency, final int maxNewConnections, final boolean expectGranted) {
+    final int numberOfPermits = 2000;
+
+    this.permitsPerNetworkSegment =
+        new PermitsPerNetworkSegment(
+            this.permitRepository,
+            this.permitReleasedNotifier,
+            WAIT_FOR_HIGH_PRIO_ENABLED,
+            MAX_WAIT_FOR_HIGH_PRIO);
+
+    final int btsId = 1;
+    final int cellId = 2;
+    final short throttlingConfigId = Integer.valueOf(1).shortValue();
+    final int clientId = 4;
+    final int requestId = 5;
+    final int priority = 6;
+    final long maxNewConnectionsResetTimeInMs = 100;
+
+    final ThrottlingSettings throttlingSettings =
+        this.newThrottlingSettings(
+            maxConcurrency,
+            maxNewConnections,
+            maxNewConnectionsResetTimeInMs,
+            MAX_WAIT_FOR_NEW_CONNECTIONS);
+
+    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
+
+    for (int i = 0; i < numberOfPermits; i++) {
+      final int newRequestId = requestId + i;
+      if (expectGranted) {
+        when(this.permitRepository.grantPermit(
+                throttlingConfigId, clientId, btsId, cellId, newRequestId))
+            .thenReturn(true);
+      } else {
+        verify(this.permitRepository, never())
+            .grantPermit(throttlingConfigId, clientId, btsId, cellId, newRequestId);
+      }
+      final boolean permitGranted =
+          this.permitsPerNetworkSegment.requestPermit(
+              throttlingConfigId,
+              clientId,
+              btsId,
+              cellId,
+              newRequestId,
+              priority,
+              throttlingSettings);
+      assertThat(permitGranted).isEqualTo(expectGranted);
+    }
+  }
+
   private void assertMaxNewRequests(
       final int maxNewConnectionsResetTimeInMs, final boolean expectPermitGranted) {
     this.permitsPerNetworkSegment =

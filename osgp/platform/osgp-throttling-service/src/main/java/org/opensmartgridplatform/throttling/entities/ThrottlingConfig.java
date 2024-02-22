@@ -65,17 +65,17 @@ public class ThrottlingConfig {
       final long maxNewConnectionsWaitTimeInMs) {
     this.id = id;
     this.name = Objects.requireNonNull(name, "name must not be null");
-    this.maxConcurrency = this.requireNonNegative("maxConcurrency", maxConcurrency);
-    this.maxNewConnections = this.requireNonNegative("maxNewConnections", maxNewConnections);
+    this.maxConcurrency = this.requireMinMinusOne("maxConcurrency", maxConcurrency);
+    this.maxNewConnections = this.requireMinMinusOne("maxNewConnections", maxNewConnections);
     this.maxNewConnectionsResetTimeInMs =
         this.requireNonNegative("maxNewConnectionsResetTimeInMs", maxNewConnectionsResetTimeInMs);
     this.maxNewConnectionsWaitTimeInMs =
         this.requireNonNegative("maxNewConnectionsWaitTimeInMs", maxNewConnectionsWaitTimeInMs);
   }
 
-  private int requireNonNegative(final String fieldName, final int value) {
-    if (value < 0) {
-      throw new IllegalArgumentException(fieldName + " must be non-negative: " + value);
+  private int requireMinMinusOne(final String fieldName, final int value) {
+    if (value < -1) {
+      throw new IllegalArgumentException(fieldName + " must be minimal -1: " + value);
     }
     return value;
   }
@@ -88,11 +88,11 @@ public class ThrottlingConfig {
   }
 
   public void setMaxConcurrency(final int maxConcurrency) {
-    this.maxConcurrency = this.requireNonNegative("maxConcurrency", maxConcurrency);
+    this.maxConcurrency = this.requireMinMinusOne("maxConcurrency", maxConcurrency);
   }
 
   public void setMaxNewConnections(final int maxNewConnections) {
-    this.maxNewConnections = this.requireNonNegative("maxNewConnections", maxNewConnections);
+    this.maxNewConnections = this.requireMinMinusOne("maxNewConnections", maxNewConnections);
   }
 
   public void setMaxNewConnectionsResetTimeInMs(final long maxNewConnectionsResetTimeInMs) {

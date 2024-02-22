@@ -25,7 +25,7 @@ public class ThrottlingClientConfig {
   @Value("${throttling.configuration.max.concurrency:1000}")
   private int configurationMaxConcurrency;
 
-  @Value("${throttling.configuration.max.new.connections:30}")
+  @Value("${throttling.configuration.max.new.connections:-1}")
   private int configurationMaxNewConnections;
 
   @Value("${throttling.configuration.max.new.connections.reset.time.in.ms:1000}")

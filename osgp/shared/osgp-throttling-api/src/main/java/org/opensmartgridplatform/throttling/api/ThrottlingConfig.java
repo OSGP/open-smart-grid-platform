@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.UUID;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -21,8 +22,14 @@ public class ThrottlingConfig {
 
   @NotBlank private String name;
 
-  @NotNull @PositiveOrZero private Integer maxConcurrency;
-  @NotNull @PositiveOrZero private int maxNewConnections;
+  @NotNull
+  @Min(value = -1)
+  private Integer maxConcurrency;
+
+  @NotNull
+  @Min(value = -1)
+  private int maxNewConnections;
+
   @NotNull @PositiveOrZero private long maxNewConnectionsResetTimeInMs;
   @NotNull @PositiveOrZero private long maxNewConnectionsWaitTimeInMs;
 

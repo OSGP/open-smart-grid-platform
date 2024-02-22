@@ -103,6 +103,11 @@ public class PermitsPerNetworkSegment {
                 TreeMap::new));
   }
 
+  public ConcurrentMap<Integer, ConcurrentMap<Integer, NewConnectionRequestThrottler>>
+      newConnectionRequestThrottlerPerSegment() {
+    return this.newConnectionRequestThrottlerPerSegment;
+  }
+
   public boolean requestPermit(
       final short throttlingConfigId,
       final int clientId,
@@ -130,6 +135,11 @@ public class PermitsPerNetworkSegment {
       final int cellId,
       final int priority,
       final ThrottlingSettings throttlingSettings) {
+    if (throttlingSettings.getMaxNewConnections() < 0) {
+      return true;
+    } else if (throttlingSettings.getMaxNewConnections() == 0) {
+      return false;
+    }
     final NewConnectionRequestThrottler newConnectionRequestThrottler =
         this.newConnectionRequestThrottlerPerSegment
             .computeIfAbsent(baseTransceiverStationId, key -> new ConcurrentHashMap<>())
@@ -174,6 +184,11 @@ public class PermitsPerNetworkSegment {
       final int cellId,
       final int priority,
       final int maxConcurrency) {
+    if (maxConcurrency < 0) {
+      return true;
+    } else if (maxConcurrency == 0) {
+      return false;
+    }
     final AtomicInteger permitCounter = this.getPermitCounter(baseTransceiverStationId, cellId);
 
     final int numberOfPermitsIfGranted = permitCounter.incrementAndGet();

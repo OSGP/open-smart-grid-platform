@@ -36,9 +36,6 @@ public class SegmentedNetworkThrottler {
 
     final ThrottlingSettings throttlingSettings =
         this.getThrottlingSettings(throttlingConfigId, baseTransceiverStationId, cellId);
-    if (throttlingSettings.getMaxConcurrency() < 1) {
-      return false;
-    }
 
     return this.permitsByThrottlingConfig.requestPermit(
         throttlingConfigId,
