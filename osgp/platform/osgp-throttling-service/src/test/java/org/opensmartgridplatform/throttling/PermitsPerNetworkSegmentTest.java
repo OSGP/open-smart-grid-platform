@@ -251,6 +251,59 @@ class PermitsPerNetworkSegmentTest {
   }
 
   @Test
+  void testHighPrioPoolDisabled() {
+    this.permitsPerNetworkSegment =
+        new PermitsPerNetworkSegment(
+            this.permitRepository, this.permitReleasedNotifier, false, MAX_WAIT_FOR_HIGH_PRIO);
+
+    final int btsId = 1;
+    final int cellId = 2;
+    final int numberOfPermits = 1;
+    final short throttlingConfigId = Integer.valueOf(1).shortValue();
+    final int clientId = 4;
+    final int requestId = 5;
+    final int priority = 6;
+    final int maxConcurrency = 1;
+    final ThrottlingSettings throttlingSettings =
+        this.newThrottlingSettings(maxConcurrency, 1000, 1000, 1000);
+
+    this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
+
+    final boolean permitGranted =
+        this.permitsPerNetworkSegment.requestPermit(
+            throttlingConfigId, clientId, btsId, cellId, requestId, priority, throttlingSettings);
+    assertThat(permitGranted).isFalse();
+  }
+
+  @Test
+  void testLowPrioPool() {
+    this.permitsPerNetworkSegment =
+        new PermitsPerNetworkSegment(
+            this.permitRepository,
+            this.permitReleasedNotifier,
+            WAIT_FOR_HIGH_PRIO_ENABLED,
+            MAX_WAIT_FOR_HIGH_PRIO);
+
+    final int btsId = 1;
+    final int cellId = 2;
+    final int numberOfPermits = 1;
+    final short throttlingConfigId = Integer.valueOf(1).shortValue();
+    final int clientId = 4;
+    final int requestId = 5;
+    final int priority = 1;
+    final int maxConcurrency = 1;
+    final ThrottlingSettings throttlingSettings =
+        this.newThrottlingSettings(maxConcurrency, 1000, 1000, 1000);
+
+    this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
+
+    final boolean permitGranted =
+        this.permitsPerNetworkSegment.requestPermit(
+            throttlingConfigId, clientId, btsId, cellId, requestId, priority, throttlingSettings);
+    assertThat(permitGranted).isFalse();
+  }
+
+  @Test
   void testMaxNewRequestsClearedInTime() {
     final long start = System.currentTimeMillis();
 
@@ -300,6 +353,17 @@ class PermitsPerNetworkSegmentTest {
     this.assertDisabledFunctions(0, 10000, false);
 
     assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).isEmpty();
+  }
+
+  @Test
+  void testToString() {
+    this.permitsPerNetworkSegment =
+        new PermitsPerNetworkSegment(
+            this.permitRepository,
+            this.permitReleasedNotifier,
+            WAIT_FOR_HIGH_PRIO_ENABLED,
+            MAX_WAIT_FOR_HIGH_PRIO);
+    assertThat(this.permitsPerNetworkSegment.toString()).isNotNull();
   }
 
   void assertDisabledFunctions(

@@ -103,7 +103,7 @@ public class PermitsPerNetworkSegment {
                 TreeMap::new));
   }
 
-  public ConcurrentMap<Integer, ConcurrentMap<Integer, NewConnectionRequestThrottler>>
+  ConcurrentMap<Integer, ConcurrentMap<Integer, NewConnectionRequestThrottler>>
       newConnectionRequestThrottlerPerSegment() {
     return this.newConnectionRequestThrottlerPerSegment;
   }

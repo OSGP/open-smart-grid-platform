@@ -10,30 +10,42 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.NaturalId;
 
 @Entity
 @Getter
+@Setter
 public class ThrottlingConfig {
 
+  @Setter(AccessLevel.NONE)
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Short id;
 
+  @Setter(AccessLevel.NONE)
+  @NotNull
   @NaturalId
   @Column(nullable = false, updatable = false, unique = true)
   private String name;
 
+  @Min(-1)
   @Column(nullable = false)
   private int maxConcurrency;
 
+  @Min(-1)
   @Column(nullable = false)
   private int maxNewConnections;
 
+  @Min(0)
   @Column(nullable = false)
   private long maxNewConnectionsResetTimeInMs;
 
+  @Min(0)
   @Column(nullable = false)
   private long maxNewConnectionsWaitTimeInMs;
 
@@ -64,42 +76,10 @@ public class ThrottlingConfig {
       final long maxNewConnectionsResetTimeInMs,
       final long maxNewConnectionsWaitTimeInMs) {
     this.id = id;
-    this.name = Objects.requireNonNull(name, "name must not be null");
-    this.maxConcurrency = this.requireMinMinusOne("maxConcurrency", maxConcurrency);
-    this.maxNewConnections = this.requireMinMinusOne("maxNewConnections", maxNewConnections);
-    this.maxNewConnectionsResetTimeInMs =
-        this.requireNonNegative("maxNewConnectionsResetTimeInMs", maxNewConnectionsResetTimeInMs);
-    this.maxNewConnectionsWaitTimeInMs =
-        this.requireNonNegative("maxNewConnectionsWaitTimeInMs", maxNewConnectionsWaitTimeInMs);
-  }
-
-  private int requireMinMinusOne(final String fieldName, final int value) {
-    if (value < -1) {
-      throw new IllegalArgumentException(fieldName + " must be minimal -1: " + value);
-    }
-    return value;
-  }
-
-  private long requireNonNegative(final String fieldName, final long value) {
-    if (value < 0) {
-      throw new IllegalArgumentException(fieldName + " must be non-negative: " + value);
-    }
-    return value;
-  }
-
-  public void setMaxConcurrency(final int maxConcurrency) {
-    this.maxConcurrency = this.requireMinMinusOne("maxConcurrency", maxConcurrency);
-  }
-
-  public void setMaxNewConnections(final int maxNewConnections) {
-    this.maxNewConnections = this.requireMinMinusOne("maxNewConnections", maxNewConnections);
-  }
-
-  public void setMaxNewConnectionsResetTimeInMs(final long maxNewConnectionsResetTimeInMs) {
+    this.name = name;
+    this.maxConcurrency = maxConcurrency;
+    this.maxNewConnections = maxNewConnections;
     this.maxNewConnectionsResetTimeInMs = maxNewConnectionsResetTimeInMs;
-  }
-
-  public void setMaxNewConnectionsWaitTimeInMs(final long maxNewConnectionsWaitTimeInMs) {
     this.maxNewConnectionsWaitTimeInMs = maxNewConnectionsWaitTimeInMs;
   }
 
@@ -121,10 +101,9 @@ public class ThrottlingConfig {
     if (this == obj) {
       return true;
     }
-    if (!(obj instanceof ThrottlingConfig)) {
+    if (!(obj instanceof final ThrottlingConfig other)) {
       return false;
     }
-    final ThrottlingConfig other = (ThrottlingConfig) obj;
     return Objects.equals(this.name, other.name);
   }
 

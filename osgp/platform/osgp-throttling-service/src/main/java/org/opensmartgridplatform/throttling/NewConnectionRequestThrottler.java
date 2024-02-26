@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 public class NewConnectionRequestThrottler {
   private final Semaphore semaphore;
   private final int maxNewConnections;
-  private final long resetTimeInMs;
   private final long maxWaitForNewConnectionsInMs;
   private final Timer resetNewConnectionRequestsTimer;
 
@@ -22,14 +21,13 @@ public class NewConnectionRequestThrottler {
       final long resetTimeInMs,
       final long maxWaitForNewConnectionsInMs) {
     this.maxNewConnections = maxNewConnections;
-    this.resetTimeInMs = resetTimeInMs;
     this.maxWaitForNewConnectionsInMs = maxWaitForNewConnectionsInMs;
 
     this.semaphore = new Semaphore(this.maxNewConnections);
 
     this.resetNewConnectionRequestsTimer = new Timer();
     this.resetNewConnectionRequestsTimer.schedule(
-        new ResetNewConnectionRequestsTask(), this.resetTimeInMs, this.resetTimeInMs);
+        new ResetNewConnectionRequestsTask(), resetTimeInMs, resetTimeInMs);
   }
 
   public boolean isNewConnectionRequestAllowed(final int priority) {
@@ -47,6 +45,7 @@ public class NewConnectionRequestThrottler {
     } catch (final InterruptedException e) {
       log.warn("isNewRequestAllowed: unable to acquire permit", e);
       Thread.currentThread().interrupt();
+      return false;
     }
     return true;
   }
