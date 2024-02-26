@@ -54,7 +54,7 @@ class DeviceConverterTest {
     dlmsDevice.setPort(dto.getPort());
     dlmsDevice.setChallengeLength(dto.getChallengeLength());
     dlmsDevice.setIpAddressIsStatic(dto.isIpAddressIsStatic());
-    dlmsDevice.setWithListSupported(dto.isWithListSupported());
+    dlmsDevice.setWithListMax(dto.getWithListMax());
     dlmsDevice.setSelectiveAccessSupported(dto.isSelectiveAccessSupported());
     return dlmsDevice;
   }

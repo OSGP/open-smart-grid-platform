@@ -19,12 +19,15 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
@@ -80,36 +83,99 @@ public class DlmsHelperTest {
 
   private final DlmsHelper dlmsHelper = new DlmsHelper();
 
-  @Test
-  public void testGetWithListSupported() throws ProtocolAdapterException, IOException {
+  @ParameterizedTest
+  @CsvSource({"2", "5", "32"})
+  void testGetWithList(final int getWithListMax) throws ProtocolAdapterException, IOException {
     final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
     final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+    when(dlmsDevice.getWithListMax()).thenReturn(getWithListMax);
     when(connectionManager.getConnection()).thenReturn(dlmsConnection);
 
-    final AttributeAddress[] attrAddresses = new AttributeAddress[1];
-    attrAddresses[0] = mock(AttributeAddress.class);
-
-    when(dlmsDevice.isWithListSupported()).thenReturn(true);
+    // Add one more address to the request than the maximum
+    final AttributeAddress[] attrAddresses = new AttributeAddress[getWithListMax + 1];
+    for (int i = 0; i <= getWithListMax; i++) {
+      attrAddresses[i] = mock(AttributeAddress.class);
+    }
 
     this.dlmsHelper.getWithList(connectionManager, dlmsDevice, attrAddresses);
-    verify(dlmsConnection).get(Arrays.asList(attrAddresses));
+
+    // We expect 2 calls:
+    // - one call with all addresses up to the maximum amount
+    // - one call with the remaining address
+    verify(dlmsConnection).get(Arrays.asList(attrAddresses).subList(0, getWithListMax));
+    verify(dlmsConnection).get(Collections.singletonList(attrAddresses[getWithListMax]));
   }
 
-  @Test
-  public void testGetWithListWorkaround() throws ProtocolAdapterException, IOException {
+  @ParameterizedTest
+  @CsvSource({"2", "5", "32"})
+  void testGetWithListWithMoreThanTwiceTheMaximum(final int getWithListMax)
+      throws ProtocolAdapterException, IOException {
     final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
     final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+    when(dlmsDevice.getWithListMax()).thenReturn(getWithListMax);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+    // Add one more address to the request than twice the maximum
+    final AttributeAddress[] attrAddresses = new AttributeAddress[(getWithListMax * 2) + 1];
+    for (int i = 0; i <= (getWithListMax * 2); i++) {
+      attrAddresses[i] = mock(AttributeAddress.class);
+    }
+
+    this.dlmsHelper.getWithList(connectionManager, dlmsDevice, attrAddresses);
+
+    // We expect 3 calls:
+    // - one call with all addresses up to the maximum amount
+    // - another call with the maximum amount of addresses
+    // - one call with the remaining address
+    verify(dlmsConnection).get(Arrays.asList(attrAddresses).subList(0, getWithListMax));
+    verify(dlmsConnection)
+        .get(Arrays.asList(attrAddresses).subList(getWithListMax, getWithListMax * 2));
+    verify(dlmsConnection).get(Collections.singletonList(attrAddresses[getWithListMax * 2]));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"0", "1"})
+  void testNormalGetWithMultipleAddresses(final int getWithListMax)
+      throws ProtocolAdapterException, IOException {
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+
+    // Set the maximum to 0 or 1. When the max is 0, then it will be handled as a max of 1.
+    when(dlmsDevice.getWithListMax()).thenReturn(getWithListMax);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+    final AttributeAddress[] attrAddresses = new AttributeAddress[2];
+    attrAddresses[0] = mock(AttributeAddress.class);
+    attrAddresses[1] = mock(AttributeAddress.class);
+
+    this.dlmsHelper.getWithList(connectionManager, dlmsDevice, attrAddresses);
+
+    // When the maximum is 1, then each address is in a separate request.
+    verify(dlmsConnection).get(List.of(attrAddresses[0]));
+    verify(dlmsConnection).get(List.of(attrAddresses[1]));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"0", "1", "2"})
+  void testNormalGetWithSingleAddress(final int getWithListMax)
+      throws ProtocolAdapterException, IOException {
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+    when(dlmsDevice.getWithListMax()).thenReturn(getWithListMax);
     when(connectionManager.getConnection()).thenReturn(dlmsConnection);
 
     final AttributeAddress[] attrAddresses = new AttributeAddress[1];
     attrAddresses[0] = mock(AttributeAddress.class);
 
-    when(dlmsDevice.isWithListSupported()).thenReturn(false);
-
     this.dlmsHelper.getWithList(connectionManager, dlmsDevice, attrAddresses);
-    verify(dlmsConnection).get(attrAddresses[0]);
+
+    // When there is only 1 address to be requested, then it doesn't matter what the maximum is:
+    // always expect a single request.
+    verify(dlmsConnection).get(List.of(attrAddresses[0]));
   }
 
   /*
@@ -452,7 +518,7 @@ public class DlmsHelperTest {
     final AttributeAddress[] attrAddresses = new AttributeAddress[1];
     attrAddresses[0] = mock(AttributeAddress.class);
 
-    when(dlmsDevice.isWithListSupported()).thenReturn(true);
+    when(dlmsDevice.getWithListMax()).thenReturn(32);
     when(dlmsConnection.get(Arrays.asList(attrAddresses))).thenThrow(jdlmsExceptionClazz);
 
     final Exception exception =

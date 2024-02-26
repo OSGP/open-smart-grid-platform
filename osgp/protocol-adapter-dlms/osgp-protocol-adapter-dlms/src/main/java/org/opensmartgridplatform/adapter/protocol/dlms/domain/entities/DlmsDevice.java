@@ -38,7 +38,7 @@ public class DlmsDevice extends AbstractEntity {
 
   @Column private Integer challengeLength;
 
-  @Column private boolean withListSupported;
+  @Column private Integer withListMax;
 
   @Column private boolean selectiveAccessSupported;
 
@@ -229,12 +229,12 @@ public class DlmsDevice extends AbstractEntity {
     this.challengeLength = challengeLength;
   }
 
-  public boolean isWithListSupported() {
-    return this.withListSupported;
+  public Integer getWithListMax() {
+    return this.withListMax;
   }
 
-  public void setWithListSupported(final boolean withListSupported) {
-    this.withListSupported = withListSupported;
+  public void setWithListMax(final Integer withListMax) {
+    this.withListMax = withListMax;
   }
 
   public boolean isSelectiveAccessSupported() {

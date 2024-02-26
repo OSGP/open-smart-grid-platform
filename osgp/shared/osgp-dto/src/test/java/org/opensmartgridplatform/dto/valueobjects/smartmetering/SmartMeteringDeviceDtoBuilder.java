@@ -38,7 +38,7 @@ public class SmartMeteringDeviceDtoBuilder {
     dto.setPort(4000L);
     dto.setChallengeLength(15);
     dto.setIpAddressIsStatic(false);
-    dto.setWithListSupported(true);
+    dto.setWithListMax(32);
     dto.setSelectiveAccessSupported(false);
     return dto;
   }

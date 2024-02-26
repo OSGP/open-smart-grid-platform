@@ -95,7 +95,7 @@ public class PlatformSmartmeteringKeys
   public static final String TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";
   public static final String VALID_FROM = "ValidFrom";
   public static final String VERSION = "Version";
-  public static final String WITH_LIST_SUPPORTED = "WithListSupported";
+  public static final String WITH_LIST_MAX = "WithListMax";
   public static final String MODULE_ACTIVE_FIRMWARE_VERSION = "ModuleActiveFirmwareVersion";
 
   public static final String DAYLIGHT_SAVINGS_BEGIN = "DaylightSavingsBegin";
