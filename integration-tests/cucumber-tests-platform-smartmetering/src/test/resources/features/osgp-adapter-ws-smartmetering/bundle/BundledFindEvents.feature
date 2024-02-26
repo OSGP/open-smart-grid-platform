@@ -33,7 +33,7 @@ Feature: SmartMetering Bundle - FindEvents
     When the bundle request is received
     Then the bundle response should contain a find events response with 21 events
 
-  Scenario: Retrieve a unknown event code
+  Scenario: Retrieve event codes
     And a dlms device
       | DeviceIdentification | TEST1029000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -87,3 +87,22 @@ Feature: SmartMetering Bundle - FindEvents
     And the bundle response should contain a find events response with 19 events
     And the bundle response should contain a find events response with 169 events
     And the bundle response should contain a find events response with 6 events
+
+  Scenario: Retrieve an unknown event code
+    And a dlms device
+      | DeviceIdentification | TEST1029000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | ManufacturerCode     | KAI               |
+      | DeviceModelCode      | MA105             |
+      | Protocol             | SMR               |
+      | ProtocolVersion      | 5.5               |
+      | Port                 | 1030              |
+    Given a bundle request
+      | DeviceIdentification | TEST1029000000001 |
+    And the bundle request contains a find events action with parameters
+      | DeviceIdentification | TEST1029000000001        |
+      | EventLogCategory     | AUXILIARY_EVENT_LOG      |
+      | FromDate             | 2013-09-01T00:00:00.000+02:00 |
+      | UntilDate            | 2016-09-05T00:00:00.000+02:00 |
+    When the bundle request is received
+    Then the bundle response should contain a response with 170 events containing "UNKNOWN_EVENT_HEADEND"
