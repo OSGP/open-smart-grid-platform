@@ -1,6 +1,6 @@
-ALTER TABLE throttling_config ADD COLUMN max_new_connections integer NOT NULL;
-ALTER TABLE throttling_config ADD COLUMN max_new_connections_reset_time_in_ms bigint NOT NULL;
-ALTER TABLE throttling_config ADD COLUMN max_new_connections_wait_time_in_ms bigint NOT NULL;
+ALTER TABLE throttling_config ADD COLUMN max_new_connections integer NOT NULL DEFAULT -1;
+ALTER TABLE throttling_config ADD COLUMN max_new_connections_reset_time_in_ms bigint NOT NULL DEFAULT 60000;
+ALTER TABLE throttling_config ADD COLUMN max_new_connections_wait_time_in_ms bigint NOT NULL DEFAULT 10000;
 
 ALTER TABLE throttling_config DROP CONSTRAINT throttling_config_max_concurrency_non_negative;
 
