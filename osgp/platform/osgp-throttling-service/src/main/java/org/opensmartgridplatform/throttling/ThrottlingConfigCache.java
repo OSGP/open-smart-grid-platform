@@ -17,16 +17,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
 @Component
-public class MaxConcurrencyByThrottlingConfig {
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(MaxConcurrencyByThrottlingConfig.class);
+public class ThrottlingConfigCache {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ThrottlingConfigCache.class);
 
-  private final ConcurrentMap<Short, Integer> maxConcurrencyByConfigId = new ConcurrentHashMap<>();
+  private final ConcurrentMap<Short, ThrottlingConfig> throttlingConfigByConfigId =
+      new ConcurrentHashMap<>();
 
   private final ThrottlingConfigRepository throttlingConfigRepository;
 
-  public MaxConcurrencyByThrottlingConfig(
-      final ThrottlingConfigRepository throttlingConfigRepository) {
+  public ThrottlingConfigCache(final ThrottlingConfigRepository throttlingConfigRepository) {
 
     this.throttlingConfigRepository = throttlingConfigRepository;
   }
@@ -39,8 +38,8 @@ public class MaxConcurrencyByThrottlingConfig {
         .findAll()
         .forEach(
             throttlingConfig ->
-                this.maxConcurrencyByConfigId.putIfAbsent(
-                    throttlingConfig.getId(), throttlingConfig.getMaxConcurrency()));
+                this.throttlingConfigByConfigId.putIfAbsent(
+                    throttlingConfig.getId(), throttlingConfig));
     stopWatch.stop();
     LOGGER.info("Init took {}ms", stopWatch.getLastTaskTimeMillis());
   }
@@ -50,36 +49,37 @@ public class MaxConcurrencyByThrottlingConfig {
    * database.
    */
   void reset() {
-    this.maxConcurrencyByConfigId.clear();
+    this.throttlingConfigByConfigId.clear();
     this.initialize();
   }
 
-  public Map<Short, Integer> maxConcurrencyByConfigId() {
-    return new TreeMap<>(this.maxConcurrencyByConfigId);
+  public Map<Short, ThrottlingConfig> throttlingConfigByConfigId() {
+    return new TreeMap<>(this.throttlingConfigByConfigId);
   }
 
-  public void setMaxConcurrency(final short throttlingConfigId, final int maxConcurrency) {
-    this.maxConcurrencyByConfigId.put(throttlingConfigId, maxConcurrency);
+  public void setThrottlingConfig(
+      final short throttlingConfigId, final ThrottlingConfig throttlingConfig) {
+    this.throttlingConfigByConfigId.put(throttlingConfigId, throttlingConfig);
   }
 
-  public int getMaxConcurrency(final short throttlingConfigId) {
-    final int maxConcurrency = this.maxConcurrencyByConfigId.getOrDefault(throttlingConfigId, -1);
-    if (maxConcurrency > -1) {
-      return maxConcurrency;
+  public ThrottlingConfig getThrottlingConfig(final short throttlingConfigId) {
+    final ThrottlingConfig throttlingConfig =
+        this.throttlingConfigByConfigId.get(throttlingConfigId);
+    if (throttlingConfig != null) {
+      return throttlingConfig;
     }
-    return this.updateMaxConcurrencyFromDatabase(throttlingConfigId);
+    return this.updateThrottlingConfigFromDatabase(throttlingConfigId);
   }
 
-  private int updateMaxConcurrencyFromDatabase(final short throttlingConfigId) {
-    final int maxConcurrency =
+  private ThrottlingConfig updateThrottlingConfigFromDatabase(final short throttlingConfigId) {
+    final ThrottlingConfig throttlingConfig =
         this.throttlingConfigRepository
             .findById(throttlingConfigId)
-            .map(ThrottlingConfig::getMaxConcurrency)
             .orElseThrow(
                 () ->
                     new IllegalArgumentException(
                         "throttlingConfigId is unknown: " + throttlingConfigId));
-    this.maxConcurrencyByConfigId.putIfAbsent(throttlingConfigId, maxConcurrency);
-    return this.maxConcurrencyByConfigId.get(throttlingConfigId);
+    this.throttlingConfigByConfigId.putIfAbsent(throttlingConfigId, throttlingConfig);
+    return this.throttlingConfigByConfigId.get(throttlingConfigId);
   }
 }
