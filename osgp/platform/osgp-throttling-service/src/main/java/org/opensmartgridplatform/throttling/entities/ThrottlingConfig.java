@@ -10,64 +10,90 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.NaturalId;
 
 @Entity
+@Getter
+@Setter
 public class ThrottlingConfig {
 
+  @Setter(AccessLevel.NONE)
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Short id;
 
+  @Setter(AccessLevel.NONE)
+  @NotNull
   @NaturalId
   @Column(nullable = false, updatable = false, unique = true)
   private String name;
 
+  @Min(-1)
   @Column(nullable = false)
   private int maxConcurrency;
+
+  @Min(-1)
+  @Column(nullable = false)
+  private int maxNewConnections;
+
+  @Min(0)
+  @Column(nullable = false)
+  private long maxNewConnectionsResetTimeInMs;
+
+  @Min(0)
+  @Column(nullable = false)
+  private long maxNewConnectionsWaitTimeInMs;
 
   public ThrottlingConfig() {
     // no-arg constructor required by JPA specification
   }
 
-  public ThrottlingConfig(final String name, final int maxConcurrency) {
-    this(null, name, maxConcurrency);
+  public ThrottlingConfig(
+      final String name,
+      final int maxConcurrency,
+      final int maxNewConnections,
+      final long maxNewConnectionsResetTimeInMs,
+      final long maxNewConnectionsWaitTimeInMs) {
+    this(
+        null,
+        name,
+        maxConcurrency,
+        maxNewConnections,
+        maxNewConnectionsResetTimeInMs,
+        maxNewConnectionsWaitTimeInMs);
   }
 
-  public ThrottlingConfig(final Short id, final String name, final int maxConcurrency) {
+  public ThrottlingConfig(
+      final Short id,
+      final String name,
+      final int maxConcurrency,
+      final int maxNewConnections,
+      final long maxNewConnectionsResetTimeInMs,
+      final long maxNewConnectionsWaitTimeInMs) {
     this.id = id;
-    this.name = Objects.requireNonNull(name, "name must not be null");
-    this.maxConcurrency = this.requireNonNegativeMaxConcurrency(maxConcurrency);
-  }
-
-  private int requireNonNegativeMaxConcurrency(final int maxConcurrency) {
-    if (maxConcurrency < 0) {
-      throw new IllegalArgumentException("maxConcurrency must be non-negative: " + maxConcurrency);
-    }
-    return maxConcurrency;
-  }
-
-  public Short getId() {
-    return this.id;
-  }
-
-  public String getName() {
-    return this.name;
-  }
-
-  public int getMaxConcurrency() {
-    return this.maxConcurrency;
-  }
-
-  public void setMaxConcurrency(final int maxConcurrency) {
-    this.maxConcurrency = this.requireNonNegativeMaxConcurrency(maxConcurrency);
+    this.name = name;
+    this.maxConcurrency = maxConcurrency;
+    this.maxNewConnections = maxNewConnections;
+    this.maxNewConnectionsResetTimeInMs = maxNewConnectionsResetTimeInMs;
+    this.maxNewConnectionsWaitTimeInMs = maxNewConnectionsWaitTimeInMs;
   }
 
   @Override
   public String toString() {
     return String.format(
-        "%s[id=%s, name=%s, maxConcurrency=%d]",
-        ThrottlingConfig.class.getSimpleName(), this.id, this.name, this.maxConcurrency);
+        "%s[id=%s, name=%s, maxConcurrency=%d, maxNewConnections=%d, maxNewConnectionsResetTimeInMs=%s, maxNewConnectionsWaitTimeInMs=%s]",
+        ThrottlingConfig.class.getSimpleName(),
+        this.id,
+        this.name,
+        this.maxConcurrency,
+        this.maxNewConnections,
+        this.maxNewConnectionsResetTimeInMs,
+        this.maxNewConnectionsWaitTimeInMs);
   }
 
   @Override
@@ -75,10 +101,9 @@ public class ThrottlingConfig {
     if (this == obj) {
       return true;
     }
-    if (!(obj instanceof ThrottlingConfig)) {
+    if (!(obj instanceof final ThrottlingConfig other)) {
       return false;
     }
-    final ThrottlingConfig other = (ThrottlingConfig) obj;
     return Objects.equals(this.name, other.name);
   }
 

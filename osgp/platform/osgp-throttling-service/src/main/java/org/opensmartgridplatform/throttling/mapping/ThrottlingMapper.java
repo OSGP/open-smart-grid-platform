@@ -14,6 +14,10 @@ public class ThrottlingMapper extends ConfigurableMapper {
   private static final String ID = "id";
   private static final String NAME = "name";
   private static final String MAX_CONCURRENCY = "maxConcurrency";
+  private static final String MAX_NEW_CONNECTIONS = "maxNewConnections";
+  private static final String MAX_NEW_CONNECTIONS_RESET_TIME_IN_MS =
+      "maxNewConnectionsResetTimeInMs";
+  private static final String MAX_NEW_CONNECTIONS_WAIT_TIME_IN_MS = "maxNewConnectionsWaitTimeInMs";
 
   @Override
   protected void configure(final MapperFactory factory) {
@@ -26,8 +30,20 @@ public class ThrottlingMapper extends ConfigurableMapper {
             .classMap(
                 org.opensmartgridplatform.throttling.api.ThrottlingConfig.class,
                 org.opensmartgridplatform.throttling.entities.ThrottlingConfig.class)
-            .constructorA(ID, NAME, MAX_CONCURRENCY)
-            .constructorB(NAME, MAX_CONCURRENCY) // a new entity does not get its ID from the API
+            .constructorA(
+                ID,
+                NAME,
+                MAX_CONCURRENCY,
+                MAX_NEW_CONNECTIONS,
+                MAX_NEW_CONNECTIONS_RESET_TIME_IN_MS,
+                MAX_NEW_CONNECTIONS_WAIT_TIME_IN_MS)
+            .constructorB(
+                NAME,
+                MAX_CONCURRENCY,
+                MAX_NEW_CONNECTIONS,
+                MAX_NEW_CONNECTIONS_RESET_TIME_IN_MS,
+                MAX_NEW_CONNECTIONS_WAIT_TIME_IN_MS) // a new entity does not get its ID from the
+            // API
             .fieldBToA(ID, ID) // entity ID is not updated from the API
             .fieldBToA(NAME, NAME) // name is not updated from the API
             .byDefault()
