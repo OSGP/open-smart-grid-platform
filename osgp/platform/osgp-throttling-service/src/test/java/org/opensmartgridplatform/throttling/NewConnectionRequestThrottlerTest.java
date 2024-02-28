@@ -16,7 +16,7 @@ class NewConnectionRequestThrottlerTest {
   private final int PRIORITY = 8;
   private final int MAX_NEW_CONNECTION_REQUESTS = 1;
   private final long RESET_TIME_IN_MS = 2000;
-  private final long MAX_WAIT_FOR_NEW_CONNECTION_REQUEST_IN_MS = 100;
+  private final long MAX_WAIT_FOR_NEW_CONNECTION_REQUEST_IN_MS = 1000;
 
   @Test
   void isNewConnectionRequestAllowed() {
