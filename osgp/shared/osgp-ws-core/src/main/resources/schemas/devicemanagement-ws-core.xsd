@@ -662,6 +662,7 @@
       <xsd:enumeration value="AUTHENTICATION_FAIL" />
       <xsd:enumeration value="LIGHT_SENSOR_REPORTS_DARK" />
       <xsd:enumeration value="LIGHT_SENSOR_REPORTS_LIGHT" />
+      <xsd:enumeration value="UNKNOWN_EVENT_HEADEND" />
     </xsd:restriction>
   </xsd:simpleType>
 

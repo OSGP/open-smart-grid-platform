@@ -95,10 +95,10 @@ Feature: CoreDeviceManagement Find Events
     Examples: 
       | DeviceIdentification | PageSize | RequestedPage | ActualNumberOfEvents | NumberOfPages | numberOfEventsInPage |
       | TEST-1024000000001   |       25 |             0 |                   48 |             2 |                   25 |
-      | TEST-1024000000002   |       25 |             1 |                   48 |             2 |                   23 |
-      | TEST-1024000000003   |        2 |             0 |                   48 |            24 |                    2 |
-      | TEST-1024000000004   |        2 |            23 |                   48 |            24 |                    2 |
-      | TEST-1024000000005   |        2 |            24 |                   48 |            24 |                    0 |
+      | TEST-1024000000001   |       25 |             1 |                   48 |             2 |                   23 |
+      | TEST-1024000000002   |        2 |             0 |                   48 |            24 |                    2 |
+      | TEST-1024000000002   |        2 |            23 |                   48 |            24 |                    2 |
+      | TEST-1024000000002   |        2 |            24 |                   48 |            24 |                    0 |
 
   Scenario: Find events for a device by filtering the description
     Given a device
