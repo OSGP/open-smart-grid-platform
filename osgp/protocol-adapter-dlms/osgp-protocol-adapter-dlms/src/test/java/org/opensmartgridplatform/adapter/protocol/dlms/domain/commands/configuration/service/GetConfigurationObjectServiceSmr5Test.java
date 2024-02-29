@@ -35,7 +35,7 @@ class GetConfigurationObjectServiceSmr5Test {
 
   @BeforeEach
   void setUp() {
-    this.instance = new GetConfigurationObjectServiceSmr5(null, null);
+    this.instance = new GetConfigurationObjectServiceSmr5(null, null, null);
     when(this.nonBitString.isBitString()).thenReturn(false);
   }
 

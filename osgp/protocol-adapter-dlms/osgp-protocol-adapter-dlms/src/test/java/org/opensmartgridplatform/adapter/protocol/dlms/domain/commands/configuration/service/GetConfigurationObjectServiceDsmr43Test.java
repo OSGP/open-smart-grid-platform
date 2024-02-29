@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,11 +29,13 @@ class GetConfigurationObjectServiceDsmr43Test {
   @Mock private DlmsHelper dlmsHelper;
 
   @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
+  @Mock private DlmsDeviceRepository dlmsDeviceRepository;
 
   @BeforeEach
   void setUp() {
     this.instance =
-        new GetConfigurationObjectServiceDsmr43(this.dlmsHelper, this.objectConfigServiceHelper);
+        new GetConfigurationObjectServiceDsmr43(
+            this.dlmsHelper, this.objectConfigServiceHelper, this.dlmsDeviceRepository);
   }
 
   @ParameterizedTest

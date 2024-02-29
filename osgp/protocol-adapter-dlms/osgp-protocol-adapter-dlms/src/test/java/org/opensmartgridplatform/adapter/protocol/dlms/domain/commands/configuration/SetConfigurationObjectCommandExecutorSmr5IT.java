@@ -26,6 +26,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
@@ -36,14 +37,17 @@ class SetConfigurationObjectCommandExecutorSmr5IT
     extends SetConfigurationObjectCommandExecutorITBase {
 
   @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
+  @Mock private DlmsDeviceRepository dlmsDeviceRepository;
 
   @BeforeEach
   void setUp() throws IOException {
     final DlmsHelper dlmsHelper = new DlmsHelper();
     final GetConfigurationObjectService getService =
-        new GetConfigurationObjectServiceSmr5(dlmsHelper, this.objectConfigServiceHelper);
+        new GetConfigurationObjectServiceSmr5(
+            dlmsHelper, this.objectConfigServiceHelper, this.dlmsDeviceRepository);
     final SetConfigurationObjectService setService =
-        new SetConfigurationObjectServiceSmr5(dlmsHelper, this.objectConfigServiceHelper);
+        new SetConfigurationObjectServiceSmr5(
+            dlmsHelper, this.objectConfigServiceHelper, this.dlmsDeviceRepository);
     super.setUp(getService, setService);
   }
 
@@ -79,7 +83,9 @@ class SetConfigurationObjectCommandExecutorSmr5IT
     final DataObject deviceData = this.createBitStringData(flagsOnDevice);
     when(this.getResult.getResultData()).thenReturn(deviceData);
 
+    final String deviceIdentification = "device-1";
     final DlmsDevice device = new DlmsDevice();
+    device.setDeviceIdentification(deviceIdentification);
     device.setProtocol(Protocol.SMR_5_0_0);
 
     // CALL
@@ -94,6 +100,12 @@ class SetConfigurationObjectCommandExecutorSmr5IT
 
     assertThat(flagsSentToDevice[0]).isEqualTo(firstExpectedByte);
     assertThat(flagsSentToDevice[1]).isEqualTo(secondExpectedByte);
+
+    // after Getting current configuration object from device
+    verify(this.dlmsDeviceRepository).updateHlsActive(deviceIdentification, null, null, null);
+    // after Setting configuration object on device
+    verify(this.dlmsDeviceRepository)
+        .updateHlsActive(deviceIdentification, Boolean.TRUE, null, null);
   }
 
   @Override

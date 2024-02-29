@@ -4,8 +4,10 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.BitString;
@@ -13,6 +15,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
@@ -39,7 +42,10 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
   public GetConfigurationObjectServiceDsmr4(
-      final DlmsHelper dlmsHelper, final ObjectConfigServiceHelper objectConfigServiceHelper) {
+      final DlmsHelper dlmsHelper,
+      final ObjectConfigServiceHelper objectConfigServiceHelper,
+      final DlmsDeviceRepository dlmsDeviceRepository) {
+    super(dlmsDeviceRepository);
     this.dlmsHelper = dlmsHelper;
     this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
@@ -115,7 +121,21 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
     final BitString bitString = flags.getValue();
     final byte[] flagBytes = bitString.getBitString();
     final List<ConfigurationFlagDto> configurationFlags = this.toConfigurationFlags(flagBytes);
+    this.addLowFlags(configurationFlags);
     return new ConfigurationFlagsDto(configurationFlags);
+  }
+
+  protected void addLowFlags(final List<ConfigurationFlagDto> configurationFlags) {
+    final List<ConfigurationFlagTypeDto> highFlags =
+        configurationFlags.stream().map(ConfigurationFlagDto::getConfigurationFlagType).toList();
+    final Stream<ConfigurationFlagTypeDto> missingFlags =
+        Arrays.stream(ConfigurationFlagTypeDto.values())
+            .filter(
+                configurationFlagTypeDto ->
+                    !highFlags.contains(configurationFlagTypeDto)
+                        && configurationFlagTypeDto.getBitPositionDsmr4().isPresent());
+    missingFlags.forEach(
+        missingFlag -> configurationFlags.add(new ConfigurationFlagDto(missingFlag, false)));
   }
 
   @Override

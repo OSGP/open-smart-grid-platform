@@ -145,7 +145,7 @@ public class SetRandomisationSettingsCommandExecutor
     final GetConfigurationObjectService getConfigurationObjectService =
         this.protocolServiceLookup.lookupGetService(protocol);
     final ConfigurationObjectDto configurationOnDevice =
-        getConfigurationObjectService.getConfigurationObject(conn, protocol);
+        getConfigurationObjectService.getConfigurationObject(conn, protocol, device);
     final SetConfigurationObjectService setService =
         this.protocolServiceLookup.lookupSetService(protocol);
 
@@ -154,7 +154,7 @@ public class SetRandomisationSettingsCommandExecutor
 
     final AccessResultCode result =
         setService.setConfigurationObject(
-            conn, configurationToSet, configurationOnDevice, protocol);
+            conn, configurationToSet, configurationOnDevice, protocol, device);
 
     this.checkResult(result, "directAttach");
   }

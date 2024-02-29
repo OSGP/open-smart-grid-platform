@@ -52,6 +52,6 @@ public class GetConfigurationObjectCommandExecutor
     final Protocol protocol = Protocol.forDevice(device);
     return this.protocolServiceLookup
         .lookupGetService(protocol)
-        .getConfigurationObject(conn, protocol);
+        .getConfigurationObject(conn, protocol, device);
   }
 }

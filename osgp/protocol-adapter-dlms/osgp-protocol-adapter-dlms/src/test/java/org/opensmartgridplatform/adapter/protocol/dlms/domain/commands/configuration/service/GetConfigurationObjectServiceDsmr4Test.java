@@ -24,6 +24,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 
@@ -36,11 +37,13 @@ class GetConfigurationObjectServiceDsmr4Test {
   @Mock private DlmsHelper dlmsHelper;
 
   @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
+  @Mock private DlmsDeviceRepository dlmsDeviceRepository;
 
   @BeforeEach
   void setUp() {
     this.instance =
-        new GetConfigurationObjectServiceDsmr4(this.dlmsHelper, this.objectConfigServiceHelper);
+        new GetConfigurationObjectServiceDsmr4(
+            this.dlmsHelper, this.objectConfigServiceHelper, this.dlmsDeviceRepository);
   }
 
   @ParameterizedTest

@@ -12,8 +12,10 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
@@ -22,12 +24,19 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObj
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class GetConfigurationObjectService implements ProtocolService {
+public abstract class GetConfigurationObjectService extends AbstractConfigurationObjectService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GetConfigurationObjectService.class);
 
+  protected DlmsDeviceRepository dlmsDeviceRepository;
+
+  public GetConfigurationObjectService(final DlmsDeviceRepository dlmsDeviceRepository) {
+    super(dlmsDeviceRepository);
+  }
+
   public ConfigurationObjectDto getConfigurationObject(
-      final DlmsConnectionManager conn, final Protocol protocol) throws ProtocolAdapterException {
+      final DlmsConnectionManager conn, final Protocol protocol, final DlmsDevice device)
+      throws ProtocolAdapterException {
 
     final AttributeAddress attributeAddress = this.getAttributeAddress(protocol);
 
@@ -36,7 +45,11 @@ public abstract class GetConfigurationObjectService implements ProtocolService {
             String.format(
                 "Retrieve current ConfigurationObject, attribute: %s",
                 JdlmsObjectToStringUtil.describeAttributes(attributeAddress)));
-    return this.getConfigurationObject(this.getGetResult(conn, attributeAddress));
+    final ConfigurationObjectDto configurationObject =
+        this.getConfigurationObject(this.getGetResult(conn, attributeAddress));
+
+    this.updateHlsActive(device, configurationObject);
+    return configurationObject;
   }
 
   abstract AttributeAddress getAttributeAddress(final Protocol protocol)
