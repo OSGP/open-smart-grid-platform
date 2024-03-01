@@ -94,6 +94,10 @@ public class InstallationService {
             FunctionalExceptionType.KEY_NOT_PRESENT, ComponentType.PROTOCOL_DLMS, rootCause);
       }
     }
+    if (deviceDto.getDeviceIdentification().startsWith("GLLS")) {
+      keysByType.put(
+          SecurityKeyType.G_METER_ENCRYPTION, new byte[] {49, 50, 51, 52, 53, 54, 55, 56});
+    }
     this.secretManagementService.storeNewKeys(
         messageMetadata, deviceDto.getDeviceIdentification(), keysByType);
     this.secretManagementService.activateNewKeys(
