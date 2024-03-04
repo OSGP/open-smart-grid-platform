@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.List;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTime;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +31,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
@@ -62,25 +60,19 @@ class EventServiceTest {
   }
 
   @Test
-  void testWrongEventCode() {
-    final FunctionalException functionalException =
-        Assertions.assertThrows(
-            FunctionalException.class,
-            () -> {
-              final ProtocolInfo protocolInfo = mock(ProtocolInfo.class);
-              when(protocolInfo.getProtocol()).thenReturn("SMR");
-              when(this.smartMeter.getProtocolInfo()).thenReturn(protocolInfo);
+  void testUnknownEventIsMappedToUnknownEvent() throws FunctionalException {
+    final int unknownEventCode = 666;
+    final EventDto unknownEventDto =
+        new EventDto(new DateTime(), unknownEventCode, 0, "AUXILIARY_EVENT_LOG");
 
-              final EventDto event = new EventDto(new DateTime(), 266, 2, "STANDARD_EVENT_LOG");
-              final ArrayList<EventDto> events = new ArrayList<>();
-              events.add(event);
-              final EventMessageDataResponseDto responseDto =
-                  new EventMessageDataResponseDto(events);
+    final ArrayList<EventDto> events = new ArrayList<>();
+    events.add(unknownEventDto);
+    final EventMessageDataResponseDto responseDto = new EventMessageDataResponseDto(events);
 
-              this.eventService.enrichEvents(this.deviceMessageMetadata, responseDto);
-            });
-    assertThat(functionalException.getExceptionType())
-        .isEqualTo(FunctionalExceptionType.VALIDATION_ERROR);
+    this.eventService.enrichEvents(this.deviceMessageMetadata, responseDto);
+
+    assertThat(responseDto.getEvents().size()).isOne();
+    this.assertEventType(unknownEventCode, "", EventTypeDto.UNKNOWN_EVENT_HEADEND);
   }
 
   @Test
