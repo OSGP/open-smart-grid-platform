@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
@@ -25,12 +24,9 @@ public abstract class AbstractConfigurationObjectService implements Configuratio
 
   private final DlmsDeviceRepository dlmsDeviceRepository;
 
-  public AbstractConfigurationObjectService(final DlmsDeviceRepository dlmsDeviceRepository) {
+  protected AbstractConfigurationObjectService(final DlmsDeviceRepository dlmsDeviceRepository) {
     this.dlmsDeviceRepository = dlmsDeviceRepository;
   }
-
-  @Override
-  public abstract boolean handles(Protocol protocol);
 
   protected void updateHlsActive(
       final DlmsDevice device, final ConfigurationObjectDto configurationObject) {

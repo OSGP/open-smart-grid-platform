@@ -30,7 +30,7 @@ public abstract class GetConfigurationObjectService extends AbstractConfiguratio
 
   protected DlmsDeviceRepository dlmsDeviceRepository;
 
-  public GetConfigurationObjectService(final DlmsDeviceRepository dlmsDeviceRepository) {
+  protected GetConfigurationObjectService(final DlmsDeviceRepository dlmsDeviceRepository) {
     super(dlmsDeviceRepository);
   }
 
