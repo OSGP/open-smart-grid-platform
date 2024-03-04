@@ -575,7 +575,7 @@ public class EventService {
         EventTypeDto.KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_4, 0x83A0, null),
     KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_4(
         EventTypeDto.KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_4, 0x83A1, null),
-    UNKNOWN_EVENT_HEADEND(EventTypeDto.UNKNOWN_EVENT_HEADEND, 0x84A1, null);
+    UNKNOWN_EVENT_HEADEND(EventTypeDto.UNKNOWN_EVENT_HEADEND, 999, null);
 
     private final EventTypeDto eventTypeDto;
     private final int eventCode;

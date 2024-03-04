@@ -6,7 +6,6 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.util.Map;
@@ -45,7 +44,7 @@ public class BundledFindEventsSteps extends BaseBundleSteps {
     assertThat(findEventsResponse.getEvents()).hasSize(nrOfEvents);
   }
 
-  @And(
+  @Then(
       "^the bundle response should contain a response with (\\d++) events containing \"([^\"]*)\"$")
   public void theBundleResponseShouldContainAFindEventsResponseWithEvent(
       final int nrOfEvents, final String eventType) throws Throwable {
