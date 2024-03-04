@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,12 +60,9 @@ public class EventService {
 
     final Integer eventCode = eventDto.getEventCode();
 
-    final List<EventTypeDtoLookup> possibleEventTypes = this.eventTypsByCode.get(eventCode);
+    List<EventTypeDtoLookup> possibleEventTypes = this.eventTypsByCode.get(eventCode);
     if (possibleEventTypes == null) {
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.DOMAIN_SMART_METERING,
-          new AssertionError("Event Type should be defined for eventCode: " + eventCode));
+      possibleEventTypes = Collections.singletonList(EventTypeDtoLookup.UNKNOWN_EVENT_HEADEND);
     }
     final List<EventTypeDtoLookup> eventTypes =
         possibleEventTypes.stream()
@@ -576,7 +574,8 @@ public class EventService {
     KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_4(
         EventTypeDto.KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_4, 0x83A0, null),
     KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_4(
-        EventTypeDto.KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_4, 0x83A1, null);
+        EventTypeDto.KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_4, 0x83A1, null),
+    UNKNOWN_EVENT_HEADEND(EventTypeDto.UNKNOWN_EVENT_HEADEND, 999, null);
 
     private final EventTypeDto eventTypeDto;
     private final int eventCode;

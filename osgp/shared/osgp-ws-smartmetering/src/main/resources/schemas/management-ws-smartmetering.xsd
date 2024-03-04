@@ -950,6 +950,8 @@
       <xsd:enumeration value="KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_4"/>
       <!-- 0x83A1 - Key is acknowledged by the M-Bus device on channel 4 -->
       <xsd:enumeration value="KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_4"/>
+      <!--        - Unknown event type -->
+      <xsd:enumeration value="UNKNOWN_EVENT_HEADEND"/>
 
     </xsd:restriction>
   </xsd:simpleType>
