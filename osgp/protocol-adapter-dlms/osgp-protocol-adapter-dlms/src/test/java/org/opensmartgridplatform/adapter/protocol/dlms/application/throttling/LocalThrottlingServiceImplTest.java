@@ -37,7 +37,7 @@ class LocalThrottlingServiceImplTest {
   private static final Integer MAX_OPEN_CONNECTIONS = MAX_NEW_CONNECTION_REQUESTS * 2;
   private static final Integer MAX_NEW_CONNECTION_RESET_TIME = 200;
   private static final Integer MAX_WAIT_FOR_PERMIT = 500;
-  private static final Integer CLEANUP_PERMITS_INTERVAL = 200;
+  private static final Integer CLEANUP_PERMITS_INTERVAL = 1000;
   private static final Duration PERMIT_TTL = Duration.of(2, ChronoUnit.SECONDS);
 
   private LocalThrottlingServiceImpl throttlingService;
