@@ -5,21 +5,23 @@
 package org.opensmartgridplatform.throttling;
 
 import java.util.Optional;
+import org.opensmartgridplatform.throttling.entities.ThrottlingConfig;
+import org.opensmartgridplatform.throttling.model.ThrottlingSettings;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SegmentedNetworkThrottler {
 
-  private final MaxConcurrencyByThrottlingConfig maxConcurrencyByThrottlingConfig;
+  private final ThrottlingConfigCache throttlingConfigCache;
   private final MaxConcurrencyByBtsCellConfig maxConcurrencyByBtsCellConfig;
   private final PermitsByThrottlingConfig permitsByThrottlingConfig;
 
   public SegmentedNetworkThrottler(
-      final MaxConcurrencyByThrottlingConfig maxConcurrencyByThrottlingConfig,
+      final ThrottlingConfigCache throttlingConfigCache,
       final MaxConcurrencyByBtsCellConfig maxConcurrencyByBtsCellConfig,
       final PermitsByThrottlingConfig permitsByThrottlingConfig) {
 
-    this.maxConcurrencyByThrottlingConfig = maxConcurrencyByThrottlingConfig;
+    this.throttlingConfigCache = throttlingConfigCache;
     this.maxConcurrencyByBtsCellConfig = maxConcurrencyByBtsCellConfig;
     this.permitsByThrottlingConfig = permitsByThrottlingConfig;
   }
@@ -32,14 +34,8 @@ public class SegmentedNetworkThrottler {
       final int requestId,
       final int priority) {
 
-    final Optional<Integer> maxConcurrencyBtsCell =
-        this.maxConcurrencyByBtsCellConfig.getMaxConcurrency(baseTransceiverStationId, cellId);
-    final int maxConcurrency =
-        maxConcurrencyBtsCell.orElse(
-            this.maxConcurrencyByThrottlingConfig.getMaxConcurrency(throttlingConfigId));
-    if (maxConcurrency < 1) {
-      return false;
-    }
+    final ThrottlingSettings throttlingSettings =
+        this.getThrottlingSettings(throttlingConfigId, baseTransceiverStationId, cellId);
 
     return this.permitsByThrottlingConfig.requestPermit(
         throttlingConfigId,
@@ -48,7 +44,44 @@ public class SegmentedNetworkThrottler {
         cellId,
         requestId,
         priority,
-        maxConcurrency);
+        throttlingSettings);
+  }
+
+  private ThrottlingSettings getThrottlingSettings(
+      final short throttlingConfigId, final int baseTransceiverStationId, final int cellId) {
+    final ThrottlingConfig throttlingConfig =
+        this.throttlingConfigCache.getThrottlingConfig(throttlingConfigId);
+
+    final Optional<Integer> maxConcurrencyBtsCell =
+        this.maxConcurrencyByBtsCellConfig.getMaxConcurrency(baseTransceiverStationId, cellId);
+    final int maxConcurrency = maxConcurrencyBtsCell.orElse(throttlingConfig.getMaxConcurrency());
+
+    final int maxNewConnections = throttlingConfig.getMaxNewConnections();
+    final long maxNewConnectionsResetTimeInMs =
+        throttlingConfig.getMaxNewConnectionsResetTimeInMs();
+    final long maxNewConnectionsWaitTimeInMs = throttlingConfig.getMaxNewConnectionsWaitTimeInMs();
+
+    return new ThrottlingSettings() {
+      @Override
+      public int getMaxConcurrency() {
+        return maxConcurrency;
+      }
+
+      @Override
+      public int getMaxNewConnections() {
+        return maxNewConnections;
+      }
+
+      @Override
+      public long getMaxNewConnectionsResetTimeInMs() {
+        return maxNewConnectionsResetTimeInMs;
+      }
+
+      @Override
+      public long getMaxNewConnectionsWaitTimeInMs() {
+        return maxNewConnectionsWaitTimeInMs;
+      }
+    };
   }
 
   public boolean releasePermit(

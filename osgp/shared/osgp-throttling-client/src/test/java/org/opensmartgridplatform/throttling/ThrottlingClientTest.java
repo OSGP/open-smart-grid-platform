@@ -37,7 +37,7 @@ class ThrottlingClientTest {
   @BeforeEach
   void beforeEach() {
     this.mockWebServer = new MockWebServer();
-    this.throttlingConfig = new ThrottlingConfig("throttling-client-test", 2);
+    this.throttlingConfig = new ThrottlingConfig("throttling-client-test", 2, 3, 4, 5);
     this.throttlingClient =
         new ThrottlingClient(
             this.throttlingConfig,
@@ -84,7 +84,7 @@ class ThrottlingClientTest {
 
   private boolean isThrottlingConfigRegister(final RecordedRequest request) {
     return "/throttling-configs".equals(request.getPath())
-        && "{\"name\":\"throttling-client-test\",\"maxConcurrency\":2}"
+        && "{\"name\":\"throttling-client-test\",\"maxConcurrency\":2,\"maxNewConnections\":3,\"maxNewConnectionsResetTimeInMs\":4,\"maxNewConnectionsWaitTimeInMs\":5}"
             .equals(request.getBody().readUtf8())
         && "POST".equals(request.getMethod());
   }

@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.opensmartgridplatform.throttling.entities.ThrottlingConfig;
+import org.opensmartgridplatform.throttling.model.ThrottlingSettings;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
 import org.opensmartgridplatform.throttling.repositories.ThrottlingConfigRepository;
 import org.opensmartgridplatform.throttling.service.PermitReleasedNotifier;
@@ -93,7 +94,7 @@ public class PermitsByThrottlingConfig {
       final int cellId,
       final int requestId,
       final int priority,
-      final int maxConcurrency) {
+      final ThrottlingSettings throttlingSettings) {
 
     final PermitsPerNetworkSegment permitsPerNetworkSegment =
         this.permitsPerSegmentByConfig.computeIfAbsent(
@@ -106,7 +107,7 @@ public class PermitsByThrottlingConfig {
         cellId,
         requestId,
         priority,
-        maxConcurrency);
+        throttlingSettings);
   }
 
   private PermitsPerNetworkSegment createAndInitialize(final short throttlingConfigId) {

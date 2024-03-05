@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.opensmartgridplatform.throttling.model.ThrottlingSettings;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository.PermitCountByNetworkSegment;
 import org.opensmartgridplatform.throttling.service.PermitReleasedNotifier;
@@ -24,6 +25,8 @@ public class PermitsPerNetworkSegment {
 
   private final ConcurrentMap<Integer, ConcurrentMap<Integer, AtomicInteger>> permitsPerSegment =
       new ConcurrentHashMap<>();
+  private final ConcurrentMap<Integer, ConcurrentMap<Integer, NewConnectionRequestThrottler>>
+      newConnectionRequestThrottlerPerSegment = new ConcurrentHashMap<>();
 
   private final PermitRepository permitRepository;
   private final PermitReleasedNotifier permitReleasedNotifier;
@@ -100,6 +103,11 @@ public class PermitsPerNetworkSegment {
                 TreeMap::new));
   }
 
+  ConcurrentMap<Integer, ConcurrentMap<Integer, NewConnectionRequestThrottler>>
+      newConnectionRequestThrottlerPerSegment() {
+    return this.newConnectionRequestThrottlerPerSegment;
+  }
+
   public boolean requestPermit(
       final short throttlingConfigId,
       final int clientId,
@@ -107,13 +115,43 @@ public class PermitsPerNetworkSegment {
       final int cellId,
       final int requestId,
       final int priority,
-      final int maxConcurrency) {
-    if (!this.isPermitAvailable(baseTransceiverStationId, cellId, priority, maxConcurrency)) {
+      final ThrottlingSettings throttlingSettings) {
+    if (!this.isNewConnectionRequestAllowed(
+        baseTransceiverStationId, cellId, priority, throttlingSettings)) {
+      return false;
+    }
+
+    if (!this.isPermitAvailable(
+        baseTransceiverStationId, cellId, priority, throttlingSettings.getMaxConcurrency())) {
       return false;
     }
 
     return this.permitRepository.grantPermit(
         throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
+  }
+
+  private boolean isNewConnectionRequestAllowed(
+      final int baseTransceiverStationId,
+      final int cellId,
+      final int priority,
+      final ThrottlingSettings throttlingSettings) {
+    if (throttlingSettings.getMaxNewConnections() < 0) {
+      return true;
+    } else if (throttlingSettings.getMaxNewConnections() == 0) {
+      return false;
+    }
+    final NewConnectionRequestThrottler newConnectionRequestThrottler =
+        this.newConnectionRequestThrottlerPerSegment
+            .computeIfAbsent(baseTransceiverStationId, key -> new ConcurrentHashMap<>())
+            .computeIfAbsent(
+                cellId,
+                key ->
+                    new NewConnectionRequestThrottler(
+                        throttlingSettings.getMaxNewConnections(),
+                        throttlingSettings.getMaxNewConnectionsResetTimeInMs(),
+                        throttlingSettings.getMaxNewConnectionsWaitTimeInMs()));
+
+    return newConnectionRequestThrottler.isNewConnectionRequestAllowed(priority);
   }
 
   public boolean releasePermit(
@@ -146,6 +184,11 @@ public class PermitsPerNetworkSegment {
       final int cellId,
       final int priority,
       final int maxConcurrency) {
+    if (maxConcurrency < 0) {
+      return true;
+    } else if (maxConcurrency == 0) {
+      return false;
+    }
     final AtomicInteger permitCounter = this.getPermitCounter(baseTransceiverStationId, cellId);
 
     final int numberOfPermitsIfGranted = permitCounter.incrementAndGet();

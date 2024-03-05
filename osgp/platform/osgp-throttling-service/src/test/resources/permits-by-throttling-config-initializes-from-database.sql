@@ -1,10 +1,10 @@
 -- Insert database content expected to be present executing test methods annotated with
 -- @Sql(scripts = "/permits-by-throttling-config-initializes-from-database.sql")
-INSERT INTO throttling_config (id, name, max_concurrency) VALUES
-  (1, 'config-one', 10),
-  (2, 'config-two', 15),
-  (3, 'config-three', 2),
-  (4, 'config-four', 1);
+INSERT INTO throttling_config (id, name, max_concurrency, max_new_connections, max_new_connections_reset_time_in_ms, max_new_connections_wait_time_in_ms) VALUES
+  (1, 'config-one', 10, 11, 12, 13),
+  (2, 'config-two', 15, 16, 17, 18),
+  (3, 'config-three', 2, 3, 4, 5),
+  (4, 'config-four', 1, 2, 3, 4);
 ALTER SEQUENCE throttling_config_id_seq RESTART WITH 5;
 
 INSERT INTO permit (id, throttling_config_id, client_id, bts_id, cell_id, request_id, created_at) VALUES

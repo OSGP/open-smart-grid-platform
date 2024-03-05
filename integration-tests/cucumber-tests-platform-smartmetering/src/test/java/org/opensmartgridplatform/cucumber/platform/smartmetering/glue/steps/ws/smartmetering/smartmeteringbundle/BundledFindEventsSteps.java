@@ -12,6 +12,7 @@ import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.FindEventsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.FindEventsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventType;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.FindEventsRequestBuilder;
 
 public class BundledFindEventsSteps extends BaseBundleSteps {
@@ -41,5 +42,24 @@ public class BundledFindEventsSteps extends BaseBundleSteps {
 
     final FindEventsResponse findEventsResponse = (FindEventsResponse) response;
     assertThat(findEventsResponse.getEvents()).hasSize(nrOfEvents);
+  }
+
+  @Then(
+      "^the bundle response should contain a response with (\\d++) events containing \"([^\"]*)\"$")
+  public void theBundleResponseShouldContainAFindEventsResponseWithEvent(
+      final int nrOfEvents, final String eventType) throws Throwable {
+    final Response response = this.getNextBundleResponse();
+
+    assertThat(response).isInstanceOf(FindEventsResponse.class);
+
+    final FindEventsResponse findEventsResponse = (FindEventsResponse) response;
+    assertThat(findEventsResponse.getEvents()).hasSize(nrOfEvents);
+    final EventType expectedEventType = EventType.valueOf(eventType);
+
+    final boolean hasExpectedEventType =
+        findEventsResponse.getEvents().stream()
+            .anyMatch(event -> event.getEventType() == expectedEventType);
+
+    assertThat(hasExpectedEventType).isTrue();
   }
 }
