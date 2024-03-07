@@ -15,7 +15,7 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>osgp-protocol-simulator-dlms</artifactId>
-    <version>5.53.0-SNAPSHOT</version>
+    <version>5.54.0-SNAPSHOT</version>
   </parent>
 
   <build>
