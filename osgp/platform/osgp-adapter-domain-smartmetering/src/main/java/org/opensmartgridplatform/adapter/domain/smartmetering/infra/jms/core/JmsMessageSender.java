@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core;
 
+import jakarta.jms.ObjectMessage;
 import java.io.Serializable;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.jms.core.JmsTemplate;
 

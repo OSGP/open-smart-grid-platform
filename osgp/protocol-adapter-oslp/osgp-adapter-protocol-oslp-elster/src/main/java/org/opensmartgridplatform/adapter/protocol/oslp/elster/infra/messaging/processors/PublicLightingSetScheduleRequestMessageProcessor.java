@@ -4,12 +4,12 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.processors;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpDeviceSettingsService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.PendingSetScheduleRequestService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;

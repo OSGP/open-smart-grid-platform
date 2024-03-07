@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.shared.infra.jms;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 
 @FunctionalInterface
 public interface MessageProcessor {

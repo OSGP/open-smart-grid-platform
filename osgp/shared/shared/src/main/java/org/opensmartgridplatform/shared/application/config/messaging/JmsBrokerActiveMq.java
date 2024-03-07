@@ -24,9 +24,9 @@ import static org.opensmartgridplatform.shared.application.config.messaging.JmsP
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_TRUST_ALL_PACKAGES;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_USE_EXPONENTIAL_BACK_OFF;
 
+import jakarta.jms.Destination;
 import java.util.Arrays;
 import java.util.concurrent.ThreadPoolExecutor;
-import javax.jms.Destination;
 import javax.net.ssl.SSLException;
 import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.ActiveMQSslConnectionFactory;

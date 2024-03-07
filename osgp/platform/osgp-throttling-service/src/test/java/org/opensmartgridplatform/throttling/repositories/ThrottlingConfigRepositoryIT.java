@@ -7,8 +7,8 @@ package org.opensmartgridplatform.throttling.repositories;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+import jakarta.validation.ConstraintViolationException;
 import java.util.Collections;
-import javax.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterAll;

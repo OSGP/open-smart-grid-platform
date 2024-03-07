@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.domain.da.application.services;
 
+import jakarta.persistence.OptimisticLockException;
 import java.time.Duration;
 import java.time.Instant;
-import javax.persistence.OptimisticLockException;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;

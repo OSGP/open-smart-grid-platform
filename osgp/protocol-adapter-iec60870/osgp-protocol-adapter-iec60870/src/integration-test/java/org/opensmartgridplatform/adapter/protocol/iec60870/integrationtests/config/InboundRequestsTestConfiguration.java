@@ -6,7 +6,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.con
 
 import static org.mockito.Mockito.mock;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceRequestMessageListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors.ConnectRequestMessageProcessor;

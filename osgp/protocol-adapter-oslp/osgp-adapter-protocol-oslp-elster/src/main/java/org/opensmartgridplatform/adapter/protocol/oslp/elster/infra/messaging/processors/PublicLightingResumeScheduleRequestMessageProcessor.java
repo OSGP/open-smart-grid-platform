@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.processors;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.io.IOException;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
@@ -39,8 +39,8 @@ public class PublicLightingResumeScheduleRequestMessageProcessor
   public void processMessage(final ObjectMessage message) {
     LOGGER.debug("Processing public lighting resume schedule request message");
 
-    MessageMetadata messageMetadata;
-    ResumeScheduleMessageDataContainerDto resumeScheduleMessageDataContainer;
+    final MessageMetadata messageMetadata;
+    final ResumeScheduleMessageDataContainerDto resumeScheduleMessageDataContainer;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
       resumeScheduleMessageDataContainer =

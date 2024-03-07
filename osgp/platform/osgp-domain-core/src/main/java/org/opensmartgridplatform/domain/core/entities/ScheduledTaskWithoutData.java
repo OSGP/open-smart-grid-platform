@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.domain.core.entities;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import java.sql.Timestamp;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 /** Scheduled task without the actual data */

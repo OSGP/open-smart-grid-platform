@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.microgrids.application.config.messaging;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.MessageListener;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.MessageListener;
 import javax.net.ssl.SSLException;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
@@ -26,7 +26,7 @@ public class InboundOsgpCoreRequestsMessagingConfig {
 
   private static final String PROPERTY_PREFIX = "jms.microgrids.inbound.osgp.core.requests";
 
-  private JmsConfigurationFactory jmsConfigurationFactory;
+  private final JmsConfigurationFactory jmsConfigurationFactory;
 
   public InboundOsgpCoreRequestsMessagingConfig(
       final Environment environment, final DefaultJmsConfiguration defaultJmsConfiguration)

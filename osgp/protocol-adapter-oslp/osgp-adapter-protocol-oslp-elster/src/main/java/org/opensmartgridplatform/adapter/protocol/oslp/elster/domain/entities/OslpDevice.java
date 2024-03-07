@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 import java.security.SecureRandom;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;

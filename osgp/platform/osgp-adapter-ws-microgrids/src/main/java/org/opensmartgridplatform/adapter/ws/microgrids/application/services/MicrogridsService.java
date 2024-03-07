@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.microgrids.application.services;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.microgrids.application.exceptionhandling.ResponseNotFoundException;
 import org.opensmartgridplatform.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessage;

@@ -48,32 +48,35 @@ SPDX-License-Identifier: Apache-2.0
     <osgp.dlms.version>5.54.0-SNAPSHOT</osgp.dlms.version>
     <osgp.shared.version>5.54.0-SNAPSHOT</osgp.shared.version>
     <osgp.jasper-interface.version>5.54.0-SNAPSHOT</osgp.jasper-interface.version>
-    <spring.version>5.3.29</spring.version>
-    <spring.data.version>2.7.15</spring.data.version>
-    <spring.data.commons.version>2.7.15</spring.data.commons.version>
-    <spring.security.version>5.8.6</spring.security.version>
-    <spring.ws.version>3.1.6</spring.ws.version>
+    <spring.version>6.1.2</spring.version>
+    <spring.data.version>3.2.0</spring.data.version>
+    <spring.data.commons.version>3.2.0</spring.data.commons.version>
+    <spring.security.version>6.2.0</spring.security.version>
+    <spring.ws.version>4.0.9</spring.ws.version>
     <reactor.version>2020.0.22</reactor.version>
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.core.version>4.8.0</mockito.core.version>
     <okhttp3.mockwebserver.version>4.9.1</okhttp3.mockwebserver.version>
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
-    <servlet.version>4.0.1</servlet.version>
-    <servlet.jstl.version>1.2</servlet.jstl.version>
-    <hibernate.version>5.6.12.Final</hibernate.version>
-    <hibernate.validator.version>6.1.5.Final</hibernate.validator.version>
-    <javax.persistence.api.version>2.2</javax.persistence.api.version>
-    <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
-    <junit.version>5.7.0</junit.version>
-    <junit.platform.launcher.version>1.6.2</junit.platform.launcher.version>
+    <servlet.version>6.0.0</servlet.version>
+    <servlet.jstl.version>3.0.0</servlet.jstl.version>
+    <hibernate.version>6.3.1.Final</hibernate.version>
+    <hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
+    <jakarta.persistence.api.version>3.1.0</jakarta.persistence.api.version>
+    <jakarta.validation.api.version>3.0.2</jakarta.validation.api.version>
+    <jakarta.jms.api.version>3.1.0</jakarta.jms.api.version>
+    <artemis.jakarta.client.version>2.31.2</artemis.jakarta.client.version>
+    <junit.version>5.10.1</junit.version>
+    <junit.platform.launcher.version>1.10.1</junit.platform.launcher.version>
     <byte.buddy.version>1.12.17</byte.buddy.version>
     <joda.version>2.10.6</joda.version>
-    <flyway.version>7.3.0</flyway.version>
-    <slf4j.version>1.7.30</slf4j.version>
+    <flyway.version>9.22.3</flyway.version>
+    <slf4j.version>2.0.9</slf4j.version>
     <apache.commons.lang.version>3.10</apache.commons.lang.version>
     <apache.commons.text.version>1.10.0</apache.commons.text.version>
-    <apache.httpcomponents.version>4.5.13</apache.httpcomponents.version>
+    <apache.httpcomponents.version>5.3</apache.httpcomponents.version>
+    <apache.httpcomponents..mime.version>4.5.14</apache.httpcomponents..mime.version>
     <apache.httpcomponents.httpcore.version>4.4.13</apache.httpcomponents.httpcore.version>
     <commons.codec.version>1.16.0</commons.codec.version>
     <orika.version>1.5.4</orika.version>
@@ -92,17 +95,17 @@ SPDX-License-Identifier: Apache-2.0
     <maven.exec.plugin.version>1.6.0</maven.exec.plugin.version>
     <maven.enforcer.plugin.version>3.4.1</maven.enforcer.plugin.version>
     <maven.enforcer.maven.version>3.8.5</maven.enforcer.maven.version>
-    <jaxb2.maven.plugin.version>2.5.0</jaxb2.maven.plugin.version>
-    <jaxb.api.version>2.3.1</jaxb.api.version>
-    <jaxb.core.version>2.3.0.1</jaxb.core.version>
+    <jaxb2.maven.plugin.version>3.1.0</jaxb2.maven.plugin.version>
+    <jaxb.api.version>4.0.1</jaxb.api.version>
+    <jaxb.core.version>4.0.4</jaxb.core.version>
     <spotbugs.maven.plugin.version>4.6.0.0</spotbugs.maven.plugin.version>
     <pmd.maven.plugin.version>3.16.0</pmd.maven.plugin.version>
     <checkstyle.maven.plugin.version>3.1.2</checkstyle.maven.plugin.version>
     <dependency-check.maven.plugin.version>7.0.2</dependency-check.maven.plugin.version>
     <versions.maven.plugin.version>2.10.0</versions.maven.plugin.version>
     <fmt-maven-plugin.version>2.19</fmt-maven-plugin.version>
-    <apache.activemq.version>5.18.3</apache.activemq.version>
-    <logback.version>1.2.13</logback.version>
+    <apache.activemq.version>6.0.1</apache.activemq.version>
+    <logback.version>1.4.14</logback.version>
     <apache.commons.schema>2.2.5</apache.commons.schema>
     <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
     <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
@@ -111,34 +114,33 @@ SPDX-License-Identifier: Apache-2.0
     <openmuc.jdlms-annotation.version>1.8.0</openmuc.jdlms-annotation.version>
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
     <openmuc.j60870.version>1.4.0</openmuc.j60870.version>
-    <javax.inject.version>1</javax.inject.version>
-    <javax.annotation.version>1.3.2</javax.annotation.version>
+    <jakarta.inject.version>2.0.1</jakarta.inject.version>
+    <jakarta.annotation.version>2.1.1</jakarta.annotation.version>
     <license.maven.plugin>3.0</license.maven.plugin>
-    <jackson.version>2.13.4</jackson.version>
-    <jackson-databind.version>2.13.4.2</jackson-databind.version>
-    <cxf.version>3.5.7</cxf.version>
+    <jackson.version>2.15.3</jackson.version>
+    <cxf.version>4.0.3</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
-    <micrometer.version>1.10.0</micrometer.version>
+    <micrometer.version>1.12.1</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
     <guava.version>32.1.2-jre</guava.version>
     <spotbugs.version>4.6.0</spotbugs.version>
     <jacoco.version>0.8.8</jacoco.version>
     <selenium.java.version>3.141.59</selenium.java.version>
     <SunriseSunsetCalculator.version>1.2</SunriseSunsetCalculator.version>
-    <ant.junit.version>1.10.8</ant.junit.version>
+    <ant.junit.version>1.10.14</ant.junit.version>
     <args4j.version>2.33</args4j.version>
     <cucumber.version>5.7.0</cucumber.version>
     <testcontainers.version>1.16.2</testcontainers.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <postgresql.version>42.6.0</postgresql.version>
-    <javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
+    <jakarta.xml.soap-api.version>3.0.1</jakarta.xml.soap-api.version>
     <!-- to avoid conflicts with spring-kafka-test the older kafka version 2.4.1 is used-->
-    <kafka.version>2.4.1</kafka.version>
+    <kafka.version>3.6.1</kafka.version>
     <avro.version>1.11.3</avro.version>
-    <spring.kafka.version>2.4.7.RELEASE</spring.kafka.version>
+    <spring.kafka.version>3.1.0</spring.kafka.version>
     <!-- spring-kafka-test needs a 2.12 version of the scala libraries -->
-    <scala.lang.version>2.12.11</scala.lang.version>
+    <scala.lang.version>2.13.12</scala.lang.version>
     <lombok.version>1.18.24</lombok.version>
     <hivemq-mqtt-client.version>1.2.0</hivemq-mqtt-client.version>
     <apache.commons.io.version>2.11.0</apache.commons.io.version>
@@ -471,6 +473,11 @@ SPDX-License-Identifier: Apache-2.0
         <version>${spring.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.springframework.integration</groupId>
+        <artifactId>spring-integration-ip</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
         <groupId>io.projectreactor</groupId>
         <artifactId>reactor-bom</artifactId>
         <version>${reactor.version}</version>
@@ -483,6 +490,16 @@ SPDX-License-Identifier: Apache-2.0
         <groupId>org.springframework</groupId>
         <artifactId>spring-jms</artifactId>
         <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.jms</groupId>
+        <artifactId>jakarta.jms-api</artifactId>
+        <version>${jakarta.jms.api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>artemis-jakarta-client</artifactId>
+        <version>${artemis.jakarta.client.version}</version>
       </dependency>
 
       <!-- Spring Data -->
@@ -548,17 +565,17 @@ SPDX-License-Identifier: Apache-2.0
         <version>${spring.ws.version}</version>
       </dependency>
 
-      <!-- javax inject -->
+      <!-- jakarta inject -->
       <dependency>
-        <groupId>javax.inject</groupId>
-        <artifactId>javax.inject</artifactId>
-        <version>${javax.inject.version}</version>
+        <groupId>jakarta.inject</groupId>
+        <artifactId>jakarta.inject-api</artifactId>
+        <version>${jakarta.inject.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>javax.annotation</groupId>
-        <artifactId>javax.annotation-api</artifactId>
-        <version>${javax.annotation.version}</version>
+        <groupId>jakarta.annotation</groupId>
+        <artifactId>jakarta.annotation-api</artifactId>
+        <version>${jakarta.annotation.version}</version>
       </dependency>
 
       <!-- ws support -->
@@ -580,21 +597,26 @@ SPDX-License-Identifier: Apache-2.0
 
       <!-- Servlet API 3.0 -->
       <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>javax.servlet-api</artifactId>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
         <version>${servlet.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>jstl</artifactId>
+        <groupId>jakarta.servlet.jsp.jstl</groupId>
+        <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+        <version>${servlet.jstl.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.web</groupId>
+        <artifactId>jakarta.servlet.jsp.jstl</artifactId>
         <version>${servlet.jstl.version}</version>
       </dependency>
 
       <!--  Jaxb xml bind -->
       <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
         <version>${jaxb.api.version}</version>
       </dependency>
       <dependency>
@@ -652,8 +674,8 @@ SPDX-License-Identifier: Apache-2.0
         <version>${jackson.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.fasterxml.jackson.jaxrs</groupId>
-        <artifactId>jackson-jaxrs-json-provider</artifactId>
+        <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+        <artifactId>jackson-jakarta-rs-json-provider</artifactId>
         <version>${jackson.version}</version>
         <exclusions>
           <exclusion>
@@ -670,7 +692,7 @@ SPDX-License-Identifier: Apache-2.0
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>${jackson-databind.version}</version>
+        <version>${jackson.version}</version>
       </dependency>
 
       <!-- PostgreSQL -->
@@ -689,25 +711,14 @@ SPDX-License-Identifier: Apache-2.0
 
       <!-- Hibernate -->
       <dependency>
-        <groupId>org.hibernate</groupId>
+        <groupId>org.hibernate.orm</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>${hibernate.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.glassfish.jaxb</groupId>
-            <artifactId>jaxb-runtime</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-entitymanager</artifactId>
-        <version>${hibernate.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>javax.persistence</groupId>
-          <artifactId>javax.persistence-api</artifactId>
-          <version>${javax.persistence.api.version}</version>
+          <groupId>jakarta.persistence</groupId>
+          <artifactId>jakarta.persistence-api</artifactId>
+          <version>${jakarta.persistence.api.version}</version>
       </dependency>
 
       <!-- Hibernate validator -->
@@ -725,9 +736,9 @@ SPDX-License-Identifier: Apache-2.0
 
       <!-- Bean validation 2.0 / JSR 380 -->
       <dependency>
-        <groupId>javax.validation</groupId>
-        <artifactId>validation-api</artifactId>
-        <version>${javax.validation.api.version}</version>
+        <groupId>jakarta.validation</groupId>
+        <artifactId>jakarta.validation-api</artifactId>
+        <version>${jakarta.validation.api.version}</version>
       </dependency>
 
       <!-- Flyway (DB Migration) -->
@@ -755,8 +766,8 @@ SPDX-License-Identifier: Apache-2.0
 
       <!-- Apache HTTP client -->
       <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient</artifactId>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
         <version>${apache.httpcomponents.version}</version>
       </dependency>
       <dependency>
@@ -841,18 +852,29 @@ SPDX-License-Identifier: Apache-2.0
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-spring</artifactId>
         <version>${apache.activemq.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
-
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-jms-pool</artifactId>
+        <version>${apache.activemq.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-broker</artifactId>
+        <version>${apache.activemq.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-pool</artifactId>
         <version>${apache.activemq.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
     <dependency>
@@ -1138,9 +1160,9 @@ SPDX-License-Identifier: Apache-2.0
       </dependency>
 
       <dependency>
-        <groupId>javax.xml.soap</groupId>
-        <artifactId>javax.xml.soap-api</artifactId>
-        <version>${javax.xml.soap-api.version}</version>
+        <groupId>jakarta.xml.soap</groupId>
+        <artifactId>jakarta.xml.soap-api</artifactId>
+        <version>${jakarta.xml.soap-api.version}</version>
       </dependency>
 
       <!-- Lombok -->
@@ -1456,6 +1478,7 @@ SPDX-License-Identifier: Apache-2.0
           <fork>true</fork>
           <source>${java.version}</source>
           <target>${java.version}</target>
+          <parameters>true</parameters>
         </configuration>
       </plugin>
 

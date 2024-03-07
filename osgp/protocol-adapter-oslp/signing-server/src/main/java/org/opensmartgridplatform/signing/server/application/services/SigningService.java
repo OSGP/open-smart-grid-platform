@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.signing.server.application.services;
 
+import jakarta.annotation.Resource;
+import jakarta.jms.Destination;
 import java.security.PrivateKey;
-import javax.annotation.Resource;
-import javax.jms.Destination;
 import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
@@ -92,7 +92,7 @@ public class SigningService {
             .withPayloadMessage(payloadMessage)
             .build();
 
-    ResponseMessage responseMessage;
+    final ResponseMessage responseMessage;
 
     if (oslpEnvelope == null) {
       LOGGER.error(

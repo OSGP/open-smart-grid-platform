@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.processors;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.io.IOException;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
@@ -38,8 +38,8 @@ public class CommonSwitchFirmwareRequestMessageProcessor extends DeviceRequestMe
   public void processMessage(final ObjectMessage message) {
     LOGGER.debug("Processing common switch firmware message");
 
-    MessageMetadata messageMetadata;
-    String version;
+    final MessageMetadata messageMetadata;
+    final String version;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
       version = (String) message.getObject();

@@ -325,7 +325,7 @@ class ThrottlingServiceApplicationIT {
   }
 
   private short validThrottlingConfigId(final ResponseEntity<Short> responseEntity) {
-    assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
+    assertThat(responseEntity.getStatusCode().is2xxSuccessful()).isTrue();
     assertThat(responseEntity.getBody()).isNotNull();
     final short id = responseEntity.getBody();
     assertThat(id).isPositive();
@@ -336,7 +336,7 @@ class ThrottlingServiceApplicationIT {
     final ResponseEntity<ThrottlingConfig[]> responseEntity =
         this.testRestTemplate.getForEntity(
             THROTTLING_CONFIGS_PAGE_URL, ThrottlingConfig[].class, page, size);
-    assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
+    assertThat(responseEntity.getStatusCode().is2xxSuccessful()).isTrue();
     return Arrays.asList(responseEntity.getBody());
   }
 
@@ -358,7 +358,7 @@ class ThrottlingServiceApplicationIT {
     final ResponseEntity<Integer> responseEntity =
         this.testRestTemplate.postForEntity(CLIENTS_URL, null, Integer.class);
 
-    assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
+    assertThat(responseEntity.getStatusCode().is2xxSuccessful()).isTrue();
     assertThat(responseEntity.getBody()).isNotNull();
     final int id = responseEntity.getBody();
     assertThat(id).isPositive();
@@ -619,7 +619,7 @@ class ThrottlingServiceApplicationIT {
         this.requestPermit(
             throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId, priority);
 
-    assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
+    assertThat(responseEntity.getStatusCode().is2xxSuccessful()).isTrue();
     assertThat(this.numberOfGrantedPermits(responseEntity)).isOne();
   }
 
@@ -684,7 +684,7 @@ class ThrottlingServiceApplicationIT {
         this.requestPermit(
             this.existingThrottlingConfigId, this.registeredClientId, requestId, priority);
 
-    assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
+    assertThat(responseEntity.getStatusCode().is2xxSuccessful()).isTrue();
   }
 
   @Test
@@ -773,7 +773,7 @@ class ThrottlingServiceApplicationIT {
         this.releasePermit(
             throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
 
-    assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
+    assertThat(responseEntity.getStatusCode().is2xxSuccessful()).isTrue();
   }
 
   @Test
@@ -789,7 +789,7 @@ class ThrottlingServiceApplicationIT {
         this.releasePermit(throttlingConfigId, clientId, requestId);
 
     System.out.println(responseEntity);
-    assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
+    assertThat(responseEntity.getStatusCode().is2xxSuccessful()).isTrue();
   }
 
   @Test
@@ -920,10 +920,10 @@ class ThrottlingServiceApplicationIT {
         this.releasePermit(
             throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
 
-    if (responseEntity.getStatusCode().series() != HttpStatus.Series.SUCCESSFUL) {
+    if (responseEntity.getStatusCode().isError()) {
       log.error(responseEntity.toString());
     }
-    assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
+    assertThat(responseEntity.getStatusCode().is2xxSuccessful()).isTrue();
   }
 
   private void unsuccessfullyReleasePermit(

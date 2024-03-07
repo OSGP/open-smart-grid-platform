@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
-import javax.annotation.PostConstruct;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;

@@ -5,7 +5,7 @@
 package org.opensmartgridplatform.adapter.domain.core.application.config;
 
 import com.zaxxer.hikari.HikariDataSource;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 import javax.sql.DataSource;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemSlicingRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;

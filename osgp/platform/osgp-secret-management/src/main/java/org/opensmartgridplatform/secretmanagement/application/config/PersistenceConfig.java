@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.secretmanagement.application.config;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 import org.flywaydb.core.Flyway;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptedSecretRepository;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptionKeyRepository;

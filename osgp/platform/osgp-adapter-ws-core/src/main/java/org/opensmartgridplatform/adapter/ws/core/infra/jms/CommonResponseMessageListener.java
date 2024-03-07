@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.adapter.ws.core.infra.jms;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
+import jakarta.jms.ObjectMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.messageprocessor.DomainResponseMessageProcessor;
 import org.springframework.beans.factory.annotation.Autowired;

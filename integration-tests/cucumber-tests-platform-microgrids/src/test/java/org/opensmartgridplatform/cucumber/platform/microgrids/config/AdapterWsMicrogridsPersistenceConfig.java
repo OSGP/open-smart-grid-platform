@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.cucumber.platform.microgrids.config;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.opensmartgridplatform.cucumber.platform.config.ApplicationPersistenceConfiguration;
 import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws.WsMicrogridsResponseDataRepository;

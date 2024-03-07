@@ -4,6 +4,16 @@
 
 package org.opensmartgridplatform.domain.core.entities;
 
+import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -16,18 +26,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import org.hibernate.annotations.SortNatural;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
@@ -56,8 +54,6 @@ public class FirmwareFile extends AbstractEntity {
       name = "device_model_firmware_file",
       joinColumns = @JoinColumn(name = "firmware_file_id"),
       inverseJoinColumns = @JoinColumn(name = "device_model_id"))
-  @OrderBy("modelCode")
-  @SortNatural
   private final SortedSet<DeviceModel> deviceModels = new TreeSet<>();
 
   @OneToMany(

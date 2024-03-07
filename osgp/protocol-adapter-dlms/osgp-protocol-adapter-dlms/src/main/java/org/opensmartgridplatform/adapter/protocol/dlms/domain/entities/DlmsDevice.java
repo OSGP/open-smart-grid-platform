@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 import java.time.Instant;
 import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 @Entity

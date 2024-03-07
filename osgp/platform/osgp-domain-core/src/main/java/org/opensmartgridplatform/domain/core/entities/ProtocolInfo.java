@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.domain.core.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.Entity;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 import org.springframework.util.StringUtils;
 

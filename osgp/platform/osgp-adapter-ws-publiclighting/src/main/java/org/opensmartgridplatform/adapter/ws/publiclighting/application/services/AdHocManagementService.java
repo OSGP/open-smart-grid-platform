@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.services;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.Size;
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessage;
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingResponseMessageFinder;

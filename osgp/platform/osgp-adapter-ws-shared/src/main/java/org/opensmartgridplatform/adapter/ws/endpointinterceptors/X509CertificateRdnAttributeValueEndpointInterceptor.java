@@ -94,7 +94,7 @@ public class X509CertificateRdnAttributeValueEndpointInterceptor
     final HttpServletConnection connection =
         (HttpServletConnection) transportContext.getConnection();
     final Object x509CertificateAttribute =
-        connection.getHttpServletRequest().getAttribute("javax.servlet.request.X509Certificate");
+        connection.getHttpServletRequest().getAttribute("jakarta.servlet.request.X509Certificate");
 
     if (x509CertificateAttribute instanceof X509Certificate[]) {
       return (X509Certificate[]) x509CertificateAttribute;

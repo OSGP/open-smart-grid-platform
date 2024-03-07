@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.cucumber.platform.distributionautomation.config;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.opensmartgridplatform.cucumber.platform.config.ApplicationPersistenceConfiguration;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps.database.ws.WsDistributionAutomationResponseDataRepository;

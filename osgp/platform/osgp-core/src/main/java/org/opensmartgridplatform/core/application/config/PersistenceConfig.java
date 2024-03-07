@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.core.application.config;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 import org.flywaydb.core.Flyway;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;

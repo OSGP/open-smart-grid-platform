@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.shared.infra.jms;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.io.Serializable;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.apache.activemq.command.ActiveMQObjectMessage;
 
 public class ObjectMessageBuilder {

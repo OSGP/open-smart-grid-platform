@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.tariffswitching.endpoints;
 
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolationException;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.DevicePage;

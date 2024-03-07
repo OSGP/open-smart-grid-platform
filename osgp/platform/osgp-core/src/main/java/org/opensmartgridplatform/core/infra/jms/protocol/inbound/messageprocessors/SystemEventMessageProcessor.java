@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.core.infra.jms.protocol.inbound.messageprocessors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.core.infra.jms.protocol.inbound.AbstractProtocolRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.entities.DomainInfo;

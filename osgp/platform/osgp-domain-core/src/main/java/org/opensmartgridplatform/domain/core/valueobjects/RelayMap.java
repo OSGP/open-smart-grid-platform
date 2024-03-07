@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.domain.core.valueobjects;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 public class RelayMap implements Serializable, Comparable<RelayMap> {
 

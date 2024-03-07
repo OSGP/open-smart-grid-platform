@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DomainInformation;
@@ -34,7 +34,7 @@ public class CommonGetStatusRequestMessageProcessor extends SsldDeviceRequestMes
   public void processMessage(final ObjectMessage message) throws JMSException {
     LOGGER.debug("Processing common get status request message");
 
-    MessageMetadata messageMetadata;
+    final MessageMetadata messageMetadata;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
     } catch (final JMSException e) {

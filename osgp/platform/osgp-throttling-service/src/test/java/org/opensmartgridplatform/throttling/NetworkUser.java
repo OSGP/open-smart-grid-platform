@@ -133,7 +133,7 @@ public class NetworkUser {
                 this.initialMaxNewConnectionsWaitTimeInMs),
             Short.class);
 
-    if (throttlingConfigResponse.getStatusCode().series() != HttpStatus.Series.SUCCESSFUL
+    if (throttlingConfigResponse.getStatusCode().isError()
         || throttlingConfigResponse.getBody() == null) {
       throw new IllegalStateException(
           "Could not register throttling config " + this.throttlingIdentity);
@@ -145,7 +145,7 @@ public class NetworkUser {
     final ResponseEntity<Integer> clientRegistrationResponse =
         this.restTemplate.postForEntity("/clients", null, Integer.class);
 
-    if (clientRegistrationResponse.getStatusCode().series() != HttpStatus.Series.SUCCESSFUL
+    if (clientRegistrationResponse.getStatusCode().isError()
         || clientRegistrationResponse.getBody() == null) {
       throw new IllegalStateException("Could not register client " + this.clientIdentity);
     }

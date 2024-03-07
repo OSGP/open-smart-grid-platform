@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.webdevicesimulator.service;
 
 import com.google.protobuf.ByteString;
+import jakarta.annotation.Resource;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -13,7 +14,6 @@ import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.text.MessageFormat;
 import java.util.Random;
-import javax.annotation.Resource;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;

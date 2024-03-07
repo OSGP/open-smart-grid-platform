@@ -14,9 +14,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.nio.charset.StandardCharsets;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

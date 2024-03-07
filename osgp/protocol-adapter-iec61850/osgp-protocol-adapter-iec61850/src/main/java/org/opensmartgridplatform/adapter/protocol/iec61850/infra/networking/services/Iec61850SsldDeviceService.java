@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services;
 
+import jakarta.jms.JMSException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.jms.JMSException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.mapping.Iec61850Mapper;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;

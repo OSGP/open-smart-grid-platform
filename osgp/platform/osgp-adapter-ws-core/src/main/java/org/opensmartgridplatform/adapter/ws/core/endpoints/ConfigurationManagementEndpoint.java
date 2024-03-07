@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.ws.core.endpoints;
 
+import jakarta.validation.ConstraintViolationException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import javax.validation.ConstraintViolationException;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.ConfigurationManagementMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.ConfigurationManagementService;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;

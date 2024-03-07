@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.tariffswitching.application.config;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResendNotificationJob;
 import org.opensmartgridplatform.shared.application.scheduling.OsgpScheduler;
 import org.quartz.SchedulerException;

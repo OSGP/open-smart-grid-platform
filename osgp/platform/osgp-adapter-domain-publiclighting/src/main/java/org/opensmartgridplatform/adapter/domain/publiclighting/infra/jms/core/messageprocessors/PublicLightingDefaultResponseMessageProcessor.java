@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.core.messageprocessors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.DefaultDeviceResponseService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -58,7 +58,7 @@ public class PublicLightingDefaultResponseMessageProcessor extends BaseMessagePr
     String organisationIdentification = null;
     String deviceIdentification = null;
 
-    ResponseMessage responseMessage;
+    final ResponseMessage responseMessage;
     ResponseMessageResultType responseMessageResultType = null;
     OsgpException osgpException = null;
 

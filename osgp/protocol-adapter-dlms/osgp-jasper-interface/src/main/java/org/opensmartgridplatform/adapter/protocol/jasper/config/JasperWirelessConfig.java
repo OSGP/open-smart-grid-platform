@@ -6,10 +6,10 @@ package org.opensmartgridplatform.adapter.protocol.jasper.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaxxer.hikari.util.DriverDataSource;
+import jakarta.xml.soap.MessageFactory;
+import jakarta.xml.soap.SOAPException;
 import java.text.SimpleDateFormat;
 import java.util.Properties;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.SOAPException;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessTerminalClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.infra.ws.CorrelationIdProviderService;

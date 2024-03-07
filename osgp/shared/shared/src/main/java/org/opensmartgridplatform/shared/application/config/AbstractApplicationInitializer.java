@@ -5,8 +5,10 @@
 package org.opensmartgridplatform.shared.application.config;
 
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.util.ContextInitializer;
+import ch.qos.logback.classic.util.DefaultJoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Optional;
@@ -14,11 +16,8 @@ import java.util.TimeZone;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
@@ -111,16 +110,17 @@ public abstract class AbstractApplicationInitializer implements WebApplicationIn
 
   private void initializeLoggingContext(final String location)
       throws FileNotFoundException, JoranException {
-    final LoggerContext loggerContext =
-        (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
+    final var loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 
     // in the current version logback automatically configures at
     // startup the context, so we have to reset it
+    final var configurator = new DefaultJoranConfigurator();
+    configurator.setContext(loggerContext);
     loggerContext.reset();
 
     // reinitialize the logger context. calling this method allows
-    // configuration through groovy or xml
-    new ContextInitializer(loggerContext).configureByResource(ResourceUtils.getURL(location));
+    // configuration through xml
+    configurator.configureByResource(ResourceUtils.getURL(location));
     this.logger.info("Initialized logging using {}", location);
   }
 }

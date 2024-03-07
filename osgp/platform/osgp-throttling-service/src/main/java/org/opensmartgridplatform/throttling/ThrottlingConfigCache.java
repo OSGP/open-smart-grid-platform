@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.throttling;
 
+import jakarta.annotation.PostConstruct;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import javax.annotation.PostConstruct;
 import org.opensmartgridplatform.throttling.entities.ThrottlingConfig;
 import org.opensmartgridplatform.throttling.repositories.ThrottlingConfigRepository;
 import org.slf4j.Logger;

@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.processors;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.io.IOException;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceMessageStatus;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
@@ -48,8 +48,8 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
   public void processMessage(final ObjectMessage message) {
     LOGGER.debug("Processing public lighting set light request message");
 
-    MessageMetadata messageMetadata;
-    LightValueMessageDataContainerDto lightValueMessageDataContainer;
+    final MessageMetadata messageMetadata;
+    final LightValueMessageDataContainerDto lightValueMessageDataContainer;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
       lightValueMessageDataContainer = (LightValueMessageDataContainerDto) message.getObject();

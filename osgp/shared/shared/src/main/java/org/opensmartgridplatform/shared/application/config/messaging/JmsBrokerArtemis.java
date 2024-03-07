@@ -14,7 +14,7 @@ import static org.opensmartgridplatform.shared.application.config.messaging.JmsP
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_QUEUE_CONSUMER_WINDOW_SIZE;
 import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_MAX_THREAD_POOL_SIZE;
 
-import javax.jms.Destination;
+import jakarta.jms.Destination;
 import javax.net.ssl.SSLException;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;

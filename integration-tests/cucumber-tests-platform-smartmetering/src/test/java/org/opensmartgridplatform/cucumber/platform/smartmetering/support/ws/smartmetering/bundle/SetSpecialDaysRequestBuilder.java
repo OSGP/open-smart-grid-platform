@@ -7,11 +7,11 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.sma
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
+import jakarta.xml.bind.DatatypeConverter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import javax.xml.bind.DatatypeConverter;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetSpecialDaysRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SpecialDay;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;

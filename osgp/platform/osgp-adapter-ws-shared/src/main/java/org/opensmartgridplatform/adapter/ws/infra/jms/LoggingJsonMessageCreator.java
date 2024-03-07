@@ -6,11 +6,11 @@ package org.opensmartgridplatform.adapter.ws.infra.jms;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
+import jakarta.jms.TextMessage;
 import java.io.UncheckedIOException;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.jms.TextMessage;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.springframework.jms.core.MessageCreator;
 

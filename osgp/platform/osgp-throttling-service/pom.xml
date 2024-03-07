@@ -22,7 +22,7 @@ SPDX-License-Identifier: Apache-2.0
   </parent>
 
   <properties>
-    <spring.boot.version>2.7.18</spring.boot.version>
+    <spring.boot.version>3.2.0</spring.boot.version>
     <failOnMissingWebXml>false</failOnMissingWebXml>
   </properties>
 
@@ -79,8 +79,8 @@ SPDX-License-Identifier: Apache-2.0
     </dependency>
 
     <dependency>
-      <groupId>javax.jms</groupId>
-      <artifactId>javax.jms-api</artifactId>
+      <groupId>jakarta.jms</groupId>
+      <artifactId>jakarta.jms-api</artifactId>
     </dependency>
 
     <dependency>

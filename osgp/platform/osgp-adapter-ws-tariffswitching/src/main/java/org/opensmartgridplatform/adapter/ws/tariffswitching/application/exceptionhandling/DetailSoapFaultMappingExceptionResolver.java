@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.ws.tariffswitching.application.exceptionhandling;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import javax.xml.transform.Result;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.FunctionalFault;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.TechnicalFault;

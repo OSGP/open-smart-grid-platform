@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.simulator.trigger;
 
+import jakarta.annotation.PostConstruct;
 import java.util.Optional;
-import javax.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.SessionProvider;

@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle;
 
+import jakarta.xml.bind.DatatypeConverter;
 import java.math.BigInteger;
 import java.util.List;
-import javax.xml.bind.DatatypeConverter;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetActivityCalendarRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.DayProfileActionType;

@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.core.infra.jms.domain.inbound;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
+import jakarta.jms.ObjectMessage;
 import java.util.List;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.core.domain.model.protocol.ProtocolResponseService;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.domain.core.exceptions.OsgpCoreException;
@@ -22,9 +22,9 @@ public class DomainResponseMessageListener implements MessageListener {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DomainResponseMessageListener.class);
 
-  private ProtocolResponseService protocolResponseService;
+  private final ProtocolResponseService protocolResponseService;
 
-  private List<ProtocolInfo> protocolInfos;
+  private final List<ProtocolInfo> protocolInfos;
 
   public DomainResponseMessageListener(
       final ProtocolResponseService protocolResponseService,

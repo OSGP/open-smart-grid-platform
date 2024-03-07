@@ -11,7 +11,11 @@ import com.fasterxml.jackson.databind.node.DecimalNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.StatusType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -25,10 +29,6 @@ import java.util.Map;
 import java.util.function.Function;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.StatusType;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
@@ -401,7 +401,7 @@ public class DlmsAttributeValuesClient {
   private WebClient configureWebClient(final String baseAddress) {
 
     final List<Object> providers = new ArrayList<>();
-    providers.add(new JacksonJaxbJsonProvider());
+    providers.add(new JacksonJsonProvider());
 
     final WebClient client = WebClient.create(baseAddress, providers);
 

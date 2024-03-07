@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms;
 
-import javax.jms.ObjectMessage;
+import jakarta.jms.ObjectMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.throttling.web.api;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
-import javax.validation.Valid;
 import org.opensmartgridplatform.throttling.PermitsByThrottlingConfig;
 import org.opensmartgridplatform.throttling.ThrottlingConfigCache;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;

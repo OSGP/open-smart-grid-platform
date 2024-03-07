@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.core.infra.jms.protocol.inbound;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
+import jakarta.jms.ObjectMessage;
 import java.util.List;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.domain.core.entities.DomainInfo;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
@@ -23,9 +23,9 @@ public class ProtocolRequestMessageListener implements MessageListener {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(ProtocolRequestMessageListener.class);
 
-  private DomainRequestService domainRequestService;
-  private List<DomainInfo> domainInfos;
-  private MessageProcessorMap protocolRequestMessageProcessorMap;
+  private final DomainRequestService domainRequestService;
+  private final List<DomainInfo> domainInfos;
+  private final MessageProcessorMap protocolRequestMessageProcessorMap;
 
   public ProtocolRequestMessageListener(
       final DomainRequestService domainRequestService,
@@ -71,7 +71,7 @@ public class ProtocolRequestMessageListener implements MessageListener {
   private void sendMessageToDomainAdapter(
       final RequestMessage requestMessage, final String messageType) {
 
-    String domain;
+    final String domain;
     final String domainVersion;
     if (DeviceFunction.PUSH_NOTIFICATION_ALARM.name().equals(messageType)) {
       domain = "SMART_METERING";

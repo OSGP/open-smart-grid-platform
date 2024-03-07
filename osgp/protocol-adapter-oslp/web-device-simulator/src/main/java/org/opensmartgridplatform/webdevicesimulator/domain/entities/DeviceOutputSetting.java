@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.webdevicesimulator.domain.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.OutputType;
 
 @Embeddable

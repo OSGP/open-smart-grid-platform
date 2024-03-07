@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.specifications;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
-import javax.validation.constraints.NotNull;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.springframework.data.jpa.domain.Specification;
 

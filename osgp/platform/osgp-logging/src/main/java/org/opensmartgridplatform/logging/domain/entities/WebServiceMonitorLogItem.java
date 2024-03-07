@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.logging.domain.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 

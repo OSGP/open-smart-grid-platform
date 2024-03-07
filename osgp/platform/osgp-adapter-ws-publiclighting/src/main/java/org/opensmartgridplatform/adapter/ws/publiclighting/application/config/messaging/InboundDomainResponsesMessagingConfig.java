@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.config.messaging;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingResponseMessageListener;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
@@ -29,7 +29,7 @@ public class InboundDomainResponsesMessagingConfig {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(InboundDomainResponsesMessagingConfig.class);
 
-  private JmsConfigurationFactory jmsConfigurationFactory;
+  private final JmsConfigurationFactory jmsConfigurationFactory;
 
   @Value("${jms.publiclighting.responses.receive.timeout:100}")
   private long receiveTimeout;

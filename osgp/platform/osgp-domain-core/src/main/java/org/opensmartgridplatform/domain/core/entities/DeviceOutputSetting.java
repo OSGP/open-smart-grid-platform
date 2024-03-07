@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.domain.core.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
 

@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.domain.admin.application.config;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
 import org.springframework.context.annotation.Bean;

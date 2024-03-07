@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.adapter.kafka.da.infra.jms.messageprocessors;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.StringMessageProducer;
 import org.opensmartgridplatform.shared.infra.jms.Constants;

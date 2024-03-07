@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.admin.application.config.messaging;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
@@ -24,7 +24,7 @@ public class InboundDomainResponsesMessagingConfig {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(InboundDomainResponsesMessagingConfig.class);
 
-  private JmsConfigurationFactory jmsConfigurationFactory;
+  private final JmsConfigurationFactory jmsConfigurationFactory;
 
   @Value("${jms.admin.responses.receive.timeout:100}")
   private long receiveTimeout;

@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.messageprocessors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.da.application.services.AdHocManagementService;
 import org.opensmartgridplatform.domain.da.valueobjects.GetDeviceModelRequest;
 import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;

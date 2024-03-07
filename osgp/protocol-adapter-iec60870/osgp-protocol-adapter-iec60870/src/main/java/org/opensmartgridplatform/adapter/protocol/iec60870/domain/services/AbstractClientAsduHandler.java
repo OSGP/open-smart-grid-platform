@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.openmuc.j60870.ASduType;
 import org.opensmartgridplatform.iec60870.Iec60870AsduHandlerRegistry;
 import org.slf4j.Logger;

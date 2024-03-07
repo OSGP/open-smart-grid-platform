@@ -6,8 +6,8 @@ package org.opensmartgridplatform.webdevicesimulator.application.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import jakarta.annotation.PreDestroy;
 import java.util.Properties;
-import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;

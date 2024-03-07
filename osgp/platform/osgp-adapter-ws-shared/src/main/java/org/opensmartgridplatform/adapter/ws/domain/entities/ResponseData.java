@@ -4,13 +4,14 @@
 
 package org.opensmartgridplatform.adapter.ws.domain.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -39,7 +40,7 @@ public class ResponseData extends AbstractEntity {
   @Enumerated(EnumType.STRING)
   private ResponseMessageResultType resultType;
 
-  @Type(type = "java.io.Serializable")
+  @JdbcTypeCode(SqlTypes.BINARY)
   private Serializable messageData;
 
   @SuppressWarnings("unused")

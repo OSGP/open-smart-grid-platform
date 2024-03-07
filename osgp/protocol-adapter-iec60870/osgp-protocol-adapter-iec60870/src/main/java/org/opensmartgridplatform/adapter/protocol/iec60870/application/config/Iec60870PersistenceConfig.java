@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.config;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 import org.flywaydb.core.Flyway;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;

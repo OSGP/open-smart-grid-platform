@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.webdevicesimulator.web.controller;
 
+import jakarta.annotation.Resource;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import javax.annotation.Resource;
 import org.apache.commons.lang3.ArrayUtils;
 import org.opensmartgridplatform.oslp.Oslp.DeviceType;
 import org.opensmartgridplatform.oslp.OslpEnvelope;

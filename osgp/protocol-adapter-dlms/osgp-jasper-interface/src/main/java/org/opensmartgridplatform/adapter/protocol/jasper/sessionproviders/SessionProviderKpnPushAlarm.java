@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders;
 
+import jakarta.annotation.PostConstruct;
 import java.util.Optional;
-import javax.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessTerminalClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.response.GetSessionInfoResponse;

@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.SetLightDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
@@ -34,8 +34,8 @@ public class PublicLightingSetLightRequestMessageProcessor
   public void processMessage(final ObjectMessage message) throws JMSException {
     LOGGER.debug("Processing public lighting set light request message");
 
-    MessageMetadata messageMetadata;
-    LightValueMessageDataContainerDto lightValueMessageDataContainer;
+    final MessageMetadata messageMetadata;
+    final LightValueMessageDataContainerDto lightValueMessageDataContainer;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
       lightValueMessageDataContainer = (LightValueMessageDataContainerDto) message.getObject();

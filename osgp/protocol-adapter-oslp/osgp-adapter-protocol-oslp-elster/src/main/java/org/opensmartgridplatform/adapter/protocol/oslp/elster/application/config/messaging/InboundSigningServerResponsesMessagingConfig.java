@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.config.messaging;
 
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.MessageListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
-import javax.jms.ConnectionFactory;
-import javax.jms.MessageListener;
 import javax.net.ssl.SSLException;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
@@ -32,8 +32,8 @@ public class InboundSigningServerResponsesMessagingConfig {
   private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_QUEUE =
       "jms.incoming.signing.server.responses.queue";
 
-  private JmsConfigurationFactory jmsConfigurationFactory;
-  private Environment environment;
+  private final JmsConfigurationFactory jmsConfigurationFactory;
+  private final Environment environment;
 
   public InboundSigningServerResponsesMessagingConfig(
       final Environment environment, final DefaultJmsConfiguration defaultJmsConfiguration)

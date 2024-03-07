@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.domain.core.entities;
 
+import jakarta.persistence.Entity;
 import java.util.Objects;
-import javax.persistence.Entity;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 /**

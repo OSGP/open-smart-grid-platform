@@ -7,6 +7,7 @@ package org.opensmartgridplatform.secretmanagement.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.ws.test.server.RequestCreators.withSoapEnvelope;
 
+import jakarta.persistence.EntityManager;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -14,7 +15,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
 import java.util.List;
-import javax.persistence.EntityManager;
 import javax.xml.namespace.QName;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

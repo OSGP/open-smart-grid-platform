@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import java.time.Instant;
-import javax.persistence.Column;
-import javax.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

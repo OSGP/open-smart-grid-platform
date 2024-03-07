@@ -4,12 +4,12 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.domain.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 @Entity

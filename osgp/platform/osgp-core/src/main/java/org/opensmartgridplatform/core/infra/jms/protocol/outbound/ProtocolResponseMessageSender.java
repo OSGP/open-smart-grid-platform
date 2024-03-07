@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.core.infra.jms.protocol.outbound;
 
-import javax.jms.Destination;
-import javax.jms.ObjectMessage;
+import jakarta.jms.Destination;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.core.domain.model.protocol.ProtocolResponseService;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.shared.infra.jms.Constants;

@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
+import jakarta.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 
@@ -11,19 +12,19 @@ public class DlmsLogItemRequestMessage {
 
   private static final int MAX_MESSAGE_LENGTH = 8000;
 
-  private boolean incoming;
+  private final boolean incoming;
 
-  private String encodedMessage;
+  private final String encodedMessage;
 
-  private String decodedMessage;
+  private final String decodedMessage;
 
-  private String deviceIdentification;
+  private final String deviceIdentification;
 
-  private String organisationIdentification;
+  private final String organisationIdentification;
 
-  private boolean valid;
+  private final boolean valid;
 
-  private int payloadMessageSerializedSize;
+  private final int payloadMessageSerializedSize;
 
   public DlmsLogItemRequestMessage(
       final String deviceIdentification,
@@ -95,7 +96,7 @@ public class DlmsLogItemRequestMessage {
   private static String bytesToCArray(final byte[] bytes) {
     String s = "";
     if (bytes.length > 0) {
-      s = javax.xml.bind.DatatypeConverter.printHexBinary(bytes);
+      s = DatatypeConverter.printHexBinary(bytes);
       // Split every two chars with
       // ', ' to create a C array.
       s = s.replaceAll("(.{2})", ", 0x$1");

@@ -5,20 +5,21 @@
 package org.opensmartgridplatform.throttling;
 
 import java.io.IOException;
+import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.opensmartgridplatform.throttling.api.Permit;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -61,8 +62,11 @@ public class ThrottlingClient {
 
     final HttpClient httpClient =
         HttpClientBuilder.create()
-            .setMaxConnPerRoute(maxConnPerRoute)
-            .setMaxConnTotal(maxConnTotal)
+            .setConnectionManager(
+                PoolingHttpClientConnectionManagerBuilder.create()
+                    .setMaxConnPerRoute(maxConnPerRoute)
+                    .setMaxConnTotal(maxConnTotal)
+                    .build())
             .build();
     final HttpComponentsClientHttpRequestFactory clientHttpRequestFactory =
         new HttpComponentsClientHttpRequestFactory();
@@ -78,9 +82,10 @@ public class ThrottlingClient {
     template.setErrorHandler(
         new DefaultResponseErrorHandler() {
           @Override
-          public void handleError(final ClientHttpResponse response, final HttpStatus statusCode)
+          public void handleError(
+              final URI url, final HttpMethod method, final ClientHttpResponse response)
               throws IOException {
-            if (statusCode == HttpStatus.NOT_FOUND || statusCode == HttpStatus.CONFLICT) {
+            if (response.getStatusCode().is4xxClientError()) {
               /*
                * Do not treat HTTP status not found or conflict as an error. With the throttling API
                * these are regular response statuses for a number of requests, for instance when
@@ -89,7 +94,7 @@ public class ThrottlingClient {
                */
               return;
             }
-            super.handleError(response, statusCode);
+            super.handleError(response, response.getStatusCode());
           }
         });
 
@@ -393,29 +398,28 @@ public class ThrottlingClient {
             this.throttlingConfig.getId(),
             this.clientId);
 
-    switch (releaseResponse.getStatusCode()) {
-      case NOT_FOUND:
-        LOGGER.warn(
-            "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, because the permit has not been granted",
-            this.throttlingConfig.getId(),
-            this.clientId,
-            requestId);
-        return false;
-      case OK:
-        LOGGER.debug(
-            "Released permit with throttlingConfigId {}, clientId {}, requestId {}",
-            this.throttlingConfig.getId(),
-            this.clientId,
-            requestId);
-        return true;
-      default:
-        LOGGER.warn(
-            "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {} - got unexpected response status {}",
-            this.throttlingConfig.getId(),
-            this.clientId,
-            requestId,
-            releaseResponse.getStatusCode());
-        return false;
+    if (releaseResponse.getStatusCode().is4xxClientError()) {
+      LOGGER.warn(
+          "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, because the permit has not been granted",
+          this.throttlingConfig.getId(),
+          this.clientId,
+          requestId);
+      return false;
+    } else if (releaseResponse.getStatusCode().is2xxSuccessful()) {
+      LOGGER.debug(
+          "Released permit with throttlingConfigId {}, clientId {}, requestId {}",
+          this.throttlingConfig.getId(),
+          this.clientId,
+          requestId);
+      return true;
+    } else {
+      LOGGER.warn(
+          "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {} - got unexpected response status {}",
+          this.throttlingConfig.getId(),
+          this.clientId,
+          requestId,
+          releaseResponse.getStatusCode());
+      return false;
     }
   }
 
@@ -441,35 +445,34 @@ public class ThrottlingClient {
             baseTransceiverStationId,
             cellId);
 
-    switch (releaseResponse.getStatusCode()) {
-      case NOT_FOUND:
-        LOGGER.warn(
-            "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, baseTransceiverStationId {}, cellId {}, because the permit has not been granted",
-            this.throttlingConfig.getId(),
-            this.clientId,
-            requestId,
-            baseTransceiverStationId,
-            cellId);
-        return false;
-      case OK:
-        LOGGER.debug(
-            "Released permit with throttlingConfigId {}, clientId {}, requestId {}, baseTransceiverStationId {}, cellId {}",
-            this.throttlingConfig.getId(),
-            this.clientId,
-            requestId,
-            baseTransceiverStationId,
-            cellId);
-        return true;
-      default:
-        LOGGER.error(
-            "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, baseTransceiverStationId {}, cellId {} - got unexpected response status {}",
-            this.throttlingConfig.getId(),
-            this.clientId,
-            requestId,
-            baseTransceiverStationId,
-            cellId,
-            releaseResponse.getStatusCode());
-        return false;
+    if (releaseResponse.getStatusCode().is4xxClientError()) {
+      LOGGER.warn(
+          "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, baseTransceiverStationId {}, cellId {}, because the permit has not been granted",
+          this.throttlingConfig.getId(),
+          this.clientId,
+          requestId,
+          baseTransceiverStationId,
+          cellId);
+      return false;
+    } else if (releaseResponse.getStatusCode().is2xxSuccessful()) {
+      LOGGER.debug(
+          "Released permit with throttlingConfigId {}, clientId {}, requestId {}, baseTransceiverStationId {}, cellId {}",
+          this.throttlingConfig.getId(),
+          this.clientId,
+          requestId,
+          baseTransceiverStationId,
+          cellId);
+      return true;
+    } else {
+      LOGGER.error(
+          "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, baseTransceiverStationId {}, cellId {} - got unexpected response status {}",
+          this.throttlingConfig.getId(),
+          this.clientId,
+          requestId,
+          baseTransceiverStationId,
+          cellId,
+          releaseResponse.getStatusCode());
+      return false;
     }
   }
 
@@ -502,26 +505,22 @@ public class ThrottlingClient {
             this.clientId,
             requestId);
 
-    switch (discardResponse.getStatusCode()) {
-      case NOT_FOUND:
-        LOGGER.info(
-            "Discarded permit for {} with requestId {} - no permit had been granted",
-            this.clientId,
-            requestId);
-        break;
-      case OK:
-        LOGGER.info(
-            "Discarded permit for {} with requestId {} - granted permit has been released",
-            this.clientId,
-            requestId);
-        break;
-      default:
-        LOGGER.error(
-            "Discarded permit for {} with requestId {} - got unexpected response status {}",
-            this.clientId,
-            requestId,
-            discardResponse.getStatusCode());
-        break;
+    if (discardResponse.getStatusCode().is4xxClientError()) {
+      LOGGER.info(
+          "Discarded permit for {} with requestId {} - no permit had been granted",
+          this.clientId,
+          requestId);
+    } else if (discardResponse.getStatusCode().is2xxSuccessful()) {
+      LOGGER.info(
+          "Discarded permit for {} with requestId {} - granted permit has been released",
+          this.clientId,
+          requestId);
+    } else {
+      LOGGER.error(
+          "Discarded permit for {} with requestId {} - got unexpected response status {}",
+          this.clientId,
+          requestId,
+          discardResponse.getStatusCode());
     }
   }
 

@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -33,8 +33,8 @@ public class AdminUpdateKeyRequestMessageProcessor extends DeviceRequestMessageP
   public void processMessage(final ObjectMessage message) {
     LOGGER.debug("Processing admin update key message");
 
-    MessageMetadata messageMetadata;
-    String publicKey;
+    final MessageMetadata messageMetadata;
+    final String publicKey;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
       publicKey = (String) message.getObject();

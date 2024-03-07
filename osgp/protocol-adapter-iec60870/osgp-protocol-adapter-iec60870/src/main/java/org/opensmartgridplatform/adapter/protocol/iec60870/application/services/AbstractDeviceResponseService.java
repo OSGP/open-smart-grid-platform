@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.services;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseServiceRegistry;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;

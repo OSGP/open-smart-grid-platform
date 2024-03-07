@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.domain.core.valueobjects;
 
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
-import javax.validation.constraints.NotNull;
 
 /** Value object, representing the fixed device ip address, netmask and gateway. */
 public class DeviceFixedIp implements Serializable {

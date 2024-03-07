@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -33,7 +33,7 @@ public class AdminRevokeKeyRequestMessageProcessor extends DeviceRequestMessageP
   public void processMessage(final ObjectMessage message) {
     LOGGER.debug("Processing admin revoke key message");
 
-    MessageMetadata messageMetadata;
+    final MessageMetadata messageMetadata;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
     } catch (final JMSException e) {

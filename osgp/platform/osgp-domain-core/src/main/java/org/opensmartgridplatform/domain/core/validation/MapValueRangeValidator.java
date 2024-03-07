@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.domain.core.validation;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.util.Collection;
 import java.util.Map;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 public class MapValueRangeValidator implements ConstraintValidator<MapValueRange, Map<?, Integer>> {
 

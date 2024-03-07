@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.ws.core.endpoints;
 
+import jakarta.validation.ConstraintViolationException;
 import java.util.List;
-import javax.validation.ConstraintViolationException;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.DeviceInstallationMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.DeviceInstallationService;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;

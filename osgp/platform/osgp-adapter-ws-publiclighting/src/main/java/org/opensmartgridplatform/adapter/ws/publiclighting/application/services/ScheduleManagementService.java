@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.services;
 
+import jakarta.validation.Valid;
 import java.time.ZonedDateTime;
-import javax.validation.Valid;
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessage;
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;

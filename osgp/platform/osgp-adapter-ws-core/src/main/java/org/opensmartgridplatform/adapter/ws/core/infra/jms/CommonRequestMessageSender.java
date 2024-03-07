@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.adapter.ws.core.infra.jms;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Session;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.slf4j.Logger;

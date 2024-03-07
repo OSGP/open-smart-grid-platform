@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.ws.admin.endpoints;
 
+import jakarta.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.ConstraintViolationException;
 import org.opensmartgridplatform.adapter.ws.admin.application.mapping.DeviceManagementMapper;
 import org.opensmartgridplatform.adapter.ws.admin.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.ws.admin.application.valueobjects.WsMessageLogFilter;

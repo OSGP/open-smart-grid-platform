@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.SetConfigurationDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
@@ -34,8 +34,8 @@ public class CommonSetConfigurationRequestMessageProcessor
   public void processMessage(final ObjectMessage message) throws JMSException {
     LOGGER.debug("Processing common set configuration message");
 
-    MessageMetadata messageMetadata;
-    ConfigurationDto configuration;
+    final MessageMetadata messageMetadata;
+    final ConfigurationDto configuration;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
       configuration = (ConfigurationDto) message.getObject();

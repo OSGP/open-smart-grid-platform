@@ -4,8 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.SetScheduleDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
@@ -35,8 +35,8 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor
   public void processMessage(final ObjectMessage message) throws JMSException {
     LOGGER.debug("Processing tariff switching set schedule request message");
 
-    MessageMetadata messageMetadata;
-    ScheduleDto scheduleDto;
+    final MessageMetadata messageMetadata;
+    final ScheduleDto scheduleDto;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
       scheduleDto = (ScheduleDto) message.getObject();

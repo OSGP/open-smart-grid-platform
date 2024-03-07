@@ -4,9 +4,9 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Session;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
@@ -59,7 +59,7 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
     if (responseMessage.getOsgpException() == null) {
       objectMessage.setObject(responseMessage.getDataObject());
     } else {
-      String description;
+      final String description;
 
       // If an exception had a cause, get the message of the
       // cause. If not, get the message of the exception itself

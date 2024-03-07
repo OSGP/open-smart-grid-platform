@@ -99,7 +99,7 @@ public interface DeviceRepository
   @Modifying
   @Query(
       value =
-          "UPDATE Device d SET d.lastSuccessfulConnectionTimestamp = now(), d.failedConnectionCount = 0"
+          "UPDATE Device d SET d.lastSuccessfulConnectionTimestamp = CURRENT_TIMESTAMP(), d.failedConnectionCount = 0"
               + " WHERE d.deviceIdentification = ?1")
   int updateConnectionDetailsToSuccess(String deviceIdentification);
 
@@ -107,7 +107,7 @@ public interface DeviceRepository
   @Modifying
   @Query(
       value =
-          "UPDATE Device d SET d.lastFailedConnectionTimestamp = now(), d.failedConnectionCount = d.failedConnectionCount+1"
+          "UPDATE Device d SET d.lastFailedConnectionTimestamp = CURRENT_TIMESTAMP(), d.failedConnectionCount = d.failedConnectionCount+1"
               + " WHERE d.deviceIdentification = ?1")
   int updateConnectionDetailsToFailure(String deviceIdentification);
 }

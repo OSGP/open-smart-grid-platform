@@ -4,10 +4,10 @@
 
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
+import jakarta.validation.Valid;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
-import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
