@@ -19,8 +19,8 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.SetParameter;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.ConfigurationObjectService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.GetConfigurationObjectService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.ProtocolService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.ProtocolServiceLookup;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.SetConfigurationObjectService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -47,7 +47,7 @@ public abstract class SetConfigurationObjectCommandExecutorITBase {
       final GetConfigurationObjectService getService,
       final SetConfigurationObjectService setService)
       throws IOException {
-    final List<ProtocolService> protocolServices = new ArrayList<>();
+    final List<ConfigurationObjectService> protocolServices = new ArrayList<>();
     protocolServices.add(getService);
     protocolServices.add(setService);
     final ProtocolServiceLookup protocolServiceLookup = new ProtocolServiceLookup(protocolServices);

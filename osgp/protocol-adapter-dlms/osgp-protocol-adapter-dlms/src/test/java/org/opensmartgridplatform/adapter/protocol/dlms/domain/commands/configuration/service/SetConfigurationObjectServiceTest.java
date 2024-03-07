@@ -28,6 +28,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
@@ -43,6 +44,7 @@ class SetConfigurationObjectServiceTest {
   private SetConfigurationObjectService instance;
 
   @Mock private DlmsHelper dlmsHelper;
+  @Mock private DlmsDeviceRepository dlmsDeviceRepository;
   @Mock private DlmsConnectionManager conn;
   @Mock private DlmsMessageListener dlmsMessageListener;
   @Mock private DlmsConnection dlmsConnection;
@@ -55,7 +57,7 @@ class SetConfigurationObjectServiceTest {
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
 
     this.instance =
-        new SetConfigurationObjectService(this.dlmsHelper) {
+        new SetConfigurationObjectService(this.dlmsHelper, this.dlmsDeviceRepository) {
 
           @Override
           AttributeAddress getAttributeAddress(final Protocol protocol) {
@@ -91,7 +93,7 @@ class SetConfigurationObjectServiceTest {
         .isThrownBy(
             () -> {
               // CALL
-              this.instance.setConfigurationObject(this.conn, null, null, null);
+              this.instance.setConfigurationObject(this.conn, null, null, null, null);
             });
   }
 

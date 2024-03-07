@@ -58,10 +58,10 @@ public class SetConfigurationObjectCommandExecutor
     final GetConfigurationObjectService getService =
         this.protocolServiceLookup.lookupGetService(protocol);
     final ConfigurationObjectDto configurationOnDevice =
-        getService.getConfigurationObject(conn, protocol);
+        getService.getConfigurationObject(conn, protocol, device);
     final SetConfigurationObjectService setService =
         this.protocolServiceLookup.lookupSetService(protocol);
     return setService.setConfigurationObject(
-        conn, configurationToSet, configurationOnDevice, protocol);
+        conn, configurationToSet, configurationOnDevice, protocol, device);
   }
 }

@@ -27,7 +27,7 @@ class SetConfigurationObjectServiceSmr5Test {
 
   @BeforeEach
   void setUp() {
-    this.instance = new SetConfigurationObjectServiceSmr5(null, null);
+    this.instance = new SetConfigurationObjectServiceSmr5(null, null, null);
   }
 
   @ParameterizedTest

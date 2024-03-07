@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProtocolServiceLookup {
 
-  private final List<ProtocolService> protocolServices;
+  private final List<ConfigurationObjectService> protocolServices;
 
-  public ProtocolServiceLookup(final List<ProtocolService> protocolServices) {
+  public ProtocolServiceLookup(final List<ConfigurationObjectService> protocolServices) {
     this.protocolServices = protocolServices;
   }
 
@@ -28,7 +28,7 @@ public class ProtocolServiceLookup {
     return this.lookupProtocolService(SetConfigurationObjectService.class, protocol);
   }
 
-  private <T extends ProtocolService> T lookupProtocolService(
+  private <T extends ConfigurationObjectService> T lookupProtocolService(
       final Class<T> type, final Protocol protocol) throws ProtocolAdapterException {
     return this.protocolServices.stream()
         .filter(type::isInstance)
