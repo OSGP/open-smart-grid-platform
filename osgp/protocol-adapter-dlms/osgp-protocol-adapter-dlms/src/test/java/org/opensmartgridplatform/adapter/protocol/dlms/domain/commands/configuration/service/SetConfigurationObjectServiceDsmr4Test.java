@@ -43,7 +43,7 @@ class SetConfigurationObjectServiceDsmr4Test {
 
   @BeforeEach
   void setUp() {
-    this.instance = new SetConfigurationObjectServiceDsmr4(null, null);
+    this.instance = new SetConfigurationObjectServiceDsmr4(null, null, null);
     when(this.configurationToSet.getConfigurationFlags()).thenReturn(this.emptyFlags());
     when(this.configurationOnDevice.getConfigurationFlags()).thenReturn(this.emptyFlags());
   }

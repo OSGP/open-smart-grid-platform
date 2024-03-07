@@ -10,6 +10,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
@@ -22,8 +23,10 @@ public class SetConfigurationObjectServiceSmr5 extends SetConfigurationObjectSer
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
   public SetConfigurationObjectServiceSmr5(
-      final DlmsHelper dlmsHelper, final ObjectConfigServiceHelper objectConfigServiceHelper) {
-    super(dlmsHelper);
+      final DlmsHelper dlmsHelper,
+      final ObjectConfigServiceHelper objectConfigServiceHelper,
+      final DlmsDeviceRepository dlmsDeviceRepository) {
+    super(dlmsHelper, dlmsDeviceRepository);
     this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 

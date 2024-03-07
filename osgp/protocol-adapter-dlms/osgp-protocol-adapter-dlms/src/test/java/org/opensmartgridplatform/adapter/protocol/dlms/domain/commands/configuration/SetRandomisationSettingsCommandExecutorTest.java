@@ -84,13 +84,14 @@ class SetRandomisationSettingsCommandExecutorTest {
     when(this.protocolServiceLookup.lookupSetService(protocol))
         .thenReturn(this.setConfigurationObjectService);
     when(this.getConfigurationObjectService.getConfigurationObject(
-            this.dlmsConnectionManager, protocol))
+            this.dlmsConnectionManager, protocol, this.device))
         .thenReturn(currentConfigurationObjectDto);
     when(this.setConfigurationObjectService.setConfigurationObject(
             any(DlmsConnectionManager.class),
             any(ConfigurationObjectDto.class),
             any(ConfigurationObjectDto.class),
-            eq(protocol)))
+            eq(protocol),
+            eq(this.device)))
         .thenReturn(AccessResultCode.SUCCESS);
 
     when(this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
@@ -130,7 +131,8 @@ class SetRandomisationSettingsCommandExecutorTest {
             any(DlmsConnectionManager.class),
             any(ConfigurationObjectDto.class),
             any(ConfigurationObjectDto.class),
-            eq(protocol)))
+            eq(protocol),
+            eq(this.device)))
         .thenReturn(AccessResultCode.OTHER_REASON);
 
     assertThatExceptionOfType(ProtocolAdapterException.class)

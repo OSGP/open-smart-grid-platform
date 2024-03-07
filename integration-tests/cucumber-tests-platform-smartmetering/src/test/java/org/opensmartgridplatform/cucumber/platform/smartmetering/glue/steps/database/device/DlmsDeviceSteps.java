@@ -15,6 +15,9 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShor
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_E;
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_G;
 import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.DLMS_DEVICE_TIMEZONE;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.HLS3ACTIVE;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.HLS4ACTIVE;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.HLS5ACTIVE;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_FIRMWARE_UPDATE_KEY;
@@ -248,6 +251,36 @@ public class DlmsDeviceSteps {
       assertThat(device.isLls1Active())
           .as(LLS1_ACTIVE)
           .isEqualTo(Boolean.valueOf(dlmsDeviceAttributes.get(LLS1_ACTIVE)));
+    }
+  }
+
+  @Then("^the dlms device with identification \"([^\"]*)\" exists with configuration properties")
+  public void theDlmsDeviceWithIdentificationExistsWithConfigurationProperties(
+      final String deviceIdentification, final Map<String, String> dlmsDeviceAttributes) {
+
+    try {
+      this.theDlmsDeviceWithIdentificationExists(deviceIdentification);
+    } catch (final Throwable e) {
+      throw new RuntimeException(e);
+    }
+
+    final DlmsDevice device =
+        this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+
+    if (dlmsDeviceAttributes.containsKey(HLS3ACTIVE)) {
+      assertThat(device.isHls3Active())
+          .as(HLS3ACTIVE)
+          .isEqualTo(Boolean.valueOf(dlmsDeviceAttributes.get(HLS3ACTIVE)));
+    }
+    if (dlmsDeviceAttributes.containsKey(HLS4ACTIVE)) {
+      assertThat(device.isHls4Active())
+          .as(HLS4ACTIVE)
+          .isEqualTo(Boolean.valueOf(dlmsDeviceAttributes.get(HLS4ACTIVE)));
+    }
+    if (dlmsDeviceAttributes.containsKey(HLS5ACTIVE)) {
+      assertThat(device.isHls5Active())
+          .as(HLS5ACTIVE)
+          .isEqualTo(Boolean.valueOf(dlmsDeviceAttributes.get(HLS5ACTIVE)));
     }
   }
 

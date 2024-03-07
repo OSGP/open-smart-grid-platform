@@ -5,17 +5,20 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AccessResultCode;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -27,7 +30,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
@@ -40,14 +45,17 @@ class SetConfigurationObjectCommandExecutorDsmr4IT
   private static final int INDEX_OF_CONFIGURATION_FLAGS = 1;
 
   @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
+  @Mock private DlmsDeviceRepository dlmsDeviceRepository;
 
   @BeforeEach
   void setUp() throws IOException {
     final DlmsHelper dlmsHelper = new DlmsHelper();
     final GetConfigurationObjectService getService =
-        new GetConfigurationObjectServiceDsmr4(dlmsHelper, this.objectConfigServiceHelper);
+        new GetConfigurationObjectServiceDsmr4(
+            dlmsHelper, this.objectConfigServiceHelper, this.dlmsDeviceRepository);
     final SetConfigurationObjectService setService =
-        new SetConfigurationObjectServiceDsmr4(dlmsHelper, this.objectConfigServiceHelper);
+        new SetConfigurationObjectServiceDsmr4(
+            dlmsHelper, this.objectConfigServiceHelper, this.dlmsDeviceRepository);
     super.setUp(getService, setService);
   }
 
@@ -77,13 +85,20 @@ class SetConfigurationObjectCommandExecutorDsmr4IT
     // result of merging configurationToSet and flagsOnDevice
     final byte firstExpectedByte = this.asByte("01111010");
     final byte secondExpectedByte = this.asByte("11000000");
+    final String deviceIdentification = "device-1";
+    final Protocol protocol = Protocol.DSMR_4_2_2;
+    final AttributeAddress attributeAddress = new AttributeAddress(1, "0.1.94.31.3.255", 2);
 
     final GprsOperationModeTypeDto gprsModeOnDevice = GprsOperationModeTypeDto.ALWAYS_ON;
     final DataObject deviceData = this.createStructureData(flagsOnDevice, gprsModeOnDevice);
     when(this.getResult.getResultData()).thenReturn(deviceData);
+    when(this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
+            protocol, DlmsObjectType.CONFIGURATION_OBJECT))
+        .thenReturn(Optional.of(attributeAddress));
 
     final DlmsDevice device = new DlmsDevice();
-    device.setProtocol(Protocol.DSMR_4_2_2);
+    device.setDeviceIdentification(deviceIdentification);
+    device.setProtocol(protocol);
 
     // CALL
     final AccessResultCode result =
@@ -101,6 +116,13 @@ class SetConfigurationObjectCommandExecutorDsmr4IT
 
     assertThat(flagsSentToDevice[0]).isEqualTo(firstExpectedByte);
     assertThat(flagsSentToDevice[1]).isEqualTo(secondExpectedByte);
+
+    // after Getting current configuration object from device
+    verify(this.dlmsDeviceRepository, times(1))
+        .updateHlsActive(deviceIdentification, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE);
+    // after Setting configuration object on device (nothing changes)
+    verify(this.dlmsDeviceRepository, times(1))
+        .updateHlsActive(deviceIdentification, null, null, null);
   }
 
   @Override

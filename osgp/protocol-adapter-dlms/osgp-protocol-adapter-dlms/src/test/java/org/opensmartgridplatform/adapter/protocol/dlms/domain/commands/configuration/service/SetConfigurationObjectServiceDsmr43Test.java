@@ -37,7 +37,7 @@ class SetConfigurationObjectServiceDsmr43Test {
 
   @BeforeEach
   void setUp() {
-    this.instance = new SetConfigurationObjectServiceDsmr43(null, null);
+    this.instance = new SetConfigurationObjectServiceDsmr43(null, null, null);
   }
 
   @ParameterizedTest

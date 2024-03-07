@@ -16,8 +16,10 @@ import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -28,7 +30,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObj
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SetConfigurationObjectService implements ProtocolService {
+public abstract class SetConfigurationObjectService extends AbstractConfigurationObjectService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObjectService.class);
 
@@ -37,7 +39,9 @@ public abstract class SetConfigurationObjectService implements ProtocolService {
 
   private final DlmsHelper dlmsHelper;
 
-  SetConfigurationObjectService(final DlmsHelper dlmsHelper) {
+  SetConfigurationObjectService(
+      final DlmsHelper dlmsHelper, final DlmsDeviceRepository dlmsDeviceRepository) {
+    super(dlmsDeviceRepository);
     this.dlmsHelper = dlmsHelper;
   }
 
@@ -45,7 +49,8 @@ public abstract class SetConfigurationObjectService implements ProtocolService {
       final DlmsConnectionManager conn,
       final ConfigurationObjectDto configurationToSet,
       final ConfigurationObjectDto configurationOnDevice,
-      final Protocol protocol)
+      final Protocol protocol,
+      final DlmsDevice device)
       throws ProtocolAdapterException {
 
     final DataObject dataObject =
@@ -60,7 +65,13 @@ public abstract class SetConfigurationObjectService implements ProtocolService {
         .setDescription(
             "SetConfigurationObject AttributeAddress: "
                 + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
-    return this.getAccessResultCode(conn, setParameter);
+    final AccessResultCode accessResultCode = this.getAccessResultCode(conn, setParameter);
+
+    if (accessResultCode.getCode() == AccessResultCode.SUCCESS.getCode()
+        && configurationToSet.getConfigurationFlags() != null) {
+      this.updateHlsActive(device, configurationToSet);
+    }
+    return accessResultCode;
   }
 
   abstract AttributeAddress getAttributeAddress(final Protocol protocol)

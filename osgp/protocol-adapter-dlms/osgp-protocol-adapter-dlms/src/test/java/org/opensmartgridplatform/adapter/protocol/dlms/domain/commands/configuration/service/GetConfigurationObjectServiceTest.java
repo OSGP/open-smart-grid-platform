@@ -21,8 +21,10 @@ import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
@@ -32,42 +34,46 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObj
 @ExtendWith(MockitoExtension.class)
 class GetConfigurationObjectServiceTest {
 
-  private final GetConfigurationObjectService instance =
-      new GetConfigurationObjectService() {
-
-        @Override
-        AttributeAddress getAttributeAddress(final Protocol protocol) {
-          return new AttributeAddress(-1, (ObisCode) null, -1);
-        }
-
-        @Override
-        ConfigurationObjectDto getConfigurationObject(final GetResult result) {
-          return null;
-        }
-
-        @Override
-        Optional<ConfigurationFlagTypeDto> getFlagType(final int bitPosition) {
-          return Optional.empty();
-        }
-
-        @Override
-        public boolean handles(final Protocol protocol) {
-          return true;
-        }
-      };
-
+  private GetConfigurationObjectService instance;
   @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
   @Mock private DlmsConnectionManager conn;
   @Mock private DlmsMessageListener dlmsMessageListener;
   @Mock private DlmsConnection dlmsConnection;
   @Mock private GetResult getResult;
+  @Mock private DlmsDeviceRepository dlmsDeviceRepository;
 
   @Mock Protocol protocol;
+
+  @Mock private DlmsDevice dlmsDevice;
 
   @BeforeEach
   void setUp() {
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
+
+    this.instance =
+        new GetConfigurationObjectService(this.dlmsDeviceRepository) {
+
+          @Override
+          AttributeAddress getAttributeAddress(final Protocol protocol) {
+            return new AttributeAddress(-1, (ObisCode) null, -1);
+          }
+
+          @Override
+          ConfigurationObjectDto getConfigurationObject(final GetResult result) {
+            return null;
+          }
+
+          @Override
+          Optional<ConfigurationFlagTypeDto> getFlagType(final int bitPosition) {
+            return Optional.empty();
+          }
+
+          @Override
+          public boolean handles(final Protocol protocol) {
+            return true;
+          }
+        };
   }
 
   @Test
@@ -80,7 +86,7 @@ class GetConfigurationObjectServiceTest {
     assertThatExceptionOfType(ConnectionException.class)
         .isThrownBy(
             () -> {
-              this.instance.getConfigurationObject(this.conn, this.protocol);
+              this.instance.getConfigurationObject(this.conn, this.protocol, this.dlmsDevice);
             });
   }
 
@@ -94,7 +100,7 @@ class GetConfigurationObjectServiceTest {
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
             () -> {
-              this.instance.getConfigurationObject(this.conn, this.protocol);
+              this.instance.getConfigurationObject(this.conn, this.protocol, this.dlmsDevice);
             });
   }
 
@@ -109,7 +115,7 @@ class GetConfigurationObjectServiceTest {
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
             () -> {
-              this.instance.getConfigurationObject(this.conn, this.protocol);
+              this.instance.getConfigurationObject(this.conn, this.protocol, this.dlmsDevice);
             });
   }
 

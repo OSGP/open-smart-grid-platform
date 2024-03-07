@@ -25,10 +25,10 @@ public class ProtocolServiceLookupTest {
 
   @BeforeEach
   void setUp() {
-    this.getDsmr4Service = new GetConfigurationObjectServiceDsmr4(null, null);
-    this.getDsmr43Service = new GetConfigurationObjectServiceDsmr43(null, null);
-    this.getSmr5Service = new GetConfigurationObjectServiceSmr5(null, null);
-    final List<ProtocolService> services = new ArrayList<>();
+    this.getDsmr4Service = new GetConfigurationObjectServiceDsmr4(null, null, null);
+    this.getDsmr43Service = new GetConfigurationObjectServiceDsmr43(null, null, null);
+    this.getSmr5Service = new GetConfigurationObjectServiceSmr5(null, null, null);
+    final List<ConfigurationObjectService> services = new ArrayList<>();
     services.add(this.getDsmr4Service);
     services.add(this.getDsmr43Service);
     services.add(this.getSmr5Service);

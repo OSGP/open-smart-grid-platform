@@ -6,7 +6,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configur
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 
-public interface ProtocolService {
+public interface ConfigurationObjectService {
 
   /** Indicates whether this service can handle the protocol */
   boolean handles(Protocol protocol);
