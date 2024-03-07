@@ -19,7 +19,9 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -31,6 +33,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.SortNatural;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
@@ -88,6 +92,15 @@ public class Device extends AbstractEntity {
   /** IP address of a device. */
   @Column(length = 50)
   protected String networkAddress;
+
+  /**
+   * The output settings are only used in the ssld table but in the database it is linked to the
+   * Device Table.
+   */
+  @LazyCollection(LazyCollectionOption.FALSE)
+  @ElementCollection()
+  @CollectionTable(name = "device_output_setting", joinColumns = @JoinColumn(name = "device_id"))
+  protected List<DeviceOutputSetting> outputSettings = new ArrayList<>();
 
   /** Cell ID on a Base Transceiver Station. */
   @Column private Integer cellId;
