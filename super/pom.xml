@@ -72,7 +72,7 @@ SPDX-License-Identifier: Apache-2.0
     <byte.buddy.version>1.14.12</byte.buddy.version>
     <joda.version>2.10.6</joda.version>
     <flyway.version>9.22.3</flyway.version>
-    <slf4j.version>2.0.9</slf4j.version>
+    <slf4j.version>2.0.12</slf4j.version>
     <apache.commons.lang.version>3.10</apache.commons.lang.version>
     <apache.commons.text.version>1.10.0</apache.commons.text.version>
     <apache.httpcomponents.version>5.3</apache.httpcomponents.version>
