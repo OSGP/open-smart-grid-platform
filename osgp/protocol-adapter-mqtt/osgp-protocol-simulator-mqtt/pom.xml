@@ -51,7 +51,7 @@ SPDX-License-Identifier: Apache-2.0
     <display.version>${project.version}-${BUILD_TAG}</display.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>17</java.version>
-    <jxr.version>3.0.0</jxr.version>
+    <jxr.version>3.3.2</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.9.0</maven.site.plugin>
     <moquette-broker.version>0.13</moquette-broker.version>
