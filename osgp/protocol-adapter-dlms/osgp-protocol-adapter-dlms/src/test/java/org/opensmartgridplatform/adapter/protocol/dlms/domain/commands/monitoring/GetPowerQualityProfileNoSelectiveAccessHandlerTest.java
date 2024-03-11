@@ -230,7 +230,7 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends GetPowerQuality
   @ParameterizedTest
   @EnumSource(PowerQualityProfile.class)
   void testSkipIfProfileDoesNotContainObject(final PowerQualityProfile profile)
-      throws ObjectConfigException, ProtocolAdapterException {
+      throws ObjectConfigException {
     final GetPowerQualityProfileRequestDataDto requestDto =
         new GetPowerQualityProfileRequestDataDto(
             profile.name(),
@@ -251,9 +251,9 @@ class GetPowerQualityProfileNoSelectiveAccessHandlerTest extends GetPowerQuality
         new GetPowerQualityProfileNoSelectiveAccessHandler(
             this.dlmsHelper, this.objectConfigService);
 
-    final GetPowerQualityProfileResponseDto responseDto =
-        handler.handle(this.conn, this.dlmsDevice, requestDto);
-    assertThat(responseDto.getPowerQualityProfileResponseDatas()).hasSize(0);
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> handler.handle(this.conn, this.dlmsDevice, requestDto));
   }
 
   private List<GetResult> createInvalidCaptureObjects() {
