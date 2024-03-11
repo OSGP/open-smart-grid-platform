@@ -23,7 +23,7 @@ SPDX-License-Identifier: Apache-2.0
   <properties>
     <java.version>17</java.version>
     <spring.boot.version>3.2.3</spring.boot.version>
-    <spring.data.commons.version>3.2.0</spring.data.commons.version>
+    <spring.data.commons.version>3.2.3</spring.data.commons.version>
     <jaxb.plugin.version>2.5.0</jaxb.plugin.version>
     <build.helper.maven.plugin.version>3.0.0</build.helper.maven.plugin.version>
     <apache.ws.xlmschema.version>2.3.1</apache.ws.xlmschema.version>
