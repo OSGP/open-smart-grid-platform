@@ -56,7 +56,7 @@ SPDX-License-Identifier: Apache-2.0
     <reactor.version>2023.0.3</reactor.version>
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
-    <mockito.core.version>4.8.0</mockito.core.version>
+    <mockito.core.version>5.2.0</mockito.core.version>
     <okhttp3.mockwebserver.version>4.9.1</okhttp3.mockwebserver.version>
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
     <servlet.version>6.0.0</servlet.version>
