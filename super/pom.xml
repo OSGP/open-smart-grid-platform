@@ -78,7 +78,7 @@ SPDX-License-Identifier: Apache-2.0
     <apache.httpcomponents.version>5.3</apache.httpcomponents.version>
     <apache.httpcomponents..mime.version>4.5.14</apache.httpcomponents..mime.version>
     <apache.httpcomponents.httpcore.version>4.4.16</apache.httpcomponents.httpcore.version>
-    <commons.codec.version>1.16.0</commons.codec.version>
+    <commons.codec.version>1.16.1</commons.codec.version>
     <orika.version>1.5.4</orika.version>
     <msal.version>1.13.0</msal.version>
     <jxr.version>3.1.1</jxr.version>
