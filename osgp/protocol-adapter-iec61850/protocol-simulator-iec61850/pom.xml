@@ -55,7 +55,7 @@ SPDX-License-Identifier: Apache-2.0
     <spring.boot.version>3.2.0</spring.boot.version>
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
 
-    <jxr.version>3.0.0</jxr.version>
+    <jxr.version>3.3.2</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.9.0</maven.site.plugin>
   </properties>
