@@ -13,13 +13,20 @@ import javax.naming.NamingException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
+import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication(
-    exclude = {SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class})
+    exclude = {
+      SecurityAutoConfiguration.class,
+      ManagementWebSecurityAutoConfiguration.class,
+      ActiveMQAutoConfiguration.class,
+      ArtemisAutoConfiguration.class
+    })
 @PropertySource("classpath:osgp-throttling-service.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/ThrottlingService/config}", ignoreResourceNotFound = true)
