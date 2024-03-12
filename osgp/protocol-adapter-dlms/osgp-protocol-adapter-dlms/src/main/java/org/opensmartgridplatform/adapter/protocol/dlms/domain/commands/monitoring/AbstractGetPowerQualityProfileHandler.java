@@ -184,7 +184,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     this.addToMapIfNeeded(POWER_QUALITY_PROFILE_2, privateOrPublic, device, profilesWithObjects);
 
     if (profilesWithObjects.isEmpty()) {
-      throw new IllegalArgumentException(
+      throw new ProtocolAdapterException(
           String.format(
               "No PQ profile found in profile %s version %s",
               device.getProtocolName(), device.getProtocolVersion()));

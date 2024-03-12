@@ -157,7 +157,7 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends GetPowerQualityPr
         new GetPowerQualityProfileSelectiveAccessHandler(this.dlmsHelper, this.objectConfigService);
 
     assertThrows(
-        IllegalArgumentException.class,
+        ProtocolAdapterException.class,
         () -> handler.handle(this.conn, this.dlmsDevice, requestDto));
   }
 }
