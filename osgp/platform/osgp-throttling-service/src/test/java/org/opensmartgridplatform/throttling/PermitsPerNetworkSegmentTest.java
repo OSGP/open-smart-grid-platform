@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.throttling;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -220,11 +221,14 @@ class PermitsPerNetworkSegmentTest {
     final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(2);
     executor.schedule(
         () -> {
-          PermitsPerNetworkSegmentTest.this.permitsPerNetworkSegment.releasePermit(
+          this.permitsPerNetworkSegment.releasePermit(
               throttlingConfigId, clientId, btsId, cellId, requestId);
           when(this.permitReleasedNotifier.waitForAvailablePermit(btsId, cellId, 1000))
               .thenReturn(false)
               .thenReturn(true);
+          doNothing()
+              .when(this.permitReleasedNotifier.waitForAvailablePermit(btsId, otherCellId, 1000));
+
           verify(this.permitReleasedNotifier, times(1)).notifyPermitReleased(btsId, cellId);
         },
         waitBeforeRelease,
