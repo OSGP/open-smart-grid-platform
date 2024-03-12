@@ -48,7 +48,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <properties>
     <jxr.version>3.3.2</jxr.version>
-    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
+    <maven.project.info.reports.plugin.version>3.5.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.12.1</maven.site.plugin>
     <jgitflow-maven-plugin.version>1.0-m5.1</jgitflow-maven-plugin.version>
   </properties>
