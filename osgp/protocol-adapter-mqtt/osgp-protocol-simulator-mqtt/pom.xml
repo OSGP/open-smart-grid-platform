@@ -52,7 +52,7 @@ SPDX-License-Identifier: Apache-2.0
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>17</java.version>
     <jxr.version>3.3.2</jxr.version>
-    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
+    <maven.project.info.reports.plugin.version>3.5.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.12.1</maven.site.plugin>
     <moquette-broker.version>0.13</moquette-broker.version>
     <hivemq-mqtt-client.version>1.2.0</hivemq-mqtt-client.version>

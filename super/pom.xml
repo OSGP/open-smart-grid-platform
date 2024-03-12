@@ -82,7 +82,7 @@ SPDX-License-Identifier: Apache-2.0
     <orika.version>1.5.4</orika.version>
     <msal.version>1.14.3</msal.version>
     <jxr.version>3.3.2</jxr.version>
-    <maven.project.info.reports.plugin.version>3.2.2</maven.project.info.reports.plugin.version>
+    <maven.project.info.reports.plugin.version>3.5.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.12.1</maven.site.plugin>
     <maven.javadoc.version>3.6.3</maven.javadoc.version>
     <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
