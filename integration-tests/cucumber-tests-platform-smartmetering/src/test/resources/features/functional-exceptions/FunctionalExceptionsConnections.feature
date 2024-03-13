@@ -61,3 +61,25 @@ Feature: SmartMetering functional exceptions regarding connections
     Then a SOAP fault should have been returned
       | Code    |                               413 |
       | Message | UNSUPPORTED_COMMUNICATION_SETTING |
+
+  Scenario Outline: Exception should be same when retry is on or off (value: <bypass_retry>)
+    Given a dlms device
+      | DeviceIdentification  | TEST1024000000001  |
+      | DeviceType            | SMART_METER_E      |
+      | Hls3active            | false              |
+      | Hls4active            | false              |
+      | Hls5active            | true               |
+      | Encryption_key        | EMPTY_SECURITY_KEY |
+    Given a bundle request
+      | DeviceIdentification | TEST1024000000001 |
+    And the bundle request contains a get administrative status action
+    When the bundle request generating an error is received with headers
+      | BypassRetry     | <bypass_retry>  |
+    And a SOAP fault should have been returned
+      | Code    |             806 |
+      | Message | KEY_NOT_PRESENT |
+
+    Examples:
+      | bypass_retry |
+      | TRUE         |
+      | FALSE        |
