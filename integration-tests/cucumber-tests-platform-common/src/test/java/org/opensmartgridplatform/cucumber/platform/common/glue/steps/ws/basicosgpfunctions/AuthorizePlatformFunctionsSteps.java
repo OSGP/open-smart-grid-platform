@@ -78,7 +78,9 @@ public class AuthorizePlatformFunctionsSteps {
 
   @When("receiving a platform function request")
   public void receivingADeviceFunctionRequest(final Map<String, String> requestParameters)
-      throws OperationNotSupportedException, WebServiceSecurityException, GeneralSecurityException,
+      throws OperationNotSupportedException,
+          WebServiceSecurityException,
+          GeneralSecurityException,
           IOException {
     this.platformFunction =
         getEnum(requestParameters, PlatformKeys.KEY_PLATFORM_FUNCTION, PlatformFunction.class);

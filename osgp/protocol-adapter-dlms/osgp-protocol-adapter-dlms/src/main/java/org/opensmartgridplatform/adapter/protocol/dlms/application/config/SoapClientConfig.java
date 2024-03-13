@@ -90,8 +90,12 @@ public class SoapClientConfig {
 
   @Bean
   public WebServiceTemplate webServiceTemplate()
-      throws UnrecoverableKeyException, CertificateException, IOException, NoSuchAlgorithmException,
-          KeyStoreException, KeyManagementException {
+      throws UnrecoverableKeyException,
+          CertificateException,
+          IOException,
+          NoSuchAlgorithmException,
+          KeyStoreException,
+          KeyManagementException {
 
     final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
     webServiceTemplate.setMarshaller(this.soapClientJaxb2Marshaller());
@@ -107,14 +111,22 @@ public class SoapClientConfig {
 
   @Bean
   public HttpComponentsMessageSender httpComponentsMessageSender()
-      throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException,
-          KeyStoreException, KeyManagementException {
+      throws IOException,
+          UnrecoverableKeyException,
+          CertificateException,
+          NoSuchAlgorithmException,
+          KeyStoreException,
+          KeyManagementException {
     return new HttpComponentsMessageSender(this.httpClient());
   }
 
   public HttpClient httpClient()
-      throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException,
-          KeyStoreException, KeyManagementException {
+      throws IOException,
+          UnrecoverableKeyException,
+          CertificateException,
+          NoSuchAlgorithmException,
+          KeyStoreException,
+          KeyManagementException {
 
     return HttpClientBuilder.create()
         .setSSLSocketFactory(this.sslConnectionSocketFactory())
@@ -125,8 +137,12 @@ public class SoapClientConfig {
   }
 
   public SSLConnectionSocketFactory sslConnectionSocketFactory()
-      throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException,
-          KeyStoreException, KeyManagementException {
+      throws IOException,
+          UnrecoverableKeyException,
+          CertificateException,
+          NoSuchAlgorithmException,
+          KeyStoreException,
+          KeyManagementException {
     if (!Boolean.parseBoolean(this.useHostNameVerifier)) {
       return new SSLConnectionSocketFactory(
           this.sslContext(), this.supportedTlsProtocols, null, NoopHostnameVerifier.INSTANCE);
@@ -140,8 +156,12 @@ public class SoapClientConfig {
   }
 
   public SSLContext sslContext()
-      throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException,
-          KeyStoreException, KeyManagementException {
+      throws IOException,
+          UnrecoverableKeyException,
+          CertificateException,
+          NoSuchAlgorithmException,
+          KeyStoreException,
+          KeyManagementException {
     return SSLContextBuilder.create()
         .loadKeyMaterial(
             this.keyStore.getFile(),

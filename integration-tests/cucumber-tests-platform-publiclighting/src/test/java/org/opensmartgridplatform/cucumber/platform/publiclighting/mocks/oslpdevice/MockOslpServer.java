@@ -277,7 +277,9 @@ public class MockOslpServer {
   }
 
   private ChannelPipeline createPipeLine(final SocketChannel channel)
-      throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException,
+      throws NoSuchAlgorithmException,
+          InvalidKeySpecException,
+          NoSuchProviderException,
           IOException {
     final ChannelPipeline pipeline = channel.pipeline();
 

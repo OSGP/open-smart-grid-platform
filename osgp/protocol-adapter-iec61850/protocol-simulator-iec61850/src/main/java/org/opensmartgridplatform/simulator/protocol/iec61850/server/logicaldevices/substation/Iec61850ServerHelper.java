@@ -17,6 +17,7 @@ public class Iec61850ServerHelper {
   private Iec61850ServerHelper() {
     // Only static utility methods
   }
+
   /*
      For a Substation Device we assume the Voltage for field 0 is 10kV en for field 1 it is 230V
      The current for L1 is 50A, for L2 it is 100A and for L3 it is 150A

@@ -103,7 +103,7 @@ SPDX-License-Identifier: Apache-2.0
     <checkstyle.maven.plugin.version>3.3.1</checkstyle.maven.plugin.version>
     <dependency-check.maven.plugin.version>7.0.2</dependency-check.maven.plugin.version>
     <versions.maven.plugin.version>2.10.0</versions.maven.plugin.version>
-    <fmt-maven-plugin.version>2.19</fmt-maven-plugin.version>
+    <fmt-maven-plugin.version>2.23</fmt-maven-plugin.version>
     <apache.activemq.version>6.0.1</apache.activemq.version>
     <logback.version>1.5.3</logback.version>
     <apache.commons.schema>2.3.1</apache.commons.schema>
