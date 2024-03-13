@@ -544,8 +544,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
                     protocol, version, MONTHLY_VALUES_COMBINED);
               }
             }
-            case INTERVAL -> this.objectConfigService.getCosemObject(
-                protocol, version, INTERVAL_VALUES_G);
+            case INTERVAL ->
+                this.objectConfigService.getCosemObject(protocol, version, INTERVAL_VALUES_G);
           };
     } catch (final ObjectConfigException e) {
       throw new ProtocolAdapterException(
@@ -679,8 +679,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
       case "3600" -> ProfileCaptureTime.HOUR;
       case "86400" -> ProfileCaptureTime.DAY;
       case "0" -> ProfileCaptureTime.MONTH;
-      default -> throw new ProtocolAdapterException(
-          "Unexpected capture period " + capturePeriodValue);
+      default ->
+          throw new ProtocolAdapterException("Unexpected capture period " + capturePeriodValue);
     };
   }
 

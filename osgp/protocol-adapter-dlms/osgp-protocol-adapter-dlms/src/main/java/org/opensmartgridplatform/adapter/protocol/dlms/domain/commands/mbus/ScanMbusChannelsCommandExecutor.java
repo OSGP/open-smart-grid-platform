@@ -41,6 +41,7 @@ public class ScanMbusChannelsCommandExecutor
       LoggerFactory.getLogger(ScanMbusChannelsCommandExecutor.class);
 
   private static final int CLASS_ID = InterfaceClass.MBUS_CLIENT.id();
+
   /**
    * IDs of the attributes of the M-Bus Client Setup that make up the Short ID.
    *

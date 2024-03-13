@@ -65,6 +65,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
   @Autowired private OslpSigningService oslpSigningService;
 
   @Autowired private LoggingService loggingService;
+
   /**
    * Convert list in property files to {@code Map}.
    *

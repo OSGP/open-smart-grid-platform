@@ -18,36 +18,43 @@ public class FirmwareModuleData implements Serializable {
    * {@link #moduleVersionComm}.
    */
   public static final String MODULE_DESCRIPTION_COMM = "communication_module_active_firmware";
+
   /**
    * Description of the FirmwareModule for which the module version in a FirmwareFile should equal
    * {@link #moduleVersionFunc} with devices other than smart meters.
    */
   public static final String MODULE_DESCRIPTION_FUNC = "functional";
+
   /**
    * Description of the FirmwareModule for which the module version in a FirmwareFile should equal
    * {@link #moduleVersionFunc} with smart meter devices.
    */
   public static final String MODULE_DESCRIPTION_FUNC_SMART_METERING = "active_firmware";
+
   /**
    * Description of the FirmwareModule for which the module version in a FirmwareFile should equal
    * {@link #moduleVersionMa}.
    */
   public static final String MODULE_DESCRIPTION_MA = "module_active_firmware";
+
   /**
    * Description of the FirmwareModule for which the module version in a FirmwareFile should equal
    * {@link #moduleVersionMbus}.
    */
   public static final String MODULE_DESCRIPTION_MBUS = "m_bus";
+
   /**
    * Description of the FirmwareModule for which the module version in a FirmwareFile should equal
    * {@link #moduleVersionSec}.
    */
   public static final String MODULE_DESCRIPTION_SEC = "security";
+
   /**
    * Description of the FirmwareModule for which the module version in a FirmwareFile should equal
    * {@link #moduleVersionMBusDriverActive}.
    */
   public static final String MODULE_DESCRIPTION_MBUS_DRIVER_ACTIVE = "m_bus_driver_active_firmware";
+
   /**
    * Description of the FirmwareModule for which the module version in a FirmwareFile should equal
    * {@link #moduleVersionSimple}.
