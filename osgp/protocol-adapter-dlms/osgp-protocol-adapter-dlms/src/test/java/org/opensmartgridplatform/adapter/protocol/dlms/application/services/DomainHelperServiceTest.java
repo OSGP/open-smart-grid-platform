@@ -85,6 +85,31 @@ class DomainHelperServiceTest {
     assertThat(actualIpAddress).isEqualTo(ipAddress);
   }
 
+  @Test
+  void noIpAddressFound() throws Exception {
+    final String communicationProvider = "comm-prov";
+    final String iccId = "icc-id";
+    final String ipAddress = IP_ADDRESS;
+    this.whenSessionProviderReturnsIpAddress(communicationProvider, iccId, null);
+
+    final DlmsDevice dlmsDevice =
+        new DlmsDeviceBuilder()
+            .withDeviceIdentification(DEVICE_IDENTIFICATION)
+            .withCommunicationProvider(communicationProvider)
+            .setIccId(iccId)
+            .build();
+
+    final FunctionalException functionalException =
+        assertThrows(
+            FunctionalException.class,
+            () -> {
+              this.domainHelperService.getDeviceIpAddressFromSessionProvider(dlmsDevice);
+            });
+    assertThat(functionalException.getExceptionType())
+        .isEqualTo(FunctionalExceptionType.SESSION_PROVIDER_ERROR);
+    assertThat(functionalException.getComponentType()).isEqualTo(ComponentType.PROTOCOL_DLMS);
+  }
+
   private void whenSessionProviderReturnsIpAddress(
       final String communicationProvider, final String iccId, final String ipAddress)
       throws Exception {
@@ -92,7 +117,7 @@ class DomainHelperServiceTest {
     when(this.sessionProviderService.getSessionProvider(communicationProvider))
         .thenReturn(this.sessionProvider);
     when(this.sessionProvider.getIpAddress(DEVICE_IDENTIFICATION, iccId))
-        .thenReturn(Optional.of(IP_ADDRESS));
+        .thenReturn(Optional.ofNullable(ipAddress));
   }
 
   @Test
