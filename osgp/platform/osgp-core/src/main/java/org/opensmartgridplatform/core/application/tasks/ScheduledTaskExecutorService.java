@@ -4,12 +4,18 @@
 
 package org.opensmartgridplatform.core.application.tasks;
 
+import static com.google.common.util.concurrent.MoreExecutors.shutdownAndAwaitTermination;
+
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import org.opensmartgridplatform.core.application.config.ScheduledTaskExecutorJobConfig;
 import org.opensmartgridplatform.core.application.services.DeviceRequestMessageService;
@@ -23,25 +29,34 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ScheduledTaskExecutorService {
+  private static final long AWAIT_TERMINATION_IN_SEC = 5;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ScheduledTaskExecutorService.class);
 
-  @Autowired private DeviceRequestMessageService deviceRequestMessageService;
+  private final DeviceRequestMessageService deviceRequestMessageService;
+  private final ScheduledTaskRepository scheduledTaskRepository;
+  private final DeviceRepository deviceRepository;
+  private final ScheduledTaskExecutorJobConfig scheduledTaskExecutorJobConfig;
+  private final int getMaxRetryCount;
 
-  @Autowired private ScheduledTaskRepository scheduledTaskRepository;
-
-  @Autowired private DeviceRepository deviceRepository;
-
-  @Autowired private ScheduledTaskExecutorJobConfig scheduledTaskExecutorJobConfig;
-
-  @Autowired private int getMaxRetryCount;
+  public ScheduledTaskExecutorService(
+      final DeviceRequestMessageService deviceRequestMessageService,
+      final ScheduledTaskRepository scheduledTaskRepository,
+      final DeviceRepository deviceRepository,
+      final ScheduledTaskExecutorJobConfig scheduledTaskExecutorJobConfig,
+      final int getMaxRetryCount) {
+    this.deviceRequestMessageService = deviceRequestMessageService;
+    this.scheduledTaskRepository = scheduledTaskRepository;
+    this.deviceRepository = deviceRepository;
+    this.scheduledTaskExecutorJobConfig = scheduledTaskExecutorJobConfig;
+    this.getMaxRetryCount = getMaxRetryCount;
+  }
 
   public void processScheduledTasks() {
     this.processStrandedScheduledTasks();
@@ -111,23 +126,40 @@ public class ScheduledTaskExecutorService {
     List<ScheduledTask> scheduledTasks = this.getScheduledTasks(type);
 
     while (!scheduledTasks.isEmpty()) {
-      for (ScheduledTask scheduledTask : scheduledTasks) {
-        LOGGER.info(
-            "Processing scheduled task for device [{}] to perform [{}]  ",
-            scheduledTask.getDeviceIdentification(),
-            scheduledTask.getMessageType());
-        try {
-          scheduledTask.setPending();
-          scheduledTask = this.scheduledTaskRepository.save(scheduledTask);
-          final ProtocolRequestMessage protocolRequestMessage =
-              this.createProtocolRequestMessage(scheduledTask);
-          this.deviceRequestMessageService.processMessage(protocolRequestMessage);
-        } catch (final FunctionalException e) {
-          LOGGER.error("Processing scheduled task failed.", e);
-          this.scheduledTaskRepository.delete(scheduledTask);
+      final ExecutorService executorService =
+          Executors.newFixedThreadPool(
+              this.scheduledTaskExecutorJobConfig.getScheduledTaskThreadPoolSize());
+      try {
+        final List<CompletableFuture<Void>> futures = new ArrayList<>();
+        for (final ScheduledTask scheduledTask : scheduledTasks) {
+          final CompletableFuture<Void> future =
+              CompletableFuture.runAsync(
+                  () -> this.processScheduledTask(scheduledTask), executorService);
+          futures.add(future);
         }
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+      } finally {
+        shutdownAndAwaitTermination(executorService, Duration.ofSeconds(AWAIT_TERMINATION_IN_SEC));
       }
+
       scheduledTasks = this.getScheduledTasks(type);
+    }
+  }
+
+  private void processScheduledTask(final ScheduledTask scheduledTask) {
+    LOGGER.info(
+        "Processing scheduled task for device [{}] to perform [{}]  ",
+        scheduledTask.getDeviceIdentification(),
+        scheduledTask.getMessageType());
+    try {
+      this.scheduledTaskRepository.updateStatus(
+          scheduledTask.getId(), ScheduledTaskStatusType.PENDING);
+      final ProtocolRequestMessage protocolRequestMessage =
+          this.createProtocolRequestMessage(scheduledTask);
+      this.deviceRequestMessageService.processMessage(protocolRequestMessage);
+    } catch (final FunctionalException e) {
+      LOGGER.error("Processing scheduled task failed.", e);
+      this.scheduledTaskRepository.delete(scheduledTask);
     }
   }
 

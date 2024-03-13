@@ -29,6 +29,9 @@ public class ScheduledTaskExecutorJobConfig {
   @Value("${scheduling.task.pending.duration.max.seconds:3600}")
   private int scheduledTaskPendingDurationMaxSeconds;
 
+  @Value("${scheduling.task.thread.pool.size:10}")
+  private int scheduledTaskThreadPoolSize;
+
   @Autowired private OsgpScheduler osgpScheduler;
 
   @Bean
@@ -45,5 +48,9 @@ public class ScheduledTaskExecutorJobConfig {
   private void initializeScheduledJob() throws SchedulerException {
     this.osgpScheduler.createAndScheduleJob(
         ScheduledTaskExecutorJob.class, this.cronExpressionScheduledTaskExecution);
+  }
+
+  public int getScheduledTaskThreadPoolSize() {
+    return this.scheduledTaskThreadPoolSize;
   }
 }
