@@ -325,13 +325,29 @@ public class DeviceResponseMessageService {
       final ProtocolResponseMessage message,
       final FunctionalException maxScheduleTimeExceededException) {
 
+    final FunctionalException originalOsgpException =
+        this.getOriginalOsgpException(message, maxScheduleTimeExceededException);
+
     final ProtocolResponseMessage maxScheduleTimeExceededResponseMessage =
         ProtocolResponseMessage.newBuilder()
             .messageMetadata(message.messageMetadata())
             .result(ResponseMessageResultType.NOT_OK)
-            .osgpException(maxScheduleTimeExceededException)
+            .osgpException(originalOsgpException)
             .dataObject(message.getDataObject())
             .build();
     this.domainResponseMessageSender.send(maxScheduleTimeExceededResponseMessage);
+  }
+
+  private FunctionalException getOriginalOsgpException(
+      final ProtocolResponseMessage message,
+      final FunctionalException maxScheduleTimeExceededException) {
+    if (maxScheduleTimeExceededException.getExceptionType()
+            == FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED
+        && message.getOsgpException() != null
+        && message.getOsgpException() instanceof final FunctionalException originalException) {
+      return originalException;
+    } else {
+      return maxScheduleTimeExceededException;
+    }
   }
 }
