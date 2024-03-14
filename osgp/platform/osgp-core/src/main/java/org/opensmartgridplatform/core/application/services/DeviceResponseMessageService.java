@@ -339,15 +339,13 @@ public class DeviceResponseMessageService {
   }
 
   private FunctionalException getOriginalOsgpException(
-      final ProtocolResponseMessage message,
-      final FunctionalException maxScheduleTimeExceededException) {
-    if (maxScheduleTimeExceededException.getExceptionType()
-            == FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED
+      final ProtocolResponseMessage message, final FunctionalException functionalException) {
+    if (functionalException.getExceptionType() == FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED
         && message.getOsgpException() != null
         && message.getOsgpException() instanceof final FunctionalException originalException) {
       return originalException;
     } else {
-      return maxScheduleTimeExceededException;
+      return functionalException;
     }
   }
 }
