@@ -34,10 +34,13 @@ public class OsgpExceptionConverter {
   public OsgpException ensureOsgpOrTechnicalException(final Exception e) {
 
     final boolean osgpExceptionSupportedByShared =
-        !(e instanceof ImageTransferException || e instanceof ProtocolAdapterException);
+        !(e instanceof ImageTransferException
+            || e instanceof ProtocolAdapterException
+            || (e instanceof FunctionalException
+                && e.getCause() instanceof ProtocolAdapterException));
 
-    if (e instanceof OsgpException && osgpExceptionSupportedByShared) {
-      return (OsgpException) e;
+    if (e instanceof final OsgpException osgpException && osgpExceptionSupportedByShared) {
+      return osgpException;
     }
 
     if (e instanceof ConnectionException) {
@@ -52,6 +55,15 @@ public class OsgpExceptionConverter {
           FunctionalExceptionType.OPERATION_NOT_SUPPORTED_BY_PLATFORM_FOR_PROTOCOL,
           ComponentType.PROTOCOL_DLMS,
           new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage()));
+    }
+
+    if (e instanceof final FunctionalException functionalException
+        && e.getCause() instanceof final ProtocolAdapterException protocolAdapterException) {
+      return new FunctionalException(
+          functionalException.getExceptionType(),
+          functionalException.getComponentType(),
+          new OsgpException(
+              protocolAdapterException.getComponentType(), protocolAdapterException.getMessage()));
     }
 
     return new TechnicalException(
