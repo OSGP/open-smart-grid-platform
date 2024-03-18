@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.Actions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsResponse;
@@ -154,6 +155,9 @@ public class BundleSteps extends BaseBundleSteps {
     final Map<String, String> extraHeaders = new HashMap<>();
     settings.forEach(
         (localPartOfName, value) -> {
+          if (StringUtils.isEmpty(value)) {
+            return;
+          }
           if (dateTimeInMillisHeaders.contains(localPartOfName)) {
             extraHeaders.put(
                 localPartOfName,
