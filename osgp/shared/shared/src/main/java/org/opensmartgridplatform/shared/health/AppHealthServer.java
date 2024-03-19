@@ -7,6 +7,7 @@ package org.opensmartgridplatform.shared.health;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -45,6 +46,11 @@ public class AppHealthServer {
         "AppHealth server started on http://localhost:{}/health with {} checks.",
         this.port,
         this.healthChecks.size());
+  }
+
+  @PreDestroy
+  public void stop() throws IOException {
+    this.server.stop(1);
   }
 
   private void handle(final HttpExchange httpExchange) throws IOException {
