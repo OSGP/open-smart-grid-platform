@@ -49,7 +49,7 @@ public class AppHealthServer {
   }
 
   @PreDestroy
-  public void stop() throws IOException {
+  public void stop() {
     this.server.stop(1);
   }
 
