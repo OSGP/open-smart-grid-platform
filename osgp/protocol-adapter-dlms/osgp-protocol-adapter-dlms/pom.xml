@@ -28,6 +28,7 @@ SPDX-License-Identifier: Apache-2.0
     <osgp-ws-secret-management-version>${project.version}</osgp-ws-secret-management-version>
     <skipITs>true</skipITs>
     <openmuc.jdlms.version>1.8.0</openmuc.jdlms.version>
+    <aspectj.version>1.9.21.2</aspectj.version>
   </properties>
 
   <build>
@@ -79,6 +80,51 @@ SPDX-License-Identifier: Apache-2.0
         <groupId>org.cyclonedx</groupId>
         <artifactId>cyclonedx-maven-plugin</artifactId>
       </plugin>
+
+      <plugin>
+        <!--
+        <groupId>org.codehaus.mojo</groupId>
+        Using snapshot build instead: https://github.com/mojohaus/aspectj-maven-plugin/issues/24#issuecomment-419077658
+        -->
+        <groupId>com.github.m50d</groupId>
+        <artifactId>aspectj-maven-plugin</artifactId>
+        <version>1.11.1</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>${aspectj.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjtools</artifactId>
+            <version>${aspectj.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <complianceLevel>17</complianceLevel>
+          <source>17</source>
+          <target>17</target>
+          <showWeaveInfo>true</showWeaveInfo>
+          <verbose>true</verbose>
+          <Xlint>ignore</Xlint>
+          <encoding>${project.build.sourceEncoding}</encoding>
+          <forceAjcCompile>true</forceAjcCompile>
+          <sources/><!-- this is important!-->
+          <weaveDirectories>
+            <weaveDirectory>${project.build.directory}/classes</weaveDirectory>
+          </weaveDirectories>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 
@@ -141,6 +187,22 @@ SPDX-License-Identifier: Apache-2.0
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-throttling-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
+      <version>${aspectj.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+      <version>${aspectj.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjtools</artifactId>
+      <version>${aspectj.version}</version>
     </dependency>
 
     <!-- Spring Framework -->

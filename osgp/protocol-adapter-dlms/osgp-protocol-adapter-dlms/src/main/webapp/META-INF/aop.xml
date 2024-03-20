@@ -1,0 +1,8 @@
+<aspectj>
+  <aspects>
+    <aspect name="org.opensmartgridplatform.adapter.protocol.dlms.application.wsclient.ExecutionTimeAdvice"/>
+    <weaver options="-verbose -showWeaveInfo">
+      <include within="org.opensmartgridplatform.adapter.protocol.dlms.application.wsclient.*"/>
+    </weaver>
+  </aspects>
+</aspectj>

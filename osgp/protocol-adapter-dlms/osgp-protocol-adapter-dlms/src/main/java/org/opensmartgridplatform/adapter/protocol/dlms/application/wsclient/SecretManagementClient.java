@@ -63,24 +63,16 @@ public class SecretManagementClient {
     };
   }
 
+  @TrackExecutionTime(timerName = "GetSecrets")
   public GetSecretsResponse getSecretsRequest(
       final MessageMetadata messageMetadata, final GetSecretsRequest request) {
     log.info(
         "Calling SecretManagement.getSecretsRequest over SOAP for device {}",
         request.getDeviceId());
 
-    final Timer timer =
-        this.createTimer("GetSecrets", request.getSecretTypes().getSecretType().size());
-    final long starttime = System.currentTimeMillis();
-
-    final GetSecretsResponse response =
-        (GetSecretsResponse)
-            this.webServiceTemplate.marshalSendAndReceive(
-                request, this.createCorrelationHeaderCallback(messageMetadata));
-
-    this.recordTimer(timer, starttime);
-
-    return response;
+    return (GetSecretsResponse)
+        this.webServiceTemplate.marshalSendAndReceive(
+            request, this.createCorrelationHeaderCallback(messageMetadata));
   }
 
   public GetNewSecretsResponse getNewSecretsRequest(
