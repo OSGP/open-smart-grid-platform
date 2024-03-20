@@ -17,7 +17,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 public class Hls5ConnectorStub extends Hls5Connector {
 
   public Hls5ConnectorStub() {
-    super(null, 0, 0, DlmsDeviceAssociation.PUBLIC_CLIENT, null);
+    super(null, 0, 0, DlmsDeviceAssociation.PUBLIC_CLIENT, null, null);
   }
 
   @Override
