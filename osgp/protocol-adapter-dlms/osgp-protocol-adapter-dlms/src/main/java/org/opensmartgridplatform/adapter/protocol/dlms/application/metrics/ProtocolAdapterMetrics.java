@@ -17,6 +17,9 @@ import org.springframework.stereotype.Component;
 public class ProtocolAdapterMetrics {
   public static final String METRIC_REQUEST_TIMER_PREFIX = "request_timer_";
   public static final String TAG_NR_OF_KEYS = "NrOfKeys";
+  public static final String TAG_COMMUNICATION_METHOD = "CommunicationMethod";
+  public static final String TAG_BTS_ID = "BtsId";
+  public static final String TAG_CELL_ID = "CellId";
   private final MeterRegistry meterRegistry;
 
   public ProtocolAdapterMetrics(final MeterRegistry meterRegistry) {

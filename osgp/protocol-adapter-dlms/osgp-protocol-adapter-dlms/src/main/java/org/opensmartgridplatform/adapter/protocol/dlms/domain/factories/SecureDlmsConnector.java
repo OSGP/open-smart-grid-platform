@@ -4,11 +4,13 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
+import io.micrometer.core.instrument.Timer;
 import java.io.IOException;
 import java.net.InetAddress;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.openmuc.jdlms.settings.client.ReferencingMethod;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.metrics.ProtocolAdapterMetrics;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.InvocationCountingDlmsMessageListener;
@@ -20,8 +22,9 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
   public SecureDlmsConnector(
       final int responseTimeout,
       final int logicalDeviceAddress,
-      final DlmsDeviceAssociation deviceAssociation) {
-    super(responseTimeout, logicalDeviceAddress, deviceAssociation);
+      final DlmsDeviceAssociation deviceAssociation,
+      final ProtocolAdapterMetrics protocolAdapterMetrics) {
+    super(responseTimeout, logicalDeviceAddress, deviceAssociation, protocolAdapterMetrics);
   }
 
   /**
@@ -81,6 +84,13 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
       tcpConnectionBuilder.setRawMessageListener(dlmsMessageListener);
     }
 
-    return tcpConnectionBuilder.build();
+    final Timer timer = this.createTimer(device, messageMetadata);
+    final long starttime = System.currentTimeMillis();
+
+    final DlmsConnection dlmsConnection = tcpConnectionBuilder.build();
+
+    this.recordTimer(timer, starttime);
+
+    return dlmsConnection;
   }
 }
