@@ -4,12 +4,13 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.ASSOCIATION_LN;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
@@ -17,6 +18,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Jdl
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.AssociationLnAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AccessRightDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AccessSelectorListDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -34,7 +39,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.MethodAccessMode
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -43,10 +47,6 @@ public class GetAssociationLnObjectsCommandExecutor
 
   private static final Logger LOGGER =
       LoggerFactory.getLogger(GetAssociationLnObjectsCommandExecutor.class);
-
-  private static final int CLASS_ID = 15;
-  private static final ObisCode OBIS_CODE = new ObisCode("0.0.40.0.0.255");
-  private static final int ATTRIBUTE_ID = 2;
 
   private static final int CLASS_ID_INDEX = 0;
   private static final int VERSION_INDEX = 1;
@@ -62,10 +62,16 @@ public class GetAssociationLnObjectsCommandExecutor
   private static final int ACCESS_RIGHTS_METHOD_ACCESS_METHOD_ID_INDEX = 0;
   private static final int ACCESS_RIGHTS_METHOD_ACCESS_ACCESS_MODE_INDEX = 1;
 
-  @Autowired private DlmsHelper dlmsHelper;
+  private final DlmsHelper dlmsHelper;
 
-  public GetAssociationLnObjectsCommandExecutor() {
+  private final ObjectConfigService objectConfigService;
+
+  public GetAssociationLnObjectsCommandExecutor(
+      final DlmsHelper dlmsHelper, final ObjectConfigService objectConfigService) {
     super(GetAssociationLnObjectsRequestDto.class);
+
+    this.dlmsHelper = dlmsHelper;
+    this.objectConfigService = objectConfigService;
   }
 
   @Override
@@ -92,8 +98,20 @@ public class GetAssociationLnObjectsCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
+    final CosemObject associationLnObject;
+    try {
+      associationLnObject =
+          this.objectConfigService.getCosemObject(
+              device.getProtocolName(), device.getProtocolVersion(), ASSOCIATION_LN);
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
+    }
+
     final AttributeAddress attributeAddress =
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+        new AttributeAddress(
+            associationLnObject.getClassId(),
+            associationLnObject.getObis(),
+            AssociationLnAttribute.OBJECT_LIST.attributeId());
 
     conn.getDlmsMessageListener()
         .setDescription(
@@ -102,9 +120,9 @@ public class GetAssociationLnObjectsCommandExecutor
 
     LOGGER.debug(
         "Retrieving Association LN objects for class id: {}, obis code: {}, attribute id: {}",
-        CLASS_ID,
-        OBIS_CODE,
-        ATTRIBUTE_ID);
+        associationLnObject.getClassId(),
+        associationLnObject.getObis(),
+        AssociationLnAttribute.OBJECT_LIST.attributeId());
 
     final List<GetResult> getResultList =
         this.dlmsHelper.getAndCheck(conn, device, "Association LN Objects", attributeAddress);
