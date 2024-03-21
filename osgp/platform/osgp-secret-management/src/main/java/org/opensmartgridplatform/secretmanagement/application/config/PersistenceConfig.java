@@ -17,12 +17,10 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 @EnableJpaRepositories(
-    entityManagerFactoryRef = "entityManagerFactory",
     basePackageClasses = {DbEncryptedSecretRepository.class, DbEncryptionKeyRepository.class})
 @Configuration
 @PropertySource("classpath:osgp-secret-management.properties")
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/SecretManagement/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${SECRET_MANAGEMENT_PROPERTIES}", ignoreResourceNotFound = true)
 public class PersistenceConfig extends AbstractPersistenceConfig {
 
   @Override
