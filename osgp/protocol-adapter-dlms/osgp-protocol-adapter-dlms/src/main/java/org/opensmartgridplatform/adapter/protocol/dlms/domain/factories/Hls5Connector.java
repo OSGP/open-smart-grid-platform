@@ -172,7 +172,7 @@ public class Hls5Connector extends SecureDlmsConnector {
      */
     final String manufacturerId;
     if (StringUtils.isEmpty(device.getManufacturerId())) {
-      LOGGER.warn(
+      LOGGER.debug(
           "Device {} does not have its manufacturer ID stored in the database. "
               + "Using a default value which makes the system title (part of the IV in HLS 5) less "
               + "unique.",
