@@ -12,7 +12,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <artifactId>protocol-adapter-iec61850</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>5.53.0</version>
+  <version>5.53.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>protocol-adapter-iec61850</name>
   <properties>
