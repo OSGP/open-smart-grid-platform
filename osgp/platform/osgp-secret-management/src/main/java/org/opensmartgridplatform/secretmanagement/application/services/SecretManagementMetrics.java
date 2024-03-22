@@ -5,8 +5,12 @@
 package org.opensmartgridplatform.secretmanagement.application.services;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.Timer.Builder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
@@ -16,6 +20,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class SecretManagementMetrics {
+
+  public static final String METRIC_REQUEST_TIMER_PREFIX = "request_timer_";
+  public static final String TAG_NR_OF_KEYS = "NrOfKeys";
 
   public static final String HARDSERVER_COMMUNICATION_EXCEPTION =
       "hardserver.communication.exception";
@@ -31,6 +38,16 @@ public class SecretManagementMetrics {
     this.meterRegistry = meterRegistry;
     this.hardserverExceptionClasses =
         Arrays.asList(StringUtils.split(hardserverExceptionClasses, ";"));
+  }
+
+  public Timer createTimer(final String name, final Map<String, String> tags) {
+    final Builder builder = Timer.builder(name);
+    tags.forEach(builder::tag);
+    return builder.register(this.meterRegistry);
+  }
+
+  public void recordTimer(final Timer timer, final Long duration, final TimeUnit timeUnit) {
+    timer.record(duration, timeUnit);
   }
 
   @SuppressWarnings("java:S1872")

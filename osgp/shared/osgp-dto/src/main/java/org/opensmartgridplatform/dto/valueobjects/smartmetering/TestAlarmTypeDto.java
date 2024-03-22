@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
+
 /*
  * TestAlarmType's for scheduling the AlarmType
  */

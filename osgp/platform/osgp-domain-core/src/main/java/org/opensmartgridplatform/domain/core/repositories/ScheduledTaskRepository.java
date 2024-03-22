@@ -10,7 +10,11 @@ import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
 import org.opensmartgridplatform.domain.core.valueobjects.ScheduledTaskStatusType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface ScheduledTaskRepository extends JpaRepository<ScheduledTask, Long> {
@@ -18,4 +22,14 @@ public interface ScheduledTaskRepository extends JpaRepository<ScheduledTask, Lo
       ScheduledTaskStatusType status, Timestamp currentTimestamp, Pageable pageable);
 
   ScheduledTask findByCorrelationUid(String correlationUid);
+
+  @Transactional
+  @Modifying
+  @Query(
+      value =
+          "UPDATE ScheduledTask st SET st.status = :scheduledTaskStatus, st.modificationTime = CURRENT_TIMESTAMP()"
+              + " WHERE st.id = :scheduledTaskId")
+  int updateStatus(
+      @Param("scheduledTaskId") Long id,
+      @Param("scheduledTaskStatus") ScheduledTaskStatusType scheduledTaskStatusType);
 }

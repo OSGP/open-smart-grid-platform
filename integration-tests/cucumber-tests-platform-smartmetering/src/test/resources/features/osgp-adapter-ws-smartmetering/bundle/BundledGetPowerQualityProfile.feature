@@ -383,7 +383,8 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
       | BeginDate            | 2015-01-01 00:00:00 |
       | EndDate              | 2017-01-10 00:00:00 |
     When the bundle request is received
-    Then the bundle response should contain an empty power quality profile response
+    Then the bundle response should be a FaultResponse with message containing
+      | Message | No PQ profile found in profile DSMR version 2.2 |
 
     Examples:
       | deviceIdentification | port | polyphase | profileType |

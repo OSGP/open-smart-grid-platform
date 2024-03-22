@@ -17,6 +17,7 @@ import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
 import org.openmuc.jdlms.SecuritySuite.EncryptionMechanism;
 import org.openmuc.jdlms.TcpConnectionBuilder;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.metrics.ProtocolAdapterMetrics;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -44,8 +45,9 @@ public class Lls1Connector extends SecureDlmsConnector {
       final int responseTimeout,
       final int logicalDeviceAddress,
       final DlmsDeviceAssociation deviceAssociation,
-      final SecretManagementService secretManagementService) {
-    super(responseTimeout, logicalDeviceAddress, deviceAssociation);
+      final SecretManagementService secretManagementService,
+      final ProtocolAdapterMetrics protocolAdapterMetrics) {
+    super(responseTimeout, logicalDeviceAddress, deviceAssociation, protocolAdapterMetrics);
     this.secretManagementService = secretManagementService;
   }
 

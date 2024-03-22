@@ -48,6 +48,7 @@ public class PowerOutages extends ProfileGeneric {
       accessMode = AttributeAccessMode.READ_ONLY,
       snOffset = 0x10)
   private final DataObject captureObjects;
+
   /**
    * Only for cosem attribute definition, data remains untouched. Attribute data is gathered from
    * size of {@link #bufferData}

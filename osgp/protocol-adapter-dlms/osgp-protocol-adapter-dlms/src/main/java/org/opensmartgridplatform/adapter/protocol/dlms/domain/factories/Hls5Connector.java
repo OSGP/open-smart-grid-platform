@@ -17,6 +17,7 @@ import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
 import org.openmuc.jdlms.SecuritySuite.EncryptionMechanism;
 import org.openmuc.jdlms.TcpConnectionBuilder;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.metrics.ProtocolAdapterMetrics;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -50,8 +51,9 @@ public class Hls5Connector extends SecureDlmsConnector {
       final int responseTimeout,
       final int logicalDeviceAddress,
       final DlmsDeviceAssociation deviceAssociation,
-      final SecretManagementService secretManagementService) {
-    super(responseTimeout, logicalDeviceAddress, deviceAssociation);
+      final SecretManagementService secretManagementService,
+      final ProtocolAdapterMetrics protocolAdapterMetrics) {
+    super(responseTimeout, logicalDeviceAddress, deviceAssociation, protocolAdapterMetrics);
     this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
     this.secretManagementService = secretManagementService;
   }
@@ -170,7 +172,7 @@ public class Hls5Connector extends SecureDlmsConnector {
      */
     final String manufacturerId;
     if (StringUtils.isEmpty(device.getManufacturerId())) {
-      LOGGER.warn(
+      LOGGER.debug(
           "Device {} does not have its manufacturer ID stored in the database. "
               + "Using a default value which makes the system title (part of the IV in HLS 5) less "
               + "unique.",

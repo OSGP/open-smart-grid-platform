@@ -101,13 +101,16 @@ public class DomainHelperService {
 
     return deviceIpAddress.orElseThrow(
         () ->
-            new ProtocolAdapterException(
-                "Session provider: No IP address was returned for device: "
-                    + dlmsDevice.getDeviceIdentification()
-                    + " and iccId: "
-                    + dlmsDevice.getIccId()
-                    + " and communicationProvider: "
-                    + dlmsDevice.getCommunicationProvider()));
+            new FunctionalException(
+                FunctionalExceptionType.SESSION_PROVIDER_ERROR,
+                COMPONENT_TYPE,
+                new ProtocolAdapterException(
+                    "Session provider: No IP address was returned for device: "
+                        + dlmsDevice.getDeviceIdentification()
+                        + " and iccId: "
+                        + dlmsDevice.getIccId()
+                        + " and communicationProvider: "
+                        + dlmsDevice.getCommunicationProvider())));
   }
 
   public DlmsDevice findMbusDevice(

@@ -61,3 +61,47 @@ Feature: SmartMetering functional exceptions regarding connections
     Then a SOAP fault should have been returned
       | Code    |                               413 |
       | Message | UNSUPPORTED_COMMUNICATION_SETTING |
+
+  Scenario Outline: Exception should be same when retry is on or off (value: <bypassRetry>)
+    Given a dlms device
+      | DeviceIdentification  | TEST1024000000001  |
+      | DeviceType            | SMART_METER_E      |
+      | Hls3active            | false              |
+      | Hls4active            | false              |
+      | Hls5active            | true               |
+      | Encryption_key        | EMPTY_SECURITY_KEY |
+    Given a bundle request
+      | DeviceIdentification | TEST1024000000001 |
+    And the bundle request contains a get administrative status action
+    When the bundle request generating an error is received with headers
+      | BypassRetry     | <bypassRetry>     |
+    And a SOAP fault should have been returned
+      | Code    |             806 |
+      | Message | KEY_NOT_PRESENT |
+
+    Examples:
+      | bypassRetry |
+      | TRUE        |
+      | FALSE       |
+
+  Scenario Outline: Exception should be same when max schedule time is reached (value: <maxScheduleTime>)
+    Given a dlms device
+      | DeviceIdentification  | TEST1024000000001  |
+      | DeviceType            | SMART_METER_E      |
+      | Hls3active            | false              |
+      | Hls4active            | false              |
+      | Hls5active            | true               |
+      | Encryption_key        | EMPTY_SECURITY_KEY |
+    Given a bundle request
+      | DeviceIdentification | TEST1024000000001 |
+    And the bundle request contains a get administrative status action
+    When the bundle request generating an error is received with headers
+      | MaxScheduleTime | <maxScheduleTime> |
+    And a SOAP fault should have been returned
+      | Code    |             806 |
+      | Message | KEY_NOT_PRESENT |
+
+    Examples:
+      | maxScheduleTime |
+      |                 |
+      | now - 5 minutes |

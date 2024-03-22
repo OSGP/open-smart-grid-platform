@@ -220,11 +220,12 @@ class PermitsPerNetworkSegmentTest {
     final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(2);
     executor.schedule(
         () -> {
-          PermitsPerNetworkSegmentTest.this.permitsPerNetworkSegment.releasePermit(
-              throttlingConfigId, clientId, btsId, cellId, requestId);
           when(this.permitReleasedNotifier.waitForAvailablePermit(btsId, cellId, 1000))
               .thenReturn(false)
               .thenReturn(true);
+          this.permitsPerNetworkSegment.releasePermit(
+              throttlingConfigId, clientId, btsId, cellId, requestId);
+
           verify(this.permitReleasedNotifier, times(1)).notifyPermitReleased(btsId, cellId);
         },
         waitBeforeRelease,

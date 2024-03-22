@@ -48,12 +48,12 @@ SPDX-License-Identifier: Apache-2.0
     <osgp.dlms.version>5.54.0-SNAPSHOT</osgp.dlms.version>
     <osgp.shared.version>5.54.0-SNAPSHOT</osgp.shared.version>
     <osgp.jasper-interface.version>5.54.0-SNAPSHOT</osgp.jasper-interface.version>
-    <spring.version>6.1.4</spring.version>
+    <spring.version>6.1.5</spring.version>
     <spring.data.version>3.2.3</spring.data.version>
     <spring.data.commons.version>3.2.3</spring.data.commons.version>
-    <spring.security.version>6.2.2</spring.security.version>
+    <spring.security.version>6.2.3</spring.security.version>
     <spring.ws.version>4.0.10</spring.ws.version>
-    <reactor.version>2023.0.3</reactor.version>
+    <reactor.version>2023.0.4</reactor.version>
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.core.version>4.8.0</mockito.core.version>
@@ -74,7 +74,7 @@ SPDX-License-Identifier: Apache-2.0
     <flyway.version>9.22.3</flyway.version>
     <slf4j.version>2.0.12</slf4j.version>
     <apache.commons.lang.version>3.14.0</apache.commons.lang.version>
-    <apache.commons.text.version>1.10.0</apache.commons.text.version>
+    <apache.commons.text.version>1.11.0</apache.commons.text.version>
     <apache.httpcomponents.version>5.3.1</apache.httpcomponents.version>
     <apache.httpcomponents..mime.version>4.5.14</apache.httpcomponents..mime.version>
     <apache.httpcomponents.httpcore.version>4.4.16</apache.httpcomponents.httpcore.version>
@@ -88,7 +88,7 @@ SPDX-License-Identifier: Apache-2.0
     <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
     <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
     <maven.dependency.plugin.version>3.6.1</maven.dependency.plugin.version>
-    <maven.surefire.plugin.version>3.0.0-M5</maven.surefire.plugin.version>
+    <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>3.2.5</maven.failsafe.plugin.version>
     <maven.assembly.plugin.version>3.3.0</maven.assembly.plugin.version>
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
@@ -103,7 +103,7 @@ SPDX-License-Identifier: Apache-2.0
     <checkstyle.maven.plugin.version>3.3.1</checkstyle.maven.plugin.version>
     <dependency-check.maven.plugin.version>7.0.2</dependency-check.maven.plugin.version>
     <versions.maven.plugin.version>2.10.0</versions.maven.plugin.version>
-    <fmt-maven-plugin.version>2.19</fmt-maven-plugin.version>
+    <fmt-maven-plugin.version>2.23</fmt-maven-plugin.version>
     <apache.activemq.version>6.0.1</apache.activemq.version>
     <logback.version>1.5.3</logback.version>
     <apache.commons.schema>2.3.1</apache.commons.schema>

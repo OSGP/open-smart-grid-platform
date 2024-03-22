@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.metrics.ProtocolAdapterMetrics;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DeviceKeyProcessingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
@@ -131,33 +132,41 @@ public class DlmsConfig extends AbstractConfig {
       final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
       @Value("${jdlms.response_timeout}") final int responseTimeout,
       @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
-      final SecretManagementService secretManagementService) {
+      final SecretManagementService secretManagementService,
+      final ProtocolAdapterMetrics protocolAdapterMetrics) {
     return new Hls5Connector(
         recoverKeyProcessInitiator,
         responseTimeout,
         logicalDeviceAddress,
         DlmsDeviceAssociation.MANAGEMENT_CLIENT,
-        secretManagementService);
+        secretManagementService,
+        protocolAdapterMetrics);
   }
 
   @Bean
   public Lls1Connector lls1Connector(
       @Value("${jdlms.lls1.response.timeout}") final int responseTimeout,
       @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
-      final SecretManagementService secretManagementService) {
+      final SecretManagementService secretManagementService,
+      final ProtocolAdapterMetrics protocolAdapterMetrics) {
     return new Lls1Connector(
         responseTimeout,
         logicalDeviceAddress,
         DlmsDeviceAssociation.MANAGEMENT_CLIENT,
-        secretManagementService);
+        secretManagementService,
+        protocolAdapterMetrics);
   }
 
   @Bean
   public Lls0Connector lls0Connector(
       @Value("${jdlms.response_timeout}") final int responseTimeout,
-      @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
+      @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
+      final ProtocolAdapterMetrics protocolAdapterMetrics) {
     return new Lls0Connector(
-        responseTimeout, logicalDeviceAddress, DlmsDeviceAssociation.PUBLIC_CLIENT);
+        responseTimeout,
+        logicalDeviceAddress,
+        DlmsDeviceAssociation.PUBLIC_CLIENT,
+        protocolAdapterMetrics);
   }
 
   @Bean

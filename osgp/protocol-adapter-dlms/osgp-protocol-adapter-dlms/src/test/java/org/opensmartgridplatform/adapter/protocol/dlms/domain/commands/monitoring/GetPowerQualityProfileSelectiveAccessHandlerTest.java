@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitoring;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -135,7 +136,7 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends GetPowerQualityPr
   @ParameterizedTest
   @EnumSource(PowerQualityProfile.class)
   void testSkipIfProfileDoesNotContainObject(final PowerQualityProfile profile)
-      throws ObjectConfigException, ProtocolAdapterException {
+      throws ObjectConfigException {
     final GetPowerQualityProfileRequestDataDto requestDto =
         new GetPowerQualityProfileRequestDataDto(
             profile.name(),
@@ -155,8 +156,8 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends GetPowerQualityPr
     final GetPowerQualityProfileSelectiveAccessHandler handler =
         new GetPowerQualityProfileSelectiveAccessHandler(this.dlmsHelper, this.objectConfigService);
 
-    final GetPowerQualityProfileResponseDto responseDto =
-        handler.handle(this.conn, this.dlmsDevice, requestDto);
-    assertThat(responseDto.getPowerQualityProfileResponseDatas()).hasSize(0);
+    assertThrows(
+        ProtocolAdapterException.class,
+        () -> handler.handle(this.conn, this.dlmsDevice, requestDto));
   }
 }

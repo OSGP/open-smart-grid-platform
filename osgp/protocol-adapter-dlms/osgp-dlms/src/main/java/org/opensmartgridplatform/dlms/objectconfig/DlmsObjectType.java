@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.dlms.objectconfig;
 
 public enum DlmsObjectType {
+  ASSOCIATION_LN,
   CLOCK,
   DEFINABLE_LOAD_PROFILE,
   POWER_QUALITY_PROFILE_1,

@@ -11,6 +11,7 @@ import lombok.Getter;
 public class HealthResponse {
   /** Indicates whether everything is health */
   private final boolean ok;
+
   /** In case of an unhealthy situation, this message should indicate what's wrong */
   private final String message;
 

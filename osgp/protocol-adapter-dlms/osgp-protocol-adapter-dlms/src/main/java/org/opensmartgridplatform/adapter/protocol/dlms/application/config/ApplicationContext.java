@@ -9,6 +9,7 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.config.AppHealthConfig;
 import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -31,7 +32,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
   MessagingConfig.class,
   DlmsPersistenceConfig.class,
   JasperWirelessConfig.class,
-  MetricsConfig.class
+  MetricsConfig.class,
+  AppHealthConfig.class
 })
 @PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)

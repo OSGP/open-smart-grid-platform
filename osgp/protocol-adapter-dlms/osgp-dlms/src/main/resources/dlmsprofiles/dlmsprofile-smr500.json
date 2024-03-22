@@ -5,6 +5,91 @@
   "properties": [],
   "objects": [
     {
+      "tag": "ASSOCIATION_LN",
+      "description": "Association LN",
+      "note": null,
+      "class-id": 15,
+      "version": 3,
+      "obis": "0.0.40.0.0.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "object_list",
+          "datatype": "object_list_type",
+          "valuetype": "FIXED_IN_METER",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "associated_partners_id",
+          "datatype": "associated_partners_type",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "application_context_name",
+          "datatype": "context_name_type",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "xDLMS_context_info",
+          "datatype": "xDLMS_context_type",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "authentication_mechanism_name",
+          "datatype": "mechanism_name_type",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "secret",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "association_status",
+          "datatype": "enum",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 9,
+          "description": "security_setup_reference",
+          "datatype": "octet-string",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0.0.43.0.0255",
+          "access": "R"
+        },
+        {
+          "id": 10,
+          "description": "user_list",
+          "datatype": "array",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "",
+          "access": "R"
+        },
+        {
+          "id": 11,
+          "description": "current_user",
+          "datatype": "structure",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "",
+          "access": "R"
+        }
+      ]
+    },
+    {
       "tag": "CLOCK",
       "description": "Clock",
       "note": null,
