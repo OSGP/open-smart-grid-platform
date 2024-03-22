@@ -615,7 +615,7 @@ class ThrottlingClientTest {
     when(mockedRestTemplate.postForObject(
             eq("/throttling-configs"), any(ThrottlingConfig.class), eq(Short.class)))
         .thenReturn((Short.valueOf("1")));
-    when(mockedRestTemplate.postForObject("/clients",null, Integer.class))
+    when(mockedRestTemplate.postForObject("/clients", null, Integer.class))
         .thenReturn(Integer.valueOf(1));
 
     final boolean released = this.throttlingClient.releasePermit(permitToBeReleased);
