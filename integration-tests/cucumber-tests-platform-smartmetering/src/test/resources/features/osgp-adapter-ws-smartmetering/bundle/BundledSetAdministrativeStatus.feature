@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @Stefan
+@SmartMetering @Platform
 Feature: SmartMetering Bundle - SetAdministrativeStatus
   As a grid operator 
   I want to be able to set administrative status on a meter via a bundle request
