@@ -2293,6 +2293,26 @@
       ]
     },
     {
+      "tag": "ADMINISTRATIVE_IN_OUT",
+      "description": "Administrative in/out",
+      "note": null,
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.1.94.31.0.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "enum",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        }
+      ]
+    },
+    {
       "tag": "CONFIGURATION_OBJECT",
       "description": "Configuration object",
       "note": null,
