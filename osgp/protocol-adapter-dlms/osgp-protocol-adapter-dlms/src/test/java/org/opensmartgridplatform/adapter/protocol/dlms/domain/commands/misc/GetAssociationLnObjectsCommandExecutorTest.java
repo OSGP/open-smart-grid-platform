@@ -11,16 +11,12 @@ import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -29,7 +25,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
-import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AssociationLnListElementDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AssociationLnListTypeDto;
@@ -37,7 +32,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObisCodeDto
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class GetAssociationLnObjectsCommandExecutorTest {
 
   private GetAssociationLnObjectsCommandExecutor executor;
@@ -49,15 +43,6 @@ class GetAssociationLnObjectsCommandExecutorTest {
   @Mock private DlmsConnectionManager connectionManager;
 
   private static final String OBIS_CODE = "0.0.40.0.0.255";
-
-  @BeforeEach
-  public void setUp() throws IOException, ObjectConfigException {
-    final ObjectConfigService objectConfigService = new ObjectConfigService();
-    this.executor =
-        new GetAssociationLnObjectsCommandExecutor(this.dlmsHelper, objectConfigService);
-
-    when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
-  }
 
   @Test
   void testExecute() throws Exception {
@@ -85,12 +70,17 @@ class GetAssociationLnObjectsCommandExecutorTest {
     final DataObject resultData = DataObject.newArrayData(Collections.nCopies(nrOfObjects, lnObj));
     when(getResult.getResultData()).thenReturn(resultData);
 
+    when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.dlmsHelper.getAndCheck(
             eq(this.connectionManager), eq(testDevice), any(), refEq(attributeAddress)))
         .thenReturn(List.of(getResult));
     when(this.dlmsHelper.readLong(classIdObj, "classId")).thenReturn((long) classId);
     when(this.dlmsHelper.readLogicalName(obisObj, "AssociationLN Element"))
         .thenReturn(new CosemObisCodeDto(lnObjectObis));
+
+    final ObjectConfigService objectConfigService = new ObjectConfigService();
+    this.executor =
+        new GetAssociationLnObjectsCommandExecutor(this.dlmsHelper, objectConfigService);
 
     // CALL
     final AssociationLnListTypeDto result =
