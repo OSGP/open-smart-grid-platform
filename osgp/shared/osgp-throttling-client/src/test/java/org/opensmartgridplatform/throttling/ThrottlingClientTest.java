@@ -639,8 +639,6 @@ class ThrottlingClientTest {
             throttlingConfigId, clientId, requestId, null, null, Instant.now().minusSeconds(2));
 
     RestTemplate mockedRestTemplate = Mockito.mock(RestTemplate.class);
-    //    ReflectionTestUtils.setField(throttlingClient, "throttlingConfig", new
-    // ThrottlingConfig());
     ReflectionTestUtils.setField(throttlingClient, "restTemplate", mockedRestTemplate);
     when(mockedRestTemplate.exchange(
             eq("/permits/{throttlingConfigId}/{clientId}"),
@@ -650,10 +648,6 @@ class ThrottlingClientTest {
             any(Short.class),
             any(Integer.class)))
         .thenThrow(new RuntimeException("Some exception calling the rest template"));
-    //    when(mockedRestTemplate.postForObject(eq("/throttling-configs"),
-    // any(ThrottlingConfig.class), eq(Short.class))).thenReturn((Short.valueOf("1")));
-    //    when(mockedRestTemplate.postForObject(eq("/clients"), eq(null),
-    // eq(Integer.class))).thenReturn(Integer.valueOf(1));
 
     final boolean released = this.throttlingClient.releasePermit(permitToBeReleased);
 
