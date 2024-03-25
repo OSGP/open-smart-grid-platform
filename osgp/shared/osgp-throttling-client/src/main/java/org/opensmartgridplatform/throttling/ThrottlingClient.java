@@ -388,16 +388,25 @@ public class ThrottlingClient {
       LOGGER.error("Client is not registered when releasing permit using requestId {}", requestId);
       return false;
     }
-
-    final ResponseEntity<Void> releaseResponse =
-        this.restTemplate.exchange(
-            "/permits/{throttlingConfigId}/{clientId}",
-            HttpMethod.DELETE,
-            new HttpEntity<>(requestId),
-            Void.class,
-            this.throttlingConfig.getId(),
-            this.clientId);
-
+    final ResponseEntity<Void> releaseResponse;
+    try {
+      releaseResponse =
+          this.restTemplate.exchange(
+              "/permits/{throttlingConfigId}/{clientId}",
+              HttpMethod.DELETE,
+              new HttpEntity<>(requestId),
+              Void.class,
+              this.throttlingConfig.getId(),
+              this.clientId);
+    } catch (Exception e) {
+      LOGGER.warn(
+          "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {} - got unexpected exception: {}",
+          this.throttlingConfig.getId(),
+          this.clientId,
+          requestId,
+          e.getMessage());
+      return false;
+    }
     if (releaseResponse.getStatusCode().is4xxClientError()) {
       LOGGER.warn(
           "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, because the permit has not been granted",
@@ -434,17 +443,29 @@ public class ThrottlingClient {
       return false;
     }
 
-    final ResponseEntity<Void> releaseResponse =
-        this.restTemplate.exchange(
-            "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
-            HttpMethod.DELETE,
-            new HttpEntity<>(requestId),
-            Void.class,
-            this.throttlingConfig.getId(),
-            this.clientId,
-            baseTransceiverStationId,
-            cellId);
-
+    final ResponseEntity<Void> releaseResponse;
+    try {
+      releaseResponse =
+          this.restTemplate.exchange(
+              "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
+              HttpMethod.DELETE,
+              new HttpEntity<>(requestId),
+              Void.class,
+              this.throttlingConfig.getId(),
+              this.clientId,
+              baseTransceiverStationId,
+              cellId);
+    } catch (Exception e) {
+      LOGGER.warn(
+          "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, baseTransceiverStationId {}, cellId {} - got unexpected exception: {}",
+          this.throttlingConfig.getId(),
+          this.clientId,
+          requestId,
+          baseTransceiverStationId,
+          cellId,
+          e.getMessage());
+      return false;
+    }
     if (releaseResponse.getStatusCode().is4xxClientError()) {
       LOGGER.warn(
           "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, baseTransceiverStationId {}, cellId {}, because the permit has not been granted",

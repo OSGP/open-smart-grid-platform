@@ -7,6 +7,9 @@ package org.opensmartgridplatform.throttling;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -20,12 +23,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 import org.opensmartgridplatform.throttling.api.Permit;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestTemplate;
 
 class ThrottlingClientTest {
 
@@ -569,6 +576,78 @@ class ThrottlingClientTest {
     final Permit permitToBeReleased =
         new Permit(
             throttlingConfigId, clientId, requestId, null, null, Instant.now().minusSeconds(2));
+
+    final boolean released = this.throttlingClient.releasePermit(permitToBeReleased);
+
+    assertThat(released).isFalse();
+  }
+
+  @Test
+  void registerFailureClientReleasesPermitForNetworkSegment2() {
+    final short throttlingConfigId = 901;
+    final int clientId = 4518988;
+    final int baseTransceiverStationId = 10029;
+    final int cellId = 1;
+    final int requestId = 23938477;
+    this.whenTheThrottlingServiceReturnsFailureOnRegistration();
+    final Permit permitToBeReleased =
+        new Permit(
+            throttlingConfigId,
+            clientId,
+            requestId,
+            baseTransceiverStationId,
+            cellId,
+            Instant.now().minusSeconds(3));
+
+    RestTemplate mockedRestTemplate = Mockito.mock(RestTemplate.class);
+    ReflectionTestUtils.setField(throttlingClient, "throttlingConfig", new ThrottlingConfig());
+    ReflectionTestUtils.setField(throttlingClient, "restTemplate", mockedRestTemplate);
+    when(mockedRestTemplate.exchange(
+            eq("/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}"),
+            eq(HttpMethod.DELETE),
+            any(HttpEntity.class),
+            eq(Void.class),
+            any(Short.class),
+            any(Integer.class),
+            any(Integer.class),
+            any(Integer.class)))
+        .thenThrow(new RuntimeException("Some exception calling the rest template"));
+    when(mockedRestTemplate.postForObject(
+            eq("/throttling-configs"), any(ThrottlingConfig.class), eq(Short.class)))
+        .thenReturn((Short.valueOf("1")));
+    when(mockedRestTemplate.postForObject("/clients", null, Integer.class))
+        .thenReturn(Integer.valueOf(1));
+
+    final boolean released = this.throttlingClient.releasePermit(permitToBeReleased);
+
+    assertThat(released).isFalse();
+  }
+
+  @Test
+  void clientReleasesPermitThatIsNotHeldForUnknownNetworkSegment2() {
+    final short throttlingConfigId = 11;
+    final int clientId = 18;
+    final int requestId = 21;
+    final int priority = 4;
+    this.whenTheThrottlingConfigIsIdentifiedById(throttlingConfigId);
+    this.whenTheThrottlingClientHasRegisteredWithId(clientId);
+    this.whenTheThrottlingServiceReleasesThePermit(
+        throttlingConfigId, clientId, requestId, priority, false);
+
+    final Permit permitToBeReleased =
+        new Permit(
+            throttlingConfigId, clientId, requestId, null, null, Instant.now().minusSeconds(2));
+
+    RestTemplate mockedRestTemplate = Mockito.mock(RestTemplate.class);
+    ReflectionTestUtils.setField(throttlingClient, "restTemplate", mockedRestTemplate);
+    when(mockedRestTemplate.exchange(
+            eq("/permits/{throttlingConfigId}/{clientId}"),
+            eq(HttpMethod.DELETE),
+            any(HttpEntity.class),
+            eq(Void.class),
+            any(Short.class),
+            any(Integer.class)))
+        .thenThrow(new RuntimeException("Some exception calling the rest template"));
 
     final boolean released = this.throttlingClient.releasePermit(permitToBeReleased);
 
