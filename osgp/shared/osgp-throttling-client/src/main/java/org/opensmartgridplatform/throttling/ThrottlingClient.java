@@ -383,16 +383,25 @@ public class ThrottlingClient {
       LOGGER.error("Client is not registered when releasing permit using requestId {}", requestId);
       return false;
     }
-
-    final ResponseEntity<Void> releaseResponse =
-        this.restTemplate.exchange(
-            "/permits/{throttlingConfigId}/{clientId}",
-            HttpMethod.DELETE,
-            new HttpEntity<>(requestId),
-            Void.class,
-            this.throttlingConfig.getId(),
-            this.clientId);
-
+    final ResponseEntity<Void> releaseResponse;
+    try {
+      releaseResponse =
+          this.restTemplate.exchange(
+              "/permits/{throttlingConfigId}/{clientId}",
+              HttpMethod.DELETE,
+              new HttpEntity<>(requestId),
+              Void.class,
+              this.throttlingConfig.getId(),
+              this.clientId);
+    } catch (final Exception e) {
+      LOGGER.warn(
+          "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {} - got unexpected exception: {}",
+          this.throttlingConfig.getId(),
+          this.clientId,
+          requestId,
+          e.getMessage());
+      return false;
+    }
     switch (releaseResponse.getStatusCode()) {
       case NOT_FOUND:
         LOGGER.warn(
@@ -430,17 +439,29 @@ public class ThrottlingClient {
       return false;
     }
 
-    final ResponseEntity<Void> releaseResponse =
-        this.restTemplate.exchange(
-            "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
-            HttpMethod.DELETE,
-            new HttpEntity<>(requestId),
-            Void.class,
-            this.throttlingConfig.getId(),
-            this.clientId,
-            baseTransceiverStationId,
-            cellId);
-
+    final ResponseEntity<Void> releaseResponse;
+    try {
+      releaseResponse =
+          this.restTemplate.exchange(
+              "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
+              HttpMethod.DELETE,
+              new HttpEntity<>(requestId),
+              Void.class,
+              this.throttlingConfig.getId(),
+              this.clientId,
+              baseTransceiverStationId,
+              cellId);
+    } catch (final Exception e) {
+      LOGGER.warn(
+          "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, baseTransceiverStationId {}, cellId {} - got unexpected exception: {}",
+          this.throttlingConfig.getId(),
+          this.clientId,
+          requestId,
+          baseTransceiverStationId,
+          cellId,
+          e.getMessage());
+      return false;
+    }
     switch (releaseResponse.getStatusCode()) {
       case NOT_FOUND:
         LOGGER.warn(
