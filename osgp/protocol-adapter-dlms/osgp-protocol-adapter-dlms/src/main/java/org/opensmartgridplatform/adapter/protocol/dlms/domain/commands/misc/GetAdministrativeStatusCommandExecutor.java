@@ -4,8 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.ADMINISTRATIVE_IN_OUT;
+
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
@@ -13,6 +14,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Jdl
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
@@ -21,7 +26,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAdministrativ
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
@@ -31,14 +35,17 @@ public class GetAdministrativeStatusCommandExecutor
   private static final Logger LOGGER =
       LoggerFactory.getLogger(GetAdministrativeStatusCommandExecutor.class);
 
-  private static final int CLASS_ID = 1;
-  private static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.0.255");
-  private static final int ATTRIBUTE_ID = 2;
+  private final ConfigurationMapper configurationMapper;
 
-  @Autowired private ConfigurationMapper configurationMapper;
+  private final ObjectConfigService objectConfigService;
 
-  public GetAdministrativeStatusCommandExecutor() {
+  public GetAdministrativeStatusCommandExecutor(
+      final ObjectConfigService objectConfigService,
+      final ConfigurationMapper configurationMapper) {
     super(GetAdministrativeStatusDataDto.class);
+
+    this.objectConfigService = objectConfigService;
+    this.configurationMapper = configurationMapper;
   }
 
   @Override
@@ -65,7 +72,19 @@ public class GetAdministrativeStatusCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    final AttributeAddress getParameter = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+    final CosemObject administrativeInOutObject;
+    try {
+      administrativeInOutObject =
+          this.objectConfigService.getCosemObject(
+              device.getProtocolName(), device.getProtocolVersion(), ADMINISTRATIVE_IN_OUT);
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
+    }
+    final AttributeAddress getParameter =
+        new AttributeAddress(
+            administrativeInOutObject.getClassId(),
+            administrativeInOutObject.getObis(),
+            DataAttribute.VALUE.attributeId());
 
     conn.getDlmsMessageListener()
         .setDescription(
@@ -73,11 +92,10 @@ public class GetAdministrativeStatusCommandExecutor
                 + JdlmsObjectToStringUtil.describeAttributes(getParameter));
 
     LOGGER.debug(
-        "Retrieving current administrative status by issuing get request for class id: {}, obis code: {}, "
-            + "attribute id: {}",
-        CLASS_ID,
-        OBIS_CODE,
-        ATTRIBUTE_ID);
+        "Retrieving current administrative status by issuing get request for class id: {}, obis code: {}, attribute id: {}",
+        administrativeInOutObject.getClassId(),
+        administrativeInOutObject.getObis(),
+        DataAttribute.VALUE.attributeId());
 
     final DataObject dataObject = this.getValidatedResultData(conn, getParameter);
 

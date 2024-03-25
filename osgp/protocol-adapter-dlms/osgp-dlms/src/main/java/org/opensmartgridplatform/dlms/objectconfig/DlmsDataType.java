@@ -75,6 +75,18 @@ public enum DlmsDataType {
   @JsonProperty("clock_status")
   CLOCK_STATUS,
 
+  // Class-id 15: Association LN
+  @JsonProperty("object_list_type")
+  OBJECT_LIST_TYPE,
+  @JsonProperty("associated_partners_type")
+  ASSOCIATED_PARTNERS_TYPE,
+  @JsonProperty("context_name_type")
+  CONTEXT_NAME_TYPE,
+  @JsonProperty("xDLMS_context_type")
+  XDLMS_CONTEXT_TYPE,
+  @JsonProperty("mechanism_name_type")
+  MECHANISM_NAME_TYPE,
+
   // Class-id 47: GSM diagnostic
   @JsonProperty("cell_info_type")
   CELL_INFO_TYPE

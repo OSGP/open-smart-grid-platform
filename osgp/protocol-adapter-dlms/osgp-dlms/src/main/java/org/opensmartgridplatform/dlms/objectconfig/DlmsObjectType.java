@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.dlms.objectconfig;
 
 public enum DlmsObjectType {
+  ASSOCIATION_LN,
   CLOCK,
   DEFINABLE_LOAD_PROFILE,
   POWER_QUALITY_PROFILE_1,
@@ -83,6 +84,7 @@ public enum DlmsObjectType {
   CLEAR_MBUS_STATUS,
   PHASE_OUTAGE_TEST,
   LAST_GASP_TEST,
+  ADMINISTRATIVE_IN_OUT,
   CONFIGURATION_OBJECT,
   RANDOMISATION_SETTINGS,
   ACTIVITY_CALENDAR;
