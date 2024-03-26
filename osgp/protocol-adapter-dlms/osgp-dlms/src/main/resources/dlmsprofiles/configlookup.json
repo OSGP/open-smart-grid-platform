@@ -20,7 +20,9 @@
       {
         "type": "value in meter is not like in specification",
         "match": [
-          "G4SRT 1.2L"
+          "G4SRT 1.2L",
+          "G10-16SRT_SMR55",
+          "G25SRT_SMR55"
         ]
       },      {
       "type": "unknown gas meter type",
