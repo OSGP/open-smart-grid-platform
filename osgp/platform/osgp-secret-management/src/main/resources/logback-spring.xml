@@ -7,16 +7,6 @@ SPDX-License-Identifier: Apache-2.0
 -->
 
 <configuration>
-
-  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [${HOSTNAME}] [%thread] %level %logger{36}@%method:%line - %msg%n</pattern>
-    </encoder>
-  </appender>
-
-  <root level="INFO" additivity="false">
-    <appender-ref ref="CONSOLE"/>
-  </root>
-
+  <include resource="org/springframework/boot/logging/logback/base.xml"/>
   <logger name="org.opensmartgridplatform.secretmanagement.application" level="DEBUG"/>
 </configuration>
