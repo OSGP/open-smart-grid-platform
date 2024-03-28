@@ -6,15 +6,16 @@ package org.opensmartgridplatform.shared.infra.db;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Factory class which constructs a {@link HikariDataSource} instance. */
 public class DefaultConnectionPoolFactory {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultConnectionPoolFactory.class);
 
   private String driverClassName;
-  private String protocol;
-  private String databaseHost;
-  private int databasePort;
-  private String databaseName;
+  private String databaseUrl;
   private String username;
   private String password;
   private int minPoolSize;
@@ -30,78 +31,10 @@ public class DefaultConnectionPoolFactory {
     // Private constructor to prevent instantiation of this class.
   }
 
-  public String getDriverClassName() {
-    return this.driverClassName;
-  }
-
-  public String getProtocol() {
-    return this.protocol;
-  }
-
-  public String getDatabaseHost() {
-    return this.databaseHost;
-  }
-
-  public int getDatabasePort() {
-    return this.databasePort;
-  }
-
-  public String getDatabaseName() {
-    return this.databaseName;
-  }
-
-  public String getDatabaseConnectionString() {
-    return this.protocol
-        .concat(this.databaseHost)
-        .concat(":")
-        .concat(this.databasePort + "/")
-        .concat(this.databaseName);
-  }
-
-  public String getUsername() {
-    return this.username;
-  }
-
-  public String getPassword() {
-    return this.password;
-  }
-
-  public int getMinPoolSize() {
-    return this.minPoolSize;
-  }
-
-  public int getMaxPoolSize() {
-    return this.maxPoolSize;
-  }
-
-  public long getInitializationFailTimeout() {
-    return this.initializationFailTimeout;
-  }
-
-  public long getValidationTimeout() {
-    return this.validationTimeout;
-  }
-
-  public long getConnectionTimeout() {
-    return this.connectionTimeout;
-  }
-
-  public boolean isAutoCommit() {
-    return this.isAutoCommit;
-  }
-
-  public int getIdleTimeout() {
-    return this.idleTimeout;
-  }
-
-  public int getMaxLifetime() {
-    return this.maxLifetime;
-  }
-
   public HikariDataSource getDefaultConnectionPool() {
     final HikariConfig hikariConfig = new HikariConfig();
     hikariConfig.setDriverClassName(this.driverClassName);
-    hikariConfig.setJdbcUrl(this.getDatabaseConnectionString());
+    hikariConfig.setJdbcUrl(this.databaseUrl);
     hikariConfig.setUsername(this.username);
     hikariConfig.setPassword(this.password);
     hikariConfig.setMinimumIdle(this.minPoolSize);
@@ -121,6 +54,7 @@ public class DefaultConnectionPoolFactory {
     private String protocol = "jdbc:postgresql://";
     private String databaseHost = "localhost";
     private int databasePort = 5432;
+    private String databaseUrl;
     private String databaseName = "";
     private String username = "";
     private String pw = "";
@@ -150,6 +84,11 @@ public class DefaultConnectionPoolFactory {
 
     public Builder withDatabasePort(final int databasePort) {
       this.databasePort = databasePort;
+      return this;
+    }
+
+    public Builder withDatabaseUrl(final String databaesUrl) {
+      this.databaseUrl = databaesUrl;
       return this;
     }
 
@@ -211,10 +150,7 @@ public class DefaultConnectionPoolFactory {
     public DefaultConnectionPoolFactory build() {
       final DefaultConnectionPoolFactory factory = new DefaultConnectionPoolFactory();
       factory.driverClassName = this.driverClassName;
-      factory.protocol = this.protocol;
-      factory.databaseHost = this.databaseHost;
-      factory.databasePort = this.databasePort;
-      factory.databaseName = this.databaseName;
+      factory.databaseUrl = this.getDatabaseConnectionString();
       factory.username = this.username;
       factory.password = this.pw;
       factory.minPoolSize = this.minPoolSize;
@@ -226,6 +162,20 @@ public class DefaultConnectionPoolFactory {
       factory.idleTimeout = this.idleTimeout;
       factory.maxLifetime = this.maxLifetime;
       return factory;
+    }
+
+    public String getDatabaseConnectionString() {
+      final String result;
+      if (StringUtils.isNotEmpty(this.databaseUrl)) {
+        result = this.databaseUrl;
+      } else {
+        result =
+            String.format(
+                "%s%s:%d/%s",
+                this.protocol, this.databaseHost, this.databasePort, this.databaseName);
+      }
+      LOGGER.debug("Using database connection string '{}'", result);
+      return result;
     }
   }
 }
