@@ -7,6 +7,7 @@ package org.opensmartgridplatform.shared.infra.jms;
 import java.io.Serializable;
 import lombok.Getter;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage.Builder;
 
 @Getter
 public class ProtocolResponseMessage extends ResponseMessage {
@@ -109,6 +110,11 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     public Builder retryHeader(final RetryHeader retryHeader) {
       this.superBuilder.withRetryHeader(retryHeader);
+      return this;
+    }
+
+    public Builder messagePriority(final int messagePriority) {
+      this.superBuilder.withMessagePriority(messagePriority);
       return this;
     }
 
