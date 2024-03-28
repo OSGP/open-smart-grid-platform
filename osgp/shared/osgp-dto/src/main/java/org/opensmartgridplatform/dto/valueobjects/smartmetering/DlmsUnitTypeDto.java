@@ -43,7 +43,7 @@ public enum DlmsUnitTypeDto {
   WATT(27, "W"),
   VOLT_AMPERE(28, "VOLT_AMPERE"),
   VAR(29, "VAR"),
-  KWH(30, "KWH"),
+  WH(30, "WH"),
   VOLT_AMP_HOUR(31, "VOLT_AMP_HOUR"),
   VAR_HOUR(32, "VAR_HOUR"),
   AMPERE(33, "AMP", "A"),

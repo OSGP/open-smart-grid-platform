@@ -12,10 +12,14 @@ import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.ACTIVE_
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_2;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.CLOCK;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
@@ -23,6 +27,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.Register;
@@ -46,19 +52,17 @@ public class GetActualMeterReadsCommandExecutor
   private static final Logger LOGGER =
       LoggerFactory.getLogger(GetActualMeterReadsCommandExecutor.class);
 
-  private static final int CLASS_ID_REGISTER = 3;
   private static final byte ATTRIBUTE_ID_VALUE = 2;
 
-  private static final int CLASS_ID_CLOCK = 8;
-  private static final byte ATTRIBUTE_ID_TIME = 2;
-
-  private static final int INDEX_TIME = 0;
-  private static final int INDEX_IMPORT = 1;
-  private static final int INDEX_IMPORT_RATE_1 = 2;
-  private static final int INDEX_IMPORT_RATE_2 = 3;
-  private static final int INDEX_EXPORT = 4;
-  private static final int INDEX_EXPORT_RATE_1 = 5;
-  private static final int INDEX_EXPORT_RATE_2 = 6;
+  private static final List<DlmsObjectType> OBJECTTYPES_FOR_ACTUALS =
+      List.of(
+          CLOCK,
+          ACTIVE_ENERGY_IMPORT,
+          ACTIVE_ENERGY_IMPORT_RATE_1,
+          ACTIVE_ENERGY_IMPORT_RATE_2,
+          ACTIVE_ENERGY_EXPORT,
+          ACTIVE_ENERGY_EXPORT_RATE_1,
+          ACTIVE_ENERGY_EXPORT_RATE_2);
 
   private final DlmsHelper dlmsHelper;
 
@@ -99,86 +103,107 @@ public class GetActualMeterReadsCommandExecutor
           "ActualMeterReadsQuery object for energy reads should not be about gas.");
     }
 
-    final CosemObject clockObject;
-    final Register importObject;
-    final Register importRate1Object;
-    final Register importRate2Object;
-    final Register exportObject;
-    final Register exportRate1Object;
-    final Register exportRate2Object;
-    try {
-      clockObject = this.getCosemObject(device, CLOCK);
-      importObject = (Register) this.getCosemObject(device, ACTIVE_ENERGY_IMPORT);
-      importRate1Object = (Register) this.getCosemObject(device, ACTIVE_ENERGY_IMPORT_RATE_1);
-      importRate2Object = (Register) this.getCosemObject(device, ACTIVE_ENERGY_IMPORT_RATE_2);
-      exportObject = (Register) this.getCosemObject(device, ACTIVE_ENERGY_EXPORT);
-      exportRate1Object = (Register) this.getCosemObject(device, ACTIVE_ENERGY_EXPORT_RATE_1);
-      exportRate2Object = (Register) this.getCosemObject(device, ACTIVE_ENERGY_EXPORT_RATE_2);
-    } catch (final ObjectConfigException e) {
-      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
-    }
+    final List<CosemObject> cosemObjects = this.getCosemObjectsFromConfig(device);
 
-    final AttributeAddress[] atttributeAddresses = {
-      new AttributeAddress(CLASS_ID_CLOCK, clockObject.getObis(), ATTRIBUTE_ID_TIME),
-      new AttributeAddress(CLASS_ID_REGISTER, importObject.getObis(), ATTRIBUTE_ID_VALUE),
-      new AttributeAddress(CLASS_ID_REGISTER, importRate1Object.getObis(), ATTRIBUTE_ID_VALUE),
-      new AttributeAddress(CLASS_ID_REGISTER, importRate2Object.getObis(), ATTRIBUTE_ID_VALUE),
-      new AttributeAddress(CLASS_ID_REGISTER, exportObject.getObis(), ATTRIBUTE_ID_VALUE),
-      new AttributeAddress(CLASS_ID_REGISTER, exportRate1Object.getObis(), ATTRIBUTE_ID_VALUE),
-      new AttributeAddress(CLASS_ID_REGISTER, exportRate2Object.getObis(), ATTRIBUTE_ID_VALUE),
-    };
+    final AttributeAddress[] atttributeAddresses = this.getAddressesForAllObjects(cosemObjects);
 
     conn.getDlmsMessageListener()
         .setDescription(
             "GetActualMeterReads retrieve attributes: "
                 + JdlmsObjectToStringUtil.describeAttributes(atttributeAddresses));
 
-    LOGGER.debug("Retrieving actual energy reads");
     final List<GetResult> getResultList =
         this.dlmsHelper.getAndCheck(
             conn, device, "retrieve actual meter reads", atttributeAddresses);
 
-    final CosemDateTimeDto cosemDateTime =
-        this.dlmsHelper.readDateTime(getResultList.get(INDEX_TIME), "Actual Energy Reads Time");
-    final DateTime time = cosemDateTime.asDateTime();
+    final Map<DlmsObjectType, DlmsMeterValueDto> valueMap = new EnumMap<>(DlmsObjectType.class);
+    DateTime time = null;
+    int index = 0;
+    for (final CosemObject object : cosemObjects) {
+      if (object.getClassId() == InterfaceClass.CLOCK.id()) {
+        time = this.getTime(getResultList, index++);
+      } else if (object instanceof final Register register) {
+        index = this.getValue(register, getResultList, valueMap, index);
+      }
+    }
+
     if (time == null) {
       throw new ProtocolAdapterException(
           "Unexpected null/unspecified value for Actual Energy Reads Time");
     }
-    final DlmsMeterValueDto activeEnergyImport =
-        this.getValue(getResultList.get(INDEX_IMPORT), importObject, "+A");
-    final DlmsMeterValueDto activeEnergyExport =
-        this.getValue(getResultList.get(INDEX_EXPORT), exportObject, "-A");
-    final DlmsMeterValueDto activeEnergyImportRate1 =
-        this.getValue(getResultList.get(INDEX_IMPORT_RATE_1), importRate1Object, "+A rate 1");
-    final DlmsMeterValueDto activeEnergyImportRate2 =
-        this.getValue(getResultList.get(INDEX_IMPORT_RATE_2), importRate2Object, "+A rate 2");
-    final DlmsMeterValueDto activeEnergyExportRate1 =
-        this.getValue(getResultList.get(INDEX_EXPORT_RATE_1), exportRate1Object, "-A rate 1");
-    final DlmsMeterValueDto activeEnergyExportRate2 =
-        this.getValue(getResultList.get(INDEX_EXPORT_RATE_2), exportRate2Object, "-A rate 2");
 
     return new MeterReadsResponseDto(
         time.toDate(),
         new ActiveEnergyValuesDto(
-            activeEnergyImport,
-            activeEnergyExport,
-            activeEnergyImportRate1,
-            activeEnergyImportRate2,
-            activeEnergyExportRate1,
-            activeEnergyExportRate2));
+            valueMap.get(ACTIVE_ENERGY_IMPORT),
+            valueMap.get(ACTIVE_ENERGY_EXPORT),
+            valueMap.get(ACTIVE_ENERGY_IMPORT_RATE_1),
+            valueMap.get(ACTIVE_ENERGY_IMPORT_RATE_2),
+            valueMap.get(ACTIVE_ENERGY_EXPORT_RATE_1),
+            valueMap.get(ACTIVE_ENERGY_EXPORT_RATE_2)));
   }
 
-  private CosemObject getCosemObject(final DlmsDevice device, final DlmsObjectType objectType)
-      throws ObjectConfigException {
-    return this.objectConfigService.getCosemObject(
-        device.getProtocolName(), device.getProtocolVersion(), objectType);
-  }
-
-  private DlmsMeterValueDto getValue(
-      final GetResult getResult, final Register register, final String description)
+  private int getValue(
+      final Register register,
+      final List<GetResult> getResultList,
+      final Map<DlmsObjectType, DlmsMeterValueDto> valueMap,
+      int index)
       throws ProtocolAdapterException {
-    return this.dlmsHelper.getScaledMeterValueWithScalerUnit(
-        getResult, register.getScalerUnit(), "Actual Energy Reads " + description);
+    final DataObject valueObject = getResultList.get(index++).getResultData();
+    final String unit;
+    if (register.needsScalerUnitFromMeter()) {
+      unit =
+          this.dlmsHelper.getScalerUnit(
+              getResultList.get(index++).getResultData(), "Actual Energy Reads scaler_unit");
+    } else {
+      unit = register.getScalerUnit();
+    }
+    final DlmsMeterValueDto value =
+        this.dlmsHelper.getScaledMeterValueWithScalerUnit(
+            valueObject, unit, "Actual Energy Reads " + register.getTag());
+
+    valueMap.put(DlmsObjectType.valueOf(register.getTag()), value);
+
+    return index;
+  }
+
+  private DateTime getTime(final List<GetResult> getResultList, final int index)
+      throws ProtocolAdapterException {
+    final CosemDateTimeDto cosemDateTime =
+        this.dlmsHelper.readDateTime(getResultList.get(index), "Actual Energy Reads Time");
+    return cosemDateTime.asDateTime();
+  }
+
+  private List<CosemObject> getCosemObjectsFromConfig(final DlmsDevice device)
+      throws ProtocolAdapterException {
+    final List<CosemObject> cosemObjects;
+    try {
+      cosemObjects =
+          this.objectConfigService.getCosemObjects(
+              device.getProtocolName(), device.getProtocolVersion(), OBJECTTYPES_FOR_ACTUALS);
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
+    }
+    return cosemObjects;
+  }
+
+  private AttributeAddress[] getAddressesForAllObjects(final List<CosemObject> objects) {
+    return objects.stream()
+        .map(this::getAddresses)
+        .flatMap(List::stream)
+        .toArray(AttributeAddress[]::new);
+  }
+
+  private List<AttributeAddress> getAddresses(final CosemObject object) {
+    final List<AttributeAddress> addresses = new ArrayList<>();
+    addresses.add(new AttributeAddress(object.getClassId(), object.getObis(), ATTRIBUTE_ID_VALUE));
+
+    if (object instanceof final Register register && register.needsScalerUnitFromMeter()) {
+      addresses.add(
+          new AttributeAddress(
+              object.getClassId(), object.getObis(), RegisterAttribute.SCALER_UNIT.attributeId()));
+    }
+
+    return addresses;
   }
 }
