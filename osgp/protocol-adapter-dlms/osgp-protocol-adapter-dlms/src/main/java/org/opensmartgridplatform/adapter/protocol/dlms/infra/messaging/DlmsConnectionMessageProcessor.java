@@ -49,7 +49,7 @@ public abstract class DlmsConnectionMessageProcessor {
 
   @Autowired private SystemEventService systemEventService;
 
-  @Autowired private MessagePriorityCalculator messagePriorityCalculator;
+  @Autowired private MessagePriorityHandler messagePriorityHandler;
 
   public void createAndHandleConnectionForDevice(
       final DlmsDevice device,
@@ -206,11 +206,11 @@ public abstract class DlmsConnectionMessageProcessor {
     }
 
     if (this.shouldRetry(result, exception, responseObject)) {
+      //      messageBuilder.result(ResponseMessageResultType.NOT_OK);
       messageBuilder.retryHeader(
           this.retryHeaderFactory.createRetryHeader(messageMetadata.getRetryCount()));
       messageBuilder.messagePriority(
-          this.messagePriorityCalculator.decreasePriority(
-              messageMetadata.getMessagePriority(), messageMetadata.getRetryCount()));
+          this.messagePriorityHandler.recalculatePriority(messageMetadata));
     }
 
     responseMessageSender.send(messageBuilder.build());
