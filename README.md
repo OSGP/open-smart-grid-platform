@@ -38,7 +38,7 @@ GXF issue tracker:
 This project is licensed under the Apache 2.0 license - see the [LICENSE](LICENSE) file for details.
 
 ## Licenses third-party libraries
-This project uses third-party libraries, which are licensed under their own respective Open-Source licenses. 
+This project uses third-party libraries, which are licensed under their own respective Open-Source licenses. Please refer to [NOTICE.MD](NOTICE.MD) for details on third-party libraries that require special mention.
 
 ## Contributing
 
