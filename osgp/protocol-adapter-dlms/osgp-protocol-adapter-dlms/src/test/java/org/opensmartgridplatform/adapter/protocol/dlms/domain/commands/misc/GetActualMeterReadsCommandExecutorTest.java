@@ -95,7 +95,7 @@ class GetActualMeterReadsCommandExecutorTest {
     when(this.dlmsDevice.getProtocolName()).thenReturn(PROTOCOL_NAME);
     when(this.dlmsDevice.getProtocolVersion()).thenReturn(PROTOCOL_VERSION);
 
-    final List<CosemObject> allObjects = this.getObjects(valueType);
+    final List<CosemObject> allObjects = this.createObjects(valueType);
 
     when(this.objectConfigService.getCosemObjects(
             PROTOCOL_NAME,
@@ -123,8 +123,7 @@ class GetActualMeterReadsCommandExecutorTest {
 
     // EXECUTE
     final MeterReadsResponseDto responseDto =
-        executor.execute(
-            this.conn, this.dlmsDevice, actualMeterReadsQueryDto, MESSAGE_METADATA);
+        executor.execute(this.conn, this.dlmsDevice, actualMeterReadsQueryDto, MESSAGE_METADATA);
 
     // VERIFY
     verify(this.dlmsHelper, times(1))
@@ -145,7 +144,7 @@ class GetActualMeterReadsCommandExecutorTest {
     this.assertValue(responseDto.getActiveEnergyExportTariffTwo(), 6);
   }
 
-  private List<CosemObject> getObjects(final ValueType valueType) {
+  private List<CosemObject> createObjects(final ValueType valueType) {
     final CosemObject clockObject = this.createCosemObject(CLOCK.name(), 8, "0.0.1.0.0.255");
 
     final Register registerActiveEnergyImport =
