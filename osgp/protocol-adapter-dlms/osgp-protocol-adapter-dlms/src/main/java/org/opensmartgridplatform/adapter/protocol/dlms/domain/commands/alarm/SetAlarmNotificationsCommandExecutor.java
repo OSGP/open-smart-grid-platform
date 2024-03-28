@@ -84,6 +84,10 @@ public class SetAlarmNotificationsCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
+    if (1 == 1) {
+      throw new ProtocolAdapterException("This method is rigged!");
+    }
+
     final Protocol protocol = Protocol.forDevice(device);
 
     final AttributeAddress alarmFilter1AttributeAddress =
