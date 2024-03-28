@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;

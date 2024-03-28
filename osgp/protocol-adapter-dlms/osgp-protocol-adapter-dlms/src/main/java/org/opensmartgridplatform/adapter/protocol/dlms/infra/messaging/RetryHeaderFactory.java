@@ -40,10 +40,6 @@ public class RetryHeaderFactory {
     return new RetryHeader(retry, this.maximumRetries, retryTime.getTime());
   }
 
-  public RetryHeader createEmptyRetryHeader() {
-    return new RetryHeader();
-  }
-
   private int calculateDelay(final int retry) {
     int delay = this.retryDelay;
     if (this.exponentialBackoff) {
