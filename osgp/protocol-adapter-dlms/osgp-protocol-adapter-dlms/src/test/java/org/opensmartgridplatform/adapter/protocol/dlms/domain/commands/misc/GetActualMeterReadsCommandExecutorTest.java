@@ -86,8 +86,6 @@ class GetActualMeterReadsCommandExecutorTest {
 
   @Captor ArgumentCaptor<AttributeAddress> attributeAddressArgumentCaptor;
 
-  private ActualMeterReadsQueryDto actualMeterReadsQueryDto;
-
   @ParameterizedTest
   @CsvSource({"FIXED_IN_PROFILE", "DYNAMIC"})
   void testRetrieval(final ValueType valueType)
@@ -112,7 +110,7 @@ class GetActualMeterReadsCommandExecutorTest {
                 ACTIVE_ENERGY_EXPORT_RATE_2)))
         .thenReturn(allObjects);
 
-    this.actualMeterReadsQueryDto = new ActualMeterReadsQueryDto();
+    final ActualMeterReadsQueryDto actualMeterReadsQueryDto = new ActualMeterReadsQueryDto();
     final List<AttributeAddress> expectedAttributeAddresses =
         this.getAttributeAddresses(allObjects);
 
@@ -126,7 +124,7 @@ class GetActualMeterReadsCommandExecutorTest {
     // EXECUTE
     final MeterReadsResponseDto responseDto =
         executor.execute(
-            this.conn, this.dlmsDevice, this.actualMeterReadsQueryDto, MESSAGE_METADATA);
+            this.conn, this.dlmsDevice, actualMeterReadsQueryDto, MESSAGE_METADATA);
 
     // VERIFY
     verify(this.dlmsHelper, times(1))
@@ -171,16 +169,6 @@ class GetActualMeterReadsCommandExecutorTest {
         registerActiveEnergyExport,
         registerActiveEnergyExportRate1,
         registerActiveEnergyExportRate2);
-  }
-
-  private CosemObject createObject(
-      final int classId,
-      final String obis,
-      final String tag,
-      final String scalerUnitValue,
-      final ValueType valueType,
-      final MeterType meterType) {
-    return this.createCosemObject(tag, classId, obis, scalerUnitValue, valueType, meterType);
   }
 
   private List<Attribute> createScalerUnitAttributeList(
@@ -256,28 +244,6 @@ class GetActualMeterReadsCommandExecutorTest {
   private CosemObject createCosemObject(final String tag, final int classId, final String obis) {
     return new CosemObject(
         tag, "descr", classId, 0, obis, "group", null, List.of(), Map.of(), List.of());
-  }
-
-  private CosemObject createCosemObject(
-      final String tag,
-      final int classId,
-      final String obis,
-      final String scalerUnitValue,
-      final ValueType valueType,
-      final MeterType meterType) {
-    return new CosemObject(
-        tag,
-        "descr",
-        classId,
-        0,
-        obis,
-        "group",
-        null,
-        this.getMeterTypes(meterType),
-        Map.of(),
-        scalerUnitValue != null
-            ? this.createScalerUnitAttributeList(scalerUnitValue, valueType)
-            : List.of());
   }
 
   private Register createRegister(
