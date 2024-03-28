@@ -21,6 +21,7 @@ import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmType
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -111,5 +112,29 @@ class AlarmDecoderTest {
         () ->
             this.decoder.decodeAlarmRegisterData(
                 inputStream, builder, DlmsObjectType.ALARM_REGISTER_1));
+  }
+
+  @Test
+  void testSkipThrowsExceptionWhenUnableToSkipRequestedBytes() {
+    final InputStream inputStream = new ByteArrayInputStream(new byte[] {0x01, 0x02, 0x03});
+    final int length = 5; // length is greater than the number of bytes in the input stream
+
+    assertThrows(
+        UnrecognizedMessageDataException.class, () -> this.decoder.skip(inputStream, length));
+  }
+
+  @Test
+  void testSkipThrowsExceptionWhenIOExceptionOccurs() {
+    final InputStream inputStream =
+        new InputStream() {
+          @Override
+          public int read() throws IOException {
+            throw new IOException("Test IOException");
+          }
+        };
+    final int length = 3;
+
+    assertThrows(
+        UnrecognizedMessageDataException.class, () -> this.decoder.skip(inputStream, length));
   }
 }
