@@ -184,6 +184,14 @@ public class GetActualMeterReadsCommandExecutor
     } catch (final ObjectConfigException e) {
       throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
     }
+
+    if (!cosemObjects.stream()
+        .allMatch(
+            object ->
+                object instanceof Register || object.getClassId() == InterfaceClass.CLOCK.id())) {
+      throw new ProtocolAdapterException("Expected only Register or Clock objects.");
+    }
+
     return cosemObjects;
   }
 
