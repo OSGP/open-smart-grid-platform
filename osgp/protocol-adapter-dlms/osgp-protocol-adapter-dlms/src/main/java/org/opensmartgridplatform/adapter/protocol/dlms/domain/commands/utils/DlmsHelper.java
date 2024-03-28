@@ -339,7 +339,7 @@ public class DlmsHelper {
           "expected a unit instead of unit UNDEFINED." + this.getDebugInfo(scalerUnitObject));
     }
 
-    return scaler + ", " + unit.getUnit();
+    return scaler + ", " + unit.getUnitShort();
   }
 
   private DlmsMeterValueDto createDlmsMeterValueBasedOnValueAndScalerAndUnit(

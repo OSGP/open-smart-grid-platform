@@ -315,7 +315,7 @@ public class DlmsHelperTest {
             getResultValue, getResultScalerUnit, "getScaledMeterValueTest");
 
     assertThat(meterValueDto.getValue()).isEqualTo(BigDecimal.valueOf(2.1));
-    assertThat(meterValueDto.getDlmsUnit()).isEqualTo(DlmsUnitTypeDto.KWH);
+    assertThat(meterValueDto.getDlmsUnit()).isEqualTo(DlmsUnitTypeDto.WH);
   }
 
   @Test

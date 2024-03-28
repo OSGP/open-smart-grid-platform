@@ -55,7 +55,8 @@ public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValueDto, 
       final DlmsUnitTypeDto dlmsUnit, final OsgpUnit osgpUnit) {
 
     switch (dlmsUnit) {
-      case KWH:
+      case WH:
+        // Dlms Unit is WH, OsgpUnit is kWh, so multiply by 0.001
         return BigDecimal.valueOf(0.001d);
       case M3: // intentional fallthrough.
       case M3_CORR: // intentional fallthrough.
@@ -76,9 +77,11 @@ public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValueDto, 
    * @throws IllegalArgumentException when no osgp unit is found
    */
   private OsgpUnit toStandardUnit(final DlmsUnitTypeDto dlmsUnit) {
-    // this is needed because the xsd generates M_3 from the M3 tag!
     if ("M_3".equals(dlmsUnit.getUnit())) {
+      // this is needed because the xsd generates M_3 from the M3 tag!
       return OsgpUnit.M3;
+    } else if ("WH".equals(dlmsUnit.getUnit())) {
+      return OsgpUnit.KWH;
     } else {
       for (final OsgpUnit osgpUnit : OsgpUnit.values()) {
         if (osgpUnit.name().equals(dlmsUnit.getUnit())) {

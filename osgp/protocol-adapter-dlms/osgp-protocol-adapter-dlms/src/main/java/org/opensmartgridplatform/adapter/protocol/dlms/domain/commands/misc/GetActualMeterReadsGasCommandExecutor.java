@@ -4,17 +4,26 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute.CAPTURE_TIME;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute.SCALER_UNIT;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute.VALUE;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_MASTER_VALUE;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.ExtendedRegister;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsDataGasDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
@@ -23,31 +32,26 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
 public class GetActualMeterReadsGasCommandExecutor
     extends AbstractCommandExecutor<ActualMeterReadsQueryDto, MeterReadsGasResponseDto> {
 
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(GetActualMeterReadsGasCommandExecutor.class);
+  private static final int INDEX_VALUE = 0;
+  private static final int INDEX_TIME = 1;
+  private static final int INDEX_SCALER_UNIT = 2;
 
-  private static final int CLASS_ID_MBUS = 4;
-  private static final byte ATTRIBUTE_ID_VALUE = 2;
-  private static final byte ATTRIBUTE_ID_SCALER_UNIT = 3;
-  private static final byte ATTRIBUTE_ID_TIME = 5;
-  private static final ObisCode OBIS_CODE_MBUS_MASTER_VALUE_1 = new ObisCode("0.1.24.2.1.255");
-  private static final ObisCode OBIS_CODE_MBUS_MASTER_VALUE_2 = new ObisCode("0.2.24.2.1.255");
-  private static final ObisCode OBIS_CODE_MBUS_MASTER_VALUE_3 = new ObisCode("0.3.24.2.1.255");
-  private static final ObisCode OBIS_CODE_MBUS_MASTER_VALUE_4 = new ObisCode("0.4.24.2.1.255");
+  private final DlmsHelper dlmsHelper;
 
-  @Autowired private DlmsHelper dlmsHelper;
+  private final ObjectConfigService objectConfigService;
 
-  public GetActualMeterReadsGasCommandExecutor() {
+  public GetActualMeterReadsGasCommandExecutor(
+      final ObjectConfigService objectConfigService, final DlmsHelper dlmsHelper) {
     super(ActualMeterReadsDataGasDto.class);
+
+    this.objectConfigService = objectConfigService;
+    this.dlmsHelper = dlmsHelper;
   }
 
   @Override
@@ -69,52 +73,37 @@ public class GetActualMeterReadsGasCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    final ObisCode obisCodeMbusMasterValue =
-        this.masterValueForChannel(actualMeterReadsRequest.getChannel());
+    if (actualMeterReadsRequest == null || !actualMeterReadsRequest.isMbusQuery()) {
+      throw new IllegalArgumentException(
+          "ActualMeterReadsQuery for energy reads should not be null and be about gas.");
+    }
 
-    LOGGER.debug("Retrieving current MBUS master value for ObisCode: {}", obisCodeMbusMasterValue);
+    final ChannelDto channel = actualMeterReadsRequest.getChannel();
 
-    final AttributeAddress mbusValue =
-        new AttributeAddress(
-            CLASS_ID_MBUS,
-            this.masterValueForChannel(actualMeterReadsRequest.getChannel()),
-            ATTRIBUTE_ID_VALUE);
+    final ExtendedRegister extendedRegister =
+        this.getCosemObjectFromConfig(device, actualMeterReadsRequest);
 
-    LOGGER.debug(
-        "Retrieving current MBUS master capture time for ObisCode: {}", obisCodeMbusMasterValue);
-
-    final AttributeAddress mbusTime =
-        new AttributeAddress(CLASS_ID_MBUS, obisCodeMbusMasterValue, ATTRIBUTE_ID_TIME);
-
-    final AttributeAddress scalerUnit =
-        new AttributeAddress(
-            CLASS_ID_MBUS,
-            this.masterValueForChannel(actualMeterReadsRequest.getChannel()),
-            ATTRIBUTE_ID_SCALER_UNIT);
+    final AttributeAddress[] atttributeAddresses = this.getAddresses(extendedRegister);
 
     conn.getDlmsMessageListener()
         .setDescription(
             "GetActualMeterReadsGas for channel "
-                + actualMeterReadsRequest.getChannel()
+                + channel
                 + ", retrieve attributes: "
-                + JdlmsObjectToStringUtil.describeAttributes(mbusValue, mbusTime, scalerUnit));
+                + JdlmsObjectToStringUtil.describeAttributes(atttributeAddresses));
 
     final List<GetResult> getResultList =
         this.dlmsHelper.getAndCheck(
-            conn,
-            device,
-            "retrieve actual meter reads for mbus " + actualMeterReadsRequest.getChannel(),
-            mbusValue,
-            mbusTime,
-            scalerUnit);
+            conn, device, "retrieve actual meter reads for mbus " + channel, atttributeAddresses);
 
+    final GetResult value = getResultList.get(INDEX_VALUE);
+    final String scalerUnit = this.getScalerUnit(extendedRegister, getResultList);
     final DlmsMeterValueDto consumption =
-        this.dlmsHelper.getScaledMeterValue(
-            getResultList.get(0),
-            getResultList.get(2),
-            "retrieve scaled value for mbus " + actualMeterReadsRequest.getChannel());
+        this.dlmsHelper.getScaledMeterValueWithScalerUnit(
+            value, scalerUnit, "retrieve scaled value for mbus " + channel);
+
     final CosemDateTimeDto cosemDateTime =
-        this.dlmsHelper.readDateTime(getResultList.get(1), "captureTime gas");
+        this.dlmsHelper.readDateTime(getResultList.get(INDEX_TIME), "captureTime gas");
     final Date captureTime;
     if (cosemDateTime.isDateTimeSpecified()) {
       captureTime = cosemDateTime.asDateTime().toDate();
@@ -126,18 +115,64 @@ public class GetActualMeterReadsGasCommandExecutor
     return new MeterReadsGasResponseDto(new Date(), consumption, captureTime);
   }
 
-  private ObisCode masterValueForChannel(final ChannelDto channel) throws ProtocolAdapterException {
-    switch (channel) {
-      case ONE:
-        return OBIS_CODE_MBUS_MASTER_VALUE_1;
-      case TWO:
-        return OBIS_CODE_MBUS_MASTER_VALUE_2;
-      case THREE:
-        return OBIS_CODE_MBUS_MASTER_VALUE_3;
-      case FOUR:
-        return OBIS_CODE_MBUS_MASTER_VALUE_4;
-      default:
-        throw new ProtocolAdapterException(String.format("channel %s not supported", channel));
+  private String getScalerUnit(
+      final ExtendedRegister extendedRegister, final List<GetResult> getResultList)
+      throws ProtocolAdapterException {
+    if (extendedRegister.needsScalerUnitFromMeter()) {
+      final GetResult scalerUnitResult = getResultList.get(INDEX_SCALER_UNIT);
+      return this.dlmsHelper.getScalerUnit(scalerUnitResult.getResultData(), "scaler unit");
+    } else {
+      return extendedRegister.getScalerUnit();
     }
+  }
+
+  private ExtendedRegister getCosemObjectFromConfig(
+      final DlmsDevice device, final ActualMeterReadsQueryDto query)
+      throws ProtocolAdapterException {
+    final CosemObject cosemObject;
+    try {
+      cosemObject =
+          this.objectConfigService.getCosemObject(
+              device.getProtocolName(), device.getProtocolVersion(), MBUS_MASTER_VALUE);
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
+    }
+
+    if (!(cosemObject instanceof ExtendedRegister)) {
+      throw new ProtocolAdapterException("Expected an ExtendedRegister");
+    }
+
+    return (ExtendedRegister)
+        this.updateCosemObjectWithChannel(cosemObject, query.getChannel().getChannelNumber());
+  }
+
+  private CosemObject updateCosemObjectWithChannel(final CosemObject cosemObject, final int channel)
+      throws ProtocolAdapterException {
+    try {
+      if (cosemObject.hasWildcardChannel()) {
+        return cosemObject.copyWithNewObis(
+            cosemObject.getObis().replace("x", String.valueOf(channel)));
+      } else {
+        throw new ProtocolAdapterException(
+            "Expected an M-Bus master value with a wildcard channel");
+      }
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
+    }
+  }
+
+  private AttributeAddress[] getAddresses(final CosemObject object) {
+    final List<AttributeAddress> attributeAddresses = new ArrayList<>();
+
+    attributeAddresses.add(
+        new AttributeAddress(object.getClassId(), object.getObis(), VALUE.attributeId()));
+    attributeAddresses.add(
+        new AttributeAddress(object.getClassId(), object.getObis(), CAPTURE_TIME.attributeId()));
+    if (object instanceof final ExtendedRegister register && register.needsScalerUnitFromMeter()) {
+      attributeAddresses.add(
+          new AttributeAddress(object.getClassId(), object.getObis(), SCALER_UNIT.attributeId()));
+    }
+
+    return attributeAddresses.toArray(new AttributeAddress[0]);
   }
 }

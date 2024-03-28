@@ -18,9 +18,9 @@ public class TestDlmsUnitType {
   }
 
   @Test
-  public void testGetKwh() {
+  public void testGetWh() {
     final String result = DlmsUnitTypeDto.getUnit(30);
-    assertThat(result).isEqualTo("KWH");
+    assertThat(result).isEqualTo("WH");
   }
 
   @Test
