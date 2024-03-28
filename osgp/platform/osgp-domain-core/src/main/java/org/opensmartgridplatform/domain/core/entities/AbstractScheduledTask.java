@@ -156,6 +156,10 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
     this.status = ScheduledTaskStatusType.RETRY;
   }
 
+  public void setMessagePriority(final Integer messagePriority) {
+    this.messagePriority = messagePriority;
+  }
+
   @Override
   public boolean equals(final Object o) {
     if (this == o) {
