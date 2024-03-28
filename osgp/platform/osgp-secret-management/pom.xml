@@ -44,6 +44,7 @@ SPDX-License-Identifier: Apache-2.0
             </goals>
             <configuration>
               <classifier>exec</classifier>
+              <executable>true</executable>
             </configuration>
           </execution>
         </executions>
