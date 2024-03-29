@@ -12,6 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_MASTER_VALUE;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_MASTER_VALUE_5MIN;
 import static org.opensmartgridplatform.dlms.objectconfig.ValueType.DYNAMIC;
 import static org.opensmartgridplatform.dlms.objectconfig.ValueType.FIXED_IN_PROFILE;
 
@@ -19,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,8 +66,12 @@ class GetActualMeterReadsGasCommandExecutorTest {
   private static final int ATTRIBUTE_ID_TIME = 5;
   private static final String PROTOCOL_NAME = "SMR";
   private static final String PROTOCOL_VERSION = "5.0.0";
+  private static final String DEVICE_MODEL_CODE = "G4";
   private static final MessageMetadata MESSAGE_METADATA =
-      MessageMetadata.newBuilder().withCorrelationUid("123456").build();
+      MessageMetadata.newBuilder()
+          .withCorrelationUid("123456")
+          .withDeviceModelCode(",G4,G4,G4,G4")
+          .build();
   private static final DateTime DATE_TIME = DateTime.parse("2018-12-31T23:00:00Z");
   private static final short SCALER = 0;
   private static final short UNIT = 13; // M3
@@ -90,7 +96,8 @@ class GetActualMeterReadsGasCommandExecutorTest {
 
     for (final ValueType valueType : valueTypes) {
       for (final int channel : ALL_CHANNELS) {
-        arguments.add(Arguments.of(valueType, channel));
+        arguments.add(Arguments.of(valueType, channel, true));
+        arguments.add(Arguments.of(valueType, channel, false));
       }
     }
 
@@ -99,23 +106,35 @@ class GetActualMeterReadsGasCommandExecutorTest {
 
   @ParameterizedTest
   @MethodSource("generateCombinations")
-  void testRetrieval(final ValueType valueType, final int channel)
+  void testRetrieval(
+      final ValueType valueType, final int channel, final boolean mbusMasterValue5minPresent)
       throws ProtocolAdapterException, ObjectConfigException {
     // SETUP
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.dlmsDevice.getProtocolName()).thenReturn(PROTOCOL_NAME);
     when(this.dlmsDevice.getProtocolVersion()).thenReturn(PROTOCOL_VERSION);
 
-    final ExtendedRegister mbusValueObject = this.createObject(valueType);
+    final ExtendedRegister mbusValueObject = this.createObject(valueType, false);
+    final ExtendedRegister mbusValueObject5min = this.createObject(valueType, true);
 
-    when(this.objectConfigService.getCosemObject(
-            PROTOCOL_NAME, PROTOCOL_VERSION, MBUS_MASTER_VALUE))
-        .thenReturn(mbusValueObject);
+    if (mbusMasterValue5minPresent) {
+      when(this.objectConfigService.getOptionalCosemObject(
+              PROTOCOL_NAME, PROTOCOL_VERSION, MBUS_MASTER_VALUE_5MIN, DEVICE_MODEL_CODE))
+          .thenReturn(Optional.of(mbusValueObject5min));
+    } else {
+      when(this.objectConfigService.getCosemObject(
+              PROTOCOL_NAME, PROTOCOL_VERSION, MBUS_MASTER_VALUE, DEVICE_MODEL_CODE))
+          .thenReturn(mbusValueObject);
+      when(this.objectConfigService.getOptionalCosemObject(
+              PROTOCOL_NAME, PROTOCOL_VERSION, MBUS_MASTER_VALUE_5MIN, DEVICE_MODEL_CODE))
+          .thenReturn(Optional.empty());
+    }
 
     final ActualMeterReadsQueryDto actualMeterReadsQueryDto =
         new ActualMeterReadsQueryDto(ChannelDto.fromNumber(channel));
     final List<AttributeAddress> expectedAttributeAddresses =
-        this.getAttributeAddresses(mbusValueObject, channel);
+        this.getAttributeAddresses(
+            mbusValueObject, mbusValueObject5min, channel, mbusMasterValue5minPresent);
 
     doReturn(this.generateMockedResult(mbusValueObject, AccessResultCode.SUCCESS))
         .when(this.dlmsHelper)
@@ -145,8 +164,12 @@ class GetActualMeterReadsGasCommandExecutorTest {
     assertThat(responseDto.getConsumption().getDlmsUnit()).isEqualTo(DlmsUnitTypeDto.M3);
   }
 
-  private ExtendedRegister createObject(final ValueType valueType) {
-    return this.createExtendedRegister(MBUS_MASTER_VALUE, "1.x.0.0.0.0", "0, M3", valueType);
+  private ExtendedRegister createObject(final ValueType valueType, final boolean masterValue5min) {
+    if (masterValue5min) {
+      return this.createExtendedRegister(MBUS_MASTER_VALUE_5MIN, "1.x.1.0.0.0", "0, M3", valueType);
+    } else {
+      return this.createExtendedRegister(MBUS_MASTER_VALUE, "1.x.0.0.0.0", "0, M3", valueType);
+    }
   }
 
   private List<GetResult> generateMockedResult(
@@ -179,11 +202,19 @@ class GetActualMeterReadsGasCommandExecutorTest {
   }
 
   private List<AttributeAddress> getAttributeAddresses(
-      final ExtendedRegister cosemObject, final int channel) {
+      final ExtendedRegister cosemObject,
+      final ExtendedRegister cosemObject5min,
+      final int channel,
+      final boolean masterValue5minPresent) {
     final List<AttributeAddress> attributeAddresses = new ArrayList<>();
 
     final int classId = cosemObject.getClassId();
-    final String obis = cosemObject.getObis().replace("x", String.valueOf(channel));
+    final String obis;
+    if (masterValue5minPresent) {
+      obis = cosemObject5min.getObis().replace("x", String.valueOf(channel));
+    } else {
+      obis = cosemObject.getObis().replace("x", String.valueOf(channel));
+    }
 
     attributeAddresses.add(new AttributeAddress(classId, obis, ATTRIBUTE_ID_VALUE));
     attributeAddresses.add(new AttributeAddress(classId, obis, ATTRIBUTE_ID_TIME));

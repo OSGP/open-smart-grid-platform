@@ -8,10 +8,12 @@ import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRe
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute.SCALER_UNIT;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute.VALUE;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_MASTER_VALUE;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_MASTER_VALUE_5MIN;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
@@ -19,6 +21,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.valueobjects.CombinedDeviceModelCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
@@ -78,10 +81,16 @@ public class GetActualMeterReadsGasCommandExecutor
           "ActualMeterReadsQuery for energy reads should not be null and be about gas.");
     }
 
+    final CombinedDeviceModelCode combinedDeviceModelCode =
+        CombinedDeviceModelCode.parse(messageMetadata.getDeviceModelCode());
+
     final ChannelDto channel = actualMeterReadsRequest.getChannel();
 
     final ExtendedRegister extendedRegister =
-        this.getCosemObjectFromConfig(device, actualMeterReadsRequest);
+        this.getCosemObjectFromConfig(
+            device,
+            actualMeterReadsRequest,
+            combinedDeviceModelCode.getCodeFromChannel(channel.getChannelNumber()));
 
     final AttributeAddress[] atttributeAddresses = this.getAddresses(extendedRegister);
 
@@ -127,13 +136,28 @@ public class GetActualMeterReadsGasCommandExecutor
   }
 
   private ExtendedRegister getCosemObjectFromConfig(
-      final DlmsDevice device, final ActualMeterReadsQueryDto query)
+      final DlmsDevice device, final ActualMeterReadsQueryDto query, final String deviceModel)
       throws ProtocolAdapterException {
     final CosemObject cosemObject;
     try {
-      cosemObject =
-          this.objectConfigService.getCosemObject(
-              device.getProtocolName(), device.getProtocolVersion(), MBUS_MASTER_VALUE);
+      // Some profiles have multiple M-Bus master values. If possible use the M-Bus master value
+      // with 5 min values. Otherwise, use the M-Bus master value with hourly values.
+      final Optional<CosemObject> optionalMbusMasterValue5min =
+          this.objectConfigService.getOptionalCosemObject(
+              device.getProtocolName(),
+              device.getProtocolVersion(),
+              MBUS_MASTER_VALUE_5MIN,
+              deviceModel);
+      if (optionalMbusMasterValue5min.isPresent()) {
+        cosemObject = optionalMbusMasterValue5min.get();
+      } else {
+        cosemObject =
+            this.objectConfigService.getCosemObject(
+                device.getProtocolName(),
+                device.getProtocolVersion(),
+                MBUS_MASTER_VALUE,
+                deviceModel);
+      }
     } catch (final ObjectConfigException e) {
       throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
     }
