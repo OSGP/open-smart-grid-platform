@@ -81,7 +81,15 @@ public class AlarmDecoder {
   void skip(final InputStream inputStream, final int length)
       throws UnrecognizedMessageDataException {
     try {
-      inputStream.skip(length);
+      final long bytesActuallySkipped = inputStream.skip(length);
+
+      if (bytesActuallySkipped != length) {
+        throw new UnrecognizedMessageDataException(
+            "Could not skip the requested number of bytes. Requested: "
+                + length
+                + ", Skipped: "
+                + bytesActuallySkipped);
+      }
     } catch (final IOException io) {
       throw new UnrecognizedMessageDataException(io.getMessage(), io);
     }
