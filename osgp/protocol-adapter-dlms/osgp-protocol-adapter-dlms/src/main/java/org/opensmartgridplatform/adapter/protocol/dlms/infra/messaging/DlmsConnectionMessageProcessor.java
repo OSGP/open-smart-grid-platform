@@ -206,7 +206,6 @@ public abstract class DlmsConnectionMessageProcessor {
     }
 
     if (this.shouldRetry(result, exception, responseObject)) {
-      //      messageBuilder.result(ResponseMessageResultType.NOT_OK);
       messageBuilder.retryHeader(
           this.retryHeaderFactory.createRetryHeader(messageMetadata.getRetryCount()));
       messageBuilder.messagePriority(
