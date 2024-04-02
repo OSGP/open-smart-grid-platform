@@ -7,10 +7,12 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter.toDateTime;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Optional;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -19,15 +21,15 @@ import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.DataObjectToEventListConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto;
@@ -57,7 +59,7 @@ public class FindEventsCommandExecutor
         EventLogCategoryDto.FRAUD_DETECTION_LOG, DlmsObjectType.FRAUD_DETECTION_EVENT_LOG);
     EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
         EventLogCategoryDto.COMMUNICATION_SESSION_LOG,
-        DlmsObjectType.COMMUNICATION_SESSIONS_EVENT_LOG);
+        DlmsObjectType.COMMUNICATION_SESSION_EVENT_LOG);
     EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
         EventLogCategoryDto.M_BUS_EVENT_LOG, DlmsObjectType.MBUS_EVENT_LOG);
     EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
@@ -73,17 +75,17 @@ public class FindEventsCommandExecutor
 
   private final DlmsHelper dlmsHelper;
 
-  private final DlmsObjectConfigService dlmsObjectConfigService;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
   @Autowired
   public FindEventsCommandExecutor(
       final DlmsHelper dlmsHelper,
       final DataObjectToEventListConverter dataObjectToEventListConverter,
-      final DlmsObjectConfigService dlmsObjectConfigService) {
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(FindEventsRequestDto.class);
     this.dlmsHelper = dlmsHelper;
     this.dataObjectToEventListConverter = dataObjectToEventListConverter;
-    this.dlmsObjectConfigService = dlmsObjectConfigService;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
@@ -104,16 +106,17 @@ public class FindEventsCommandExecutor
         this.getSelectiveAccessDescription(
             device, findEventsQuery.getFrom(), findEventsQuery.getUntil());
 
-    final DlmsObject eventLogObject =
-        this.dlmsObjectConfigService.getDlmsObject(
-            device, EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()));
+    final DlmsObjectType dlmsObjectType =
+        EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory());
 
-    final AttributeAddress eventLogBuffer =
-        new AttributeAddress(
-            eventLogObject.getClassId(),
-            eventLogObject.getObisCode(),
-            eventLogObject.getDefaultAttributeId(),
-            selectiveAccessDescription);
+    final Optional<AttributeAddress> optionalAttributeAddress =
+        this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
+            Protocol.forDevice(device), dlmsObjectType, selectiveAccessDescription);
+
+    if (!optionalAttributeAddress.isPresent()) {
+      return new ArrayList<>();
+    }
+    final AttributeAddress attributeAddress = optionalAttributeAddress.get();
 
     conn.getDlmsMessageListener()
         .setDescription(
@@ -124,11 +127,11 @@ public class FindEventsCommandExecutor
                 + " until "
                 + findEventsQuery.getUntil()
                 + ", retrieve attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(eventLogBuffer));
+                + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
 
     final GetResult getResult;
     try {
-      getResult = conn.getConnection().get(eventLogBuffer);
+      getResult = conn.getConnection().get(attributeAddress);
     } catch (final IOException e) {
       throw new ConnectionException(e);
     }
@@ -170,17 +173,7 @@ public class FindEventsCommandExecutor
     final DateTime convertedBeginDateTime = toDateTime(beginDateTime, device.getTimezone());
     final DateTime convertedEndDateTime = toDateTime(endDateTime, device.getTimezone());
 
-    final DlmsObject clockObject =
-        this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.CLOCK);
-
-    final DataObject clockDefinition =
-        DataObject.newStructureData(
-            Arrays.asList(
-                DataObject.newUInteger16Data(clockObject.getClassId()),
-                DataObject.newOctetStringData(clockObject.getObisCode().bytes()),
-                DataObject.newInteger8Data((byte) clockObject.getDefaultAttributeId()),
-                DataObject.newUInteger16Data(0)));
-
+    final DataObject clockDefinition = this.dlmsHelper.getClockDefinition();
     final DataObject fromValue = this.dlmsHelper.asDataObject(convertedBeginDateTime);
     final DataObject toValue = this.dlmsHelper.asDataObject(convertedEndDateTime);
 

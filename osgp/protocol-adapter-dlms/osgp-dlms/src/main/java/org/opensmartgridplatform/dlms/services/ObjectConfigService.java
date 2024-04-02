@@ -134,6 +134,12 @@ public class ObjectConfigService {
 
   public Map<DlmsObjectType, CosemObject> getCosemObjects(
       final String protocolName, final String protocolVersion) throws ObjectConfigException {
+    final DlmsProfile dlmsProfile = this.getDlmsProfile(protocolName, protocolVersion);
+    return dlmsProfile.getObjectMap();
+  }
+
+  public DlmsProfile getDlmsProfile(final String protocolName, final String protocolVersion)
+      throws ObjectConfigException {
 
     if (this.dlmsProfiles.isEmpty()) {
       throw new ObjectConfigException("No DLMS Profile available");
@@ -148,7 +154,7 @@ public class ObjectConfigService {
       throw new ObjectConfigException(
           "DLMS Profile for " + protocolName + " " + protocolVersion + " is not available");
     }
-    return dlmsProfile.get().getObjectMap();
+    return dlmsProfile.get();
   }
 
   private String getConfigLookupType(final String matchGroup, final String deviceModel)

@@ -7,26 +7,26 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter.toDateTime;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.Map;
 import org.joda.time.DateTime;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.EnumSource.Mode;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
@@ -34,14 +34,16 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.DataObjectToEventListConverter;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigConfiguration;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto;
@@ -49,8 +51,28 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsReques
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class FindEventsCommandExecutorTest {
+
+  private static final Map<EventLogCategoryDto, String> OBIS_MAPPING = new HashMap<>();
+
+  private static final String TIME_ZONE = "Europe/Amsterdam";
+
+  private static final String SMR_5_0_0 = "SMR_5_0_0";
+
+  private static final String SMR_5_1 = "SMR_5_1";
+
+  private static final String SMR_5_2 = "SMR_5_2";
+
+  static {
+    OBIS_MAPPING.put(EventLogCategoryDto.POWER_QUALITY_EVENT_LOG, "0.0.99.98.5.255");
+    OBIS_MAPPING.put(EventLogCategoryDto.COMMUNICATION_SESSION_LOG, "0.0.99.98.4.255");
+    OBIS_MAPPING.put(EventLogCategoryDto.M_BUS_EVENT_LOG, "0.0.99.98.3.255");
+    OBIS_MAPPING.put(EventLogCategoryDto.FRAUD_DETECTION_LOG, "0.0.99.98.1.255");
+    OBIS_MAPPING.put(EventLogCategoryDto.STANDARD_EVENT_LOG, "0.0.99.98.0.255");
+    OBIS_MAPPING.put(EventLogCategoryDto.AUXILIARY_EVENT_LOG, "0.0.99.98.6.255");
+    OBIS_MAPPING.put(EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG, "0.0.99.98.7.255");
+  }
+
   @Mock private DlmsHelper dlmsHelper;
 
   @Mock private DlmsConnectionManager conn;
@@ -63,316 +85,205 @@ class FindEventsCommandExecutorTest {
 
   @Mock private GetResult getResult;
 
-  private FindEventsRequestDto findEventsRequestDto;
+  @Captor private ArgumentCaptor<AttributeAddress> attributeAddressArgumentCaptor;
 
   private MessageMetadata messageMetadata;
 
   private FindEventsCommandExecutor executor;
 
-  private DlmsDevice currentDevice;
-
   @BeforeEach
-  public void before() throws ProtocolAdapterException, IOException {
+  public void before() throws ProtocolAdapterException, IOException, ObjectConfigException {
 
-    final DataObject fromDate = mock(DataObject.class);
-    final DataObject toDate = mock(DataObject.class);
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
-    this.findEventsRequestDto =
-        new FindEventsRequestDto(
-            EventLogCategoryDto.POWER_QUALITY_EVENT_LOG,
-            DateTime.now().minusDays(70),
-            DateTime.now());
+    final ObjectConfigService objectConfigService = new ObjectConfigService();
+    final ObjectConfigServiceHelper objectConfigServiceHelper =
+        new ObjectConfigServiceHelper(objectConfigService);
 
     final DataObjectToEventListConverter dataObjectToEventListConverter =
         new DataObjectToEventListConverter(this.dlmsHelper);
-    final DlmsObjectConfigService dlmsObjectConfigService =
-        new DlmsObjectConfigService(
-            this.dlmsHelper, new DlmsObjectConfigConfiguration().getDlmsObjectConfigs());
 
     this.executor =
         new FindEventsCommandExecutor(
-            this.dlmsHelper, dataObjectToEventListConverter, dlmsObjectConfigService);
-
-    when(this.dlmsHelper.asDataObject(this.findEventsRequestDto.getFrom())).thenReturn(fromDate);
-    when(this.dlmsHelper.asDataObject(this.findEventsRequestDto.getUntil())).thenReturn(toDate);
-    when(this.dlmsHelper.convertDataObjectToDateTime(any(DataObject.class)))
-        .thenReturn(new CosemDateTimeDto());
-    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
-    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
-    when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
-  }
-
-  @AfterEach
-  public void after() throws ProtocolAdapterException {
-    final DateTime toDate =
-        toDateTime(this.findEventsRequestDto.getFrom().toDate(), this.currentDevice.getTimezone());
-
-    final DateTime endDate =
-        toDateTime(this.findEventsRequestDto.getUntil().toDate(), this.currentDevice.getTimezone());
-
-    verify(this.dlmsHelper).asDataObject(toDate);
-    verify(this.dlmsHelper).asDataObject(endDate);
+            this.dlmsHelper, dataObjectToEventListConverter, objectConfigServiceHelper);
   }
 
   @ParameterizedTest
-  @CsvSource({"SMR_5_1, Europe/Amsterdam", "SMR_5_1, UTC"})
-  void testRetrievalOfPowerQualityEvents(final String protocol, final String timezoneString)
+  @ValueSource(strings = {"UTC", "Europe/Amsterdam"})
+  void testEventTimezone(final String timeZone) throws ProtocolAdapterException, IOException {
+    this.testEventRetrieval(SMR_5_0_0, EventLogCategoryDto.STANDARD_EVENT_LOG, timeZone);
+  }
+
+  @ParameterizedTest
+  @EnumSource(
+      value = EventLogCategoryDto.class,
+      names = {"POWER_QUALITY_EXTENDED_EVENT_LOG", "AUXILIARY_EVENT_LOG"},
+      mode = EnumSource.Mode.EXCLUDE)
+  void testSmr500Event(final EventLogCategoryDto eventLogCategoryDto)
       throws ProtocolAdapterException, IOException {
-    this.currentDevice = this.createDlmsDevice(protocol, timezoneString);
-
-    // SETUP
-    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
-    when(this.getResult.getResultData()).thenReturn(this.resultData);
-    when(this.resultData.getValue()).thenReturn(this.generateDataObjects());
-
-    // CALL
-    final List<EventDto> events =
-        this.executor.execute(
-            this.conn, this.currentDevice, this.findEventsRequestDto, this.messageMetadata);
-
-    // VERIFY
-    assertThat(events).hasSize(13);
-
-    int firstEventCode = 77;
-    for (final EventDto event : events) {
-      assertThat(event.getEventCode()).isEqualTo(firstEventCode++);
-    }
-
-    verify(this.dlmsHelper, times(events.size()))
-        .convertDataObjectToDateTime(any(DataObject.class));
-    verify(this.conn).getDlmsMessageListener();
-    verify(this.conn).getConnection();
-    verify(this.dlmsConnection).get(any(AttributeAddress.class));
+    this.testEventRetrieval(SMR_5_0_0, eventLogCategoryDto);
   }
 
   @ParameterizedTest
-  @CsvSource({"SMR_5_1, Europe/Amsterdam", "SMR_5_1, UTC"})
-  void testRetrievalOfAuxiliaryLogEvents(final String protocol, final String timezoneString)
+  @EnumSource(
+      value = EventLogCategoryDto.class,
+      names = {"POWER_QUALITY_EXTENDED_EVENT_LOG"},
+      mode = EnumSource.Mode.EXCLUDE)
+  void testSmr51Event(final EventLogCategoryDto eventLogCategoryDto)
       throws ProtocolAdapterException, IOException {
-    // SETUP
-    this.currentDevice = this.createDlmsDevice(protocol, timezoneString);
-    this.findEventsRequestDto =
-        new FindEventsRequestDto(
-            EventLogCategoryDto.AUXILIARY_EVENT_LOG, DateTime.now().minusDays(70), DateTime.now());
-
-    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
-    when(this.getResult.getResultData()).thenReturn(this.resultData);
-    when(this.resultData.getValue()).thenReturn(this.generateDataObjectsAuxiliary());
-
-    // CALL
-    final List<EventDto> events =
-        this.executor.execute(
-            this.conn, this.currentDevice, this.findEventsRequestDto, this.messageMetadata);
-
-    // VERIFY
-    assertThat(events).hasSize(34);
-
-    int firstEventCode = 33664;
-    for (final EventDto event : events) {
-      assertThat(event.getEventCode()).isEqualTo(firstEventCode++);
-    }
-
-    verify(this.dlmsHelper, times(events.size()))
-        .convertDataObjectToDateTime(any(DataObject.class));
-    verify(this.conn).getDlmsMessageListener();
-    verify(this.conn).getConnection();
-    verify(this.dlmsConnection).get(any(AttributeAddress.class));
+    this.testEventRetrieval(SMR_5_1, eventLogCategoryDto);
   }
 
   @ParameterizedTest
-  @CsvSource({"SMR_5_0_0, Europe/Amsterdam", "SMR_5_0_0, UTC"})
-  void testRetrievalOfEventsForWrongCombinationOfProtocolAndLogType(
-      final String protocol, final String timezoneString) {
-    this.currentDevice = this.createDlmsDevice(protocol, timezoneString);
-    // SETUP
-    this.findEventsRequestDto =
-        new FindEventsRequestDto(
-            EventLogCategoryDto.AUXILIARY_EVENT_LOG, DateTime.now().minusDays(70), DateTime.now());
-
-    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
-    when(this.getResult.getResultData()).thenReturn(this.resultData);
-    when(this.resultData.getValue()).thenReturn(this.generateDataObjectsAuxiliary());
-
-    // CALL
-    assertThatExceptionOfType(ProtocolAdapterException.class)
-        .isThrownBy(
-            () ->
-                this.executor.execute(
-                    this.conn,
-                    this.currentDevice,
-                    this.findEventsRequestDto,
-                    this.messageMetadata));
-  }
-
-  @ParameterizedTest
-  @CsvSource({"SMR_5_2, Europe/Amsterdam", "SMR_5_2, UTC"})
-  void testRetrievalOfEventsFromPowerQualityExtendedEventLog(
-      final String protocol, final String timezoneString)
+  @EnumSource(value = EventLogCategoryDto.class)
+  void testSmr52Event(final EventLogCategoryDto eventLogCategoryDto)
       throws ProtocolAdapterException, IOException {
-    // SETUP
-    this.currentDevice = this.createDlmsDevice(protocol, timezoneString);
-    this.findEventsRequestDto =
-        new FindEventsRequestDto(
-            EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG,
-            DateTime.now().minusDays(70),
-            DateTime.now());
-
-    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
-    when(this.getResult.getResultData()).thenReturn(this.resultData);
-    when(this.resultData.getValue()).thenReturn(this.generateDataObjectsExtendedPowerQuality());
-
-    // CALL
-    final List<EventDto> events =
-        this.executor.execute(
-            this.conn, this.currentDevice, this.findEventsRequestDto, this.messageMetadata);
-
-    // VERIFY
-    assertThat(events).hasSize(6);
-
-    int firstEventCode = 93;
-    for (final EventDto event : events) {
-      assertThat(event.getEventCode()).isEqualTo(firstEventCode++);
-    }
-
-    verify(this.dlmsHelper, times(events.size()))
-        .convertDataObjectToDateTime(any(DataObject.class));
-    verify(this.conn).getDlmsMessageListener();
-    verify(this.conn).getConnection();
-    verify(this.dlmsConnection).get(any(AttributeAddress.class));
+    this.testEventRetrieval(SMR_5_2, eventLogCategoryDto);
   }
 
   @ParameterizedTest
-  @CsvSource({"SMR_5_0_0, Europe/Amsterdam", "SMR_5_0_0, UTC"})
-  void testRetrievalOfEventsFromPowerQualityExtendedEventLogThrowsExceptionWhenNotSupportedByDevice(
-      final String protocol, final String timezoneString) {
-    this.currentDevice = this.createDlmsDevice(protocol, timezoneString);
-    this.findEventsRequestDto =
-        new FindEventsRequestDto(
-            EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG,
-            DateTime.now().minusDays(70),
-            DateTime.now());
-
-    assertThatExceptionOfType(ProtocolAdapterException.class)
-        .isThrownBy(
-            () ->
-                this.executor.execute(
-                    this.conn,
-                    this.currentDevice,
-                    this.findEventsRequestDto,
-                    this.messageMetadata));
+  @EnumSource(
+      value = EventLogCategoryDto.class,
+      names = {"POWER_QUALITY_EXTENDED_EVENT_LOG", "AUXILIARY_EVENT_LOG"},
+      mode = Mode.INCLUDE)
+  void testNoSmr500Event(final EventLogCategoryDto eventLogCategoryDto)
+      throws ProtocolAdapterException, IOException {
+    this.testNoEventRetrieval(SMR_5_0_0, eventLogCategoryDto);
   }
 
   @ParameterizedTest
-  @CsvSource({"SMR_5_1, Europe/Amsterdam", "SMR_5_1, UTC"})
-  void testOtherReasonResult(final String protocol, final String timezoneString)
-      throws IOException {
-    // SETUP
-    this.currentDevice = this.createDlmsDevice(protocol, timezoneString);
+  @EnumSource(
+      value = EventLogCategoryDto.class,
+      names = {"POWER_QUALITY_EXTENDED_EVENT_LOG"},
+      mode = Mode.INCLUDE)
+  void testNoSmr51Event(final EventLogCategoryDto eventLogCategoryDto)
+      throws ProtocolAdapterException, IOException {
+    this.testNoEventRetrieval(SMR_5_1, eventLogCategoryDto);
+  }
+
+  @Test
+  void testOtherReasonResult() throws IOException {
+
+    final DlmsDevice currentDevice = this.createDlmsDevice(SMR_5_0_0, TIME_ZONE);
+    final EventLogCategoryDto eventLogCategoryDto = EventLogCategoryDto.STANDARD_EVENT_LOG;
+
+    this.whenConnection();
     when(this.getResult.getResultCode()).thenReturn(AccessResultCode.OTHER_REASON);
 
-    // CALL
+    final FindEventsRequestDto findEventsRequestDto =
+        this.createFindEventsRequestDto(eventLogCategoryDto);
+
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
             () ->
                 this.executor.execute(
-                    this.conn,
-                    this.currentDevice,
-                    this.findEventsRequestDto,
-                    this.messageMetadata));
-
-    // VERIFY
-    verify(this.conn).getDlmsMessageListener();
-    verify(this.conn).getConnection();
-    verify(this.dlmsConnection).get(any(AttributeAddress.class));
+                    this.conn, currentDevice, findEventsRequestDto, this.messageMetadata));
+    this.verifyAttributeAddress(eventLogCategoryDto);
   }
 
-  @ParameterizedTest
-  @CsvSource({"SMR_5_1, Europe/Amsterdam", "SMR_5_1, UTC"})
-  void testEmptyGetResult(final String protocol, final String timezoneString) throws IOException {
-    // SETUP
-    this.currentDevice = this.createDlmsDevice(protocol, timezoneString);
-    when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
-
-    // CALL
-    assertThatExceptionOfType(ProtocolAdapterException.class)
-        .isThrownBy(
-            () ->
-                this.executor.execute(
-                    this.conn,
-                    this.currentDevice,
-                    this.findEventsRequestDto,
-                    this.messageMetadata));
-
-    // VERIFY
-    verify(this.conn).getDlmsMessageListener();
-    verify(this.conn).getConnection();
-    verify(this.dlmsConnection).get(any(AttributeAddress.class));
+  private void testEventRetrieval(
+      final String protocol, final EventLogCategoryDto eventLogCategoryDto)
+      throws ProtocolAdapterException, IOException {
+    this.testEventRetrieval(protocol, eventLogCategoryDto, TIME_ZONE);
   }
 
-  private List<DataObject> generateDataObjects() {
+  private void testEventRetrieval(
+      final String protocol, final EventLogCategoryDto eventLogCategoryDto, final String timeZone)
+      throws ProtocolAdapterException, IOException {
+    final DlmsDevice currentDevice = this.createDlmsDevice(protocol, timeZone);
 
-    final List<DataObject> dataObjects = new ArrayList<>();
+    this.whenConnection();
+    this.whenSuccessReturn(this.generateDataObject(eventLogCategoryDto), eventLogCategoryDto);
 
-    IntStream.rangeClosed(77, 89)
-        .forEach(
-            code -> {
-              final DataObject eventCode = DataObject.newInteger16Data((short) code);
-              final DataObject eventTime =
-                  DataObject.newDateTimeData(new CosemDateTime(2018, 12, 31, 23, code - 60, 0, 0));
+    final FindEventsRequestDto findEventsRequestDto =
+        this.createFindEventsRequestDto(eventLogCategoryDto);
+    final List<EventDto> events =
+        this.executor.execute(this.conn, currentDevice, findEventsRequestDto, this.messageMetadata);
 
-              final DataObject struct = DataObject.newStructureData(eventTime, eventCode);
-
-              dataObjects.add(struct);
-            });
-
-    return dataObjects;
+    this.verifyAttributeAddress(eventLogCategoryDto);
+    this.verifyTimezoneConversion(currentDevice, findEventsRequestDto);
+    assertThat(events).isNotEmpty();
   }
 
-  private List<DataObject> generateDataObjectsAuxiliary() {
-
-    final List<DataObject> dataObjects = new ArrayList<>();
-
-    IntStream.rangeClosed(33664, 33697)
-        .forEach(
-            code -> {
-              final DataObject eventCode = DataObject.newUInteger16Data(code);
-              final DataObject eventTime =
-                  DataObject.newDateTimeData(new CosemDateTime(2018, 12, 31, 23, code % 60, 0, 0));
-
-              final DataObject struct = DataObject.newStructureData(eventTime, eventCode);
-
-              dataObjects.add(struct);
-            });
-
-    return dataObjects;
+  private void verifyAttributeAddress(final EventLogCategoryDto eventLogCategoryDto) {
+    final AttributeAddress address = this.attributeAddressArgumentCaptor.getValue();
+    assertThat(address.getInstanceId().asDecimalString())
+        .isEqualTo(OBIS_MAPPING.get(eventLogCategoryDto));
   }
 
-  private List<DataObject> generateDataObjectsExtendedPowerQuality() {
+  private void testNoEventRetrieval(
+      final String protocol, final EventLogCategoryDto eventLogCategoryDto)
+      throws ProtocolAdapterException, IOException {
+    final DlmsDevice currentDevice = this.createDlmsDevice(protocol, TIME_ZONE);
 
-    final List<DataObject> dataObjects = new ArrayList<>();
+    final FindEventsRequestDto findEventsRequestDto =
+        this.createFindEventsRequestDto(eventLogCategoryDto);
+    final List<EventDto> events =
+        this.executor.execute(this.conn, currentDevice, findEventsRequestDto, this.messageMetadata);
 
-    IntStream.rangeClosed(93, 98)
-        .forEach(
-            code -> {
-              final DataObject eventCode = DataObject.newInteger16Data((short) code);
-              final DataObject eventTime =
-                  DataObject.newDateTimeData(new CosemDateTime(2018, 12, 31, 23, code - 60, 0, 0));
-              final DataObject magnitude = DataObject.newInteger32Data(5);
-              final DataObject duration = DataObject.newInteger32Data(6);
+    this.verifyNoConnection();
+    assertThat(events).isEmpty();
+  }
 
-              final DataObject struct =
-                  DataObject.newStructureData(eventTime, eventCode, magnitude, duration);
+  private void whenConnection() throws IOException {
+    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
+    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.dlmsConnection.get(this.attributeAddressArgumentCaptor.capture()))
+        .thenReturn(this.getResult);
+  }
 
-              dataObjects.add(struct);
-            });
+  private void verifyNoConnection() throws IOException {
+    verifyNoInteractions(this.conn);
+  }
 
-    return dataObjects;
+  private void whenSuccessReturn(
+      final List<DataObject> value, final EventLogCategoryDto eventLogCategoryDto) {
+    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+    when(this.getResult.getResultData()).thenReturn(this.resultData);
+    when(this.dlmsHelper.convertDataObjectToDateTime(any(DataObject.class)))
+        .thenReturn(new CosemDateTimeDto());
+    when(this.resultData.getValue()).thenReturn(value);
+  }
+
+  private FindEventsRequestDto createFindEventsRequestDto(
+      final EventLogCategoryDto powerQualityEventLog) {
+    return new FindEventsRequestDto(
+        powerQualityEventLog, DateTime.now().minusDays(70), DateTime.now());
+  }
+
+  private void verifyTimezoneConversion(
+      final DlmsDevice currentDevice, final FindEventsRequestDto findEventsRequestDto) {
+    final DateTime dateTimeFrom =
+        DlmsDateTimeConverter.toDateTime(
+            findEventsRequestDto.getFrom(), currentDevice.getTimezone());
+    final DateTime dateTimeUntil =
+        DlmsDateTimeConverter.toDateTime(
+            findEventsRequestDto.getUntil(), currentDevice.getTimezone());
+    verify(this.dlmsHelper).asDataObject(dateTimeFrom);
+    verify(this.dlmsHelper).asDataObject(dateTimeUntil);
+  }
+
+  private List<DataObject> generateDataObject(final EventLogCategoryDto eventLogCategoryDto) {
+    final CosemDateTime dateTime = new CosemDateTime(2018, 12, 31, 23, 1, 0, 0);
+    final DataObject eventCode = DataObject.newInteger16Data((short) 1);
+    final DataObject eventTime = DataObject.newDateTimeData(dateTime);
+    switch (eventLogCategoryDto.getDetailsType()) {
+      case NONE:
+        return List.of(DataObject.newStructureData(eventTime, eventCode));
+      case COUNTER:
+        final DataObject eventCounter = DataObject.newInteger32Data(4);
+        return List.of(DataObject.newStructureData(eventTime, eventCode, eventCounter));
+      case MAGNITUDE_AND_DURATION:
+        final DataObject magnitude = DataObject.newInteger32Data(5);
+        final DataObject duration = DataObject.newInteger32Data(6);
+        return List.of(DataObject.newStructureData(eventTime, eventCode, magnitude, duration));
+      default:
+        return List.of(DataObject.newStructureData(eventTime, eventCode));
+    }
   }
 
   private DlmsDevice createDlmsDevice(final String protocol, final String timezone) {
     final DlmsDevice device = new DlmsDevice();
-    device.setDeviceIdentification("123456789012");
     device.setTimezone(timezone);
     device.setProtocol(Protocol.valueOf(protocol));
     return device;
