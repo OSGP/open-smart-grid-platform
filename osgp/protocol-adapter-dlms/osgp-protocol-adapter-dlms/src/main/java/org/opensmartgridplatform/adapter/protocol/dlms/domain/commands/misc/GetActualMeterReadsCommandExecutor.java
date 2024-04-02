@@ -41,16 +41,11 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component()
 public class GetActualMeterReadsCommandExecutor
     extends AbstractCommandExecutor<ActualMeterReadsQueryDto, MeterReadsResponseDto> {
-
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(GetActualMeterReadsCommandExecutor.class);
 
   private static final byte ATTRIBUTE_ID_VALUE = 2;
 
