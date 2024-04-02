@@ -349,6 +349,7 @@
       <xsd:enumeration value="POWER_QUALITY_EVENT_LOG"/>
       <xsd:enumeration value="AUXILIARY_EVENT_LOG"/>
       <xsd:enumeration value="POWER_QUALITY_EXTENDED_EVENT_LOG"/>
+      <xsd:enumeration value="POWER_QUALITY_THD_EVENT_LOG"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -427,6 +428,24 @@
       <xsd:enumeration value="MODULE_COVER_OPENED"/>
       <!-- 49 - module cover closed -  -  -  -->
       <xsd:enumeration value="MODULE_COVER_CLOSED"/>
+      <!-- 51 - THD Over-limit L1 -  -  -  -->
+      <xsd:enumeration value="THD_OVER_LIMIT_L1"/>
+      <!-- 52 - THD Over-limit L2 -  -  -  -->
+      <xsd:enumeration value="THD_OVER_LIMIT_L2"/>
+      <!-- 53 - THD Over-limit L3 -  -  -  -->
+      <xsd:enumeration value="THD_OVER_LIMIT_L3"/>
+      <!-- 54 - THD Normal L1 -  -  -  -->
+      <xsd:enumeration value="THD_NORMAL_L1"/>
+      <!-- 55 - THD Normal L2 -  -  -  -->
+      <xsd:enumeration value="THD_NORMAL_L2"/>
+      <!-- 56 - THD Normal L3 -  -  -  -->
+      <xsd:enumeration value="THD_NORMAL_L3"/>
+      <!-- 57 - THD Long Over-limit L1 -  -  -  -->
+      <xsd:enumeration value="THD_LONG_OVER_LIMIT_L1"/>
+      <!-- 58 - THD Long Over-limit L2 -  -  -  -->
+      <xsd:enumeration value="THD_LONG_OVER_LIMIT_L2"/>
+      <!-- 59 - THD Long Over-limit L3 -  -  -  -->
+      <xsd:enumeration value="THD_LONG_OVER_LIMIT_L3"/>
       <!-- 71 - metrological maintenance -  -  -  -->
       <xsd:enumeration value="METROLOGICAL_MAINTENANCE"/>
       <!-- 72 - technical maintenance -  -  -  -->
