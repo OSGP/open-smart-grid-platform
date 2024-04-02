@@ -33,9 +33,7 @@ public class MessagePriorityHandler {
     final int retryCount = messageMetadata.getRetryCount();
     final int priority = messageMetadata.getMessagePriority();
 
-    if (this.decreaseEnabled
-        && (retryCount > 0 || this.decreaseInterval == 1)
-        && retryCount % this.decreaseInterval == 0) {
+    if (this.decreaseEnabled && (retryCount > 0) && retryCount % this.decreaseInterval == 0) {
       return Math.max(priority - this.decreaseValue, this.minimumPriority);
     }
 
