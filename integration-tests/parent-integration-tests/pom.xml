@@ -147,7 +147,6 @@ SPDX-License-Identifier: Apache-2.0
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-secret-management</artifactId>
         <version>${osgp.dlms.version}</version>
-        <classifier>classes</classifier>
       </dependency>
     </dependencies>
   </dependencyManagement>

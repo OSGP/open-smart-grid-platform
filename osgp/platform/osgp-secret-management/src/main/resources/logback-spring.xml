@@ -7,42 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 -->
 
 <configuration>
-
-  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [${HOSTNAME}] [%thread] %level %logger{36}@%method:%line - %msg%n</pattern>
-    </encoder>
-  </appender>
-
-  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>/var/log/osp/logs/osgp-secret-management.log</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <fileNamePattern>/var/log/osp/logs/osgp-secret-management.log.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-      <maxFileSize>100MB</maxFileSize>
-      <maxHistory>10</maxHistory>
-      <totalSizeCap>20GB</totalSizeCap>
-    </rollingPolicy>
-    <encoder>
-      <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [${HOSTNAME}] [%thread] %level %logger{36}@%method:%line - %msg%n</pattern>
-    </encoder>
-  </appender>
-
-  <root level="INFO" additivity="false">
-    <appender-ref ref="CONSOLE"/>
-    <appender-ref ref="FILE"/>
-  </root>
-
-  <!-- TRACE, DEBUG, INFO, WARN, ERROR -->
-  <logger name="org.opensmartgridplatform.secretmanagement.application" level="DEBUG"/>
-  <logger name="org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService" level="TRACE"/>
-  <logger name="org.opensmartgridplatform.shared.security.providers" level="DEBUG"/>
-
-  <logger name="org.opensmartgridplatform.adapter.ws.endpointinterceptors" level="TRACE"/>
-  <logger name="org.opensmartgridplatform.adapter.protocol.dlms.domain.commands" level="INFO"/>
-  <logger name="org.opensmartgridplatform.adapter.ws.shared.services" level="INFO"/>
-
-  <logger name="org.springframework.ws.server.MessageTracing" level="TRACE" />
-
+  <include resource="org/springframework/boot/logging/logback/base.xml"/>
   <logger name="org.opensmartgridplatform.secretmanagement.application" level="DEBUG"/>
 
 </configuration>
