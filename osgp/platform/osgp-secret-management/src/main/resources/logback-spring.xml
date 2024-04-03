@@ -8,6 +8,4 @@ SPDX-License-Identifier: Apache-2.0
 
 <configuration>
   <include resource="org/springframework/boot/logging/logback/base.xml"/>
-  <logger name="org.opensmartgridplatform.secretmanagement.application" level="DEBUG"/>
-
 </configuration>
