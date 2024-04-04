@@ -14,6 +14,33 @@
     </jxb:schemaBindings>
 
     <!-- the following bindings are needed because the XJC transformer will change L1 to L_1 etc -->
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='THD_OVER_LIMIT_L1']">
+       <jxb:typesafeEnumMember name="THD_OVER_LIMIT_L1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='THD_OVER_LIMIT_L2']">
+       <jxb:typesafeEnumMember name="THD_OVER_LIMIT_L2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='THD_OVER_LIMIT_L3']">
+       <jxb:typesafeEnumMember name="THD_OVER_LIMIT_L3"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='THD_NORMAL_L1']">
+       <jxb:typesafeEnumMember name="THD_NORMAL_L1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='THD_NORMAL_L2']">
+       <jxb:typesafeEnumMember name="THD_NORMAL_L2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='THD_NORMAL_L3']">
+       <jxb:typesafeEnumMember name="THD_NORMAL_L3"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='THD_LONG_OVER_LIMIT_L1']">
+       <jxb:typesafeEnumMember name="THD_LONG_OVER_LIMIT_L1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='THD_LONG_OVER_LIMIT_L2']">
+       <jxb:typesafeEnumMember name="THD_LONG_OVER_LIMIT_L2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='THD_LONG_OVER_LIMIT_L3']">
+       <jxb:typesafeEnumMember name="THD_LONG_OVER_LIMIT_L3"/>
+    </jxb:bindings>
     <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='PHASE_RETURNED_L1']">
        <jxb:typesafeEnumMember name="PHASE_RETURNED_L1"/>
     </jxb:bindings>

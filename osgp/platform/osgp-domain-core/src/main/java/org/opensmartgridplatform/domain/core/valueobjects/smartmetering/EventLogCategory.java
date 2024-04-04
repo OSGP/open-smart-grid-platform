@@ -13,7 +13,8 @@ public enum EventLogCategory implements Serializable {
   M_BUS_EVENT_LOG,
   POWER_QUALITY_EVENT_LOG,
   AUXILIARY_EVENT_LOG,
-  POWER_QUALITY_EXTENDED_EVENT_LOG;
+  POWER_QUALITY_EXTENDED_EVENT_LOG,
+  POWER_QUALITY_THD_EVENT_LOG;
 
   public static EventLogCategory fromValue(final String v) {
     return valueOf(v);

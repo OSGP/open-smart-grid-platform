@@ -285,6 +285,54 @@ class ListEventMappingTest {
               null,
               EventLogCategory.FRAUD_DETECTION_LOG));
 
+  private static final List<Event> POWER_QUALITY_THD_EVENTS =
+      Arrays.asList(
+          newEvent(
+              DateTime.now(),
+              EventType.THD_OVER_LIMIT_L1,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.THD_OVER_LIMIT_L2,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.THD_OVER_LIMIT_L3,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.THD_NORMAL_L1,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.THD_NORMAL_L2,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.THD_NORMAL_L3,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.THD_LONG_OVER_LIMIT_L1,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.THD_LONG_OVER_LIMIT_L2,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.THD_LONG_OVER_LIMIT_L3,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG));
+
   private static final List<Event> COMMUNICATION_SESSIONS_EVENTS =
       Arrays.asList(
           newEvent(
@@ -1525,6 +1573,23 @@ class ListEventMappingTest {
         this.managementMapper.mapAsList(mappedFraudDetectionEvents, Event.class);
 
     this.checkEventsMappedFromWsSchema(mappedFraudDetectionEvents, fraudDetectionEvents);
+  }
+
+  @Test
+  void testMappingForListOfPowerQualityThdEvents() {
+
+    final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
+        mappedPowerQualityThdEvents =
+            this.managementMapper.mapAsList(
+                POWER_QUALITY_THD_EVENTS,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);
+
+    this.checkEventsMappedToWsSchema(POWER_QUALITY_THD_EVENTS, mappedPowerQualityThdEvents);
+
+    final List<Event> powerQualityThdEvents =
+        this.managementMapper.mapAsList(mappedPowerQualityThdEvents, Event.class);
+
+    this.checkEventsMappedFromWsSchema(mappedPowerQualityThdEvents, powerQualityThdEvents);
   }
 
   @Test
