@@ -16,6 +16,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Jdl
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -39,9 +40,13 @@ public abstract class AbstractReplaceKeyCommandExecutor<T>
 
   @Autowired private SecretManagementService secretManagementService;
 
+  @Autowired private DlmsDeviceRepository dlmsDeviceRepository;
+
   @Autowired
   @Qualifier("decrypterForGxfSmartMetering")
   private RsaEncrypter decrypterForGxfSmartMetering;
+
+  private static final Long INVOCATION_COUNTER_AFTER_KEY_CHANGE = 250L;
 
   /**
    * Constructor for CommandExecutors that need to be executed in the context of bundle actions.
@@ -91,6 +96,9 @@ public abstract class AbstractReplaceKeyCommandExecutor<T>
         messageMetadata);
 
     log.info("Encryption key successfully set on device :{}", device.getDeviceIdentification());
+
+    this.dlmsDeviceRepository.updateInvocationCounter(
+        devicePostSave.getDeviceIdentification(), INVOCATION_COUNTER_AFTER_KEY_CHANGE);
 
     return new ActionResponseDto(
         String.format(
