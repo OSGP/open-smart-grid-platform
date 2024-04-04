@@ -102,6 +102,36 @@
       ]
     },
     {
+      "tag": "ACTIVE_ENERGY_IMPORT",
+      "description": "Active energy import (+A)",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.1.8.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, WH",
+          "access": "R"
+        }
+      ]
+    },
+    {
       "tag": "ACTIVE_ENERGY_IMPORT_RATE_1",
       "description": "Active energy import (+A) rate 1",
       "note": null,
@@ -138,6 +168,36 @@
       "class-id": 3,
       "version": 0,
       "obis": "1.0.1.8.2.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, WH",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ACTIVE_ENERGY_EXPORT",
+      "description": "Active energy export (-A)",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.2.8.0.255",
       "group": "ELECTRICITY",
       "meterTypes": [
         "SP",

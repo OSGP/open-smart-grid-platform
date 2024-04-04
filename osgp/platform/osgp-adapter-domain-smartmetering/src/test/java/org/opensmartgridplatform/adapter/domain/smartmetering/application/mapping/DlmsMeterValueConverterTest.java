@@ -20,7 +20,7 @@ public class DlmsMeterValueConverterTest {
   public void testCalculate() {
     final MonitoringMapper calculator = new MonitoringMapper();
     DlmsMeterValueDto response =
-        new DlmsMeterValueDto(BigDecimal.valueOf(123456), DlmsUnitTypeDto.KWH);
+        new DlmsMeterValueDto(BigDecimal.valueOf(123456), DlmsUnitTypeDto.WH);
     assertThat(calculator.map(response, OsgpMeterValue.class).getValue())
         .isEqualTo(BigDecimal.valueOf(123.456d));
     assertThat(calculator.map(response, OsgpMeterValue.class).getOsgpUnit())

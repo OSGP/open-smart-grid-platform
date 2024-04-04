@@ -45,8 +45,9 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider {
     try {
       super.setKeyFile(keyStoreFile);
       this.keyStore = KeyStore.getInstance(TYPE, PROVIDER);
-      final FileInputStream fIn = new FileInputStream(keyStoreFile);
-      this.keyStore.load(fIn, null);
+      try (final FileInputStream fIn = new FileInputStream(keyStoreFile)) {
+        this.keyStore.load(fIn, null);
+      }
     } catch (final CertificateException
         | NoSuchAlgorithmException
         | NoSuchProviderException

@@ -37,6 +37,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionC
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.MessagePriorityHandler;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RetryHeaderFactory;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
@@ -70,6 +71,8 @@ class GetFirmwareFileResponseMessageProcessorTest {
   @Mock private ThrottlingClientConfig throttlingClientConfig;
 
   @Mock private OsgpExceptionConverter osgpExceptionConverter;
+
+  @Mock private MessagePriorityHandler messagePriorityHandler;
 
   private DlmsDevice dlmsDevice;
 
