@@ -126,6 +126,186 @@
       ]
     },
     {
+      "tag": "ACTIVE_ENERGY_IMPORT",
+      "description": "Active energy import (+A)",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.1.8.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, WH",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ACTIVE_ENERGY_IMPORT_RATE_1",
+      "description": "Active energy import (+A) rate 1",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.1.8.1.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, WH",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ACTIVE_ENERGY_IMPORT_RATE_2",
+      "description": "Active energy import (+A) rate 2",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.1.8.2.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, WH",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ACTIVE_ENERGY_EXPORT",
+      "description": "Active energy export (-A)",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.2.8.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, WH",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ACTIVE_ENERGY_EXPORT_RATE_1",
+      "description": "Active energy export (-A) rate 1",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.2.8.1.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, WH",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ACTIVE_ENERGY_EXPORT_RATE_2",
+      "description": "Active energy export (-A) rate 2",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.2.8.2.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, WH",
+          "access": "R"
+        }
+      ]
+    },
+    {
       "tag": "DEFINABLE_LOAD_PROFILE",
       "description": "Definable load profile",
       "note": "Attribute 4 (capture period in sec) is overridden in factory with value 900 (default in spec: 86400)",
@@ -2207,6 +2387,60 @@
       ]
     },
     {
+      "tag": "MBUS_MASTER_VALUE_5MIN",
+      "description": "M-Bus volume 5 minute value",
+      "note": null,
+      "class-id": 4,
+      "version": 0,
+      "obis": "0.x.24.2.1.255",
+      "group": "GAS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "BASED_ON_MODEL",
+          "valuebasedonmodel": {
+            "type": "GAS_METER_TYPE",
+            "values": [
+              {
+                "types": ["G4-G6"],
+                "value": "-3, M3"
+              },
+              {
+                "types": ["G10-G25"],
+                "value": "-2, M3"
+              }
+            ]
+          },
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "status",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "capture_time",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
       "tag": "MBUS_MASTER_VALUE",
       "description": "M-Bus volume hourly",
       "note": null,
@@ -2444,7 +2678,7 @@
       "class-id": 7,
       "version": 1,
       "obis": "0.0.99.98.0.255",
-      "group": "ELECTRICITY",
+      "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [
@@ -2475,7 +2709,7 @@
           "id": 5,
           "description": "sort method",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         },
@@ -2512,7 +2746,7 @@
       "class-id": 7,
       "version": 1,
       "obis": "0.0.99.98.1.255",
-      "group": "ELECTRICITY",
+      "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [
@@ -2543,7 +2777,7 @@
           "id": 5,
           "description": "sort method",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         },
@@ -2580,7 +2814,7 @@
       "class-id": 7,
       "version": 1,
       "obis": "0.0.99.98.3.255",
-      "group": "ELECTRICITY",
+      "group": "GAS",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [
@@ -2611,7 +2845,7 @@
           "id": 5,
           "description": "sort method",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         },
@@ -2648,7 +2882,7 @@
       "class-id": 7,
       "version": 1,
       "obis": "0.0.99.98.4.255",
-      "group": "ELECTRICITY",
+      "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [
@@ -2679,7 +2913,7 @@
           "id": 5,
           "description": "sort method",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         },
@@ -2716,7 +2950,7 @@
       "class-id": 7,
       "version": 1,
       "obis": "0.0.99.98.5.255",
-      "group": "ELECTRICITY",
+      "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [
@@ -2747,7 +2981,7 @@
           "id": 5,
           "description": "sort method",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         },
@@ -2783,7 +3017,7 @@
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.11.0.255",
-      "group": "ELECTRICITY",
+      "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [
@@ -2802,7 +3036,7 @@
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.11.1.255",
-      "group": "ELECTRICITY",
+      "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [
@@ -2821,7 +3055,7 @@
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.11.3.255",
-      "group": "ELECTRICITY",
+      "group": "GAS",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [
@@ -2840,7 +3074,7 @@
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.11.4.255",
-      "group": "ELECTRICITY",
+      "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [
@@ -2859,7 +3093,7 @@
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.15.4.255",
-      "group": "ELECTRICITY",
+      "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [
@@ -2878,7 +3112,7 @@
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.11.5.255",
-      "group": "ELECTRICITY",
+      "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [

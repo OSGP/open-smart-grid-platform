@@ -117,6 +117,8 @@ public class DeviceResponseMessageServiceTest {
             .build();
     final ScheduledTask scheduledTask =
         new ScheduledTask(MESSAGE_METADATA, DOMAIN, DOMAIN_VERSION, DATA_OBJECT, SCHEDULED_TIME);
+    // update message priority to reflect the priority of the previous run
+    scheduledTask.setMessagePriority(scheduledTask.getMessagePriority() + 1);
 
     when(this.scheduledTaskService.findByCorrelationUid(anyString())).thenReturn(scheduledTask);
     this.deviceResponseMessageService.processMessage(message);
@@ -130,6 +132,8 @@ public class DeviceResponseMessageServiceTest {
     assertThat(scheduledTask.getScheduledTime())
         .isEqualTo(new Timestamp(scheduledRetryTime.getTime()));
     assertThat(scheduledTask.getErrorLog()).contains(expectedMessage);
+    // check that the message priority is copied to the scheduled task
+    assertThat(scheduledTask.getMessagePriority()).isEqualTo(message.getMessagePriority());
   }
 
   /**

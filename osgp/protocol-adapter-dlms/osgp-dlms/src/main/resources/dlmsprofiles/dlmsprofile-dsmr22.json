@@ -102,6 +102,36 @@
       ]
     },
     {
+      "tag": "ACTIVE_ENERGY_IMPORT",
+      "description": "Active energy import (+A)",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.1.8.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, WH",
+          "access": "R"
+        }
+      ]
+    },
+    {
       "tag": "ACTIVE_ENERGY_IMPORT_RATE_1",
       "description": "Active energy import (+A) rate 1",
       "note": null,
@@ -138,6 +168,36 @@
       "class-id": 3,
       "version": 0,
       "obis": "1.0.1.8.2.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, WH",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ACTIVE_ENERGY_EXPORT",
+      "description": "Active energy export (-A)",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.2.8.0.255",
       "group": "ELECTRICITY",
       "meterTypes": [
         "SP",
@@ -1123,6 +1183,267 @@
           "datatype": "octet-string",
           "valuetype": "SET_BY_CLIENT",
           "access": "RW"
+        }
+      ]
+    },
+    {
+      "tag": "STANDARD_EVENT_LOG",
+      "description": "Standard event log containing errors and alarms",
+      "note": null,
+      "class-id": 7,
+      "version": 0,
+      "obis": "0.0.99.98.0.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "buffer",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture objects",
+          "datatype": "array",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "CLOCK,2|STANDARD_EVENT_CODE,2",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "capture period",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "sort method",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "sort object",
+          "datatype": "object_definition",
+          "valuetype": "FIXED_IN_METER",
+          "value": "NONE",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "entries in use",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "profile entries",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "100",
+          "access": "R"
+        }
+
+      ]
+    },
+    {
+      "tag": "FRAUD_DETECTION_EVENT_LOG",
+      "description": "Event log containing all fraud detection events",
+      "note": null,
+      "class-id": 7,
+      "version": 0,
+      "obis": "0.0.99.98.1.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "buffer",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture objects",
+          "datatype": "array",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "CLOCK,2|FRAUD_DETECTION_EVENT_CODE,2",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "capture period",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "sort method",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "sort object",
+          "datatype": "object_definition",
+          "valuetype": "FIXED_IN_METER",
+          "value": "NONE",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "entries in use",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "profile entries",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "30",
+          "access": "R"
+        }
+
+      ]
+    },
+    {
+      "tag": "MBUS_EVENT_LOG",
+      "description": "M-Bus event log containing errors and alarms",
+      "note": null,
+      "class-id": 7,
+      "version": 0,
+      "obis": "0.0.99.98.3.255",
+      "group": "GAS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "buffer",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture objects",
+          "datatype": "array",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "CLOCK,2|MBUS_EVENT_CODE,2",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "capture period",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "sort method",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "sort object",
+          "datatype": "object_definition",
+          "valuetype": "FIXED_IN_METER",
+          "value": "NONE",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "entries in use",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "profile entries",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "30",
+          "access": "R"
+        }
+
+      ]
+    },
+    {
+      "tag": "STANDARD_EVENT_CODE",
+      "description": "Standard event log code",
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.96.11.0.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "FRAUD_DETECTION_EVENT_CODE",
+      "description": "Fraud detection event log code",
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.96.11.1.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_EVENT_CODE",
+      "description": "M-Bus event log code",
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.96.11.3.255",
+      "group": "GAS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
         }
       ]
     }

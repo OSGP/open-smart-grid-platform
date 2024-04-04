@@ -219,7 +219,7 @@
       "class-id": 7,
       "version": 1,
       "obis": "0.0.99.98.7.255",
-      "group": "ELECTRICITY",
+      "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [
@@ -250,7 +250,7 @@
           "id": 5,
           "description": "sort method",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         },
@@ -286,7 +286,7 @@
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.11.7.255",
-      "group": "ELECTRICITY",
+      "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [
@@ -305,7 +305,7 @@
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.11.20.255",
-      "group": "ELECTRICITY",
+      "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [
@@ -324,7 +324,7 @@
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.11.21.255",
-      "group": "ELECTRICITY",
+      "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [

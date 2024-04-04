@@ -178,6 +178,7 @@ public class DeviceResponseMessageService {
 
     scheduledTask.setFailed(this.determineErrorMessage(message));
     scheduledTask.retryOn(scheduledRetryTime);
+    scheduledTask.setMessagePriority(message.getMessagePriority());
     this.scheduledTaskService.saveScheduledTask(scheduledTask);
   }
 
