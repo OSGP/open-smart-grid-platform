@@ -163,7 +163,7 @@ public class FindEventsCommandExecutor
 
   private SelectiveAccessDescription getSelectiveAccessDescription(
       final DlmsDevice device, final DateTime beginDateTime, final DateTime endDateTime)
-      throws ProtocolAdapterException {
+      throws NotSupportedByProtocolException {
 
     /*
      * Define the clock object {8,0-0:1.0.0.255,2,0} to be used as
@@ -192,7 +192,8 @@ public class FindEventsCommandExecutor
     return new SelectiveAccessDescription(ACCESS_SELECTOR_RANGE_DESCRIPTOR, accessParameter);
   }
 
-  private DataObject getClockDefinition(final DlmsDevice device) throws ProtocolAdapterException {
+  private DataObject getClockDefinition(final DlmsDevice device)
+      throws NotSupportedByProtocolException {
 
     final Protocol protocol = Protocol.forDevice(device);
     final AttributeAddress attributeAddress =
