@@ -11,7 +11,7 @@ import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
 
 @Getter
 public enum Protocol {
-  DSMR_2_2("DSMR", "2.2", 35, 2, 4, 6, 14, 0, 0, 0, 0, false, false),
+  DSMR_2_2("DSMR", "2.2", 41, 2, 4, 6, 14, 0, 0, 0, 0, false, false),
   DSMR_4_2_2("DSMR", "4.2.2", 71, 11, 27, 6, 14, 6, 13, 5, 6, true, false),
   SMR_4_3("SMR", "4.3", 72, 11, 27, 6, 14, 6, 13, 6, 7, true, false),
   SMR_5_0_0("SMR", "5.0.0", 82, 11, 27, 6, 14, 6, 15, 9, 14, true, true),

@@ -2,11 +2,12 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @FindEvents
+@SmartMetering @Platform
 Feature: SmartMetering Bundle - FindEvents
   As a grid operator 
   I want to retrieve the events from a meter via a bundle request
 
+  @FindEvents
   Scenario Outline: Retrieve event codes for meter with protocol <protocol> <version>
     And a dlms device
       | DeviceIdentification | <deviceIdentification> |
@@ -60,7 +61,7 @@ Feature: SmartMetering Bundle - FindEvents
     And the bundle response should contain a find events response with <powqe> events
     Examples:
       | deviceIdentification | protocol | version | std | fraud | comm | mbus | powq | aux | powqe |
-      | TEST1026000000001    | DSMR     |     2.2 |     |       |      |      |      |     |       |
+      | TEST1026000000001    | DSMR     |     2.2 |  21 |     9 |      |   30 |      |     |       |
       | TEST1024000000001    | DSMR     |   4.2.2 |  21 |     9 |    7 |   30 |      |     |       |
       | TEST1031000000001    | SMR      |     4.3 |  21 |     9 |    7 |   30 |      |     |       |
       | TEST1027000000001    | SMR      |   5.0.0 |  21 |     9 |    7 |   30 |   19 |     |       |
@@ -129,7 +130,7 @@ Feature: SmartMetering Bundle - FindEvents
 
     Examples:
       | deviceIdentification | protocol | version | std    | fraud  | comm   | mbus   | powq   | aux    | powqe  |
-      | TEST1026000000001    | DSMR     |     2.2 | be     | be     | be     | be     | be     | be     | be     |
+      | TEST1026000000001    | DSMR     |     2.2 | not be | not be | be     | not be | be     | be     | be     |
       | TEST1024000000001    | DSMR     |   4.2.2 | not be | not be | not be | not be | be     | be     | be     |
       | TEST1031000000001    | SMR      |     4.3 | not be | not be | not be | not be | be     | be     | be     |
       | TEST1027000000001    | SMR      |   5.0.0 | not be | not be | not be | not be | not be | be     | be     |

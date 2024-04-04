@@ -121,6 +121,21 @@ class FindEventsCommandExecutorTest {
       names = {
         "POWER_QUALITY_EXTENDED_EVENT_LOG",
         "POWER_QUALITY_EVENT_LOG",
+        "AUXILIARY_EVENT_LOG",
+        "COMMUNICATION_SESSION_LOG"
+      },
+      mode = EnumSource.Mode.EXCLUDE)
+  void testDsmr22Event(final EventLogCategoryDto eventLogCategoryDto)
+      throws ProtocolAdapterException, IOException {
+    this.testEventRetrieval(DSMR_2_2, eventLogCategoryDto);
+  }
+
+  @ParameterizedTest
+  @EnumSource(
+      value = EventLogCategoryDto.class,
+      names = {
+        "POWER_QUALITY_EXTENDED_EVENT_LOG",
+        "POWER_QUALITY_EVENT_LOG",
         "AUXILIARY_EVENT_LOG"
       },
       mode = EnumSource.Mode.EXCLUDE)
@@ -157,7 +172,15 @@ class FindEventsCommandExecutorTest {
   }
 
   @ParameterizedTest
-  @EnumSource(EventLogCategoryDto.class)
+  @EnumSource(
+      value = EventLogCategoryDto.class,
+      names = {
+        "POWER_QUALITY_EXTENDED_EVENT_LOG",
+        "POWER_QUALITY_EVENT_LOG",
+        "AUXILIARY_EVENT_LOG",
+        "COMMUNICATION_SESSION_LOG"
+      },
+      mode = EnumSource.Mode.INCLUDE)
   void testNoDsmr22Event(final EventLogCategoryDto eventLogCategoryDto)
       throws ProtocolAdapterException, IOException {
     this.testNoEventRetrieval(DSMR_2_2, eventLogCategoryDto);

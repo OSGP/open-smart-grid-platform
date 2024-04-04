@@ -37,11 +37,10 @@ public class BundledFindEventsSteps extends BaseBundleSteps {
   @Then("^the bundle response should contain a find events response with ([^\"]*) events$")
   public void theBundleResponseShouldContainAFindEventsResponse(final String nrOfEvents)
       throws Throwable {
+    final Response response = this.getNextBundleResponse();
     if (StringUtils.isEmpty(nrOfEvents)) {
       return;
     }
-    final Response response = this.getNextBundleResponse();
-
     assertThat(response).isInstanceOf(FindEventsResponse.class);
 
     final FindEventsResponse findEventsResponse = (FindEventsResponse) response;
