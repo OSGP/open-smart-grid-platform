@@ -7,12 +7,10 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter.toDateTime;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Optional;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -28,6 +26,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
@@ -109,14 +108,17 @@ public class FindEventsCommandExecutor
     final DlmsObjectType dlmsObjectType =
         EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory());
 
-    final Optional<AttributeAddress> optionalAttributeAddress =
-        this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
-            Protocol.forDevice(device), dlmsObjectType, selectiveAccessDescription);
-
-    if (!optionalAttributeAddress.isPresent()) {
-      return new ArrayList<>();
-    }
-    final AttributeAddress attributeAddress = optionalAttributeAddress.get();
+    final Protocol protocol = Protocol.forDevice(device);
+    final AttributeAddress attributeAddress =
+        this.objectConfigServiceHelper
+            .findOptionalDefaultAttributeAddress(
+                protocol, dlmsObjectType, selectiveAccessDescription)
+            .orElseThrow(
+                () ->
+                    new NotSupportedByProtocolException(
+                        String.format(
+                            "No address found for %s in protocol %s %s",
+                            dlmsObjectType.name(), protocol.getName(), protocol.getVersion())));
 
     conn.getDlmsMessageListener()
         .setDescription(
@@ -173,7 +175,7 @@ public class FindEventsCommandExecutor
     final DateTime convertedBeginDateTime = toDateTime(beginDateTime, device.getTimezone());
     final DateTime convertedEndDateTime = toDateTime(endDateTime, device.getTimezone());
 
-    final DataObject clockDefinition = this.dlmsHelper.getClockDefinition();
+    final DataObject clockDefinition = this.getClockDefinition(device);
     final DataObject fromValue = this.dlmsHelper.asDataObject(convertedBeginDateTime);
     final DataObject toValue = this.dlmsHelper.asDataObject(convertedEndDateTime);
 
@@ -188,5 +190,26 @@ public class FindEventsCommandExecutor
             Arrays.asList(clockDefinition, fromValue, toValue, selectedValues));
 
     return new SelectiveAccessDescription(ACCESS_SELECTOR_RANGE_DESCRIPTOR, accessParameter);
+  }
+
+  private DataObject getClockDefinition(final DlmsDevice device) throws ProtocolAdapterException {
+
+    final Protocol protocol = Protocol.forDevice(device);
+    final AttributeAddress attributeAddress =
+        this.objectConfigServiceHelper
+            .findOptionalDefaultAttributeAddress(protocol, DlmsObjectType.CLOCK)
+            .orElseThrow(
+                () ->
+                    new NotSupportedByProtocolException(
+                        String.format(
+                            "No address found for %s in protocol %s %s",
+                            DlmsObjectType.CLOCK, protocol.getName(), protocol.getVersion())));
+
+    return DataObject.newStructureData(
+        Arrays.asList(
+            DataObject.newUInteger16Data(attributeAddress.getClassId()),
+            DataObject.newOctetStringData(attributeAddress.getInstanceId().bytes()),
+            DataObject.newInteger8Data((byte) attributeAddress.getId()),
+            DataObject.newUInteger16Data(0)));
   }
 }

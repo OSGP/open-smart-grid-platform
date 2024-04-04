@@ -248,4 +248,13 @@ public class BundleSteps extends BaseBundleSteps {
 
     assertThat(faultResponse.getMessage()).containsSubsequence(values.get(PlatformKeys.MESSAGE));
   }
+
+  @Then("the bundle response should not be a FaultResponse with message containing")
+  public void theBundleResponseShouldNotBeAFaultResponseWithMessageContaining(
+      final Map<String, String> values) throws Throwable {
+    final Response response = this.getNextBundleResponse();
+
+    assertThat(response).isNotInstanceOf(FaultResponse.class);
+    assertThat(response.getResult()).isNotEqualTo(OsgpResultType.NOT_OK);
+  }
 }

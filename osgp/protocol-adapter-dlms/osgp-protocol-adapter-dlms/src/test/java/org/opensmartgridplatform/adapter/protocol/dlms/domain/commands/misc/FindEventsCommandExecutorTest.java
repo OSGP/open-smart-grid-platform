@@ -40,6 +40,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Obj
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
@@ -57,10 +58,10 @@ class FindEventsCommandExecutorTest {
 
   private static final String TIME_ZONE = "Europe/Amsterdam";
 
+  private static final String DSMR_2_2 = "DSMR_2_2";
+  private static final String DSMR_4_2_2 = "DSMR_4_2_2";
   private static final String SMR_5_0_0 = "SMR_5_0_0";
-
   private static final String SMR_5_1 = "SMR_5_1";
-
   private static final String SMR_5_2 = "SMR_5_2";
 
   static {
@@ -117,6 +118,20 @@ class FindEventsCommandExecutorTest {
   @ParameterizedTest
   @EnumSource(
       value = EventLogCategoryDto.class,
+      names = {
+        "POWER_QUALITY_EXTENDED_EVENT_LOG",
+        "POWER_QUALITY_EVENT_LOG",
+        "AUXILIARY_EVENT_LOG"
+      },
+      mode = EnumSource.Mode.EXCLUDE)
+  void testDsmr422Event(final EventLogCategoryDto eventLogCategoryDto)
+      throws ProtocolAdapterException, IOException {
+    this.testEventRetrieval(DSMR_4_2_2, eventLogCategoryDto);
+  }
+
+  @ParameterizedTest
+  @EnumSource(
+      value = EventLogCategoryDto.class,
       names = {"POWER_QUALITY_EXTENDED_EVENT_LOG", "AUXILIARY_EVENT_LOG"},
       mode = EnumSource.Mode.EXCLUDE)
   void testSmr500Event(final EventLogCategoryDto eventLogCategoryDto)
@@ -139,6 +154,27 @@ class FindEventsCommandExecutorTest {
   void testSmr52Event(final EventLogCategoryDto eventLogCategoryDto)
       throws ProtocolAdapterException, IOException {
     this.testEventRetrieval(SMR_5_2, eventLogCategoryDto);
+  }
+
+  @ParameterizedTest
+  @EnumSource(EventLogCategoryDto.class)
+  void testNoDsmr22Event(final EventLogCategoryDto eventLogCategoryDto)
+      throws ProtocolAdapterException, IOException {
+    this.testNoEventRetrieval(DSMR_2_2, eventLogCategoryDto);
+  }
+
+  @ParameterizedTest
+  @EnumSource(
+      value = EventLogCategoryDto.class,
+      names = {
+        "POWER_QUALITY_EXTENDED_EVENT_LOG",
+        "POWER_QUALITY_EVENT_LOG",
+        "AUXILIARY_EVENT_LOG"
+      },
+      mode = Mode.INCLUDE)
+  void testNoDsmr422Event(final EventLogCategoryDto eventLogCategoryDto)
+      throws ProtocolAdapterException, IOException {
+    this.testNoEventRetrieval(DSMR_4_2_2, eventLogCategoryDto);
   }
 
   @ParameterizedTest
@@ -218,11 +254,13 @@ class FindEventsCommandExecutorTest {
 
     final FindEventsRequestDto findEventsRequestDto =
         this.createFindEventsRequestDto(eventLogCategoryDto);
-    final List<EventDto> events =
-        this.executor.execute(this.conn, currentDevice, findEventsRequestDto, this.messageMetadata);
+    assertThatExceptionOfType(NotSupportedByProtocolException.class)
+        .isThrownBy(
+            () ->
+                this.executor.execute(
+                    this.conn, currentDevice, findEventsRequestDto, this.messageMetadata));
 
     this.verifyNoConnection();
-    assertThat(events).isEmpty();
   }
 
   private void whenConnection() throws IOException {
