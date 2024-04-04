@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.FindEventsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.FindEventsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
@@ -33,15 +34,18 @@ public class BundledFindEventsSteps extends BaseBundleSteps {
     this.addActionToBundleRequest(action);
   }
 
-  @Then("^the bundle response should contain a find events response with (\\d++) events$")
-  public void theBundleResponseShouldContainAFindEventsResponse(final int nrOfEvents)
+  @Then("^the bundle response should contain a find events response with ([^\"]*) events$")
+  public void theBundleResponseShouldContainAFindEventsResponse(final String nrOfEvents)
       throws Throwable {
+    if (StringUtils.isEmpty(nrOfEvents)) {
+      return;
+    }
     final Response response = this.getNextBundleResponse();
 
     assertThat(response).isInstanceOf(FindEventsResponse.class);
 
     final FindEventsResponse findEventsResponse = (FindEventsResponse) response;
-    assertThat(findEventsResponse.getEvents()).hasSize(nrOfEvents);
+    assertThat(findEventsResponse.getEvents()).hasSize(Integer.valueOf(nrOfEvents));
   }
 
   @Then(
