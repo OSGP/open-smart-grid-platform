@@ -7,6 +7,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 import java.util.Optional;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
+import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -51,6 +52,26 @@ public class ObjectConfigServiceHelper {
   }
 
   /**
+   * Find an optional attribute from the ObjectConfigService based on the protocol and
+   * protocolVersion, DlmsObjectType name and channel. When not found the Optional empty is
+   * returned.
+   *
+   * @param protocol protocol like DSMR or SMR 5.5
+   * @param dlmsObjectType the DlmsObjectType to find
+   * @param selectiveAccessDescription selectiveAccessDescription used to find
+   * @return Optional<AttributeAddress> when found it returns a newly created AttributeAddress or
+   *     else Optional.empty()
+   */
+  public Optional<AttributeAddress> findOptionalDefaultAttributeAddress(
+      final Protocol protocol,
+      final DlmsObjectType dlmsObjectType,
+      final SelectiveAccessDescription selectiveAccessDescription) {
+
+    return this.findOptionalAttributeAddress(
+        protocol, dlmsObjectType, (Integer) null, DEFAULT_ATTRIBUTE_ID, selectiveAccessDescription);
+  }
+
+  /**
    * Find an optional default attribute from the ObjectConfigService based on the protocol and
    * protocolVersion and a DlmsObjectType name. When not found the Optional empty is returned.
    *
@@ -82,6 +103,29 @@ public class ObjectConfigServiceHelper {
       final DlmsObjectType dlmsObjectType,
       final Integer channel,
       final int attributeId) {
+    return this.findOptionalAttributeAddress(
+        protocol, dlmsObjectType, channel, attributeId, (SelectiveAccessDescription) null);
+  }
+
+  /**
+   * Find an optional attribute from the ObjectConfigService based on the protocol and
+   * protocolVersion , DlmsObjectType name, channel and attributeId. When not found the Optional
+   * empty is returned.
+   *
+   * @param protocol protocol like SMR 5.5
+   * @param dlmsObjectType the DlmsObjectType to find
+   * @param channel the channel of the device to access
+   * @param attributeId the attributeId to find
+   * @param selectiveAccessDescription selectiveAccessDescription used to find
+   * @return Optional<AttributeAddress> when found it returns a newly created AttributeAddress or
+   *     else Optional.empty()
+   */
+  public Optional<AttributeAddress> findOptionalAttributeAddress(
+      final Protocol protocol,
+      final DlmsObjectType dlmsObjectType,
+      final Integer channel,
+      final int attributeId,
+      final SelectiveAccessDescription selectiveAccessDescription) {
 
     final Optional<CosemObject> optObject =
         this.getOptionalCosemObject(protocol.getName(), protocol.getVersion(), dlmsObjectType);
@@ -91,12 +135,18 @@ public class ObjectConfigServiceHelper {
 
     final CosemObject cosemObject = optObject.get();
     final int classId = cosemObject.getClassId();
-    final ObisCode obisCode = this.replaceChannel(cosemObject.getObis(), channel);
 
     final Optional<Attribute> attributeOpt =
         Optional.ofNullable(cosemObject.getAttribute(attributeId));
-
-    return attributeOpt.map(value -> new AttributeAddress(classId, obisCode, value.getId()));
+    if (selectiveAccessDescription == null) {
+      final ObisCode obisCode = this.createObisCode(cosemObject.getObis(), channel);
+      return attributeOpt.map(value -> new AttributeAddress(classId, obisCode, value.getId()));
+    } else {
+      final String obisCode = this.replaceChannel(cosemObject.getObis(), channel);
+      return attributeOpt.map(
+          value ->
+              new AttributeAddress(classId, obisCode, value.getId(), selectiveAccessDescription));
+    }
   }
 
   private Optional<CosemObject> getOptionalCosemObject(
@@ -164,11 +214,14 @@ public class ObjectConfigServiceHelper {
         });
   }
 
-  private ObisCode replaceChannel(String obisCode, final Integer channel) {
+  private ObisCode createObisCode(final String obisCode, final Integer channel) {
+    return new ObisCode(this.replaceChannel(obisCode, channel));
+  }
+
+  private String replaceChannel(String obisCode, final Integer channel) {
     if (channel != null) {
       obisCode = obisCode.replace("x", channel.toString());
     }
-
-    return new ObisCode(obisCode);
+    return obisCode;
   }
 }

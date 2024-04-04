@@ -28,17 +28,21 @@ class DlmsProfileValidatorTest {
   @Test
   void testValidProfiles() throws IOException, ObjectConfigException {
 
-    final ObjectMapper objectMapper = new ObjectMapper();
-    final DlmsProfile dlmsProfile50 =
-        objectMapper.readValue(
-            new ClassPathResource("/dlmsprofiles/dlmsprofile-smr500.json").getFile(),
-            DlmsProfile.class);
-    final DlmsProfile dlmsProfile51 =
-        objectMapper.readValue(
-            new ClassPathResource("/dlmsprofiles/dlmsprofile-smr51.json").getFile(),
-            DlmsProfile.class);
-
-    DlmsProfileValidator.validate(Arrays.asList(dlmsProfile50, dlmsProfile51));
+    final ObjectConfigService objectConfigService = new ObjectConfigService();
+    final DlmsProfile dlmsProfile42 = objectConfigService.getDlmsProfile("DSMR", "4.2.2");
+    final DlmsProfile dlmsProfile43 = objectConfigService.getDlmsProfile("SMR", "4.3");
+    final DlmsProfile dlmsProfile50 = objectConfigService.getDlmsProfile("SMR", "5.0.0");
+    final DlmsProfile dlmsProfile51 = objectConfigService.getDlmsProfile("SMR", "5.1");
+    final DlmsProfile dlmsProfile52 = objectConfigService.getDlmsProfile("SMR", "5.2");
+    final DlmsProfile dlmsProfile55 = objectConfigService.getDlmsProfile("SMR", "5.5");
+    DlmsProfileValidator.validate(
+        Arrays.asList(
+            dlmsProfile42,
+            dlmsProfile43,
+            dlmsProfile50,
+            dlmsProfile51,
+            dlmsProfile52,
+            dlmsProfile55));
   }
 
   static Stream<Arguments> errorCases() {
