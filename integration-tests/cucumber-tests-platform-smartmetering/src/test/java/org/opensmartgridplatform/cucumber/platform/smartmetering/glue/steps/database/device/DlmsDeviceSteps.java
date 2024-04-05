@@ -367,6 +367,23 @@ public class DlmsDeviceSteps {
         .isNull();
   }
 
+  @Then("the dlms device with identification {string} has invocationcounter with value {string}")
+  public void theInvocationCounterShouldBeReset(
+      final String deviceIdentification, final String invocationDounter) {
+
+    final DlmsDevice dlmsDevice =
+        this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+    assertThat(dlmsDevice)
+        .as("DLMS device with identification " + deviceIdentification + " in protocol database")
+        .isNotNull();
+    assertThat(dlmsDevice.getInvocationCounter())
+        .as(
+            "Invocation counter of DLMS device with identification "
+                + deviceIdentification
+                + " is not reset")
+        .isEqualTo(Long.parseLong(invocationDounter));
+  }
+
   @Then(
       "^the newly generated keys are stored in the secret management database encrypted_secret table$")
   public void theNewlyGeneratedKeysAreStoredInTheSecretManagementDatabaseEncryptedSecretTable() {
