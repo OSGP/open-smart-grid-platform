@@ -110,13 +110,10 @@ class GenerateAndReplaceKeyCommandExecutorTest {
         .isEqualTo(result.getResultString());
 
     verify(this.secretManagementService, times(1))
-        .generate128BitsKeysAndStoreAsNewKeys(Mockito.any(), Mockito.any(), Mockito.any());
-    verify(this.secretManagementService, times(2))
-        .getKey(Mockito.any(), Mockito.any(), Mockito.any());
-    verify(this.secretManagementService, times(2))
-        .activateNewKey(Mockito.any(), Mockito.any(), Mockito.any());
+        .generate128BitsKeysAndStoreAsNewKeys(any(), any(), any());
+    verify(this.secretManagementService, times(2)).getKey(any(), any(), any());
+    verify(this.secretManagementService, times(2)).activateNewKey(any(), any(), any());
 
-    verify(this.dlmsDeviceRepository, times(1))
-        .updateInvocationCounter(Mockito.any(), Mockito.any());
+    verify(this.dlmsDeviceRepository, times(1)).updateInvocationCounter(any(), any());
   }
 }
