@@ -237,6 +237,9 @@ class ObjectConfigServiceTest {
     assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_2));
     assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
     assertNotNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
+    assertNotNull(cosemObjects.get(DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_MAGNITUDE));
+    assertNotNull(cosemObjects.get(DlmsObjectType.POWER_QUALITY_THD_EVENT_MAGNITUDE));
+    assertNotNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
     assertNull(cosemObjects.get(DlmsObjectType.PUSH_SETUP_UDP));
   }
 

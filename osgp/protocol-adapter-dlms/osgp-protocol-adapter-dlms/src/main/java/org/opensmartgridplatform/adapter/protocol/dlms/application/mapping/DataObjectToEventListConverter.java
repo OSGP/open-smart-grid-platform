@@ -8,11 +8,20 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.Attribute;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
+import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto;
@@ -33,12 +42,17 @@ public class DataObjectToEventListConverter {
 
   private final DlmsHelper dlmsHelper;
 
+  private final ObjectConfigService objectConfigService;
+
   @Autowired
-  public DataObjectToEventListConverter(final DlmsHelper dlmsHelper) {
+  public DataObjectToEventListConverter(
+      final DlmsHelper dlmsHelper, final ObjectConfigService objectConfigService) {
     this.dlmsHelper = dlmsHelper;
+    this.objectConfigService = objectConfigService;
   }
 
-  public List<EventDto> convert(final DataObject source, final EventLogCategoryDto eventLogCategory)
+  public List<EventDto> convert(
+      final DataObject source, final EventLogCategoryDto eventLogCategory, final Protocol protocol)
       throws ProtocolAdapterException {
     final List<EventDto> eventList = new ArrayList<>();
     if (source == null) {
@@ -47,14 +61,16 @@ public class DataObjectToEventListConverter {
 
     final List<DataObject> listOfEvents = source.getValue();
     for (final DataObject eventDataObject : listOfEvents) {
-      eventList.add(this.getEvent(eventDataObject, eventLogCategory));
+      eventList.add(this.getEvent(eventDataObject, eventLogCategory, protocol));
     }
 
     return eventList;
   }
 
   private EventDto getEvent(
-      final DataObject eventDataObject, final EventLogCategoryDto eventLogCategory)
+      final DataObject eventDataObject,
+      final EventLogCategoryDto eventLogCategory,
+      final Protocol protocol)
       throws ProtocolAdapterException {
 
     final List<DataObject> eventData = eventDataObject.getValue();
@@ -70,22 +86,23 @@ public class DataObjectToEventListConverter {
 
     // extract values from List<DataObject> eventData.
     final DateTime dateTime = this.extractDateTime(eventData);
-    final Integer code = this.extractCode(eventData);
+    final Integer eventCode = this.extractCode(eventData);
     final Integer eventCounter = this.extractEventCounter(eventLogCategory, eventData);
     final String eventLogCategoryName = eventLogCategory.name();
 
     log.info(
         "Event time is {}, event code is {}, event category is {} and event counter is {}",
         dateTime,
-        code,
+        eventCode,
         eventLogCategoryName,
         eventCounter);
 
     // build a new EventDto with those values.
-    final EventDto event = new EventDto(dateTime, code, eventCounter, eventLogCategoryName);
+    final EventDto event = new EventDto(dateTime, eventCode, eventCounter, eventLogCategoryName);
 
     // add details
-    event.addEventDetails(this.extractEventDetails(eventLogCategory, eventData));
+    event.addEventDetails(
+        this.extractEventDetails(eventLogCategory, eventData, eventCode, protocol));
 
     return event;
   }
@@ -123,34 +140,97 @@ public class DataObjectToEventListConverter {
   }
 
   private List<EventDetailDto> extractEventDetails(
-      final EventLogCategoryDto eventLogCategory, final List<DataObject> eventData)
+      final EventLogCategoryDto eventLogCategory,
+      final List<DataObject> eventData,
+      final Integer eventCode,
+      final Protocol protocol)
       throws ProtocolAdapterException {
 
+    if (eventLogCategory.getDetailsType() == EventLogDetailsType.MAGNITUDE) {
+      return this.extractMagnitudeThd(eventData, eventCode, protocol);
+    }
     if (eventLogCategory.getDetailsType() == EventLogDetailsType.MAGNITUDE_AND_DURATION) {
-      return this.extractMagnitudeAndDuration(eventData);
+      return this.extractMagnitudeAndDuration(eventData, eventCode, protocol);
     }
 
     return Collections.emptyList();
   }
 
-  private List<EventDetailDto> extractMagnitudeAndDuration(final List<DataObject> eventData)
+  private List<EventDetailDto> extractMagnitudeThd(
+      final List<DataObject> eventData, final Integer eventCode, final Protocol protocol)
       throws ProtocolAdapterException {
 
     final List<EventDetailDto> eventDetails = new ArrayList<>();
 
-    this.checkIsNumber(eventData.get(2), MAGNITUDE);
-    eventDetails.add(
-        new EventDetailDto(
-            MAGNITUDE,
-            this.readValueWithScalerAndUnit(eventData.get(2), BigDecimal.valueOf(0.1), "V")));
+    try {
+      final String scalerUnitMagnitude =
+          this.getScalerUnit(eventCode, protocol, DlmsObjectType.POWER_QUALITY_THD_EVENT_MAGNITUDE);
 
-    this.checkIsNumber(eventData.get(3), DURATION);
-    eventDetails.add(
-        new EventDetailDto(
-            DURATION,
-            this.readValueWithScalerAndUnit(eventData.get(3), BigDecimal.valueOf(0.1), "s")));
+      this.checkIsNumber(eventData.get(2), MAGNITUDE);
+      eventDetails.add(
+          new EventDetailDto(
+              MAGNITUDE, this.readValueWithScalerAndUnit(eventData.get(2), scalerUnitMagnitude)));
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException("Error in object config", e);
+    }
+    return eventDetails;
+  }
+
+  private List<EventDetailDto> extractMagnitudeAndDuration(
+      final List<DataObject> eventData, final Integer eventCode, final Protocol protocol)
+      throws ProtocolAdapterException {
+
+    final List<EventDetailDto> eventDetails = new ArrayList<>();
+
+    try {
+      final String scalerUnitMagnitude =
+          this.getScalerUnit(
+              eventCode, protocol, DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_MAGNITUDE);
+
+      this.checkIsNumber(eventData.get(2), MAGNITUDE);
+      eventDetails.add(
+          new EventDetailDto(
+              MAGNITUDE, this.readValueWithScalerAndUnit(eventData.get(2), scalerUnitMagnitude)));
+
+      final String scalerUnitDuration =
+          this.getScalerUnit(
+              eventCode, protocol, DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_DURATION);
+
+      this.checkIsNumber(eventData.get(3), DURATION);
+      eventDetails.add(
+          new EventDetailDto(
+              DURATION, this.readValueWithScalerAndUnit(eventData.get(3), scalerUnitDuration)));
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException("Error in object config", e);
+    }
 
     return eventDetails;
+  }
+
+  private String getScalerUnit(
+      final Integer eventCode, final Protocol protocol, final DlmsObjectType dlmsObjectType)
+      throws ObjectConfigException {
+    final CosemObject cosemSourceObject =
+        this.getEventRelatedCosemSourceObject(dlmsObjectType, eventCode, protocol);
+    final Attribute scalerUnit =
+        cosemSourceObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId());
+    return scalerUnit.getValue();
+  }
+
+  private CosemObject getEventRelatedCosemSourceObject(
+      final DlmsObjectType dlmsObjectType, final Integer eventCode, final Protocol protocol)
+      throws ObjectConfigException {
+    final CosemObject eventMagnitude =
+        this.objectConfigService.getCosemObject(
+            protocol.getName(), protocol.getVersion(), dlmsObjectType);
+    final Map<String, String> eventMapping =
+        (Map<String, String>) eventMagnitude.getProperties().get(ObjectProperty.SOURCE_OBJECTS);
+    final String sourceObjectName = eventMapping.get(String.valueOf(eventCode));
+
+    final CosemObject cosemSourceObject =
+        this.objectConfigService.getCosemObject(
+            protocol.getName(), protocol.getVersion(), DlmsObjectType.valueOf(sourceObjectName));
+    return cosemSourceObject;
   }
 
   private void checkIsNumber(final DataObject data, final String description)
@@ -161,10 +241,12 @@ public class DataObjectToEventListConverter {
     }
   }
 
-  private String readValueWithScalerAndUnit(
-      final DataObject data, final BigDecimal scaler, final String unit) {
+  private String readValueWithScalerAndUnit(final DataObject data, final String scalerUnit) {
+    final Long scaler = Long.valueOf(scalerUnit.split(",")[0].trim());
+    final BigDecimal multiplier = BigDecimal.valueOf(Math.pow(10, scaler));
+    final String unit = scalerUnit.split(",")[1].trim();
     final int value = data.getValue();
-    final BigDecimal scaledValue = scaler.multiply(BigDecimal.valueOf(value));
-    return scaledValue + " " + unit;
+    final BigDecimal scaledValue = multiplier.multiply(BigDecimal.valueOf(value));
+    return scaledValue.setScale(0 - scaler.intValue()) + " " + unit;
   }
 }
