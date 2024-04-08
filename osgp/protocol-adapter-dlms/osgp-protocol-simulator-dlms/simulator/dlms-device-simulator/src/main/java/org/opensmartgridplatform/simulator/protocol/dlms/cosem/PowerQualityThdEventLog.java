@@ -125,18 +125,16 @@ public class PowerQualityThdEventLog extends ProfileGeneric {
     return definitions;
   }
 
-  /** Initializes buffer with some data. */
+  /** Initializes buffer with all possible events. */
   private void initBufferData() {
     this.bufferData = new CircularFifoQueue<>(PROFILE_ENTRIES);
-
-    // Add all events.
     this.addEvents((short) 51, (short) 59);
   }
 
-  private void addEvents(final int begin, final int end) {
-    for (int i = begin; i <= end; i++) {
-      // Add list with 3 values to the buffer: timestamp, eventcode and magnitude
-      this.bufferData.add(Arrays.asList(this.getNextDateTime(), i, i - begin + 1));
+  private void addEvents(final int firstEventCode, final int lastEventCode) {
+    for (int eventCode = firstEventCode; eventCode <= lastEventCode; eventCode++) {
+      final int magnitude = eventCode - firstEventCode + 1;
+      this.bufferData.add(Arrays.asList(this.getNextDateTime(), eventCode, magnitude));
     }
   }
 

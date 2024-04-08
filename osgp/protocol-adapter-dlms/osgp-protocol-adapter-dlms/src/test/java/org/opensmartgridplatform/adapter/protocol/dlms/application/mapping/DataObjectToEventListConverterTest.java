@@ -6,11 +6,15 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +24,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
+import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
@@ -40,6 +48,123 @@ class DataObjectToEventListConverterTest {
     } catch (final ObjectConfigException | IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Test
+  void testDlmsObjectFound() throws ObjectConfigException {
+    final Protocol protocol = Protocol.SMR_5_0_0;
+
+    final DateTime dateTime1 = new DateTime(2021, 9, 16, 10, 35, 10, DateTimeZone.UTC);
+    final DataObject eventDataObject =
+        this.createEventDataObjectMagnitudeDuration(dateTime1, 93, 11, 21);
+    final DataObject source = DataObject.newArrayData(Arrays.asList(eventDataObject));
+
+    final Throwable thrown =
+        catchThrowable(
+            () ->
+                this.converter.convert(
+                    source, EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG, protocol));
+
+    assertThat(thrown)
+        .isInstanceOf(ProtocolAdapterException.class)
+        .hasMessage("No CosemObject found for dlmstype POWER_QUALITY_EXTENDED_EVENT_MAGNITUDE")
+        .hasCauseInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  void testMissingSourceObjectMapping() throws ObjectConfigException {
+    final Protocol protocol = Protocol.SMR_5_2;
+
+    final ObjectConfigService objectConfigServiceMock = mock(ObjectConfigService.class);
+    final DataObjectToEventListConverter converterWithMockedObjectConfig =
+        new DataObjectToEventListConverter(this.dlmsHelper, objectConfigServiceMock);
+    final CosemObject cosemObjectWithoutSourceObjectMapping = mock(CosemObject.class);
+    when(objectConfigServiceMock.getCosemObject(
+            protocol.getName(),
+            protocol.getVersion(),
+            DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_MAGNITUDE))
+        .thenReturn(cosemObjectWithoutSourceObjectMapping);
+    when(cosemObjectWithoutSourceObjectMapping.getProperties()).thenReturn(new HashMap<>());
+
+    final DateTime dateTime1 = new DateTime(2021, 9, 16, 10, 35, 10, DateTimeZone.UTC);
+    final DataObject eventDataObject =
+        this.createEventDataObjectMagnitudeDuration(dateTime1, 93, 11, 21);
+    final DataObject source = DataObject.newArrayData(Arrays.asList(eventDataObject));
+
+    final Throwable thrown =
+        catchThrowable(
+            () ->
+                converterWithMockedObjectConfig.convert(
+                    source, EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG, protocol));
+
+    assertThat(thrown)
+        .isInstanceOf(ProtocolAdapterException.class)
+        .hasMessage(
+            "No SOURCE_OBJECT property available for dlms objecttype POWER_QUALITY_EXTENDED_EVENT_MAGNITUDE");
+  }
+
+  @Test
+  void testNoSourceObjectMappedOnEventCode() throws ObjectConfigException {
+    final Protocol protocol = Protocol.SMR_5_2;
+
+    final DateTime dateTime1 = new DateTime(2021, 9, 16, 10, 35, 10, DateTimeZone.UTC);
+    final DataObject eventDataObject =
+        this.createEventDataObjectMagnitudeDuration(dateTime1, 1, 11, 21);
+    final DataObject source = DataObject.newArrayData(Arrays.asList(eventDataObject));
+
+    final Throwable thrown =
+        catchThrowable(
+            () ->
+                this.converter.convert(
+                    source, EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG, protocol));
+
+    assertThat(thrown)
+        .isInstanceOf(ProtocolAdapterException.class)
+        .hasMessage(
+            "No sourceObject mapped for event 1 on dlmsobject POWER_QUALITY_EXTENDED_EVENT_MAGNITUDE");
+  }
+
+  @Test
+  void testMappedSourceObjectNotRegisterClass() throws ObjectConfigException {
+    final Protocol protocol = Protocol.SMR_5_2;
+
+    final ObjectConfigService objectConfigServiceMock = mock(ObjectConfigService.class);
+    final DataObjectToEventListConverter converterWithMockedObjectConfig =
+        new DataObjectToEventListConverter(this.dlmsHelper, objectConfigServiceMock);
+    final CosemObject cosemObjectWithSourceObjectMapping = mock(CosemObject.class);
+    when(objectConfigServiceMock.getCosemObject(
+            protocol.getName(),
+            protocol.getVersion(),
+            DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_MAGNITUDE))
+        .thenReturn(cosemObjectWithSourceObjectMapping);
+    when(objectConfigServiceMock.getCosemObject(
+            protocol.getName(),
+            protocol.getVersion(),
+            DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_CODE))
+        .thenReturn(
+            new CosemObject(
+                null, null, InterfaceClass.DATA.id(), 0, null, null, null, null, null, null));
+    when(cosemObjectWithSourceObjectMapping.getProperties())
+        .thenReturn(
+            Map.of(
+                ObjectProperty.SOURCE_OBJECTS, Map.of("93", "POWER_QUALITY_EXTENDED_EVENT_CODE")));
+
+    final DateTime dateTime1 = new DateTime(2021, 9, 16, 10, 35, 10, DateTimeZone.UTC);
+    final DataObject eventDataObject =
+        this.createEventDataObjectMagnitudeDuration(dateTime1, 93, 11, 21);
+    final DataObject source = DataObject.newArrayData(Arrays.asList(eventDataObject));
+
+    final Throwable thrown =
+        catchThrowable(
+            () ->
+                converterWithMockedObjectConfig.convert(
+                    source, EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG, protocol));
+
+    assertThat(thrown)
+        .isInstanceOf(ProtocolAdapterException.class)
+        .hasMessage(
+            "SourceObject mapped on event 93 with dlmstype POWER_QUALITY_EXTENDED_EVENT_MAGNITUDE"
+                + " is not of class REGISTER");
   }
 
   @Test
@@ -156,11 +281,11 @@ class DataObjectToEventListConverterTest {
         this.createEventDataObjectMagnitudeDuration(dateTime1, 93, 11, 21);
     final DataObject eventDataObject2 =
         this.createEventDataObjectMagnitudeDuration(dateTime2, 94, 12, 22);
-    final String MAGNITUDE = "magnitude";
-    final String DURATION = "duration";
-
     final DataObject source =
         DataObject.newArrayData(Arrays.asList(eventDataObject1, eventDataObject2));
+
+    final String MAGNITUDE = "magnitude";
+    final String DURATION = "duration";
     final EventDto expectedEvent1 =
         new EventDto(
             dateTime1, 93, null, EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG.name());

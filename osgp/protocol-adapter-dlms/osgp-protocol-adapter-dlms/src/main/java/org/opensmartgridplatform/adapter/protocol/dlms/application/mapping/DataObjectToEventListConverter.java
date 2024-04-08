@@ -16,6 +16,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
@@ -97,10 +98,8 @@ public class DataObjectToEventListConverter {
         eventLogCategoryName,
         eventCounter);
 
-    // build a new EventDto with those values.
     final EventDto event = new EventDto(dateTime, eventCode, eventCounter, eventLogCategoryName);
 
-    // add details
     event.addEventDetails(
         this.extractEventDetails(eventLogCategory, eventData, eventCode, protocol));
 
@@ -162,17 +161,13 @@ public class DataObjectToEventListConverter {
 
     final List<EventDetailDto> eventDetails = new ArrayList<>();
 
-    try {
-      final String scalerUnitMagnitude =
-          this.getScalerUnit(eventCode, protocol, DlmsObjectType.POWER_QUALITY_THD_EVENT_MAGNITUDE);
+    final String scalerUnitMagnitude =
+        this.getScalerUnit(eventCode, protocol, DlmsObjectType.POWER_QUALITY_THD_EVENT_MAGNITUDE);
 
-      this.checkIsNumber(eventData.get(2), MAGNITUDE);
-      eventDetails.add(
-          new EventDetailDto(
-              MAGNITUDE, this.readValueWithScalerAndUnit(eventData.get(2), scalerUnitMagnitude)));
-    } catch (final ObjectConfigException e) {
-      throw new ProtocolAdapterException("Error in object config", e);
-    }
+    this.checkIsNumber(eventData.get(2), MAGNITUDE);
+    eventDetails.add(
+        new EventDetailDto(
+            MAGNITUDE, this.readValueWithScalerAndUnit(eventData.get(2), scalerUnitMagnitude)));
     return eventDetails;
   }
 
@@ -182,36 +177,38 @@ public class DataObjectToEventListConverter {
 
     final List<EventDetailDto> eventDetails = new ArrayList<>();
 
-    try {
-      final String scalerUnitMagnitude =
-          this.getScalerUnit(
-              eventCode, protocol, DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_MAGNITUDE);
+    final String scalerUnitMagnitude =
+        this.getScalerUnit(
+            eventCode, protocol, DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_MAGNITUDE);
 
-      this.checkIsNumber(eventData.get(2), MAGNITUDE);
-      eventDetails.add(
-          new EventDetailDto(
-              MAGNITUDE, this.readValueWithScalerAndUnit(eventData.get(2), scalerUnitMagnitude)));
+    this.checkIsNumber(eventData.get(2), MAGNITUDE);
+    eventDetails.add(
+        new EventDetailDto(
+            MAGNITUDE, this.readValueWithScalerAndUnit(eventData.get(2), scalerUnitMagnitude)));
 
-      final String scalerUnitDuration =
-          this.getScalerUnit(
-              eventCode, protocol, DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_DURATION);
+    final String scalerUnitDuration =
+        this.getScalerUnit(
+            eventCode, protocol, DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_DURATION);
 
-      this.checkIsNumber(eventData.get(3), DURATION);
-      eventDetails.add(
-          new EventDetailDto(
-              DURATION, this.readValueWithScalerAndUnit(eventData.get(3), scalerUnitDuration)));
-    } catch (final ObjectConfigException e) {
-      throw new ProtocolAdapterException("Error in object config", e);
-    }
+    this.checkIsNumber(eventData.get(3), DURATION);
+    eventDetails.add(
+        new EventDetailDto(
+            DURATION, this.readValueWithScalerAndUnit(eventData.get(3), scalerUnitDuration)));
 
     return eventDetails;
   }
 
   private String getScalerUnit(
       final Integer eventCode, final Protocol protocol, final DlmsObjectType dlmsObjectType)
-      throws ObjectConfigException {
+      throws ProtocolAdapterException {
     final CosemObject cosemSourceObject =
         this.getEventRelatedCosemSourceObject(dlmsObjectType, eventCode, protocol);
+    if (cosemSourceObject.getClassId() != InterfaceClass.REGISTER.id()) {
+      throw new ProtocolAdapterException(
+          String.format(
+              "SourceObject mapped on event %s with dlmstype %s is not of class REGISTER",
+              eventCode, dlmsObjectType));
+    }
     final Attribute scalerUnit =
         cosemSourceObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId());
     return scalerUnit.getValue();
@@ -219,18 +216,44 @@ public class DataObjectToEventListConverter {
 
   private CosemObject getEventRelatedCosemSourceObject(
       final DlmsObjectType dlmsObjectType, final Integer eventCode, final Protocol protocol)
-      throws ObjectConfigException {
-    final CosemObject eventMagnitude =
-        this.objectConfigService.getCosemObject(
-            protocol.getName(), protocol.getVersion(), dlmsObjectType);
-    final Map<String, String> eventMapping =
-        (Map<String, String>) eventMagnitude.getProperties().get(ObjectProperty.SOURCE_OBJECTS);
-    final String sourceObjectName = eventMapping.get(String.valueOf(eventCode));
+      throws ProtocolAdapterException {
 
-    final CosemObject cosemSourceObject =
-        this.objectConfigService.getCosemObject(
-            protocol.getName(), protocol.getVersion(), DlmsObjectType.valueOf(sourceObjectName));
-    return cosemSourceObject;
+    final CosemObject cosemObject;
+    try {
+      cosemObject =
+          this.objectConfigService.getCosemObject(
+              protocol.getName(), protocol.getVersion(), dlmsObjectType);
+    } catch (final ObjectConfigException | IllegalArgumentException e) {
+      throw new ProtocolAdapterException(
+          String.format("No CosemObject found for dlmstype %s", dlmsObjectType), e);
+    }
+
+    final Map<String, String> eventMapping =
+        (Map<String, String>) cosemObject.getProperties().get(ObjectProperty.SOURCE_OBJECTS);
+    if (eventMapping == null || eventMapping.isEmpty()) {
+      throw new ProtocolAdapterException(
+          String.format(
+              "No SOURCE_OBJECT property available for dlms objecttype %s", dlmsObjectType));
+    }
+
+    final String sourceObjectName = eventMapping.get(String.valueOf(eventCode));
+    if (sourceObjectName == null) {
+      throw new ProtocolAdapterException(
+          String.format(
+              "No sourceObject mapped for event %s on dlmsobject %s", eventCode, dlmsObjectType));
+    }
+
+    try {
+      final DlmsObjectType dlmsSourceObjectType = DlmsObjectType.valueOf(sourceObjectName);
+      return this.objectConfigService.getCosemObject(
+          protocol.getName(), protocol.getVersion(), dlmsSourceObjectType);
+    } catch (final ObjectConfigException e) {
+      final String message =
+          String.format(
+              "No SourceObject found for dlmstype %s and event %s by name %s",
+              dlmsObjectType, eventCode, sourceObjectName);
+      throw new ProtocolAdapterException(message, e);
+    }
   }
 
   private void checkIsNumber(final DataObject data, final String description)
