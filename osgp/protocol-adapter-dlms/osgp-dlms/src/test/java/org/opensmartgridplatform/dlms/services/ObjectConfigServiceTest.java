@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.opensmartgridplatform.dlms.services.ObjectConfigService.getAttributeIdFromCaptureObjectDefinition;
 import static org.opensmartgridplatform.dlms.services.ObjectConfigService.getCaptureObjectDefinitions;
 import static org.opensmartgridplatform.dlms.services.ObjectConfigService.getCosemObjectTypeFromCaptureObjectDefinition;
+import static org.opensmartgridplatform.dlms.services.ObjectConfigService.getSourceObjectDefinitions;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.AccessType;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CaptureObject;
@@ -237,6 +240,9 @@ class ObjectConfigServiceTest {
     assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_2));
     assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
     assertNotNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
+    assertNotNull(cosemObjects.get(DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_MAGNITUDE));
+    assertNotNull(cosemObjects.get(DlmsObjectType.POWER_QUALITY_THD_EVENT_MAGNITUDE));
+    assertNotNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
     assertNull(cosemObjects.get(DlmsObjectType.PUSH_SETUP_UDP));
   }
 
@@ -407,6 +413,39 @@ class ObjectConfigServiceTest {
   }
 
   @Test
+  void testGetSourceObjects() {
+    final Map sourceObjectEventMapping =
+        Map.of("Event1", "SourceObject1", "Event2", "SourceObject2");
+    final Map<ObjectProperty, Object> propertiessourceObjects =
+        Map.of(ObjectProperty.SOURCE_OBJECTS, sourceObjectEventMapping);
+    final CosemObject profile =
+        this.createCosemObject(InterfaceClass.DATA.id(), propertiessourceObjects);
+
+    final List<String> sourceObjects = getSourceObjectDefinitions(profile);
+
+    assertThat(sourceObjects).hasSize(2);
+  }
+
+  @Test
+  void testGetSourceObjectDefinitionsEmpty() {
+    final Attribute captureObjectsAttribute =
+        this.createAttribute(DataAttribute.VALUE.attributeId(), null);
+    final CosemObject profile =
+        this.createCosemObject(InterfaceClass.DATA.id(), List.of(captureObjectsAttribute));
+
+    final List<String> captureObjectDefinitions = getSourceObjectDefinitions(profile);
+
+    assertThat(captureObjectDefinitions).isEmpty();
+  }
+
+  @Test
+  void testGetSourceObjectsWrongClassId() {
+    final CosemObject profile = this.createCosemObject(InterfaceClass.REGISTER.id(), List.of());
+
+    assertThrows(IllegalArgumentException.class, () -> getSourceObjectDefinitions(profile));
+  }
+
+  @Test
   void HandleValueBasedOnModel() throws ObjectConfigException {
     final ValueBasedOnModel valueBasedOnModel =
         new ValueBasedOnModel(
@@ -531,5 +570,11 @@ class ObjectConfigServiceTest {
   private CosemObject createCosemObject(final int classId, final List<Attribute> attributes) {
     return new CosemObject(
         "TAG", "descr", classId, 0, "1.2.3", "group", null, List.of(), null, attributes);
+  }
+
+  private CosemObject createCosemObject(
+      final int classId, final Map<ObjectProperty, Object> properties) {
+    return new CosemObject(
+        "TAG", "descr", classId, 0, "1.2.3", "group", null, List.of(), properties, List.of());
   }
 }

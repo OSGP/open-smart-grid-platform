@@ -22,6 +22,7 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic.AdjacentCellInfo;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic.CellInfo;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityExtendedEventLog;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityThdEventLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -124,6 +125,11 @@ public class Smr52Profile {
   @Bean
   public PowerQualityExtendedEventLog powerQualityExtendedEventLog(final Calendar cal) {
     return new PowerQualityExtendedEventLog(cal);
+  }
+
+  @Bean
+  public PowerQualityThdEventLog powerQualityThdEventLog(final Calendar cal) {
+    return new PowerQualityThdEventLog(cal);
   }
 
   @Bean

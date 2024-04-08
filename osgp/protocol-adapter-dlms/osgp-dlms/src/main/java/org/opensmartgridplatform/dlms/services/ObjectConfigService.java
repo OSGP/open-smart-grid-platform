@@ -313,6 +313,22 @@ public class ObjectConfigService {
     return List.of(captureObjectDefinitions);
   }
 
+  public static List<String> getSourceObjectDefinitions(final CosemObject profile) {
+    if (profile.getClassId() != InterfaceClass.DATA.id()) {
+      throw new IllegalArgumentException(
+          "Can't get source objects, object " + profile.getTag() + " is not a Data class");
+    }
+
+    final Map<String, String> sourceObjects =
+        (Map<String, String>) profile.getProperty(ObjectProperty.SOURCE_OBJECTS);
+
+    if (sourceObjects == null || sourceObjects.isEmpty()) {
+      return List.of();
+    }
+
+    return sourceObjects.values().stream().toList();
+  }
+
   public static DlmsObjectType getCosemObjectTypeFromCaptureObjectDefinition(
       final String captureObjectDefinition) {
     return DlmsObjectType.fromValue(captureObjectDefinition.split(",")[0]);

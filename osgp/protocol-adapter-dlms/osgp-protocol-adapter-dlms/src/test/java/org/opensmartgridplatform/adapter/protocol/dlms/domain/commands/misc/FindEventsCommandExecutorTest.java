@@ -72,6 +72,7 @@ class FindEventsCommandExecutorTest {
     OBIS_MAPPING.put(EventLogCategoryDto.STANDARD_EVENT_LOG, "0.0.99.98.0.255");
     OBIS_MAPPING.put(EventLogCategoryDto.AUXILIARY_EVENT_LOG, "0.0.99.98.6.255");
     OBIS_MAPPING.put(EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG, "0.0.99.98.7.255");
+    OBIS_MAPPING.put(EventLogCategoryDto.POWER_QUALITY_THD_EVENT_LOG, "0.0.99.98.8.255");
   }
 
   @Mock private DlmsHelper dlmsHelper;
@@ -102,7 +103,7 @@ class FindEventsCommandExecutorTest {
         new ObjectConfigServiceHelper(objectConfigService);
 
     final DataObjectToEventListConverter dataObjectToEventListConverter =
-        new DataObjectToEventListConverter(this.dlmsHelper);
+        new DataObjectToEventListConverter(this.dlmsHelper, objectConfigService);
 
     this.executor =
         new FindEventsCommandExecutor(
@@ -122,7 +123,8 @@ class FindEventsCommandExecutorTest {
         "POWER_QUALITY_EXTENDED_EVENT_LOG",
         "POWER_QUALITY_EVENT_LOG",
         "AUXILIARY_EVENT_LOG",
-        "COMMUNICATION_SESSION_LOG"
+        "COMMUNICATION_SESSION_LOG",
+        "POWER_QUALITY_THD_EVENT_LOG"
       },
       mode = EnumSource.Mode.EXCLUDE)
   void testDsmr22Event(final EventLogCategoryDto eventLogCategoryDto)
@@ -136,7 +138,8 @@ class FindEventsCommandExecutorTest {
       names = {
         "POWER_QUALITY_EXTENDED_EVENT_LOG",
         "POWER_QUALITY_EVENT_LOG",
-        "AUXILIARY_EVENT_LOG"
+        "AUXILIARY_EVENT_LOG",
+        "POWER_QUALITY_THD_EVENT_LOG"
       },
       mode = EnumSource.Mode.EXCLUDE)
   void testDsmr422Event(final EventLogCategoryDto eventLogCategoryDto)
@@ -147,7 +150,11 @@ class FindEventsCommandExecutorTest {
   @ParameterizedTest
   @EnumSource(
       value = EventLogCategoryDto.class,
-      names = {"POWER_QUALITY_EXTENDED_EVENT_LOG", "AUXILIARY_EVENT_LOG"},
+      names = {
+        "POWER_QUALITY_EXTENDED_EVENT_LOG",
+        "AUXILIARY_EVENT_LOG",
+        "POWER_QUALITY_THD_EVENT_LOG"
+      },
       mode = EnumSource.Mode.EXCLUDE)
   void testSmr500Event(final EventLogCategoryDto eventLogCategoryDto)
       throws ProtocolAdapterException, IOException {
@@ -157,7 +164,7 @@ class FindEventsCommandExecutorTest {
   @ParameterizedTest
   @EnumSource(
       value = EventLogCategoryDto.class,
-      names = {"POWER_QUALITY_EXTENDED_EVENT_LOG"},
+      names = {"POWER_QUALITY_EXTENDED_EVENT_LOG", "POWER_QUALITY_THD_EVENT_LOG"},
       mode = EnumSource.Mode.EXCLUDE)
   void testSmr51Event(final EventLogCategoryDto eventLogCategoryDto)
       throws ProtocolAdapterException, IOException {
@@ -178,11 +185,11 @@ class FindEventsCommandExecutorTest {
         "POWER_QUALITY_EXTENDED_EVENT_LOG",
         "POWER_QUALITY_EVENT_LOG",
         "AUXILIARY_EVENT_LOG",
-        "COMMUNICATION_SESSION_LOG"
+        "COMMUNICATION_SESSION_LOG",
+        "POWER_QUALITY_THD_EVENT_LOG"
       },
       mode = EnumSource.Mode.INCLUDE)
-  void testNoDsmr22Event(final EventLogCategoryDto eventLogCategoryDto)
-      throws ProtocolAdapterException, IOException {
+  void testNoDsmr22Event(final EventLogCategoryDto eventLogCategoryDto) {
     this.testNoEventRetrieval(DSMR_2_2, eventLogCategoryDto);
   }
 
@@ -192,28 +199,31 @@ class FindEventsCommandExecutorTest {
       names = {
         "POWER_QUALITY_EXTENDED_EVENT_LOG",
         "POWER_QUALITY_EVENT_LOG",
-        "AUXILIARY_EVENT_LOG"
+        "AUXILIARY_EVENT_LOG",
+        "POWER_QUALITY_THD_EVENT_LOG"
       },
       mode = Mode.INCLUDE)
-  void testNoDsmr422Event(final EventLogCategoryDto eventLogCategoryDto)
-      throws ProtocolAdapterException, IOException {
+  void testNoDsmr422Event(final EventLogCategoryDto eventLogCategoryDto) {
     this.testNoEventRetrieval(DSMR_4_2_2, eventLogCategoryDto);
   }
 
   @ParameterizedTest
   @EnumSource(
       value = EventLogCategoryDto.class,
-      names = {"POWER_QUALITY_EXTENDED_EVENT_LOG", "AUXILIARY_EVENT_LOG"},
+      names = {
+        "POWER_QUALITY_EXTENDED_EVENT_LOG",
+        "AUXILIARY_EVENT_LOG",
+        "POWER_QUALITY_THD_EVENT_LOG"
+      },
       mode = Mode.INCLUDE)
-  void testNoSmr500Event(final EventLogCategoryDto eventLogCategoryDto)
-      throws ProtocolAdapterException, IOException {
+  void testNoSmr500Event(final EventLogCategoryDto eventLogCategoryDto) {
     this.testNoEventRetrieval(SMR_5_0_0, eventLogCategoryDto);
   }
 
   @ParameterizedTest
   @EnumSource(
       value = EventLogCategoryDto.class,
-      names = {"POWER_QUALITY_EXTENDED_EVENT_LOG"},
+      names = {"POWER_QUALITY_EXTENDED_EVENT_LOG", "POWER_QUALITY_THD_EVENT_LOG"},
       mode = Mode.INCLUDE)
   void testNoSmr51Event(final EventLogCategoryDto eventLogCategoryDto)
       throws ProtocolAdapterException, IOException {
@@ -261,6 +271,7 @@ class FindEventsCommandExecutorTest {
 
     this.verifyAttributeAddress(eventLogCategoryDto);
     this.verifyTimezoneConversion(currentDevice, findEventsRequestDto);
+
     assertThat(events).isNotEmpty();
   }
 
@@ -271,8 +282,7 @@ class FindEventsCommandExecutorTest {
   }
 
   private void testNoEventRetrieval(
-      final String protocol, final EventLogCategoryDto eventLogCategoryDto)
-      throws ProtocolAdapterException, IOException {
+      final String protocol, final EventLogCategoryDto eventLogCategoryDto) {
     final DlmsDevice currentDevice = this.createDlmsDevice(protocol, TIME_ZONE);
 
     final FindEventsRequestDto findEventsRequestDto =
@@ -293,7 +303,7 @@ class FindEventsCommandExecutorTest {
         .thenReturn(this.getResult);
   }
 
-  private void verifyNoConnection() throws IOException {
+  private void verifyNoConnection() {
     verifyNoInteractions(this.conn);
   }
 
@@ -326,18 +336,21 @@ class FindEventsCommandExecutorTest {
 
   private List<DataObject> generateDataObject(final EventLogCategoryDto eventLogCategoryDto) {
     final CosemDateTime dateTime = new CosemDateTime(2018, 12, 31, 23, 1, 0, 0);
-    final DataObject eventCode = DataObject.newInteger16Data((short) 1);
     final DataObject eventTime = DataObject.newDateTimeData(dateTime);
+    DataObject eventCode = DataObject.newInteger16Data((short) 1);
     switch (eventLogCategoryDto.getDetailsType()) {
-      case NONE:
-        return List.of(DataObject.newStructureData(eventTime, eventCode));
       case COUNTER:
         final DataObject eventCounter = DataObject.newInteger32Data(4);
         return List.of(DataObject.newStructureData(eventTime, eventCode, eventCounter));
       case MAGNITUDE_AND_DURATION:
+        eventCode = DataObject.newInteger16Data((short) 93);
         final DataObject magnitude = DataObject.newInteger32Data(5);
         final DataObject duration = DataObject.newInteger32Data(6);
         return List.of(DataObject.newStructureData(eventTime, eventCode, magnitude, duration));
+      case MAGNITUDE:
+        eventCode = DataObject.newInteger16Data((short) 51);
+        final DataObject magnitude2 = DataObject.newInteger32Data(7);
+        return List.of(DataObject.newStructureData(eventTime, eventCode, magnitude2));
       default:
         return List.of(DataObject.newStructureData(eventTime, eventCode));
     }

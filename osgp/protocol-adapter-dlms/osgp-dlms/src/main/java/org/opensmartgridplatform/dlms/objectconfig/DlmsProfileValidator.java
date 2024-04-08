@@ -26,6 +26,7 @@ import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 public class DlmsProfileValidator {
   private static final String PQ_ERROR = " PQ validation error: ";
   private static final String CAPTURE_OBJECTS_ERROR = " Capture objects validation error: ";
+  private static final String SOURCE_OBJECTS_ERROR = " Source objects validation error: ";
 
   private DlmsProfileValidator() {
     // Static class
@@ -53,6 +54,7 @@ public class DlmsProfileValidator {
       allPqPeriodicShouldBeInAProfileSelectableObjects(dlmsProfile, validationErrors);
       allPqRequestsShouldMatchType(dlmsProfile, validationErrors);
       allCaptureObjectsShouldExist(dlmsProfile, validationErrors);
+      allSourceObjectsShouldExist(dlmsProfile, validationErrors);
 
       return validationErrors;
     } catch (final Exception e) {
@@ -244,6 +246,23 @@ public class DlmsProfileValidator {
 
     if (!validationError.isEmpty()) {
       validationErrors.add(createErrorMessage(dlmsProfile, CAPTURE_OBJECTS_ERROR, validationError));
+    }
+  }
+
+  private static void allSourceObjectsShouldExist(
+      final DlmsProfile dlmsProfile, final List<String> validationErrors) {
+    final String validationError =
+        dlmsProfile.getObjects().stream()
+            .filter(object -> object.getClassId() == InterfaceClass.DATA.id())
+            .map(ObjectConfigService::getSourceObjectDefinitions)
+            .flatMap(Collection::stream)
+            .map(ObjectConfigService::getCosemObjectTypeFromCaptureObjectDefinition)
+            .map(tag -> objectShouldExist(dlmsProfile, tag))
+            .filter(error -> !error.isEmpty())
+            .collect(Collectors.joining(", "));
+
+    if (!validationError.isEmpty()) {
+      validationErrors.add(createErrorMessage(dlmsProfile, SOURCE_OBJECTS_ERROR, validationError));
     }
   }
 

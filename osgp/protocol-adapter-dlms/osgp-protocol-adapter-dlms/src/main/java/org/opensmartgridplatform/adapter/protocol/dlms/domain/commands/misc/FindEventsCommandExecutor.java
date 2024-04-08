@@ -68,6 +68,9 @@ public class FindEventsCommandExecutor
     EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
         EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG,
         DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_LOG);
+    EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
+        EventLogCategoryDto.POWER_QUALITY_THD_EVENT_LOG,
+        DlmsObjectType.POWER_QUALITY_THD_EVENT_LOG);
   }
 
   private final DataObjectToEventListConverter dataObjectToEventListConverter;
@@ -158,7 +161,7 @@ public class FindEventsCommandExecutor
 
     final DataObject resultData = getResult.getResultData();
     return this.dataObjectToEventListConverter.convert(
-        resultData, findEventsQuery.getEventLogCategory());
+        resultData, findEventsQuery.getEventLogCategory(), protocol);
   }
 
   private SelectiveAccessDescription getSelectiveAccessDescription(

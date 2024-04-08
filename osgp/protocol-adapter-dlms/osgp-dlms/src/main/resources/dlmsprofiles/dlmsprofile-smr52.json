@@ -307,7 +307,16 @@
       "obis": "0.0.96.11.20.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
+      "properties": {
+        "SOURCE_OBJECTS": {
+          "93": "MAGNITUDE_OF_LAST_VOLTAGE_SAG_IN_PHASE_L1",
+          "94": "MAGNITUDE_OF_LAST_VOLTAGE_SAG_IN_PHASE_L2",
+          "95": "MAGNITUDE_OF_LAST_VOLTAGE_SAG_IN_PHASE_L3",
+          "96": "MAGNITUDE_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L1",
+          "97": "MAGNITUDE_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L2",
+          "98": "MAGNITUDE_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L3"
+        }
+      },
       "attributes": [
         {
           "id": 2,
@@ -326,6 +335,152 @@
       "obis": "0.0.96.11.21.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
+      "properties": {
+        "SOURCE_OBJECTS": {
+          "93": "DURATION_OF_LAST_VOLTAGE_SAG_IN_PHASE_L1",
+          "94": "DURATION_OF_LAST_VOLTAGE_SAG_IN_PHASE_L2",
+          "95": "DURATION_OF_LAST_VOLTAGE_SAG_IN_PHASE_L3",
+          "96": "DURATION_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L1",
+          "97": "DURATION_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L2",
+          "98": "DURATION_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L3"
+        }
+      },
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "POWER_QUALITY_THD_EVENT_LOG",
+      "description": "Event log containing Power Quality events",
+      "note": null,
+      "class-id": 7,
+      "version": 1,
+      "obis": "0.0.99.98.8.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "buffer",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture objects",
+          "datatype": "array",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "CLOCK,2|POWER_QUALITY_THD_EVENT_CODE,2|POWER_QUALITY_THD_EVENT_MAGNITUDE,2",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "capture period",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "sort method",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "sort object",
+          "datatype": "object_definition",
+          "valuetype": "FIXED_IN_METER",
+          "value": "NONE",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "entries in use",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "profile entries",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "100",
+          "access": "R"
+        }
+
+      ]
+    },
+    {
+      "tag": "POWER_QUALITY_THD_EVENT_CODE",
+      "description": "Power quality extended event log code THD",
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.96.11.8.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "POWER_QUALITY_THD_EVENT_MAGNITUDE",
+      "description": "Power quality extended event log code for THD over-limit magnitude",
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.96.11.22.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {
+        "SOURCE_OBJECTS": {
+          "51": "MAGNITUDE_OF_LAST_CURRENT_OVER_LIMIT_THD_IN_PHASE_L1",
+          "52": "MAGNITUDE_OF_LAST_CURRENT_OVER_LIMIT_THD_IN_PHASE_L2",
+          "53": "MAGNITUDE_OF_LAST_CURRENT_OVER_LIMIT_THD_IN_PHASE_L3",
+          "54": "MAGNITUDE_OF_LAST_CURRENT_OVER_LIMIT_THD_IN_PHASE_L1",
+          "55": "MAGNITUDE_OF_LAST_CURRENT_OVER_LIMIT_THD_IN_PHASE_L2",
+          "56": "MAGNITUDE_OF_LAST_CURRENT_OVER_LIMIT_THD_IN_PHASE_L3",
+          "57": "MAGNITUDE_OF_LAST_CURRENT_OVER_LIMIT_THD_IN_PHASE_L1",
+          "58": "MAGNITUDE_OF_LAST_CURRENT_OVER_LIMIT_THD_IN_PHASE_L2",
+          "59": "MAGNITUDE_OF_LAST_CURRENT_OVER_LIMIT_THD_IN_PHASE_L3"
+        }},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MAGNITUDE_OF_LAST_VOLTAGE_SAG_IN_PHASE_L1",
+      "description": "Magnitude of last voltage sag in phase L1",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.32.34.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
       "properties": {},
       "attributes": [
         {
@@ -333,6 +488,406 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "-1, V",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MAGNITUDE_OF_LAST_VOLTAGE_SAG_IN_PHASE_L2",
+      "description": "Magnitude of last voltage sag in phase L2",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.52.34.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "-1, V",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MAGNITUDE_OF_LAST_VOLTAGE_SAG_IN_PHASE_L3",
+      "description": "Magnitude of last voltage sag in phase L3",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.72.34.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "-1, V",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MAGNITUDE_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L1",
+      "description": "Magnitude of last voltage swell in phase L1",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.32.38.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "-1, V",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MAGNITUDE_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L2",
+      "description": "Magnitude of last voltage swell in phase L2",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.52.38.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "-1, V",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MAGNITUDE_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L3",
+      "description": "Magnitude of last voltage swell in phase L3",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.72.38.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "-1, V",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "DURATION_OF_LAST_VOLTAGE_SAG_IN_PHASE_L1",
+      "description": "Duration of last voltage sag in phase L1",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.32.33.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "-1, s",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "DURATION_OF_LAST_VOLTAGE_SAG_IN_PHASE_L2",
+      "description": "Duration of last voltage sag in phase L2",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.52.33.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "-1, s",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "DURATION_OF_LAST_VOLTAGE_SAG_IN_PHASE_L3",
+      "description": "Duration of last voltage sag in phase L3",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.72.33.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "-1, s",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "DURATION_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L1",
+      "description": "Duration of last voltage swell in phase L1",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.32.37.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "-1, s",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "DURATION_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L2",
+      "description": "Duration of last voltage swell in phase L2",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.52.37.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "-1, s",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "DURATION_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L3",
+      "description": "Duration of last voltage swell in phase L3",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.72.37.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "-1, s",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MAGNITUDE_OF_LAST_CURRENT_OVER_LIMIT_THD_IN_PHASE_L1",
+      "description": "Magnitude of last current over-limit THD in phase L1",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.31.38.124.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "0, %",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MAGNITUDE_OF_LAST_CURRENT_OVER_LIMIT_THD_IN_PHASE_L2",
+      "description": "Magnitude of last current over-limit THD in phase L2",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.51.38.124.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "0, %",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MAGNITUDE_OF_LAST_CURRENT_OVER_LIMIT_THD_IN_PHASE_L3",
+      "description": "Magnitude of last current over-limit THD in phase L3",
+      "note": null,
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.71.38.124.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "0, %",
           "access": "R"
         }
       ]

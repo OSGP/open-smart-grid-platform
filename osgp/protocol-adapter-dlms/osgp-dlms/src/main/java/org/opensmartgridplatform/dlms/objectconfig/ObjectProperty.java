@@ -7,5 +7,6 @@ package org.opensmartgridplatform.dlms.objectconfig;
 public enum ObjectProperty {
   SELECTABLE_OBJECTS,
   PQ_PROFILE,
-  PQ_REQUEST
+  PQ_REQUEST,
+  SOURCE_OBJECTS
 }
