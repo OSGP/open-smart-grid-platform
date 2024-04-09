@@ -8,12 +8,14 @@ package org.opensmartgridplatform.simulator.protocol.dlms.cosem;
 public enum UnitType {
   DATA_VALID(0),
   DATA_NOT_VALID(4),
+  SECONDS(7),
   CUBIC_METER(14),
   WATT(27),
   VAR(29),
   WATT_HOUR(30),
   AMPERE(33),
   VOLT(35),
+  PERCENTAGE(56),
   COUNT(255);
 
   private final int value;

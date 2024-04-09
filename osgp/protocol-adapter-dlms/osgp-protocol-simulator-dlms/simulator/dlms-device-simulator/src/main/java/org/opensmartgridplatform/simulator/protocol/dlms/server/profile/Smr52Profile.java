@@ -21,8 +21,13 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.AlarmObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic.AdjacentCellInfo;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic.CellInfo;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MinDurationCurrentTHDOverlimitNormalToOver;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MinDurationCurrentTHDOverlimitOverToNormal;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityExtendedEventLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityThdEventLog;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.TimeThresholdCurrentTHDOverlimit;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ValueHysteresisCurrentTHDOverlimit;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ValueThresholdCurrentTHDOverlimit;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -130,6 +135,33 @@ public class Smr52Profile {
   @Bean
   public PowerQualityThdEventLog powerQualityThdEventLog(final Calendar cal) {
     return new PowerQualityThdEventLog(cal);
+  }
+
+  @Bean
+  public MinDurationCurrentTHDOverlimitNormalToOver minDurationCurrentTHDOverlimitNormalToOver(
+      final long value) {
+    return new MinDurationCurrentTHDOverlimitNormalToOver(value);
+  }
+
+  @Bean
+  public MinDurationCurrentTHDOverlimitOverToNormal minDurationCurrentTHDOverlimitOverToNormal(
+      final long value) {
+    return new MinDurationCurrentTHDOverlimitOverToNormal(value);
+  }
+
+  @Bean
+  public TimeThresholdCurrentTHDOverlimit timeThresholdCurrentTHDOverlimit(final long value) {
+    return new TimeThresholdCurrentTHDOverlimit(value);
+  }
+
+  @Bean
+  public ValueHysteresisCurrentTHDOverlimit valueHysteresisCurrentTHDOverlimit(final long value) {
+    return new ValueHysteresisCurrentTHDOverlimit(value);
+  }
+
+  @Bean
+  public ValueThresholdCurrentTHDOverlimit valueThresholdCurrentTHDOverlimit(final long value) {
+    return new ValueThresholdCurrentTHDOverlimit(value);
   }
 
   @Bean
