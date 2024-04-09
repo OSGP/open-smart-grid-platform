@@ -891,6 +891,151 @@
           "access": "R"
         }
       ]
+    },
+    {
+      "tag": "THD_THRESHOLD",
+      "description": "Value threshold for Current THD Over-limit",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.11.35.124.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "RW"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, %",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "THD_HYSTERESIS",
+      "description": "Value hysteresis for Current THD Over-limit",
+      "class-id": 3,
+      "version": 0,
+      "obis": "0.1.94.31.21.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "RW"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, %",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "THD_MIN_DURATION_NORMAL_TO_OVER",
+      "description": "Min. duration for Current THD Over-limit (Normal to over)",
+      "class-id": 3,
+      "version": 0,
+      "obis": "0.1.94.31.22.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "RW"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, s",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "THD_MIN_DURATION_OVER_TO_NORMAL",
+      "description": "Min. duration for Current THD Over-limit (Over to normal)",
+      "class-id": 3,
+      "version": 0,
+      "obis": "0.1.94.31.23.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "RW"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, s",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "THD_TIME_THRESHOLD",
+      "description": "Time threshold for Current THD Over-limit",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.11.44.124.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "RW"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, s",
+          "access": "R"
+        }
+      ]
     }
   ]
 }
