@@ -144,6 +144,7 @@ SPDX-License-Identifier: Apache-2.0
     <lombok.version>1.18.30</lombok.version>
     <hivemq-mqtt-client.version>1.2.0</hivemq-mqtt-client.version>
     <apache.commons.io.version>2.15.1</apache.commons.io.version>
+    <apache.commons.compress.version>1.26.1</apache.commons.compress.version>
     <!-- Default always skip integration tests, to ensure all developer data
       is retained -->
     <skipITs>true</skipITs>
@@ -1178,6 +1179,12 @@ SPDX-License-Identifier: Apache-2.0
         <artifactId>commons-io</artifactId>
         <version>${apache.commons.io.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>${apache.commons.compress.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
