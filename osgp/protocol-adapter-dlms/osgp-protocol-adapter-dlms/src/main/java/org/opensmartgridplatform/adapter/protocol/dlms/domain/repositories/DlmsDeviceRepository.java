@@ -48,6 +48,17 @@ public interface DlmsDeviceRepository extends JpaRepository<DlmsDevice, Long> {
   @Modifying
   @Query(
       value =
+          "UPDATE DlmsDevice"
+              + "   SET invocationCounter = invocationCounter + :incrementValue"
+              + " WHERE deviceIdentification = :deviceIdentification")
+  int incrementInvocationCounter(
+      @Param("deviceIdentification") String deviceIdentification,
+      @Param("incrementValue") Long incrementValue);
+
+  @Transactional
+  @Modifying
+  @Query(
+      value =
           """
               UPDATE dlms_device
                  SET hls3Active = coalesce(:hls3active, hls3Active)
