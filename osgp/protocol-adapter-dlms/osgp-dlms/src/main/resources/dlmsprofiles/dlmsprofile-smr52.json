@@ -893,7 +893,7 @@
       ]
     },
     {
-      "tag": "THD_THRESHOLD",
+      "tag": "THD_VALUE_THRESHOLD",
       "description": "Value threshold for Current THD Over-limit",
       "class-id": 3,
       "version": 0,
@@ -922,7 +922,7 @@
       ]
     },
     {
-      "tag": "THD_HYSTERESIS",
+      "tag": "THD_VALUE_HYSTERESIS",
       "description": "Value hysteresis for Current THD Over-limit",
       "class-id": 3,
       "version": 0,
