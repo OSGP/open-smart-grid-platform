@@ -66,6 +66,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushS
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupSmsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupUdpRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetThdConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
@@ -115,6 +116,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupLast
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupUdpRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
@@ -202,6 +204,7 @@ public class ActionMapperService {
         ClearMBusStatusOnAllChannelsRequestData.class,
         ClearMBusStatusOnAllChannelsRequestDto.class);
     CLASS_MAP.put(TestAlarmSchedulerRequestData.class, TestAlarmSchedulerRequestDto.class);
+    CLASS_MAP.put(SetThdConfigurationRequestData.class, SetThdConfigurationRequestDto.class);
   }
 
   @Autowired
@@ -280,6 +283,7 @@ public class ActionMapperService {
     CLASS_TO_MAPPER_MAP.put(GetGsmDiagnosticRequestData.class, this.managementMapper);
     CLASS_TO_MAPPER_MAP.put(GetKeysRequestData.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(ClearMBusStatusOnAllChannelsRequestData.class, this.managementMapper);
+    CLASS_TO_MAPPER_MAP.put(SetThdConfigurationRequestData.class, this.managementMapper);
   }
 
   public BundleMessagesRequestDto mapAllActions(
