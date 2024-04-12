@@ -63,5 +63,5 @@ public class ThdConfiguration implements Serializable {
     public ThdConfiguration build() {
       return new ThdConfiguration(this);
     }
-  }
+
 }

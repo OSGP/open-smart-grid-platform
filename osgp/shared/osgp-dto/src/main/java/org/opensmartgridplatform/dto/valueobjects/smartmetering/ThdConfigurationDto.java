@@ -25,6 +25,21 @@ public class ThdConfigurationDto implements ActionRequestDto {
     this.valueThreshold = Objects.requireNonNull(builder.valueThreshold);
   }
 
+  @Override
+  public String toString() {
+    return "ThdConfiguration[valueThreshold="
+        + this.thdValueThreshold
+        + ", valueHysteresis="
+        + this.thdValueHysteresis
+        + ", minDurationNormalToOver="
+        + this.thdMinDurationNormalToOver
+        + ", minDurationOverToNormal="
+        + this.thdMinDurationOverToNormal
+        + ", timeThreshold="
+        + this.thdTimeThreshold
+        + "]";
+  }
+
   public static class Builder {
 
     private long minDurationNormalToOver;

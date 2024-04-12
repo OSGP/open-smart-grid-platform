@@ -6,6 +6,8 @@ package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 public class SetThdConfigurationRequestDto implements ActionRequestDto {
 
+  private static final long serialVersionUID = 411378475387180322L;
+
   private final ThdConfigurationDto thdConfiguration;
 
   public SetThdConfigurationRequestDto(final ThdConfigurationDto thdConfiguration) {
