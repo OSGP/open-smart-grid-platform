@@ -346,6 +346,26 @@
     </wsdl:part>
   </wsdl:message>
 
+  <wsdl:message name="SetThdConfigurationRequest">
+    <wsdl:part element="smconf:SetThdConfigurationRequest" name="SetThdConfigurationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetThdConfigurationAsyncResponse">
+    <wsdl:part element="smconf:SetThdConfigurationAsyncResponse"
+      name="SetThdConfigurationAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetThdConfigurationAsyncRequest">
+    <wsdl:part element="smconf:SetThdConfigurationAsyncRequest"
+      name="SetThdConfigurationAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetThdConfigurationResponse">
+    <wsdl:part element="smconf:SetThdConfigurationResponse" name="SetThdConfigurationResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+
   <wsdl:message name="SetAdministrativeStatusRequest">
     <wsdl:part element="smconf:SetAdministrativeStatusRequest"
                name="SetAdministrativieStatusRequest">
@@ -659,6 +679,22 @@
       </wsdl:input>
       <wsdl:output message="tns:SetPushSetupUdpResponse"
         name="SetPushSetupUdpResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetThdConfiguration">
+      <wsdl:input message="tns:SetThdConfigurationRequest" name="SetThdConfigurationRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetThdConfigurationAsyncResponse"
+        name="SetThdConfigurationAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetThdConfigurationResponse">
+      <wsdl:input message="tns:SetThdConfigurationAsyncRequest"
+        name="SetThdConfigurationAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetThdConfigurationResponse"
+        name="SetThdConfigurationResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -1140,11 +1176,11 @@
       <soap:operation soapAction=""/>
       <wsdl:input name="SetPushSetupSmsRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal"/>
+          use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal"/>
+          use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal"/>
+          use="literal"/>
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetPushSetupSmsAsyncResponse">
@@ -1196,6 +1232,38 @@
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetPushSetupUdpResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetThdConfiguration">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="SetThdConfigurationRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SetThdConfigurationAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetSetThdConfigurationResponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="SetThdConfigurationAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SetThdConfigurationResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>

@@ -39,6 +39,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusU
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupUdpRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ThdConfiguration;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import org.opensmartgridplatform.domain.smartmetering.exceptions.GatewayDeviceNotSetForMbusDeviceException;
@@ -71,6 +72,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyBy
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupUdpRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ThdConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -248,6 +250,30 @@ public class ConfigurationService {
 
     final SetPushSetupUdpRequestDto requestDto =
         this.configurationMapper.map(setPushSetupUdpRequestData, SetPushSetupUdpRequestDto.class);
+
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
+  }
+
+  public void setThdConfiguration(
+      final MessageMetadata messageMetadata, final ThdConfiguration thdConfiguration)
+      throws FunctionalException {
+
+    log.info(
+        "setThdConfiguration for organisationIdentification: {} for deviceIdentification: {}",
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
+
+    final SmartMeter smartMeter =
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
+
+    final ThdConfigurationDto requestDto =
+        this.configurationMapper.map(thdConfiguration, ThdConfigurationDto.class);
 
     this.osgpCoreRequestMessageSender.send(
         requestDto,
@@ -563,6 +589,29 @@ public class ConfigurationService {
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
       log.error("Set Push Setup Udp Response not ok. Unexpected Exception", exception);
+      result = ResponseMessageResultType.NOT_OK;
+    }
+
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withMessageMetadata(messageMetadata)
+            .withResult(result)
+            .withOsgpException(exception)
+            .build();
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
+  }
+
+  public void handleSetThdConfigurationResponse(
+      final MessageMetadata messageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception) {
+
+    log.info(
+        "handleThdConfigurationResponse for MessageType: {}", messageMetadata.getMessageType());
+
+    ResponseMessageResultType result = deviceResult;
+    if (exception != null) {
+      log.error("Set THD Configuration Response not ok. Unexpected Exception", exception);
       result = ResponseMessageResultType.NOT_OK;
     }
 

@@ -7,6 +7,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 import java.io.Serializable;
 import java.util.List;
 import org.openmuc.jdlms.AccessResultCode;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.SetAlarmNotificationsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.GetConfigurationObjectCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetConfigurationObjectCommandExecutor;
@@ -63,6 +64,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisation
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDayDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ThdConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -97,6 +99,8 @@ public class ConfigurationService {
   @Autowired private SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor;
 
   @Autowired private SetPushSetupUdpCommandExecutor setPushSetupUdpCommandExecutor;
+
+  @Autowired private AbstractCommandExecutor setThdConfigurationCommandExecutor;
 
   @Autowired private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
 
@@ -397,6 +401,27 @@ public class ConfigurationService {
     if (AccessResultCode.SUCCESS != accessResultCode) {
       throw new ProtocolAdapterException(
           "AccessResultCode for set push setup udp was not SUCCESS: " + accessResultCode);
+    }
+  }
+
+  public void setThdConfiguration(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final ThdConfigurationDto thdConfiguration,
+      final MessageMetadata messageMetadata)
+      throws ProtocolAdapterException {
+
+    LOGGER.info("THD Configuration to set on the device: {}", thdConfiguration);
+
+    final AccessResultCode accessResultCode = AccessResultCode.SUCCESS;
+    // Activate lines of code after implementation of command executor
+    // final AccessResultCode accessResultCode =
+    //        this.setThdConfigurationCommandExecutor.execute(conn, device, thdConfiguration,
+    // messageMetadata);
+
+    if (AccessResultCode.SUCCESS != accessResultCode) {
+      throw new ProtocolAdapterException(
+          "AccessResultCode for set push setup sms was not SUCCESS: " + accessResultCode);
     }
   }
 
