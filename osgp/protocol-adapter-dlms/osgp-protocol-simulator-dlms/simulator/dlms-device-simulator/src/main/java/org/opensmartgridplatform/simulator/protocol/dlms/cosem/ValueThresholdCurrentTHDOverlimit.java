@@ -20,7 +20,7 @@ public class ValueThresholdCurrentTHDOverlimit extends CosemInterfaceObject {
   @CosemAttribute(id = 3, type = Type.STRUCTURE)
   private final DataObject scalerUnit;
 
-  public ValueThresholdCurrentTHDOverlimit(final long value) {
+  public ValueThresholdCurrentTHDOverlimit(final int value) {
     super("1.0.11.35.124.255");
     this.value = DataObject.newUInteger32Data(value);
     this.scalerUnit = ScalerUnitBuilder.createScalerUnit(0, UnitType.PERCENTAGE.value());

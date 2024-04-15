@@ -1236,12 +1236,12 @@
           <xsd:documentation>The time threshold for current THD Over-limit .</xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-      <xsd:element name="ThdValueHysteresis" type="xsd:long">
+      <xsd:element name="ThdValueHysteresis" type="xsd:int">
         <xsd:annotation>
           <xsd:documentation>The value hysteresis for current THD Over-limit.</xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-      <xsd:element name="ThdValueThreshold" type="xsd:long">
+      <xsd:element name="ThdValueThreshold" type="xsd:int">
         <xsd:annotation>
           <xsd:documentation>The value threshold for current THD Over-limit.</xsd:documentation>
         </xsd:annotation>

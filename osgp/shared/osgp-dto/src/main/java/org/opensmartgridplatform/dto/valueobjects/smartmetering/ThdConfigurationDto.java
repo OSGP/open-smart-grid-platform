@@ -13,8 +13,8 @@ public class ThdConfigurationDto implements ActionRequestDto {
   private final long minDurationNormalToOver;
   private final long minDurationOverToNormal;
   private final long timeThreshold;
-  private final long valueHysteresis;
-  private final long valueThreshold;
+  private final int valueHysteresis;
+  private final int valueThreshold;
 
   protected ThdConfigurationDto(final Builder builder) {
 
@@ -28,15 +28,15 @@ public class ThdConfigurationDto implements ActionRequestDto {
   @Override
   public String toString() {
     return "ThdConfiguration[valueThreshold="
-        + this.thdValueThreshold
+        + this.valueThreshold
         + ", valueHysteresis="
-        + this.thdValueHysteresis
+        + this.valueHysteresis
         + ", minDurationNormalToOver="
-        + this.thdMinDurationNormalToOver
+        + this.minDurationNormalToOver
         + ", minDurationOverToNormal="
-        + this.thdMinDurationOverToNormal
+        + this.minDurationOverToNormal
         + ", timeThreshold="
-        + this.thdTimeThreshold
+        + this.timeThreshold
         + "]";
   }
 
@@ -45,8 +45,8 @@ public class ThdConfigurationDto implements ActionRequestDto {
     private long minDurationNormalToOver;
     private long minDurationOverToNormal;
     private long timeThreshold;
-    private long valueHysteresis;
-    private long valueThreshold;
+    private int valueHysteresis;
+    private int valueThreshold;
 
     public ThdConfigurationDto.Builder withMinDurationNormalToOver(
         final long minDurationNormalToOver) {
@@ -65,12 +65,12 @@ public class ThdConfigurationDto implements ActionRequestDto {
       return this;
     }
 
-    public ThdConfigurationDto.Builder withValueHysteresis(final long valueHysteresis) {
+    public ThdConfigurationDto.Builder withValueHysteresis(final int valueHysteresis) {
       this.valueHysteresis = valueHysteresis;
       return this;
     }
 
-    public ThdConfigurationDto.Builder withValueThreshold(final long valueThreshold) {
+    public ThdConfigurationDto.Builder withValueThreshold(final int valueThreshold) {
       this.valueThreshold = valueThreshold;
       return this;
     }

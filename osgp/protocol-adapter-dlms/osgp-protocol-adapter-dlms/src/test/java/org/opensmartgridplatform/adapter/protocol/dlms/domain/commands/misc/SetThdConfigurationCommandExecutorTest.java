@@ -60,12 +60,13 @@ class SetThdConfigurationCommandExecutorTest {
 
   private static final SetThdConfigurationRequestDto REQUEST =
       new SetThdConfigurationRequestDto(
-          new ThdConfigurationDto(
-              VALUE_THRESHOLD,
-              VALUE_HYSTERESIS,
-              DURATION_NORMAL_TO_OVER,
-              DURATION_OVER_TO_NORMAL,
-              TIME_THRESHOLD));
+          new ThdConfigurationDto.Builder()
+              .withValueThreshold(VALUE_THRESHOLD)
+              .withValueHysteresis(VALUE_HYSTERESIS)
+              .withMinDurationNormalToOver(DURATION_NORMAL_TO_OVER)
+              .withMinDurationOverToNormal(DURATION_OVER_TO_NORMAL)
+              .withTimeThreshold(TIME_THRESHOLD)
+              .build());
 
   private static final MessageMetadata MSG_META_DATA =
       MessageMetadata.newBuilder().withCorrelationUid("123456").build();

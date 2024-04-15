@@ -155,12 +155,12 @@ public class Smr52Profile {
   }
 
   @Bean
-  public ValueHysteresisCurrentTHDOverlimit valueHysteresisCurrentTHDOverlimit(final long value) {
+  public ValueHysteresisCurrentTHDOverlimit valueHysteresisCurrentTHDOverlimit(final int value) {
     return new ValueHysteresisCurrentTHDOverlimit(value);
   }
 
   @Bean
-  public ValueThresholdCurrentTHDOverlimit valueThresholdCurrentTHDOverlimit(final long value) {
+  public ValueThresholdCurrentTHDOverlimit valueThresholdCurrentTHDOverlimit(final int value) {
     return new ValueThresholdCurrentTHDOverlimit(value);
   }
 

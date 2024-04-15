@@ -4,7 +4,6 @@
 
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration;
 
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.THD_MIN_DURATION_NORMAL_TO_OVER;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.THD_MIN_DURATION_OVER_TO_NORMAL;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.THD_TIME_THRESHOLD;
@@ -48,12 +47,12 @@ public class SetThdConfigurationRequestFactory {
     final ThdConfiguration thdConfiguration = new ThdConfiguration();
 
     thdConfiguration.setThdMinDurationNormalToOver(
-        getValue(settings, THD_MIN_DURATION_NORMAL_TO_OVER));
+        getLongValue(settings, THD_MIN_DURATION_NORMAL_TO_OVER));
     thdConfiguration.setThdMinDurationOverToNormal(
-        getValue(settings, THD_MIN_DURATION_OVER_TO_NORMAL));
-    thdConfiguration.setThdTimeThreshold(getValue(settings, THD_TIME_THRESHOLD));
-    thdConfiguration.setThdValueHysteresis(getValue(settings, THD_VALUE_HYSTERESIS));
-    thdConfiguration.setThdValueThreshold(getValue(settings, THD_VALUE_THRESHOLD));
+        getLongValue(settings, THD_MIN_DURATION_OVER_TO_NORMAL));
+    thdConfiguration.setThdTimeThreshold(getLongValue(settings, THD_TIME_THRESHOLD));
+    thdConfiguration.setThdValueHysteresis(getIntValue(settings, THD_VALUE_HYSTERESIS));
+    thdConfiguration.setThdValueThreshold(getIntValue(settings, THD_VALUE_THRESHOLD));
 
     final SetThdConfigurationRequestData requestData = new SetThdConfigurationRequestData();
     requestData.setThdConfiguration(thdConfiguration);
@@ -61,7 +60,11 @@ public class SetThdConfigurationRequestFactory {
     return requestData;
   }
 
-  private static long getValue(final Map<String, String> parameters, final String key) {
-    return Long.valueOf(getInteger(parameters, key, 0));
+  private static long getLongValue(final Map<String, String> parameters, final String key) {
+    return getLongValue(parameters, key);
+  }
+
+  private static int getIntValue(final Map<String, String> parameters, final String key) {
+    return getIntValue(parameters, key);
   }
 }

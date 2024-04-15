@@ -84,17 +84,17 @@ public class SetThdConfigurationCommandExecutor
     final ThdConfigurationDto thdConfig = setThdConfigRequest.getThdConfiguration();
 
     final SetParameter setParamThreshold =
-        this.getSetParameterLong(addressThreshold, (int) thdConfig.getThdValueThreshold());
+        this.getSetParameterLong(addressThreshold, thdConfig.getValueThreshold());
     final SetParameter setParamHysteresis =
-        this.getSetParameterLong(addressHysteresis, (int) thdConfig.getThdValueHysteresis());
+        this.getSetParameterLong(addressHysteresis, thdConfig.getValueHysteresis());
     final SetParameter setParamMinDurationNormalToOver =
         this.getSetParameterDoubleLong(
-            addressMinDurationNormalToOver, thdConfig.getThdMinDurationNormalToOver());
+            addressMinDurationNormalToOver, thdConfig.getMinDurationNormalToOver());
     final SetParameter setParamMinDurationOverToNormal =
         this.getSetParameterDoubleLong(
-            addressMinDurationOverToNormal, thdConfig.getThdMinDurationOverToNormal());
+            addressMinDurationOverToNormal, thdConfig.getMinDurationOverToNormal());
     final SetParameter setParamTimeThreshold =
-        this.getSetParameterDoubleLong(addressTimeThreshold, thdConfig.getThdTimeThreshold());
+        this.getSetParameterDoubleLong(addressTimeThreshold, thdConfig.getTimeThreshold());
 
     final List<AccessResultCode> resultCodes =
         this.dlmsHelper.setWithList(

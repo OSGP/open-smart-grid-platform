@@ -20,7 +20,7 @@ public class ValueHysteresisCurrentTHDOverlimit extends CosemInterfaceObject {
   @CosemAttribute(id = 3, type = Type.STRUCTURE)
   private final DataObject scalerUnit;
 
-  public ValueHysteresisCurrentTHDOverlimit(final long value) {
+  public ValueHysteresisCurrentTHDOverlimit(final int value) {
     super("0.1.94.31.21.255");
     this.value = DataObject.newUInteger32Data(value);
     this.scalerUnit = ScalerUnitBuilder.createScalerUnit(0, UnitType.PERCENTAGE.value());

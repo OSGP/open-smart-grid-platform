@@ -14,8 +14,8 @@ public class ThdConfiguration implements Serializable {
   private final long minDurationNormalToOver;
   private final long minDurationOverToNormal;
   private final long timeThreshold;
-  private final long valueHysteresis;
-  private final long valueThreshold;
+  private final int valueHysteresis;
+  private final int valueThreshold;
 
   public ThdConfiguration(final Builder builder) {
 
@@ -30,8 +30,8 @@ public class ThdConfiguration implements Serializable {
     private long minDurationNormalToOver;
     private long minDurationOverToNormal;
     private long timeThreshold;
-    private long valueHysteresis;
-    private long valueThreshold;
+    private int valueHysteresis;
+    private int valueThreshold;
 
     public ThdConfiguration.Builder withMinDurationNormalToOver(
         final long minDurationNormalToOver) {
@@ -50,12 +50,12 @@ public class ThdConfiguration implements Serializable {
       return this;
     }
 
-    public ThdConfiguration.Builder withValueHysteresis(final long valueHysteresis) {
+    public ThdConfiguration.Builder withValueHysteresis(final int valueHysteresis) {
       this.valueHysteresis = valueHysteresis;
       return this;
     }
 
-    public ThdConfiguration.Builder withValueThreshold(final long valueThreshold) {
+    public ThdConfiguration.Builder withValueThreshold(final int valueThreshold) {
       this.valueThreshold = valueThreshold;
       return this;
     }
@@ -63,5 +63,5 @@ public class ThdConfiguration implements Serializable {
     public ThdConfiguration build() {
       return new ThdConfiguration(this);
     }
-
+  }
 }
