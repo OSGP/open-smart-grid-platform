@@ -10,6 +10,8 @@ import lombok.Getter;
 @Getter
 public class ThdConfigurationDto implements ActionRequestDto {
 
+  private static final long serialVersionUID = -6203873802022156814L;
+
   private final long minDurationNormalToOver;
   private final long minDurationOverToNormal;
   private final long timeThreshold;
