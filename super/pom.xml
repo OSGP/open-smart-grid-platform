@@ -109,7 +109,7 @@ SPDX-License-Identifier: Apache-2.0
     <apache.commons.schema>2.3.1</apache.commons.schema>
     <maven.clean.plugin.version>3.3.2</maven.clean.plugin.version>
     <maven.compiler.plugin.version>3.12.1</maven.compiler.plugin.version>
-    <netty.version>4.1.101.Final</netty.version>
+    <netty.version>4.1.108.Final</netty.version>
     <openmuc.jdlms.version>1.8.0</openmuc.jdlms.version>
     <openmuc.jdlms-annotation.version>1.8.0</openmuc.jdlms-annotation.version>
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
@@ -126,7 +126,7 @@ SPDX-License-Identifier: Apache-2.0
     <guava.version>32.1.2-jre</guava.version>
     <spotbugs.version>4.6.0</spotbugs.version>
     <jacoco.version>0.8.8</jacoco.version>
-    <selenium.java.version>3.141.59</selenium.java.version>
+    <selenium.java.version>4.19.1</selenium.java.version>
     <SunriseSunsetCalculator.version>1.2</SunriseSunsetCalculator.version>
     <ant.junit.version>1.10.14</ant.junit.version>
     <args4j.version>2.37</args4j.version>
@@ -144,6 +144,7 @@ SPDX-License-Identifier: Apache-2.0
     <lombok.version>1.18.30</lombok.version>
     <hivemq-mqtt-client.version>1.2.0</hivemq-mqtt-client.version>
     <apache.commons.io.version>2.15.1</apache.commons.io.version>
+    <apache.commons.compress.version>1.26.1</apache.commons.compress.version>
     <!-- Default always skip integration tests, to ensure all developer data
       is retained -->
     <skipITs>true</skipITs>
@@ -1178,6 +1179,12 @@ SPDX-License-Identifier: Apache-2.0
         <artifactId>commons-io</artifactId>
         <version>${apache.commons.io.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>${apache.commons.compress.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
@@ -1451,7 +1458,7 @@ SPDX-License-Identifier: Apache-2.0
         <plugin>
           <groupId>org.cyclonedx</groupId>
           <artifactId>cyclonedx-maven-plugin</artifactId>
-          <version>2.7.2</version>
+          <version>2.7.11</version>
           <executions>
             <execution>
               <phase>prepare-package</phase>
