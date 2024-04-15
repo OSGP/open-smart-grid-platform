@@ -4,6 +4,8 @@
 
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle;
 
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.THD_MIN_DURATION_NORMAL_TO_OVER;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.THD_MIN_DURATION_OVER_TO_NORMAL;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.THD_TIME_THRESHOLD;
@@ -46,10 +48,10 @@ public class SetThdConfigurationRequestBuilder {
   }
 
   private long getLongValue(final Map<String, String> parameters, final String key) {
-    return this.getLongValue(parameters, key);
+    return getLong(parameters, key);
   }
 
   private int getIntValue(final Map<String, String> parameters, final String key) {
-    return this.getIntValue(parameters, key);
+    return getInteger(parameters, key);
   }
 }
