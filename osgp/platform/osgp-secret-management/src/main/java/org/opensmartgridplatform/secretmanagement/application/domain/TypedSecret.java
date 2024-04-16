@@ -10,6 +10,7 @@ import lombok.Getter;
 /** TypedSecret stores a secret (not necessarily an encrypted secret), along with it's type. */
 @Getter
 public class TypedSecret {
+  private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
   private final SecretType secretType;
   private final byte[] secret;
 
@@ -24,5 +25,16 @@ public class TypedSecret {
 
   public byte[] getSecret() {
     return this.secret == null ? null : Arrays.copyOf(this.secret, this.secret.length);
+  }
+
+  public String getSecretAsHexString() {
+    final byte[] bytes = this.getSecret();
+    final char[] hexChars = new char[bytes.length * 2];
+    for (int j = 0; j < bytes.length; j++) {
+      final int v = bytes[j] & 0xFF;
+      hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+      hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+    }
+    return new String(hexChars);
   }
 }

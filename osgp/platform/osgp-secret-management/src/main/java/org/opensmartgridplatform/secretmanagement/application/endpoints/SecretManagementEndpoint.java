@@ -292,7 +292,32 @@ public class SecretManagementEndpoint {
     final List<SecretType> secretTypeList = this.converter.convertToSecretTypes(soapSecretTypes);
     final List<TypedSecret> typedSecrets =
         this.secretManagementService.retrieveSecrets(request.getDeviceId(), secretTypeList);
+    log.info("##### SECRETS: requesting for device: {}", request.getDeviceId());
+    log.info(
+        "##### SECRETS: reencrypted to RSA from DB: {}",
+        typedSecrets.stream()
+            .map(
+                typedSecret ->
+                    "\ntype: "
+                        + typedSecret.getSecretType().name()
+                        + " secret: "
+                        + typedSecret.getSecretAsHexString())
+            .toList()
+            .toString());
+
     final TypedSecrets soapTypedSecrets = this.converter.convertToSoapTypedSecrets(typedSecrets);
+
+    log.info(
+        "##### SECRETS: encrypted for SOAP transport): {}",
+        typedSecrets.stream()
+            .map(
+                typedSecret ->
+                    "\ntype: "
+                        + typedSecret.getSecretType().name()
+                        + " secret: "
+                        + typedSecret.getSecretAsHexString())
+            .toList()
+            .toString());
     response.setTypedSecrets(soapTypedSecrets);
     return response;
   }
