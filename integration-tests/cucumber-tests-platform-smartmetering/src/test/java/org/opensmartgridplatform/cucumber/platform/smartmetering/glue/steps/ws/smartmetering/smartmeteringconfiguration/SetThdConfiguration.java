@@ -67,6 +67,17 @@ public class SetThdConfiguration {
   @Then("^the ThdConfiguration should be set on the device$")
   public void theThdConfigurationShouldBeSetOnTheDevice(final Map<String, String> settings)
       throws Throwable {
+    this.theThdConfigurationShouldResultIn(settings, true);
+  }
+
+  @Then("^the ThdConfiguration should not be set on the device$")
+  public void theThdConfigurationShouldNotBeSetOnTheDevice(final Map<String, String> settings)
+      throws Throwable {
+    this.theThdConfigurationShouldResultIn(settings, false);
+  }
+
+  private void theThdConfigurationShouldResultIn(
+      final Map<String, String> settings, final boolean succes) throws Throwable {
 
     final SetThdConfigurationAsyncRequest setThdConfigurationAsyncRequest =
         SetThdConfigurationRequestFactory.fromScenarioContext();
@@ -78,8 +89,9 @@ public class SetThdConfiguration {
     assertThat(setThdConfigurationResponse.getResult())
         .as("SetThdConfigurationResponse result was null")
         .isNotNull();
+
     assertThat(setThdConfigurationResponse.getResult())
         .as("SetThdConfigurationResponse should be OK")
-        .isEqualTo(OsgpResultType.OK);
+        .isEqualTo(succes ? OsgpResultType.OK : OsgpResultType.NOT_OK);
   }
 }

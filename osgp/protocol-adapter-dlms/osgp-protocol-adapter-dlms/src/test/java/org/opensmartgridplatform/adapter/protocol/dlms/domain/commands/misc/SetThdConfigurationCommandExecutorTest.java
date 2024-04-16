@@ -36,7 +36,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ThdConfigurationDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
@@ -54,19 +53,18 @@ class SetThdConfigurationCommandExecutorTest {
 
   private static final int VALUE_THRESHOLD = 5;
   private static final int VALUE_HYSTERESIS = 10;
-  private static final int DURATION_NORMAL_TO_OVER = 15;
-  private static final int DURATION_OVER_TO_NORMAL = 20;
-  private static final int TIME_THRESHOLD = 25;
+  private static final long DURATION_NORMAL_TO_OVER = 15;
+  private static final long DURATION_OVER_TO_NORMAL = 20;
+  private static final long TIME_THRESHOLD = 25;
 
-  private static final SetThdConfigurationRequestDto REQUEST =
-      new SetThdConfigurationRequestDto(
-          new ThdConfigurationDto.Builder()
-              .withValueThreshold(VALUE_THRESHOLD)
-              .withValueHysteresis(VALUE_HYSTERESIS)
-              .withMinDurationNormalToOver(DURATION_NORMAL_TO_OVER)
-              .withMinDurationOverToNormal(DURATION_OVER_TO_NORMAL)
-              .withTimeThreshold(TIME_THRESHOLD)
-              .build());
+  private static final ThdConfigurationDto REQUEST =
+      new ThdConfigurationDto.Builder()
+          .withValueThreshold(VALUE_THRESHOLD)
+          .withValueHysteresis(VALUE_HYSTERESIS)
+          .withMinDurationNormalToOver(DURATION_NORMAL_TO_OVER)
+          .withMinDurationOverToNormal(DURATION_OVER_TO_NORMAL)
+          .withTimeThreshold(TIME_THRESHOLD)
+          .build();
 
   private static final MessageMetadata MSG_META_DATA =
       MessageMetadata.newBuilder().withCorrelationUid("123456").build();
@@ -107,14 +105,13 @@ class SetThdConfigurationCommandExecutorTest {
     assertThat(result).isEqualTo(SUCCESS);
 
     final List<SetParameter> setParameters = this.setParameterArgumentCaptor.getValue();
-    this.verifySetParameter(setParameters.get(0), THD_VALUE_THRESHOLD_OBIS, VALUE_THRESHOLD, false);
+    this.verifySetParameter(setParameters.get(0), THD_VALUE_THRESHOLD_OBIS, VALUE_THRESHOLD);
+    this.verifySetParameter(setParameters.get(1), THD_VALUE_HYSTERESIS_OBIS, VALUE_HYSTERESIS);
     this.verifySetParameter(
-        setParameters.get(1), THD_VALUE_HYSTERESIS_OBIS, VALUE_HYSTERESIS, false);
+        setParameters.get(2), THD_MIN_DURATION_NORMAL_TO_OVER_OBIS, DURATION_NORMAL_TO_OVER);
     this.verifySetParameter(
-        setParameters.get(2), THD_MIN_DURATION_NORMAL_TO_OVER_OBIS, DURATION_NORMAL_TO_OVER, true);
-    this.verifySetParameter(
-        setParameters.get(3), THD_MIN_DURATION_OVER_TO_NORMAL_OBIS, DURATION_OVER_TO_NORMAL, true);
-    this.verifySetParameter(setParameters.get(4), THD_TIME_THRESHOLD_OBIS, TIME_THRESHOLD, true);
+        setParameters.get(3), THD_MIN_DURATION_OVER_TO_NORMAL_OBIS, DURATION_OVER_TO_NORMAL);
+    this.verifySetParameter(setParameters.get(4), THD_TIME_THRESHOLD_OBIS, TIME_THRESHOLD);
 
     assertThat(setParameters).isNotNull();
   }
@@ -147,22 +144,25 @@ class SetThdConfigurationCommandExecutorTest {
   }
 
   private void verifySetParameter(
-      final SetParameter setParameter,
-      final String obis,
-      final int value,
-      final boolean doubeLong) {
+      final SetParameter setParameter, final String obis, final long value) {
+    assertAddress(setParameter, obis);
+    assertThat(setParameter.getData())
+        .isEqualToComparingFieldByField(DataObject.newUInteger32Data(value));
+  }
+
+  private void verifySetParameter(
+      final SetParameter setParameter, final String obis, final int value) {
+    assertAddress(setParameter, obis);
+    assertThat(setParameter.getData())
+        .isEqualToComparingFieldByField(DataObject.newUInteger16Data(value));
+  }
+
+  private static void assertAddress(final SetParameter setParameter, final String obis) {
     final AttributeAddress address = setParameter.getAttributeAddress();
     assertThat(address.getClassId()).isEqualTo(CLASS_ID_REGISTER);
     assertThat(address.getInstanceId().asDecimalString()).isEqualTo(obis);
     assertThat(address.getId()).isEqualTo(ATTRIBUTE_ID_VALUE);
     assertThat(address.getAccessSelection()).isNull();
-    if (doubeLong) {
-      assertThat(setParameter.getData())
-          .isEqualToComparingFieldByField(DataObject.newUInteger32Data(value));
-    } else {
-      assertThat(setParameter.getData())
-          .isEqualToComparingFieldByField(DataObject.newUInteger16Data(value));
-    }
   }
 
   private DlmsDevice createDlmsDevice(final Protocol protocol) {

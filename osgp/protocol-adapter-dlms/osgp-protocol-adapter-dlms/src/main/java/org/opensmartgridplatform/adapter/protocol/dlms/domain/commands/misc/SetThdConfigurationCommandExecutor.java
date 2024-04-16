@@ -21,7 +21,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedBy
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ThdConfigurationDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -31,7 +30,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component()
 public class SetThdConfigurationCommandExecutor
-    extends AbstractCommandExecutor<SetThdConfigurationRequestDto, AccessResultCode> {
+    extends AbstractCommandExecutor<ThdConfigurationDto, AccessResultCode> {
 
   private final DlmsHelper dlmsHelper;
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
@@ -39,7 +38,7 @@ public class SetThdConfigurationCommandExecutor
   @Autowired
   public SetThdConfigurationCommandExecutor(
       final DlmsHelper dlmsHelper, final ObjectConfigServiceHelper objectConfigServiceHelper) {
-    super(FindEventsRequestDto.class);
+    super(SetThdConfigurationRequestDto.class);
     this.dlmsHelper = dlmsHelper;
     this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
@@ -54,7 +53,7 @@ public class SetThdConfigurationCommandExecutor
   public AccessResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final SetThdConfigurationRequestDto setThdConfigRequest,
+      final ThdConfigurationDto thdConfigurationDto,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
@@ -81,20 +80,19 @@ public class SetThdConfigurationCommandExecutor
                     addressMinDurationOverToNormal,
                     addressTimeThreshold));
 
-    final ThdConfigurationDto thdConfig = setThdConfigRequest.getThdConfiguration();
-
     final SetParameter setParamThreshold =
-        this.getSetParameterLong(addressThreshold, thdConfig.getValueThreshold());
+        this.getSetParameterLong(addressThreshold, thdConfigurationDto.getValueThreshold());
     final SetParameter setParamHysteresis =
-        this.getSetParameterLong(addressHysteresis, thdConfig.getValueHysteresis());
+        this.getSetParameterLong(addressHysteresis, thdConfigurationDto.getValueHysteresis());
     final SetParameter setParamMinDurationNormalToOver =
         this.getSetParameterDoubleLong(
-            addressMinDurationNormalToOver, thdConfig.getMinDurationNormalToOver());
+            addressMinDurationNormalToOver, thdConfigurationDto.getMinDurationNormalToOver());
     final SetParameter setParamMinDurationOverToNormal =
         this.getSetParameterDoubleLong(
-            addressMinDurationOverToNormal, thdConfig.getMinDurationOverToNormal());
+            addressMinDurationOverToNormal, thdConfigurationDto.getMinDurationOverToNormal());
     final SetParameter setParamTimeThreshold =
-        this.getSetParameterDoubleLong(addressTimeThreshold, thdConfig.getTimeThreshold());
+        this.getSetParameterDoubleLong(
+            addressTimeThreshold, thdConfigurationDto.getTimeThreshold());
 
     final List<AccessResultCode> resultCodes =
         this.dlmsHelper.setWithList(

@@ -112,6 +112,21 @@ public class Smr52Profile {
   @Value("${ltediagnostic.capturetime.clockstatus}")
   private byte lteDiagnosticClockStatus;
 
+  @Value("${thd.configuration.minDuration.normaltoover}")
+  private long minDurationCurrentTHDOverlimitNormalToOver;
+
+  @Value("${thd.configuration.minDuration.overtonormal}")
+  private long minDurationCurrentTHDOverlimitOverToNormal;
+
+  @Value("${thd.configuration.time.threshold}")
+  private long timeThresholdCurrentTHDOverlimit;
+
+  @Value("${thd.configuration.value.hysteresis}")
+  private int valueHysteresisCurrentTHDOverlimit;
+
+  @Value("${thd.configuration.value.threshold}")
+  private int valueThresholdCurrentTHDOverlimit;
+
   @Bean
   public AlarmObject alarmObject2(final DynamicValues dynamicValues) {
     dynamicValues.setDefaultAttributeValue(
@@ -138,30 +153,30 @@ public class Smr52Profile {
   }
 
   @Bean
-  public MinDurationCurrentTHDOverlimitNormalToOver minDurationCurrentTHDOverlimitNormalToOver(
-      final long value) {
-    return new MinDurationCurrentTHDOverlimitNormalToOver(value);
+  public MinDurationCurrentTHDOverlimitNormalToOver minDurationCurrentTHDOverlimitNormalToOver() {
+    return new MinDurationCurrentTHDOverlimitNormalToOver(
+        this.minDurationCurrentTHDOverlimitNormalToOver);
   }
 
   @Bean
-  public MinDurationCurrentTHDOverlimitOverToNormal minDurationCurrentTHDOverlimitOverToNormal(
-      final long value) {
-    return new MinDurationCurrentTHDOverlimitOverToNormal(value);
+  public MinDurationCurrentTHDOverlimitOverToNormal minDurationCurrentTHDOverlimitOverToNormal() {
+    return new MinDurationCurrentTHDOverlimitOverToNormal(
+        this.minDurationCurrentTHDOverlimitOverToNormal);
   }
 
   @Bean
-  public TimeThresholdCurrentTHDOverlimit timeThresholdCurrentTHDOverlimit(final long value) {
-    return new TimeThresholdCurrentTHDOverlimit(value);
+  public TimeThresholdCurrentTHDOverlimit timeThresholdCurrentTHDOverlimit() {
+    return new TimeThresholdCurrentTHDOverlimit(this.timeThresholdCurrentTHDOverlimit);
   }
 
   @Bean
-  public ValueHysteresisCurrentTHDOverlimit valueHysteresisCurrentTHDOverlimit(final int value) {
-    return new ValueHysteresisCurrentTHDOverlimit(value);
+  public ValueHysteresisCurrentTHDOverlimit valueHysteresisCurrentTHDOverlimit() {
+    return new ValueHysteresisCurrentTHDOverlimit(this.valueHysteresisCurrentTHDOverlimit);
   }
 
   @Bean
-  public ValueThresholdCurrentTHDOverlimit valueThresholdCurrentTHDOverlimit(final int value) {
-    return new ValueThresholdCurrentTHDOverlimit(value);
+  public ValueThresholdCurrentTHDOverlimit valueThresholdCurrentTHDOverlimit() {
+    return new ValueThresholdCurrentTHDOverlimit(this.valueThresholdCurrentTHDOverlimit);
   }
 
   @Bean

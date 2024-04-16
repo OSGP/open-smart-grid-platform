@@ -7,7 +7,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 import java.io.Serializable;
 import java.util.List;
 import org.openmuc.jdlms.AccessResultCode;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.SetAlarmNotificationsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.GetConfigurationObjectCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetConfigurationObjectCommandExecutor;
@@ -23,6 +22,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.GetM
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.ConfigureDefinableLoadProfileCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetAdministrativeStatusCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetAdministrativeStatusCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetThdConfigurationCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupAlarmCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupLastGaspCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupSmsCommandExecutor;
@@ -100,7 +100,7 @@ public class ConfigurationService {
 
   @Autowired private SetPushSetupUdpCommandExecutor setPushSetupUdpCommandExecutor;
 
-  @Autowired private AbstractCommandExecutor setThdConfigurationCommandExecutor;
+  @Autowired private SetThdConfigurationCommandExecutor setThdConfigurationCommandExecutor;
 
   @Autowired private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
 
@@ -413,11 +413,9 @@ public class ConfigurationService {
 
     LOGGER.info("THD Configuration to set on the device: {}", thdConfiguration);
 
-    final AccessResultCode accessResultCode = AccessResultCode.SUCCESS;
-    // Activate lines of code after implementation of command executor
-    // final AccessResultCode accessResultCode =
-    //        this.setThdConfigurationCommandExecutor.execute(conn, device, thdConfiguration,
-    // messageMetadata);
+    final AccessResultCode accessResultCode =
+        this.setThdConfigurationCommandExecutor.execute(
+            conn, device, thdConfiguration, messageMetadata);
 
     if (AccessResultCode.SUCCESS != accessResultCode) {
       throw new ProtocolAdapterException(

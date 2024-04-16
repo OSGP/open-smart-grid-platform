@@ -35,8 +35,9 @@ public class SetThdConfigurationRequestMessageProcessor extends DeviceRequestMes
 
     this.assertRequestObjectType(ThdConfigurationDto.class, requestObject);
 
-    final ThdConfigurationDto thdConfiguration = (ThdConfigurationDto) requestObject;
-    this.configurationService.setThdConfiguration(conn, device, thdConfiguration, messageMetadata);
+    final ThdConfigurationDto thdConfigurationDto = (ThdConfigurationDto) requestObject;
+    this.configurationService.setThdConfiguration(
+        conn, device, thdConfigurationDto, messageMetadata);
     return null;
   }
 }
