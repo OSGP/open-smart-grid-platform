@@ -7,9 +7,7 @@ package org.opensmartgridplatform.secretmanagement.application.domain;
 import java.util.Arrays;
 import lombok.Getter;
 
-/**
- * TypedSecret stores a secret (not necessarily an encrypted secret), along with it's type.
- */
+/** TypedSecret stores a secret (not necessarily an encrypted secret), along with it's type. */
 @Getter
 public class TypedSecret {
 
