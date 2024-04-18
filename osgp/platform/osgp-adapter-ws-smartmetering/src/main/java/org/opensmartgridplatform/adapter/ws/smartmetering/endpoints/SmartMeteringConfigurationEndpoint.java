@@ -1183,8 +1183,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-      if (meterResponseData.getMessageData() instanceof String) {
-        response.setDescription((String) meterResponseData.getMessageData());
+      if (meterResponseData.getMessageData() instanceof final String messageData) {
+        response.setDescription(messageData);
       }
     } catch (final Exception e) {
       this.handleException(e);
