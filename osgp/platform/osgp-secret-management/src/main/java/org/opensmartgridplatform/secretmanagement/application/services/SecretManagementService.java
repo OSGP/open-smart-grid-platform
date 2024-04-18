@@ -110,8 +110,6 @@ public class SecretManagementService {
       final byte[] aesEncrypted;
       try {
         aesEncrypted = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
-        log.info("aesEncrypted -> type: {} aesEncryption: {}",
-            dbEncryptedSecret.getSecretType().name(), aesEncrypted);
       } catch (final IllegalArgumentException iae) {
         throw new FunctionalException(
             FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.SECRET_MANAGEMENT, iae);
@@ -242,10 +240,6 @@ public class SecretManagementService {
 
     final Map<SecretType, Optional<DbEncryptedSecret>> dbEncryptedSecretByType =
         this.getValidatedDbEncryptedSecretByType(deviceIdentification, secretTypes, status);
-
-    log.info("DB encrypted keys: ");
-    dbEncryptedSecretByType.entrySet().stream().map(e -> e.getKey() + " -> " + e.getValue())
-        .forEach(log::info);
 
     return secretTypes.stream()
         .map(
