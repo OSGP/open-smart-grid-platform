@@ -196,10 +196,6 @@ public class ActionMapperService {
             .SetPushSetupUdpRequestData.class,
         SetPushSetupUdpRequestData.class);
     CLASS_MAP.put(
-        org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
-            .SetThdConfigurationRequestData.class,
-        SetThdConfigurationRequestData.class);
-    CLASS_MAP.put(
         org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequestData
             .class,
         SynchronizeTimeRequestData.class);

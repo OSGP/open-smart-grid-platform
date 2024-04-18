@@ -1057,7 +1057,33 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="ThdConfiguration" type="tns:ThdConfiguration" />
+          <xsd:element name="MinDurationNormalToOver" type="xsd:long">
+            <xsd:annotation>
+              <xsd:documentation>The min duration for current THD Over-limit (Normal to over).
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="MinDurationOverToNormal" type="xsd:long">
+            <xsd:annotation>
+              <xsd:documentation>The min duration for current THD Over-limit (Over to normal).
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="TimeThreshold" type="xsd:long">
+            <xsd:annotation>
+              <xsd:documentation>The time threshold for current THD Over-limit .</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="ValueHysteresis" type="xsd:int">
+            <xsd:annotation>
+              <xsd:documentation>The value hysteresis for current THD Over-limit.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="ValueThreshold" type="xsd:int">
+            <xsd:annotation>
+              <xsd:documentation>The value threshold for current THD Over-limit.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -1212,38 +1238,6 @@
           <xsd:documentation>Port number of the service listening for
             alarm notifications over UDP.
           </xsd:documentation>
-        </xsd:annotation>
-      </xsd:element>
-    </xsd:sequence>
-  </xsd:complexType>
-
-  <xsd:complexType name="ThdConfiguration">
-    <xsd:sequence>
-      <xsd:element name="ThdMinDurationNormalToOver" type="xsd:long">
-        <xsd:annotation>
-          <xsd:documentation>The min duration for current THD Over-limit (Normal to over).
-          </xsd:documentation>
-        </xsd:annotation>
-      </xsd:element>
-      <xsd:element name="ThdMinDurationOverToNormal" type="xsd:long">
-        <xsd:annotation>
-          <xsd:documentation>The min duration for current THD Over-limit (Over to normal).
-          </xsd:documentation>
-        </xsd:annotation>
-      </xsd:element>
-      <xsd:element name="ThdTimeThreshold" type="xsd:long">
-        <xsd:annotation>
-          <xsd:documentation>The time threshold for current THD Over-limit .</xsd:documentation>
-        </xsd:annotation>
-      </xsd:element>
-      <xsd:element name="ThdValueHysteresis" type="xsd:int">
-        <xsd:annotation>
-          <xsd:documentation>The value hysteresis for current THD Over-limit.</xsd:documentation>
-        </xsd:annotation>
-      </xsd:element>
-      <xsd:element name="ThdValueThreshold" type="xsd:int">
-        <xsd:annotation>
-          <xsd:documentation>The value threshold for current THD Over-limit.</xsd:documentation>
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>

@@ -21,13 +21,13 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.AlarmObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic.AdjacentCellInfo;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic.CellInfo;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MinDurationCurrentTHDOverlimitNormalToOver;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MinDurationCurrentTHDOverlimitOverToNormal;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityExtendedEventLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityThdEventLog;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.TimeThresholdCurrentTHDOverlimit;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ValueHysteresisCurrentTHDOverlimit;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ValueThresholdCurrentTHDOverlimit;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ThdMinDurationNormalToOver;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ThdMinDurationOverToNormal;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ThdTimeThreshold;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ThdValueHysteresis;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ThdValueThreshold;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -113,19 +113,19 @@ public class Smr52Profile {
   private byte lteDiagnosticClockStatus;
 
   @Value("${thd.configuration.minDuration.normaltoover}")
-  private long minDurationCurrentTHDOverlimitNormalToOver;
+  private long thdMinDurationNormalToOver;
 
   @Value("${thd.configuration.minDuration.overtonormal}")
-  private long minDurationCurrentTHDOverlimitOverToNormal;
+  private long thdMinDurationOverToNormal;
 
   @Value("${thd.configuration.time.threshold}")
-  private long timeThresholdCurrentTHDOverlimit;
+  private long thdTimeThreshold;
 
   @Value("${thd.configuration.value.hysteresis}")
-  private int valueHysteresisCurrentTHDOverlimit;
+  private int thdValueHysteresis;
 
   @Value("${thd.configuration.value.threshold}")
-  private int valueThresholdCurrentTHDOverlimit;
+  private int thdValueThreshold;
 
   @Bean
   public AlarmObject alarmObject2(final DynamicValues dynamicValues) {
@@ -153,30 +153,28 @@ public class Smr52Profile {
   }
 
   @Bean
-  public MinDurationCurrentTHDOverlimitNormalToOver minDurationCurrentTHDOverlimitNormalToOver() {
-    return new MinDurationCurrentTHDOverlimitNormalToOver(
-        this.minDurationCurrentTHDOverlimitNormalToOver);
+  public ThdMinDurationNormalToOver thdMinDurationNormalToOver() {
+    return new ThdMinDurationNormalToOver(this.thdMinDurationNormalToOver);
   }
 
   @Bean
-  public MinDurationCurrentTHDOverlimitOverToNormal minDurationCurrentTHDOverlimitOverToNormal() {
-    return new MinDurationCurrentTHDOverlimitOverToNormal(
-        this.minDurationCurrentTHDOverlimitOverToNormal);
+  public ThdMinDurationOverToNormal thdMinDurationOverToNormal() {
+    return new ThdMinDurationOverToNormal(this.thdMinDurationOverToNormal);
   }
 
   @Bean
-  public TimeThresholdCurrentTHDOverlimit timeThresholdCurrentTHDOverlimit() {
-    return new TimeThresholdCurrentTHDOverlimit(this.timeThresholdCurrentTHDOverlimit);
+  public ThdTimeThreshold thdTimeThreshold() {
+    return new ThdTimeThreshold(this.thdTimeThreshold);
   }
 
   @Bean
-  public ValueHysteresisCurrentTHDOverlimit valueHysteresisCurrentTHDOverlimit() {
-    return new ValueHysteresisCurrentTHDOverlimit(this.valueHysteresisCurrentTHDOverlimit);
+  public ThdValueHysteresis thdValueHysteresis() {
+    return new ThdValueHysteresis(this.thdValueHysteresis);
   }
 
   @Bean
-  public ValueThresholdCurrentTHDOverlimit valueThresholdCurrentTHDOverlimit() {
-    return new ValueThresholdCurrentTHDOverlimit(this.valueThresholdCurrentTHDOverlimit);
+  public ThdValueThreshold thdValueThreshold() {
+    return new ThdValueThreshold(this.thdValueThreshold);
   }
 
   @Bean

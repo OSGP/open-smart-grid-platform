@@ -14,7 +14,6 @@ import static org.opensmartgridplatform.cucumber.platform.smartmetering.Platform
 
 import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetThdConfigurationRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ThdConfiguration;
 
 public class SetThdConfigurationRequestBuilder {
 
@@ -37,13 +36,11 @@ public class SetThdConfigurationRequestBuilder {
 
   public SetThdConfigurationRequest build() {
     final SetThdConfigurationRequest request = new SetThdConfigurationRequest();
-    final ThdConfiguration config = new ThdConfiguration();
-    config.setThdMinDurationNormalToOver(this.thdMinDurationNormalToOver);
-    config.setThdMinDurationOverToNormal(this.thdMinDurationOverToNormal);
-    config.setThdTimeThreshold(this.thdTimeThreshold);
-    config.setThdValueThreshold(this.thdValueThreshold);
-    config.setThdValueHysteresis(this.thdValueHysteresis);
-    request.setThdConfiguration(config);
+    request.setMinDurationNormalToOver(this.thdMinDurationNormalToOver);
+    request.setMinDurationOverToNormal(this.thdMinDurationOverToNormal);
+    request.setTimeThreshold(this.thdTimeThreshold);
+    request.setValueThreshold(this.thdValueThreshold);
+    request.setValueHysteresis(this.thdValueHysteresis);
     return request;
   }
 

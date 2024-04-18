@@ -12,7 +12,7 @@ import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.builder.ScalerUnitBuilder;
 
 @CosemClass(id = 3)
-public class TimeThresholdCurrentTHDOverlimit extends CosemInterfaceObject {
+public class ThdTimeThreshold extends CosemInterfaceObject {
 
   @CosemAttribute(id = 2, type = Type.DOUBLE_LONG_UNSIGNED)
   private final DataObject value;
@@ -20,9 +20,9 @@ public class TimeThresholdCurrentTHDOverlimit extends CosemInterfaceObject {
   @CosemAttribute(id = 3, type = Type.STRUCTURE)
   private final DataObject scalerUnit;
 
-  public TimeThresholdCurrentTHDOverlimit(final long value) {
+  public ThdTimeThreshold(final long value) {
     super("1.0.11.44.124.255");
-    this.value = DataObject.newUInteger64Data(value);
+    this.value = DataObject.newUInteger32Data(value);
     this.scalerUnit = ScalerUnitBuilder.createScalerUnit(0, UnitType.SECONDS.value());
   }
 }

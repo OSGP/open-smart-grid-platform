@@ -12,17 +12,17 @@ import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.builder.ScalerUnitBuilder;
 
 @CosemClass(id = 3)
-public class MinDurationCurrentTHDOverlimitNormalToOver extends CosemInterfaceObject {
+public class ThdValueHysteresis extends CosemInterfaceObject {
 
-  @CosemAttribute(id = 2, type = Type.DOUBLE_LONG_UNSIGNED)
+  @CosemAttribute(id = 2, type = Type.LONG_UNSIGNED)
   private final DataObject value;
 
   @CosemAttribute(id = 3, type = Type.STRUCTURE)
   private final DataObject scalerUnit;
 
-  public MinDurationCurrentTHDOverlimitNormalToOver(final long value) {
-    super("0.1.94.31.22.255");
-    this.value = DataObject.newUInteger64Data(value);
-    this.scalerUnit = ScalerUnitBuilder.createScalerUnit(0, UnitType.SECONDS.value());
+  public ThdValueHysteresis(final int value) {
+    super("0.1.94.31.21.255");
+    this.value = DataObject.newUInteger16Data(value);
+    this.scalerUnit = ScalerUnitBuilder.createScalerUnit(0, UnitType.PERCENTAGE.value());
   }
 }

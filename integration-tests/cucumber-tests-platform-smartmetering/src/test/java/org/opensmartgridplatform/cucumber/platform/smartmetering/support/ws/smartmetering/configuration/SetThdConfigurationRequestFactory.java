@@ -16,7 +16,6 @@ import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetThdConfigurationAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetThdConfigurationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetThdConfigurationRequestData;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ThdConfiguration;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 
@@ -46,18 +45,12 @@ public class SetThdConfigurationRequestFactory {
   private static SetThdConfigurationRequestData createRequestData(
       final Map<String, String> settings) {
 
-    final ThdConfiguration thdConfiguration = new ThdConfiguration();
-
-    thdConfiguration.setThdMinDurationNormalToOver(
-        getLongValue(settings, THD_MIN_DURATION_NORMAL_TO_OVER));
-    thdConfiguration.setThdMinDurationOverToNormal(
-        getLongValue(settings, THD_MIN_DURATION_OVER_TO_NORMAL));
-    thdConfiguration.setThdTimeThreshold(getLongValue(settings, THD_TIME_THRESHOLD));
-    thdConfiguration.setThdValueHysteresis(getIntValue(settings, THD_VALUE_HYSTERESIS));
-    thdConfiguration.setThdValueThreshold(getIntValue(settings, THD_VALUE_THRESHOLD));
-
     final SetThdConfigurationRequestData requestData = new SetThdConfigurationRequestData();
-    requestData.setThdConfiguration(thdConfiguration);
+    requestData.setMinDurationNormalToOver(getLongValue(settings, THD_MIN_DURATION_NORMAL_TO_OVER));
+    requestData.setMinDurationOverToNormal(getLongValue(settings, THD_MIN_DURATION_OVER_TO_NORMAL));
+    requestData.setTimeThreshold(getLongValue(settings, THD_TIME_THRESHOLD));
+    requestData.setValueHysteresis(getIntValue(settings, THD_VALUE_HYSTERESIS));
+    requestData.setValueThreshold(getIntValue(settings, THD_VALUE_THRESHOLD));
 
     return requestData;
   }

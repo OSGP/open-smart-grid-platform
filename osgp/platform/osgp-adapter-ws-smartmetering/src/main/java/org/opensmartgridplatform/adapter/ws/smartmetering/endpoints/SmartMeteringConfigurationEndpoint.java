@@ -142,7 +142,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeyOn
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupUdpRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ThdConfiguration;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetThdConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -1138,10 +1138,9 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
       @BypassRetry final String bypassRetry)
       throws OsgpException {
 
-    final ThdConfiguration thdConfiguration =
+    final SetThdConfigurationRequestData requestData =
         this.configurationMapper.map(
-            request.getSetThdConfigurationRequestData().getThdConfiguration(),
-            ThdConfiguration.class);
+            request.getSetThdConfigurationRequestData(), SetThdConfigurationRequestData.class);
 
     final RequestMessageMetadata requestMessageMetadata =
         RequestMessageMetadata.newBuilder()
@@ -1155,7 +1154,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .build();
 
     final AsyncResponse asyncResponse =
-        this.requestService.enqueueAndSendRequest(requestMessageMetadata, thdConfiguration);
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
 
     this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 

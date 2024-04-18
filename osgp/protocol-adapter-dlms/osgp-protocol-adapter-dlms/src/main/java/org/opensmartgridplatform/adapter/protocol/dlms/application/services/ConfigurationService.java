@@ -61,10 +61,10 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupUdpRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDayDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ThdConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -407,15 +407,14 @@ public class ConfigurationService {
   public void setThdConfiguration(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ThdConfigurationDto thdConfiguration,
+      final SetThdConfigurationRequestDto requestDto,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    LOGGER.info("THD Configuration to set on the device: {}", thdConfiguration);
+    LOGGER.info("THD Configuration to set on the device: {}", requestDto);
 
     final AccessResultCode accessResultCode =
-        this.setThdConfigurationCommandExecutor.execute(
-            conn, device, thdConfiguration, messageMetadata);
+        this.setThdConfigurationCommandExecutor.execute(conn, device, requestDto, messageMetadata);
 
     if (AccessResultCode.SUCCESS != accessResultCode) {
       throw new ProtocolAdapterException(

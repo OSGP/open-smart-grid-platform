@@ -38,8 +38,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysR
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupUdpRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetThdConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ThdConfiguration;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import org.opensmartgridplatform.domain.smartmetering.exceptions.GatewayDeviceNotSetForMbusDeviceException;
@@ -71,8 +71,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupUdpRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ThdConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -241,7 +241,7 @@ public class ConfigurationService {
       throws FunctionalException {
 
     log.info(
-        "setPushSetupSms for organisationIdentification: {} for deviceIdentification: {}",
+        "setPushSetupUdp for organisationIdentification: {} for deviceIdentification: {}",
         messageMetadata.getOrganisationIdentification(),
         messageMetadata.getDeviceIdentification());
 
@@ -261,7 +261,7 @@ public class ConfigurationService {
   }
 
   public void setThdConfiguration(
-      final MessageMetadata messageMetadata, final ThdConfiguration thdConfiguration)
+      final MessageMetadata messageMetadata, final SetThdConfigurationRequestData requestData)
       throws FunctionalException {
 
     log.info(
@@ -272,8 +272,13 @@ public class ConfigurationService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
-    final ThdConfigurationDto requestDto =
-        this.configurationMapper.map(thdConfiguration, ThdConfigurationDto.class);
+    final SetThdConfigurationRequestDto requestDto =
+        new SetThdConfigurationRequestDto(
+            requestData.getMinDurationNormalToOver(),
+            requestData.getMinDurationOverToNormal(),
+            requestData.getTimeThreshold(),
+            requestData.getValueHysteresis(),
+            requestData.getValueThreshold());
 
     this.osgpCoreRequestMessageSender.send(
         requestDto,

@@ -36,7 +36,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ThdConfigurationDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurationRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,14 +57,13 @@ class SetThdConfigurationCommandExecutorTest {
   private static final long DURATION_OVER_TO_NORMAL = 20;
   private static final long TIME_THRESHOLD = 25;
 
-  private static final ThdConfigurationDto REQUEST =
-      new ThdConfigurationDto.Builder()
-          .withValueThreshold(VALUE_THRESHOLD)
-          .withValueHysteresis(VALUE_HYSTERESIS)
-          .withMinDurationNormalToOver(DURATION_NORMAL_TO_OVER)
-          .withMinDurationOverToNormal(DURATION_OVER_TO_NORMAL)
-          .withTimeThreshold(TIME_THRESHOLD)
-          .build();
+  private static final SetThdConfigurationRequestDto REQUEST =
+      new SetThdConfigurationRequestDto(
+          DURATION_NORMAL_TO_OVER,
+          DURATION_OVER_TO_NORMAL,
+          TIME_THRESHOLD,
+          VALUE_HYSTERESIS,
+          VALUE_THRESHOLD);
 
   private static final MessageMetadata MSG_META_DATA =
       MessageMetadata.newBuilder().withCorrelationUid("123456").build();

@@ -22,7 +22,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurationRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ThdConfigurationDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,7 +29,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component()
 public class SetThdConfigurationCommandExecutor
-    extends AbstractCommandExecutor<ThdConfigurationDto, AccessResultCode> {
+    extends AbstractCommandExecutor<SetThdConfigurationRequestDto, AccessResultCode> {
 
   private final DlmsHelper dlmsHelper;
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
@@ -53,7 +52,7 @@ public class SetThdConfigurationCommandExecutor
   public AccessResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ThdConfigurationDto thdConfigurationDto,
+      final SetThdConfigurationRequestDto requestDto,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
@@ -81,18 +80,17 @@ public class SetThdConfigurationCommandExecutor
                     addressTimeThreshold));
 
     final SetParameter setParamThreshold =
-        this.getSetParameterLong(addressThreshold, thdConfigurationDto.getValueThreshold());
+        this.getSetParameterLong(addressThreshold, requestDto.getValueThreshold());
     final SetParameter setParamHysteresis =
-        this.getSetParameterLong(addressHysteresis, thdConfigurationDto.getValueHysteresis());
+        this.getSetParameterLong(addressHysteresis, requestDto.getValueHysteresis());
     final SetParameter setParamMinDurationNormalToOver =
         this.getSetParameterDoubleLong(
-            addressMinDurationNormalToOver, thdConfigurationDto.getMinDurationNormalToOver());
+            addressMinDurationNormalToOver, requestDto.getMinDurationNormalToOver());
     final SetParameter setParamMinDurationOverToNormal =
         this.getSetParameterDoubleLong(
-            addressMinDurationOverToNormal, thdConfigurationDto.getMinDurationOverToNormal());
+            addressMinDurationOverToNormal, requestDto.getMinDurationOverToNormal());
     final SetParameter setParamTimeThreshold =
-        this.getSetParameterDoubleLong(
-            addressTimeThreshold, thdConfigurationDto.getTimeThreshold());
+        this.getSetParameterDoubleLong(addressTimeThreshold, requestDto.getTimeThreshold());
 
     final List<AccessResultCode> resultCodes =
         this.dlmsHelper.setWithList(

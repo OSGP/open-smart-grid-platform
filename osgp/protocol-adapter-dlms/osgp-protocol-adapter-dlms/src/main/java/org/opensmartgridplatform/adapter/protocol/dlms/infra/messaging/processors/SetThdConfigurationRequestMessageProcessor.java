@@ -9,7 +9,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ThdConfigurationDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurationRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -33,11 +33,10 @@ public class SetThdConfigurationRequestMessageProcessor extends DeviceRequestMes
       final MessageMetadata messageMetadata)
       throws OsgpException {
 
-    this.assertRequestObjectType(ThdConfigurationDto.class, requestObject);
+    this.assertRequestObjectType(SetThdConfigurationRequestDto.class, requestObject);
 
-    final ThdConfigurationDto thdConfigurationDto = (ThdConfigurationDto) requestObject;
-    this.configurationService.setThdConfiguration(
-        conn, device, thdConfigurationDto, messageMetadata);
+    final SetThdConfigurationRequestDto requestDto = (SetThdConfigurationRequestDto) requestObject;
+    this.configurationService.setThdConfiguration(conn, device, requestDto, messageMetadata);
     return null;
   }
 }

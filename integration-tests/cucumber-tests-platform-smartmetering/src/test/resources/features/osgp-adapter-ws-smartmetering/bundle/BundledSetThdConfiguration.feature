@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform #@ThdConfiguration
+@SmartMetering @Platform @ThdConfiguration
 Feature: SmartMetering Bundle - THD Configuation
   As a grid operator 
   I want to be able to set configuration for THD on a meter via a bundle request
@@ -16,11 +16,11 @@ Feature: SmartMetering Bundle - THD Configuation
       | Protocol             | <protocol>             |
       | ProtocolVersion      |              <version> |
     And the bundle request contains a set THD configuration action with parameters
-        | Thd Value Threshold             | 1 |
-        | Thd Value Hysteresis            | 2 |
-        | Thd Min Duration Normal To Over | 3 |
-        | Thd Min Duration Over To Normal | 4 |
-        | Thd Time Threshold              | 5 |
+      | Thd Min Duration Normal To Over | 1 |
+      | Thd Min Duration Over To Normal | 2 |
+      | Thd Time Threshold              | 3 |
+      | Thd Value Hysteresis            | 4 |
+      | Thd Value Threshold             | 5 |
     When the bundle request is received
     Then the bundle response should contain a set THD configuration response with values
       | Result | OK |
@@ -40,11 +40,11 @@ Feature: SmartMetering Bundle - THD Configuation
       | Protocol             | <protocol>             |
       | ProtocolVersion      |              <version> |
     And the bundle request contains a set THD configuration action with parameters
-      | Thd Value Threshold             | 1 |
-      | Thd Value Hysteresis            | 2 |
-      | Thd Min Duration Normal To Over | 3 |
-      | Thd Min Duration Over To Normal | 4 |
-      | Thd Time Threshold              | 5 |
+      | Thd Min Duration Normal To Over | 1 |
+      | Thd Min Duration Over To Normal | 2 |
+      | Thd Time Threshold              | 3 |
+      | Thd Value Hysteresis            | 4 |
+      | Thd Value Threshold             | 5 |
     When the bundle request is received
     Then the bundle response should be a FaultResponse with message containing
       | Message | Error handling request with SetThdConfigurationCommandExecutor: No address found for THD_VALUE_THRESHOLD in protocol <protocol> <version> |

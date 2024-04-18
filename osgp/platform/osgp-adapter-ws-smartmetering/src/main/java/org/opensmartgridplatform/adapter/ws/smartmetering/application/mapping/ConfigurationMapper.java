@@ -75,8 +75,6 @@ public class ConfigurationMapper extends ConfigurableMapper {
 
     mapperFactory.getConverterFactory().registerConverter(new SetKeysRequestConverter());
 
-    mapperFactory.getConverterFactory().registerConverter(new ThdConfigurationConverter());
-
     // These converters are necessary to enable correct mapping of dates and
     // times.
     mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter());

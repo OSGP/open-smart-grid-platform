@@ -6,7 +6,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.mess
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.BaseRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ThdConfiguration;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetThdConfigurationRequestData;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -33,8 +33,7 @@ public class SetThdConfigurationRequestMessageProcessor extends BaseRequestMessa
   protected void handleMessage(final MessageMetadata deviceMessageMetadata, final Object dataObject)
       throws FunctionalException {
 
-    final ThdConfiguration thdConfiguration = (ThdConfiguration) dataObject;
-
-    this.configurationService.setThdConfiguration(deviceMessageMetadata, thdConfiguration);
+    this.configurationService.setThdConfiguration(
+        deviceMessageMetadata, (SetThdConfigurationRequestData) dataObject);
   }
 }
