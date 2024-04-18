@@ -56,15 +56,21 @@ public class SecretManagementEndpoint {
 
   @FunctionalInterface
   private interface RequestProcessor<R extends AbstractRequest, S extends AbstractResponse> {
+
     S processRequest(R request) throws OsgpException;
   }
 
   public static final String NAMESPACE_URI =
       "http://www.opensmartgridplatform.org/schemas/security/secretmanagement";
+
   public static final String CORRELATION_UID = "correlationUid";
+
   private static final String CORRELATION_HEADER = "{" + NAMESPACE_URI + "}" + CORRELATION_UID;
+
   private final SecretManagementService secretManagementService;
+
   private final SecretManagementMetrics secretManagementMetrics;
+
   private final SoapEndpointDataTypeConverter converter;
 
   public SecretManagementEndpoint(
@@ -292,35 +298,7 @@ public class SecretManagementEndpoint {
     final List<SecretType> secretTypeList = this.converter.convertToSecretTypes(soapSecretTypes);
     final List<TypedSecret> typedSecrets =
         this.secretManagementService.retrieveSecrets(request.getDeviceId(), secretTypeList);
-
-    if (log.isDebugEnabled()) {
-      log.debug(
-          "Secrets from DB reencrypted to RSA: {}",
-          typedSecrets.stream()
-              .map(
-                  typedSecret ->
-                      "\ntype: "
-                          + typedSecret.getSecretType().name()
-                          + " secret: "
-                          + typedSecret.getSecretAsHexString())
-              .toList());
-    }
-
     final TypedSecrets soapTypedSecrets = this.converter.convertToSoapTypedSecrets(typedSecrets);
-
-    if (log.isDebugEnabled()) {
-      log.debug(
-          "Secrets encrypted for SOAP transport): {}",
-          typedSecrets.stream()
-              .map(
-                  typedSecret ->
-                      "\ntype: "
-                          + typedSecret.getSecretType().name()
-                          + " secret: "
-                          + typedSecret.getSecretAsHexString())
-              .toList());
-    }
-
     response.setTypedSecrets(soapTypedSecrets);
     return response;
   }

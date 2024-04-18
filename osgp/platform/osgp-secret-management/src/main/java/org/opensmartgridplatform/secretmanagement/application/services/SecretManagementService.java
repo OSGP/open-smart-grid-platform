@@ -60,9 +60,13 @@ public class SecretManagementService {
 
   // Internal datastructure to keep track of (intermediate) secret details
   private static class EncryptedTypedSecret {
+
     byte[] encryptedSecret;
+
     SecretType type;
+
     String encryptionKeyReference; // NULL when RSA
+
     EncryptionProviderType encryptionProviderType; // NULL when RSA
 
     private EncryptedTypedSecret(final SecretType type) {
@@ -106,6 +110,8 @@ public class SecretManagementService {
       final byte[] aesEncrypted;
       try {
         aesEncrypted = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
+        log.info("aesEncrypted -> type: {} aesEncryption: {}",
+            dbEncryptedSecret.getSecretType().name(), aesEncrypted);
       } catch (final IllegalArgumentException iae) {
         throw new FunctionalException(
             FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.SECRET_MANAGEMENT, iae);
@@ -119,23 +125,26 @@ public class SecretManagementService {
   }
 
   private final EncryptionDelegate encryptionDelegateForKeyStorage;
+
   private final EncryptionProviderType encryptionProviderType;
+
   private final DbEncryptedSecretRepository secretRepository;
+
   private final EncryptionKeyReferenceCacheService encryptionKeyReferenceCacheService;
+
   private final RsaEncrypter encrypterForSecretManagementClient;
+
   private final RsaEncrypter decrypterForSecretManagement;
+
   private final SecretManagementMetrics secretManagementMetrics;
 
   public SecretManagementService(
-      @Qualifier("DefaultEncryptionDelegateForKeyStorage")
-          final EncryptionDelegate defaultEncryptionDelegateForKeyStorage,
+      @Qualifier("DefaultEncryptionDelegateForKeyStorage") final EncryptionDelegate defaultEncryptionDelegateForKeyStorage,
       final EncryptionProviderType encryptionProviderType,
       final DbEncryptedSecretRepository secretRepository,
       final EncryptionKeyReferenceCacheService encryptionKeyReferenceCacheService,
-      @Qualifier(value = "encrypterForSecretManagementClient")
-          final RsaEncrypter encrypterForSecretManagementClient,
-      @Qualifier(value = "decrypterForSecretManagement")
-          final RsaEncrypter decrypterForSecretManagement,
+      @Qualifier(value = "encrypterForSecretManagementClient") final RsaEncrypter encrypterForSecretManagementClient,
+      @Qualifier(value = "decrypterForSecretManagement") final RsaEncrypter decrypterForSecretManagement,
       final SecretManagementMetrics secretManagementMetrics) {
     this.encryptionDelegateForKeyStorage = defaultEncryptionDelegateForKeyStorage;
     this.encryptionProviderType = encryptionProviderType;
@@ -233,6 +242,10 @@ public class SecretManagementService {
 
     final Map<SecretType, Optional<DbEncryptedSecret>> dbEncryptedSecretByType =
         this.getValidatedDbEncryptedSecretByType(deviceIdentification, secretTypes, status);
+
+    log.info("DB encrypted keys: ");
+    dbEncryptedSecretByType.entrySet().stream().map(e -> e.getKey() + " -> " + e.getValue())
+        .forEach(log::info);
 
     return secretTypes.stream()
         .map(
@@ -437,7 +450,8 @@ public class SecretManagementService {
     } else {
       final byte[] rsaEncrypted =
           this.reencryptAes2Rsa(
-              secret.encryptedSecret, secret.encryptionKeyReference, secret.encryptionProviderType);
+              secret.encryptedSecret, secret.encryptionKeyReference, secret.encryptionProviderType,
+              secret.type);
       return new EncryptedTypedSecret(rsaEncrypted, secret.type);
     }
   }
@@ -464,11 +478,22 @@ public class SecretManagementService {
   private byte[] reencryptAes2Rsa(
       final byte[] aes,
       final String keyReference,
-      final EncryptionProviderType encryptionProviderType) {
+      final EncryptionProviderType encryptionProviderType,
+      final SecretType secretType) {
     try {
-      return this.encrypterForSecretManagementClient.encrypt(
-          this.encryptionDelegateForKeyStorage.decrypt(
-              new EncryptedSecret(encryptionProviderType, aes), keyReference));
+      final byte[] decrypted = this.encryptionDelegateForKeyStorage.decrypt(
+          new EncryptedSecret(encryptionProviderType, aes), keyReference);
+      final byte[] encrypted = this.encrypterForSecretManagementClient.encrypt(decrypted);
+
+      log.debug(
+          "\nSECRETS LOGGING -> secret type: {}, provider type: {}, key reference: {} "
+              + "\nAES encrypted (DB)  : {} "
+              + "\ndecrypted           : {} "
+              + "\nRSA encrypted (SOAP): {}",
+          secretType.name(), encryptionProviderType.name(), keyReference, HexUtils.toHexString(aes),
+          HexUtils.toHexString(decrypted), HexUtils.toHexString(encrypted));
+
+      return encrypted;
     } catch (final EncrypterException ee) {
       throw this.handleEncrypterException(
           "Could not reencrypt secret from AES to RSA: " + ee.toString(), ee);
