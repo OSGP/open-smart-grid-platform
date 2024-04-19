@@ -23,6 +23,7 @@ import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.CosemDate;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
@@ -195,10 +196,8 @@ public class DlmsHelper {
     try {
       // Getting a too large list of attribute addresses in one get from the DlmsConnection
       // might result in a SCOPE_OF_ACCESS_VIOLATED error
-      Integer maxItemsInRequest = device.getWithListMax();
-      if (maxItemsInRequest == null || maxItemsInRequest < 1) {
-        maxItemsInRequest = 1;
-      }
+      final int maxItemsInRequest = this.getMaxItemsInRequest(device);
+
       final List<GetResult> getResults = new ArrayList<>();
       final List<AttributeAddress[]> maximizedSubsetsOfParams =
           this.getMaximizedSubsetsOfParams(maxItemsInRequest, params);
@@ -223,6 +222,47 @@ public class DlmsHelper {
     }
   }
 
+  public List<AccessResultCode> setWithList(
+      final DlmsConnectionManager conn, final DlmsDevice device, final List<SetParameter> params)
+      throws ProtocolAdapterException {
+    try {
+      // Setting a too large list of attribute addresses in one set to the DlmsConnection
+      // might result in a SCOPE_OF_ACCESS_VIOLATED error
+      final int maxItemsInRequest = this.getMaxItemsInRequest(device);
+
+      final List<AccessResultCode> resultCodes = new ArrayList<>();
+      final List<List<SetParameter>> maximizedSubsetsOfParams =
+          this.getMaximizedSubsetsOfParams(maxItemsInRequest, params);
+      for (final List<SetParameter> maximizedSubsetOfParams : maximizedSubsetsOfParams) {
+        resultCodes.addAll(conn.getConnection().set(maximizedSubsetOfParams));
+      }
+      return resultCodes;
+    } catch (final IOException | NullPointerException e) {
+      // The jDMLS code throws a NullPointerException instead of a ResponseTimeoutException
+      // (specific type of IOException via NonFatalJDlmsException and JDlmsException).
+      throw new ConnectionException(
+          "Connection error setting values with-list for device: "
+              + device.getDeviceIdentification(),
+          e);
+    } catch (final Exception e) {
+      throw new ProtocolAdapterException(
+          "Error setting values with-list for device: "
+              + device.getDeviceIdentification()
+              + ", with-list max: "
+              + device.getWithListMax(),
+          e);
+    }
+  }
+
+  private int getMaxItemsInRequest(final DlmsDevice device) {
+    Integer maxItemsInRequest = device.getWithListMax();
+    if (maxItemsInRequest == null || maxItemsInRequest < 1) {
+      maxItemsInRequest = 1;
+    }
+
+    return maxItemsInRequest;
+  }
+
   private List<AttributeAddress[]> getMaximizedSubsetsOfParams(
       final int chunk, final AttributeAddress[] attributeAddresses) {
     final List<AttributeAddress[]> maximizedCurrentSets = new ArrayList<>();
@@ -230,6 +270,15 @@ public class DlmsHelper {
       maximizedCurrentSets.add(
           Arrays.copyOfRange(
               attributeAddresses, i, Math.min(attributeAddresses.length, i + chunk)));
+    }
+    return maximizedCurrentSets;
+  }
+
+  private List<List<SetParameter>> getMaximizedSubsetsOfParams(
+      final int chunk, final List<SetParameter> setParameters) {
+    final List<List<SetParameter>> maximizedCurrentSets = new ArrayList<>();
+    for (int i = 0; i < setParameters.size(); i += chunk) {
+      maximizedCurrentSets.add(setParameters.subList(i, Math.min(setParameters.size(), i + chunk)));
     }
     return maximizedCurrentSets;
   }

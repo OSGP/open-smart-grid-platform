@@ -23,6 +23,11 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic.Adj
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic.CellInfo;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityExtendedEventLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityThdEventLog;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ThdMinDurationNormalToOver;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ThdMinDurationOverToNormal;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ThdTimeThreshold;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ThdValueHysteresis;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ThdValueThreshold;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -107,6 +112,21 @@ public class Smr52Profile {
   @Value("${ltediagnostic.capturetime.clockstatus}")
   private byte lteDiagnosticClockStatus;
 
+  @Value("${thd.configuration.minDuration.normaltoover}")
+  private long thdMinDurationNormalToOver;
+
+  @Value("${thd.configuration.minDuration.overtonormal}")
+  private long thdMinDurationOverToNormal;
+
+  @Value("${thd.configuration.time.threshold}")
+  private long thdTimeThreshold;
+
+  @Value("${thd.configuration.value.hysteresis}")
+  private int thdValueHysteresis;
+
+  @Value("${thd.configuration.value.threshold}")
+  private int thdValueThreshold;
+
   @Bean
   public AlarmObject alarmObject2(final DynamicValues dynamicValues) {
     dynamicValues.setDefaultAttributeValue(
@@ -130,6 +150,31 @@ public class Smr52Profile {
   @Bean
   public PowerQualityThdEventLog powerQualityThdEventLog(final Calendar cal) {
     return new PowerQualityThdEventLog(cal);
+  }
+
+  @Bean
+  public ThdMinDurationNormalToOver thdMinDurationNormalToOver() {
+    return new ThdMinDurationNormalToOver(this.thdMinDurationNormalToOver);
+  }
+
+  @Bean
+  public ThdMinDurationOverToNormal thdMinDurationOverToNormal() {
+    return new ThdMinDurationOverToNormal(this.thdMinDurationOverToNormal);
+  }
+
+  @Bean
+  public ThdTimeThreshold thdTimeThreshold() {
+    return new ThdTimeThreshold(this.thdTimeThreshold);
+  }
+
+  @Bean
+  public ThdValueHysteresis thdValueHysteresis() {
+    return new ThdValueHysteresis(this.thdValueHysteresis);
+  }
+
+  @Bean
+  public ThdValueThreshold thdValueThreshold() {
+    return new ThdValueThreshold(this.thdValueThreshold);
   }
 
   @Bean

@@ -444,6 +444,38 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="SetThdConfigurationRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="SetThdConfigurationRequestData" type="tns:SetThdConfigurationRequestData" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetThdConfigurationAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetThdConfigurationAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetThdConfigurationResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType" />
+        <xsd:element name="Description" type="xsd:string"
+          minOccurs="0" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="SetAlarmNotificationsRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -1016,6 +1048,42 @@
     <xsd:complexContent>
       <xsd:extension base="common:Query">
         <xsd:sequence>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="SetThdConfigurationRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Command">
+        <xsd:sequence>
+          <xsd:element name="MinDurationNormalToOver" type="xsd:long">
+            <xsd:annotation>
+              <xsd:documentation>The min duration for current THD Over-limit (Normal to over).
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="MinDurationOverToNormal" type="xsd:long">
+            <xsd:annotation>
+              <xsd:documentation>The min duration for current THD Over-limit (Over to normal).
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="TimeThreshold" type="xsd:long">
+            <xsd:annotation>
+              <xsd:documentation>The time threshold for current THD Over-limit .</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="ValueHysteresis" type="xsd:int">
+            <xsd:annotation>
+              <xsd:documentation>The value hysteresis for current THD Over-limit.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="ValueThreshold" type="xsd:int">
+            <xsd:annotation>
+              <xsd:documentation>The value threshold for current THD Over-limit.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

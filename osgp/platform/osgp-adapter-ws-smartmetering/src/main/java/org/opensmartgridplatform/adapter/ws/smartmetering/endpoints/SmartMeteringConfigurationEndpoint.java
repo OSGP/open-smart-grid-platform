@@ -118,6 +118,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetThdConfigurationAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetThdConfigurationAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetThdConfigurationRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetThdConfigurationResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequest;
@@ -138,6 +142,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeyOn
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupUdpRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetThdConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -1113,6 +1118,73 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
       response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
       if (meterResponseData.getMessageData() instanceof String) {
         response.setDescription((String) meterResponseData.getMessageData());
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
+    }
+    return response;
+  }
+
+  @PayloadRoot(
+      localPart = "SetThdConfigurationRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetThdConfigurationAsyncResponse setThdConfiguration(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetThdConfigurationRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
+
+    final SetThdConfigurationRequestData requestData =
+        this.configurationMapper.map(
+            request.getSetThdConfigurationRequestData(), SetThdConfigurationRequestData.class);
+
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.SET_THD_CONFIGURATION)
+            .withMessageType(MessageType.SET_THD_CONFIGURATION)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
+
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
+
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+
+    return this.configurationMapper.map(asyncResponse, SetThdConfigurationAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "SetThdConfigurationAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetThdConfigurationResponse getSetThdConfigurationResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetThdConfigurationAsyncRequest request)
+      throws OsgpException {
+
+    log.info(
+        "Incoming SetThdConfigurationAsyncRequest for organisation {} for meter: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification());
+
+    SetThdConfigurationResponse response = null;
+    try {
+      response = new SetThdConfigurationResponse();
+      final ResponseData meterResponseData =
+          this.responseDataService.get(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+      if (meterResponseData.getMessageData() instanceof final String messageData) {
+        response.setDescription(messageData);
       }
     } catch (final Exception e) {
       this.handleException(e);
