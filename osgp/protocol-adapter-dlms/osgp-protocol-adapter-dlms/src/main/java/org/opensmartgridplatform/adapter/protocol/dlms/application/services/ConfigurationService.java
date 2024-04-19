@@ -11,6 +11,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.Set
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.GetConfigurationObjectCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetConfigurationObjectCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetRandomisationSettingsCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetThdConfigurationCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SetActivityCalendarCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SetClockConfigurationCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SetSpecialDaysCommandExecutor;
@@ -22,7 +23,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.GetM
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.ConfigureDefinableLoadProfileCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetAdministrativeStatusCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetAdministrativeStatusCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetThdConfigurationCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupAlarmCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupLastGaspCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupSmsCommandExecutor;

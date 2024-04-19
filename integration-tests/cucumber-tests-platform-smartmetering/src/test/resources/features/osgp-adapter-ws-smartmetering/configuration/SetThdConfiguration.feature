@@ -16,11 +16,11 @@ Feature: SmartMetering Configuration - Set THD Configuration
       | ProtocolVersion      |              <version> |
     When the set ThdConfiguration request is received
       | DeviceIdentification            | <deviceIdentification> |
-      | Thd Min Duration Normal To Over |                      1 |
-      | Thd Min Duration Over To Normal |                      2 |
-      | Thd Time Threshold              |                      3 |
-      | Thd Value Hysteresis            |                      4 |
-      | Thd Value Threshold             |                      5 |
+      | Thd Min Duration Normal To Over |                   1200 |
+      | Thd Min Duration Over To Normal |                   1080 |
+      | Thd Time Threshold              |                  96000 |
+      | Thd Value Hysteresis            |                      5 |
+      | Thd Value Threshold             |                     50 |
     Then the ThdConfiguration <shouldBeSetOrNot> on the device
       | DeviceIdentification | <deviceIdentification> |
 

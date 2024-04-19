@@ -13,16 +13,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurat
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SetThdConfigurationRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public SetThdConfigurationRequestMessageProcessor() {
+  public SetThdConfigurationRequestMessageProcessor(
+      final ConfigurationService configurationService) {
     super(MessageType.SET_THD_CONFIGURATION);
+    this.configurationService = configurationService;
   }
 
   @Override
