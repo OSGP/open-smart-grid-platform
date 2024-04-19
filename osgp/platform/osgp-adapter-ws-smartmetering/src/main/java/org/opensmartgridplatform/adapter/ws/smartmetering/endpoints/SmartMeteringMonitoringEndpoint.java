@@ -34,6 +34,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetP
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetSystemEventAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetSystemEventResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetThdFingerprintAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetThdFingerprintAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetThdFingerprintRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetThdFingerprintResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasAsyncRequest;
@@ -76,9 +80,11 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
   private static final String SMARTMETER_MONITORING_NAMESPACE =
       "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10";
 
-  @Autowired private RequestService requestService;
+  @Autowired
+  private RequestService requestService;
 
-  @Autowired private MonitoringMapper monitoringMapper;
+  @Autowired
+  private MonitoringMapper monitoringMapper;
 
   public SmartMeteringMonitoringEndpoint() {
     // Empty constructor
@@ -97,10 +103,10 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
     final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery
         requestData =
-            this.monitoringMapper.map(
-                request,
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering
-                    .PeriodicMeterReadsQuery.class);
+        this.monitoringMapper.map(
+            request,
+            org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                .PeriodicMeterReadsQuery.class);
 
     final RequestMessageMetadata requestMessageMetadata =
         RequestMessageMetadata.newBuilder()
@@ -136,10 +142,10 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
     final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery
         requestData =
-            this.monitoringMapper.map(
-                request,
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering
-                    .PeriodicMeterReadsQuery.class);
+        this.monitoringMapper.map(
+            request,
+            org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                .PeriodicMeterReadsQuery.class);
 
     final RequestMessageMetadata requestMessageMetadata =
         RequestMessageMetadata.newBuilder()
@@ -255,8 +261,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
     final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery
         requestData =
-            new org.opensmartgridplatform.domain.core.valueobjects.smartmetering
-                .ActualMeterReadsQuery(false);
+        new org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+            .ActualMeterReadsQuery(false);
 
     final RequestMessageMetadata requestMessageMetadata =
         RequestMessageMetadata.newBuilder()
@@ -292,8 +298,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
     final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery
         requestData =
-            new org.opensmartgridplatform.domain.core.valueobjects.smartmetering
-                .ActualMeterReadsQuery(true);
+        new org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+            .ActualMeterReadsQuery(true);
 
     final RequestMessageMetadata requestMessageMetadata =
         RequestMessageMetadata.newBuilder()
@@ -385,10 +391,10 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
     final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest
         requestData =
-            this.monitoringMapper.map(
-                request,
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering
-                    .ReadAlarmRegisterRequest.class);
+        this.monitoringMapper.map(
+            request,
+            org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                .ReadAlarmRegisterRequest.class);
 
     final RequestMessageMetadata requestMessageMetadata =
         RequestMessageMetadata.newBuilder()
@@ -576,10 +582,10 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
     final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearAlarmRegisterRequest
         requestData =
-            this.monitoringMapper.map(
-                request,
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering
-                    .ClearAlarmRegisterRequest.class);
+        this.monitoringMapper.map(
+            request,
+            org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                .ClearAlarmRegisterRequest.class);
 
     final RequestMessageMetadata requestMessageMetadata =
         RequestMessageMetadata.newBuilder()
@@ -644,10 +650,9 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
   @ResponsePayload
   public ActualPowerQualityAsyncResponse getActualPowerQuality(
       @OrganisationIdentification final String organisationIdentification,
-      @RequestPayload
-          final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring
-                  .ActualPowerQualityRequest
-              request,
+      @RequestPayload final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring
+          .ActualPowerQualityRequest
+          request,
       @MessagePriority final String messagePriority,
       @ResponseUrl final String responseUrl,
       @ScheduleTime final String scheduleTime,
@@ -735,6 +740,69 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                   .GetSystemEventResponse.class);
     } catch (final Exception e) {
       this.handleRetrieveException(e, request, organisationIdentification);
+    }
+    return response;
+  }
+
+  @PayloadRoot(localPart = "GetThdFingerprintRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
+  @ResponsePayload
+  public GetThdFingerprintAsyncResponse GetThdFingerprint(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetThdFingerprintRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
+
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetThdFingerprintRequest
+        dataRequest =
+        this.monitoringMapper.map(
+            request,
+            org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                .GetThdFingerprintRequest.class);
+
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.GET_THD_FINGERPRINT)
+            .withMessageType(MessageType.GET_THD_FINGERPRINT)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
+
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, dataRequest);
+
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+
+    return this.monitoringMapper.map(asyncResponse, GetThdFingerprintAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "GetThdFingerprintAsyncRequest",
+      namespace = SMARTMETER_MONITORING_NAMESPACE)
+  @ResponsePayload
+  public GetThdFingerprintResponse getGetThdFingerprintResponse(
+      @RequestPayload final GetThdFingerprintAsyncRequest request) throws OsgpException {
+
+    GetThdFingerprintResponse response = null;
+    try {
+      final ResponseData responseData =
+          this.responseDataService.get(
+              request.getCorrelationUid(),
+              org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                  .GetThdFingerprintResponse.class,
+              ComponentType.WS_SMART_METERING);
+
+      this.throwExceptionIfResultNotOk(responseData, "retrieving the THD fingerprint");
+
+      response =
+          this.monitoringMapper.map(responseData.getMessageData(), GetThdFingerprintResponse.class);
+    } catch (final Exception e) {
+      this.handleException(e);
     }
     return response;
   }

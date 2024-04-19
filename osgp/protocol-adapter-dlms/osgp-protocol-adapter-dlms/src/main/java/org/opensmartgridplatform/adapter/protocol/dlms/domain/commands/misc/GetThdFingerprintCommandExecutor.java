@@ -104,15 +104,15 @@ public class GetThdFingerprintCommandExecutor
         .setDescription(
             "GetAdministrativeStatus, retrieve attribute: "
                 + JdlmsObjectToStringUtil.describeAttributes(
-                addressCurrentL1,
-                addressCurrentL2,
-                addressCurrentL3,
-                addressCurrentFingerprintL1,
-                addressCurrentFingerprintL2,
-                addressCurrentFingerprintL3,
-                addressOverLimitCounterL1,
-                addressOverLimitCounterL2,
-                addressOverLimitCounterL3));
+                    addressCurrentL1,
+                    addressCurrentL2,
+                    addressCurrentL3,
+                    addressCurrentFingerprintL1,
+                    addressCurrentFingerprintL2,
+                    addressCurrentFingerprintL3,
+                    addressOverLimitCounterL1,
+                    addressOverLimitCounterL2,
+                    addressOverLimitCounterL3));
 
     LOGGER.debug("Retrieving THD fingerprint");
 
@@ -133,18 +133,18 @@ public class GetThdFingerprintCommandExecutor
     final int currentL1 = this.dlmsHelper.readInteger(results.get(0), "Read current THD L1");
     final int currentL2 = this.dlmsHelper.readInteger(results.get(1), "Read current THD L2");
     final int currentL3 = this.dlmsHelper.readInteger(results.get(2), "Read current THD L3");
-    final List<Integer> fingerprintL1 = this.getFingerprintValues(results.get(3),
-        "Read fingerprint value L1");
-    final List<Integer> fingerprintL2 = this.getFingerprintValues(results.get(4),
-        "Read fingerprint value L2");
-    final List<Integer> fingerprintL3 = this.getFingerprintValues(results.get(5),
-        "Read fingerprint value L3");
-    final int overLimitCounterL1 = this.dlmsHelper.readInteger(results.get(6),
-        "Read THD over limit counter L1");
-    final int overLimitCounterL2 = this.dlmsHelper.readInteger(results.get(7),
-        "Read THD over limit counter L2");
-    final int overLimitCounterL3 = this.dlmsHelper.readInteger(results.get(8),
-        "Read THD over limit counter L3");
+    final List<Integer> fingerprintL1 =
+        this.getFingerprintValues(results.get(3), "Read fingerprint value L1");
+    final List<Integer> fingerprintL2 =
+        this.getFingerprintValues(results.get(4), "Read fingerprint value L2");
+    final List<Integer> fingerprintL3 =
+        this.getFingerprintValues(results.get(5), "Read fingerprint value L3");
+    final int overLimitCounterL1 =
+        this.dlmsHelper.readInteger(results.get(6), "Read THD over limit counter L1");
+    final int overLimitCounterL2 =
+        this.dlmsHelper.readInteger(results.get(7), "Read THD over limit counter L2");
+    final int overLimitCounterL3 =
+        this.dlmsHelper.readInteger(results.get(8), "Read THD over limit counter L3");
 
     return new GetThdFingerprintResponseDto(
         currentL1,
@@ -158,8 +158,7 @@ public class GetThdFingerprintCommandExecutor
         overLimitCounterL3);
   }
 
-  private List<Integer> getFingerprintValues(final GetResult getResult,
-      final String description)
+  private List<Integer> getFingerprintValues(final GetResult getResult, final String description)
       throws ProtocolAdapterException {
     final AccessResultCode resultCode = getResult.getResultCode();
     if (resultCode != AccessResultCode.SUCCESS) {

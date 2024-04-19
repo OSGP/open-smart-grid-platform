@@ -2,14 +2,14 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package org.opensmartgridplatform.dto.valueobjects.smartmetering;
+package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
-import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 
-public class GetThdFingerprintResponseDto extends ActionResponseDto {
+public class ThdFingerprint implements Serializable {
 
-  @Serial private static final long serialVersionUID = -2437923107190171721L;
+  private static final long serialVersionUID = 210040597151389027L;
 
   private final int thdInstantaneousCurrentL1;
 
@@ -29,7 +29,7 @@ public class GetThdFingerprintResponseDto extends ActionResponseDto {
 
   private final int thdCurrentOverLimitCounterL3;
 
-  public GetThdFingerprintResponseDto(
+  public ThdFingerprint(
       final int thdInstantaneousCurrentL1,
       final int thdInstantaneousCurrentL2,
       final int thdInstantaneousCurrentL3,

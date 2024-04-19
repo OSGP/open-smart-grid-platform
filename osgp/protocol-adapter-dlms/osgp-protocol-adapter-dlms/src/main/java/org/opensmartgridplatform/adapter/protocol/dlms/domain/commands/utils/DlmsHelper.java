@@ -107,8 +107,8 @@ public class DlmsHelper {
    * Gets a single result from a meter, and returns the result data if retrieval was successful
    * (resultCode of the GetResult equals AccessResultCode.SUCCESS).
    *
-   * @return a result from trying to retrieve the value for the attribute identified by
-   * {@code attributeAddress}.
+   * @return a result from trying to retrieve the value for the attribute identified by {@code
+   *     attributeAddress}.
    */
   public DataObject getAttributeValue(
       final DlmsConnectionManager conn, final AttributeAddress attributeAddress)
@@ -161,12 +161,12 @@ public class DlmsHelper {
    * Check if the number of result matches the number of expected results, when there is only one
    * result the {@link AccessResultCode} of that result is checked.
    *
-   * @param getResultList   the list of results to be checked, when null a nullpointerexception is
-   *                        thrown
+   * @param getResultList the list of results to be checked, when null a nullpointerexception is
+   *     thrown
    * @param expectedResults the number of results expected
-   * @param description     a description that will be used in exceptions thrown, may be null
+   * @param description a description that will be used in exceptions thrown, may be null
    * @throws ProtocolAdapterException when the number of results does not match the expected number
-   *                                  or when the one and only result is erroneous.
+   *     or when the one and only result is erroneous.
    */
   public void checkResultList(
       final List<GetResult> getResultList, final int expectedResults, final String description)
@@ -260,7 +260,7 @@ public class DlmsHelper {
    * create a dlms meter value, apply the scaler and determine the unit on the meter.
    *
    * @return the meter value with dlms unit or null when {@link #readLong(GetResult, String)} is
-   * null
+   *     null
    */
   public DlmsMeterValueDto getScaledMeterValue(
       final GetResult value, final GetResult scalerUnit, final String description)
@@ -273,7 +273,7 @@ public class DlmsHelper {
    *
    * @param scalerUnit specifies the scaler and the unit in a String, formatted as "0, W"
    * @return the meter value with dlms unit or null when {@link #readLong(GetResult, String)} is
-   * null
+   *     null
    */
   public DlmsMeterValueDto getScaledMeterValueWithScalerUnit(
       final GetResult value, final String scalerUnit, final String description)
@@ -286,7 +286,7 @@ public class DlmsHelper {
    *
    * @param scalerUnit specifies the scaler and the unit in a String, formatted as "0, W"
    * @return the meter value with dlms unit or null when {@link #readLong(GetResult, String)} is
-   * null
+   *     null
    */
   public DlmsMeterValueDto getScaledMeterValueWithScalerUnit(
       final DataObject value, final String scalerUnit, final String description)

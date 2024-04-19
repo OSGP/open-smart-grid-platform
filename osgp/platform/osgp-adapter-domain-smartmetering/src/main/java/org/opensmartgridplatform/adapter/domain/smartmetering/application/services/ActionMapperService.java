@@ -49,6 +49,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusE
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetThdFingerprintRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MbusActionRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
@@ -101,6 +102,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptio
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetThdFingerprintRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannelsRequestDataDto;
@@ -135,10 +137,12 @@ public class ActionMapperService {
 
   private static final Map<Class<? extends ActionRequest>, ConfigurableMapper> CLASS_TO_MAPPER_MAP =
       new HashMap<>();
+
   private static final Map<
           Class<? extends ActionRequest>,
           CustomValueToDtoConverter<? extends ActionRequest, ? extends ActionRequestDto>>
       CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
+
   private static final Map<Class<? extends ActionRequest>, Class<? extends ActionRequestDto>>
       CLASS_MAP = new HashMap<>();
 
@@ -169,6 +173,7 @@ public class ActionMapperService {
         GetAssociationLnObjectsRequestData.class, GetAssociationLnObjectsRequestDto.class);
     CLASS_MAP.put(CoupleMbusDeviceRequestData.class, GetAssociationLnObjectsRequestDto.class);
     CLASS_MAP.put(SetClockConfigurationRequestData.class, SetClockConfigurationRequestDto.class);
+    CLASS_MAP.put(GetThdFingerprintRequestData.class, GetThdFingerprintRequestDataDto.class);
     CLASS_MAP.put(
         GetConfigurationObjectRequestData.class, GetConfigurationObjectRequestDataDto.class);
     CLASS_MAP.put(
@@ -209,8 +214,11 @@ public class ActionMapperService {
   private ConfigurationMapper configurationMapper;
 
   @Autowired private ManagementMapper managementMapper;
+
   @Autowired private MonitoringMapper monitoringMapper;
+
   @Autowired private CommonMapper commonMapper;
+
   @Autowired private PeriodicReadsRequestGasDataConverter periodicReadsRequestGasDataConverter;
 
   @Autowired
@@ -260,6 +268,7 @@ public class ActionMapperService {
     CLASS_TO_MAPPER_MAP.put(SpecificAttributeValueRequestData.class, this.commonMapper);
     CLASS_TO_MAPPER_MAP.put(GetAssociationLnObjectsRequestData.class, this.commonMapper);
     CLASS_TO_MAPPER_MAP.put(SetClockConfigurationRequestData.class, this.configurationMapper);
+    CLASS_TO_MAPPER_MAP.put(GetThdFingerprintRequestData.class, this.monitoringMapper);
     CLASS_TO_MAPPER_MAP.put(GetConfigurationObjectRequestData.class, this.commonMapper);
     CLASS_TO_MAPPER_MAP.put(GetPowerQualityProfileRequestData.class, this.monitoringMapper);
     CLASS_TO_MAPPER_MAP.put(GenerateAndReplaceKeysRequestData.class, this.configurationMapper);

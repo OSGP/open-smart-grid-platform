@@ -35,6 +35,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusE
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetThdFingerprintResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReads;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
@@ -62,6 +63,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptio
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetThdFingerprintResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
@@ -92,6 +94,7 @@ public class ActionMapperResponseService {
 
   private static final Map<Class<? extends ActionResponseDto>, ConfigurableMapper>
       classToMapperMap = new HashMap<>();
+
   private static final Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>>
       classMap = new HashMap<>();
 
@@ -100,6 +103,7 @@ public class ActionMapperResponseService {
     classMap.put(EventMessageDataResponseDto.class, EventMessagesResponse.class);
     classMap.put(MeterReadsResponseDto.class, MeterReads.class);
     classMap.put(MeterReadsGasResponseDto.class, MeterReadsGas.class);
+    classMap.put(GetThdFingerprintResponseDto.class, GetThdFingerprintResponse.class);
     classMap.put(ActionResponseDto.class, ActionResponse.class);
     classMap.put(FaultResponseDto.class, FaultResponse.class);
     classMap.put(AlarmRegisterResponseDto.class, AlarmRegister.class);
@@ -137,6 +141,7 @@ public class ActionMapperResponseService {
     classToMapperMap.put(EventMessageDataResponseDto.class, this.managementMapper);
     classToMapperMap.put(MeterReadsResponseDto.class, this.monitoringMapper);
     classToMapperMap.put(MeterReadsGasResponseDto.class, this.monitoringMapper);
+    classToMapperMap.put(GetThdFingerprintResponseDto.class, this.monitoringMapper);
     classToMapperMap.put(ActionResponseDto.class, this.commonMapper);
     classToMapperMap.put(FaultResponseDto.class, this.commonMapper);
     classToMapperMap.put(AlarmRegisterResponseDto.class, this.commonMapper);

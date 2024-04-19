@@ -37,14 +37,11 @@ class GetThdFingerprintCommandExecutorTest {
 
   private GetThdFingerprintCommandExecutor executor;
 
-  @Mock
-  private DlmsMessageListener dlmsMessageListener;
+  @Mock private DlmsMessageListener dlmsMessageListener;
 
-  @Mock
-  private DlmsConnectionManager connectionManager;
+  @Mock private DlmsConnectionManager connectionManager;
 
-  @Mock
-  private DlmsConnection dlmsConnection;
+  @Mock private DlmsConnection dlmsConnection;
 
   private static final String OBIS_CODE = "0.1.94.31.0.255";
 
@@ -55,11 +52,12 @@ class GetThdFingerprintCommandExecutorTest {
   @BeforeEach
   public void setUp() throws IOException, ObjectConfigException {
     final ObjectConfigService objectConfigService = new ObjectConfigService();
-    final ObjectConfigServiceHelper objectConfigServiceHelper = new ObjectConfigServiceHelper(
-        objectConfigService);
+    final ObjectConfigServiceHelper objectConfigServiceHelper =
+        new ObjectConfigServiceHelper(objectConfigService);
     final DlmsHelper dlmsHelper = new DlmsHelper();
-    this.executor = new GetThdFingerprintCommandExecutor(objectConfigService,
-        objectConfigServiceHelper, dlmsHelper);
+    this.executor =
+        new GetThdFingerprintCommandExecutor(
+            objectConfigService, objectConfigServiceHelper, dlmsHelper);
   }
 
   @Test
@@ -82,10 +80,18 @@ class GetThdFingerprintCommandExecutorTest {
 
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
-    when(this.dlmsConnection.get(ArgumentMatchers.anyList())).thenReturn(
-        List.of(resultCurrentL1, resultCurrentL2, resultCurrentL3, resultFingerprintL1,
-            resultFingerprintL2, resultFingerprintL3, resultCounterL1, resultCounterL2,
-            resultCounterL3));
+    when(this.dlmsConnection.get(ArgumentMatchers.anyList()))
+        .thenReturn(
+            List.of(
+                resultCurrentL1,
+                resultCurrentL2,
+                resultCurrentL3,
+                resultFingerprintL1,
+                resultFingerprintL2,
+                resultFingerprintL3,
+                resultCounterL1,
+                resultCounterL2,
+                resultCounterL3));
 
     this.executor.execute(this.connectionManager, testDevice, null, mock(MessageMetadata.class));
   }
@@ -97,20 +103,26 @@ class GetThdFingerprintCommandExecutorTest {
     testDevice.setProtocol(Protocol.DSMR_2_2);
 
     // CALL
-    assertThrows(IllegalArgumentException.class, () -> {
-      this.executor.execute(this.connectionManager, testDevice, null, mock(MessageMetadata.class));
-    });
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          this.executor.execute(
+              this.connectionManager, testDevice, null, mock(MessageMetadata.class));
+        });
   }
 
   private GetResultImpl createValueResult(final int value, final AccessResultCode resultCode) {
     return new GetResultImpl(DataObject.newUInteger16Data(value), resultCode);
   }
 
-  private GetResultImpl createFingerprintResult(final int startValue, final int amount,
-      final AccessResultCode resultCode) {
+  private GetResultImpl createFingerprintResult(
+      final int startValue, final int amount, final AccessResultCode resultCode) {
 
-    final List<DataObject> values = IntStream.rangeClosed(1, amount).boxed()
-        .map(i -> DataObject.newUInteger16Data(startValue + i)).toList();
+    final List<DataObject> values =
+        IntStream.rangeClosed(1, amount)
+            .boxed()
+            .map(i -> DataObject.newUInteger16Data(startValue + i))
+            .toList();
 
     final DataObject fingerprintArray = DataObject.newArrayData(values);
     return new GetResultImpl(fingerprintArray, resultCode);
