@@ -67,6 +67,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushS
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupSmsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupUdpRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetThdConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
@@ -117,6 +118,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupLast
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupUdpRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
@@ -163,6 +165,7 @@ public class ActionMapperService {
     CLASS_MAP.put(SetPushSetupLastGaspRequestData.class, SetPushSetupLastGaspRequestDto.class);
     CLASS_MAP.put(SetPushSetupSmsRequestData.class, SetPushSetupSmsRequestDto.class);
     CLASS_MAP.put(SetPushSetupUdpRequestData.class, SetPushSetupUdpRequestDto.class);
+    CLASS_MAP.put(SetThdConfigurationRequestData.class, SetThdConfigurationRequestDto.class);
     CLASS_MAP.put(SynchronizeTimeRequestData.class, SynchronizeTimeRequestDto.class);
     CLASS_MAP.put(GetAllAttributeValuesRequestData.class, GetAllAttributeValuesRequestDto.class);
     CLASS_MAP.put(GetFirmwareVersionRequestData.class, GetFirmwareVersionRequestDto.class);
@@ -260,6 +263,7 @@ public class ActionMapperService {
     CLASS_TO_MAPPER_MAP.put(SetPushSetupLastGaspRequestData.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(SetPushSetupSmsRequestData.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(SetPushSetupUdpRequestData.class, this.configurationMapper);
+    CLASS_TO_MAPPER_MAP.put(SetThdConfigurationRequestData.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(SynchronizeTimeRequestData.class, this.commonMapper);
     CLASS_TO_MAPPER_MAP.put(GetAllAttributeValuesRequestData.class, this.commonMapper);
     CLASS_TO_MAPPER_MAP.put(GetFirmwareVersionRequestData.class, this.commonMapper);

@@ -11,6 +11,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.Set
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.GetConfigurationObjectCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetConfigurationObjectCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetRandomisationSettingsCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetThdConfigurationCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SetActivityCalendarCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SetClockConfigurationCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SetSpecialDaysCommandExecutor;
@@ -60,6 +61,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupUdpRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDayDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
@@ -97,6 +99,8 @@ public class ConfigurationService {
   @Autowired private SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor;
 
   @Autowired private SetPushSetupUdpCommandExecutor setPushSetupUdpCommandExecutor;
+
+  @Autowired private SetThdConfigurationCommandExecutor setThdConfigurationCommandExecutor;
 
   @Autowired private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
 
@@ -397,6 +401,24 @@ public class ConfigurationService {
     if (AccessResultCode.SUCCESS != accessResultCode) {
       throw new ProtocolAdapterException(
           "AccessResultCode for set push setup udp was not SUCCESS: " + accessResultCode);
+    }
+  }
+
+  public void setThdConfiguration(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final SetThdConfigurationRequestDto requestDto,
+      final MessageMetadata messageMetadata)
+      throws ProtocolAdapterException {
+
+    LOGGER.info("THD Configuration to set on the device: {}", requestDto);
+
+    final AccessResultCode accessResultCode =
+        this.setThdConfigurationCommandExecutor.execute(conn, device, requestDto, messageMetadata);
+
+    if (AccessResultCode.SUCCESS != accessResultCode) {
+      throw new ProtocolAdapterException(
+          "AccessResultCode for set push setup sms was not SUCCESS: " + accessResultCode);
     }
   }
 

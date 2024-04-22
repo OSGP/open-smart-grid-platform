@@ -194,6 +194,14 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="SetThdConfigurationRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:SetThdConfigurationRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:element name="SynchronizeTimeRequest">
     <xsd:complexType>
       <xsd:complexContent>
@@ -402,6 +410,7 @@
         <xsd:element ref="tns:SetPushSetupLastGaspRequest" />
         <xsd:element ref="tns:SetPushSetupSmsRequest" />
         <xsd:element ref="tns:SetPushSetupUdpRequest" />
+        <xsd:element ref="tns:SetThdConfigurationRequest" />
         <xsd:element ref="tns:SynchronizeTimeRequest" />
         <xsd:element ref="tns:GetFirmwareVersionRequest" />
         <xsd:element ref="tns:GetFirmwareVersionGasRequest"/>
