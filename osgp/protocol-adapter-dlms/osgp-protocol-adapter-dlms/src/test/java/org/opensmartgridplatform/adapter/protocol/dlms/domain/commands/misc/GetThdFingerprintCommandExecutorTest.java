@@ -27,6 +27,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Obj
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
@@ -104,7 +105,7 @@ class GetThdFingerprintCommandExecutorTest {
 
     // CALL
     assertThrows(
-        IllegalArgumentException.class,
+        NotSupportedByProtocolException.class,
         () -> {
           this.executor.execute(
               this.connectionManager, testDevice, null, mock(MessageMetadata.class));

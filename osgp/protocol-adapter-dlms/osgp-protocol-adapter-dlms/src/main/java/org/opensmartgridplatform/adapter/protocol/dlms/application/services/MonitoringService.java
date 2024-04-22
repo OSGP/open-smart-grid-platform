@@ -10,6 +10,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.Rea
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualMeterReadsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualMeterReadsGasCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualPowerQualityCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetThdFingerprintCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitoring.GetPowerQualityProfileCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsGasCommandExecutor;
@@ -21,6 +22,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQuali
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetThdFingerprintResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -37,6 +39,7 @@ public class MonitoringService {
   private final ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
   private final GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor;
   private final ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor;
+  private final GetThdFingerprintCommandExecutor getThdFingerprintCommandExecutor;
 
   public MonitoringService(
       final GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor,
@@ -46,7 +49,8 @@ public class MonitoringService {
       final GetActualPowerQualityCommandExecutor getActualPowerQualityCommandExecutor,
       final ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor,
       final GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor,
-      final ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor) {
+      final ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor,
+      final GetThdFingerprintCommandExecutor getThdFingerprintCommandExecutor) {
 
     this.getPeriodicMeterReadsCommandExecutor = getPeriodicMeterReadsCommandExecutor;
     this.getPeriodicMeterReadsGasCommandExecutor = getPeriodicMeterReadsGasCommandExecutor;
@@ -56,6 +60,7 @@ public class MonitoringService {
     this.readAlarmRegisterCommandExecutor = readAlarmRegisterCommandExecutor;
     this.getPowerQualityProfileCommandExecutor = getPowerQualityProfileCommandExecutor;
     this.clearAlarmRegisterCommandExecutor = clearAlarmRegisterCommandExecutor;
+    this.getThdFingerprintCommandExecutor = getThdFingerprintCommandExecutor;
   }
 
   // === REQUEST PERIODIC METER DATA ===
@@ -144,5 +149,14 @@ public class MonitoringService {
 
     this.clearAlarmRegisterCommandExecutor.execute(
         conn, device, clearAlarmRegisterRequestDto, messageMetadata);
+  }
+
+  public GetThdFingerprintResponseDto requestThdFingerprint(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final MessageMetadata messageMetadata)
+      throws ProtocolAdapterException {
+
+    return this.getThdFingerprintCommandExecutor.execute(conn, device, null, messageMetadata);
   }
 }
