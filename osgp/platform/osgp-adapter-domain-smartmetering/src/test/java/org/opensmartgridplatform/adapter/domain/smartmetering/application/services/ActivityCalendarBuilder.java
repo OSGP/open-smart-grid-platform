@@ -19,7 +19,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.WeekProf
 public class ActivityCalendarBuilder {
 
   private String calendarName;
-  private List<SeasonProfile> seasonProfileList = new ArrayList<>();
+  private final List<SeasonProfile> seasonProfileList = new ArrayList<>();
   private CosemDateTime activatePassiveCalendarTime;
 
   public ActivityCalendarBuilder withCosemDateTime(
@@ -48,10 +48,10 @@ public class ActivityCalendarBuilder {
     final CosemDateTime seasonStart = new CosemDateTime(date, time, deviation, clockStatus);
 
     final CosemTime startTime = time;
-    final DayProfileAction dayProfileAction = new DayProfileAction(new Integer(10), startTime);
+    final DayProfileAction dayProfileAction = new DayProfileAction(Integer.valueOf(10), startTime);
     final List<DayProfileAction> dayProfileActionList = new ArrayList<>();
     dayProfileActionList.add(dayProfileAction);
-    final DayProfile dayProfile = new DayProfile(new Integer(10), dayProfileActionList);
+    final DayProfile dayProfile = new DayProfile(Integer.valueOf(10), dayProfileActionList);
 
     final WeekProfile weekProfile =
         WeekProfile.newBuilder()

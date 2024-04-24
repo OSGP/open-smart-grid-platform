@@ -90,6 +90,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetThdConfigurationAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetThdConfigurationAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetThdConfigurationRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetThdConfigurationResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequest;
@@ -432,6 +436,20 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     this.waitForNotification(correlationUid);
 
     return (SetPushSetupUdpResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
+  }
+
+  public SetThdConfigurationAsyncResponse setThdConfiguration(
+      final SetThdConfigurationRequest request) throws WebServiceSecurityException {
+    return (SetThdConfigurationAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+  }
+
+  public SetThdConfigurationResponse getSetThdConfigurationResponse(
+      final SetThdConfigurationAsyncRequest asyncRequest) throws WebServiceSecurityException {
+
+    final String correlationUid = asyncRequest.getCorrelationUid();
+    this.waitForNotification(correlationUid);
+
+    return (SetThdConfigurationResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
   }
 
   private WebServiceTemplate getTemplate() throws WebServiceSecurityException {

@@ -18,6 +18,7 @@ import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
@@ -85,16 +87,16 @@ public class DlmsHelperTest {
 
   @ParameterizedTest
   @CsvSource({"2", "5", "32"})
-  void testGetWithList(final int getWithListMax) throws ProtocolAdapterException, IOException {
+  void testGetWithList(final int withListMax) throws ProtocolAdapterException, IOException {
     final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
     final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
-    when(dlmsDevice.getWithListMax()).thenReturn(getWithListMax);
+    when(dlmsDevice.getWithListMax()).thenReturn(withListMax);
     when(connectionManager.getConnection()).thenReturn(dlmsConnection);
 
     // Add one more address to the request than the maximum
-    final AttributeAddress[] attrAddresses = new AttributeAddress[getWithListMax + 1];
-    for (int i = 0; i <= getWithListMax; i++) {
+    final AttributeAddress[] attrAddresses = new AttributeAddress[withListMax + 1];
+    for (int i = 0; i <= withListMax; i++) {
       attrAddresses[i] = mock(AttributeAddress.class);
     }
 
@@ -103,23 +105,23 @@ public class DlmsHelperTest {
     // We expect 2 calls:
     // - one call with all addresses up to the maximum amount
     // - one call with the remaining address
-    verify(dlmsConnection).get(Arrays.asList(attrAddresses).subList(0, getWithListMax));
-    verify(dlmsConnection).get(Collections.singletonList(attrAddresses[getWithListMax]));
+    verify(dlmsConnection).get(Arrays.asList(attrAddresses).subList(0, withListMax));
+    verify(dlmsConnection).get(Collections.singletonList(attrAddresses[withListMax]));
   }
 
   @ParameterizedTest
   @CsvSource({"2", "5", "32"})
-  void testGetWithListWithMoreThanTwiceTheMaximum(final int getWithListMax)
+  void testGetWithListWithMoreThanTwiceTheMaximum(final int withListMax)
       throws ProtocolAdapterException, IOException {
     final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
     final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
-    when(dlmsDevice.getWithListMax()).thenReturn(getWithListMax);
+    when(dlmsDevice.getWithListMax()).thenReturn(withListMax);
     when(connectionManager.getConnection()).thenReturn(dlmsConnection);
 
     // Add one more address to the request than twice the maximum
-    final AttributeAddress[] attrAddresses = new AttributeAddress[(getWithListMax * 2) + 1];
-    for (int i = 0; i <= (getWithListMax * 2); i++) {
+    final AttributeAddress[] attrAddresses = new AttributeAddress[(withListMax * 2) + 1];
+    for (int i = 0; i <= (withListMax * 2); i++) {
       attrAddresses[i] = mock(AttributeAddress.class);
     }
 
@@ -129,10 +131,9 @@ public class DlmsHelperTest {
     // - one call with all addresses up to the maximum amount
     // - another call with the maximum amount of addresses
     // - one call with the remaining address
-    verify(dlmsConnection).get(Arrays.asList(attrAddresses).subList(0, getWithListMax));
-    verify(dlmsConnection)
-        .get(Arrays.asList(attrAddresses).subList(getWithListMax, getWithListMax * 2));
-    verify(dlmsConnection).get(Collections.singletonList(attrAddresses[getWithListMax * 2]));
+    verify(dlmsConnection).get(Arrays.asList(attrAddresses).subList(0, withListMax));
+    verify(dlmsConnection).get(Arrays.asList(attrAddresses).subList(withListMax, withListMax * 2));
+    verify(dlmsConnection).get(Collections.singletonList(attrAddresses[withListMax * 2]));
   }
 
   @ParameterizedTest
@@ -160,12 +161,12 @@ public class DlmsHelperTest {
 
   @ParameterizedTest
   @CsvSource({"0", "1", "2"})
-  void testNormalGetWithSingleAddress(final int getWithListMax)
+  void testNormalGetWithSingleAddress(final int withListMax)
       throws ProtocolAdapterException, IOException {
     final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
     final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
-    when(dlmsDevice.getWithListMax()).thenReturn(getWithListMax);
+    when(dlmsDevice.getWithListMax()).thenReturn(withListMax);
     when(connectionManager.getConnection()).thenReturn(dlmsConnection);
 
     final AttributeAddress[] attrAddresses = new AttributeAddress[1];
@@ -176,6 +177,100 @@ public class DlmsHelperTest {
     // When there is only 1 address to be requested, then it doesn't matter what the maximum is:
     // always expect a single request.
     verify(dlmsConnection).get(List.of(attrAddresses[0]));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"2", "5", "32"})
+  void testSetWithList(final int withListMax) throws ProtocolAdapterException, IOException {
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+    when(dlmsDevice.getWithListMax()).thenReturn(withListMax);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+    // Add one more setParameter to the request than the maximum
+    final List<SetParameter> setParams = new ArrayList<>();
+    for (int i = 0; i <= withListMax; i++) {
+      setParams.add(mock(SetParameter.class));
+    }
+
+    this.dlmsHelper.setWithList(connectionManager, dlmsDevice, setParams);
+
+    // We expect 2 calls:
+    // - one call with all setParameters up to the maximum amount
+    // - one call with the remaining setParameter
+    verify(dlmsConnection).set(setParams.subList(0, withListMax));
+    verify(dlmsConnection).set(setParams.subList(withListMax, withListMax + 1));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"2", "5", "32"})
+  void testSetWithListWithMoreThanTwiceTheMaximum(final int withListMax)
+      throws ProtocolAdapterException, IOException {
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+    when(dlmsDevice.getWithListMax()).thenReturn(withListMax);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+    // Add one more setParameter to the request than twice the maximum
+    final List<SetParameter> setParams = new ArrayList<>();
+    for (int i = 0; i <= (withListMax * 2); i++) {
+      setParams.add(mock(SetParameter.class));
+    }
+
+    this.dlmsHelper.setWithList(connectionManager, dlmsDevice, setParams);
+
+    // We expect 3 calls:
+    // - one call with all setParameters up to the maximum amount
+    // - another call with the maximum amount of setParameters
+    // - one call with the remaining setParameter
+    verify(dlmsConnection).set(setParams.subList(0, withListMax));
+    verify(dlmsConnection).set(setParams.subList(withListMax, withListMax * 2));
+    verify(dlmsConnection).set(setParams.subList(withListMax * 2, withListMax * 2 + 1));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"0", "1"})
+  void testNormalSetWithMultipleSetParams(final int withListMax)
+      throws ProtocolAdapterException, IOException {
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+
+    // Set the maximum to 0 or 1. When the max is 0, then it will be handled as a max of 1.
+    when(dlmsDevice.getWithListMax()).thenReturn(withListMax);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+    final List<SetParameter> setParams = new ArrayList<>();
+    setParams.add(mock(SetParameter.class));
+    setParams.add(mock(SetParameter.class));
+
+    this.dlmsHelper.setWithList(connectionManager, dlmsDevice, setParams);
+
+    // When the maximum is 1, then each setParameter is in a separate request.
+    verify(dlmsConnection).set(List.of(setParams.get(0)));
+    verify(dlmsConnection).set(List.of(setParams.get(1)));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"0", "1", "2"})
+  void testNormalSetWithSingleSetParam(final int withListMax)
+      throws ProtocolAdapterException, IOException {
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+    when(dlmsDevice.getWithListMax()).thenReturn(withListMax);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+    final List<SetParameter> setParams = new ArrayList<>();
+    setParams.add(mock(SetParameter.class));
+
+    this.dlmsHelper.setWithList(connectionManager, dlmsDevice, setParams);
+
+    // When there is only 1 setParameter to be requested, then it doesn't matter what the maximum
+    // is: always expect a single request.
+    verify(dlmsConnection).set(setParams);
   }
 
   /*
