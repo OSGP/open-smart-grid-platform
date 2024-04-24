@@ -8,7 +8,6 @@ import java.io.IOException;
 import ma.glasnost.orika.MapperFacade;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -18,46 +17,28 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SetClockConfigurationCommandExecutor
     extends AbstractCommandExecutor<SetClockConfigurationRequestDto, Void> {
 
-  private static final ObisCode LOGICAL_NAME = new ObisCode("0.0.1.0.0.255");
+  private final MapperFacade configurationMapper;
+  private final ObjectConfigService objectConfigService;
 
-  private static final AttributeAddress ATTRIBUTE_TIME_ZONE =
-      new AttributeAddress(
-          InterfaceClass.CLOCK.id(), LOGICAL_NAME, ClockAttribute.TIME_ZONE.attributeId());
-
-  private static final AttributeAddress ATTRIBUTE_DAYLIGHT_SAVINGS_BEGIN =
-      new AttributeAddress(
-          InterfaceClass.CLOCK.id(),
-          LOGICAL_NAME,
-          ClockAttribute.DAYLIGHT_SAVINGS_BEGIN.attributeId());
-
-  private static final AttributeAddress ATTRIBUTE_DAYLIGHT_SAVINGS_END =
-      new AttributeAddress(
-          InterfaceClass.CLOCK.id(),
-          LOGICAL_NAME,
-          ClockAttribute.DAYLIGHT_SAVINGS_END.attributeId());
-
-  private static final AttributeAddress ATTRIBUTE_DAYLIGHT_SAVINGS_ENABLED =
-      new AttributeAddress(
-          InterfaceClass.CLOCK.id(),
-          LOGICAL_NAME,
-          ClockAttribute.DAYLIGHT_SAVINGS_ENABLED.attributeId());
-
-  @Autowired private MapperFacade configurationMapper;
-
-  public SetClockConfigurationCommandExecutor() {
+  public SetClockConfigurationCommandExecutor(
+      final MapperFacade configurationMapper, final ObjectConfigService objectConfigService) {
     super(SetClockConfigurationRequestDto.class);
+    this.configurationMapper = configurationMapper;
+    this.objectConfigService = objectConfigService;
   }
 
   @Override
@@ -78,41 +59,60 @@ public class SetClockConfigurationCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    this.dlmsLogWrite(conn, ATTRIBUTE_TIME_ZONE);
+    final AttributeAddress attributeTimeZone =
+        this.getClockAttributeAddress(device, ClockAttribute.TIME_ZONE);
+    this.dlmsLogWrite(conn, attributeTimeZone);
     this.writeAttribute(
         conn,
         new SetParameter(
-            ATTRIBUTE_TIME_ZONE, DataObject.newInteger16Data(object.getTimeZoneOffset())),
+            attributeTimeZone, DataObject.newInteger16Data(object.getTimeZoneOffset())),
         "Timezone");
 
+    final AttributeAddress attributeDstBegin =
+        this.getClockAttributeAddress(device, ClockAttribute.DAYLIGHT_SAVINGS_BEGIN);
     final CosemDateTime daylightSavingsBegin =
         this.configurationMapper.map(object.getDaylightSavingsBegin(), CosemDateTime.class);
-    this.dlmsLogWrite(conn, ATTRIBUTE_DAYLIGHT_SAVINGS_BEGIN);
+    this.dlmsLogWrite(conn, attributeDstBegin);
     this.writeAttribute(
         conn,
         new SetParameter(
-            ATTRIBUTE_DAYLIGHT_SAVINGS_BEGIN,
-            DataObject.newOctetStringData(daylightSavingsBegin.encode())),
+            attributeDstBegin, DataObject.newOctetStringData(daylightSavingsBegin.encode())),
         "Daylight savings begin");
 
+    final AttributeAddress attributeDstEnd =
+        this.getClockAttributeAddress(device, ClockAttribute.DAYLIGHT_SAVINGS_END);
     final CosemDateTime daylightSavingsEnd =
         this.configurationMapper.map(object.getDaylightSavingsEnd(), CosemDateTime.class);
-    this.dlmsLogWrite(conn, ATTRIBUTE_DAYLIGHT_SAVINGS_END);
+    this.dlmsLogWrite(conn, attributeDstEnd);
     this.writeAttribute(
         conn,
         new SetParameter(
-            ATTRIBUTE_DAYLIGHT_SAVINGS_END,
-            DataObject.newOctetStringData(daylightSavingsEnd.encode())),
-        "Daylight savinds end");
+            attributeDstEnd, DataObject.newOctetStringData(daylightSavingsEnd.encode())),
+        "Daylight savings end");
 
-    this.dlmsLogWrite(conn, ATTRIBUTE_DAYLIGHT_SAVINGS_ENABLED);
+    final AttributeAddress attributeDstEnabled =
+        this.getClockAttributeAddress(device, ClockAttribute.DAYLIGHT_SAVINGS_ENABLED);
+    this.dlmsLogWrite(conn, attributeDstEnabled);
     this.writeAttribute(
         conn,
         new SetParameter(
-            ATTRIBUTE_DAYLIGHT_SAVINGS_ENABLED,
-            DataObject.newBoolData(object.isDaylightSavingsEnabled())),
+            attributeDstEnabled, DataObject.newBoolData(object.isDaylightSavingsEnabled())),
         "Daylight savings enabled");
     return null;
+  }
+
+  private AttributeAddress getClockAttributeAddress(
+      final DlmsDevice device, final ClockAttribute clockAttribute)
+      throws ProtocolAdapterException {
+    try {
+      final CosemObject cosemObject =
+          this.objectConfigService.getCosemObject(
+              device.getProtocolName(), device.getProtocolVersion(), DlmsObjectType.CLOCK);
+      return new AttributeAddress(
+          cosemObject.getClassId(), cosemObject.getObis(), clockAttribute.attributeId());
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
+    }
   }
 
   private void writeAttribute(
