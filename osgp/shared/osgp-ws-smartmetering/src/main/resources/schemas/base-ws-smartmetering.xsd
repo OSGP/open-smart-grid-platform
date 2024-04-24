@@ -349,6 +349,12 @@
       <xsd:enumeration value="PHASE_OUTAGE_DETECTED_L2" />
       <xsd:enumeration value="PHASE_OUTAGE_DETECTED_L3" />
       <xsd:enumeration value="PHASE_OUTAGE_TEST_INDICATION" />
+      <xsd:enumeration value="THD_OVERLIMIT_IN_PHASE_L1" />
+      <xsd:enumeration value="THD_OVERLIMIT_IN_PHASE_L2" />
+      <xsd:enumeration value="THD_OVERLIMIT_IN_PHASE_L3" />
+      <xsd:enumeration value="THD_LONG_OVERLIMIT_IN_PHASE_L1" />
+      <xsd:enumeration value="THD_LONG_OVERLIMIT_IN_PHASE_L2" />
+      <xsd:enumeration value="THD_LONG_OVERLIMIT_IN_PHASE_L3" />
       <xsd:enumeration value="VOLTAGE_SAG_IN_PHASE_DETECTED_L1" />
       <xsd:enumeration value="VOLTAGE_SAG_IN_PHASE_DETECTED_L2" />
       <xsd:enumeration value="VOLTAGE_SAG_IN_PHASE_DETECTED_L3" />
