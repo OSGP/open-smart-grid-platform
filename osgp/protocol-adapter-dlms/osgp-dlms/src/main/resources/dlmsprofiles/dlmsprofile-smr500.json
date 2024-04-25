@@ -111,7 +111,7 @@
           "id": 3,
           "description": "time_zone",
           "datatype": "long",
-          "valuetype": "DYNAMIC",
+          "valuetype": "SET_BY_CLIENT",
           "value": "-60",
           "access": "RW"
         },
