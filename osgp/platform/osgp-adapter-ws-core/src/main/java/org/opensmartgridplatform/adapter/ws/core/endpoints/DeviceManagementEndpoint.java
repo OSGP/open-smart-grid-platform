@@ -294,10 +294,8 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
       response
           .getEvents()
           .addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Event.class));
-      response.setPage(new org.opensmartgridplatform.adapter.ws.schema.core.common.Page());
-      response.getPage().setPageSize(result.getSize());
-      response.getPage().setTotalPages(result.getTotalPages());
-      response.getPage().setCurrentPage(result.getNumber());
+      response.setPage(pageToPage(result));
+
     } catch (final ConstraintViolationException e) {
       throw new FunctionalException(
           FunctionalExceptionType.VALIDATION_ERROR,
@@ -335,10 +333,7 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
         response
             .getDevices()
             .addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
-        response.setPage(new org.opensmartgridplatform.adapter.ws.schema.core.common.Page());
-        response.getPage().setPageSize(result.getSize());
-        response.getPage().setTotalPages(result.getTotalPages());
-        response.getPage().setCurrentPage(result.getNumber());
+        response.setPage(pageToPage(result));
       }
 
       if (result != null && request.isUsePages() != null && !request.isUsePages()) {
@@ -368,6 +363,17 @@ public class DeviceManagementEndpoint extends CoreEndpoint {
 
   private DeviceFilter deviceFilterFrom(final FindDevicesRequest request) {
     return this.deviceManagementMapper.map(request.getDeviceFilter(), DeviceFilter.class);
+  }
+
+  private org.opensmartgridplatform.adapter.ws.schema.core.common.Page pageToPage(Page<?> page) {
+    var xsdPage = new org.opensmartgridplatform.adapter.ws.schema.core.common.Page();
+    xsdPage.setPageSize(page.getSize());
+    xsdPage.setTotalPages(page.getTotalPages());
+    xsdPage.setCurrentPage(page.getNumber());
+    // It is very unlikely that the system will have more than 2147483647 devices or events,
+    // so it should be safe to cast to an int
+    xsdPage.setTotalElements(Long.valueOf(page.getTotalElements()).intValue());
+    return xsdPage;
   }
 
   // suppress warning about unused method. This method is used in findDevices.

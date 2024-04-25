@@ -340,7 +340,6 @@ public class DeviceManagementService {
     return devices;
   }
 
-  @Transactional(value = "transactionManager")
   public Page<Device> applyFilter(
       final DeviceFilter deviceFilter, final Organisation organisation, final PageRequest request)
       throws ArgumentNullOrEmptyException {
