@@ -114,21 +114,21 @@
           "id": 5,
           "description": "daylights_savings_begin",
           "datatype": "octet-string",
-          "valuetype": "DYNAMIC",
+          "valuetype": "SET_BY_CLIENT",
           "access": "RW"
         },
         {
           "id": 6,
           "description": "daylights_savings_end",
           "datatype": "octet-string",
-          "valuetype": "DYNAMIC",
+          "valuetype": "SET_BY_CLIENT",
           "access": "RW"
         },
         {
           "id": 7,
           "description": "daylights_savings_deviation",
           "datatype": "integer",
-          "valuetype": "DYNAMIC",
+          "valuetype": "SET_BY_CLIENT",
           "value": "60",
           "access": "R"
         },
@@ -136,7 +136,7 @@
           "id": 8,
           "description": "daylights_savings_enabled",
           "datatype": "boolean",
-          "valuetype": "DYNAMIC",
+          "valuetype": "SET_BY_CLIENT",
           "value": "1",
           "access": "RW"
         },

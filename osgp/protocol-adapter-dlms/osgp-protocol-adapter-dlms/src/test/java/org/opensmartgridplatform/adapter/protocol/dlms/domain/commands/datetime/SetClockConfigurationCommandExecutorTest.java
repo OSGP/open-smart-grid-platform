@@ -4,7 +4,8 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,6 +31,7 @@ import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -60,14 +62,16 @@ class SetClockConfigurationCommandExecutorTest {
 
   private SetClockConfigurationCommandExecutor executor;
 
-  @Captor ArgumentCaptor<SetParameter> setParameterArgumentCaptor;
+  @Captor ArgumentCaptor<List<SetParameter>> setParameterArgumentCaptor;
 
   @BeforeEach
   public void setUp() throws IOException, ObjectConfigException {
     final ObjectConfigService objectConfigService = new ObjectConfigService();
+    final DlmsHelper dlmsHelper = new DlmsHelper();
 
     this.executor =
-        new SetClockConfigurationCommandExecutor(this.configurationMapper, objectConfigService);
+        new SetClockConfigurationCommandExecutor(
+            this.configurationMapper, objectConfigService, dlmsHelper);
   }
 
   @ParameterizedTest
@@ -78,50 +82,83 @@ class SetClockConfigurationCommandExecutorTest {
     when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocol.getVersion());
 
     // SETUP
-    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
-    when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
+    when(this.dlmsConnection.set(anyList())).thenReturn(List.of(AccessResultCode.SUCCESS));
 
-    final short timeZoneOffset = 60;
-    final DateTime daylightSavingsBegin = new DateTime(2023, 3, 26, 1, 0, 0, DateTimeZone.UTC);
-    final DateTime daylightSavingsEnd = new DateTime(2023, 3, 26, 1, 0, 0, DateTimeZone.UTC);
-    final boolean daylightSavingsEnabled = true;
-
-    final SetClockConfigurationRequestDto requestDto =
-        new SetClockConfigurationRequestDto(
-            timeZoneOffset,
-            new CosemDateTimeDto(daylightSavingsBegin),
-            new CosemDateTimeDto(daylightSavingsEnd),
-            daylightSavingsEnabled);
+    final SetClockConfigurationRequestDto requestDto = this.createRequestDto();
 
     // CALL
     this.executor.execute(this.conn, this.dlmsDevice, requestDto, this.messageMetadata);
 
     // VERIFY
     verify(this.dlmsConnection, times(4)).set(this.setParameterArgumentCaptor.capture());
-    final List<SetParameter> setParameters = this.setParameterArgumentCaptor.getAllValues();
+    final List<List<SetParameter>> setParameters = this.setParameterArgumentCaptor.getAllValues();
     this.verifySetParameter(
-        setParameters.get(0),
+        setParameters.get(0).get(0),
         ClockAttribute.TIME_ZONE,
         DataObject.newInteger16Data(requestDto.getTimeZoneOffset()));
     this.verifySetParameter(
-        setParameters.get(1),
+        setParameters.get(1).get(0),
         ClockAttribute.DAYLIGHT_SAVINGS_BEGIN,
         DataObject.newOctetStringData(
             this.newCosemDateTime(requestDto.getDaylightSavingsBegin()).encode()));
     this.verifySetParameter(
-        setParameters.get(2),
+        setParameters.get(2).get(0),
         ClockAttribute.DAYLIGHT_SAVINGS_END,
         DataObject.newOctetStringData(
             this.newCosemDateTime(requestDto.getDaylightSavingsEnd()).encode()));
     this.verifySetParameter(
-        setParameters.get(3),
+        setParameters.get(3).get(0),
         ClockAttribute.DAYLIGHT_SAVINGS_ENABLED,
         DataObject.newBoolData(requestDto.isDaylightSavingsEnabled()));
   }
 
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  void testExecuteError(final Protocol protocol) throws IOException {
+    when(this.dlmsDevice.getDeviceIdentification()).thenReturn("E001");
+
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocol.getName());
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocol.getVersion());
+
+    // SETUP
+    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
+    when(this.dlmsConnection.set(anyList()))
+        .thenReturn(List.of(AccessResultCode.OTHER_REASON))
+        .thenReturn(List.of(AccessResultCode.SUCCESS))
+        .thenReturn(List.of(AccessResultCode.SUCCESS))
+        .thenReturn(List.of(AccessResultCode.SUCCESS));
+
+    final SetClockConfigurationRequestDto requestDto = this.createRequestDto();
+
+    // CALL
+    final ProtocolAdapterException protocolAdapterException =
+        assertThrows(
+            ProtocolAdapterException.class,
+            () ->
+                this.executor.execute(
+                    this.conn, this.dlmsDevice, requestDto, this.messageMetadata));
+
+    assertThat(protocolAdapterException.getMessage())
+        .isEqualTo(
+            "Clock configuration was not set successfully for device E001. ResultCode: [OTHER_REASON]");
+  }
+
   private CosemDateTime newCosemDateTime(final CosemDateTimeDto dateTime) {
     return this.configurationMapper.map(dateTime, CosemDateTime.class);
+  }
+
+  private SetClockConfigurationRequestDto createRequestDto() {
+    final short timeZoneOffset = 60;
+    final DateTime daylightSavingsBegin = new DateTime(2023, 3, 26, 1, 0, 0, DateTimeZone.UTC);
+    final DateTime daylightSavingsEnd = new DateTime(2023, 3, 26, 1, 0, 0, DateTimeZone.UTC);
+    final boolean daylightSavingsEnabled = true;
+
+    return new SetClockConfigurationRequestDto(
+        timeZoneOffset,
+        new CosemDateTimeDto(daylightSavingsBegin),
+        new CosemDateTimeDto(daylightSavingsEnd),
+        daylightSavingsEnabled);
   }
 
   private void verifySetParameter(
