@@ -745,7 +745,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
   @PayloadRoot(localPart = "GetThdFingerprintRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
   @ResponsePayload
-  public GetThdFingerprintAsyncResponse GetThdFingerprint(
+  public GetThdFingerprintAsyncResponse getThdFingerprint(
       @OrganisationIdentification final String organisationIdentification,
       @RequestPayload final GetThdFingerprintRequest request,
       @MessagePriority final String messagePriority,

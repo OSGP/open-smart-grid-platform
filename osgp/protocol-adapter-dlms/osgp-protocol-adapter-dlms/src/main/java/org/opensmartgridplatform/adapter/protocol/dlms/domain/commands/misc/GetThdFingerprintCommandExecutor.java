@@ -21,7 +21,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
-import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
@@ -38,19 +37,14 @@ public class GetThdFingerprintCommandExecutor
   private static final Logger LOGGER =
       LoggerFactory.getLogger(GetThdFingerprintCommandExecutor.class);
 
-  private final ObjectConfigService objectConfigService;
-
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
   private final DlmsHelper dlmsHelper;
 
   public GetThdFingerprintCommandExecutor(
-      final ObjectConfigService objectConfigService,
-      final ObjectConfigServiceHelper objectConfigServiceHelper,
-      final DlmsHelper dlmsHelper) {
+      final ObjectConfigServiceHelper objectConfigServiceHelper, final DlmsHelper dlmsHelper) {
     super(GetAdministrativeStatusDataDto.class);
 
-    this.objectConfigService = objectConfigService;
     this.objectConfigServiceHelper = objectConfigServiceHelper;
     this.dlmsHelper = dlmsHelper;
   }

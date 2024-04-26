@@ -56,9 +56,7 @@ class GetThdFingerprintCommandExecutorTest {
     final ObjectConfigServiceHelper objectConfigServiceHelper =
         new ObjectConfigServiceHelper(objectConfigService);
     final DlmsHelper dlmsHelper = new DlmsHelper();
-    this.executor =
-        new GetThdFingerprintCommandExecutor(
-            objectConfigService, objectConfigServiceHelper, dlmsHelper);
+    this.executor = new GetThdFingerprintCommandExecutor(objectConfigServiceHelper, dlmsHelper);
   }
 
   @Test

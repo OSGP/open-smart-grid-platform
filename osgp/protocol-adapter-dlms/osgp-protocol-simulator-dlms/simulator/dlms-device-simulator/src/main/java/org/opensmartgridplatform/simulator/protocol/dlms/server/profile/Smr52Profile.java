@@ -23,6 +23,9 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic.Adj
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic.CellInfo;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityExtendedEventLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityThdEventLog;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ThdCurrentOverLimitCounter;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ThdInstantaneousCurrent;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ThdInstantaneousCurrentFingerprint;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ThdMinDurationNormalToOver;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ThdMinDurationOverToNormal;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ThdTimeThreshold;
@@ -37,6 +40,7 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 @Profile("smr52")
 public class Smr52Profile {
+
   @Value("${alarmobject.register2.value}")
   private int alarmRegister2Value;
 
@@ -175,6 +179,57 @@ public class Smr52Profile {
   @Bean
   public ThdValueThreshold thdValueThreshold() {
     return new ThdValueThreshold(this.thdValueThreshold);
+  }
+
+  @Bean
+  public ThdInstantaneousCurrent thdInstantaneousCurrentL1() {
+    return new ThdInstantaneousCurrent(0, "1.0.31.7.124.255");
+  }
+
+  @Bean
+  public ThdInstantaneousCurrent thdInstantaneousCurrentL2() {
+    return new ThdInstantaneousCurrent(0, "1.0.51.7.124.255");
+  }
+
+  @Bean
+  public ThdInstantaneousCurrent thdInstantaneousCurrentL3() {
+    return new ThdInstantaneousCurrent(0, "1.0.71.7.124.255");
+  }
+
+  @Bean
+  public ThdInstantaneousCurrentFingerprint thdInstantaneousCurrentFingerprintL1() {
+    final List<DataObject> values =
+        IntStream.rangeClosed(101, 115).boxed().map(DataObject::newUInteger16Data).toList();
+    return new ThdInstantaneousCurrentFingerprint(values, "0.1.94.31.24.255");
+  }
+
+  @Bean
+  public ThdInstantaneousCurrentFingerprint thdInstantaneousCurrentFingerprintL2() {
+    final List<DataObject> values =
+        IntStream.rangeClosed(201, 215).boxed().map(DataObject::newUInteger16Data).toList();
+    return new ThdInstantaneousCurrentFingerprint(values, "0.1.94.31.25.255");
+  }
+
+  @Bean
+  public ThdInstantaneousCurrentFingerprint thdInstantaneousCurrentFingerprintL3() {
+    final List<DataObject> values =
+        IntStream.rangeClosed(301, 315).boxed().map(DataObject::newUInteger16Data).toList();
+    return new ThdInstantaneousCurrentFingerprint(values, "0.1.94.31.26.255");
+  }
+
+  @Bean
+  public ThdCurrentOverLimitCounter thdCurrentOverLimitCounterL1() {
+    return new ThdCurrentOverLimitCounter(0, "1.0.31.36.124.255");
+  }
+
+  @Bean
+  public ThdCurrentOverLimitCounter thdCurrentOverLimitCounterL2() {
+    return new ThdCurrentOverLimitCounter(0, "1.0.51.36.124.255");
+  }
+
+  @Bean
+  public ThdCurrentOverLimitCounter thdCurrentOverLimitCounterL3() {
+    return new ThdCurrentOverLimitCounter(0, "1.0.71.36.124.255");
   }
 
   @Bean

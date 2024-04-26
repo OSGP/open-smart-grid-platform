@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class GetThdFingerprintRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private MonitoringService monitoringServuce;
+  @Autowired private MonitoringService monitoringService;
 
   public GetThdFingerprintRequestMessageProcessor() {
     super(MessageType.GET_THD_FINGERPRINT);
@@ -33,6 +33,6 @@ public class GetThdFingerprintRequestMessageProcessor extends DeviceRequestMessa
       final MessageMetadata messageMetadata)
       throws OsgpException {
 
-    return this.monitoringServuce.requestThdFingerprint(conn, device, messageMetadata);
+    return this.monitoringService.requestThdFingerprint(conn, device, messageMetadata);
   }
 }
