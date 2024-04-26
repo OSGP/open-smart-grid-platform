@@ -90,5 +90,6 @@ public class MonitoringMapper extends ConfigurableMapper {
         .getConverterFactory()
         .registerConverter(new ActualPowerQualityResponseDataConverter());
     mapperFactory.getConverterFactory().registerConverter(new PowerQualityValueConverter());
+    mapperFactory.getConverterFactory().registerConverter(new ThdFingerprintConverter());
   }
 }

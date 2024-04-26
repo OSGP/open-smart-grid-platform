@@ -23,7 +23,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetThdFingerprintRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetThdFingerprintResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
@@ -43,7 +43,7 @@ public class GetThdFingerprintCommandExecutor
 
   public GetThdFingerprintCommandExecutor(
       final ObjectConfigServiceHelper objectConfigServiceHelper, final DlmsHelper dlmsHelper) {
-    super(GetAdministrativeStatusDataDto.class);
+    super(GetThdFingerprintRequestDataDto.class);
 
     this.objectConfigServiceHelper = objectConfigServiceHelper;
     this.dlmsHelper = dlmsHelper;
