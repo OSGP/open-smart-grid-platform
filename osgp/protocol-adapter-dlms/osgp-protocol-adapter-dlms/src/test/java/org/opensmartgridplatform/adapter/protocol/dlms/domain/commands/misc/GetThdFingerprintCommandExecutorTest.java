@@ -98,36 +98,49 @@ class GetThdFingerprintCommandExecutorTest {
                 resultCounterL2,
                 resultCounterL3));
 
-    final GetThdFingerprintResponseDto result = this.executor.execute(
-        this.connectionManager, testDevice, null, mock(MessageMetadata.class));
+    final GetThdFingerprintResponseDto result =
+        this.executor.execute(
+            this.connectionManager, testDevice, null, mock(MessageMetadata.class));
 
     final List<AttributeAddress> expectedAttributeAddresses = new ArrayList<>();
     expectedAttributeAddresses.add(
-        new AttributeAddress(InterfaceClass.REGISTER.id(), "1.0.31.7.124.255",
+        new AttributeAddress(
+            InterfaceClass.REGISTER.id(),
+            "1.0.31.7.124.255",
             RegisterAttribute.VALUE.attributeId()));
     expectedAttributeAddresses.add(
-        new AttributeAddress(InterfaceClass.REGISTER.id(), "1.0.51.7.124.255",
+        new AttributeAddress(
+            InterfaceClass.REGISTER.id(),
+            "1.0.51.7.124.255",
             RegisterAttribute.VALUE.attributeId()));
     expectedAttributeAddresses.add(
-        new AttributeAddress(InterfaceClass.REGISTER.id(), "1.0.71.7.124.255",
+        new AttributeAddress(
+            InterfaceClass.REGISTER.id(),
+            "1.0.71.7.124.255",
             RegisterAttribute.VALUE.attributeId()));
     expectedAttributeAddresses.add(
-        new AttributeAddress(InterfaceClass.DATA.id(), "0.1.94.31.24.255",
+        new AttributeAddress(
+            InterfaceClass.DATA.id(), "0.1.94.31.24.255", RegisterAttribute.VALUE.attributeId()));
+    expectedAttributeAddresses.add(
+        new AttributeAddress(
+            InterfaceClass.DATA.id(), "0.1.94.31.25.255", RegisterAttribute.VALUE.attributeId()));
+    expectedAttributeAddresses.add(
+        new AttributeAddress(
+            InterfaceClass.DATA.id(), "0.1.94.31.26.255", RegisterAttribute.VALUE.attributeId()));
+    expectedAttributeAddresses.add(
+        new AttributeAddress(
+            InterfaceClass.REGISTER.id(),
+            "1.0.31.36.124.255",
             RegisterAttribute.VALUE.attributeId()));
     expectedAttributeAddresses.add(
-        new AttributeAddress(InterfaceClass.DATA.id(), "0.1.94.31.25.255",
+        new AttributeAddress(
+            InterfaceClass.REGISTER.id(),
+            "1.0.51.36.124.255",
             RegisterAttribute.VALUE.attributeId()));
     expectedAttributeAddresses.add(
-        new AttributeAddress(InterfaceClass.DATA.id(), "0.1.94.31.26.255",
-            RegisterAttribute.VALUE.attributeId()));
-    expectedAttributeAddresses.add(
-        new AttributeAddress(InterfaceClass.REGISTER.id(), "1.0.31.36.124.255",
-            RegisterAttribute.VALUE.attributeId()));
-    expectedAttributeAddresses.add(
-        new AttributeAddress(InterfaceClass.REGISTER.id(), "1.0.51.36.124.255",
-            RegisterAttribute.VALUE.attributeId()));
-    expectedAttributeAddresses.add(
-        new AttributeAddress(InterfaceClass.REGISTER.id(), "1.0.71.36.124.255",
+        new AttributeAddress(
+            InterfaceClass.REGISTER.id(),
+            "1.0.71.36.124.255",
             RegisterAttribute.VALUE.attributeId()));
 
     final ArgumentCaptor<List<AttributeAddress>> attributeAddressesCaptor =
@@ -135,18 +148,19 @@ class GetThdFingerprintCommandExecutorTest {
     verify(this.dlmsConnection).get(attributeAddressesCaptor.capture());
     final List<AttributeAddress> capturedAttributeAddresses = attributeAddressesCaptor.getValue();
     assertThat(capturedAttributeAddresses).hasSize(9);
-    assertThat(capturedAttributeAddresses).usingRecursiveComparison()
+    assertThat(capturedAttributeAddresses)
+        .usingRecursiveComparison()
         .isEqualTo(expectedAttributeAddresses);
 
     assertThat(result.getThdInstantaneousCurrentL1()).isEqualTo(1);
     assertThat(result.getThdInstantaneousCurrentL2()).isEqualTo(2);
     assertThat(result.getThdInstantaneousCurrentL3()).isEqualTo(3);
-    assertThat(result.getThdInstantaneousCurrentFingerprintL1()).isEqualTo(
-        IntStream.rangeClosed(101, 115).boxed().toList());
-    assertThat(result.getThdInstantaneousCurrentFingerprintL2()).isEqualTo(
-        IntStream.rangeClosed(201, 215).boxed().toList());
-    assertThat(result.getThdInstantaneousCurrentFingerprintL3()).isEqualTo(
-        IntStream.rangeClosed(301, 315).boxed().toList());
+    assertThat(result.getThdInstantaneousCurrentFingerprintL1())
+        .isEqualTo(IntStream.rangeClosed(101, 115).boxed().toList());
+    assertThat(result.getThdInstantaneousCurrentFingerprintL2())
+        .isEqualTo(IntStream.rangeClosed(201, 215).boxed().toList());
+    assertThat(result.getThdInstantaneousCurrentFingerprintL3())
+        .isEqualTo(IntStream.rangeClosed(301, 315).boxed().toList());
     assertThat(result.getThdCurrentOverLimitCounterL1()).isEqualTo(10);
     assertThat(result.getThdCurrentOverLimitCounterL2()).isEqualTo(20);
     assertThat(result.getThdCurrentOverLimitCounterL3()).isEqualTo(30);
