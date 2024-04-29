@@ -50,7 +50,7 @@ SPDX-License-Identifier: Apache-2.0
     <osgp.jasper-interface.version>6.1.0-SNAPSHOT</osgp.jasper-interface.version>
     <spring.version>6.1.6</spring.version>
     <spring.data.version>3.2.3</spring.data.version>
-    <spring.data.commons.version>3.2.3</spring.data.commons.version>
+    <spring.data.commons.version>3.2.5</spring.data.commons.version>
     <spring.security.version>6.2.3</spring.security.version>
     <spring.ws.version>4.0.10</spring.ws.version>
     <reactor.version>2023.0.4</reactor.version>
