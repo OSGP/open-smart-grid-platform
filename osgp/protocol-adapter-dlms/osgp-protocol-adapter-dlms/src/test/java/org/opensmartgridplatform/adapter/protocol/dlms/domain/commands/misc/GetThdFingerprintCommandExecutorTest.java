@@ -4,21 +4,26 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openmuc.jdlms.AccessResultCode.SUCCESS;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AccessResultCode;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
@@ -30,7 +35,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetThdFingerprintResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
@@ -68,11 +76,9 @@ class GetThdFingerprintCommandExecutorTest {
     final GetResultImpl resultCurrentL1 = this.createValueResult(1, SUCCESS);
     final GetResultImpl resultCurrentL2 = this.createValueResult(2, SUCCESS);
     final GetResultImpl resultCurrentL3 = this.createValueResult(3, SUCCESS);
-
     final GetResultImpl resultFingerprintL1 = this.createFingerprintResult(100, 15, SUCCESS);
     final GetResultImpl resultFingerprintL2 = this.createFingerprintResult(200, 15, SUCCESS);
     final GetResultImpl resultFingerprintL3 = this.createFingerprintResult(300, 15, SUCCESS);
-
     final GetResultImpl resultCounterL1 = this.createValueResult(10, SUCCESS);
     final GetResultImpl resultCounterL2 = this.createValueResult(20, SUCCESS);
     final GetResultImpl resultCounterL3 = this.createValueResult(30, SUCCESS);
@@ -92,7 +98,58 @@ class GetThdFingerprintCommandExecutorTest {
                 resultCounterL2,
                 resultCounterL3));
 
-    this.executor.execute(this.connectionManager, testDevice, null, mock(MessageMetadata.class));
+    final GetThdFingerprintResponseDto result = this.executor.execute(
+        this.connectionManager, testDevice, null, mock(MessageMetadata.class));
+
+    final List<AttributeAddress> expectedAttributeAddresses = new ArrayList<>();
+    expectedAttributeAddresses.add(
+        new AttributeAddress(InterfaceClass.REGISTER.id(), "1.0.31.7.124.255",
+            RegisterAttribute.VALUE.attributeId()));
+    expectedAttributeAddresses.add(
+        new AttributeAddress(InterfaceClass.REGISTER.id(), "1.0.51.7.124.255",
+            RegisterAttribute.VALUE.attributeId()));
+    expectedAttributeAddresses.add(
+        new AttributeAddress(InterfaceClass.REGISTER.id(), "1.0.71.7.124.255",
+            RegisterAttribute.VALUE.attributeId()));
+    expectedAttributeAddresses.add(
+        new AttributeAddress(InterfaceClass.DATA.id(), "0.1.94.31.24.255",
+            RegisterAttribute.VALUE.attributeId()));
+    expectedAttributeAddresses.add(
+        new AttributeAddress(InterfaceClass.DATA.id(), "0.1.94.31.25.255",
+            RegisterAttribute.VALUE.attributeId()));
+    expectedAttributeAddresses.add(
+        new AttributeAddress(InterfaceClass.DATA.id(), "0.1.94.31.26.255",
+            RegisterAttribute.VALUE.attributeId()));
+    expectedAttributeAddresses.add(
+        new AttributeAddress(InterfaceClass.REGISTER.id(), "1.0.31.36.124.255",
+            RegisterAttribute.VALUE.attributeId()));
+    expectedAttributeAddresses.add(
+        new AttributeAddress(InterfaceClass.REGISTER.id(), "1.0.51.36.124.255",
+            RegisterAttribute.VALUE.attributeId()));
+    expectedAttributeAddresses.add(
+        new AttributeAddress(InterfaceClass.REGISTER.id(), "1.0.71.36.124.255",
+            RegisterAttribute.VALUE.attributeId()));
+
+    final ArgumentCaptor<List<AttributeAddress>> attributeAddressesCaptor =
+        ArgumentCaptor.forClass(List.class);
+    verify(this.dlmsConnection).get(attributeAddressesCaptor.capture());
+    final List<AttributeAddress> capturedAttributeAddresses = attributeAddressesCaptor.getValue();
+    assertThat(capturedAttributeAddresses).hasSize(9);
+    assertThat(capturedAttributeAddresses).usingRecursiveComparison()
+        .isEqualTo(expectedAttributeAddresses);
+
+    assertThat(result.getThdInstantaneousCurrentL1()).isEqualTo(1);
+    assertThat(result.getThdInstantaneousCurrentL2()).isEqualTo(2);
+    assertThat(result.getThdInstantaneousCurrentL3()).isEqualTo(3);
+    assertThat(result.getThdInstantaneousCurrentFingerprintL1()).isEqualTo(
+        IntStream.rangeClosed(101, 115).boxed().toList());
+    assertThat(result.getThdInstantaneousCurrentFingerprintL2()).isEqualTo(
+        IntStream.rangeClosed(201, 215).boxed().toList());
+    assertThat(result.getThdInstantaneousCurrentFingerprintL3()).isEqualTo(
+        IntStream.rangeClosed(301, 315).boxed().toList());
+    assertThat(result.getThdCurrentOverLimitCounterL1()).isEqualTo(10);
+    assertThat(result.getThdCurrentOverLimitCounterL2()).isEqualTo(20);
+    assertThat(result.getThdCurrentOverLimitCounterL3()).isEqualTo(30);
   }
 
   @Test
