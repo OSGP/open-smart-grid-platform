@@ -217,12 +217,13 @@ class PermitsPerNetworkSegmentTest {
 
     final long start = System.currentTimeMillis();
 
+    when(this.permitReleasedNotifier.waitForAvailablePermit(btsId, cellId, 1000))
+        .thenReturn(false)
+        .thenReturn(true);
+
     final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(2);
     executor.schedule(
         () -> {
-          when(this.permitReleasedNotifier.waitForAvailablePermit(btsId, cellId, 1000))
-              .thenReturn(false)
-              .thenReturn(true);
           this.permitsPerNetworkSegment.releasePermit(
               throttlingConfigId, clientId, btsId, cellId, requestId);
 
