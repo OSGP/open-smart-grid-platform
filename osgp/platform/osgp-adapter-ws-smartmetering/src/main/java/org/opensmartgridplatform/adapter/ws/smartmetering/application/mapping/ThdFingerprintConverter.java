@@ -4,13 +4,15 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
+import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetThdFingerprintResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.FingerprintValues;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetThdFingerprintResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ThdFingerprint;
 
+@Slf4j
 public class ThdFingerprintConverter
     extends CustomConverter<
         org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetThdFingerprintResponse,
@@ -26,6 +28,9 @@ public class ThdFingerprintConverter
     if (source == null) {
       return null;
     }
+    log.info(
+        "converting from domain-core-smartmetering to ws-schema-smartmetering with {}",
+        this.getClass().getName());
 
     final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ThdFingerprint
         sourceThdFingerprint = source.getThdFingerprint();
