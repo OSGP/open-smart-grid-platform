@@ -101,29 +101,29 @@
         },
         {
           "id": 5,
-          "description": "daylights_savings_begin",
+          "description": "daylight_savings_begin",
           "datatype": "octet-string",
           "valuetype": "SET_BY_CLIENT",
           "access": "RW"
         },
         {
           "id": 6,
-          "description": "daylights_savings_end",
+          "description": "daylight_savings_end",
           "datatype": "octet-string",
           "valuetype": "SET_BY_CLIENT",
           "access": "RW"
         },
         {
           "id": 7,
-          "description": "daylights_savings_deviation",
+          "description": "daylight_savings_deviation",
           "datatype": "integer",
-          "valuetype": "SET_BY_CLIENT",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "60",
           "access": "R"
         },
         {
           "id": 8,
-          "description": "daylights_savings_enabled",
+          "description": "daylight_savings_enabled",
           "datatype": "boolean",
           "valuetype": "SET_BY_CLIENT",
           "access": "RW"
