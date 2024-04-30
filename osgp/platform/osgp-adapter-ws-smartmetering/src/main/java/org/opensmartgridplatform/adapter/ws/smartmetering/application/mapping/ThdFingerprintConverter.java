@@ -5,35 +5,15 @@
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import lombok.extern.slf4j.Slf4j;
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.MappingContext;
-import ma.glasnost.orika.metadata.Type;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.FingerprintValues;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetThdFingerprintResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ThdFingerprint;
 
 @Slf4j
-public class ThdFingerprintConverter
-    extends CustomConverter<
-        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetThdFingerprintResponse,
-        GetThdFingerprintResponse> {
+public class ThdFingerprintConverter {
 
-  @Override
-  public GetThdFingerprintResponse convert(
-      final org.opensmartgridplatform.domain.core.valueobjects.smartmetering
-              .GetThdFingerprintResponse
-          source,
-      final Type<? extends GetThdFingerprintResponse> destinationType,
-      final MappingContext context) {
-    if (source == null) {
-      return null;
-    }
-
-    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ThdFingerprint
-        sourceThdFingerprint = source.getThdFingerprint();
-
-    final GetThdFingerprintResponse result = new GetThdFingerprintResponse();
-
+  public static ThdFingerprint getThdFingerprint(
+      final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ThdFingerprint
+          sourceThdFingerprint) {
     final ThdFingerprint dest = new ThdFingerprint();
     dest.setThdInstantaneousCurrentL1(sourceThdFingerprint.getThdInstantaneousCurrentL1());
     dest.setThdInstantaneousCurrentL2(sourceThdFingerprint.getThdInstantaneousCurrentL2());
@@ -56,9 +36,6 @@ public class ThdFingerprintConverter
     dest.setThdCurrentOverLimitCounterL1(sourceThdFingerprint.getThdCurrentOverLimitCounterL1());
     dest.setThdCurrentOverLimitCounterL2(sourceThdFingerprint.getThdCurrentOverLimitCounterL2());
     dest.setThdCurrentOverLimitCounterL3(sourceThdFingerprint.getThdCurrentOverLimitCounterL3());
-
-    result.setThdFingerprint(dest);
-
-    return result;
+    return dest;
   }
 }

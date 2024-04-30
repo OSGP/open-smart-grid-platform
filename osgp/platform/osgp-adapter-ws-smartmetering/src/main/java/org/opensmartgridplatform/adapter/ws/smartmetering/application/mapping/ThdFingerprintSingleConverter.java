@@ -8,11 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetThdFingerprintResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetThdFingerprintResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ThdFingerprint;
 
 @Slf4j
-public class ThdFingerprintBundleConverter
+public class ThdFingerprintSingleConverter
     extends CustomConverter<
         org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetThdFingerprintResponse,
         GetThdFingerprintResponse> {
