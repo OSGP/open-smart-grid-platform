@@ -288,6 +288,13 @@ class ReadAlarmRegisterCommandExecutorTest {
     alarmTypesRegister2.add(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L1);
     alarmTypesRegister2.add(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L2);
     alarmTypesRegister2.add(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3);
+    alarmTypesRegister2.add(AlarmTypeDto.THD_OVERLIMIT_IN_PHASE_L1);
+    alarmTypesRegister2.add(AlarmTypeDto.THD_OVERLIMIT_IN_PHASE_L2);
+    alarmTypesRegister2.add(AlarmTypeDto.THD_OVERLIMIT_IN_PHASE_L3);
+    alarmTypesRegister2.add(AlarmTypeDto.THD_LONG_OVERLIMIT_IN_PHASE_L1);
+    alarmTypesRegister2.add(AlarmTypeDto.THD_LONG_OVERLIMIT_IN_PHASE_L2);
+    alarmTypesRegister2.add(AlarmTypeDto.THD_LONG_OVERLIMIT_IN_PHASE_L3);
+
     return alarmTypesRegister2;
   }
 
