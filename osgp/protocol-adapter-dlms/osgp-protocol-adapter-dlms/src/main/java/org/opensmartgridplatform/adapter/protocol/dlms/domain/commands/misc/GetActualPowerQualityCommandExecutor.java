@@ -165,6 +165,9 @@ public class GetActualPowerQualityCommandExecutor
   }
 
   private boolean readScalerValueFromMeter(final CosemObject pqObject) {
+    if (pqObject.getClassId() == CLASS_ID_CLOCK) {
+      return false;
+    }
     if (pqObject.hasAttribute(RegisterAttribute.SCALER_UNIT.attributeId())) {
       final Attribute attribute =
           pqObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId());

@@ -53,6 +53,24 @@
     <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='VOLTAGE_SWELL_IN_PHASE_DETECTED_L3']">
       <jxb:typesafeEnumMember name="VOLTAGE_SWELL_IN_PHASE_DETECTED_L3"/>
     </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='THD_OVERLIMIT_IN_PHASE_L1']">
+      <jxb:typesafeEnumMember name="THD_OVERLIMIT_IN_PHASE_L1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='THD_OVERLIMIT_IN_PHASE_L2']">
+      <jxb:typesafeEnumMember name="THD_OVERLIMIT_IN_PHASE_L2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='THD_OVERLIMIT_IN_PHASE_L3']">
+      <jxb:typesafeEnumMember name="THD_OVERLIMIT_IN_PHASE_L3"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='THD_LONG_OVERLIMIT_IN_PHASE_L1']">
+      <jxb:typesafeEnumMember name="THD_LONG_OVERLIMIT_IN_PHASE_L1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='THD_LONG_OVERLIMIT_IN_PHASE_L2']">
+      <jxb:typesafeEnumMember name="THD_LONG_OVERLIMIT_IN_PHASE_L2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='THD_LONG_OVERLIMIT_IN_PHASE_L3']">
+      <jxb:typesafeEnumMember name="THD_LONG_OVERLIMIT_IN_PHASE_L3"/>
+    </jxb:bindings>
   </jxb:bindings>
 
 </jxb:bindings>
