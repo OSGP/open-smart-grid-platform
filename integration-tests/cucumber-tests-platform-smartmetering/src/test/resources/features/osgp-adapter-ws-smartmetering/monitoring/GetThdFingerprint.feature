@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringMonitoring
+@SmartMetering @Platform @SmartMeteringMonitoring @Fingerprint
 Feature: SmartMetering Monitoring - Get Thd Fingerprint
   As a grid operator
   I want to be able to get the THD fingerprint and counters from a device
@@ -16,12 +16,21 @@ Feature: SmartMetering Monitoring - Get Thd Fingerprint
     When the get THD fingerprint request is received
       | DeviceIdentification | <DeviceId>   |
     Then the THD fingerprint result should be returned
-      | DeviceIdentification | <DeviceId> |
+      | THD_CURRENT_L1     |  317 |
+      | THD_CURRENT_L2     |  517 |
+      | THD_CURRENT_L3     |  717 |
+      | THD_FINGERPRINT_L1 |   15 |
+      | THD_FINGERPRINT_L2 |   15 |
+      | THD_FINGERPRINT_L3 |   15 |
+      | THD_COUNTER_L1     | 3136 |
+      | THD_COUNTER_L2     | 5136 |
+      | THD_COUNTER_L3     | 7136 |
 
     Examples:
       | DeviceId             | Protocol | ProtocolVersion |
       | TEST1029000000001    | SMR      | 5.2             |
       | TEST1030000000001    | SMR      | 5.5             |
+
 
   Scenario Outline: Get THD fingerprint is not supported on a <Protocol> <ProtocolVersion> E-meter
     Given a dlms device

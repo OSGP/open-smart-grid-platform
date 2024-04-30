@@ -183,17 +183,17 @@ public class Smr52Profile {
 
   @Bean
   public ThdInstantaneousCurrent thdInstantaneousCurrentL1() {
-    return new ThdInstantaneousCurrent(0, "1.0.31.7.124.255");
+    return new ThdInstantaneousCurrent(317, "1.0.31.7.124.255");
   }
 
   @Bean
   public ThdInstantaneousCurrent thdInstantaneousCurrentL2() {
-    return new ThdInstantaneousCurrent(0, "1.0.51.7.124.255");
+    return new ThdInstantaneousCurrent(517, "1.0.51.7.124.255");
   }
 
   @Bean
   public ThdInstantaneousCurrent thdInstantaneousCurrentL3() {
-    return new ThdInstantaneousCurrent(0, "1.0.71.7.124.255");
+    return new ThdInstantaneousCurrent(717, "1.0.71.7.124.255");
   }
 
   @Bean
@@ -219,17 +219,17 @@ public class Smr52Profile {
 
   @Bean
   public ThdCurrentOverLimitCounter thdCurrentOverLimitCounterL1() {
-    return new ThdCurrentOverLimitCounter(0, "1.0.31.36.124.255");
+    return new ThdCurrentOverLimitCounter(3136, "1.0.31.36.124.255");
   }
 
   @Bean
   public ThdCurrentOverLimitCounter thdCurrentOverLimitCounterL2() {
-    return new ThdCurrentOverLimitCounter(0, "1.0.51.36.124.255");
+    return new ThdCurrentOverLimitCounter(5136, "1.0.51.36.124.255");
   }
 
   @Bean
   public ThdCurrentOverLimitCounter thdCurrentOverLimitCounterL3() {
-    return new ThdCurrentOverLimitCounter(0, "1.0.71.36.124.255");
+    return new ThdCurrentOverLimitCounter(7136, "1.0.71.36.124.255");
   }
 
   @Bean

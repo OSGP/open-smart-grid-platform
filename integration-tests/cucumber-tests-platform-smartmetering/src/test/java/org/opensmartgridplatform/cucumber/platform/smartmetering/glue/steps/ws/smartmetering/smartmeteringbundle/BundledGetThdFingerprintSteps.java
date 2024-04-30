@@ -13,8 +13,9 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetThdFi
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetThdFingerprintResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ThdFingerprint;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring.AbstractThdFingerprintSteps;
 
-public class BundledGetThdFingerprintSteps extends BaseBundleSteps {
+public class BundledGetThdFingerprintSteps extends AbstractThdFingerprintSteps {
 
   @Given("^the bundle request contains a get THD fingerprint action$")
   public void theBundleRequestContainsAGetThdFingerprintAction() {
@@ -33,7 +34,6 @@ public class BundledGetThdFingerprintSteps extends BaseBundleSteps {
 
     final ThdFingerprint thdFingerprint = getThdFingerprintResponse.getThdFingerprint();
 
-    assertThat(thdFingerprint.getThdInstantaneousCurrentFingerprintL1().getFingerprintValue())
-        .hasSize(15);
+    this.assertFingerprint(expectedValues, thdFingerprint);
   }
 }

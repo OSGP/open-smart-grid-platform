@@ -32,9 +32,9 @@ public class GetThdFingerprintResponseConverter
             source.getThdInstantaneousCurrentFingerprintL1(),
             source.getThdInstantaneousCurrentFingerprintL2(),
             source.getThdInstantaneousCurrentFingerprintL3(),
-            source.getThdInstantaneousCurrentL1(),
+            source.getThdCurrentOverLimitCounterL1(),
             source.getThdCurrentOverLimitCounterL2(),
-            source.getThdInstantaneousCurrentL3());
+            source.getThdCurrentOverLimitCounterL3());
 
     return new GetThdFingerprintResponse(thdFingerprint);
   }

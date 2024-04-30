@@ -14,6 +14,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetT
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetThdFingerprintAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetThdFingerprintRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetThdFingerprintResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ThdFingerprint;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.GetThdFingerprintRequestFactory;
@@ -22,7 +23,7 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-public class ThdFingerprintSteps {
+public class ThdFingerprintSteps extends AbstractThdFingerprintSteps {
 
   @Autowired
   private SmartMeteringMonitoringRequestClient<
@@ -57,6 +58,10 @@ public class ThdFingerprintSteps {
 
     assertThat(response).as("GetThdFingerprintResponse should not be null").isNotNull();
     assertThat(response.getThdFingerprint()).as("Expected THD fingerprint").isNotNull();
+
+    final ThdFingerprint thdFingerprint = response.getThdFingerprint();
+
+    this.assertFingerprint(settings, thdFingerprint);
   }
 
   @Then("^the THD fingerprint result should not be returned$")
