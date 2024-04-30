@@ -27,7 +27,7 @@ public class BundledGetThdFingerprintSteps extends AbstractThdFingerprintSteps {
       final Map<String, String> expectedValues) throws Throwable {
     final Response response = this.getNextBundleResponse();
 
-    assertThat(response instanceof GetThdFingerprintResponse).isTrue();
+    assertThat(response).isInstanceOf(GetThdFingerprintResponse.class);
 
     final GetThdFingerprintResponse getThdFingerprintResponse =
         (GetThdFingerprintResponse) response;
