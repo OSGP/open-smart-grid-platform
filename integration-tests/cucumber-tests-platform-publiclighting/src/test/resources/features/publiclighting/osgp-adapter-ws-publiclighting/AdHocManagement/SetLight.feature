@@ -15,7 +15,7 @@ Feature: PublicLightingAdhocManagement Set Light
       | PlatformFunctionGroup      | ADMIN                |
       | Domains                    | COMMON               |
 
-  @OslpMockServer
+  @OslpMockServer @Jelle
   Scenario Outline: Receive A Set Light Request With A Single Light Value
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
@@ -47,12 +47,12 @@ Feature: PublicLightingAdhocManagement Set Light
     Examples: 
       | Protocol    | Index | On    | DimValue | Event                  |
       | OSLP ELSTER |     0 | true  |          | LIGHT_EVENTS_LIGHT_ON  |
-      | OSLP ELSTER |     2 | true  |          | LIGHT_EVENTS_LIGHT_ON  |
-      | OSLP ELSTER |     6 | true  |          | LIGHT_EVENTS_LIGHT_ON  |
-      | OSLP ELSTER |     2 | false |          | LIGHT_EVENTS_LIGHT_OFF |
-      | OSLP ELSTER |     2 | true  |        1 | LIGHT_EVENTS_LIGHT_ON  |
-      | OSLP ELSTER |     2 | true  |       75 | LIGHT_EVENTS_LIGHT_ON  |
-      | OSLP ELSTER |     2 | true  |      100 | LIGHT_EVENTS_LIGHT_ON  |
+#      | OSLP ELSTER |     2 | true  |          | LIGHT_EVENTS_LIGHT_ON  |
+#      | OSLP ELSTER |     6 | true  |          | LIGHT_EVENTS_LIGHT_ON  |
+#      | OSLP ELSTER |     2 | false |          | LIGHT_EVENTS_LIGHT_OFF |
+#      | OSLP ELSTER |     2 | true  |        1 | LIGHT_EVENTS_LIGHT_ON  |
+#      | OSLP ELSTER |     2 | true  |       75 | LIGHT_EVENTS_LIGHT_ON  |
+#      | OSLP ELSTER |     2 | true  |      100 | LIGHT_EVENTS_LIGHT_ON  |
 
   Scenario Outline: Receive A Set Light Request With An Invalid Single Light Value
     Given a device

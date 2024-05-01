@@ -214,6 +214,7 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
 
     // now update the common stuff of the SSLD device.
     this.updateDevice(deviceIdentification, settings);
+    System.out.println(ssld.getNetworkAddress());
 
     // Return the updated ssld device.
     return this.ssldRepository.findByDeviceIdentification(deviceIdentification);

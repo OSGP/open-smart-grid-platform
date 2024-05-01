@@ -113,6 +113,7 @@ public class OslpDeviceSteps {
       final String deviceIdentification = "TST-" + (i + 1);
       final Map<String, String> deviceSettings = new HashMap<>();
       deviceSettings.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, deviceIdentification);
+      deviceSettings.put(PlatformKeys.KEY_NETWORKADDRESS, "host.docker.internal");
       deviceSettings.put(
           PlatformKeys.KEY_DEVICE_UID,
           Base64.encodeBase64String(deviceIdentification.getBytes(StandardCharsets.US_ASCII)));

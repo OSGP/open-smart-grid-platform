@@ -103,23 +103,16 @@ public abstract class BaseDeviceSteps {
                 PlatformKeys.KEY_PROTOCOL_VERSION,
                 PlatformDefaults.DEFAULT_PROTOCOL_VERSION)));
 
-    InetAddress inetAddress;
-    try {
-      inetAddress =
-          InetAddress.getByName(
-              getString(
-                  settings,
-                  PlatformKeys.NETWORK_ADDRESS,
-                  this.configuration.getDeviceNetworkAddress()));
-    } catch (final UnknownHostException e) {
-      inetAddress = InetAddress.getLoopbackAddress();
-    }
+//    Network settings
+    String networkAddress =
+            getString(settings, PlatformKeys.NETWORK_ADDRESS, this.configuration.getDeviceNetworkAddress());
+    System.out.println(networkAddress);
 
     device.setBtsId(getInteger(settings, PlatformKeys.BTS_ID, null));
     device.setCellId(getInteger(settings, PlatformKeys.CELL_ID, null));
 
     device.updateRegistrationData(
-        inetAddress.getHostAddress(),
+        networkAddress,
         getString(settings, PlatformKeys.KEY_DEVICE_TYPE, PlatformDefaults.DEFAULT_DEVICE_TYPE));
 
     device.updateInMaintenance(
