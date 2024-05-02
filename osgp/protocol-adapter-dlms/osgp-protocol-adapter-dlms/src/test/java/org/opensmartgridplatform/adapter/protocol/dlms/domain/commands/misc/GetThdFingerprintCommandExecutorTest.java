@@ -52,12 +52,6 @@ class GetThdFingerprintCommandExecutorTest {
 
   @Mock private DlmsConnection dlmsConnection;
 
-  private static final String OBIS_CODE = "0.1.94.31.0.255";
-
-  private static final int CLASS_ID = 1;
-
-  private static final int ATTRIBUTE_ID = 2;
-
   @BeforeEach
   public void setUp() throws IOException, ObjectConfigException {
     final ObjectConfigService objectConfigService = new ObjectConfigService();

@@ -36,10 +36,43 @@ class ThdFingerprintConverterTest {
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle
                     .GetThdFingerprintResponse.class);
 
+    assertThat(response).isNotNull();
+
     final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ThdFingerprint
         thdFingerprint = response.getThdFingerprint();
 
     this.assertFingerprint(thdFingerprint);
+  }
+
+  @Test
+  void convertBundleWhenResponseNull() {
+
+    final GetThdFingerprintResponse source = null;
+
+    final org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetThdFingerprintResponse
+        response =
+            this.mapper.map(
+                source,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle
+                    .GetThdFingerprintResponse.class);
+
+    assertThat(response).isNull();
+  }
+
+  @Test
+  void convertBundleWhenFingerprintNull() {
+
+    final GetThdFingerprintResponse source = this.createResponseWithoutFingerprint();
+
+    final org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetThdFingerprintResponse
+        response =
+            this.mapper.map(
+                source,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle
+                    .GetThdFingerprintResponse.class);
+
+    assertThat(response).isNotNull();
+    assertThat(response.getThdFingerprint()).isNull();
   }
 
   @Test
@@ -55,10 +88,45 @@ class ThdFingerprintConverterTest {
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring
                     .GetThdFingerprintResponse.class);
 
+    assertThat(response).isNotNull();
+
     final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ThdFingerprint
         thdFingerprint = response.getThdFingerprint();
 
     this.assertFingerprint(thdFingerprint);
+  }
+
+  @Test
+  void convertSingleWhenResponseNull() {
+
+    final GetThdFingerprintResponse source = null;
+
+    final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring
+            .GetThdFingerprintResponse
+        response =
+            this.mapper.map(
+                source,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring
+                    .GetThdFingerprintResponse.class);
+
+    assertThat(response).isNull();
+  }
+
+  @Test
+  void convertSingleWhenFingerprintNull() {
+
+    final GetThdFingerprintResponse source = this.createResponseWithoutFingerprint();
+
+    final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring
+            .GetThdFingerprintResponse
+        response =
+            this.mapper.map(
+                source,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring
+                    .GetThdFingerprintResponse.class);
+
+    assertThat(response).isNotNull();
+    assertThat(response.getThdFingerprint()).isNull();
   }
 
   private GetThdFingerprintResponse createResponse() {
@@ -74,6 +142,11 @@ class ThdFingerprintConverterTest {
                 this.counterL1,
                 this.counterL2,
                 this.counterL3));
+    return source;
+  }
+
+  private GetThdFingerprintResponse createResponseWithoutFingerprint() {
+    final GetThdFingerprintResponse source = new GetThdFingerprintResponse((ThdFingerprint) null);
     return source;
   }
 

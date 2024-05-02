@@ -11,9 +11,16 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ThdF
 @Slf4j
 public class ThdFingerprintConverter {
 
+  private ThdFingerprintConverter() {
+    //    hide the implicit public constructor for this utility class
+  }
+
   public static ThdFingerprint getThdFingerprint(
       final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ThdFingerprint
           sourceThdFingerprint) {
+    if (sourceThdFingerprint == null) {
+      return null;
+    }
     final ThdFingerprint dest = new ThdFingerprint();
     dest.setThdInstantaneousCurrentL1(sourceThdFingerprint.getThdInstantaneousCurrentL1());
     dest.setThdInstantaneousCurrentL2(sourceThdFingerprint.getThdInstantaneousCurrentL2());
