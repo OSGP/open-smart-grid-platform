@@ -105,7 +105,7 @@ public class InstallationService {
       final MessageMetadata messageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
-    this.handleResponse("handleDefaultDeviceResponse", messageMetadata, deviceResult, exception);
+    this.doHandleResponse("handleDefaultDeviceResponse", messageMetadata, deviceResult, exception);
   }
 
   public void coupleMbusDevice(
@@ -191,7 +191,7 @@ public class InstallationService {
       this.mBusGatewayService.handleDecoupleMbusDeviceResponse(
           messageMetadata, decoupleMbusDeviceResponseDto);
     }
-    this.handleResponse("decoupleMbusDevice", messageMetadata, result, exception);
+    this.doHandleResponse("decoupleMbusDevice", messageMetadata, result, exception);
   }
 
   @Transactional(value = "transactionManager")
@@ -252,6 +252,14 @@ public class InstallationService {
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
+    this.doHandleResponse(methodName, messageMetadata, deviceResult, exception);
+  }
+
+  private void doHandleResponse(
+      final String methodName,
+      final MessageMetadata messageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception) {
     LOGGER.debug("{} for MessageType: {}", methodName, messageMetadata.getMessageType());
 
     final ResponseMessage responseMessage =

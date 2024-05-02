@@ -16,8 +16,6 @@ public class SetPushSetupUdpRequestData implements ActionRequest {
 
   private static final long serialVersionUID = 6093319027662713873L;
 
-  public SetPushSetupUdpRequestData() {}
-
   @Override
   public void validate() throws FunctionalException {
     // No validation needed
