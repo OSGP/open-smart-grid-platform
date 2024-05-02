@@ -89,6 +89,7 @@
       <xsd:enumeration value="UPDATE_PROTOCOL" />
       <xsd:enumeration value="SCHEDULE_TEST_ALARM" />
       <xsd:enumeration value="DECOUPLE_MBUS_DEVICE_ADMINISTRATIVE" />
+      <xsd:enumeration value="GET_THD_FINGERPRINT" />
     </xsd:restriction>
   </xsd:simpleType>
 
