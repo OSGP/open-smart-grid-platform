@@ -74,7 +74,7 @@ SPDX-License-Identifier: Apache-2.0
     <flyway.version>9.22.3</flyway.version>
     <slf4j.version>2.0.13</slf4j.version>
     <apache.commons.lang.version>3.14.0</apache.commons.lang.version>
-    <apache.commons.text.version>1.11.0</apache.commons.text.version>
+    <apache.commons.text.version>1.12.0</apache.commons.text.version>
     <apache.httpcomponents.version>5.3.1</apache.httpcomponents.version>
     <apache.httpcomponents..mime.version>4.5.14</apache.httpcomponents..mime.version>
     <apache.httpcomponents.httpcore.version>4.4.16</apache.httpcomponents.httpcore.version>
