@@ -20,14 +20,17 @@ public class PushSetupBuilder {
   private final AccessResultCode accessResultCode;
   private final ObisCode obisCode;
   private final TransportServiceTypeDto transportServiceTypeDto;
+  private final String destination;
 
   public PushSetupBuilder(
       final AccessResultCode resultCode,
       final ObisCode obisCode,
-      final TransportServiceTypeDto transportServiceTypeDto) {
+      final TransportServiceTypeDto transportServiceTypeDto,
+      final String destination) {
     this.accessResultCode = resultCode;
     this.obisCode = obisCode;
     this.transportServiceTypeDto = transportServiceTypeDto;
+    this.destination = destination;
   }
 
   public GetResultImpl buildPushObjectList() {
@@ -42,7 +45,8 @@ public class PushSetupBuilder {
   }
 
   public GetResultImpl buildSendDestinationAndMethod() {
-    return new GetResultImpl(this.createSendDestinationAndMethod(), this.accessResultCode);
+    return new GetResultImpl(
+        this.createSendDestinationAndMethod(this.destination), this.accessResultCode);
   }
 
   public GetResultImpl buildCommunicationWindow() {
@@ -65,11 +69,11 @@ public class PushSetupBuilder {
         Arrays.asList(classIdElement, obisCodeElement, attributeIdElement, dataIndexElement));
   }
 
-  private DataObject createSendDestinationAndMethod() {
+  private DataObject createSendDestinationAndMethod(final String destintion) {
     final List<DataObject> sendDestinationAndMethodElements = new ArrayList<>();
     sendDestinationAndMethodElements.add(
         DataObject.newEnumerateData(this.transportServiceTypeDto.getDlmsEnumValue()));
-    sendDestinationAndMethodElements.add(DataObject.newOctetStringData("destintion".getBytes()));
+    sendDestinationAndMethodElements.add(DataObject.newOctetStringData(destintion.getBytes()));
     sendDestinationAndMethodElements.add(
         DataObject.newEnumerateData(MessageTypeDto.A_XDR_ENCODED_X_DLMS_APDU.getDlmsEnumValue()));
 

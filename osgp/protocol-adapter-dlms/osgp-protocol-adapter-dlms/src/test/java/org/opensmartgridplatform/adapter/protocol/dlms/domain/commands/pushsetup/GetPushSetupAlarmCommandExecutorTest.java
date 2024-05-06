@@ -5,10 +5,11 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openmuc.jdlms.AccessResultCode.SUCCESS;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.GetPushSetupCommandExecutorTest.createExpectedAttributeAddresses;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -42,6 +43,12 @@ class GetPushSetupAlarmCommandExecutorTest extends GetPushSetupCommandExecutorTe
 
   private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
 
+  private static final String DESTINTION = "destination";
+  private static final long RANDOMISATION_START_INTERVAL = 1L;
+  private static final int NUMBER_OF_RETRIES = 2;
+  private static final long REPETITION_DELAY = 3L;
+  private static final TransportServiceTypeDto TRANSPORT_SERVICE_TYPE = TransportServiceTypeDto.TCP;
+
   @Mock private DlmsConnectionManager conn;
   @Mock private DlmsMessageListener dlmsMessageListener;
   @Mock private DlmsConnection dlmsConnection;
@@ -71,16 +78,16 @@ class GetPushSetupAlarmCommandExecutorTest extends GetPushSetupCommandExecutorTe
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
 
     final PushSetupBuilder pushSetupBuilder =
-        new PushSetupBuilder(SUCCESS, OBIS_CODE, TransportServiceTypeDto.TCP);
+        new PushSetupBuilder(SUCCESS, OBIS_CODE, TRANSPORT_SERVICE_TYPE, DESTINTION);
     when(this.dlmsConnection.get(ArgumentMatchers.anyList()))
         .thenReturn(
             List.of(
                 pushSetupBuilder.buildPushObjectList(),
                 pushSetupBuilder.buildSendDestinationAndMethod(),
                 pushSetupBuilder.buildCommunicationWindow(),
-                this.longUnsigned(1L, SUCCESS),
-                this.unsigned(2, SUCCESS),
-                this.longUnsigned(3L, SUCCESS)));
+                this.longUnsigned(RANDOMISATION_START_INTERVAL, SUCCESS),
+                this.unsigned(NUMBER_OF_RETRIES, SUCCESS),
+                this.longUnsigned(REPETITION_DELAY, SUCCESS)));
 
     final DlmsDevice device = new DlmsDevice();
     device.setProtocol(protocol);
@@ -121,5 +128,16 @@ class GetPushSetupAlarmCommandExecutorTest extends GetPushSetupCommandExecutorTe
 
   private void assertResult(final PushSetupAlarmDto result) {
     final List<CosemObjectDefinitionDto> cosemObjectDefinitionDtos = result.getPushObjectList();
+    assertThat(cosemObjectDefinitionDtos.stream().allMatch(this.sameObiscode)).isTrue();
+    assertThat(result.getSendDestinationAndMethod().getTransportService())
+        .isEqualTo(TRANSPORT_SERVICE_TYPE);
+    assertThat(result.getSendDestinationAndMethod().getDestination()).isEqualTo(DESTINTION);
+    assertThat(result.getRandomisationStartInterval().longValue())
+        .isEqualTo(RANDOMISATION_START_INTERVAL);
+    assertThat(result.getNumberOfRetries()).isEqualTo(NUMBER_OF_RETRIES);
+    assertThat(result.getRepetitionDelay().longValue()).isEqualTo(REPETITION_DELAY);
   }
+
+  private final Predicate<CosemObjectDefinitionDto> sameObiscode =
+      cod -> Arrays.equals(cod.getLogicalName().toByteArray(), OBIS_CODE.bytes());
 }
