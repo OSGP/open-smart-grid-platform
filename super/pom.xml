@@ -108,7 +108,7 @@ SPDX-License-Identifier: Apache-2.0
     <logback.version>1.5.6</logback.version>
     <apache.commons.schema>2.3.1</apache.commons.schema>
     <maven.clean.plugin.version>3.3.2</maven.clean.plugin.version>
-    <maven.compiler.plugin.version>3.12.1</maven.compiler.plugin.version>
+    <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
     <netty.version>4.1.108.Final</netty.version>
     <openmuc.jdlms.version>1.8.0</openmuc.jdlms.version>
     <openmuc.jdlms-annotation.version>1.8.0</openmuc.jdlms-annotation.version>
