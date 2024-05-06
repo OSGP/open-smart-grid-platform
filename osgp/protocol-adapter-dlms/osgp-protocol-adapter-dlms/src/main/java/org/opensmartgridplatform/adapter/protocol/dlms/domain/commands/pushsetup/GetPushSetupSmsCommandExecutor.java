@@ -12,9 +12,7 @@ import static org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupA
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute.SEND_DESTINATION_AND_METHOD;
 
 import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
@@ -23,9 +21,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Obj
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObisCodeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
@@ -38,21 +34,11 @@ public class GetPushSetupSmsCommandExecutor
     extends GetPushSetupCommandExecutor<Void, PushSetupSmsDto> {
 
   private final DlmsHelper dlmsHelper;
-  private final ObjectConfigServiceHelper objectConfigServiceHelper;
-
-  PushSetupAttribute[] attributes = {
-    PUSH_OBJECT_LIST,
-    SEND_DESTINATION_AND_METHOD,
-    COMMUNICATION_WINDOW,
-    RANDOMISATION_START_INTERVAL,
-    NUMBER_OF_RETRIES,
-    REPETITION_DELAY
-  };
 
   public GetPushSetupSmsCommandExecutor(
       final DlmsHelper dlmsHelper, final ObjectConfigServiceHelper objectConfigServiceHelper) {
+    super(objectConfigServiceHelper);
     this.dlmsHelper = dlmsHelper;
-    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
@@ -64,7 +50,7 @@ public class GetPushSetupSmsCommandExecutor
       throws ProtocolAdapterException {
 
     final AttributeAddress[] attributeAddresses =
-        this.getAttributeAddresses(Protocol.forDevice(device));
+        this.getAttributeAddresses(Protocol.forDevice(device), DlmsObjectType.PUSH_SETUP_SMS);
     conn.getDlmsMessageListener()
         .setDescription(
             "GetPushSetupSms, retrieve attributes: "
@@ -112,33 +98,5 @@ public class GetPushSetupSmsCommandExecutor
             .intValue());
 
     return pushSetupSmsBuilder.build();
-  }
-
-  private AttributeAddress[] getAttributeAddresses(final Protocol protocol)
-      throws NotSupportedByProtocolException {
-    final AttributeAddress[] attributeAddresses = new AttributeAddress[this.attributes.length];
-    for (int i = 0; i < this.attributes.length; i++) {
-      attributeAddresses[i] = this.getAttributeAddress(protocol, this.attributes[i].attributeId());
-    }
-    return attributeAddresses;
-  }
-
-  private int idx(final PushSetupAttribute pushSetupAttribute) {
-    return ArrayUtils.indexOf(this.attributes, pushSetupAttribute);
-  }
-
-  private AttributeAddress getAttributeAddress(final Protocol protocol, final int attributeId)
-      throws NotSupportedByProtocolException {
-    final Optional<AttributeAddress> optionalAttributeAddress =
-        this.objectConfigServiceHelper.findOptionalAttributeAddress(
-            protocol, DlmsObjectType.PUSH_SETUP_SMS, null, attributeId);
-    return optionalAttributeAddress.orElseThrow(
-        () ->
-            new NotSupportedByProtocolException(
-                String.format(
-                    "No address found for %s in protocol %s %s",
-                    DlmsObjectType.PUSH_SETUP_SMS.name(),
-                    protocol.getName(),
-                    protocol.getVersion())));
   }
 }

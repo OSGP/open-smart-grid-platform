@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openmuc.jdlms.AccessResultCode.SUCCESS;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.GetPushSetupCommandExecutorTest.createExpectedAttributeAddresses;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,34 +33,31 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessa
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.TransportServiceTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-class GetPushSetupSmsCommandExecutorTest extends GetPushSetupCommandExecutorTest {
+class GetPushSetupAlarmCommandExecutorTest extends GetPushSetupCommandExecutorTest {
 
-  private static final ObisCode OBIS_CODE = new ObisCode("0.2.25.9.0.255");
+  private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
 
   @Mock private DlmsConnectionManager conn;
   @Mock private DlmsMessageListener dlmsMessageListener;
   @Mock private DlmsConnection dlmsConnection;
-  @InjectMocks GetPushSetupSmsCommandExecutor executor;
+  @InjectMocks GetPushSetupAlarmCommandExecutor executor;
   @Captor ArgumentCaptor<AttributeAddress[]> attributeAddressesCaptor;
 
-  private ObjectConfigService objectConfigService;
   private MessageMetadata messageMetadata;
-  private ObjectConfigServiceHelper objectConfigServiceHelper;
-  private DlmsHelper dlmsHelper;
 
   @BeforeEach
   public void init() throws IOException, ObjectConfigException {
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
-    this.objectConfigService = new ObjectConfigService();
-    this.objectConfigServiceHelper = new ObjectConfigServiceHelper(this.objectConfigService);
-    this.dlmsHelper = new DlmsHelper();
-    this.executor =
-        new GetPushSetupSmsCommandExecutor(this.dlmsHelper, this.objectConfigServiceHelper);
+    final ObjectConfigService objectConfigService = new ObjectConfigService();
+    final ObjectConfigServiceHelper objectConfigServiceHelper =
+        new ObjectConfigServiceHelper(objectConfigService);
+    final DlmsHelper dlmsHelper = new DlmsHelper();
+    this.executor = new GetPushSetupAlarmCommandExecutor(dlmsHelper, objectConfigServiceHelper);
   }
 
   @ParameterizedTest
@@ -73,7 +71,7 @@ class GetPushSetupSmsCommandExecutorTest extends GetPushSetupCommandExecutorTest
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
 
     final PushSetupBuilder pushSetupBuilder =
-        new PushSetupBuilder(SUCCESS, OBIS_CODE, TransportServiceTypeDto.SMS);
+        new PushSetupBuilder(SUCCESS, OBIS_CODE, TransportServiceTypeDto.TCP);
     when(this.dlmsConnection.get(ArgumentMatchers.anyList()))
         .thenReturn(
             List.of(
@@ -87,7 +85,7 @@ class GetPushSetupSmsCommandExecutorTest extends GetPushSetupCommandExecutorTest
     final DlmsDevice device = new DlmsDevice();
     device.setProtocol(protocol);
     device.setWithListMax(32);
-    final PushSetupSmsDto result =
+    final PushSetupAlarmDto result =
         this.executor.execute(this.conn, device, null, this.messageMetadata);
 
     this.assertWithListAddresses();
@@ -121,7 +119,7 @@ class GetPushSetupSmsCommandExecutorTest extends GetPushSetupCommandExecutorTest
         .isEqualTo(expectedAttributeAddresses);
   }
 
-  private void assertResult(final PushSetupSmsDto result) {
+  private void assertResult(final PushSetupAlarmDto result) {
     final List<CosemObjectDefinitionDto> cosemObjectDefinitionDtos = result.getPushObjectList();
   }
 }

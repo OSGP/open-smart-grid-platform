@@ -4,36 +4,39 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup;
 
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute.COMMUNICATION_WINDOW;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute.NUMBER_OF_RETRIES;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute.PUSH_OBJECT_LIST;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute.RANDOMISATION_START_INTERVAL;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute.REPETITION_DELAY;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute.SEND_DESTINATION_AND_METHOD;
+
 import java.util.List;
+import org.apache.commons.lang3.ArrayUtils;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 
 public abstract class GetPushSetupCommandExecutor<T, R> extends AbstractCommandExecutor<T, R> {
 
-  protected static final int CLASS_ID = 40;
-  protected static final int ATTRIBUTE_ID_PUSH_OBJECT_LIST = 2;
-  protected static final int ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD = 3;
-  protected static final int ATTRIBUTE_ID_COMMUNICATION_WINDOW = 4;
-  protected static final int ATTRIBUTE_ID_RANDOMISATION_START_INTERVAL = 5;
-  protected static final int ATTRIBUTE_ID_NUMBER_OF_RETRIES = 6;
-  protected static final int ATTRIBUTE_ID_REPETITION_DELAY = 7;
+  PushSetupAttribute[] attributes = {
+    PUSH_OBJECT_LIST,
+    SEND_DESTINATION_AND_METHOD,
+    COMMUNICATION_WINDOW,
+    RANDOMISATION_START_INTERVAL,
+    NUMBER_OF_RETRIES,
+    REPETITION_DELAY
+  };
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  protected static final int INDEX_PUSH_OBJECT_LIST = 0;
-  protected static final int INDEX_SEND_DESTINATION_AND_METHOD = 1;
-  protected static final int INDEX_COMMUNICATION_WINDOW = 2;
-  protected static final int INDEX_RANDOMISATION_START_INTERVAL = 3;
-  protected static final int INDEX_NUMBER_OF_RETRIES = 4;
-  protected static final int INDEX_REPETITION_DELAY = 5;
-
-  protected GetPushSetupCommandExecutor() {
-    // hide public constructor, but keep this accessible by subclasses
-  }
-
-  protected GetPushSetupCommandExecutor(final Class<? extends ActionRequestDto> clazz) {
-    super(clazz);
+  protected GetPushSetupCommandExecutor(final ObjectConfigServiceHelper objectConfigServiceHelper) {
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   protected static void checkResultList(
@@ -51,5 +54,35 @@ public abstract class GetPushSetupCommandExecutor<T, R> extends AbstractCommandE
               + " GetResults while retrieving Push Setup table, got "
               + getResultList.size());
     }
+  }
+
+  protected AttributeAddress[] getAttributeAddresses(
+      final Protocol protocol, final DlmsObjectType dlmsObjectType)
+      throws NotSupportedByProtocolException {
+    final AttributeAddress[] attributeAddresses = new AttributeAddress[this.attributes.length];
+    for (int i = 0; i < this.attributes.length; i++) {
+      attributeAddresses[i] =
+          this.getAttributeAddress(protocol, dlmsObjectType, this.attributes[i].attributeId());
+    }
+    return attributeAddresses;
+  }
+
+  protected AttributeAddress getAttributeAddress(
+      final Protocol protocol, final DlmsObjectType dlmsObjectType, final int attributeId)
+      throws NotSupportedByProtocolException {
+    return this.objectConfigServiceHelper
+        .findOptionalAttributeAddress(protocol, dlmsObjectType, null, attributeId)
+        .orElseThrow(
+            () ->
+                new NotSupportedByProtocolException(
+                    String.format(
+                        "No address found for %s in protocol %s %s",
+                        DlmsObjectType.PUSH_SETUP_SMS.name(),
+                        protocol.getName(),
+                        protocol.getVersion())));
+  }
+
+  protected int idx(final PushSetupAttribute pushSetupAttribute) {
+    return ArrayUtils.indexOf(this.attributes, pushSetupAttribute);
   }
 }
