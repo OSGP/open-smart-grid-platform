@@ -9,22 +9,18 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup;
 
-import static org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute.COMMUNICATION_WINDOW;
-
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
-import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
-import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupUdpRequestDto;
@@ -37,11 +33,8 @@ import org.springframework.stereotype.Component;
 public class SetPushSetupUdpCommandExecutor
     extends SetPushSetupCommandExecutor<SetPushSetupUdpRequestDto, AccessResultCode> {
 
-  private final ObjectConfigService objectConfigService;
-
-  public SetPushSetupUdpCommandExecutor(final ObjectConfigService objectConfigService) {
-    super(SetPushSetupUdpRequestDto.class);
-    this.objectConfigService = objectConfigService;
+  public SetPushSetupUdpCommandExecutor(final ObjectConfigServiceHelper objectConfigServiceHelper) {
+    super(SetPushSetupUdpRequestDto.class, objectConfigServiceHelper);
   }
 
   @Override
@@ -86,23 +79,11 @@ public class SetPushSetupUdpCommandExecutor
 
   private SetParameter getSetParameterCommunicationWindow(final DlmsDevice device)
       throws ProtocolAdapterException {
-
-    try {
-      final CosemObject pushSetupUdp =
-          this.objectConfigService.getCosemObject(
-              device.getProtocolName(), device.getProtocolVersion(), DlmsObjectType.PUSH_SETUP_UDP);
-
-      final AttributeAddress communicationWindowAddress =
-          new AttributeAddress(
-              pushSetupUdp.getClassId(),
-              pushSetupUdp.getObis(),
-              COMMUNICATION_WINDOW.attributeId());
-      final DataObject value = DataObject.newArrayData(Collections.emptyList());
-      return new SetParameter(communicationWindowAddress, value);
-
-    } catch (final ObjectConfigException e) {
-      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
-    }
+    final AttributeAddress communicationWindowAddress =
+        this.getCommunicationWindowAddress(
+            Protocol.forDevice(device), DlmsObjectType.PUSH_SETUP_UDP);
+    final DataObject value = DataObject.newArrayData(Collections.emptyList());
+    return new SetParameter(communicationWindowAddress, value);
   }
 
   @Override
