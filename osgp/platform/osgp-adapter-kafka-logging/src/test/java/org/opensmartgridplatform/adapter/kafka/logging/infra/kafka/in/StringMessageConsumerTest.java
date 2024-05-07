@@ -38,9 +38,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
     partitions = 1,
     topics = {"${distributionautomation.kafka.topic.message}"},
     brokerProperties = {
-      "listeners=PLAINTEXT://${distributionautomation.kafka.bootstrap.servers}",
       "log.dirs=target/kafka-logs-distributionautomation-messages",
-      "auto.create.topics.enable=true"
     })
 @DirtiesContext
 class StringMessageConsumerTest {

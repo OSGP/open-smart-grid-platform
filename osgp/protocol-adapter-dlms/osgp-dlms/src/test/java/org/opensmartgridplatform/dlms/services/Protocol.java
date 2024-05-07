@@ -16,8 +16,8 @@ public enum Protocol {
   SMR_4_3("SMR", "4.3", 74, 11, 27, 6, 14, 6, 13, 6, 7, true, false),
   SMR_5_0_0("SMR", "5.0.0", 84, 11, 27, 6, 14, 6, 15, 9, 14, true, true),
   SMR_5_1("SMR", "5.1", 88, 11, 27, 6, 14, 6, 15, 9, 14, true, true),
-  SMR_5_2("SMR", "5.2", 113, 11, 27, 6, 14, 6, 15, 10, 15, true, true),
-  SMR_5_5("SMR", "5.5", 117, 11, 27, 6, 14, 6, 15, 10, 15, true, true);
+  SMR_5_2("SMR", "5.2", 127, 11, 27, 6, 14, 6, 15, 10, 15, true, true),
+  SMR_5_5("SMR", "5.5", 131, 11, 27, 6, 14, 6, 15, 10, 15, true, true);
 
   private final String name;
   private final String version;

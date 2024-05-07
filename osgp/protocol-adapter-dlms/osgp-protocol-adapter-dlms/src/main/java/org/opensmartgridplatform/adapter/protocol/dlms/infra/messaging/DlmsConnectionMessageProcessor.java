@@ -158,9 +158,8 @@ public abstract class DlmsConnectionMessageProcessor {
     final InvocationCountingDlmsMessageListener dlmsMessageListener =
         (InvocationCountingDlmsMessageListener) conn.getDlmsMessageListener();
     final int numberOfSentMessages = dlmsMessageListener.getNumberOfSentMessages();
-    device.incrementInvocationCounter(numberOfSentMessages);
-    this.deviceRepository.updateInvocationCounter(
-        device.getDeviceIdentification(), device.getInvocationCounter());
+    this.deviceRepository.incrementInvocationCounter(
+        device.getDeviceIdentification(), (long) numberOfSentMessages);
   }
 
   /**

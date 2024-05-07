@@ -52,7 +52,7 @@ public class EventMessageDataContainerMappingTest {
   public void testWithFilledList() {
     // build test data
     final EventDto event =
-        new EventDto(new DateTime(), new Integer(1), new Integer(2), "STANDARD_EVENT_LOG");
+        new EventDto(new DateTime(), Integer.valueOf(1), Integer.valueOf(2), "STANDARD_EVENT_LOG");
     event.setEventTypeDto(EventTypeDto.POWER_FAILURE);
 
     final ArrayList<EventDto> events = new ArrayList<>();

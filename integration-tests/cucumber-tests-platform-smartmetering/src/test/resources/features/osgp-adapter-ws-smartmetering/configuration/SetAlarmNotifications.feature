@@ -50,6 +50,8 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
       | AlarmTypeEnabled2    | TRUE                             |
       | AlarmType_3          | LAST_GASP                        |
       | AlarmTypeEnabled3    | TRUE                             |
+      | AlarmType_4          | THD_OVERLIMIT_IN_PHASE_L1        |
+      | AlarmTypeEnabled4    | TRUE                             |
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1029000000001 |
 
@@ -160,21 +162,33 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
       | Protocol             | SMR               |
       | ProtocolVersion      | 5.2               |
     When the set alarm notifications request is received
-      | DeviceIdentification | TEST1029000000001                     |
-      | AlarmType_1          | VOLTAGE_SAG_IN_PHASE_DETECTED_L1      |
-      | AlarmTypeEnabled1    | false                                 |
-      | AlarmType_2          | VOLTAGE_SAG_IN_PHASE_DETECTED_L2      |
-      | AlarmTypeEnabled2    | false                                 |
-      | AlarmType_3          | VOLTAGE_SAG_IN_PHASE_DETECTED_L3      |
-      | AlarmTypeEnabled3    | false                                 |
-      | AlarmType_4          | VOLTAGE_SWELL_IN_PHASE_DETECTED_L1    |
-      | AlarmTypeEnabled4    | false                                 |
-      | AlarmType_5          | VOLTAGE_SWELL_IN_PHASE_DETECTED_L2    |
-      | AlarmTypeEnabled5    | false                                 |
-      | AlarmType_6          | VOLTAGE_SWELL_IN_PHASE_DETECTED_L3    |
-      | AlarmTypeEnabled6    | false                                 |
+      | DeviceIdentification | TEST1029000000001                   |
+      | AlarmType_1          | VOLTAGE_SAG_IN_PHASE_DETECTED_L1    |
+      | AlarmTypeEnabled1    | false                               |
+      | AlarmType_2          | VOLTAGE_SAG_IN_PHASE_DETECTED_L2    |
+      | AlarmTypeEnabled2    | false                               |
+      | AlarmType_3          | VOLTAGE_SAG_IN_PHASE_DETECTED_L3    |
+      | AlarmTypeEnabled3    | false                               |
+      | AlarmType_4          | VOLTAGE_SWELL_IN_PHASE_DETECTED_L1  |
+      | AlarmTypeEnabled4    | false                               |
+      | AlarmType_5          | VOLTAGE_SWELL_IN_PHASE_DETECTED_L2  |
+      | AlarmTypeEnabled5    | false                               |
+      | AlarmType_6          | VOLTAGE_SWELL_IN_PHASE_DETECTED_L3  |
+      | AlarmTypeEnabled6    | false                               |
+      | AlarmType_7          | THD_OVERLIMIT_IN_PHASE_L1           |
+      | AlarmTypeEnabled7    | false                               |
+      | AlarmType_8          | THD_OVERLIMIT_IN_PHASE_L2           |
+      | AlarmTypeEnabled8    | false                               |
+      | AlarmType_9          | THD_OVERLIMIT_IN_PHASE_L3           |
+      | AlarmTypeEnabled9    | false                               |
+      | AlarmType_10         | THD_LONG_OVERLIMIT_IN_PHASE_L1      |
+      | AlarmTypeEnabled10   | false                               |
+      | AlarmType_11         | THD_LONG_OVERLIMIT_IN_PHASE_L2      |
+      | AlarmTypeEnabled11   | false                               |
+      | AlarmType_12         | THD_LONG_OVERLIMIT_IN_PHASE_L3      |
+      | AlarmTypeEnabled12   | false                               |
     Then the specified alarm notifications should be set on the device
-      | DeviceIdentification | TEST1029000000001                     |
+      | DeviceIdentification | TEST1029000000001                   |
 
   @NightlyBuildOnly
   Scenario: Set all alarm notifications disabled on a SMR 5.5 device

@@ -19,6 +19,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmReg
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearAlarmRegisterRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetThdFingerprintRequest;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetThdFingerprintResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReads;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
@@ -33,6 +35,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigureDefinableLoadProfileRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetThdFingerprintRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetThdFingerprintResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
@@ -543,6 +547,59 @@ public class MonitoringService {
         messageMetadata.getMessageType());
 
     this.handleMetadataOnlyResponseMessage(messageMetadata, deviceResult, exception);
+  }
+
+  public void getThdFingerprint(
+      final MessageMetadata messageMetadata,
+      final GetThdFingerprintRequest getThdFingerprintRequest)
+      throws FunctionalException {
+
+    LOGGER.info(
+        "GetThdFingerprint for organisationIdentification: {} for deviceIdentification: {}",
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
+
+    final SmartMeter smartMeter =
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
+
+    final GetThdFingerprintRequestDto requestDto =
+        this.monitoringMapper.map(getThdFingerprintRequest, GetThdFingerprintRequestDto.class);
+
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
+  }
+
+  public void handleGetThdFingerprintResponse(
+      final MessageMetadata messageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception,
+      final GetThdFingerprintResponseDto resultData) {
+
+    LOGGER.info(
+        "handle GetThdFingerprint response for MessageType: {}", messageMetadata.getMessageType());
+
+    final GetThdFingerprintResponse response =
+        this.monitoringMapper.map(resultData, GetThdFingerprintResponse.class);
+
+    ResponseMessageResultType result = deviceResult;
+    if (exception != null) {
+      LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
+      result = ResponseMessageResultType.NOT_OK;
+    }
+
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withMessageMetadata(messageMetadata)
+            .withResult(result)
+            .withOsgpException(exception)
+            .withDataObject(response)
+            .build();
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
   private void handleMetadataOnlyResponseMessage(

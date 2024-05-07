@@ -49,6 +49,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusE
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetThdFingerprintRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MbusActionRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
@@ -66,6 +67,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushS
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupSmsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupUdpRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetThdConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
@@ -101,6 +103,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptio
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetThdFingerprintRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannelsRequestDataDto;
@@ -115,6 +118,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupLast
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupUdpRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
@@ -135,10 +139,12 @@ public class ActionMapperService {
 
   private static final Map<Class<? extends ActionRequest>, ConfigurableMapper> CLASS_TO_MAPPER_MAP =
       new HashMap<>();
+
   private static final Map<
           Class<? extends ActionRequest>,
           CustomValueToDtoConverter<? extends ActionRequest, ? extends ActionRequestDto>>
       CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
+
   private static final Map<Class<? extends ActionRequest>, Class<? extends ActionRequestDto>>
       CLASS_MAP = new HashMap<>();
 
@@ -159,6 +165,7 @@ public class ActionMapperService {
     CLASS_MAP.put(SetPushSetupLastGaspRequestData.class, SetPushSetupLastGaspRequestDto.class);
     CLASS_MAP.put(SetPushSetupSmsRequestData.class, SetPushSetupSmsRequestDto.class);
     CLASS_MAP.put(SetPushSetupUdpRequestData.class, SetPushSetupUdpRequestDto.class);
+    CLASS_MAP.put(SetThdConfigurationRequestData.class, SetThdConfigurationRequestDto.class);
     CLASS_MAP.put(SynchronizeTimeRequestData.class, SynchronizeTimeRequestDto.class);
     CLASS_MAP.put(GetAllAttributeValuesRequestData.class, GetAllAttributeValuesRequestDto.class);
     CLASS_MAP.put(GetFirmwareVersionRequestData.class, GetFirmwareVersionRequestDto.class);
@@ -169,6 +176,7 @@ public class ActionMapperService {
         GetAssociationLnObjectsRequestData.class, GetAssociationLnObjectsRequestDto.class);
     CLASS_MAP.put(CoupleMbusDeviceRequestData.class, GetAssociationLnObjectsRequestDto.class);
     CLASS_MAP.put(SetClockConfigurationRequestData.class, SetClockConfigurationRequestDto.class);
+    CLASS_MAP.put(GetThdFingerprintRequestData.class, GetThdFingerprintRequestDataDto.class);
     CLASS_MAP.put(
         GetConfigurationObjectRequestData.class, GetConfigurationObjectRequestDataDto.class);
     CLASS_MAP.put(
@@ -209,8 +217,11 @@ public class ActionMapperService {
   private ConfigurationMapper configurationMapper;
 
   @Autowired private ManagementMapper managementMapper;
+
   @Autowired private MonitoringMapper monitoringMapper;
+
   @Autowired private CommonMapper commonMapper;
+
   @Autowired private PeriodicReadsRequestGasDataConverter periodicReadsRequestGasDataConverter;
 
   @Autowired
@@ -252,6 +263,7 @@ public class ActionMapperService {
     CLASS_TO_MAPPER_MAP.put(SetPushSetupLastGaspRequestData.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(SetPushSetupSmsRequestData.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(SetPushSetupUdpRequestData.class, this.configurationMapper);
+    CLASS_TO_MAPPER_MAP.put(SetThdConfigurationRequestData.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(SynchronizeTimeRequestData.class, this.commonMapper);
     CLASS_TO_MAPPER_MAP.put(GetAllAttributeValuesRequestData.class, this.commonMapper);
     CLASS_TO_MAPPER_MAP.put(GetFirmwareVersionRequestData.class, this.commonMapper);
@@ -260,6 +272,7 @@ public class ActionMapperService {
     CLASS_TO_MAPPER_MAP.put(SpecificAttributeValueRequestData.class, this.commonMapper);
     CLASS_TO_MAPPER_MAP.put(GetAssociationLnObjectsRequestData.class, this.commonMapper);
     CLASS_TO_MAPPER_MAP.put(SetClockConfigurationRequestData.class, this.configurationMapper);
+    CLASS_TO_MAPPER_MAP.put(GetThdFingerprintRequestData.class, this.monitoringMapper);
     CLASS_TO_MAPPER_MAP.put(GetConfigurationObjectRequestData.class, this.commonMapper);
     CLASS_TO_MAPPER_MAP.put(GetPowerQualityProfileRequestData.class, this.monitoringMapper);
     CLASS_TO_MAPPER_MAP.put(GenerateAndReplaceKeysRequestData.class, this.configurationMapper);
