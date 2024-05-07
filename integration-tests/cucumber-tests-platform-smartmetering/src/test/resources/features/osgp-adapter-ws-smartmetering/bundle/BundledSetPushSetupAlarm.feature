@@ -7,11 +7,11 @@ Feature: SmartMetering Bundle - SetPushSetupAlarm
   As a grid operator 
   I want to be able to set push setup alarm on a meter via a bundle request
 
-  Scenario: Set push setup alarm on a device in a bundle request
+  Scenario Outline: Set push setup alarm on a device in a bundle request
     Given a bundle request
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | <deviceIdentification> |
     And a dlms device
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | <deviceIdentification> |
       | DeviceType           | SMART_METER_E     |
     And the bundle request contains a set push setup alarm action with parameters
       | Host                   | localhost                                     |
@@ -24,16 +24,20 @@ Feature: SmartMetering Bundle - SetPushSetupAlarm
     Then the bundle response should contain a set push setup alarm response with values
       | Result | OK |
 
-  Scenario: Set push setup alarm on an SMR5.2 device in a bundle request
+    Examples:
+      | deviceIdentification |
+      | TEST1024000000001    |
+
+
+  Scenario Outline: Set push setup alarm on an SMR5.2 device in a bundle request
     Given a bundle request
-      | DeviceIdentification | TEST1029000000001 |
+      | DeviceIdentification | <deviceIdentification> |
     And a dlms device
-      | DeviceIdentification | TEST1029000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | CommunicationMethod  | GPRS              |
-      | Protocol             | SMR               |
-      | ProtocolVersion      |               5.2 |
-      | Port                 |              1029 |
+      | DeviceIdentification | <deviceIdentification> |
+      | DeviceType           | SMART_METER_E          |
+      | CommunicationMethod  | GPRS                   |
+      | Protocol             | <protocol>             |
+      | ProtocolVersion      | <version>              |
     And the bundle request contains a set push setup alarm action with parameters
       | Host                   | localhost                                                     |
       | Port                   | 9598                                                          |
@@ -44,3 +48,7 @@ Feature: SmartMetering Bundle - SetPushSetupAlarm
     When the bundle request is received
     Then the bundle response should contain a set push setup alarm response with values
       | Result | OK |
+
+    Examples:
+      | deviceIdentification | protocol | version |
+      | TEST1029000000001    | SMR      | 5.2     |
