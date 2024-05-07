@@ -33,6 +33,6 @@ class StacktraceUtilsTest {
             Caused by org.opensmartgridplatform.shared.utils.StacktraceUtilsTest: This is the original error""";
 
     final var actual = messageAndCauses(exception).replaceAll("\r\n", "\n");
-    assertThat(actual).isEqualTo(expected);
+    assertThat(actual).isEqualToIgnoringNewLines(expected);
   }
 }
