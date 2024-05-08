@@ -115,7 +115,7 @@ SPDX-License-Identifier: Apache-2.0
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
     <openmuc.j60870.version>1.4.0</openmuc.j60870.version>
     <jakarta.inject.version>2.0.1</jakarta.inject.version>
-    <jakarta.annotation.version>2.1.1</jakarta.annotation.version>
+    <jakarta.annotation.version>3.0.0</jakarta.annotation.version>
     <license.maven.plugin>3.0</license.maven.plugin>
     <jackson.version>2.15.3</jackson.version>
     <cxf.version>4.0.3</cxf.version>
