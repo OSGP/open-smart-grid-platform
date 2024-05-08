@@ -59,7 +59,7 @@ public class SetPushSetupUdpCommandExecutor
   public AccessResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final SetPushSetupUdpRequestDto pushSetupSms,
+      final SetPushSetupUdpRequestDto pushSetupUdp,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 

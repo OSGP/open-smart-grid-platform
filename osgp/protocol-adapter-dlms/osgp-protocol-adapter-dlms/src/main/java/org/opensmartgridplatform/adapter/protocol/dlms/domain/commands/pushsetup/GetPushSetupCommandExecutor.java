@@ -77,9 +77,7 @@ public abstract class GetPushSetupCommandExecutor<T, R> extends AbstractCommandE
                 new NotSupportedByProtocolException(
                     String.format(
                         "No address found for %s in protocol %s %s",
-                        DlmsObjectType.PUSH_SETUP_SMS.name(),
-                        protocol.getName(),
-                        protocol.getVersion())));
+                        dlmsObjectType.name(), protocol.getName(), protocol.getVersion())));
   }
 
   protected int idx(final PushSetupAttribute pushSetupAttribute) {

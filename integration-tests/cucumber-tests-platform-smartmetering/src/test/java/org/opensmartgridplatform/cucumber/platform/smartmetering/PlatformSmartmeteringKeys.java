@@ -170,12 +170,13 @@ public class PlatformSmartmeteringKeys
   public static final String CLOSE_OPTICAL_PORT = "CloseOpticalPort";
 
   public static final String THD_VALUE_THRESHOLD = "Thd Value Threshold";
-
   public static final String THD_VALUE_HYSTERESIS = "Thd Value Hysteresis";
-
   public static final String THD_MIN_DURATION_NORMAL_TO_OVER = "Thd Min Duration Normal To Over";
-
   public static final String THD_MIN_DURATION_OVER_TO_NORMAL = "Thd Min Duration Over To Normal";
-
   public static final String THD_TIME_THRESHOLD = "Thd Time Threshold";
+
+  public static final String PUSH_OBJECT_CLASS_IDS = "PushObjectClassIds";
+  public static final String PUSH_OBJECT_OBIS_CODES = "PushObjectObisCodes";
+  public static final String PUSH_OBJECT_ATTRIBUTE_IDS = "PushObjectAttributeIds";
+  public static final String PUSH_OBJECT_DATA_INDEXES = "PushObjectDataIndexes";
 }

@@ -10,17 +10,14 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass.PUSH_SETUP;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import java.math.BigInteger;
 import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupUdpAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupUdpAsyncResponse;
@@ -28,18 +25,16 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupUdpResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration.SetPushSetupSteps.PushSetupType;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocResponseClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetPushSetupUdpRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute;
-import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class SetPushSetupUdp {
+public class SetPushSetupUdp extends SetPushSetupSteps {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupUdp.class);
 
@@ -92,58 +87,6 @@ public class SetPushSetupUdp {
   @Then("^the PushSetupUdp should be set on the device$")
   public void thePushSetupUdpShouldBeSetOnTheDevice(final Map<String, String> settings)
       throws Throwable {
-    final GetSpecificAttributeValueResponse specificAttributeValues =
-        this.getSpecificAttributeValues(settings);
-    assertThat(specificAttributeValues)
-        .as("GetSpecificAttributeValuesResponse was null")
-        .isNotNull();
-    assertThat(specificAttributeValues.getResult())
-        .as("GetSpecificAttributeValuesResponse result was null")
-        .isNotNull();
-    assertThat(specificAttributeValues.getResult())
-        .as("GetSpecificAttributeValuesResponse should be OK")
-        .isEqualTo(OsgpResultType.OK);
-
-    final String actual = specificAttributeValues.getAttributeValueData();
-    assertThat(actual)
-        .isEqualTo(
-            "DataObject: Choice=ARRAY, ResultData isComplex, value=[java.util.LinkedList]: [\n]\n");
-  }
-
-  private GetSpecificAttributeValueResponse getSpecificAttributeValues(
-      final Map<String, String> settings) throws WebServiceSecurityException {
-
-    // Make a specificAttributeValueRequest to read out the register for
-    // pushsetupUdp on the device simulator. ClassID = 40, ObisCode =
-    // 0.3.25.9.0.255 and AttributeID = 4. This is the attribute that stores
-    // 'communication_window' which we sent earlier in the form of
-    // host:port
-
-    final GetSpecificAttributeValueRequest request = new GetSpecificAttributeValueRequest();
-    request.setClassId(BigInteger.valueOf(PUSH_SETUP.id()));
-    request.setObisCode(this.getObisCodeValues());
-    request.setAttribute(BigInteger.valueOf(PushSetupAttribute.COMMUNICATION_WINDOW.attributeId()));
-    request.setDeviceIdentification(
-        settings.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
-
-    final GetSpecificAttributeValueAsyncResponse asyncResponse =
-        this.adHocRequestclient.doRequest(request);
-    final GetSpecificAttributeValueAsyncRequest asyncRequest =
-        new GetSpecificAttributeValueAsyncRequest();
-    asyncRequest.setDeviceIdentification(asyncResponse.getDeviceIdentification());
-    asyncRequest.setCorrelationUid(asyncResponse.getCorrelationUid());
-    return this.adHocResponseClient.getResponse(asyncRequest);
-  }
-
-  private ObisCodeValues getObisCodeValues() {
-    final ObisCodeValues values = new ObisCodeValues();
-    values.setA((short) 0);
-    values.setB((short) 3);
-    values.setC((short) 25);
-    values.setD((short) 9);
-    values.setE((short) 0);
-    values.setF((short) 255);
-
-    return values;
+    this.assertAttributeSetOnDevice(PushSetupType.UDP, settings);
   }
 }
