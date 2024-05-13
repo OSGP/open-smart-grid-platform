@@ -210,7 +210,9 @@ class GetFirmwareFileResponseMessageProcessorTest {
 
     final ResponseMessage capturedValue = responseMessageArgumentCaptor.getValue();
     assertThat(
-            ((UpdateFirmwareRequestDto) capturedValue.getDataObject()).getFirmwareIdentification())
+            ((UpdateFirmwareRequestDto) capturedValue.getDataObject())
+                .getUpdateFirmwareRequestDataDto()
+                .getFirmwareIdentification())
         .isSameAs(firmwareFileDto.getFirmwareIdentification());
     assertThat(capturedValue.getResult()).isSameAs(ResponseMessageResultType.NOT_OK);
     assertThat(capturedValue.bypassRetry()).isFalse();

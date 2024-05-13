@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentExceptio
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ThrowingConsumer;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.responses.from.core.OsgpResponseMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -126,8 +127,9 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
         final FirmwareFileDto firmwareFileDto = (FirmwareFileDto) dataObject;
 
         return new UpdateFirmwareRequestDto(
-            firmwareFileDto.getFirmwareIdentification(),
-            protocolResponseMessage.getDeviceIdentification());
+            protocolResponseMessage.getDeviceIdentification(),
+            new UpdateFirmwareRequestDataDto(
+                firmwareFileDto.getFirmwareIdentification(), null, null));
       }
     }
 

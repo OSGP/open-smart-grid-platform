@@ -75,7 +75,7 @@ public class UpdateFirmwareCommandExecutor
       final MessageMetadata messageMetadata)
       throws OsgpException {
 
-    final String firmwareIdentification = updateFirmwareRequestDto.getFirmwareIdentification();
+    final String firmwareIdentification = getFirmwareIdentification(updateFirmwareRequestDto);
     final FirmwareFile firmwareFile =
         this.getFirmwareFile(updateFirmwareRequestDto, messageMetadata);
 
@@ -132,6 +132,11 @@ public class UpdateFirmwareCommandExecutor
     }
   }
 
+  private static String getFirmwareIdentification(
+      final UpdateFirmwareRequestDto updateFirmwareRequestDto) {
+    return updateFirmwareRequestDto.getUpdateFirmwareRequestDataDto().getFirmwareIdentification();
+  }
+
   private void prepare(final ImageTransfer transfer) throws ProtocolAdapterException {
     this.enable(transfer);
     transfer.initiateImageTransfer();
@@ -177,10 +182,10 @@ public class UpdateFirmwareCommandExecutor
 
     log.debug(
         "Getting firmware file from caching repository for firmware {}",
-        updateFirmwareRequestDto.getFirmwareIdentification());
+        getFirmwareIdentification(updateFirmwareRequestDto));
     final byte[] firmwareFileByteArray =
         this.firmwareFileCachingRepository.retrieve(
-            updateFirmwareRequestDto.getFirmwareIdentification());
+            getFirmwareIdentification(updateFirmwareRequestDto));
 
     if (firmwareFileByteArray == null) {
       throw new ProtocolAdapterException(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE);

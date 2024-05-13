@@ -40,7 +40,7 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
   @Override
   protected boolean usesDeviceConnection(final Serializable messageObject) {
     if (messageObject instanceof final UpdateFirmwareRequestDto requestDto) {
-      final String firmwareIdentification = requestDto.getFirmwareIdentification();
+      final String firmwareIdentification = getFirmwareIdentification(requestDto);
       final boolean usesDeviceConnection =
           this.firmwareService.isFirmwareFileAvailable(firmwareIdentification);
       if (!usesDeviceConnection) {
@@ -52,6 +52,10 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
       return usesDeviceConnection;
     }
     return super.usesDeviceConnection(messageObject);
+  }
+
+  private static String getFirmwareIdentification(final UpdateFirmwareRequestDto requestDto) {
+    return requestDto.getUpdateFirmwareRequestDataDto().getFirmwareIdentification();
   }
 
   @Override
@@ -68,7 +72,7 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
 
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
         (UpdateFirmwareRequestDto) requestObject;
-    final String firmwareIdentification = updateFirmwareRequestDto.getFirmwareIdentification();
+    final String firmwareIdentification = getFirmwareIdentification(updateFirmwareRequestDto);
 
     LOGGER.info(
         "[{}] - Firmware file [{}] not available. Sending GetFirmwareFile request to core.",
@@ -109,7 +113,7 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
 
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
         (UpdateFirmwareRequestDto) requestObject;
-    final String firmwareIdentification = updateFirmwareRequestDto.getFirmwareIdentification();
+    final String firmwareIdentification = getFirmwareIdentification(updateFirmwareRequestDto);
 
     LOGGER.info(
         "[{}] - Firmware file [{}] available. Updating firmware on device [{}]",
