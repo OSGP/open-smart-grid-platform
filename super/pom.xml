@@ -85,7 +85,7 @@ SPDX-License-Identifier: Apache-2.0
     <maven.project.info.reports.plugin.version>3.5.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.12.1</maven.site.plugin>
     <maven.javadoc.version>3.6.3</maven.javadoc.version>
-    <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
+    <maven.jar.plugin.version>3.4.1</maven.jar.plugin.version>
     <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
     <maven.dependency.plugin.version>3.6.1</maven.dependency.plugin.version>
     <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
