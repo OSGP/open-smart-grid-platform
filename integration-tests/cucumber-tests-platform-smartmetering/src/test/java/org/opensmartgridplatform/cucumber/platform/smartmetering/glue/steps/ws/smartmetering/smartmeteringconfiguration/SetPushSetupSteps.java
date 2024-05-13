@@ -167,9 +167,7 @@ public class SetPushSetupSteps {
     final byte[] expectedBytes = (hostAndPort.getBytes(StandardCharsets.US_ASCII));
     final String expected = Arrays.toString(expectedBytes);
     final String actual = specificAttributeValues.getAttributeValueData();
-    assertThat(actual.contains(expected))
-        .as("{} was not set on device", pushSetupType.getName())
-        .isTrue();
+    assertThat(actual).as("{} was not set on device", pushSetupType.getName()).contains(expected);
   }
 
   private static void checkGetSpecificAttributeValueResponse(

@@ -40,7 +40,7 @@ public class BundledSetPushSetupSmsSteps extends BaseBundleSteps {
   public void theBundleResponseShouldContainASetPushSetupSmsResponse() throws Throwable {
     final Response response = this.getNextBundleResponse();
 
-    assertThat(response instanceof ActionResponse).as("Not a valid response").isTrue();
+    assertThat(response).as("Not a valid response").isInstanceOf(ActionResponse.class);
   }
 
   @Then("^the bundle response should contain a set push setup sms response with values$")
@@ -49,7 +49,7 @@ public class BundledSetPushSetupSmsSteps extends BaseBundleSteps {
 
     final Response response = this.getNextBundleResponse();
 
-    assertThat(response instanceof ActionResponse).as("Not a valid response").isTrue();
+    assertThat(response).as("Not a valid response").isInstanceOf(ActionResponse.class);
     assertThat(response.getResult().name())
         .as("Result is not as expected.")
         .isEqualTo(values.get(PlatformSmartmeteringKeys.RESULT));
