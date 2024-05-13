@@ -14,14 +14,18 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AttributeAccessItem;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDataDecoder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectListElement;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.AccessType;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
@@ -41,12 +45,12 @@ public class GetAllAttributeValuesCommandExecutor
     extends AbstractCommandExecutor<DataObject, String> {
 
   private static final int OBIS_CODE_BYTE_ARRAY_LENGTH = 6;
-  /* 0 is the index of the class number */
   private static final int CLASS_ID_INDEX = 0;
-  /* 2 is index of the obis code */
+  private static final int VERSION_INDEX = 1;
   private static final int OBIS_CODE_INDEX = 2;
-  /* 3 is the index of the attributes */
   private static final int ATTR_INDEX = 3;
+  private static final int ATTR_ID_INDEX = 0;
+  private static final int ACCESS_MODE_INDEX = 1;
   private static final int CLASS_ID = 15;
   private static final ObisCode OBIS_CODE = new ObisCode("0.0.40.0.0.255");
   private static final int ATTRIBUTE_ID = 2;
@@ -108,13 +112,14 @@ public class GetAllAttributeValuesCommandExecutor
     if (!objectList.isComplex()) {
       this.throwUnexpectedTypeProtocolAdapterException();
     }
-    final List<DataObject> objectListElements = objectList.getValue();
+    final List<DataObject> objectListElementDataObjects = objectList.getValue();
 
-    final List<ClassIdObisAttr> allObisCodes = this.getAllObisCodes(objectListElements);
-    this.logAllObisCodes(allObisCodes);
+    final List<ObjectListElement> allObjectListElements =
+        this.getAllObjectListElements(objectListElementDataObjects);
+    this.logAllObisCodes(allObjectListElements);
 
     try {
-      final String output = this.createOutput(device, conn, allObisCodes);
+      final String output = this.createOutput(device, conn, allObjectListElements);
       LOGGER.debug("Total output is: {}", output);
       return output;
     } catch (final IOException e) {
@@ -122,23 +127,23 @@ public class GetAllAttributeValuesCommandExecutor
     }
   }
 
-  private void logAllObisCodes(final List<ClassIdObisAttr> allObisCodes) {
+  private void logAllObisCodes(final List<ObjectListElement> objectListElements) {
     int index = 1;
     LOGGER.debug("List of all ObisCodes:");
-    for (final ClassIdObisAttr obisAttr : allObisCodes) {
+    for (final ObjectListElement element : objectListElements) {
       LOGGER.debug(
           "{}/{} {} #attr{}",
           index++,
-          allObisCodes.size(),
-          obisAttr.getObisCode().getValue(),
-          obisAttr.getNoAttr());
+          objectListElements.size(),
+          element.getLogicalName(),
+          element.getAttributes().size());
     }
   }
 
   private String createOutput(
       final DlmsDevice device,
       final DlmsConnectionManager conn,
-      final List<ClassIdObisAttr> allObisCodes)
+      final List<ObjectListElement> objectListElements)
       throws ProtocolAdapterException, IOException {
 
     final DlmsProfile dlmsProfile = this.getDlmsProfile(device);
@@ -146,13 +151,13 @@ public class GetAllAttributeValuesCommandExecutor
     final List<CosemObject> meterContents = new ArrayList<>();
 
     int index = 1;
-    for (final ClassIdObisAttr obisAttr : allObisCodes) {
+    for (final ObjectListElement element : objectListElements) {
       LOGGER.debug(
           "Creating output for {} {}/{}",
-          obisAttr.getObisCode().getValue(),
+          element.getLogicalName(),
           index++,
-          allObisCodes.size());
-      meterContents.add(this.getAllDataFromObisCode(dlmsProfile, conn, obisAttr));
+          objectListElements.size());
+      meterContents.add(this.getAllDataFromObisCode(dlmsProfile, conn, element));
     }
 
     final ObjectMapper objectMapper = new ObjectMapper();
@@ -165,48 +170,38 @@ public class GetAllAttributeValuesCommandExecutor
   private CosemObject getAllDataFromObisCode(
       final DlmsProfile dlmsProfile,
       final DlmsConnectionManager conn,
-      final ClassIdObisAttr obisAttr)
+      final ObjectListElement objectListElement)
       throws ProtocolAdapterException, IOException {
 
     final List<DataObject> attributeData = new ArrayList<>();
 
-    final int noOfAttr = obisAttr.getNoAttr();
+    final int noOfAttr = objectListElement.getAttributes().size();
     for (int attributeValue = 1; attributeValue <= noOfAttr; attributeValue++) {
       LOGGER.debug(
           "Creating output for {} attr: {}/{}",
-          obisAttr.getObisCode().getValue(),
+          objectListElement.getLogicalName(),
           attributeValue,
           noOfAttr);
       attributeData.add(
           this.getAllDataFromAttribute(
-              conn, obisAttr.getClassNumber(), obisAttr.getObisCode(), attributeValue));
+              conn,
+              objectListElement.getClassId(),
+              objectListElement.getLogicalName(),
+              attributeValue));
     }
 
-    return this.dlmsDataDecoder.decodeObjectData(
-        obisAttr.classNumber,
-        this.getObisCode(obisAttr.obisCode),
-        noOfAttr,
-        attributeData,
-        dlmsProfile);
+    return this.dlmsDataDecoder.decodeObjectData(objectListElement, attributeData, dlmsProfile);
   }
 
   private DataObject getAllDataFromAttribute(
       final DlmsConnectionManager conn,
       final int classNumber,
-      final DataObject obisCode,
+      final String obisCode,
       final int attributeValue)
-      throws ProtocolAdapterException, IOException {
+      throws IOException {
 
-    if (!obisCode.isByteArray()) {
-      this.throwUnexpectedTypeProtocolAdapterException();
-    }
-
-    final byte[] obisCodeByteArray = obisCode.getValue();
-    if (obisCodeByteArray.length != OBIS_CODE_BYTE_ARRAY_LENGTH) {
-      this.throwUnexpectedTypeProtocolAdapterException();
-    }
     final AttributeAddress attributeAddress =
-        new AttributeAddress(classNumber, new ObisCode(obisCodeByteArray), attributeValue);
+        new AttributeAddress(classNumber, new ObisCode(obisCode), attributeValue);
 
     conn.getDlmsMessageListener()
         .setDescription(
@@ -216,7 +211,7 @@ public class GetAllAttributeValuesCommandExecutor
     LOGGER.debug(
         "Retrieving configuration objects data for class id: {}, obis code: {}, attribute id: {}",
         classNumber,
-        obisCodeByteArray,
+        obisCode,
         attributeValue);
     final GetResult getResult = conn.getConnection().get(attributeAddress);
 
@@ -225,21 +220,23 @@ public class GetAllAttributeValuesCommandExecutor
     return getResult.getResultData();
   }
 
-  private List<ClassIdObisAttr> getAllObisCodes(final List<DataObject> objectListElements)
-      throws ProtocolAdapterException {
-    final List<ClassIdObisAttr> allObisCodes = new ArrayList<>();
+  private List<ObjectListElement> getAllObjectListElements(
+      final List<DataObject> objectListDataObjects) throws ProtocolAdapterException {
+    final List<ObjectListElement> allElements = new ArrayList<>();
 
-    for (final DataObject objectListElement : objectListElements) {
-      final List<DataObject> objectListElementValues = objectListElement.getValue();
-      final ClassIdObisAttr classIdObisAttr =
-          new ClassIdObisAttr(
-              this.getClassId(objectListElementValues.get(CLASS_ID_INDEX)),
-              objectListElementValues.get(OBIS_CODE_INDEX),
-              this.getNoOffAttributes(objectListElementValues));
+    for (final DataObject objectListDataObject : objectListDataObjects) {
+      final List<DataObject> elementValues = objectListDataObject.getValue();
+      final ObjectListElement element =
+          new ObjectListElement(
+              this.getClassId(elementValues.get(CLASS_ID_INDEX)),
+              this.getVersion(elementValues.get(VERSION_INDEX)),
+              this.getObis(elementValues.get(OBIS_CODE_INDEX)),
+              this.getAttributeItems(elementValues.get(ATTR_INDEX)));
 
-      allObisCodes.add(classIdObisAttr);
+      allElements.add(element);
     }
-    return allObisCodes;
+
+    return allElements;
   }
 
   private int getClassId(final DataObject dataObject) throws ProtocolAdapterException {
@@ -250,47 +247,72 @@ public class GetAllAttributeValuesCommandExecutor
     return number.intValue();
   }
 
-  private void throwUnexpectedTypeProtocolAdapterException() throws ProtocolAdapterException {
-    throw new ProtocolAdapterException("Unexpected type of element");
-  }
-
-  private int getNoOffAttributes(final List<DataObject> objectListElementValues)
-      throws ProtocolAdapterException {
-    final DataObject accessRights = objectListElementValues.get(ATTR_INDEX);
-    if (!accessRights.isComplex()) {
+  private int getVersion(final DataObject dataObject) throws ProtocolAdapterException {
+    if (Type.UNSIGNED != dataObject.getType()) {
       this.throwUnexpectedTypeProtocolAdapterException();
     }
-    final List<DataObject> accessRightsValues = accessRights.getValue();
+    final Number number = dataObject.getValue();
+    return number.intValue();
+  }
+
+  private String getObis(final DataObject dataObject) throws ProtocolAdapterException {
+    if (Type.OCTET_STRING != dataObject.getType()) {
+      this.throwUnexpectedTypeProtocolAdapterException();
+    }
+    return this.getObisCode(dataObject);
+  }
+
+  private List<AttributeAccessItem> getAttributeItems(final DataObject dataObject)
+      throws ProtocolAdapterException {
+    if (!dataObject.isComplex()) {
+      this.throwUnexpectedTypeProtocolAdapterException();
+    }
+    final List<DataObject> accessRightsValues = dataObject.getValue();
     final DataObject attributeAccess = accessRightsValues.get(0);
     if (!attributeAccess.isComplex()) {
       this.throwUnexpectedTypeProtocolAdapterException();
     }
-    final List<DataObject> attributeAccessDescriptors = attributeAccess.getValue();
-    return attributeAccessDescriptors.size();
+
+    final List<DataObject> descriptors = attributeAccess.getValue();
+
+    final List<AttributeAccessItem> attributeAccessItems = new ArrayList<>();
+
+    for (final DataObject descriptor : descriptors) {
+      final List<DataObject> descriptorValues = descriptor.getValue();
+      attributeAccessItems.add(
+          new AttributeAccessItem(
+              this.getAttributeId(descriptorValues.get(ATTR_ID_INDEX)),
+              this.getAccessMode(descriptorValues.get(ACCESS_MODE_INDEX))));
+    }
+
+    return attributeAccessItems;
   }
 
-  private class ClassIdObisAttr {
-    private final int classNumber;
-    private final DataObject obisCode;
-    private final int noAttr;
-
-    public ClassIdObisAttr(final int classNumber, final DataObject obisCode, final int noAttr) {
-      this.classNumber = classNumber;
-      this.obisCode = obisCode;
-      this.noAttr = noAttr;
+  private int getAttributeId(final DataObject dataObject) throws ProtocolAdapterException {
+    if (Type.INTEGER != dataObject.getType()) {
+      this.throwUnexpectedTypeProtocolAdapterException();
     }
+    final Number number = dataObject.getValue();
+    return number.intValue();
+  }
 
-    public int getClassNumber() {
-      return this.classNumber;
+  private AccessType getAccessMode(final DataObject dataObject) throws ProtocolAdapterException {
+    if (Type.ENUMERATE != dataObject.getType()) {
+      this.throwUnexpectedTypeProtocolAdapterException();
     }
+    final Number number = dataObject.getValue();
 
-    public DataObject getObisCode() {
-      return this.obisCode;
-    }
+    return switch (number.intValue()) {
+      case 0 -> null;
+      case 1 -> AccessType.R;
+      case 2 -> AccessType.W;
+      case 3 -> AccessType.RW;
+      default -> null;
+    };
+  }
 
-    public int getNoAttr() {
-      return this.noAttr;
-    }
+  private void throwUnexpectedTypeProtocolAdapterException() throws ProtocolAdapterException {
+    throw new ProtocolAdapterException("Unexpected type of element");
   }
 
   private DlmsProfile getDlmsProfile(final DlmsDevice device) {

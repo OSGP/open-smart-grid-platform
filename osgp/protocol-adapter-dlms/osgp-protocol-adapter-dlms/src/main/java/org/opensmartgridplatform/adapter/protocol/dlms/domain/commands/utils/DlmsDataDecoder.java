@@ -41,11 +41,11 @@ public class DlmsDataDecoder {
   @Autowired private DlmsHelper dlmsHelper;
 
   public CosemObject decodeObjectData(
-      final int classId,
-      final String obisCode,
-      final int noAttr,
+      final ObjectListElement objectListElement,
       final List<DataObject> attributeData,
       final DlmsProfile dlmsProfile) {
+    final int classId = objectListElement.getClassId();
+    final String obisCode = objectListElement.getLogicalName();
 
     try {
       final CosemObject cosemObjectFromProfile =
@@ -63,11 +63,11 @@ public class DlmsDataDecoder {
               ? cosemObjectFromProfile.getNote()
               : "";
 
-      if (attributes.size() != noAttr) {
+      if (attributes.size() != objectListElement.getAttributes().size()) {
         note =
             note
                 + "\nRead number of attributes "
-                + noAttr
+                + objectListElement.getAttributes().size()
                 + " differs from number of attributes in profile "
                 + attributes.size();
       }
@@ -85,7 +85,7 @@ public class DlmsDataDecoder {
           cosemObjectFromProfile.getTag(),
           cosemObjectFromProfile.getDescription(),
           classId,
-          cosemObjectFromProfile.getVersion(), // TODO: get from meter
+          objectListElement.getVersion(),
           obisCode,
           cosemObjectFromProfile.getGroup(),
           note,
