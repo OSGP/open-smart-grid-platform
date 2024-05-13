@@ -82,7 +82,7 @@ public class DlmsHelper {
     TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(7, TransportServiceTypeDto.ZIG_BEE);
   }
 
-  private static String getDataType(final DataObject dataObject) {
+  public static String getDataType(final DataObject dataObject) {
     final String dataType;
     if (dataObject.isBitString()) {
       dataType = "BitString";

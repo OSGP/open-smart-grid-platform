@@ -4,6 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +15,19 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDataDecoder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObisCodeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAllAttributeValuesRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -44,6 +52,10 @@ public class GetAllAttributeValuesCommandExecutor
   private static final int ATTRIBUTE_ID = 2;
 
   @Autowired private DlmsHelper dlmsHelper;
+
+  @Autowired private DlmsDataDecoder dlmsDataDecoder;
+
+  @Autowired private ObjectConfigService objectConfigService;
 
   private static final Logger LOGGER =
       LoggerFactory.getLogger(GetAllAttributeValuesCommandExecutor.class);
@@ -102,10 +114,8 @@ public class GetAllAttributeValuesCommandExecutor
     this.logAllObisCodes(allObisCodes);
 
     try {
-      final String output = this.createOutput(conn, allObisCodes);
-
+      final String output = this.createOutput(device, conn, allObisCodes);
       LOGGER.debug("Total output is: {}", output);
-
       return output;
     } catch (final IOException e) {
       throw new ConnectionException(e);
@@ -126,10 +136,15 @@ public class GetAllAttributeValuesCommandExecutor
   }
 
   private String createOutput(
-      final DlmsConnectionManager conn, final List<ClassIdObisAttr> allObisCodes)
+      final DlmsDevice device,
+      final DlmsConnectionManager conn,
+      final List<ClassIdObisAttr> allObisCodes)
       throws ProtocolAdapterException, IOException {
 
-    final StringBuilder output = new StringBuilder();
+    final DlmsProfile dlmsProfile = this.getDlmsProfile(device);
+
+    final List<CosemObject> meterContents = new ArrayList<>();
+
     int index = 1;
     for (final ClassIdObisAttr obisAttr : allObisCodes) {
       LOGGER.debug(
@@ -137,17 +152,24 @@ public class GetAllAttributeValuesCommandExecutor
           obisAttr.getObisCode().getValue(),
           index++,
           allObisCodes.size());
-      output.append(this.getAllDataFromObisCode(conn, obisAttr));
-      LOGGER.debug("Length of output is now: {}", output.length());
+      meterContents.add(this.getAllDataFromObisCode(dlmsProfile, conn, obisAttr));
     }
-    return output.toString();
+
+    final ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.setSerializationInclusion(Include.NON_NULL);
+    objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+    return objectMapper.writeValueAsString(meterContents);
   }
 
-  private String getAllDataFromObisCode(
-      final DlmsConnectionManager conn, final ClassIdObisAttr obisAttr)
+  private CosemObject getAllDataFromObisCode(
+      final DlmsProfile dlmsProfile,
+      final DlmsConnectionManager conn,
+      final ClassIdObisAttr obisAttr)
       throws ProtocolAdapterException, IOException {
 
-    final StringBuilder output = new StringBuilder();
+    final List<DataObject> attributeData = new ArrayList<>();
+
     final int noOfAttr = obisAttr.getNoAttr();
     for (int attributeValue = 1; attributeValue <= noOfAttr; attributeValue++) {
       LOGGER.debug(
@@ -155,14 +177,20 @@ public class GetAllAttributeValuesCommandExecutor
           obisAttr.getObisCode().getValue(),
           attributeValue,
           noOfAttr);
-      output.append(
+      attributeData.add(
           this.getAllDataFromAttribute(
               conn, obisAttr.getClassNumber(), obisAttr.getObisCode(), attributeValue));
     }
-    return output.toString();
+
+    return this.dlmsDataDecoder.decodeObjectData(
+        obisAttr.classNumber,
+        this.getObisCode(obisAttr.obisCode),
+        noOfAttr,
+        attributeData,
+        dlmsProfile);
   }
 
-  private String getAllDataFromAttribute(
+  private DataObject getAllDataFromAttribute(
       final DlmsConnectionManager conn,
       final int classNumber,
       final DataObject obisCode,
@@ -194,7 +222,7 @@ public class GetAllAttributeValuesCommandExecutor
 
     LOGGER.debug("ResultCode: {}", getResult.getResultCode());
 
-    return this.dlmsHelper.getDebugInfo(getResult.getResultData());
+    return getResult.getResultData();
   }
 
   private List<ClassIdObisAttr> getAllObisCodes(final List<DataObject> objectListElements)
@@ -263,5 +291,21 @@ public class GetAllAttributeValuesCommandExecutor
     public int getNoAttr() {
       return this.noAttr;
     }
+  }
+
+  private DlmsProfile getDlmsProfile(final DlmsDevice device) {
+    final List<DlmsProfile> dlmsProfiles = this.objectConfigService.getConfiguredDlmsProfiles();
+    return dlmsProfiles.stream()
+        .filter(
+            p ->
+                p.getProfile().equals(device.getProtocolName())
+                    && p.getVersion().equals(device.getProtocolVersion()))
+        .toList()
+        .get(0);
+  }
+
+  private String getObisCode(final DataObject obis) throws ProtocolAdapterException {
+    final CosemObisCodeDto cosemObisCodeDto = this.dlmsHelper.readLogicalName(obis, "");
+    return new ObisCode(cosemObisCodeDto.toByteArray()).asDecimalString();
   }
 }
