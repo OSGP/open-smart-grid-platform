@@ -21,28 +21,28 @@
         "id": 2,
         "description": "push_object_list",
         "datatype": "array",
-        "valuetype": "DYNAMIC",
+        "valuetype": "SET_BY_CLIENT",
         "access": "RW"
       },
       {
         "id": 3,
         "description": "send_destination_and_method",
         "datatype": "structure",
-        "valuetype": "DYNAMIC",
+        "valuetype": "SET_BY_CLIENT",
         "access": "RW"
       },
       {
         "id": 4,
         "description": "communication_window",
         "datatype": "array",
-        "valuetype": "DYNAMIC",
+        "valuetype": "SET_BY_CLIENT",
         "access": "RW"
       },
       {
         "id": 5,
         "description": "randomisation_start_interval",
         "datatype": "long-unsigned",
-        "valuetype": "DYNAMIC",
+        "valuetype": "SET_BY_CLIENT",
         "value": "5",
         "access": "RW"
       },
@@ -50,14 +50,14 @@
         "id": 6,
         "description": "number of retries",
         "datatype": "unsigned",
-        "valuetype": "DYNAMIC",
+        "valuetype": "SET_BY_CLIENT",
         "access": "RW"
       },
       {
         "id": 7,
         "description": "repetition_delay",
         "datatype": "long-unsigned",
-        "valuetype": "DYNAMIC",
+        "valuetype": "SET_BY_CLIENT",
         "access": "RW"
       }
     ]
