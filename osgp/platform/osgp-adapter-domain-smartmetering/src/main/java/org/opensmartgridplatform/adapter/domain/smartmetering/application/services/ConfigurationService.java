@@ -73,6 +73,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupUdpR
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -1052,8 +1053,9 @@ public class ConfigurationService {
       cellId = smartMeter.getCellId();
     }
     final UpdateFirmwareRequestDto requestDto =
-        new UpdateFirmwareRequestDto(firmwareIdentification, identificationOfDeviceToBeUpdated);
-
+        new UpdateFirmwareRequestDto(
+            identificationOfDeviceToBeUpdated,
+            new UpdateFirmwareRequestDataDto(firmwareIdentification, null, null));
     this.osgpCoreRequestMessageSender.send(
         requestDto,
         messageMetadata

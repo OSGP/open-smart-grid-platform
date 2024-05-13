@@ -496,7 +496,7 @@ public class ConfigurationService {
     LOGGER.info(
         "Updating firmware of device {} to firmware with identification {}",
         device,
-        updateFirmwareRequestDto.getFirmwareIdentification());
+        updateFirmwareRequestDto.getUpdateFirmwareRequestDataDto().getFirmwareIdentification());
 
     return this.firmwareService.updateFirmware(
         conn, device, updateFirmwareRequestDto, messageMetadata);

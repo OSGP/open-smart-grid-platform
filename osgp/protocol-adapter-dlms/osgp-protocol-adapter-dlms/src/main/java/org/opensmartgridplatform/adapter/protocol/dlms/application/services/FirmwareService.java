@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.Firmw
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -58,7 +59,7 @@ public class FirmwareService {
     LOGGER.info(
         "Updating firmware of device {} to firmware with identification {}",
         device,
-        updateFirmwareRequestDto.getFirmwareIdentification());
+        updateFirmwareRequestDto.getUpdateFirmwareRequestDataDto().getFirmwareIdentification());
 
     return this.executeFirmwareUpdate(conn, device, updateFirmwareRequestDto, messageMetadata);
   }
@@ -89,7 +90,9 @@ public class FirmwareService {
         conn,
         device,
         new UpdateFirmwareRequestDto(
-            firmwareFileDto.getFirmwareIdentification(), firmwareFileDto.getDeviceIdentification()),
+            firmwareFileDto.getDeviceIdentification(),
+            new UpdateFirmwareRequestDataDto(
+                firmwareFileDto.getFirmwareIdentification(), null, null)),
         messageMetadata);
   }
 
@@ -103,14 +106,17 @@ public class FirmwareService {
       final UpdateFirmwareRequestDto updateFirmwareRequestDto,
       final MessageMetadata messageMetadata)
       throws OsgpException {
-    if (this.firmwareRepository.isAvailable(updateFirmwareRequestDto.getFirmwareIdentification())) {
+    if (this.firmwareRepository.isAvailable(
+        updateFirmwareRequestDto.getUpdateFirmwareRequestDataDto().getFirmwareIdentification())) {
       return this.updateFirmwareCommandExecutor.execute(
           conn, device, updateFirmwareRequestDto, messageMetadata);
     } else {
       throw new ProtocolAdapterException(
           String.format(
               EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE,
-              updateFirmwareRequestDto.getFirmwareIdentification()));
+              updateFirmwareRequestDto
+                  .getUpdateFirmwareRequestDataDto()
+                  .getFirmwareIdentification()));
     }
   }
 }

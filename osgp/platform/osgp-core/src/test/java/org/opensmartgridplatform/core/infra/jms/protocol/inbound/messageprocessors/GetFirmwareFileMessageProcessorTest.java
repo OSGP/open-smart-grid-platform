@@ -31,6 +31,7 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
@@ -66,7 +67,9 @@ public class GetFirmwareFileMessageProcessorTest {
     final byte[] firmwareFileBytes = firmwareFileIdentification.getBytes();
 
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
-        new UpdateFirmwareRequestDto(firmwareFileIdentification, deviceIdentification);
+        new UpdateFirmwareRequestDto(
+            deviceIdentification,
+            new UpdateFirmwareRequestDataDto(firmwareFileIdentification, null, null));
     final RequestMessage requestMessage =
         new RequestMessage(
             correlationUid,

@@ -40,6 +40,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRes
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RetryHeaderFactory;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -101,7 +102,9 @@ class UpdateFirmwareRequestMessageProcessorTest {
     final String firmwareIdentification = "unavailable";
     final String deviceIdentification = "unavailableEither";
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
-        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+        new UpdateFirmwareRequestDto(
+            deviceIdentification,
+            new UpdateFirmwareRequestDataDto(firmwareIdentification, null, null));
     final ObjectMessage message =
         new ObjectMessageBuilder()
             .withObject(updateFirmwareRequestDto)
@@ -127,7 +130,9 @@ class UpdateFirmwareRequestMessageProcessorTest {
     final String firmwareIdentification = "unavailable";
     final String deviceIdentification = "unavailableEither";
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
-        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+        new UpdateFirmwareRequestDto(
+            deviceIdentification,
+            new UpdateFirmwareRequestDataDto(firmwareIdentification, null, null));
     final ObjectMessage message =
         new ObjectMessageBuilder()
             .withObject(updateFirmwareRequestDto)
@@ -153,7 +158,9 @@ class UpdateFirmwareRequestMessageProcessorTest {
     final String firmwareIdentification = "available";
     final String deviceIdentification = "availableToo";
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
-        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+        new UpdateFirmwareRequestDto(
+            deviceIdentification,
+            new UpdateFirmwareRequestDataDto(firmwareIdentification, null, null));
     final ObjectMessage message =
         new ObjectMessageBuilder()
             .withObject(updateFirmwareRequestDto)
@@ -182,7 +189,9 @@ class UpdateFirmwareRequestMessageProcessorTest {
     final String firmwareIdentification = "unavailable";
     final String deviceIdentification = "unavailableEither";
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
-        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+        new UpdateFirmwareRequestDto(
+            deviceIdentification,
+            new UpdateFirmwareRequestDataDto(firmwareIdentification, null, null));
     final ObjectMessage message =
         new ObjectMessageBuilder()
             .withObject(updateFirmwareRequestDto)
@@ -210,7 +219,9 @@ class UpdateFirmwareRequestMessageProcessorTest {
     final String firmwareIdentification = "unavailable";
     final String deviceIdentification = "unavailableEither";
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
-        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+        new UpdateFirmwareRequestDto(
+            deviceIdentification,
+            new UpdateFirmwareRequestDataDto(firmwareIdentification, null, null));
 
     when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification))
         .thenReturn(isFirmwareFileAvailable);
@@ -225,7 +236,9 @@ class UpdateFirmwareRequestMessageProcessorTest {
     final String firmwareIdentification = "unavailable";
     final String deviceIdentification = "unavailableEither";
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
-        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+        new UpdateFirmwareRequestDto(
+            deviceIdentification,
+            new UpdateFirmwareRequestDataDto(firmwareIdentification, null, null));
     final ObjectMessage message =
         new ObjectMessageBuilder()
             .withObject(updateFirmwareRequestDto)

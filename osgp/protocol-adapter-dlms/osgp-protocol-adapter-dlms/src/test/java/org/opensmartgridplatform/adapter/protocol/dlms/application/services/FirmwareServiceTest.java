@@ -30,6 +30,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.Firmw
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareImageIdentifierCachingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -61,7 +62,9 @@ public class FirmwareServiceTest {
   public static void init() {
     messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
     updateFirmwareRequestDto =
-        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+        new UpdateFirmwareRequestDto(
+            deviceIdentification,
+            new UpdateFirmwareRequestDataDto(firmwareIdentification, null, null));
   }
 
   @Test

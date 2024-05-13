@@ -62,7 +62,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:Identification" />
-        <xsd:element name="FirmwareIdentification" type="common:Identification" />
+        <xsd:element name="UpdateFirmwareRequestData" type="tns:UpdateFirmwareRequestData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -113,6 +113,8 @@
       <xsd:extension base="common:Command">
         <xsd:sequence>
           <xsd:element name="FirmwareIdentification" type="common:Identification" />
+          <xsd:element name="FirmwareDigest" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+          <xsd:element name="FirmwareHashType" type="common:HashType" minOccurs="0" maxOccurs="1"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
