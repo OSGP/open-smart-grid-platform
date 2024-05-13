@@ -3162,6 +3162,123 @@
           "access": "R"
         }
       ]
+    },
+    {
+      "tag": "PUSH_SETUP_ALARM",
+      "description": "Push Setup Alarm",
+      "note": null,
+      "class-id": 40,
+      "version": 0,
+      "obis": "0.1.25.9.0.255",
+      "group": "ABSTRACT",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "push_object_list",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 3,
+          "description": "send_destination_and_method",
+          "datatype": "structure",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 4,
+          "description": "communication_window",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 5,
+          "description": "randomisation_start_interval",
+          "datatype": "long-unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "value": "0",
+          "access": "RW"
+        },
+        {
+          "id": 6,
+          "description": "number of retries",
+          "datatype": "unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 7,
+          "description": "repetition_delay",
+          "datatype": "long-unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        }
+      ]
+    },
+    {
+      "tag": "PUSH_SETUP_SMS",
+      "description": "Push Setup Alarm",
+      "note": null,
+      "class-id": 40,
+      "version": 0,
+      "obis": "0.2.25.9.0.255",
+      "group": "ABSTRACT",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "push_object_list",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 3,
+          "description": "send_destination_and_method",
+          "datatype": "structure",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 4,
+          "description": "communication_window",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 5,
+          "description": "randomisation_start_interval",
+          "datatype": "long-unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "value": "0",
+          "access": "RW"
+        },
+        {
+          "id": 6,
+          "description": "number of retries",
+          "datatype": "unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 7,
+          "description": "repetition_delay",
+          "datatype": "long-unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        }
+      ]
     }
+
   ]
 }
