@@ -63,7 +63,8 @@ public class DlmsDataDecoder {
               ? cosemObjectFromProfile.getNote()
               : "";
 
-      if (attributes.size() != objectListElement.getAttributes().size()) {
+      if (cosemObjectFromProfile.getTag() != null
+          && attributes.size() != objectListElement.getAttributes().size()) {
         note =
             note
                 + "\nRead number of attributes "
@@ -72,7 +73,8 @@ public class DlmsDataDecoder {
                 + attributes.size();
       }
 
-      if (classId != cosemObjectFromProfile.getClassId()) {
+      if (cosemObjectFromProfile.getTag() != null
+          && classId != cosemObjectFromProfile.getClassId()) {
         note =
             note
                 + "\nRead classId "

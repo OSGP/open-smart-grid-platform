@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
@@ -35,11 +37,10 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObisCodeDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAllAttributeValuesRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class GetAllAttributeValuesCommandExecutor
     extends AbstractCommandExecutor<DataObject, String> {
@@ -60,9 +61,6 @@ public class GetAllAttributeValuesCommandExecutor
   @Autowired private DlmsDataDecoder dlmsDataDecoder;
 
   @Autowired private ObjectConfigService objectConfigService;
-
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(GetAllAttributeValuesCommandExecutor.class);
 
   public GetAllAttributeValuesCommandExecutor() {
     super(GetAllAttributeValuesRequestDto.class);
@@ -101,7 +99,7 @@ public class GetAllAttributeValuesCommandExecutor
             "RetrieveAllAttributeValues, retrieve attribute: "
                 + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
 
-    LOGGER.debug(
+    log.debug(
         "Retrieving all attribute values for class id: {}, obis code: {}, attribute id: {}",
         CLASS_ID,
         OBIS_CODE,
@@ -120,7 +118,7 @@ public class GetAllAttributeValuesCommandExecutor
 
     try {
       final String output = this.createOutput(device, conn, allObjectListElements);
-      LOGGER.debug("Total output is: {}", output);
+      log.debug("Total output is: {}", output);
       return output;
     } catch (final IOException e) {
       throw new ConnectionException(e);
@@ -129,9 +127,9 @@ public class GetAllAttributeValuesCommandExecutor
 
   private void logAllObisCodes(final List<ObjectListElement> objectListElements) {
     int index = 1;
-    LOGGER.debug("List of all ObisCodes:");
+    log.debug("List of all ObisCodes:");
     for (final ObjectListElement element : objectListElements) {
-      LOGGER.debug(
+      log.debug(
           "{}/{} {} #attr{}",
           index++,
           objectListElements.size(),
@@ -144,7 +142,7 @@ public class GetAllAttributeValuesCommandExecutor
       final DlmsDevice device,
       final DlmsConnectionManager conn,
       final List<ObjectListElement> objectListElements)
-      throws ProtocolAdapterException, IOException {
+      throws IOException {
 
     final DlmsProfile dlmsProfile = this.getDlmsProfile(device);
 
@@ -152,12 +150,12 @@ public class GetAllAttributeValuesCommandExecutor
 
     int index = 1;
     for (final ObjectListElement element : objectListElements) {
-      LOGGER.debug(
+      log.debug(
           "Creating output for {} {}/{}",
           element.getLogicalName(),
           index++,
           objectListElements.size());
-      meterContents.add(this.getAllDataFromObisCode(dlmsProfile, conn, element));
+      meterContents.add(this.getAllDataFromObisCode(dlmsProfile, conn, device, element));
     }
 
     final ObjectMapper objectMapper = new ObjectMapper();
@@ -170,54 +168,51 @@ public class GetAllAttributeValuesCommandExecutor
   private CosemObject getAllDataFromObisCode(
       final DlmsProfile dlmsProfile,
       final DlmsConnectionManager conn,
-      final ObjectListElement objectListElement)
-      throws ProtocolAdapterException, IOException {
+      final DlmsDevice device,
+      final ObjectListElement objectListElement) {
 
-    final List<DataObject> attributeData = new ArrayList<>();
-
-    final int noOfAttr = objectListElement.getAttributes().size();
-    for (int attributeValue = 1; attributeValue <= noOfAttr; attributeValue++) {
-      LOGGER.debug(
-          "Creating output for {} attr: {}/{}",
-          objectListElement.getLogicalName(),
-          attributeValue,
-          noOfAttr);
-      attributeData.add(
-          this.getAllDataFromAttribute(
-              conn,
-              objectListElement.getClassId(),
-              objectListElement.getLogicalName(),
-              attributeValue));
-    }
+    final List<DataObject> attributeData =
+        this.getAllDataFromAttributes(conn, device, objectListElement);
 
     return this.dlmsDataDecoder.decodeObjectData(objectListElement, attributeData, dlmsProfile);
   }
 
-  private DataObject getAllDataFromAttribute(
+  private List<DataObject> getAllDataFromAttributes(
       final DlmsConnectionManager conn,
-      final int classNumber,
-      final String obisCode,
-      final int attributeValue)
-      throws IOException {
+      final DlmsDevice device,
+      final ObjectListElement objectListElement) {
+    try {
+      final int classId = objectListElement.getClassId();
+      final String obisCode = objectListElement.getLogicalName();
+      final AttributeAddress[] addresses =
+          objectListElement.getAttributes().stream()
+              .map(item -> new AttributeAddress(classId, obisCode, item.getAttributeId()))
+              .toArray(AttributeAddress[]::new);
 
-    final AttributeAddress attributeAddress =
-        new AttributeAddress(classNumber, new ObisCode(obisCode), attributeValue);
+      conn.getDlmsMessageListener()
+          .setDescription(
+              "RetrieveAllAttributeValues, retrieve attributes: "
+                  + JdlmsObjectToStringUtil.describeAttributes(addresses));
 
-    conn.getDlmsMessageListener()
-        .setDescription(
-            "RetrieveAllAttributeValues, retrieve attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
+      log.debug(
+          "Retrieving data for {} attributes of class id: {}, obis code: {}",
+          addresses.length,
+          classId,
+          obisCode);
+      final List<GetResult> getResults = this.dlmsHelper.getWithList(conn, device, addresses);
 
-    LOGGER.debug(
-        "Retrieving configuration objects data for class id: {}, obis code: {}, attribute id: {}",
-        classNumber,
-        obisCode,
-        attributeValue);
-    final GetResult getResult = conn.getConnection().get(attributeAddress);
+      if (getResults.stream()
+          .allMatch(result -> result.getResultCode() == AccessResultCode.SUCCESS)) {
+        log.debug("ResultCode: SUCCESS");
+      } else {
+        log.debug("ResultCode not SUCCESS for one or more attributes");
+      }
 
-    LOGGER.debug("ResultCode: {}", getResult.getResultCode());
-
-    return getResult.getResultData();
+      return getResults.stream().map(result -> result.getResultData()).toList();
+    } catch (final Exception e) {
+      log.debug("Failed reading attributes from " + objectListElement.getLogicalName(), e);
+      return List.of();
+    }
   }
 
   private List<ObjectListElement> getAllObjectListElements(
