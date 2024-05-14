@@ -466,6 +466,12 @@ public class DlmsHelper {
     return (value == null) ? null : value.intValue();
   }
 
+  public Integer readInteger(final DataObject resultData, final String description)
+      throws ProtocolAdapterException {
+    final Long value = this.readLong(resultData, description);
+    return (value == null) ? null : value.intValue();
+  }
+
   public Short readShort(final GetResult getResult, final String description)
       throws ProtocolAdapterException {
     this.checkResultCode(getResult, description);

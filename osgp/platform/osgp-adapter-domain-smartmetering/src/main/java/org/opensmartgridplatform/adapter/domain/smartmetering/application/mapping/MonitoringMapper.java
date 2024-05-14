@@ -11,6 +11,7 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.ActualPowerQualityDtoConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.DlmsMeterValueConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.GetPowerQualityProfileDtoConverter;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.GetThdFingerprintResponseConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.MeterReadsResponseItemDtoConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.PeriodicMeterReadsResponseItemDtoConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.PowerQualityValueConverter;
@@ -37,5 +38,6 @@ public class MonitoringMapper extends ConfigurableMapper {
     converterFactory.registerConverter(new GetPowerQualityProfileDtoConverter(mapperFactory));
     converterFactory.registerConverter(new ActualPowerQualityDtoConverter(mapperFactory));
     converterFactory.registerConverter(new PowerQualityValueConverter());
+    converterFactory.registerConverter(new GetThdFingerprintResponseConverter());
   }
 }

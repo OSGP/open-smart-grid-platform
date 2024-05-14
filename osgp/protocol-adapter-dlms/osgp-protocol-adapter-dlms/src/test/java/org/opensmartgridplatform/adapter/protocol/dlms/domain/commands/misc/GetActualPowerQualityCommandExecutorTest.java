@@ -48,6 +48,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.AccessType;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
@@ -267,8 +268,21 @@ class GetActualPowerQualityCommandExecutorTest {
   }
 
   private CosemObject getClockObject() {
-
-    return this.createCosemObject(DlmsObjectType.CLOCK.name(), 8, "0.0.1.0.0.255");
+    final CosemObject cosemObject =
+        this.createCosemObject(DlmsObjectType.CLOCK.name(), CLASS_ID_CLOCK, "0.0.1.0.0.255");
+    cosemObject
+        .getAttributes()
+        .add(
+            new Attribute(
+                ClockAttribute.TIME_ZONE.attributeId(),
+                "time_zone",
+                null,
+                DlmsDataType.LONG,
+                ValueType.DYNAMIC,
+                "-60",
+                null,
+                AccessType.RW));
+    return cosemObject;
   }
 
   private List<CosemObject> getObjects(final MeterType meterType) {
@@ -366,11 +380,15 @@ class GetActualPowerQualityCommandExecutorTest {
   }
 
   private boolean readScalerValueFromMeter(final CosemObject pqObject) {
-    if (!pqObject.hasAttribute(RegisterAttribute.SCALER_UNIT.attributeId())) {
+    if (pqObject.getClassId() == CLASS_ID_CLOCK) {
       return false;
     }
-    final Attribute attribute = pqObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId());
-    return attribute.getValuetype() != ValueType.FIXED_IN_PROFILE;
+    if (pqObject.hasAttribute(RegisterAttribute.SCALER_UNIT.attributeId())) {
+      final Attribute attribute =
+          pqObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId());
+      return attribute.getValuetype() != ValueType.FIXED_IN_PROFILE;
+    }
+    return false;
   }
 
   private EnumMap<ObjectProperty, List<String>> getObjectProperties(
@@ -405,7 +423,7 @@ class GetActualPowerQualityCommandExecutorTest {
 
   private CosemObject createCosemObject(final String tag, final int classId, final String obis) {
     return new CosemObject(
-        tag, "descr", classId, 0, obis, "group", null, List.of(), Map.of(), List.of());
+        tag, "descr", classId, 0, obis, "group", null, List.of(), Map.of(), new ArrayList<>());
   }
 
   private CosemObject createCosemObject(

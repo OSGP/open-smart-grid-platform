@@ -4,41 +4,42 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup;
 
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute.COMMUNICATION_WINDOW;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute.NUMBER_OF_RETRIES;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute.PUSH_OBJECT_LIST;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute.RANDOMISATION_START_INTERVAL;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute.REPETITION_DELAY;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute.SEND_DESTINATION_AND_METHOD;
+
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObisCodeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component()
 public class GetPushSetupAlarmCommandExecutor
     extends GetPushSetupCommandExecutor<Void, PushSetupAlarmDto> {
 
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(GetPushSetupAlarmCommandExecutor.class);
-  private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
+  private final DlmsHelper dlmsHelper;
 
-  private static final AttributeAddress[] ATTRIBUTE_ADDRESSES = {
-    new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_PUSH_OBJECT_LIST),
-    new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD),
-    new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_COMMUNICATION_WINDOW),
-    new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_RANDOMISATION_START_INTERVAL),
-    new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_NUMBER_OF_RETRIES),
-    new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_REPETITION_DELAY)
-  };
-
-  @Autowired private DlmsHelper dlmsHelper;
+  public GetPushSetupAlarmCommandExecutor(
+      final DlmsHelper dlmsHelper, final ObjectConfigServiceHelper objectConfigServiceHelper) {
+    super(objectConfigServiceHelper);
+    this.dlmsHelper = dlmsHelper;
+  }
 
   @Override
   public PushSetupAlarmDto execute(
@@ -48,48 +49,52 @@ public class GetPushSetupAlarmCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
+    final AttributeAddress[] attributeAddresses =
+        this.getAttributeAddresses(Protocol.forDevice(device), DlmsObjectType.PUSH_SETUP_ALARM);
     conn.getDlmsMessageListener()
         .setDescription(
             "GetPushSetupAlarm, retrieve attributes: "
-                + JdlmsObjectToStringUtil.describeAttributes(ATTRIBUTE_ADDRESSES));
+                + JdlmsObjectToStringUtil.describeAttributes(attributeAddresses));
 
-    LOGGER.info("Retrieving Push Setup Alarm");
+    log.info("Retrieving Push Setup Alarm");
 
     final List<GetResult> getResultList =
-        this.dlmsHelper.getWithList(conn, device, ATTRIBUTE_ADDRESSES);
+        this.dlmsHelper.getWithList(conn, device, attributeAddresses);
 
-    GetPushSetupCommandExecutor.checkResultList(getResultList, ATTRIBUTE_ADDRESSES);
+    GetPushSetupCommandExecutor.checkResultList(getResultList, attributeAddresses);
 
     final PushSetupAlarmDto.Builder pushSetupAlarmBuilder = new PushSetupAlarmDto.Builder();
-    pushSetupAlarmBuilder.withLogicalName(new CosemObisCodeDto(OBIS_CODE.bytes()));
+    pushSetupAlarmBuilder.withLogicalName(
+        new CosemObisCodeDto(attributeAddresses[0].getInstanceId().bytes()));
 
     pushSetupAlarmBuilder.withPushObjectList(
         this.dlmsHelper.readListOfObjectDefinition(
-            getResultList.get(INDEX_PUSH_OBJECT_LIST), "Push Object List"));
+            getResultList.get(this.idx(PUSH_OBJECT_LIST)), "Push Object List"));
 
     pushSetupAlarmBuilder.withSendDestinationAndMethod(
         this.dlmsHelper.readSendDestinationAndMethod(
-            getResultList.get(INDEX_SEND_DESTINATION_AND_METHOD), "Send Destination And Method"));
+            getResultList.get(this.idx(SEND_DESTINATION_AND_METHOD)),
+            "Send Destination And Method"));
 
     pushSetupAlarmBuilder.withCommunicationWindow(
         this.dlmsHelper.readListOfWindowElement(
-            getResultList.get(INDEX_COMMUNICATION_WINDOW), "Communication Window"));
+            getResultList.get(this.idx(COMMUNICATION_WINDOW)), "Communication Window"));
 
     pushSetupAlarmBuilder.withRandomisationStartInterval(
         this.dlmsHelper
             .readLongNotNull(
-                getResultList.get(INDEX_RANDOMISATION_START_INTERVAL),
+                getResultList.get(this.idx(RANDOMISATION_START_INTERVAL)),
                 "Randomisation Start Interval")
             .intValue());
 
     pushSetupAlarmBuilder.withNumberOfRetries(
         this.dlmsHelper
-            .readLongNotNull(getResultList.get(INDEX_NUMBER_OF_RETRIES), "Number of Retries")
+            .readLongNotNull(getResultList.get(this.idx(NUMBER_OF_RETRIES)), "Number of Retries")
             .intValue());
 
     pushSetupAlarmBuilder.withRepetitionDelay(
         this.dlmsHelper
-            .readLongNotNull(getResultList.get(INDEX_REPETITION_DELAY), "Repetition Delay")
+            .readLongNotNull(getResultList.get(this.idx(REPETITION_DELAY)), "Repetition Delay")
             .intValue());
 
     return pushSetupAlarmBuilder.build();

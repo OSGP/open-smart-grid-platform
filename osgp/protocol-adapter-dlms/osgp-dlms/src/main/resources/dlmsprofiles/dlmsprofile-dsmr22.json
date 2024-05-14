@@ -87,7 +87,7 @@
           "id": 3,
           "description": "time_zone",
           "datatype": "long",
-          "valuetype": "FIXED_IN_PROFILE",
+          "valuetype": "SET_BY_CLIENT",
           "value": "-60",
           "access": "RW"
         },
@@ -97,6 +97,43 @@
           "datatype": "clock_status",
           "valuetype": "DYNAMIC",
           "value": "OK",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "daylight_savings_begin",
+          "datatype": "octet-string",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 6,
+          "description": "daylight_savings_end",
+          "datatype": "octet-string",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 7,
+          "description": "daylight_savings_deviation",
+          "datatype": "integer",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "60",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "daylight_savings_enabled",
+          "datatype": "boolean",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        },
+        {
+          "id": 9,
+          "description": "clock_base",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_METER",
+          "value": "1",
           "access": "R"
         }
       ]

@@ -4,6 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
+import static com.google.common.util.concurrent.MoreExecutors.shutdownAndAwaitTermination;
+
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,6 +34,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
 @Slf4j
 public class ImageTransfer {
+  private static final long AWAIT_TERMINATION_IN_SEC = 5;
 
   private static final double LOGGER_PERCENTAGE_STEP = 5.0;
 
@@ -57,7 +61,6 @@ public class ImageTransfer {
 
   private static final int CLASS_ID = 18;
   private static final ObisCode OBIS_CODE = new ObisCode("0.0.44.0.0.255");
-  private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 
   private final ImageTransferProperties properties;
   private final byte[] imageIdentifier;
@@ -312,18 +315,21 @@ public class ImageTransfer {
   }
 
   private void waitForImageInitiation() throws OsgpException {
-    final Future<Integer> newStatus =
-        EXECUTOR_SERVICE.submit(
-            new ImageTransferStatusChangeWatcher(
-                ImageTransferStatus.NOT_INITIATED,
-                this.properties.getInitiationStatusCheckInterval(),
-                this.properties.getInitiationStatusCheckTimeout()));
-
+    final ExecutorService executorService = Executors.newSingleThreadExecutor();
     final int status;
     try {
+      final Future<Integer> newStatus =
+          executorService.submit(
+              new ImageTransferStatusChangeWatcher(
+                  ImageTransferStatus.NOT_INITIATED,
+                  this.properties.getInitiationStatusCheckInterval(),
+                  this.properties.getInitiationStatusCheckTimeout()));
+
       status = newStatus.get();
     } catch (final InterruptedException | ExecutionException e) {
       throw new ProtocolAdapterException("", e);
+    } finally {
+      shutdownAndAwaitTermination(executorService, Duration.ofSeconds(AWAIT_TERMINATION_IN_SEC));
     }
 
     if (status != ImageTransferStatus.INITIATED.getValue()) {
@@ -332,18 +338,21 @@ public class ImageTransfer {
   }
 
   private void waitForImageVerification() throws OsgpException {
-    final Future<Integer> newStatus =
-        EXECUTOR_SERVICE.submit(
-            new ImageTransferStatusChangeWatcher(
-                ImageTransferStatus.VERIFICATION_INITIATED,
-                this.properties.getVerificationStatusCheckInterval(),
-                this.properties.getVerificationStatusCheckTimeout()));
-
+    final ExecutorService executorService = Executors.newSingleThreadExecutor();
     final int status;
     try {
+      final Future<Integer> newStatus =
+          executorService.submit(
+              new ImageTransferStatusChangeWatcher(
+                  ImageTransferStatus.VERIFICATION_INITIATED,
+                  this.properties.getVerificationStatusCheckInterval(),
+                  this.properties.getVerificationStatusCheckTimeout()));
+
       status = newStatus.get();
     } catch (final InterruptedException | ExecutionException e) {
       throw new ProtocolAdapterException("", e);
+    } finally {
+      shutdownAndAwaitTermination(executorService, Duration.ofSeconds(AWAIT_TERMINATION_IN_SEC));
     }
 
     if (status == ImageTransferStatus.VERIFICATION_FAILED.getValue()) {

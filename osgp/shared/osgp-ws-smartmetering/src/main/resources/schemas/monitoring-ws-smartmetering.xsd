@@ -653,4 +653,74 @@
     </xsd:complexType>
   </xsd:element>
 
+  <!-- GetThdFingerprint -->
+
+  <xsd:element name="GetThdFingerprintRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetThdFingerprintAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetThdFingerprintAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetThdFingerprintResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType" />
+        <xsd:element name="ThdFingerprint" type="tns:ThdFingerprint"
+          minOccurs="0" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="ThdFingerprint">
+    <xsd:sequence>
+      <xsd:element name="ThdInstantaneousCurrentL1" type="xsd:int" />
+      <xsd:element name="ThdInstantaneousCurrentL2" type="xsd:int" />
+      <xsd:element name="ThdInstantaneousCurrentL3" type="xsd:int" />
+      <xsd:element name="ThdInstantaneousCurrentFingerprintL1" type="tns:FingerprintValues"/>
+      <xsd:element name="ThdInstantaneousCurrentFingerprintL2" type="tns:FingerprintValues"/>
+      <xsd:element name="ThdInstantaneousCurrentFingerprintL3" type="tns:FingerprintValues"/>
+      <xsd:element name="ThdCurrentOverLimitCounterL1" type="xsd:int" />
+      <xsd:element name="ThdCurrentOverLimitCounterL2" type="xsd:int" />
+      <xsd:element name="ThdCurrentOverLimitCounterL3" type="xsd:int" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="FingerprintValues">
+    <xsd:sequence>
+      <xsd:element name="FingerprintValue" type="xsd:int" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="GetThdFingerprintRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="GetThdFingerprintResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="ThdFingerprint" type="tns:ThdFingerprint" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
 </xsd:schema>

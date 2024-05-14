@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup;
 
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
@@ -12,9 +13,13 @@ import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.PushSetupMapper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
@@ -23,24 +28,21 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupAlar
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.TransportServiceTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component()
 public class SetPushSetupAlarmCommandExecutor
     extends SetPushSetupCommandExecutor<PushSetupAlarmDto, AccessResultCode> {
-
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(SetPushSetupAlarmCommandExecutor.class);
-  private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
 
   private final DlmsHelper dlmsHelper;
   private final PushSetupMapper pushSetupMapper;
 
   public SetPushSetupAlarmCommandExecutor(
-      final DlmsHelper dlmsHelper, final PushSetupMapper pushSetupMapper) {
-    super(SetPushSetupAlarmRequestDto.class);
+      final DlmsHelper dlmsHelper,
+      final PushSetupMapper pushSetupMapper,
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
+    super(SetPushSetupAlarmRequestDto.class, objectConfigServiceHelper);
     this.dlmsHelper = dlmsHelper;
     this.pushSetupMapper = pushSetupMapper;
   }
@@ -86,7 +88,7 @@ public class SetPushSetupAlarmCommandExecutor
     }
 
     if (pushSetupAlarm.hasPushObjectList()) {
-      resultCode = this.setPushObjectList(conn, pushSetupAlarm);
+      resultCode = this.setPushObjectList(conn, pushSetupAlarm, device);
     }
 
     return resultCode;
@@ -97,7 +99,7 @@ public class SetPushSetupAlarmCommandExecutor
       final PushSetupAlarmDto pushSetupAlarm,
       final DlmsDevice device)
       throws ProtocolAdapterException {
-    LOGGER.debug(
+    log.debug(
         "Setting Send destination and method of Push Setup Alarm: {}",
         pushSetupAlarm.getSendDestinationAndMethod());
 
@@ -118,10 +120,12 @@ public class SetPushSetupAlarmCommandExecutor
   }
 
   private SetParameter getSetParameterSendDestinationAndMethod(
-      final PushSetupAlarmDto pushSetupAlarm, final DlmsDevice device) {
+      final PushSetupAlarmDto pushSetupAlarm, final DlmsDevice device)
+      throws NotSupportedByProtocolException {
 
     final AttributeAddress sendDestinationAndMethodAddress =
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD);
+        this.getSendDestinationAndMethodAddress(
+            Protocol.forDevice(device), DlmsObjectType.PUSH_SETUP_ALARM);
     final DataObject value =
         this.pushSetupMapper.map(
             this.getUpdatedSendDestinationAndMethod(
@@ -132,9 +136,11 @@ public class SetPushSetupAlarmCommandExecutor
   }
 
   private AccessResultCode setPushObjectList(
-      final DlmsConnectionManager conn, final PushSetupAlarmDto pushSetupAlarm)
+      final DlmsConnectionManager conn,
+      final PushSetupAlarmDto pushSetupAlarm,
+      final DlmsDevice device)
       throws ProtocolAdapterException {
-    LOGGER.debug(
+    log.debug(
         "Setting Push Object List of Push Setup Alarm: {}", pushSetupAlarm.getPushObjectList());
 
     // Before setting the push object list, verify if the objects in the list are really present in
@@ -142,7 +148,7 @@ public class SetPushSetupAlarmCommandExecutor
     this.verifyPushObjects(pushSetupAlarm.getPushObjectList(), conn);
 
     final SetParameter setParameterPushObjectList =
-        this.getSetParameterPushObjectList(pushSetupAlarm);
+        this.getSetParameterPushObjectList(pushSetupAlarm, device);
 
     final AccessResultCode resultCode =
         this.doSetRequest("PushSetupAlarm, push object list", conn, setParameterPushObjectList);
@@ -189,10 +195,12 @@ public class SetPushSetupAlarmCommandExecutor
     }
   }
 
-  private SetParameter getSetParameterPushObjectList(final PushSetupAlarmDto pushSetupAlarm) {
+  private SetParameter getSetParameterPushObjectList(
+      final PushSetupAlarmDto pushSetupAlarm, final DlmsDevice device)
+      throws NotSupportedByProtocolException {
 
     final AttributeAddress pushObjectListAddress =
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_PUSH_OBJECT_LIST);
+        this.getPushObjectListAddress(Protocol.forDevice(device), DlmsObjectType.PUSH_SETUP_ALARM);
     final DataObject value =
         DataObject.newArrayData(
             this.pushSetupMapper.mapAsList(pushSetupAlarm.getPushObjectList(), DataObject.class));
@@ -208,22 +216,22 @@ public class SetPushSetupAlarmCommandExecutor
     }
 
     if (pushSetupAlarm.hasCommunicationWindow()) {
-      LOGGER.warn(
+      log.warn(
           "Setting Communication Window of Push Setup Alarm not implemented: {}",
           pushSetupAlarm.getCommunicationWindow());
     }
     if (pushSetupAlarm.hasRandomisationStartInterval()) {
-      LOGGER.warn(
+      log.warn(
           "Setting Randomisation Start Interval of Push Setup Alarm not implemented: {}",
           pushSetupAlarm.getRandomisationStartInterval());
     }
     if (pushSetupAlarm.hasNumberOfRetries()) {
-      LOGGER.warn(
+      log.warn(
           "Setting Number of Retries of Push Setup Alarm not implemented: {}",
           pushSetupAlarm.getNumberOfRetries());
     }
     if (pushSetupAlarm.hasRepetitionDelay()) {
-      LOGGER.warn(
+      log.warn(
           "Setting Repetition Delay of Push Setup Alarm not implemented: {}",
           pushSetupAlarm.getRepetitionDelay());
     }

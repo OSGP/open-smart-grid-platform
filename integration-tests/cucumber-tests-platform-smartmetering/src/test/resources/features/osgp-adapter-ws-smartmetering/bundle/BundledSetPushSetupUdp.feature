@@ -1,4 +1,8 @@
-@SmartMetering @Platform
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
+@SmartMetering @Platform @Bundle @PushSetup @SetPushSetupUdp
 Feature: SmartMetering Bundle - Set Push Setup UDP
   As a grid operator 
   I want to be able to set push setup udp on a meter via a bundle request
@@ -12,7 +16,6 @@ Feature: SmartMetering Bundle - Set Push Setup UDP
       | CommunicationMethod  | GPRS              |
       | Protocol             | SMR               |
       | ProtocolVersion      | 5.5               |
-      | Port                 |              1030 |
     And the bundle request contains a set push setup udp action
     When the bundle request is received
     Then the bundle response should contain a set push setup udp response
@@ -28,9 +31,8 @@ Feature: SmartMetering Bundle - Set Push Setup UDP
       | CommunicationMethod  | GPRS              |
       | Protocol             | SMR               |
       | ProtocolVersion      |               5.2 |
-      | Port                 |              1029 |
     And the bundle request contains a set push setup udp action
     When the bundle request is received
     Then the bundle response should be a FaultResponse with message containing
-      | Message | No object found of type PUSH_SETUP_UDP in profile SMR version 5.2 |
+      | Message | Error handling request with SetPushSetupUdpCommandExecutor: No address found for PUSH_SETUP_UDP in protocol SMR 5.2 |
 

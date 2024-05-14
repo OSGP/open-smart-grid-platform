@@ -34,6 +34,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPerio
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetSpecificAttributeValueRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetThdFingerprintRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ScanMbusChannelsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetActivityCalendarRequest;
@@ -85,6 +86,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusE
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetThdFingerprintRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
@@ -118,6 +120,7 @@ import org.springframework.validation.annotation.Validated;
 public class ActionMapperService {
 
   private static final Map<Class<?>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
+
   private static final Map<Class<?>, Class<? extends ActionRequest>> CLASS_MAP = new HashMap<>();
 
   /** Specifies to which core object the ws object needs to be mapped. */
@@ -155,6 +158,10 @@ public class ActionMapperService {
         org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData
             .class,
         ActualMeterReadsGasRequestData.class);
+    CLASS_MAP.put(
+        org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring
+            .GetThdFingerprintRequestData.class,
+        GetThdFingerprintRequestData.class);
     CLASS_MAP.put(
         org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
             .AdministrativeStatusTypeData.class,
@@ -259,6 +266,7 @@ public class ActionMapperService {
     CLASS_MAP.put(GetPeriodicMeterReadsGasRequest.class, PeriodicMeterReadsGasRequestData.class);
     CLASS_MAP.put(GetActualMeterReadsRequest.class, ActualMeterReadsRequestData.class);
     CLASS_MAP.put(GetActualMeterReadsGasRequest.class, ActualMeterReadsGasRequestData.class);
+    CLASS_MAP.put(GetThdFingerprintRequest.class, GetThdFingerprintRequestData.class);
     CLASS_MAP.put(SetAdministrativeStatusRequest.class, AdministrativeStatusTypeData.class);
     CLASS_MAP.put(SetActivityCalendarRequest.class, ActivityCalendarData.class);
     CLASS_MAP.put(SetKeyOnGMeterRequest.class, SetKeyOnGMeterRequestData.class);
@@ -319,9 +327,13 @@ public class ActionMapperService {
   }
 
   @Autowired private ManagementMapper managementMapper;
+
   @Autowired private AdhocMapper adhocMapper;
+
   @Autowired private ConfigurationMapper configurationMapper;
+
   @Autowired private MonitoringMapper monitoringMapper;
+
   @Autowired private InstallationMapper installationMapper;
 
   /** Specifies which mapper to use for the ws class received. */
@@ -435,6 +447,11 @@ public class ActionMapperService {
             .class,
         this.monitoringMapper);
     CLASS_TO_MAPPER_MAP.put(ClearAlarmRegisterRequest.class, this.monitoringMapper);
+    CLASS_TO_MAPPER_MAP.put(
+        org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring
+            .GetThdFingerprintRequest.class,
+        this.monitoringMapper);
+    CLASS_TO_MAPPER_MAP.put(GetThdFingerprintRequest.class, this.monitoringMapper);
   }
 
   private void mapConfigurationRequestData() {
