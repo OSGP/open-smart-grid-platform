@@ -35,6 +35,7 @@ public class OsgpRequestMessageSender {
     this.send(requestMessage, messageType, messageMetadata, false);
   }
 
+  @Deprecated
   public void sendWithReplyToThisInstance(
       final RequestMessage requestMessage,
       final String messageType,
