@@ -186,8 +186,9 @@ public class SetLightSteps {
     final SetLightAsyncRequest request = new SetLightAsyncRequest();
     final AsyncRequest asyncRequest = new AsyncRequest();
     asyncRequest.setDeviceId(deviceIdentification);
-    String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
-    System.out.println("correlationUid: "+correlationUid);
+    String correlationUid =
+        (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
+    System.out.println("correlationUid: " + correlationUid);
     asyncRequest.setCorrelationUid(correlationUid);
     request.setAsyncRequest(asyncRequest);
 

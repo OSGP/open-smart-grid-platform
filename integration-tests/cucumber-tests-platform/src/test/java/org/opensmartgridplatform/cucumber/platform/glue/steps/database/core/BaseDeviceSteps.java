@@ -13,8 +13,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -103,9 +101,10 @@ public abstract class BaseDeviceSteps {
                 PlatformKeys.KEY_PROTOCOL_VERSION,
                 PlatformDefaults.DEFAULT_PROTOCOL_VERSION)));
 
-//    Network settings
+    //    Network settings
     String networkAddress =
-            getString(settings, PlatformKeys.NETWORK_ADDRESS, this.configuration.getDeviceNetworkAddress());
+        getString(
+            settings, PlatformKeys.NETWORK_ADDRESS, this.configuration.getDeviceNetworkAddress());
     System.out.println(networkAddress);
 
     device.setBtsId(getInteger(settings, PlatformKeys.BTS_ID, null));
