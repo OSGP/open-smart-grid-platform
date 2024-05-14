@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.Data;
 import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.ExtendedRegister;
 import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.ProfileGeneric;
@@ -38,6 +39,8 @@ public class CosemObject {
 
   @JsonProperty("class-id")
   protected int classId;
+
+  protected InterfaceClass dlmsClass;
 
   protected int version;
   protected String obis;
@@ -61,6 +64,7 @@ public class CosemObject {
     this.tag = tag;
     this.description = description;
     this.classId = classId;
+    this.dlmsClass = InterfaceClass.interfaceClassFor(classId);
     this.version = version;
     this.obis = obis;
     this.group = group;

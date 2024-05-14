@@ -15,6 +15,7 @@ public class Attribute {
   private String note;
   private DlmsDataType datatype;
   private ValueType valuetype;
+  private String rawValue;
   private String value;
   private ValueBasedOnModel valuebasedonmodel;
   private AccessType access;
@@ -38,6 +39,27 @@ public class Attribute {
     this.access = access;
   }
 
+  public Attribute(
+      final int id,
+      final String description,
+      final String note,
+      final DlmsDataType datatype,
+      final ValueType valuetype,
+      final String value,
+      final String rawValue,
+      final ValueBasedOnModel valuebasedonmodel,
+      final AccessType access) {
+    this.id = id;
+    this.description = description;
+    this.note = note;
+    this.datatype = datatype;
+    this.valuetype = valuetype;
+    this.value = value;
+    this.rawValue = rawValue;
+    this.valuebasedonmodel = valuebasedonmodel;
+    this.access = access;
+  }
+
   public Attribute copy() {
     return new Attribute(
         this.id,
@@ -46,6 +68,7 @@ public class Attribute {
         this.datatype,
         this.valuetype,
         this.value,
+        this.rawValue,
         this.valuebasedonmodel == null ? null : this.valuebasedonmodel.copy(),
         this.access);
   }

@@ -57,7 +57,7 @@ public class DataDecoder {
       }
 
       return this.createCosemObject(
-          this.getObjectDescription(classId, objectFromProfile),
+          objectFromProfile.getDescription(),
           classId,
           objectListElement.getVersion(),
           obisCode,
@@ -87,12 +87,12 @@ public class DataDecoder {
 
       return this.decodeAttributeData(cosemObject, attributeId, attributeData, null);
     } catch (final Exception e) {
-      final String error =
-          "Decoding failed, raw data: "
-              + this.minimizeRawData(this.dlmsHelper.getDebugInfo(attributeData));
-      log.warn(error, e);
+      final String rawData =
+          "raw data: " + this.minimizeRawData(this.dlmsHelper.getDebugInfo(attributeData));
+      final String error = "Decoding failed";
+      log.warn(error + ", raw data: " + rawData, e);
 
-      return new Attribute(attributeId, null, error, null, null, null, null, null);
+      return new Attribute(attributeId, null, error, null, null, null, rawData, null, null);
     }
   }
 
@@ -102,18 +102,7 @@ public class DataDecoder {
         dlmsProfile.getObjects().stream().filter(o -> o.getObis().equals(obis)).findFirst();
 
     return optionalCosemObject.orElseGet(
-        () -> this.createCosemObject("", classId, -1, obis, null, null));
-  }
-
-  private String getObjectDescription(final int classId, final CosemObject objectFromProfile) {
-    String description = interfaceClassFor(classId).name();
-
-    if (objectFromProfile.getDescription() != null
-        && !objectFromProfile.getDescription().isBlank()) {
-      description += ", " + objectFromProfile.getDescription();
-    }
-
-    return description;
+        () -> this.createCosemObject(null, classId, -1, obis, null, null));
   }
 
   private String getObjectNote(
@@ -177,10 +166,6 @@ public class DataDecoder {
     }
 
     final String rawData = this.minimizeRawData(this.dlmsHelper.getDebugInfo(attributeData));
-    final String note =
-        (attributeFromProfile.getNote() == null || attributeFromProfile.getNote().isBlank())
-            ? rawData
-            : attributeFromProfile.getNote() + "\n" + rawData;
 
     final String value =
         this.decodeAttributeValue(cosemObject, attributeFromProfile, attributeData);
@@ -188,10 +173,11 @@ public class DataDecoder {
     return new Attribute(
         attributeId,
         attributeFromProfile.getDescription(),
-        note,
+        attributeFromProfile.getNote(),
         attributeFromProfile.getDatatype(),
         null,
         value,
+        rawData,
         null,
         accessItem != null ? accessItem.getAccessMode() : null);
   }

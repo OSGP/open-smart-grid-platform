@@ -73,8 +73,8 @@ public class BasicDlmsDataDecoder {
   }
 
   private String cosemDateTimeToString(final CosemDateTimeDto dateTimeDto) {
-    return "CosemDateTime["
-        + dateTimeDto.getDate()
+    return this.getDayOfWeek(dateTimeDto)
+        + dateTimeDto.getDate().asLocalDate()
         + ", "
         + dateTimeDto.getTime().asLocalTime().toString()
         + ", deviation="
@@ -82,6 +82,20 @@ public class BasicDlmsDataDecoder {
         + ", "
         + dateTimeDto.getClockStatus()
         + ']';
+  }
+
+  private String getDayOfWeek(final CosemDateTimeDto dateTimeDto) {
+    return switch (dateTimeDto.getDate().getDayOfWeek()) {
+      case 1 -> "Monday ";
+      case 2 -> "Tuesday ";
+      case 3 -> "Wednesday ";
+      case 4 -> "Thursday ";
+      case 5 -> "Friday ";
+      case 6 -> "Saturday ";
+      case 7 -> "Sunday ";
+      case 0xFF -> "Day of week not specified, ";
+      default -> "DayOfWeek value unknown: " + dateTimeDto.getDate().getDayOfWeek() + ", ";
+    };
   }
 
   private String decodeVisibleString(final DataObject attributeData) {
