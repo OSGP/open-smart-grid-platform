@@ -131,7 +131,7 @@ SPDX-License-Identifier: Apache-2.0
     <ant.junit.version>1.10.14</ant.junit.version>
     <args4j.version>2.37</args4j.version>
     <cucumber.version>5.7.0</cucumber.version>
-    <testcontainers.version>1.19.7</testcontainers.version>
+    <testcontainers.version>1.19.8</testcontainers.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <postgresql.version>42.7.2</postgresql.version>
     <jakarta.xml.soap-api.version>3.0.1</jakarta.xml.soap-api.version>
