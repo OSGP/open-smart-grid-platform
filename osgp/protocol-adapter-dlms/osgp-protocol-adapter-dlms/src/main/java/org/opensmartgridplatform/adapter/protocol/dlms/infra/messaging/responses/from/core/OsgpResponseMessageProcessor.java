@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * process should be passed in at construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
  */
+@Deprecated
 public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessageProcessor
     implements MessageProcessor {
 

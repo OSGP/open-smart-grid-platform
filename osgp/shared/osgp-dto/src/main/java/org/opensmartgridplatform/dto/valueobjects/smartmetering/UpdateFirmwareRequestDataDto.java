@@ -4,8 +4,10 @@
 
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
+import lombok.Getter;
 import org.opensmartgridplatform.dto.valueobjects.HashTypeDto;
 
+@Getter
 public class UpdateFirmwareRequestDataDto implements ActionRequestDto {
 
   private static final long serialVersionUID = 4779593744529504287L;
@@ -21,9 +23,5 @@ public class UpdateFirmwareRequestDataDto implements ActionRequestDto {
     this.firmwareIdentification = firmwareIdentification;
     this.firmwareHashType = firmwareHashType;
     this.firmwareDigest = firmwareDigest;
-  }
-
-  public String getFirmwareIdentification() {
-    return this.firmwareIdentification;
   }
 }
