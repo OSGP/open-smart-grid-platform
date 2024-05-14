@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder;
 
 import java.util.List;
 import lombok.Getter;

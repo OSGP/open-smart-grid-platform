@@ -18,11 +18,11 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.AttributeAccessItem;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDataDecoder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectListElement;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder.AttributeAccessItem;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder.DataDecoder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder.ObjectListElement;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -58,7 +58,7 @@ public class GetAllAttributeValuesCommandExecutor
 
   @Autowired private DlmsHelper dlmsHelper;
 
-  @Autowired private DlmsDataDecoder dlmsDataDecoder;
+  @Autowired private DataDecoder dataDecoder;
 
   @Autowired private ObjectConfigService objectConfigService;
 
@@ -174,7 +174,7 @@ public class GetAllAttributeValuesCommandExecutor
     final List<DataObject> attributeData =
         this.getAllDataFromAttributes(conn, device, objectListElement);
 
-    return this.dlmsDataDecoder.decodeObjectData(objectListElement, attributeData, dlmsProfile);
+    return this.dataDecoder.decodeObjectData(objectListElement, attributeData, dlmsProfile);
   }
 
   private List<DataObject> getAllDataFromAttributes(

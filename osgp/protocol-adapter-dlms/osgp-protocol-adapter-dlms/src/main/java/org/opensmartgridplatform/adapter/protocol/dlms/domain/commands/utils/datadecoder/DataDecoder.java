@@ -2,42 +2,35 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder;
 
 import static org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass.interfaceClassFor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
-import org.opensmartgridplatform.dlms.objectconfig.DlmsDataType;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service(value = "dlmsDataDecoder")
-public class DlmsDataDecoder {
-
-  private static final List<DataObject.Type> simpleNumbers =
-      List.of(
-          DataObject.Type.DOUBLE_LONG,
-          DataObject.Type.DOUBLE_LONG_UNSIGNED,
-          DataObject.Type.INTEGER,
-          DataObject.Type.UNSIGNED,
-          DataObject.Type.LONG64,
-          DataObject.Type.LONG64_UNSIGNED,
-          DataObject.Type.LONG_INTEGER,
-          DataObject.Type.LONG_UNSIGNED);
+@Service(value = "dataDecoder")
+public class DataDecoder {
 
   @Autowired private DlmsHelper dlmsHelper;
+  @Autowired private BasicDlmsDataDecoder basicDlmsDataDecoder;
+  @Autowired private BasicDlmsClassDataDecoder basicDlmsClassDataDecoder;
+  @Autowired private ProfileDataDecoder profileDataDecoder;
 
   public CosemObject decodeObjectData(
       final ObjectListElement objectListElement,
@@ -52,60 +45,33 @@ public class DlmsDataDecoder {
 
       final List<Attribute> attributes = new ArrayList<>();
 
-      int index = 1;
+      int attributeId = 1;
       for (final DataObject dataObject : attributeData) {
         attributes.add(
             this.decodeAttributeData(
                 objectFromProfile,
-                index,
+                attributeId,
                 dataObject,
-                objectListElement.getAttributes().get(index)));
-        index++;
-      }
-
-      String note =
-          (objectFromProfile.getNote() != null && !objectFromProfile.getNote().isBlank())
-              ? objectFromProfile.getNote()
-              : "";
-
-      if (objectFromProfile.getTag() != null
-          && objectFromProfile.getAttributes().size() + 1
-              != objectListElement.getAttributes().size()) {
-        note =
-            note
-                + "\nRead number of attributes "
-                + objectListElement.getAttributes().size()
-                + " differs from number of attributes in profile "
-                + objectFromProfile.getAttributes().size()
-                + 1;
-      }
-
-      if (objectFromProfile.getTag() != null && classId != objectFromProfile.getClassId()) {
-        note =
-            note
-                + "\nRead classId "
-                + classId
-                + " differs from classId in profile "
-                + objectFromProfile.getClassId();
+                objectListElement.getAttributes().get(attributeId - 1)));
+        attributeId++;
       }
 
       return this.createCosemObject(
-          objectFromProfile.getDescription(),
+          this.getObjectDescription(classId, objectFromProfile),
           classId,
           objectListElement.getVersion(),
           obisCode,
-          note,
+          this.getObjectNote(objectFromProfile, objectListElement),
           attributes);
     } catch (final Exception e) {
-      return this.createCosemObject(
-          InterfaceClass.interfaceClassFor(classId).name() + ", decoding failed: " + e.getMessage(),
-          classId,
-          -1,
-          obisCode,
-          "Raw data: "
+      final String error =
+          "Decoding failed, raw data: "
               + this.minimizeRawData(
-                  this.dlmsHelper.getDebugInfo(DataObject.newStructureData(attributeData))),
-          null);
+                  this.dlmsHelper.getDebugInfo(DataObject.newStructureData(attributeData)));
+      log.warn(error, e);
+
+      return this.createCosemObject(
+          interfaceClassFor(classId).name(), classId, -1, obisCode, error, null);
     }
   }
 
@@ -121,16 +87,12 @@ public class DlmsDataDecoder {
 
       return this.decodeAttributeData(cosemObject, attributeId, attributeData, null);
     } catch (final Exception e) {
-      return new Attribute(
-          attributeId,
-          null,
+      final String error =
           "Decoding failed, raw data: "
-              + this.minimizeRawData(this.dlmsHelper.getDebugInfo(attributeData)),
-          null,
-          null,
-          null,
-          null,
-          null);
+              + this.minimizeRawData(this.dlmsHelper.getDebugInfo(attributeData));
+      log.warn(error, e);
+
+      return new Attribute(attributeId, null, error, null, null, null, null, null);
     }
   }
 
@@ -139,21 +101,56 @@ public class DlmsDataDecoder {
     final Optional<CosemObject> optionalCosemObject =
         dlmsProfile.getObjects().stream().filter(o -> o.getObis().equals(obis)).findFirst();
 
-    final String className = interfaceClassFor(classId).name();
-
     return optionalCosemObject.orElseGet(
-        () ->
-            this.createCosemObject(
-                className
-                    + ", object not found in profile "
-                    + dlmsProfile.getProfile()
-                    + " "
-                    + dlmsProfile.getVersion(),
-                classId,
-                -1,
-                obis,
-                null,
-                null));
+        () -> this.createCosemObject("", classId, -1, obis, null, null));
+  }
+
+  private String getObjectDescription(final int classId, final CosemObject objectFromProfile) {
+    String description = interfaceClassFor(classId).name();
+
+    if (objectFromProfile.getDescription() != null
+        && !objectFromProfile.getDescription().isBlank()) {
+      description += ", " + objectFromProfile.getDescription();
+    }
+
+    return description;
+  }
+
+  private String getObjectNote(
+      final CosemObject objectFromProfile, final ObjectListElement objectListElement) {
+    String note = objectFromProfile.getNote() != null ? objectFromProfile.getNote() : "";
+    note = note + this.compareReadValuesWithProfile(objectFromProfile, objectListElement);
+
+    return note.isEmpty() ? null : note;
+  }
+
+  private String compareReadValuesWithProfile(
+      final CosemObject objectFromProfile, final ObjectListElement objectListElement) {
+    String note = "";
+
+    if (objectFromProfile.getTag() != null) {
+      if (objectFromProfile.getAttributes().size() + 1
+          != objectListElement.getAttributes().size()) {
+        note =
+            note
+                + "\nRead number of attributes "
+                + objectListElement.getAttributes().size()
+                + " differs from number of attributes in profile "
+                + objectFromProfile.getAttributes().size()
+                + 1;
+      }
+
+      if (objectListElement.getClassId() != objectFromProfile.getClassId()) {
+        note =
+            note
+                + "\nRead classId "
+                + objectListElement.getClassId()
+                + " differs from classId in profile "
+                + objectFromProfile.getClassId();
+      }
+    }
+
+    return note;
   }
 
   private Attribute decodeAttributeData(
@@ -186,7 +183,7 @@ public class DlmsDataDecoder {
             : attributeFromProfile.getNote() + "\n" + rawData;
 
     final String value =
-        this.decodeAttributeValue(cosemObject.getClassId(), attributeFromProfile, attributeData);
+        this.decodeAttributeValue(cosemObject, attributeFromProfile, attributeData);
 
     return new Attribute(
         attributeId,
@@ -207,40 +204,42 @@ public class DlmsDataDecoder {
           .replace("DataObject: Choice=", "")
           .replace("java.lang.", "")
           .replace("java.util.", "")
+          .replace("[[B]:", "[B]:")
           .replace("ResultData is", "");
     }
   }
 
   private String decodeAttributeValue(
-      final int classId, final Attribute attributeFromProfile, final DataObject attributeData)
+      final CosemObject objectFromProfile,
+      final Attribute attributeFromProfile,
+      final DataObject attributeData)
       throws ProtocolAdapterException {
 
     if (attributeFromProfile.getId() == 1) {
       return this.decodeAttributeLogicalName(attributeData);
     }
 
-    if (attributeFromProfile.getDatatype() == DlmsDataType.SCAL_UNIT_TYPE
-        || attributeFromProfile.getDatatype() == null
-            && this.attributeIsScalerUnit(classId, attributeFromProfile.getId())) {
-      return this.decodeAttributeScalerUnit(attributeData);
+    String decodedValue =
+        this.profileDataDecoder.decodeAttributeValue(
+            objectFromProfile, attributeFromProfile, attributeData);
+
+    if (decodedValue == null) {
+      decodedValue =
+          this.basicDlmsClassDataDecoder.decodeAttributeValue(
+              objectFromProfile, attributeFromProfile, attributeData);
     }
 
-    if (simpleNumbers.contains(attributeData.getType())) {
-      return this.decodeNumber(attributeData);
+    if (decodedValue == null) {
+      decodedValue = this.basicDlmsDataDecoder.decodeAttributeValue(attributeData);
     }
 
-    return "No decoder found for value";
-  }
-
-  private boolean attributeIsScalerUnit(final int classId, final int attributeId) {
-    return (((classId == 3 || classId == 4) && attributeId == 3)
-        || (classId == 5 && attributeId == 4));
+    return Objects.requireNonNullElse(decodedValue, "No decoder found for value");
   }
 
   private String getAttributeDescription(final InterfaceClass interfaceClass, final int attrId) {
     for (final Enum<?> attributeClass : interfaceClass.getAttributeEnumValues()) {
       if (((AttributeClass) attributeClass).attributeId() == attrId) {
-        return ((AttributeClass) attributeClass).attributeName();
+        return ((AttributeClass) attributeClass).attributeName().toLowerCase();
       }
     }
 
@@ -261,20 +260,5 @@ public class DlmsDataDecoder {
   private String decodeAttributeLogicalName(final DataObject attributeData) {
     final byte[] obisCodeByteArray = attributeData.getValue();
     return (new ObisCode(obisCodeByteArray)).toString();
-  }
-
-  private String decodeAttributeScalerUnit(final DataObject attributeData)
-      throws ProtocolAdapterException {
-    return this.dlmsHelper.getScalerUnit(attributeData, "readValue");
-  }
-
-  private String decodeNumber(final DataObject result) throws ProtocolAdapterException {
-    final Long value = this.dlmsHelper.readLong(result, "readValue");
-
-    if (value == null) {
-      return "null";
-    } else {
-      return value.toString();
-    }
   }
 }
