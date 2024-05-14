@@ -716,11 +716,6 @@ public class FirmwareManagementService {
       }
       databaseDeviceModels.add(databaseDeviceModel);
     }
-    if (!deviceModels.isEmpty() && databaseDeviceModels.isEmpty()) {
-      LOGGER.info("No DeviceModels found.");
-      throw new FunctionalException(
-          FunctionalExceptionType.UNKNOWN_DEVICEMODEL, ComponentType.WS_CORE);
-    }
 
     final Map<FirmwareModule, String> firmwareVersionsByModule =
         firmwareModuleData.getVersionsByModule(this.firmwareModuleRepository, true);
