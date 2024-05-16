@@ -39,13 +39,18 @@ import org.springframework.stereotype.Service;
 @Service(value = "basicDlmsClassDataDecoder")
 public class BasicDlmsClassDataDecoder {
 
-  @Autowired private DlmsHelper dlmsHelper;
-  @Autowired private BasicDlmsDataDecoder basicDlmsDataDecoder;
+  private final DlmsHelper dlmsHelper;
+  private final BasicDlmsDataDecoder basicDlmsDataDecoder;
 
   private final Map<AttributeType, Function<DataObject, String>> decoderMap =
       new EnumMap<>(AttributeType.class);
 
-  public BasicDlmsClassDataDecoder() {
+  @Autowired
+  public BasicDlmsClassDataDecoder(
+      final DlmsHelper dlmsHelper, final BasicDlmsDataDecoder basicDlmsClassDataDecoder) {
+    this.dlmsHelper = dlmsHelper;
+    this.basicDlmsDataDecoder = basicDlmsClassDataDecoder;
+
     this.decoderMap.put(ADJACENT_CELLS, this::decodeAdjacentCells);
     this.decoderMap.put(CAPTURE_OBJECT_DEFINITION_LIST, this::decodeCaptureObjects);
     this.decoderMap.put(CAPTURE_OBJECT_DEFINITION, this::decodeCaptureObject);
@@ -195,7 +200,9 @@ public class BasicDlmsClassDataDecoder {
       final List<DataObject> adjacentCells = attributeData.getValue();
       for (final DataObject dataObject : adjacentCells) {
         final List<DataObject> structure = dataObject.getValue();
-
+        if (!decoded.isEmpty()) {
+          decoded.append(", ");
+        }
         decoded.append("cellId: ").append(structure.get(0).getValue().toString());
         decoded
             .append(", signalQuality: ")
