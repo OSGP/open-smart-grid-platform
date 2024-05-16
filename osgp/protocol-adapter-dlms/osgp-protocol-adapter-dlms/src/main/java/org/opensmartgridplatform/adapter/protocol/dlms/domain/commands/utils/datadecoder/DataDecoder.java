@@ -92,7 +92,7 @@ public class DataDecoder {
       final String error = "Decoding failed";
       log.warn(error + ", raw data: " + rawData, e);
 
-      return new Attribute(attributeId, null, error, null, null, null, rawData, null, null);
+      return new Attribute(attributeId, null, error, null, null, null, null, rawData, null, null);
     }
   }
 
@@ -176,6 +176,7 @@ public class DataDecoder {
         attributeFromProfile.getNote(),
         attributeFromProfile.getDatatype(),
         null,
+        null,
         value,
         rawData,
         null,
@@ -212,7 +213,7 @@ public class DataDecoder {
     if (decodedValue == null) {
       decodedValue =
           this.basicDlmsClassDataDecoder.decodeAttributeValue(
-              objectFromProfile, attributeFromProfile, attributeData);
+              objectFromProfile.getClassId(), attributeFromProfile.getId(), attributeData);
     }
 
     if (decodedValue == null) {

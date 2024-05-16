@@ -6,6 +6,7 @@ package org.opensmartgridplatform.dlms.objectconfig;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType;
 
 @Getter
 @NoArgsConstructor
@@ -14,6 +15,7 @@ public class Attribute {
   private String description;
   private String note;
   private DlmsDataType datatype;
+  private AttributeType attributetype;
   private ValueType valuetype;
   private String rawValue;
   private String value;
@@ -44,6 +46,7 @@ public class Attribute {
       final String description,
       final String note,
       final DlmsDataType datatype,
+      final AttributeType attributeType,
       final ValueType valuetype,
       final String value,
       final String rawValue,
@@ -53,6 +56,7 @@ public class Attribute {
     this.description = description;
     this.note = note;
     this.datatype = datatype;
+    this.attributetype = this.attributetype;
     this.valuetype = valuetype;
     this.value = value;
     this.rawValue = rawValue;
@@ -66,6 +70,7 @@ public class Attribute {
         this.description,
         this.note,
         this.datatype,
+        this.attributetype,
         this.valuetype,
         this.value,
         this.rawValue,

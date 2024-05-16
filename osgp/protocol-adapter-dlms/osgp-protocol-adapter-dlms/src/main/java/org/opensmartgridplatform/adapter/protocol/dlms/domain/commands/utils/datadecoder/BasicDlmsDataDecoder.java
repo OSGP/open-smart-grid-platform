@@ -38,6 +38,10 @@ public class BasicDlmsDataDecoder {
       return this.decodeNumber(attributeData);
     }
 
+    if (attributeData.getType() == Type.BOOLEAN) {
+      return this.decodeBoolean(attributeData);
+    }
+
     if (attributeData.getType() == Type.OCTET_STRING) {
       return this.decodeOctetString(attributeData);
     }
@@ -59,17 +63,25 @@ public class BasicDlmsDataDecoder {
     }
   }
 
+  private String decodeBoolean(final DataObject attributeData) {
+    return (int) attributeData.getValue() == 1 ? "true" : "false";
+  }
+
   private String decodeOctetString(final DataObject attributeData) {
 
     try {
-      return this.cosemDateTimeToString(
-          this.dlmsHelper.readDateTime(attributeData, "Try to read time from bytes"));
+      return this.decodeDateTime(attributeData);
     } catch (final Exception ignored) {
       // Decoding failed, so byte array is not a date time
     }
 
     final byte[] byteArray = attributeData.getValue();
     return new String(byteArray);
+  }
+
+  public String decodeDateTime(final DataObject attributeData) throws ProtocolAdapterException {
+    return this.cosemDateTimeToString(
+        this.dlmsHelper.readDateTime(attributeData, "Try to read time from bytes"));
   }
 
   private String cosemDateTimeToString(final CosemDateTimeDto dateTimeDto) {

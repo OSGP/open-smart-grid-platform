@@ -164,6 +164,199 @@
       ]
     },
     {
+      "tag": "ACTIVE_FIRMWARE_IDENTIFIER",
+      "description": "Active firmware identifier",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.0.0.2.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ACTIVE_FIRMWARE_SIGNATURE",
+      "description": "Active firmware signature",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.0.0.2.8.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "attributetype": "SIGNATURE",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MODULE_ACTIVE_FIRMWARE_IDENTIFIER",
+      "description": "Module Active firmware identifier",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.1.0.2.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MODULE_FIRMWARE_SIGNATURE",
+      "description": "Module firmware signature",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.1.0.2.8.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "attributetype": "SIGNATURE",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "COMMUNICATION_MODULE_ACTIVE_FIRMWARE_IDENTIFIER",
+      "description": "Communication Module Active firmware identifier",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.2.0.2.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "COMMUNICATION_MODULE_FIRMWARE_SIGNATURE",
+      "description": "Communication Module firmware signature",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.2.0.2.8.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "attributetype": "SIGNATURE",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "P1_PORT_VERSION",
+      "description": "P1 Port DSMR Version",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.3.0.2.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_DRIVER_ACTIVE_FIRMWARE_IDENTIFIER",
+      "description": "M-Bus Driver Active firmware identifier",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.4.0.2.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_DRIVER_ACTIVE_FIRMWARE_SIGNATURE",
+      "description": "M-Bus Driver Active firmware signature",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.4.0.2.8.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "attributetype": "SIGNATURE",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
       "tag": "ACTIVE_ENERGY_IMPORT",
       "description": "Active energy import (+A)",
       "note": null,

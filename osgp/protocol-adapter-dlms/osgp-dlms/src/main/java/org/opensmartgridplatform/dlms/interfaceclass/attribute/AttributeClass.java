@@ -16,4 +16,8 @@ public interface AttributeClass {
   int attributeId();
 
   String attributeName();
+
+  default AttributeType attributeType() {
+    return AttributeType.UNKNOWN;
+  }
 }

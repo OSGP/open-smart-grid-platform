@@ -6,9 +6,13 @@
 
 package org.opensmartgridplatform.dlms.interfaceclass;
 
+import java.util.Arrays;
+import java.util.Optional;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ActivityCalendarAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AssociationLnAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AssociationSnAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AutoAnswerAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AutoConnectAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
@@ -123,5 +127,22 @@ public enum InterfaceClass {
 
   public Enum<?>[] getAttributeEnumValues() {
     return this.attributeClass.getEnumConstants();
+  }
+
+  public AttributeType getAttributeType(final int attributeId) {
+    final Enum<?>[] attributesForClass = this.getAttributeEnumValues();
+
+    final Optional<AttributeClass> optionalAttributeClass =
+        Arrays.stream(attributesForClass)
+            .map(AttributeClass.class::cast)
+            .filter(attribute -> attribute.attributeId() == attributeId)
+            .findFirst();
+
+    AttributeType attributeType = AttributeType.UNKNOWN;
+    if (optionalAttributeClass.isPresent()) {
+      attributeType = optionalAttributeClass.get().attributeType();
+    }
+
+    return attributeType;
   }
 }
