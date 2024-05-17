@@ -837,11 +837,4 @@
   <xsd:simpleType name="TimeZoneType">
     <xsd:restriction base="xsd:string" />
   </xsd:simpleType>
-
-  <xsd:simpleType name="HashType">
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="MD5"/>
-      <xsd:enumeration value="SHA256"/>
-    </xsd:restriction>
-  </xsd:simpleType>
 </xsd:schema>

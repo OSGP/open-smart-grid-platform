@@ -6,18 +6,15 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.config.messa
 
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.Destination;
-import jakarta.jms.MessageListener;
 import java.util.UUID;
 import javax.net.ssl.SSLException;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 /** Configuration class for inbound responses from OSGP Core on firmware file requests . */
 @Configuration
@@ -48,16 +45,6 @@ public class InboundOsgpCoreFirmwareFileResponsesMessagingConfig {
     LOGGER.info(
         "Initializing protocolDlmsInboundOsgpCoreFirmwareFileResponsesConnectionFactory bean.");
     return this.jmsConfigurationFactory.getPooledConnectionFactory();
-  }
-
-  @Bean(name = "protocolDlmsInboundOsgpCoreFirmwareFileResponsesMessageListenerContainer")
-  public DefaultMessageListenerContainer messageListenerContainer(
-      @Qualifier("protocolDlmsInboundOsgpCoreFirmwareFileResponsesMessageListener")
-          final MessageListener messageListener) {
-    LOGGER.info(
-        "Initializing protocolDlmsInboundOsgpCoreFirmwareFileResponsesMessageListenerContainer bean.");
-    return this.jmsConfigurationFactory.initMessageListenerContainer(
-        messageListener, this.replyToQueue());
   }
 
   /**

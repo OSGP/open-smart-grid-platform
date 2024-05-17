@@ -11,6 +11,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.application.mappin
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActivityCalendar;
@@ -45,6 +46,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFi
 import org.opensmartgridplatform.domain.smartmetering.exceptions.GatewayDeviceNotSetForMbusDeviceException;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionGasDto;
+import org.opensmartgridplatform.dto.valueobjects.HashTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificationsDto;
@@ -1024,8 +1026,11 @@ public class ConfigurationService {
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     final String firmwareIdentification = updateFirmwareRequestData.getFirmwareIdentification();
-    this.firmwareService.checkFirmwareFileSupportsDeviceModel(
-        smartMeter, this.firmwareService.getFirmwareFile(firmwareIdentification));
+    final FirmwareFile firmwareFile = this.firmwareService.getFirmwareFile(firmwareIdentification);
+    final String hash = firmwareFile.getHash();
+    final HashTypeDto hashTypeDto = getHashTypeDto(firmwareFile);
+
+    this.firmwareService.checkFirmwareFileSupportsDeviceModel(smartMeter, firmwareFile);
 
     /*
      * The request here is applicable for an E-meter or G-meter. The assumption here
@@ -1052,10 +1057,11 @@ public class ConfigurationService {
       baseTransceiverStationId = smartMeter.getBtsId();
       cellId = smartMeter.getCellId();
     }
+
     final UpdateFirmwareRequestDto requestDto =
         new UpdateFirmwareRequestDto(
             identificationOfDeviceToBeUpdated,
-            new UpdateFirmwareRequestDataDto(firmwareIdentification, null, null));
+            new UpdateFirmwareRequestDataDto(firmwareIdentification, hashTypeDto, hash));
     this.osgpCoreRequestMessageSender.send(
         requestDto,
         messageMetadata
@@ -1064,6 +1070,14 @@ public class ConfigurationService {
             .withNetworkAddress(ipAddress)
             .withNetworkSegmentIds(baseTransceiverStationId, cellId)
             .build());
+  }
+
+  private static HashTypeDto getHashTypeDto(final FirmwareFile firmwareFile) {
+    final String hashType = firmwareFile.getHashType();
+    if (hashType == null) {
+      return null;
+    }
+    return HashTypeDto.valueOf(hashType);
   }
 
   public void handleUpdateFirmwareResponse(

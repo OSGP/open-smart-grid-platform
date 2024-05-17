@@ -25,12 +25,7 @@ public class S3BucketService {
       throws ProtocolAdapterException {
     final Path fwFile =
         Paths.get(this.s3BucketConfig.getFirmwarePath(), firmwareFileIdentification);
-    try {
-      return Files.readAllBytes(fwFile);
-    } catch (final IOException e) {
-      throw new ProtocolAdapterException(
-          String.format("Error reading firmware file (%s) from s3 bucket", fwFile.toString()), e);
-    }
+    return getBytesFromFile(fwFile, "firmware");
   }
 
   public byte[] readImageIdentifier(final String firmwareFileIdentification)
@@ -38,17 +33,20 @@ public class S3BucketService {
     final Path imageIdentifierFile =
         Paths.get(
             this.s3BucketConfig.getFirmwarePath(),
-            firmwareFileIdentification,
-            ".",
-            this.s3BucketConfig.getFirmwareImageIdentifierExtension());
+            String.format(
+                "%s.%s",
+                firmwareFileIdentification,
+                this.s3BucketConfig.getFirmwareImageIdentifierExtension()));
+    return getBytesFromFile(imageIdentifierFile, "image identifier");
+  }
+
+  private static byte[] getBytesFromFile(final Path path, final String filetype)
+      throws ProtocolAdapterException {
     try {
-      return Files.readAllBytes(imageIdentifierFile);
+      return Files.readAllBytes(path);
     } catch (final IOException e) {
       throw new ProtocolAdapterException(
-          String.format(
-              "Error reading image identifier file (%3) from s3 bucket",
-              imageIdentifierFile.toString()),
-          e);
+          String.format("Error reading %s file (%s) from s3 bucket", filetype, path.toString()), e);
     }
   }
 }
