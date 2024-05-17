@@ -5,12 +5,22 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getHexDecoded;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncRequest;
@@ -27,14 +37,26 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
+import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository;
+import org.opensmartgridplatform.dto.valueobjects.HashTypeDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
+@Slf4j
 @Transactional(value = "txMgrCore")
 public class UpdateFirmware {
 
+  @Value("${smartmetering.firmware.path}")
+  private String firmwarePath;
+
+  @Value("${smartmetering.firmware.imageidentifier.extention}")
+  private String imageIdentifierExtension;
+
   @Autowired private DeviceRepository deviceRepository;
+
+  @Autowired private FirmwareFileRepository firmwareFileRepository;
 
   @Autowired private SmartMeteringConfigurationClient client;
 
@@ -110,5 +132,65 @@ public class UpdateFirmware {
                 + deviceIdentification
                 + " should not have firmware versions from the scenario after an unsuccessful update.")
         .isFalse();
+  }
+
+  @Given("a firmware file and image identifier on a s3 bucket and corresponding hash in database")
+  public void aFirmwareFileAndImageIdentifierOnASBucketAndCorrespondingHashInDatabase(
+      final Map<String, String> settings) throws Throwable {
+    final String firmwareIdentification =
+        getString(settings, PlatformKeys.FIRMWARE_FILE_IDENTIFICATION, null);
+
+    final FirmwareFile firmwareFile =
+        this.firmwareFileRepository.findByIdentificationOnly(firmwareIdentification);
+    byte[] fileContent = null;
+    if (settings.containsKey(PlatformKeys.FIRMWARE_FILE)) {
+      fileContent = getHexDecoded(settings, PlatformKeys.FIRMWARE_FILE, null);
+    }
+    final String imageIdentifier =
+        getString(settings, PlatformKeys.FIRMWARE_FILE_IMAGE_IDENTIFIER, null);
+    final String hashType = getString(settings, PlatformKeys.FIRMWARE_HASH_TYPE, null);
+    final HashTypeDto hashTypeDto = HashTypeDto.valueOf(hashType);
+    this.storeFileContentAndHash(firmwareFile, fileContent, imageIdentifier, hashTypeDto);
+  }
+
+  private void storeFileContentAndHash(
+      final FirmwareFile firmwareFile,
+      final byte[] fileContent,
+      final String imageIdentifier,
+      final HashTypeDto hashTypeDto)
+      throws IOException {
+    final Path path = Paths.get(this.firmwarePath);
+    if (!Files.exists(path)) {
+      Files.createDirectories(path);
+    }
+    if (fileContent != null) {
+      final Path pathFirmware = Paths.get(this.firmwarePath, firmwareFile.getIdentification());
+      if (!Files.exists(pathFirmware)) {
+        Files.write(pathFirmware, fileContent);
+      }
+    }
+    if (imageIdentifier != null) {
+      final Path pathImageIdentifier =
+          Paths.get(
+              this.firmwarePath,
+              firmwareFile.getIdentification() + "." + this.imageIdentifierExtension);
+      if (!Files.exists(pathImageIdentifier)) {
+        Files.write(pathImageIdentifier, imageIdentifier.getBytes());
+      }
+    }
+    firmwareFile.setHash(this.calcHash(fileContent, hashTypeDto.getAlgorithmName()));
+    firmwareFile.setHashType(hashTypeDto.name());
+    this.firmwareFileRepository.save(firmwareFile);
+  }
+
+  private String calcHash(final byte[] filecontent, final String algorithm) {
+    try {
+      final MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
+      final byte[] digest = messageDigest.digest(filecontent);
+      return new BigInteger(1, digest).toString(16);
+    } catch (final NoSuchAlgorithmException e) {
+      log.error("Error calculating digest", e);
+      return "";
+    }
   }
 }

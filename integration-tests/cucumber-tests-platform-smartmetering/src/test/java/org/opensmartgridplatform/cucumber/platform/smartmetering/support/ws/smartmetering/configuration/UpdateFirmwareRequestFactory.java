@@ -9,7 +9,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequestData;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
@@ -25,10 +24,8 @@ public class UpdateFirmwareRequestFactory {
             PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION,
             PlatformSmartmeteringDefaults.DEVICE_IDENTIFICATION));
 
-    final UpdateFirmwareRequestData requestData = new UpdateFirmwareRequestData();
-    requestData.setFirmwareIdentification(
+    updateFirmwareRequest.setFirmwareIdentification(
         parameters.get(PlatformSmartmeteringKeys.FIRMWARE_FILE_IDENTIFICATION));
-    updateFirmwareRequest.setUpdateFirmwareRequestData(requestData);
 
     return updateFirmwareRequest;
   }
