@@ -11,6 +11,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.GetFirmwareVersionsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.UpdateFirmwareCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
@@ -90,7 +91,9 @@ public class FirmwareService {
     if (!this.firmwareFileInCache(firmwareIdentification)) {
       this.loadFirmwareFileInCache(updateFirmwareRequestDto);
     }
-    if (!this.imageIdentifierInCache(firmwareIdentification)) {
+    final boolean imageIdentifierRequired =
+        !this.getFirmwareFile(firmwareIdentification).isMbusFirmware();
+    if (imageIdentifierRequired && !this.imageIdentifierInCache(firmwareIdentification)) {
       this.loadImageIdentifierInCache(updateFirmwareRequestDto);
     }
     return this.updateFirmwareCommandExecutor.execute(
@@ -99,6 +102,11 @@ public class FirmwareService {
 
   private boolean firmwareFileInCache(final String firmwareIdentification) {
     return this.firmwareRepository.isAvailable(firmwareIdentification);
+  }
+
+  private FirmwareFile getFirmwareFile(final String firmwareIdentification) {
+    final byte[] bytes = this.firmwareRepository.retrieve(firmwareIdentification);
+    return new FirmwareFile(bytes);
   }
 
   private boolean imageIdentifierInCache(final String firmwareIdentification) {
