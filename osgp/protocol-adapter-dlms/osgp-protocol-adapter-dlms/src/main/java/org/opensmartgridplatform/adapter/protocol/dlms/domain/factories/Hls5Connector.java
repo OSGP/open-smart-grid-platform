@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
@@ -170,18 +169,7 @@ public class Hls5Connector extends SecureDlmsConnector {
      * builder the library is enabled to meet the IV requirements of DLMS
      * HLS5 communication.
      */
-    final String manufacturerId;
-    if (StringUtils.isEmpty(device.getManufacturerId())) {
-      LOGGER.debug(
-          "Device {} does not have its manufacturer ID stored in the database. "
-              + "Using a default value which makes the system title (part of the IV in HLS 5) less "
-              + "unique.",
-          device.getDeviceIdentification());
-      manufacturerId = "   ";
-    } else {
-      manufacturerId = device.getManufacturerId();
-    }
-    tcpConnectionBuilder.setSystemTitle(manufacturerId, device.getDeviceId());
+    tcpConnectionBuilder.setSystemTitle("   ", device.getDeviceId());
 
     final long frameCounter = device.getInvocationCounter();
 
