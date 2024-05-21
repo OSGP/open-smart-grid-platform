@@ -119,7 +119,7 @@ Feature: SmartMetering Configuration - Firmware
       | ModelCode                   | MA105                          |
       | FirmwareIsForSmartMeters    | true                           |
       | FirmwareFileExists          | false                          |
-    And a firmware file and image identifier on a s3 bucket and corresponding hash in database
+    And a firmware file and image identifier in a firmware file store and corresponding hash in database
       | FirmwareFileIdentification  | TEST_FW_FILE_0003              |
       | FirmwareFile                | 0000000000230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4ffbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d5fa821c678e71c05c47e1c69c4bfffe1fd |
       | FirmwareHashType            | SHA256                         |
@@ -159,7 +159,7 @@ Feature: SmartMetering Configuration - Firmware
       | ModelCode                   | MA105                                    |
       | FirmwareFileExists          | false                                    |
       | FirmwareIsForSmartMeters    | true                                     |
-    And a firmware file and image identifier on a s3 bucket and corresponding hash in database
+    And a firmware file and image identifier in a firmware file store and corresponding hash in database
       | FirmwareFileIdentification  | TEST_FW_FILE_0001              |
       | FirmwareFile                | 0000000000230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4ffbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d5fa821c678e71c05c47e1c69c4bfffe1fd |
       | FirmwareHashType            | SHA256                         |
@@ -203,7 +203,7 @@ Feature: SmartMetering Configuration - Firmware
       | ModelCode                  | MA105                                    |
       | FirmwareFileExists         | false                                    |
       | FirmwareIsForSmartMeters   | true                                     |
-    And a firmware file and image identifier on a s3 bucket and corresponding hash in database
+    And a firmware file and image identifier in a firmware file store and corresponding hash in database
       | FirmwareFileIdentification  | TEST_FW_FILE_0012              |
       | FirmwareFile                | 0000000000230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4ffbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d5fa821c678e71c05c47e1c69c4bfffe1fd |
       | FirmwareHashType            | SHA256                         |
@@ -212,10 +212,10 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareFileIdentification | TEST_FW_FILE_0012 |
     Then retrieving the update firmware response results in an exception
     And a SOAP fault should have been returned
-      | Component      | PROTOCOL_DLMS                                                                                       |
-      | Message        | Unexpected exception while handling protocol request/response message                               |
-      | InnerException | org.opensmartgridplatform.shared.exceptionhandling.OsgpException                                    |
-      | InnerMessage   | Error reading image identifier file (/etc/osp/firmwarefiles/TEST_FW_FILE_0012.imgid) from s3 bucket |
+      | Component      | PROTOCOL_DLMS                                                                                                 |
+      | Message        | Unexpected exception while handling protocol request/response message                                         |
+      | InnerException | org.opensmartgridplatform.shared.exceptionhandling.OsgpException                                              |
+      | InnerMessage   | Error reading image identifier file (/etc/osp/firmwarefiles/TEST_FW_FILE_0012.imgid) from firmware file store |
     And the database should not be updated with the new device firmware
       | DeviceIdentification      | TEST1024000000002      |
       | FirmwareModuleVersionComm | Telit 10.00.154        |
@@ -246,7 +246,7 @@ Feature: SmartMetering Configuration - Firmware
       | ModelCode                   | MA10X                                    |
       | FirmwareFileExists          | false                                    |
       | FirmwareIsForSmartMeters    | true                                     |
-    And a firmware file and image identifier on a s3 bucket and corresponding hash in database
+    And a firmware file and image identifier in a firmware file store and corresponding hash in database
       | FirmwareFileIdentification  | TEST_FW_FILE_0001              |
       | FirmwareFile                | 0000000000230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4ffbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d5fa821c678e71c05c47e1c69c4bfffe1fd |
       | FirmwareHashType            | SHA256                         |
@@ -299,7 +299,7 @@ Feature: SmartMetering Configuration - Firmware
       | ModelCode                   | G_METER_MODEL_1                |
       | FirmwareIsForSmartMeters    | true                           |
       | FirmwareFileExists          | false                          |
-    And a firmware file and image identifier on a s3 bucket and corresponding hash in database
+    And a firmware file and image identifier in a firmware file store and corresponding hash in database
       | FirmwareFileIdentification  | TEST_FW_FILE_GAS_0002          |
       | FirmwareFile                | 534d523500230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4ffbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d5fa821c678e71c05c47e1c69c4bfffe1fd |
       | FirmwareHashType            | SHA256                         |

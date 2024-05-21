@@ -51,7 +51,7 @@ public class FirmwareServiceTest {
 
   @Mock private DlmsDevice dlmsDeviceMock;
 
-  @Mock private S3BucketService s3BucketService;
+  @Mock private FirmwareFileStoreService firmwareFileStoreService;
 
   @InjectMocks private FirmwareService firmwareService;
 
@@ -104,7 +104,7 @@ public class FirmwareServiceTest {
         updateFirmwareRequestDto,
         messageMetadata);
 
-    verifyNoInteractions(this.s3BucketService);
+    verifyNoInteractions(this.firmwareFileStoreService);
     verify(this.firmwareFileCachingRepository, never()).store(anyString(), any(byte[].class));
     verify(this.firmwareImageIdentifierCachingRepository, never())
         .store(anyString(), any(byte[].class));
@@ -122,7 +122,8 @@ public class FirmwareServiceTest {
     final byte[] firmwareImageIdentifier = Hex.decode(imageIdentifier);
 
     when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(false);
-    when(this.s3BucketService.readFirmwareFile(firmwareIdentification)).thenReturn(firmwareFile);
+    when(this.firmwareFileStoreService.readFirmwareFile(firmwareIdentification))
+        .thenReturn(firmwareFile);
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification))
         .thenReturn(firmwareFile);
     when(this.firmwareImageIdentifierCachingRepository.isAvailable(firmwareIdentification))
@@ -136,7 +137,7 @@ public class FirmwareServiceTest {
         updateFirmwareRequestDto,
         messageMetadata);
 
-    verify(this.s3BucketService).readFirmwareFile(firmwareIdentification);
+    verify(this.firmwareFileStoreService).readFirmwareFile(firmwareIdentification);
     verify(this.firmwareFileCachingRepository).store(firmwareIdentification, firmwareFile);
     verify(this.firmwareImageIdentifierCachingRepository, never())
         .store(anyString(), any(byte[].class));
@@ -159,7 +160,7 @@ public class FirmwareServiceTest {
 
     when(this.firmwareImageIdentifierCachingRepository.isAvailable(firmwareIdentification))
         .thenReturn(false);
-    when(this.s3BucketService.readImageIdentifier(firmwareIdentification))
+    when(this.firmwareFileStoreService.readImageIdentifier(firmwareIdentification))
         .thenReturn(firmwareImageIdentifier);
     when(this.firmwareImageIdentifierCachingRepository.retrieve(firmwareIdentification))
         .thenReturn(firmwareImageIdentifier);
@@ -170,10 +171,10 @@ public class FirmwareServiceTest {
         updateFirmwareRequestDto,
         messageMetadata);
 
-    verify(this.s3BucketService).readImageIdentifier(firmwareIdentification);
+    verify(this.firmwareFileStoreService).readImageIdentifier(firmwareIdentification);
     verify(this.firmwareImageIdentifierCachingRepository)
         .store(firmwareIdentification, firmwareImageIdentifier);
-    verify(this.s3BucketService, never()).readFirmwareFile(firmwareIdentification);
+    verify(this.firmwareFileStoreService, never()).readFirmwareFile(firmwareIdentification);
     verify(this.firmwareFileCachingRepository, never()).store(anyString(), any(byte[].class));
     verify(this.updateFirmwareCommandExecutor, times(1))
         .execute(
@@ -190,7 +191,8 @@ public class FirmwareServiceTest {
     final HashTypeDto sha256 = HashTypeDto.SHA256;
 
     when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(false);
-    when(this.s3BucketService.readFirmwareFile(firmwareIdentification)).thenReturn(firmwareFile);
+    when(this.firmwareFileStoreService.readFirmwareFile(firmwareIdentification))
+        .thenReturn(firmwareFile);
 
     updateFirmwareRequestDto = createUpdateFirmwareRequestDto(sha256, validMD5firmwareDigest);
     assertThatExceptionOfType(ProtocolAdapterException.class)
@@ -204,7 +206,7 @@ public class FirmwareServiceTest {
             })
         .withMessageContainingAll(firmwareIdentification, sha256.getAlgorithmName());
 
-    verify(this.s3BucketService).readFirmwareFile(firmwareIdentification);
+    verify(this.firmwareFileStoreService).readFirmwareFile(firmwareIdentification);
     verify(this.firmwareFileCachingRepository, never()).store(firmwareIdentification, firmwareFile);
     verify(this.firmwareFileCachingRepository, never()).retrieve(firmwareIdentification);
     verifyNoInteractions(this.firmwareImageIdentifierCachingRepository);
@@ -212,13 +214,13 @@ public class FirmwareServiceTest {
   }
 
   @Test
-  void updateFirmwareWhenFirmwareFileNotInCacheAndNotOnS3Bucket() throws OsgpException {
+  void updateFirmwareWhenFirmwareFileNotInCacheAndNotOnStore() throws OsgpException {
 
     final byte[] firmwareFile = firmwareIdentification.getBytes();
     final HashTypeDto sha256 = HashTypeDto.SHA256;
 
     when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(false);
-    when(this.s3BucketService.readFirmwareFile(firmwareIdentification)).thenReturn(null);
+    when(this.firmwareFileStoreService.readFirmwareFile(firmwareIdentification)).thenReturn(null);
 
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
@@ -231,7 +233,7 @@ public class FirmwareServiceTest {
             })
         .withMessageContainingAll(firmwareIdentification);
 
-    verify(this.s3BucketService).readFirmwareFile(firmwareIdentification);
+    verify(this.firmwareFileStoreService).readFirmwareFile(firmwareIdentification);
     verify(this.firmwareFileCachingRepository, never()).store(firmwareIdentification, firmwareFile);
     verify(this.firmwareFileCachingRepository, never()).retrieve(firmwareIdentification);
     verifyNoInteractions(this.firmwareImageIdentifierCachingRepository);
@@ -239,15 +241,15 @@ public class FirmwareServiceTest {
   }
 
   @Test
-  void updateFirmwareWhenS3BucketThrowsException() throws OsgpException {
+  void updateFirmwareWhenStoreThrowsException() throws OsgpException {
 
     final byte[] firmwareFile = firmwareIdentification.getBytes();
     final HashTypeDto sha256 = HashTypeDto.SHA256;
-    final String s3bucketExceptionMessage = "s3 bucket failed!";
+    final String storeExceptionMessage = "firmware file store failed!";
 
     when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(false);
-    when(this.s3BucketService.readFirmwareFile(firmwareIdentification))
-        .thenThrow(new ProtocolAdapterException(s3bucketExceptionMessage));
+    when(this.firmwareFileStoreService.readFirmwareFile(firmwareIdentification))
+        .thenThrow(new ProtocolAdapterException(storeExceptionMessage));
 
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
@@ -258,7 +260,7 @@ public class FirmwareServiceTest {
                   updateFirmwareRequestDto,
                   messageMetadata);
             })
-        .withMessage(s3bucketExceptionMessage);
+        .withMessage(storeExceptionMessage);
 
     verify(this.firmwareFileCachingRepository, never()).store(firmwareIdentification, firmwareFile);
     verify(this.firmwareFileCachingRepository, never()).retrieve(firmwareIdentification);

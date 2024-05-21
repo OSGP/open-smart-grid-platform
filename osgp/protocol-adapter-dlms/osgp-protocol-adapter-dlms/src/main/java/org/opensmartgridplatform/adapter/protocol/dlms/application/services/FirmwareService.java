@@ -42,19 +42,19 @@ public class FirmwareService {
   private final FirmwareImageIdentifierCachingRepository imageIdentifierRepository;
   private final GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
   private final UpdateFirmwareCommandExecutor updateFirmwareCommandExecutor;
-  private final S3BucketService s3BucketService;
+  private final FirmwareFileStoreService firmwareFileStoreService;
 
   public FirmwareService(
       final FirmwareFileCachingRepository firmwareRepository,
       final FirmwareImageIdentifierCachingRepository imageIdentifierRepository,
       final GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor,
       final UpdateFirmwareCommandExecutor updateFirmwareCommandExecutor,
-      final S3BucketService s3BucketService) {
+      final FirmwareFileStoreService firmwareFileStoreService) {
     this.firmwareRepository = firmwareRepository;
     this.imageIdentifierRepository = imageIdentifierRepository;
     this.getFirmwareVersionsCommandExecutor = getFirmwareVersionsCommandExecutor;
     this.updateFirmwareCommandExecutor = updateFirmwareCommandExecutor;
-    this.s3BucketService = s3BucketService;
+    this.firmwareFileStoreService = firmwareFileStoreService;
   }
 
   public List<FirmwareVersionDto> getFirmwareVersions(
@@ -173,11 +173,11 @@ public class FirmwareService {
 
   private byte[] readFirmwareFile(final String firmwareIdentification)
       throws ProtocolAdapterException {
-    return this.s3BucketService.readFirmwareFile(firmwareIdentification);
+    return this.firmwareFileStoreService.readFirmwareFile(firmwareIdentification);
   }
 
   private byte[] readImageIdentifier(final String firmwareIdentification)
       throws ProtocolAdapterException {
-    return this.s3BucketService.readImageIdentifier(firmwareIdentification);
+    return this.firmwareFileStoreService.readImageIdentifier(firmwareIdentification);
   }
 }
