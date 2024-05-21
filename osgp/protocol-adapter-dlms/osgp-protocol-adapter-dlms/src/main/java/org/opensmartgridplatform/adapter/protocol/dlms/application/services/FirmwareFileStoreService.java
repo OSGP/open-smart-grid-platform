@@ -8,23 +8,23 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.config.S3BucketConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.FirmwareFileStoreConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.stereotype.Service;
 
-@Service(value = "dlmsS3BucketService")
-public class S3BucketService {
+@Service(value = "dlmsFirmwareFileStoreService")
+public class FirmwareFileStoreService {
 
-  final S3BucketConfig s3BucketConfig;
+  final FirmwareFileStoreConfig firmwareFileStoreConfig;
 
-  public S3BucketService(final S3BucketConfig s3BucketConfig) {
-    this.s3BucketConfig = s3BucketConfig;
+  public FirmwareFileStoreService(final FirmwareFileStoreConfig firmwareFileStoreConfig) {
+    this.firmwareFileStoreConfig = firmwareFileStoreConfig;
   }
 
   public byte[] readFirmwareFile(final String firmwareFileIdentification)
       throws ProtocolAdapterException {
     final Path fwFile =
-        Paths.get(this.s3BucketConfig.getFirmwarePath(), firmwareFileIdentification);
+        Paths.get(this.firmwareFileStoreConfig.getFirmwarePath(), firmwareFileIdentification);
     return getBytesFromFile(fwFile, "firmware");
   }
 
@@ -32,11 +32,11 @@ public class S3BucketService {
       throws ProtocolAdapterException {
     final Path imageIdentifierFile =
         Paths.get(
-            this.s3BucketConfig.getFirmwarePath(),
+            this.firmwareFileStoreConfig.getFirmwarePath(),
             String.format(
                 "%s.%s",
                 firmwareFileIdentification,
-                this.s3BucketConfig.getFirmwareImageIdentifierExtension()));
+                this.firmwareFileStoreConfig.getFirmwareImageIdentifierExtension()));
     return getBytesFromFile(imageIdentifierFile, "image identifier");
   }
 
@@ -46,7 +46,9 @@ public class S3BucketService {
       return Files.readAllBytes(path);
     } catch (final IOException e) {
       throw new ProtocolAdapterException(
-          String.format("Error reading %s file (%s) from s3 bucket", filetype, path.toString()), e);
+          String.format(
+              "Error reading %s file (%s) from firmware file store", filetype, path.toString()),
+          e);
     }
   }
 }

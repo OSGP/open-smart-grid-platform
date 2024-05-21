@@ -13,7 +13,7 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true)
-public class S3BucketConfig extends AbstractConfig {
+public class FirmwareFileStoreConfig extends AbstractConfig {
 
   @Value("${smartmetering.firmware.path}")
   private String firmwarePath;

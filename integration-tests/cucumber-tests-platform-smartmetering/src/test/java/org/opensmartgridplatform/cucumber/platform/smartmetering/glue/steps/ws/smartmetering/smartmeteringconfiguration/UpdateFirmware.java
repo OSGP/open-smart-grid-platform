@@ -134,8 +134,9 @@ public class UpdateFirmware {
         .isFalse();
   }
 
-  @Given("a firmware file and image identifier on a s3 bucket and corresponding hash in database")
-  public void aFirmwareFileAndImageIdentifierOnASBucketAndCorrespondingHashInDatabase(
+  @Given(
+      "a firmware file and image identifier in a firmware file store and corresponding hash in database")
+  public void aFirmwareFileAndImageIdentifierInAFirmwareFileStoreAndCorrespondingHashInDatabase(
       final Map<String, String> settings) throws Throwable {
     final String firmwareIdentification =
         getString(settings, PlatformKeys.FIRMWARE_FILE_IDENTIFICATION, null);
