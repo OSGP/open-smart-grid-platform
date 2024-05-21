@@ -56,9 +56,11 @@
     <xsd:sequence>
       <xsd:element name="TotalPages" type="xsd:int"
         minOccurs="1" maxOccurs="1" />
-      <xsd:element name="PageSize" type="xsd:int" minOccurs="1"
-        maxOccurs="1" />
+      <xsd:element name="PageSize" type="xsd:int"
+        minOccurs="1" maxOccurs="1" />
       <xsd:element name="CurrentPage" type="xsd:int"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="TotalElements" type="xsd:int"
         minOccurs="1" maxOccurs="1" />
     </xsd:sequence>
   </xsd:complexType>
