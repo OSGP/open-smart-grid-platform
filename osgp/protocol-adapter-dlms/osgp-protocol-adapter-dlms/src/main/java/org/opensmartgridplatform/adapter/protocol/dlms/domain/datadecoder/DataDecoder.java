@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder;
 
 import static org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass.interfaceClassFor;
 
@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.dlmsclassdatadecoder.DlmsClassDataDecoder;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
@@ -29,18 +30,18 @@ public class DataDecoder {
 
   private final DlmsHelper dlmsHelper;
   private final BasicDlmsDataDecoder basicDlmsDataDecoder;
-  private final BasicDlmsClassDataDecoder basicDlmsClassDataDecoder;
+  private final DlmsClassDataDecoder dlmsClassDataDecoder;
   private final ProfileDataDecoder profileDataDecoder;
 
   @Autowired
   public DataDecoder(
       final DlmsHelper dlmsHelper,
       final BasicDlmsDataDecoder basicDlmsDataDecoder,
-      final BasicDlmsClassDataDecoder basicDlmsClassDataDecoder,
+      final DlmsClassDataDecoder dlmsClassDataDecoder,
       final ProfileDataDecoder profileDataDecoder) {
     this.dlmsHelper = dlmsHelper;
     this.basicDlmsDataDecoder = basicDlmsDataDecoder;
-    this.basicDlmsClassDataDecoder = basicDlmsClassDataDecoder;
+    this.dlmsClassDataDecoder = dlmsClassDataDecoder;
     this.profileDataDecoder = profileDataDecoder;
   }
 
@@ -223,7 +224,7 @@ public class DataDecoder {
 
     if (decodedValue == null) {
       decodedValue =
-          this.basicDlmsClassDataDecoder.decodeAttributeValue(
+          this.dlmsClassDataDecoder.decodeAttributeValue(
               objectFromProfile.getClassId(), attributeFromProfile.getId(), attributeData);
     }
 

@@ -21,9 +21,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractC
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder.AttributeAccessItem;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder.DataDecoder;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder.ObjectListElement;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.AttributeAccessItem;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.DataDecoder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.ObjectListElement;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.dlmsclassdatadecoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,8 +10,9 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.BasicDlmsDataDecoder;
 
-class BasicDlmsClassDataDecoderTest {
+class DlmsClassDataDecoderTest {
   private static final int CLASS_ID_REGISTER = 3;
   private static final int ATTRIBUTE_ID_SCALER_UNIT = 3;
 
@@ -29,8 +30,16 @@ class BasicDlmsClassDataDecoderTest {
 
   private final DlmsHelper dlmsHelper = new DlmsHelper();
   private final BasicDlmsDataDecoder dlmsDataDecoder = new BasicDlmsDataDecoder(this.dlmsHelper);
-  private final BasicDlmsClassDataDecoder decoder =
-      new BasicDlmsClassDataDecoder(this.dlmsHelper, this.dlmsDataDecoder);
+  private final DataExchangeClassesDecoder dataExchangeClassesDecoder =
+      new DataExchangeClassesDecoder(this.dlmsHelper, this.dlmsDataDecoder);
+  private final MeasurementDataClassesDecoder measurementDataClassesDecoder =
+      new MeasurementDataClassesDecoder(this.dlmsHelper, this.dlmsDataDecoder);
+  private final DlmsClassDataDecoder decoder =
+      new DlmsClassDataDecoder(
+          this.dlmsHelper,
+          this.dlmsDataDecoder,
+          this.dataExchangeClassesDecoder,
+          this.measurementDataClassesDecoder);
 
   @Test
   void testDecodeScalerUnit() {
@@ -89,7 +98,7 @@ class BasicDlmsClassDataDecoderTest {
         this.decoder.decodeAttributeValue(
             CLASS_ID_PROFILE_GENERIC, ATTRIBUTE_ID_SORT_METHOD, DataObject.newEnumerateData(1));
 
-    assertThat(result).isEqualTo("fifo");
+    assertThat(result).isEqualTo("FIFO");
   }
 
   @Test

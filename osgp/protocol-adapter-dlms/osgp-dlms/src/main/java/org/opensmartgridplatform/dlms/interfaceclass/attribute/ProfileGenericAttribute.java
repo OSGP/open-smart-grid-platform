@@ -7,7 +7,7 @@
 package org.opensmartgridplatform.dlms.interfaceclass.attribute;
 
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.CAPTURE_OBJECT_DEFINITION;
-import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.CAPTURE_OBJECT_DEFINITION_LIST;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.CAPTURE_OBJECT_LIST;
 
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 
@@ -15,7 +15,7 @@ import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 public enum ProfileGenericAttribute implements AttributeClass {
   LOGICAL_NAME(1),
   BUFFER(2),
-  CAPTURE_OBJECTS(3, CAPTURE_OBJECT_DEFINITION_LIST),
+  CAPTURE_OBJECTS(3, CAPTURE_OBJECT_LIST),
   CAPTURE_PERIOD(4),
   SORT_METHOD(5, org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.SORT_METHOD),
   SORT_OBJECT(6, CAPTURE_OBJECT_DEFINITION),

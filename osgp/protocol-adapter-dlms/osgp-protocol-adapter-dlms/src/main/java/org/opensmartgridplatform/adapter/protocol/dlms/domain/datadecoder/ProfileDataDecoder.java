@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder;
 
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.SIGNATURE;
 

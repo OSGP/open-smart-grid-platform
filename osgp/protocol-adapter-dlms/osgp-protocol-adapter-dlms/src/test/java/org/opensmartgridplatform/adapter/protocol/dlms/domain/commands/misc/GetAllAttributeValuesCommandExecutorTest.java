@@ -26,10 +26,12 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder.BasicDlmsClassDataDecoder;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder.BasicDlmsDataDecoder;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder.DataDecoder;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder.ProfileDataDecoder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.BasicDlmsDataDecoder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.DataDecoder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.ProfileDataDecoder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.dlmsclassdatadecoder.DataExchangeClassesDecoder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.dlmsclassdatadecoder.DlmsClassDataDecoder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.dlmsclassdatadecoder.MeasurementDataClassesDecoder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -68,12 +70,19 @@ class GetAllAttributeValuesCommandExecutorTest {
     final ObjectConfigServiceHelper objectConfigServiceHelper =
         new ObjectConfigServiceHelper(objectConfigService);
     final BasicDlmsDataDecoder basicDlmsDataDecoder = new BasicDlmsDataDecoder(dlmsHelper);
-    final BasicDlmsClassDataDecoder basicDlmsClassDataDecoder =
-        new BasicDlmsClassDataDecoder(dlmsHelper, basicDlmsDataDecoder);
+    final DataExchangeClassesDecoder dataExchangeClassesDecoder =
+        new DataExchangeClassesDecoder(dlmsHelper, basicDlmsDataDecoder);
+    final MeasurementDataClassesDecoder measurementDataClassesDecoder =
+        new MeasurementDataClassesDecoder(dlmsHelper, basicDlmsDataDecoder);
+    final DlmsClassDataDecoder dlmsClassDataDecoder =
+        new DlmsClassDataDecoder(
+            dlmsHelper,
+            basicDlmsDataDecoder,
+            dataExchangeClassesDecoder,
+            measurementDataClassesDecoder);
     final ProfileDataDecoder profileDataDecoder = new ProfileDataDecoder(dlmsHelper);
     final DataDecoder dataDecoder =
-        new DataDecoder(
-            dlmsHelper, basicDlmsDataDecoder, basicDlmsClassDataDecoder, profileDataDecoder);
+        new DataDecoder(dlmsHelper, basicDlmsDataDecoder, dlmsClassDataDecoder, profileDataDecoder);
 
     this.executor =
         new GetAllAttributeValuesCommandExecutor(

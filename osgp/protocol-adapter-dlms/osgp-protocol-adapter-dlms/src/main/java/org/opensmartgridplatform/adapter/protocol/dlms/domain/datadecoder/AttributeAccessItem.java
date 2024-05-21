@@ -1,4 +1,4 @@
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder;
 
 import lombok.Getter;
 import org.opensmartgridplatform.dlms.objectconfig.AccessType;
