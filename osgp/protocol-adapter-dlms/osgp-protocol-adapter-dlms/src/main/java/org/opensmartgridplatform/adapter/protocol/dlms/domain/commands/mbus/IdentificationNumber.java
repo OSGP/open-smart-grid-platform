@@ -4,8 +4,11 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.MbusClientAttribute;
 
 /**
@@ -112,7 +115,7 @@ public class IdentificationNumber {
     if (StringUtils.isBlank(this.textualRepresentation)) {
       return DataObject.newNullData();
     }
-    return DataObject.newUInteger32Data(this.getNumericalRepresentation());
+    return DataObject.newUInteger32Data(this.getLongRepresentation());
   }
 
   public Long getIdentificationNumberInBcdRepresentationAsLong() {
@@ -123,7 +126,26 @@ public class IdentificationNumber {
     return this.textualRepresentation;
   }
 
-  public Long getNumericalRepresentation() {
+  public Long getLongRepresentation() {
     return Long.parseLong(this.getTextualRepresentation());
+  }
+
+  public Integer getIntRepresentation() throws ProtocolAdapterException {
+    // Convert textual representation of deviceIdentificationNumber to long (eight bytes)
+    final ByteBuffer longBytesBuffer = ByteBuffer.allocate(Long.BYTES);
+    longBytesBuffer.putLong(0, Long.parseLong(this.textualRepresentation, 16));
+    // First four bytes should be empty (zero)
+    byte[] intBytes = Arrays.copyOfRange(longBytesBuffer.array(), 0, 4);
+    ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
+    if (buffer.put(intBytes).flip().getInt() != 0) {
+      throw new ProtocolAdapterException(
+          String.format(
+              "IdentificationNumber %s cannot be represented as integer.",
+              this.textualRepresentation));
+    }
+    // Convert the last four bytes to integer
+    intBytes = Arrays.copyOfRange(longBytesBuffer.array(), 4, 8);
+    buffer = ByteBuffer.allocate(Integer.BYTES);
+    return buffer.put(intBytes).flip().getInt();
   }
 }
