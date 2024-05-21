@@ -20,15 +20,18 @@ import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder.AttributeAccessItem;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder.DataDecoder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.datadecoder.ObjectListElement;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.objectconfig.AccessType;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -42,32 +45,40 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class GetAllAttributeValuesCommandExecutor
-    extends AbstractCommandExecutor<DataObject, String> {
+public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecutor<Void, String> {
 
-  private static final int OBIS_CODE_BYTE_ARRAY_LENGTH = 6;
   private static final int CLASS_ID_INDEX = 0;
   private static final int VERSION_INDEX = 1;
   private static final int OBIS_CODE_INDEX = 2;
   private static final int ATTR_INDEX = 3;
   private static final int ATTR_ID_INDEX = 0;
   private static final int ACCESS_MODE_INDEX = 1;
-  private static final int CLASS_ID = 15;
-  private static final ObisCode OBIS_CODE = new ObisCode("0.0.40.0.0.255");
   private static final int ATTRIBUTE_ID = 2;
 
-  @Autowired private DlmsHelper dlmsHelper;
+  private final ObjectConfigService objectConfigService;
 
-  @Autowired private DataDecoder dataDecoder;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  @Autowired private ObjectConfigService objectConfigService;
+  private final DlmsHelper dlmsHelper;
 
-  public GetAllAttributeValuesCommandExecutor() {
+  private final DataDecoder dataDecoder;
+
+  @Autowired
+  public GetAllAttributeValuesCommandExecutor(
+      final ObjectConfigService objectConfigService,
+      final ObjectConfigServiceHelper objectConfigServiceHelper,
+      final DlmsHelper dlmsHelper,
+      final DataDecoder dataDecoder) {
     super(GetAllAttributeValuesRequestDto.class);
+
+    this.objectConfigService = objectConfigService;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
+    this.dlmsHelper = dlmsHelper;
+    this.dataDecoder = dataDecoder;
   }
 
   @Override
-  public DataObject fromBundleRequestInput(final ActionRequestDto bundleInput)
+  public Void fromBundleRequestInput(final ActionRequestDto bundleInput)
       throws ProtocolAdapterException {
     /*
      * GetAllAttributeValuesRequestDto does not contain any values to pass
@@ -87,12 +98,13 @@ public class GetAllAttributeValuesCommandExecutor
   public String execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final DataObject object,
+      final Void v,
       final MessageMetadata messageMetadata)
       throws OsgpException {
 
     final AttributeAddress attributeAddress =
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+        this.objectConfigServiceHelper.findAttributeAddress(
+            device, Protocol.forDevice(device), DlmsObjectType.ASSOCIATION_LN, null, ATTRIBUTE_ID);
 
     conn.getDlmsMessageListener()
         .setDescription(
@@ -101,9 +113,9 @@ public class GetAllAttributeValuesCommandExecutor
 
     log.debug(
         "Retrieving all attribute values for class id: {}, obis code: {}, attribute id: {}",
-        CLASS_ID,
-        OBIS_CODE,
-        ATTRIBUTE_ID);
+        attributeAddress.getClassId(),
+        attributeAddress.getInstanceId().asDecimalString(),
+        attributeAddress.getId());
 
     final DataObject objectList = this.dlmsHelper.getAttributeValue(conn, attributeAddress);
 

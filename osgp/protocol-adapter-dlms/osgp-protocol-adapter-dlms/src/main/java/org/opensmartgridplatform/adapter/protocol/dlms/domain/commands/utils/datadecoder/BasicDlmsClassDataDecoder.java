@@ -47,9 +47,9 @@ public class BasicDlmsClassDataDecoder {
 
   @Autowired
   public BasicDlmsClassDataDecoder(
-      final DlmsHelper dlmsHelper, final BasicDlmsDataDecoder basicDlmsClassDataDecoder) {
+      final DlmsHelper dlmsHelper, final BasicDlmsDataDecoder basicDlmsDataDecoder) {
     this.dlmsHelper = dlmsHelper;
-    this.basicDlmsDataDecoder = basicDlmsClassDataDecoder;
+    this.basicDlmsDataDecoder = basicDlmsDataDecoder;
 
     this.decoderMap.put(ADJACENT_CELLS, this::decodeAdjacentCells);
     this.decoderMap.put(CAPTURE_OBJECT_DEFINITION_LIST, this::decodeCaptureObjects);

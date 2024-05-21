@@ -27,10 +27,22 @@ import org.springframework.stereotype.Service;
 @Service(value = "dataDecoder")
 public class DataDecoder {
 
-  @Autowired private DlmsHelper dlmsHelper;
-  @Autowired private BasicDlmsDataDecoder basicDlmsDataDecoder;
-  @Autowired private BasicDlmsClassDataDecoder basicDlmsClassDataDecoder;
-  @Autowired private ProfileDataDecoder profileDataDecoder;
+  private final DlmsHelper dlmsHelper;
+  private final BasicDlmsDataDecoder basicDlmsDataDecoder;
+  private final BasicDlmsClassDataDecoder basicDlmsClassDataDecoder;
+  private final ProfileDataDecoder profileDataDecoder;
+
+  @Autowired
+  public DataDecoder(
+      final DlmsHelper dlmsHelper,
+      final BasicDlmsDataDecoder basicDlmsDataDecoder,
+      final BasicDlmsClassDataDecoder basicDlmsClassDataDecoder,
+      final ProfileDataDecoder profileDataDecoder) {
+    this.dlmsHelper = dlmsHelper;
+    this.basicDlmsDataDecoder = basicDlmsDataDecoder;
+    this.basicDlmsClassDataDecoder = basicDlmsClassDataDecoder;
+    this.profileDataDecoder = profileDataDecoder;
+  }
 
   public CosemObject decodeObjectData(
       final ObjectListElement objectListElement,

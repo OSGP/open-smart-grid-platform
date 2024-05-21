@@ -23,12 +23,15 @@ import org.springframework.stereotype.Service;
 @Service(value = "profileDataDecoder")
 public class ProfileDataDecoder {
 
-  @Autowired private DlmsHelper dlmsHelper;
+  private final DlmsHelper dlmsHelper;
 
   private final Map<AttributeType, Function<DataObject, String>> decoderMap =
       new EnumMap<>(AttributeType.class);
 
-  public ProfileDataDecoder() {
+  @Autowired
+  public ProfileDataDecoder(final DlmsHelper dlmsHelper) {
+    this.dlmsHelper = dlmsHelper;
+
     this.decoderMap.put(SIGNATURE, this::decodeSignature);
   }
 

@@ -28,7 +28,7 @@ class BasicDlmsClassDataDecoderTest {
   private static final int ATTRIBUTE_ID_ADJACENT_CELLS = 7;
 
   private final DlmsHelper dlmsHelper = new DlmsHelper();
-  private final BasicDlmsDataDecoder dlmsDataDecoder = new BasicDlmsDataDecoder();
+  private final BasicDlmsDataDecoder dlmsDataDecoder = new BasicDlmsDataDecoder(this.dlmsHelper);
   private final BasicDlmsClassDataDecoder decoder =
       new BasicDlmsClassDataDecoder(this.dlmsHelper, this.dlmsDataDecoder);
 

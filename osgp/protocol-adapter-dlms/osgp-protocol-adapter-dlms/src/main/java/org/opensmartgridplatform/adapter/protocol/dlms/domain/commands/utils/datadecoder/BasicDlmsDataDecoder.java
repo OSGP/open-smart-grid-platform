@@ -29,7 +29,12 @@ public class BasicDlmsDataDecoder {
           DataObject.Type.LONG_INTEGER,
           DataObject.Type.LONG_UNSIGNED);
 
-  @Autowired private DlmsHelper dlmsHelper;
+  private final DlmsHelper dlmsHelper;
+
+  @Autowired
+  public BasicDlmsDataDecoder(final DlmsHelper dlmsHelper) {
+    this.dlmsHelper = dlmsHelper;
+  }
 
   public String decodeAttributeValue(final DataObject attributeData)
       throws ProtocolAdapterException {
