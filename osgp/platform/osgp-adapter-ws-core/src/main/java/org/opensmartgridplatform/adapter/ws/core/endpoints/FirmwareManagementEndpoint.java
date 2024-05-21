@@ -861,7 +861,8 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
         firmware.getFilename(),
         firmware.isPushToNewDevices(),
         firmware.isActive(),
-        firmware.getImageIdentifier());
+        firmware.getHash(),
+        firmware.getHashType());
   }
 
   @PayloadRoot(localPart = "ChangeFirmwareRequest", namespace = NAMESPACE)

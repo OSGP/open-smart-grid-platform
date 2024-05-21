@@ -4,13 +4,13 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import org.bouncycastle.util.encoders.Hex;
@@ -29,7 +29,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareImageIdentifierCachingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
+import org.opensmartgridplatform.dto.valueobjects.HashTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -50,40 +51,44 @@ public class FirmwareServiceTest {
 
   @Mock private DlmsDevice dlmsDeviceMock;
 
+  @Mock private FirmwareFileStoreService firmwareFileStoreService;
+
   @InjectMocks private FirmwareService firmwareService;
 
   private static MessageMetadata messageMetadata;
-  private static final String firmwareIdentification = "fw";
+  private static final String firmwareIdentification = "firmware-file-1";
+  private static final String imageIdentifier = "496d6167654964656e746966696572";
   private static final String deviceIdentification = "device-1";
   private static UpdateFirmwareRequestDto updateFirmwareRequestDto;
+  private static final String validMD5firmwareDigest = "48b5773e8b37a602d38a521e98cfc6a1";
 
   @BeforeAll
   public static void init() {
     messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
     updateFirmwareRequestDto =
-        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+        createUpdateFirmwareRequestDto(HashTypeDto.MD5, validMD5firmwareDigest);
+  }
+
+  private static UpdateFirmwareRequestDto createUpdateFirmwareRequestDto(
+      final HashTypeDto hashTypeDto, final String firmwareDigest) {
+    return new UpdateFirmwareRequestDto(
+        deviceIdentification,
+        new UpdateFirmwareRequestDataDto(firmwareIdentification, hashTypeDto, firmwareDigest));
   }
 
   @Test
-  public void getFirmwareVersionsShouldCallExecutor() throws ProtocolAdapterException {
-    // Arrange
-
-    // Act
+  void getFirmwareVersionsShouldCallExecutor() throws ProtocolAdapterException {
     this.firmwareService.getFirmwareVersions(
         this.dlmsConnectionManagerMock, this.dlmsDeviceMock, messageMetadata);
 
-    // Assert
     verify(this.getFirmwareVersionsCommandExecutor, times(1))
         .execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, null, messageMetadata);
   }
 
   @Test
-  public void updateFirmwareShouldCallExecutorWhenFirmwareFileInCache() throws OsgpException {
-    // Arrange
+  void updateFirmwareWhenAllInCache() throws OsgpException {
     final byte[] firmwareFile = firmwareIdentification.getBytes();
-    final byte[] firmwareImageIdentifier = Hex.decode("496d6167654964656e746966696572");
-    final MessageMetadata messageMetadata =
-        MessageMetadata.newBuilder().withCorrelationUid("123456").build();
+    final byte[] firmwareImageIdentifier = Hex.decode(imageIdentifier);
 
     when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(true);
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification))
@@ -93,14 +98,16 @@ public class FirmwareServiceTest {
     when(this.firmwareImageIdentifierCachingRepository.retrieve(firmwareIdentification))
         .thenReturn(firmwareImageIdentifier);
 
-    // Act
     this.firmwareService.updateFirmware(
         this.dlmsConnectionManagerMock,
         this.dlmsDeviceMock,
         updateFirmwareRequestDto,
         messageMetadata);
 
-    // Assert
+    verifyNoInteractions(this.firmwareFileStoreService);
+    verify(this.firmwareFileCachingRepository, never()).store(anyString(), any(byte[].class));
+    verify(this.firmwareImageIdentifierCachingRepository, never())
+        .store(anyString(), any(byte[].class));
     verify(this.updateFirmwareCommandExecutor, times(1))
         .execute(
             this.dlmsConnectionManagerMock,
@@ -110,11 +117,84 @@ public class FirmwareServiceTest {
   }
 
   @Test
-  public void updateFirmwareShouldThrowExceptionWhenFirmwareFileNotInCache() throws OsgpException {
-    // Arrange
-    when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification)).thenReturn(null);
+  void updateFirmwareWhenFirmwareFileNotInCache() throws OsgpException {
+    final byte[] firmwareFile = firmwareIdentification.getBytes();
+    final byte[] firmwareImageIdentifier = Hex.decode(imageIdentifier);
 
-    // Act
+    when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(false);
+    when(this.firmwareFileStoreService.readFirmwareFile(firmwareIdentification))
+        .thenReturn(firmwareFile);
+    when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification))
+        .thenReturn(firmwareFile);
+    when(this.firmwareImageIdentifierCachingRepository.isAvailable(firmwareIdentification))
+        .thenReturn(true);
+    when(this.firmwareImageIdentifierCachingRepository.retrieve(firmwareIdentification))
+        .thenReturn(firmwareImageIdentifier);
+
+    this.firmwareService.updateFirmware(
+        this.dlmsConnectionManagerMock,
+        this.dlmsDeviceMock,
+        updateFirmwareRequestDto,
+        messageMetadata);
+
+    verify(this.firmwareFileStoreService).readFirmwareFile(firmwareIdentification);
+    verify(this.firmwareFileCachingRepository).store(firmwareIdentification, firmwareFile);
+    verify(this.firmwareImageIdentifierCachingRepository, never())
+        .store(anyString(), any(byte[].class));
+    verify(this.updateFirmwareCommandExecutor, times(1))
+        .execute(
+            this.dlmsConnectionManagerMock,
+            this.dlmsDeviceMock,
+            updateFirmwareRequestDto,
+            messageMetadata);
+  }
+
+  @Test
+  void updateFirmwareWhenImageIdentifierNotInCache() throws OsgpException {
+    final byte[] firmwareFile = firmwareIdentification.getBytes();
+    final byte[] firmwareImageIdentifier = Hex.decode(imageIdentifier);
+
+    when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(true);
+    when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification))
+        .thenReturn(firmwareFile);
+
+    when(this.firmwareImageIdentifierCachingRepository.isAvailable(firmwareIdentification))
+        .thenReturn(false);
+    when(this.firmwareFileStoreService.readImageIdentifier(firmwareIdentification))
+        .thenReturn(firmwareImageIdentifier);
+    when(this.firmwareImageIdentifierCachingRepository.retrieve(firmwareIdentification))
+        .thenReturn(firmwareImageIdentifier);
+
+    this.firmwareService.updateFirmware(
+        this.dlmsConnectionManagerMock,
+        this.dlmsDeviceMock,
+        updateFirmwareRequestDto,
+        messageMetadata);
+
+    verify(this.firmwareFileStoreService).readImageIdentifier(firmwareIdentification);
+    verify(this.firmwareImageIdentifierCachingRepository)
+        .store(firmwareIdentification, firmwareImageIdentifier);
+    verify(this.firmwareFileStoreService, never()).readFirmwareFile(firmwareIdentification);
+    verify(this.firmwareFileCachingRepository, never()).store(anyString(), any(byte[].class));
+    verify(this.updateFirmwareCommandExecutor, times(1))
+        .execute(
+            this.dlmsConnectionManagerMock,
+            this.dlmsDeviceMock,
+            updateFirmwareRequestDto,
+            messageMetadata);
+  }
+
+  @Test
+  void updateFirmwareWhenFirmwareFileNotInCacheAndNotValid() throws OsgpException {
+
+    final byte[] firmwareFile = firmwareIdentification.getBytes();
+    final HashTypeDto sha256 = HashTypeDto.SHA256;
+
+    when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(false);
+    when(this.firmwareFileStoreService.readFirmwareFile(firmwareIdentification))
+        .thenReturn(firmwareFile);
+
+    updateFirmwareRequestDto = createUpdateFirmwareRequestDto(sha256, validMD5firmwareDigest);
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
             () -> {
@@ -123,98 +203,68 @@ public class FirmwareServiceTest {
                   this.dlmsDeviceMock,
                   updateFirmwareRequestDto,
                   messageMetadata);
+            })
+        .withMessageContainingAll(firmwareIdentification, sha256.getAlgorithmName());
 
-              // Assert
-              // Nothing to do, as exception will be thrown;
-            });
+    verify(this.firmwareFileStoreService).readFirmwareFile(firmwareIdentification);
+    verify(this.firmwareFileCachingRepository, never()).store(firmwareIdentification, firmwareFile);
+    verify(this.firmwareFileCachingRepository, never()).retrieve(firmwareIdentification);
+    verifyNoInteractions(this.firmwareImageIdentifierCachingRepository);
+    verifyNoInteractions(this.updateFirmwareCommandExecutor);
   }
 
   @Test
-  public void updateFirmwareShouldNotCallExecutorWhenFirmwareFileNotInCache() throws OsgpException {
-    // Arrange
-    when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification)).thenReturn(null);
+  void updateFirmwareWhenFirmwareFileNotInCacheAndNotOnStore() throws OsgpException {
 
-    // Act
-    try {
-      this.firmwareService.updateFirmware(
-          this.dlmsConnectionManagerMock,
-          this.dlmsDeviceMock,
-          updateFirmwareRequestDto,
-          messageMetadata);
-    } catch (final ProtocolAdapterException e) {
-      // Ignore exception.
-    }
-
-    // Assert
-    verify(this.updateFirmwareCommandExecutor, never())
-        .execute(
-            this.dlmsConnectionManagerMock,
-            this.dlmsDeviceMock,
-            updateFirmwareRequestDto,
-            messageMetadata);
-  }
-
-  @Test
-  public void updateFirmwareUsingFirmwareFileShouldStoreFirmwareFileAndCallExecutor()
-      throws OsgpException {
-    // Arrange
     final byte[] firmwareFile = firmwareIdentification.getBytes();
-    final byte[] firmwareImageIdentifier = Hex.decode("496d6167654964656e746966696572");
+    final HashTypeDto sha256 = HashTypeDto.SHA256;
 
-    final FirmwareFileDto firmwareFileDto =
-        new FirmwareFileDto(
-            firmwareIdentification, deviceIdentification, firmwareFile, firmwareImageIdentifier);
-    final MessageMetadata messageMetadata =
-        MessageMetadata.newBuilder().withCorrelationUid("123456").build();
-
-    when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(true);
-    when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification))
-        .thenReturn(firmwareFile);
-    when(this.firmwareImageIdentifierCachingRepository.isAvailable(firmwareIdentification))
-        .thenReturn(true);
-    when(this.firmwareImageIdentifierCachingRepository.retrieve(firmwareIdentification))
-        .thenReturn(firmwareImageIdentifier);
-
-    // Act
-    this.firmwareService.updateFirmware(
-        this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareFileDto, messageMetadata);
-
-    // Assert
-    verify(this.firmwareFileCachingRepository, times(1))
-        .store(firmwareIdentification, firmwareFile);
-    verify(this.firmwareImageIdentifierCachingRepository, times(1))
-        .store(firmwareIdentification, firmwareImageIdentifier);
-    verify(this.updateFirmwareCommandExecutor, times(1))
-        .execute(
-            same(this.dlmsConnectionManagerMock),
-            same(this.dlmsDeviceMock),
-            any(UpdateFirmwareRequestDto.class),
-            same(messageMetadata));
-  }
-
-  @Test
-  public void isFirmwareAvailableShouldReturnTrueWhenFirmwareFileAvailable() {
-    // Arrange
-    when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(true);
-    final boolean expected = true;
-
-    // Act
-    final boolean actual = this.firmwareService.isFirmwareFileAvailable(firmwareIdentification);
-
-    // Assert
-    assertThat(actual).isEqualTo(expected);
-  }
-
-  @Test
-  public void isFirmwareAvailableShouldReturnFalseWhenFirmwareFileNotAvailable() {
-    // Arrange
     when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(false);
-    final boolean expected = false;
+    when(this.firmwareFileStoreService.readFirmwareFile(firmwareIdentification)).thenReturn(null);
 
-    // Act
-    final boolean actual = this.firmwareService.isFirmwareFileAvailable(firmwareIdentification);
+    assertThatExceptionOfType(ProtocolAdapterException.class)
+        .isThrownBy(
+            () -> {
+              this.firmwareService.updateFirmware(
+                  this.dlmsConnectionManagerMock,
+                  this.dlmsDeviceMock,
+                  updateFirmwareRequestDto,
+                  messageMetadata);
+            })
+        .withMessageContainingAll(firmwareIdentification);
 
-    // Assert
-    assertThat(actual).isEqualTo(expected);
+    verify(this.firmwareFileStoreService).readFirmwareFile(firmwareIdentification);
+    verify(this.firmwareFileCachingRepository, never()).store(firmwareIdentification, firmwareFile);
+    verify(this.firmwareFileCachingRepository, never()).retrieve(firmwareIdentification);
+    verifyNoInteractions(this.firmwareImageIdentifierCachingRepository);
+    verifyNoInteractions(this.updateFirmwareCommandExecutor);
+  }
+
+  @Test
+  void updateFirmwareWhenStoreThrowsException() throws OsgpException {
+
+    final byte[] firmwareFile = firmwareIdentification.getBytes();
+    final HashTypeDto sha256 = HashTypeDto.SHA256;
+    final String storeExceptionMessage = "firmware file store failed!";
+
+    when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(false);
+    when(this.firmwareFileStoreService.readFirmwareFile(firmwareIdentification))
+        .thenThrow(new ProtocolAdapterException(storeExceptionMessage));
+
+    assertThatExceptionOfType(ProtocolAdapterException.class)
+        .isThrownBy(
+            () -> {
+              this.firmwareService.updateFirmware(
+                  this.dlmsConnectionManagerMock,
+                  this.dlmsDeviceMock,
+                  updateFirmwareRequestDto,
+                  messageMetadata);
+            })
+        .withMessage(storeExceptionMessage);
+
+    verify(this.firmwareFileCachingRepository, never()).store(firmwareIdentification, firmwareFile);
+    verify(this.firmwareFileCachingRepository, never()).retrieve(firmwareIdentification);
+    verifyNoInteractions(this.firmwareImageIdentifierCachingRepository);
+    verifyNoInteractions(this.updateFirmwareCommandExecutor);
   }
 }

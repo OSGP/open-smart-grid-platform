@@ -758,17 +758,18 @@ public class FirmwareManagementService {
       final FirmwareFileRequest firmwareFileRequest,
       final byte[] file) {
     existingFirmwareFile.setDescription(firmwareFileRequest.getDescription());
-    existingFirmwareFile.setImageIdentifier(firmwareFileRequest.getImageIdentifier());
     // A file can only be uploaded once
     // - directly at creation of the FirmwareFile record
     // - or as is processed here in a update action of the FirmwareFile record
     // Removing the File Content is not allowed. Null or empty value for file therefore will be
     // ignored.
     // Getting and directly setting of file(name) attributes of the existing FW file record seems
-    // not necessary but asppearently a new record is created in the process
+    // not necessary but apparently a new record is created in the process
     if (existingFirmwareFile.getFile() == null || existingFirmwareFile.getFile().length == 0) {
       existingFirmwareFile.setFilename(firmwareFileRequest.getFileName());
       existingFirmwareFile.setFile(file);
+      existingFirmwareFile.setHash(firmwareFileRequest.getHash());
+      existingFirmwareFile.setHashType(firmwareFileRequest.getHashType());
     } else {
       existingFirmwareFile.setFilename(existingFirmwareFile.getFilename());
       existingFirmwareFile.setFile(existingFirmwareFile.getFile());
@@ -784,7 +785,8 @@ public class FirmwareManagementService {
         .withDescription(firmwareFileRequest.getDescription())
         .withPushToNewDevices(firmwareFileRequest.isPushToNewDevices())
         .withFile(file)
-        .withImageIdentifier(firmwareFileRequest.getImageIdentifier())
+        .withHash(firmwareFileRequest.getHash())
+        .withHashType(firmwareFileRequest.getHashType())
         .build();
   }
 

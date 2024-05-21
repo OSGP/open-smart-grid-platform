@@ -38,6 +38,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.Firmw
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ImageTransferAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.method.ImageTransferMethod;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
@@ -172,7 +173,9 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     this.initConnectionStubForTransfer(-1, 10);
 
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
-        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+        new UpdateFirmwareRequestDto(
+            deviceIdentification,
+            new UpdateFirmwareRequestDataDto(firmwareIdentification, null, null));
     this.commandExecutor.execute(
         this.connectionManagerStub, device, updateFirmwareRequestDto, this.messageMetadata);
 
@@ -207,7 +210,9 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     this.initConnectionStubForTransfer(1, 3);
 
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
-        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+        new UpdateFirmwareRequestDto(
+            deviceIdentification,
+            new UpdateFirmwareRequestDataDto(firmwareIdentification, null, null));
     this.commandExecutor.execute(
         this.connectionManagerStub, device, updateFirmwareRequestDto, this.messageMetadata);
 
@@ -238,7 +243,9 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     this.initConnectionStubForTransfer(-1, 10);
 
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
-        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+        new UpdateFirmwareRequestDto(
+            deviceIdentification,
+            new UpdateFirmwareRequestDataDto(firmwareIdentification, null, null));
     this.commandExecutor.execute(
         this.connectionManagerStub, device, updateFirmwareRequestDto, this.messageMetadata);
 
@@ -272,7 +279,9 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     this.initConnectionStubForTransfer(1, 3);
 
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
-        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+        new UpdateFirmwareRequestDto(
+            deviceIdentification,
+            new UpdateFirmwareRequestDataDto(firmwareIdentification, null, null));
     this.commandExecutor.execute(
         this.connectionManagerStub, device, updateFirmwareRequestDto, this.messageMetadata);
 
