@@ -16,9 +16,8 @@ class IdentificationNumberTest {
   private final Long IDENTIFICATION_NUMBER_AS_NUMBER = 12049260L;
   private final Long IDENTIFICATION_NUMBER_IN_BCD_AS_LONG = 302289504L;
 
-  private final String IDENTIFICATION_NUMBER_AS_STRING_LARGE = "99999999";
-  private final int IDENTIFICATION_NUMBER_AS_INT = -1717986919;
-  private final Long IDENTIFICATION_NUMBER_AS_LONG = 99999999L;
+  private final String IDENTIFICATION_NUMBER_AS_STRING_LARGE = "90000023";
+  private final int IDENTIFICATION_NUMBER_AS_INT = -1879048157;
 
   @Test
   void testFromBcdRepresentation() {
@@ -31,13 +30,23 @@ class IdentificationNumberTest {
   }
 
   @Test
-  void testFromTextualRepresentation() {
+  void testFromTextualRepresentation() throws ProtocolAdapterException {
 
     final IdentificationNumber identificationNumber =
         IdentificationNumber.fromTextualRepresentation(this.IDENTIFICATION_NUMBER_AS_STRING);
 
     assertThat(identificationNumber.getIdentificationNumberInBcdRepresentationAsLong())
         .isEqualTo(this.IDENTIFICATION_NUMBER_IN_BCD_AS_LONG);
+  }
+
+  @Test
+  void testIntRepresentation() throws ProtocolAdapterException {
+
+    final IdentificationNumber identificationNumber =
+        IdentificationNumber.fromTextualRepresentation(this.IDENTIFICATION_NUMBER_AS_STRING);
+
+    assertThat(identificationNumber.getIntRepresentation())
+        .isEqualTo(Integer.parseInt(identificationNumber.getTextualRepresentation(), 16));
   }
 
   @Test
@@ -48,8 +57,6 @@ class IdentificationNumberTest {
 
     assertThat(identificationNumber.getIntRepresentation())
         .isEqualTo(this.IDENTIFICATION_NUMBER_AS_INT);
-    assertThat(identificationNumber.getLongRepresentation())
-        .isEqualTo(this.IDENTIFICATION_NUMBER_AS_LONG);
   }
 
   @Test
