@@ -8,12 +8,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import org.junit.jupiter.api.Test;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 class IdentificationNumberTest {
 
   private final String IDENTIFICATION_NUMBER_AS_STRING = "12049260";
   private final Long IDENTIFICATION_NUMBER_AS_NUMBER = 12049260L;
   private final Long IDENTIFICATION_NUMBER_IN_BCD_AS_LONG = 302289504L;
+
+  private final String IDENTIFICATION_NUMBER_AS_STRING_LARGE = "99999999";
+  private final int IDENTIFICATION_NUMBER_AS_INT = -1717986919;
+  private final Long IDENTIFICATION_NUMBER_AS_LONG = 99999999L;
 
   @Test
   void testFromBcdRepresentation() {
@@ -33,6 +38,18 @@ class IdentificationNumberTest {
 
     assertThat(identificationNumber.getIdentificationNumberInBcdRepresentationAsLong())
         .isEqualTo(this.IDENTIFICATION_NUMBER_IN_BCD_AS_LONG);
+  }
+
+  @Test
+  void testFromTextualRepresentationIntOverflow() throws ProtocolAdapterException {
+
+    final IdentificationNumber identificationNumber =
+        IdentificationNumber.fromTextualRepresentation(this.IDENTIFICATION_NUMBER_AS_STRING_LARGE);
+
+    assertThat(identificationNumber.getIntRepresentation())
+        .isEqualTo(this.IDENTIFICATION_NUMBER_AS_INT);
+    assertThat(identificationNumber.getLongRepresentation())
+        .isEqualTo(this.IDENTIFICATION_NUMBER_AS_LONG);
   }
 
   @Test
