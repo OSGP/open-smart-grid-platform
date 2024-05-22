@@ -6,7 +6,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.MbusClientAttribute;
 
 /**
@@ -131,7 +130,7 @@ public class IdentificationNumber {
    * empty (zero). Since textual representation is always checked on length and digits this is
    * always the case
    */
-  public Integer getIntRepresentation() throws ProtocolAdapterException {
+  public Integer getIntRepresentation() {
     return (int) Long.parseLong(this.textualRepresentation, 16);
   }
 }

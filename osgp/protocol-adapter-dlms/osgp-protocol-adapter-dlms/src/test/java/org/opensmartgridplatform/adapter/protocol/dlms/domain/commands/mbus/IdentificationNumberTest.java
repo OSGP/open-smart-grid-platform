@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import org.junit.jupiter.api.Test;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 class IdentificationNumberTest {
 
@@ -30,7 +29,7 @@ class IdentificationNumberTest {
   }
 
   @Test
-  void testFromTextualRepresentation() throws ProtocolAdapterException {
+  void testFromTextualRepresentation() {
 
     final IdentificationNumber identificationNumber =
         IdentificationNumber.fromTextualRepresentation(this.IDENTIFICATION_NUMBER_AS_STRING);
@@ -40,7 +39,7 @@ class IdentificationNumberTest {
   }
 
   @Test
-  void testIntRepresentation() throws ProtocolAdapterException {
+  void testIntRepresentation() {
 
     final IdentificationNumber identificationNumber =
         IdentificationNumber.fromTextualRepresentation(this.IDENTIFICATION_NUMBER_AS_STRING);
@@ -50,7 +49,7 @@ class IdentificationNumberTest {
   }
 
   @Test
-  void testFromTextualRepresentationIntOverflow() throws ProtocolAdapterException {
+  void testFromTextualRepresentationIntOverflow() {
 
     final IdentificationNumber identificationNumber =
         IdentificationNumber.fromTextualRepresentation(this.IDENTIFICATION_NUMBER_AS_STRING_LARGE);
