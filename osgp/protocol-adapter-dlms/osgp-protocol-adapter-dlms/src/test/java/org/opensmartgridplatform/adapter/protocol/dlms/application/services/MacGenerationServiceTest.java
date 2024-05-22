@@ -118,12 +118,12 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testIV1() throws ProtocolAdapterException {
+  void testIV1() throws ProtocolAdapterException {
     this.testIV(byteArray1, this.expectedIv1, getIdentificationNumber(this.deviceIdentification1));
   }
 
   @Test
-  public void testIV2() throws ProtocolAdapterException {
+  void testIV2() throws ProtocolAdapterException {
     this.testIV(byteArray2, this.expectedIv1, getIdentificationNumber(this.deviceIdentification1));
   }
 
@@ -152,7 +152,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testInvalidFirmwareImageMagicNumber() throws ProtocolAdapterException {
+  void testInvalidFirmwareImageMagicNumber() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[0] = (byte) 0;
@@ -164,7 +164,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testInvalidHeaderLength() throws ProtocolAdapterException {
+  void testInvalidHeaderLength() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[5] = (byte) 0;
@@ -176,7 +176,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testInvalidAddressLength() throws ProtocolAdapterException {
+  void testInvalidAddressLength() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[18] = (byte) 0;
@@ -188,7 +188,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testInvalidAddressType() throws ProtocolAdapterException {
+  void testInvalidAddressType() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[19] = (byte) 0;
@@ -200,7 +200,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testNonExistingSecurityType() throws ProtocolAdapterException {
+  void testNonExistingSecurityType() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[17] = (byte) 6;
@@ -212,7 +212,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testNotExpectedSecurityType() throws ProtocolAdapterException {
+  void testNotExpectedSecurityType() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[17] = (byte) 0;
@@ -224,7 +224,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testInvalidSecurityLength() throws ProtocolAdapterException {
+  void testInvalidSecurityLength() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[15] = (byte) 0;
@@ -236,7 +236,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testNotExpectedActivationType() throws ProtocolAdapterException {
+  void testNotExpectedActivationType() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[28] = (byte) 1;
@@ -248,7 +248,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testNonExistingActivationType() throws ProtocolAdapterException {
+  void testNonExistingActivationType() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[28] = (byte) 0;
@@ -260,7 +260,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testNonExistingDeviceType() throws ProtocolAdapterException {
+  void testNonExistingDeviceType() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[27] = (byte) 0;
