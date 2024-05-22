@@ -86,6 +86,8 @@ public class FirmwareManagementService {
 
   @Autowired private WritableDeviceFirmwareFileRepository deviceFirmwareFileRepository;
 
+  @Autowired private FirmwareFileStorageService firmwareFileStorageService;
+
   @Resource
   @Qualifier("wsCoreFirmwareManagementFirmwareDirectory")
   private String firmwareDirectory;
@@ -676,6 +678,14 @@ public class FirmwareManagementService {
     return databaseManufacturer;
   }
 
+  /**
+   * @param organisationIdentification
+   * @param firmwareFileRequest
+   * @param file
+   * @param deviceModels
+   * @param firmwareModuleData
+   * @throws OsgpException
+   */
   @Transactional(value = "writableTransactionManager")
   public void addOrChangeFirmware(
       @Identification final String organisationIdentification,
@@ -689,14 +699,31 @@ public class FirmwareManagementService {
         this.domainHelperService.findOrganisation(organisationIdentification);
     this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_FIRMWARE);
 
-    // find for each DeviceModel from the WebServcies the corresponding entities
-    // There should be at least one DeviceModel. If none found a FunctionalException should be
-    // raised
-    // Each DeviceModel can have it's own Manufacturer (at least a theory)
-    // if a Manufacturer entity related to the DeviceModel can not be found a FunctionalException
-    // should be raised
-    // if one of the DeviceModel entities can not be found a FunctionalException should be raised
+    final List<DeviceModel> persistedDeviceModels = this.getPersistedDeviceModels(deviceModels);
+
+    final Map<FirmwareModule, String> firmwareVersionsByModule =
+        firmwareModuleData.getVersionsByModule(this.firmwareModuleRepository, true);
+
+    final FirmwareFile firmwareFile = this.storeFirmware(firmwareFileRequest, file);
+
+    firmwareFile.updateFirmwareDeviceModels(persistedDeviceModels);
+    firmwareFile.updateFirmwareModuleData(firmwareVersionsByModule);
+
+    this.firmwareFileRepository.save(firmwareFile);
+  }
+
+  /**
+   * Find for each DeviceModel from the WebServices the corresponding entity. There should be at
+   * least one DeviceModel. If none found a FunctionalException should be raised. Each DeviceModel
+   * can have its own Manufacturer (at least a theory) if a Manufacturer entity related to the
+   * DeviceModel can not be found a FunctionalException should be raised if one of the DeviceModel
+   * entities can not be found a FunctionalException should be raised.
+   */
+  private List<DeviceModel> getPersistedDeviceModels(
+      final List<org.opensmartgridplatform.domain.core.valueobjects.DeviceModel> deviceModels)
+      throws FunctionalException {
     final List<DeviceModel> databaseDeviceModels = new ArrayList<>();
+
     for (final org.opensmartgridplatform.domain.core.valueobjects.DeviceModel deviceModel :
         deviceModels) {
 
@@ -714,18 +741,11 @@ public class FirmwareManagementService {
             ComponentType.WS_CORE,
             new UnknownEntityException(DeviceModel.class, deviceModel.getModelCode()));
       }
+
       databaseDeviceModels.add(databaseDeviceModel);
     }
 
-    final Map<FirmwareModule, String> firmwareVersionsByModule =
-        firmwareModuleData.getVersionsByModule(this.firmwareModuleRepository, true);
-
-    final FirmwareFile firmwareFile = this.insertOrUdateDatabase(firmwareFileRequest, file);
-
-    firmwareFile.updateFirmwareDeviceModels(databaseDeviceModels);
-    firmwareFile.updateFirmwareModuleData(firmwareVersionsByModule);
-
-    this.firmwareFileRepository.save(firmwareFile);
+    return databaseDeviceModels;
   }
 
   private FirmwareFile firmwareFileFrom(final FirmwareFileRequest firmwareFileRequest) {
@@ -735,6 +755,27 @@ public class FirmwareManagementService {
         .withPushToNewDevices(firmwareFileRequest.isPushToNewDevices())
         .withActive(firmwareFileRequest.isActive())
         .build();
+  }
+
+  private FirmwareFile storeFirmware(
+      final FirmwareFileRequest firmwareFileRequest, final byte[] file) throws TechnicalException {
+
+    final FirmwareFile firmwareFile = this.insertOrUdateDatabase(firmwareFileRequest, null);
+    firmwareFile.setHash(this.firmwareFileStorageService.calculateHash("SHA-256", file));
+
+    if (this.firmwareFileStorage) {
+      try {
+        this.firmwareFileStorageService.storeFirmwareFile(file, firmwareFile.getIdentification());
+        this.firmwareFileStorageService.storeImageIdentifier(
+            file, firmwareFile.getIdentification());
+      } catch (final IOException e) {
+        LOGGER.error("Error storing firmware file", e);
+        throw new TechnicalException(ComponentType.WS_CORE, "Error storing firmware file", e);
+      }
+      return firmwareFile;
+    } else {
+      return this.insertOrUdateDatabase(firmwareFileRequest, file);
+    }
   }
 
   private FirmwareFile insertOrUdateDatabase(
