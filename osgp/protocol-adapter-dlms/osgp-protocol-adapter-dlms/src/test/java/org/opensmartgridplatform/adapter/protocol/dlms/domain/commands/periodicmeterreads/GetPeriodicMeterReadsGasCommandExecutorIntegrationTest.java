@@ -28,7 +28,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.BeforeEach;
@@ -194,7 +193,7 @@ class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     final List<Protocol> dsmrProtocols =
         Arrays.stream(Protocol.values())
             .filter(protocol -> protocol.isDsmr4() || protocol.isDsmr2())
-            .collect(Collectors.toList());
+            .toList();
 
     return generateCombinations(dsmrProtocols);
   }

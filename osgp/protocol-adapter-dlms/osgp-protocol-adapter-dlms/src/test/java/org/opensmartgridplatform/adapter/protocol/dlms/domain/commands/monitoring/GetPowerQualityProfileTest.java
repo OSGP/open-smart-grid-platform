@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.jdlms.GetResult;
@@ -88,9 +87,7 @@ public abstract class GetPowerQualityProfileTest {
 
     final Map<ObjectProperty, Object> properties = new HashMap<>();
     final List<String> stringProperties =
-        this.getPropertyObjects().stream()
-            .map(DlmsObjectType::toString)
-            .collect(Collectors.toList());
+        this.getPropertyObjects().stream().map(DlmsObjectType::toString).toList();
     properties.put(ObjectProperty.SELECTABLE_OBJECTS, stringProperties);
 
     final List<Attribute> attributeList = new ArrayList<>();

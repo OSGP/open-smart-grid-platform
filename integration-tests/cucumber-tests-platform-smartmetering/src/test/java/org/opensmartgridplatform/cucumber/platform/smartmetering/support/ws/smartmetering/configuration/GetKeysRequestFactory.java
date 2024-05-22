@@ -9,7 +9,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysRequestData;
@@ -44,6 +43,6 @@ public class GetKeysRequestFactory {
       final Map<String, String> settings) {
     final List<String> secretTypesAsString =
         Arrays.asList(getString(settings, "SecretTypes").split(","));
-    return secretTypesAsString.stream().map(SecretType::valueOf).collect(Collectors.toList());
+    return secretTypesAsString.stream().map(SecretType::valueOf).toList();
   }
 }

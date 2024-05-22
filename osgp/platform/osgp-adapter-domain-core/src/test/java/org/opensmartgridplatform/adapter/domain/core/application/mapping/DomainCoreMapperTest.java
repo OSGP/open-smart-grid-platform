@@ -5,7 +5,6 @@
 package org.opensmartgridplatform.adapter.domain.core.application.mapping;
 
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
@@ -170,9 +169,7 @@ class DomainCoreMapperTest {
   }
 
   private List<RelayMatrix> toRelayLinking(final List<RelayMatrixDto> relayLinking) {
-    return relayLinking.stream()
-        .map(relayMatrixDto -> this.toRelayMatrix(relayMatrixDto))
-        .collect(toList());
+    return relayLinking.stream().map(relayMatrixDto -> this.toRelayMatrix(relayMatrixDto)).toList();
   }
 
   private RelayMatrix toRelayMatrix(final RelayMatrixDto dto) {
@@ -189,9 +186,7 @@ class DomainCoreMapperTest {
 
   private RelayConfiguration toRelayConfiguration(final RelayConfigurationDto dto) {
     final List<RelayMap> relayMaps =
-        dto.getRelayMap().stream()
-            .map(relayMapDto -> this.toRelayMap(relayMapDto))
-            .collect(toList());
+        dto.getRelayMap().stream().map(relayMapDto -> this.toRelayMap(relayMapDto)).toList();
     return new RelayConfiguration(relayMaps);
   }
 

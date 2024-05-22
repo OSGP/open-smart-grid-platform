@@ -6,7 +6,6 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationKeyConfiguration;
@@ -1888,7 +1887,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
     return keysEncryptedWithGxfKey.stream()
         .map(key -> this.reencryptKeyInGetKeysResponse(key, applicationRsaEncrypter))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private GetKeysResponseData reencryptKeyInGetKeysResponse(

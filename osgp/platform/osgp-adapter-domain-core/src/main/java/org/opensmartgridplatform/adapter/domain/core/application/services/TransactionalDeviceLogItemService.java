@@ -6,7 +6,6 @@ package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.domain.core.application.config.PersistenceDomainLoggingConfig;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemSlicingRepository;
@@ -43,8 +42,7 @@ public class TransactionalDeviceLogItemService {
 
   public void deleteDeviceLogItems(final List<DeviceLogItem> deviceLogItems) {
     final int size = deviceLogItems.size();
-    final List<Long> ids =
-        deviceLogItems.stream().map(DeviceLogItem::getId).collect(Collectors.toList());
+    final List<Long> ids = deviceLogItems.stream().map(DeviceLogItem::getId).toList();
 
     final int listSize = ids.size();
 

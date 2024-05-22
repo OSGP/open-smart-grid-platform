@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.stream.Collectors;
 import junit.runner.Version;
 import org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter;
 import org.junit.runner.Computer;
@@ -102,7 +101,7 @@ public abstract class AppBase {
     final List<Failure> failuresLinkedToTestMechanism =
         result.getFailures().stream()
             .filter(failure -> Description.TEST_MECHANISM.equals(failure.getDescription()))
-            .collect(Collectors.toList());
+            .toList();
 
     final int testMechanismRelatedFailureCount = failuresLinkedToTestMechanism.size();
     if (testMechanismRelatedFailureCount > 0) {

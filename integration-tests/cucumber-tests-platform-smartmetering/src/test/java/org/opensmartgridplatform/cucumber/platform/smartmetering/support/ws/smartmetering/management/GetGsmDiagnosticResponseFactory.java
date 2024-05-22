@@ -13,7 +13,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetGsmDiagnosticResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.AdjacentCellInfo;
@@ -73,7 +72,7 @@ public class GetGsmDiagnosticResponseFactory {
                       SignalQuality.fromValue(adjacentCellSignalQualities.get(i)));
                   return adjacentCellInfo;
                 })
-            .collect(Collectors.toList());
+            .toList();
 
     final GetGsmDiagnosticResponse getGsmDiagnosticResponse = new GetGsmDiagnosticResponse();
 

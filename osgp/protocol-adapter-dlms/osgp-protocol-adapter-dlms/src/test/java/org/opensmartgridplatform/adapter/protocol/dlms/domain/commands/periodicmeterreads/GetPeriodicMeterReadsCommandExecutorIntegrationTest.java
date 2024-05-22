@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.stream.Collectors;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -289,7 +288,7 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
     final AttributeAddress actualAttributeAddressProfile =
         requestedAttributeAddresses.stream()
             .filter(a -> a.getClassId() == this.CLASS_ID_PROFILE)
-            .collect(Collectors.toList())
+            .toList()
             .get(0);
 
     AttributeAddressAssert.is(actualAttributeAddressProfile, expectedAddressProfile);
@@ -303,7 +302,7 @@ class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
                     (a.getClassId() == this.CLASS_ID_REGISTER
                             || a.getClassId() == this.CLASS_ID_EXTENDED_REGISTER)
                         && a.getId() == this.ATTR_ID_SCALER_UNIT)
-            .collect(Collectors.toList());
+            .toList();
     assertThat(attributeAddressesScalerUnit).hasSize(expectedScalerUnitAddresses.size());
 
     // Check response

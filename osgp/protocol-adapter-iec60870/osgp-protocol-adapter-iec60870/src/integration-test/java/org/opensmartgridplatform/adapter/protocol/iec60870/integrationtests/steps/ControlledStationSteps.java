@@ -13,7 +13,6 @@ import io.cucumber.java.en.Given;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
@@ -96,9 +95,7 @@ public class ControlledStationSteps {
     public static ProcessImage fromDataTable(final DataTable processImageTable) {
 
       final List<InformationObject> informationObjects =
-          processImageTable.asMaps().stream()
-              .map(ProcessImage::informationObject)
-              .collect(Collectors.toList());
+          processImageTable.asMaps().stream().map(ProcessImage::informationObject).toList();
       return new ProcessImage(informationObjects);
     }
 
