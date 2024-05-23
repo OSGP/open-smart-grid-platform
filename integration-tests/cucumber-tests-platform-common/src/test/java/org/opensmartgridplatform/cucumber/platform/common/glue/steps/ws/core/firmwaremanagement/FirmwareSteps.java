@@ -11,6 +11,9 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getHexD
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStringList;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,6 +41,8 @@ public class FirmwareSteps {
   public static final String ACTIVE_FIRMWARE = "active_firmware";
   public static final String M_BUS_DRIVER_ACTIVE_FIRMWARE = "m_bus_driver_active_firmware";
   public static final String SIMPLE_VERSION_INFO = "simple_version_info";
+  public static final String DATABASE = "database";
+  public static final String FILE_STORAGE = "file_storage";
 
   @Autowired private FirmwareFileRepository firmwareFileRepository;
 
@@ -47,14 +52,22 @@ public class FirmwareSteps {
         getString(requestParameters, PlatformKeys.FIRMWARE_FILE_IDENTIFICATION, null));
     firmware.setFilename(getString(requestParameters, PlatformKeys.FIRMWARE_FILE_FILENAME, null));
     firmware.setDescription(getString(requestParameters, PlatformKeys.FIRMWARE_DESCRIPTION, null));
-    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_FILE)) {
+    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_FILE)
+        && requestParameters.get(PlatformKeys.FIRMWARE_FILE) != null) {
       firmware.setFile(getHexDecoded(requestParameters, PlatformKeys.FIRMWARE_FILE, null));
+    }
+    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_FILE_IMAGE_IDENTIFIER)
+        && requestParameters.get(PlatformKeys.FIRMWARE_FILE_IMAGE_IDENTIFIER) != null) {
+      firmware.setImageIdentifier(
+          getHexDecoded(requestParameters, PlatformKeys.FIRMWARE_FILE_IMAGE_IDENTIFIER, null));
     }
     firmware.setPushToNewDevices(
         getBoolean(
             requestParameters,
             PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
             PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE));
+
+    firmware.setHashType(getString(requestParameters, PlatformKeys.FIRMWARE_HASH_TYPE, null));
 
     firmware.setFirmwareModuleData(new FirmwareModuleData());
     if (requestParameters.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM)) {
@@ -171,7 +184,8 @@ public class FirmwareSteps {
   }
 
   protected void assertFirmwareFileExists(
-      final String identification, final Map<String, String> firmwareFileProperties) {
+      final String identification, final Map<String, String> firmwareFileProperties)
+      throws NoSuchAlgorithmException {
     final Firmware expectedFirmware = this.createAndGetFirmware(firmwareFileProperties);
     final FirmwareFile databaseFirmwareFile =
         this.firmwareFileRepository.findByIdentification(identification);
@@ -181,8 +195,34 @@ public class FirmwareSteps {
         .as("Firmware File {} should exist", identification);
 
     assertThat(databaseFirmwareFile.getDescription()).isEqualTo(expectedFirmware.getDescription());
-    assertThat(databaseFirmwareFile.getFile()).isEqualTo(expectedFirmware.getFile());
     assertThat(databaseFirmwareFile.getFilename()).isEqualTo(expectedFirmware.getFilename());
+
+    if (expectedFirmware.getFile() == null) {
+      return;
+    }
+
+    final String fileStoreLocation =
+        getString(firmwareFileProperties, PlatformKeys.FIRMWARE_FILE_STORE_LOCATION, DATABASE);
+
+    if (fileStoreLocation == DATABASE) {
+      assertThat(databaseFirmwareFile.getFile()).isEqualTo(expectedFirmware.getFile());
+    }
+    if (fileStoreLocation == FILE_STORAGE) {
+      // There is no check here whether the file is actually on the file storage. The file storage
+      // check is implicitly done in the tests using the file from file storage.
+      assertThat(databaseFirmwareFile.getFile()).isNull();
+      assertThat(databaseFirmwareFile.getHashType()).isEqualTo(expectedFirmware.getHashType());
+      assertThat(databaseFirmwareFile.getHash())
+          .isEqualTo(
+              this.calculateHash(expectedFirmware.getHashType(), expectedFirmware.getFile()));
+    }
+  }
+
+  private String calculateHash(final String hashType, final byte[] firmwareFile)
+      throws NoSuchAlgorithmException {
+    final MessageDigest messageDigest = MessageDigest.getInstance(hashType);
+    final byte[] digest = messageDigest.digest(firmwareFile);
+    return new BigInteger(1, digest).toString(16);
   }
 
   protected void assertFirmwareFileHasModuleVersions(
