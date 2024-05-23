@@ -6,6 +6,7 @@ package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MappingContext;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdatedDevice;
@@ -35,7 +36,7 @@ public class DeviceOutputSettingsMapper extends CustomMapper<UpdatedDevice, Ssld
     if (outputSettings == null) {
       return new ArrayList<>();
     } else {
-      return outputSettings.stream().map(this::mapOutputSetting).toList();
+      return outputSettings.stream().map(this::mapOutputSetting).collect(Collectors.toList());
     }
   }
 
