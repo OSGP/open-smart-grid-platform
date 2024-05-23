@@ -6,6 +6,7 @@ package org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders;
 
 import jakarta.annotation.PostConstruct;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessTerminalClient;
 import org.opensmartgridplatform.adapter.protocol.jasper.response.GetSessionInfoResponse;
@@ -15,13 +16,10 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
+@Slf4j
 public class SessionProviderKpnPushAlarm extends SessionProvider {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SessionProviderKpnPushAlarm.class);
 
   private final JasperWirelessSmsClient jasperWirelessSmsClient;
   private final JasperWirelessTerminalClient jasperWirelessTerminalClient;
@@ -53,7 +51,7 @@ public class SessionProviderKpnPushAlarm extends SessionProvider {
   @Override
   public Optional<String> getIpAddress(final String deviceIdentification, final String iccId)
       throws OsgpException {
-    LOGGER.info("Get ip address for device: " + deviceIdentification);
+    log.info("Get ip address for device: {}", deviceIdentification);
     try {
       this.jasperWirelessSmsClient.sendWakeUpSMS(iccId);
 
@@ -69,20 +67,20 @@ public class SessionProviderKpnPushAlarm extends SessionProvider {
 
     Optional<String> ipAddress = Optional.empty();
     for (int attempt = 1; attempt <= this.nrOfAttempts; attempt++) {
-      LOGGER.info(
+      log.info(
           "Wait for ip-address, this will be pushed by alarm for device: {}, attempt {}",
           deviceIdentification,
           attempt);
       ipAddress = this.deviceSessionService.waitForIpAddress(deviceIdentification);
       if (ipAddress.isEmpty()) {
-        LOGGER.info(
+        log.info(
             "Did not receive an ip-address for device: {}, try to get ip-address from session provider, attempt {}",
             deviceIdentification,
             attempt);
         ipAddress = this.getIpAddressFromSessionInfo(deviceIdentification, iccId);
       }
       if (ipAddress.isPresent()) {
-        LOGGER.info(
+        log.info(
             "Received ip-address: {} for device: {}, attempt: {}",
             ipAddress.get(),
             deviceIdentification,
@@ -99,12 +97,12 @@ public class SessionProviderKpnPushAlarm extends SessionProvider {
     final GetSessionInfoResponse response = this.jasperWirelessTerminalClient.getSession(iccId);
     final Optional<String> ipAddress = Optional.ofNullable(response.getIpAddress());
     if (ipAddress.isEmpty()) {
-      LOGGER.info(
+      log.info(
           "Session provider did not return an ip-address for device: {}, icc: {}",
           deviceIdentification,
           iccId);
     } else {
-      LOGGER.info(
+      log.info(
           "Session provider returned ip-address: {} for device: {}, icc: {}",
           ipAddress.get(),
           deviceIdentification,
@@ -115,27 +113,25 @@ public class SessionProviderKpnPushAlarm extends SessionProvider {
   }
 
   private void handleException(final OsgpJasperException e) throws FunctionalException {
-    String errorMessage = "";
     final FunctionalExceptionType functionalExceptionType;
     if (e.getJasperError() != null) {
       if (e.getJasperError().getHttpStatus() == HttpStatus.NOT_FOUND) {
         functionalExceptionType = FunctionalExceptionType.INVALID_ICCID;
       } else {
-        errorMessage =
-            String.format(
-                "Session provider %s returned error %s : %s",
-                SessionProviderEnum.KPN.name(),
-                e.getJasperError().getCode(),
-                e.getJasperError().getMessage());
-        LOGGER.error(errorMessage, e);
+        log.error(
+            "Session provider {} returned error {} : {}",
+            SessionProviderEnum.KPN.name(),
+            e.getJasperError().getCode(),
+            e.getJasperError().getMessage(),
+            e);
         functionalExceptionType = FunctionalExceptionType.SESSION_PROVIDER_ERROR;
       }
     } else {
-      errorMessage =
-          String.format(
-              "Session provider %s returned unknown error message: %s",
-              SessionProviderEnum.KPN.name(), e.getMessage());
-      LOGGER.error(errorMessage, e);
+      log.error(
+          "Session provider {} returned unknown error message: {}",
+          SessionProviderEnum.KPN.name(),
+          e.getMessage(),
+          e);
       functionalExceptionType = FunctionalExceptionType.SESSION_PROVIDER_ERROR;
     }
     throw new FunctionalException(

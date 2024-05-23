@@ -202,11 +202,11 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       final MessageMetadata metadata, final Exception exception, final Serializable requestObject) {
     // Return original request + exception
     if (!(exception instanceof SilentException)) {
-      final String errorMessage =
-          String.format(
-              "Unexpected exception during %s, correlationUID: %s",
-              this.messageType.name(), metadata.getCorrelationUid());
-      log.error(errorMessage, exception);
+      log.error(
+          "Unexpected exception during {}, correlationUID: {}",
+          this.messageType.name(),
+          metadata.getCorrelationUid(),
+          exception);
     }
     this.sendResponseMessage(
         metadata,

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * device.
  */
 public class DataObjectAttrExecutors {
-  private static final String REQUESTS_FAILED_FOR = ": Requests failed for: {}";
+  private static final String REQUESTS_FAILED_FOR2 = "{}: Requests failed for: {}";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DataObjectAttrExecutors.class);
 
@@ -60,11 +60,11 @@ public class DataObjectAttrExecutors {
         }
       }
     } catch (final IOException e) {
-      LOGGER.error(this.executor + REQUESTS_FAILED_FOR, this.errString);
+      LOGGER.error(REQUESTS_FAILED_FOR2, this.executor, this.errString);
       throw new ConnectionException(e);
     }
     if (this.containsError) {
-      LOGGER.error(this.executor + REQUESTS_FAILED_FOR, this.errString);
+      LOGGER.error(REQUESTS_FAILED_FOR2, this.executor, this.errString);
       throw new ProtocolAdapterException(this.errString);
     }
   }
@@ -74,7 +74,7 @@ public class DataObjectAttrExecutors {
     this.errString += dataObjectAttrExecutor.createRequestAndResultCodeInfo();
     this.containsError = true;
     if (this.stopOnNoSuccess) {
-      LOGGER.error(this.executor + REQUESTS_FAILED_FOR, this.errString);
+      LOGGER.error(REQUESTS_FAILED_FOR2, this.executor, this.errString);
       throw new ProtocolAdapterException(
           this.errString
               + ". Stopping execution after element: "

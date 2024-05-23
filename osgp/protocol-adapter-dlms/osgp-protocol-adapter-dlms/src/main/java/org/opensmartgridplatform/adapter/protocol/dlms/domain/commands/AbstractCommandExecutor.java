@@ -6,6 +6,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -19,13 +20,10 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Slf4j
 public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T, R> {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommandExecutor.class);
 
   @Autowired private CommandExecutorMap bundleCommandExecutorMap;
 
@@ -72,13 +70,13 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
     }
 
     final T commandInput = this.fromBundleRequestInput(actionRequestDto);
-    LOGGER.debug(
+    log.debug(
         "Translated {} from bundle to {} for call to CommandExecutor.",
         this.className(actionRequestDto),
         this.className(commandInput));
     final R executionResult = this.execute(conn, device, commandInput, messageMetadata);
     final ActionResponseDto bundleResponse = this.asBundleResponse(executionResult);
-    LOGGER.debug(
+    log.debug(
         "Translated {} to {} for bundle response after call to CommandExecutor.",
         this.className(executionResult),
         this.className(bundleResponse));
