@@ -21,15 +21,14 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response
 public class BundledSetPushSetupUdpSteps extends BaseBundleSteps {
 
   @Given("^the bundle request contains a set push setup udp action$")
-  public void theBundleRequestContainsASetPushSetupAlarmAction() throws Throwable {
+  public void theBundleRequestContainsASetPushSetupUdpAction() throws Throwable {
 
     final SetPushSetupUdpRequest action = new SetPushSetupUdpRequest();
-
     this.addActionToBundleRequest(action);
   }
 
   @Then("^the bundle response should contain a set push setup udp response$")
-  public void theBundleResponseShouldContainASetPushSetupAlarmResponse() throws Throwable {
+  public void theBundleResponseShouldContainASetPushSetupUdpResponse() throws Throwable {
     final Response response = this.getNextBundleResponse();
 
     assertThat(response).isInstanceOf(ActionResponse.class);

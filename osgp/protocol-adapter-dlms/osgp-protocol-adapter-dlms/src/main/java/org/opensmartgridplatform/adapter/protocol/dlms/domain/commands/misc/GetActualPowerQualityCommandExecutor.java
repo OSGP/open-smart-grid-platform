@@ -108,60 +108,104 @@ public class GetActualPowerQualityCommandExecutor
 
     int idx = 0;
     for (final CosemObject pqObject : pqObjects) {
-      final PowerQualityObjectDto powerQualityObject;
-      final PowerQualityValueDto powerQualityValue;
-
+      final PowerQualityDtos powerQualityDtos;
       final GetResult resultValue = resultList.get(idx++);
 
       if (pqObject.getClassId() == CLASS_ID_CLOCK) {
-        final CosemDateTimeDto cosemDateTime =
-            this.dlmsHelper.readDateTime(resultValue, "Actual Power Quality - Time");
-        powerQualityValue = new PowerQualityValueDto(cosemDateTime.asDateTime().toDate());
-        powerQualityObject = new PowerQualityObjectDto(pqObject.getTag(), null);
+        powerQualityDtos = this.createClockObject(pqObject, resultValue);
 
       } else if (pqObject.getClassId() == CLASS_ID_REGISTER) {
-        final DlmsMeterValueDto meterValue;
+        GetResult resultValueScalerUnit = null;
         if (this.readScalerValueFromMeter(pqObject)) {
-          final GetResult resultValueScalerUnit = resultList.get(idx++);
-          meterValue =
-              this.dlmsHelper.getScaledMeterValue(
-                  resultValue,
-                  resultValueScalerUnit,
-                  "Actual Power Quality - " + pqObject.getObis());
-        } else {
-          final String scalerUnit =
-              pqObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId()).getValue();
-          meterValue =
-              this.dlmsHelper.getScaledMeterValueWithScalerUnit(
-                  resultValue, scalerUnit, "Actual Power Quality - " + pqObject.getObis());
+          resultValueScalerUnit = resultList.get(idx++);
         }
-
-        final BigDecimal value = meterValue != null ? meterValue.getValue() : null;
-        final String unit = meterValue != null ? meterValue.getDlmsUnit().getUnit() : null;
-        powerQualityValue = new PowerQualityValueDto(value);
-
-        powerQualityObject = new PowerQualityObjectDto(pqObject.getTag(), unit);
+        powerQualityDtos = this.createRegisterObject(pqObject, resultValue, resultValueScalerUnit);
 
       } else if (pqObject.getClassId() == CLASS_ID_DATA) {
-        final Integer meterValue =
-            this.dlmsHelper.readInteger(
-                resultValue, "Actual Power Quality - " + pqObject.getObis());
+        powerQualityDtos = this.createDataObject(pqObject, resultValue);
 
-        powerQualityValue =
-            meterValue != null ? new PowerQualityValueDto(new BigDecimal(meterValue)) : null;
-
-        powerQualityObject = new PowerQualityObjectDto(pqObject.getTag(), null);
       } else {
         throw new ProtocolAdapterException(
             String.format(
                 "Unsupported ClassId %d for logical name %s",
                 pqObject.getClassId(), pqObject.getObis()));
       }
-      powerQualityObjects.add(powerQualityObject);
-      powerQualityValues.add(powerQualityValue);
+      powerQualityObjects.add(powerQualityDtos.powerQualityObject);
+      powerQualityValues.add(powerQualityDtos.powerQualityValue);
     }
 
     return new ActualPowerQualityDataDto(powerQualityObjects, powerQualityValues);
+  }
+
+  private PowerQualityDtos createRegisterObject(
+      final CosemObject pqObject,
+      final GetResult resultValue,
+      final GetResult resultValueScalerUnit)
+      throws ProtocolAdapterException {
+    final DlmsMeterValueDto meterValue;
+    final PowerQualityDtos powerQualityDtos;
+    if (resultValueScalerUnit != null) {
+      meterValue =
+          this.dlmsHelper.getScaledMeterValue(
+              resultValue, resultValueScalerUnit, getDescription(pqObject));
+    } else {
+      final String scalerUnit =
+          pqObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId()).getValue();
+      meterValue =
+          this.dlmsHelper.getScaledMeterValueWithScalerUnit(
+              resultValue, scalerUnit, getDescription(pqObject));
+    }
+
+    final BigDecimal value = meterValue != null ? meterValue.getValue() : null;
+    final String unit = meterValue != null ? meterValue.getDlmsUnit().getUnit() : null;
+    final PowerQualityValueDto powerQualityValue = new PowerQualityValueDto(value);
+    final PowerQualityObjectDto powerQualityObject =
+        new PowerQualityObjectDto(pqObject.getTag(), unit);
+    powerQualityDtos = new PowerQualityDtos(powerQualityObject, powerQualityValue);
+    return powerQualityDtos;
+  }
+
+  private PowerQualityDtos createDataObject(final CosemObject pqObject, final GetResult resultValue)
+      throws ProtocolAdapterException {
+    final PowerQualityDtos powerQualityDtos;
+    final Integer meterValue = this.dlmsHelper.readInteger(resultValue, getDescription(pqObject));
+
+    final PowerQualityValueDto powerQualityValue =
+        meterValue != null ? new PowerQualityValueDto(new BigDecimal(meterValue)) : null;
+
+    final PowerQualityObjectDto powerQualityObject =
+        new PowerQualityObjectDto(pqObject.getTag(), null);
+    powerQualityDtos = new PowerQualityDtos(powerQualityObject, powerQualityValue);
+    return powerQualityDtos;
+  }
+
+  private static String getDescription(final CosemObject pqObject) {
+    return "Actual Power Quality - " + pqObject.getObis();
+  }
+
+  private PowerQualityDtos createClockObject(
+      final CosemObject pqObject, final GetResult resultValue) throws ProtocolAdapterException {
+    final PowerQualityDtos powerQualityDtos;
+    final CosemDateTimeDto cosemDateTime =
+        this.dlmsHelper.readDateTime(resultValue, "Actual Power Quality - Time");
+    final PowerQualityValueDto powerQualityValue =
+        new PowerQualityValueDto(cosemDateTime.asDateTime().toDate());
+    final PowerQualityObjectDto powerQualityObject =
+        new PowerQualityObjectDto(pqObject.getTag(), null);
+    powerQualityDtos = new PowerQualityDtos(powerQualityObject, powerQualityValue);
+    return powerQualityDtos;
+  }
+
+  private class PowerQualityDtos {
+    final PowerQualityObjectDto powerQualityObject;
+    final PowerQualityValueDto powerQualityValue;
+
+    public PowerQualityDtos(
+        final PowerQualityObjectDto powerQualityObject,
+        final PowerQualityValueDto powerQualityValue) {
+      this.powerQualityObject = powerQualityObject;
+      this.powerQualityValue = powerQualityValue;
+    }
   }
 
   private boolean readScalerValueFromMeter(final CosemObject pqObject) {

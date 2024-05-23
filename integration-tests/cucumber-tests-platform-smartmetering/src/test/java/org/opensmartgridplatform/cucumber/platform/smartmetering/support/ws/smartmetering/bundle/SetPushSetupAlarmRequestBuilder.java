@@ -18,6 +18,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetPushS
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.PushObject;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequestData;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class SetPushSetupAlarmRequestBuilder {
@@ -52,6 +53,25 @@ public class SetPushSetupAlarmRequestBuilder {
     pushSetupAlarm.getPushObjectList().addAll(this.pushObjectList);
 
     request.setPushSetupAlarm(pushSetupAlarm);
+    return request;
+  }
+
+  public org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
+          .SetPushSetupAlarmRequest
+      buildSingle() {
+    final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
+            .SetPushSetupAlarmRequest
+        request =
+            new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
+                .SetPushSetupAlarmRequest();
+    final PushSetupAlarm pushSetupAlarm = new PushSetupAlarm();
+    pushSetupAlarm.setHost(this.host);
+    pushSetupAlarm.setPort(this.port);
+    pushSetupAlarm.getPushObjectList().addAll(this.pushObjectList);
+
+    final SetPushSetupAlarmRequestData requestData = new SetPushSetupAlarmRequestData();
+    requestData.setPushSetupAlarm(pushSetupAlarm);
+    request.setSetPushSetupAlarmRequestData(requestData);
     return request;
   }
 
@@ -91,7 +111,7 @@ public class SetPushSetupAlarmRequestBuilder {
   }
 
   private ObisCodeValues convertObisCode(final String obisCode) {
-    final String[] obisCodeSplit = obisCode.split("\\.");
+    final String[] obisCodeSplit = obisCode.split("[:\\.-]");
 
     final ObisCodeValues obisCodeValues = new ObisCodeValues();
     obisCodeValues.setA(Short.parseShort(obisCodeSplit[0]));

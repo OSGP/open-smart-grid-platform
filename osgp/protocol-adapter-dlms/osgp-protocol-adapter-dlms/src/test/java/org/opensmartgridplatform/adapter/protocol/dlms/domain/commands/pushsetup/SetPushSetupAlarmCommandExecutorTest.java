@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -15,10 +16,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -33,11 +36,14 @@ import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.PushSetupMapper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObisCodeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MessageTypeDto;
@@ -109,11 +115,22 @@ class SetPushSetupAlarmCommandExecutorTest {
 
   @Mock private MessageMetadata messageMetadata;
 
-  private final SetPushSetupAlarmCommandExecutor executor =
-      new SetPushSetupAlarmCommandExecutor(new DlmsHelper(), new PushSetupMapper());
+  private SetPushSetupAlarmCommandExecutor executor;
+
+  @BeforeEach
+  public void init() throws IOException, ObjectConfigException {
+    this.executor =
+        new SetPushSetupAlarmCommandExecutor(
+            new DlmsHelper(),
+            new PushSetupMapper(),
+            new ObjectConfigServiceHelper(new ObjectConfigService()));
+  }
 
   @ParameterizedTest
-  @EnumSource(Protocol.class)
+  @EnumSource(
+      value = Protocol.class,
+      names = {"DSMR_2_2", "OTHER_PROTOCOL"},
+      mode = Mode.EXCLUDE)
   void testSetSendDestinationAndMethod(final Protocol protocol)
       throws ProtocolAdapterException, IOException {
     // SETUP
@@ -136,6 +153,24 @@ class SetPushSetupAlarmCommandExecutorTest {
     verify(this.dlmsConnection, times(1)).set(this.setParameterArgumentCaptor.capture());
     final List<SetParameter> setParameters = this.setParameterArgumentCaptor.getAllValues();
     this.verifySendDestinationAndMethodParameter(setParameters.get(0), protocol);
+  }
+
+  @ParameterizedTest
+  @EnumSource(
+      value = Protocol.class,
+      names = {"DSMR_2_2", "OTHER_PROTOCOL"},
+      mode = Mode.INCLUDE)
+  void protocolNotSupported(final Protocol protocol) {
+    final DlmsDevice device = this.createDlmsDevice(protocol);
+    final PushSetupAlarmDto pushSetupAlarmDto =
+        new PushSetupAlarmDto.Builder()
+            .withSendDestinationAndMethod(SEND_DESTINATION_AND_METHOD)
+            .build();
+    device.setProtocol(protocol);
+    assertThatExceptionOfType(ProtocolAdapterException.class)
+        .isThrownBy(
+            () ->
+                this.executor.execute(this.conn, device, pushSetupAlarmDto, this.messageMetadata));
   }
 
   @Test

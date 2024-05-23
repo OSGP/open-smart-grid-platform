@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -14,10 +15,12 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -30,11 +33,14 @@ import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.PushSetupMapper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MessageTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupLastGaspDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SendDestinationAndMethodDto;
@@ -55,8 +61,6 @@ class SetPushSetupLastGaspCommandExecutorTest {
   private static final SendDestinationAndMethodDto SEND_DESTINATION_AND_METHOD =
       new SendDestinationAndMethodDto(null, DESTINATION, null);
 
-  private final DlmsDevice DLMS_DEVICE = this.createDlmsDevice(Protocol.SMR_5_5);
-
   @Captor ArgumentCaptor<SetParameter> setParameterArgumentCaptor;
 
   @Mock private DlmsConnectionManager conn;
@@ -67,11 +71,20 @@ class SetPushSetupLastGaspCommandExecutorTest {
 
   @Mock private MessageMetadata messageMetadata;
 
-  private final SetPushSetupLastGaspCommandExecutor executor =
-      new SetPushSetupLastGaspCommandExecutor(new PushSetupMapper());
+  private SetPushSetupLastGaspCommandExecutor executor;
+
+  @BeforeEach
+  public void init() throws IOException, ObjectConfigException {
+    this.executor =
+        new SetPushSetupLastGaspCommandExecutor(
+            new PushSetupMapper(), new ObjectConfigServiceHelper(new ObjectConfigService()));
+  }
 
   @ParameterizedTest
-  @EnumSource(Protocol.class)
+  @EnumSource(
+      value = Protocol.class,
+      names = {"SMR_5_5"},
+      mode = Mode.INCLUDE)
   void testSetSendDestinationAndMethod(final Protocol protocol)
       throws ProtocolAdapterException, IOException {
     // SETUP
@@ -96,9 +109,27 @@ class SetPushSetupLastGaspCommandExecutorTest {
     this.verifySendDestinationAndMethodParameter(setParameters.get(0), protocol);
   }
 
+  @ParameterizedTest
+  @EnumSource(
+      value = Protocol.class,
+      names = {"SMR_5_5"},
+      mode = Mode.EXCLUDE)
+  void protocolNotSupported(final Protocol protocol) {
+    final DlmsDevice device = new DlmsDevice();
+    device.setProtocol(protocol);
+    final PushSetupLastGaspDto pushSetupLastGaspDto =
+        new PushSetupLastGaspDto.Builder().withCommunicationWindow(new ArrayList<>()).build();
+    assertThatExceptionOfType(ProtocolAdapterException.class)
+        .isThrownBy(
+            () ->
+                this.executor.execute(
+                    this.conn, device, pushSetupLastGaspDto, this.messageMetadata));
+  }
+
   @Test
   void testSetWithUnsupportedFieldsSet() {
-    // SETUP
+    final DlmsDevice device = new DlmsDevice();
+    device.setProtocol(Protocol.SMR_5_5);
     final PushSetupLastGaspDto pushSetupLastGaspDto =
         new PushSetupLastGaspDto.Builder().withCommunicationWindow(new ArrayList<>()).build();
 
@@ -106,8 +137,7 @@ class SetPushSetupLastGaspCommandExecutorTest {
     final Throwable thrown =
         catchThrowable(
             () -> {
-              this.executor.execute(
-                  this.conn, this.DLMS_DEVICE, pushSetupLastGaspDto, this.messageMetadata);
+              this.executor.execute(this.conn, device, pushSetupLastGaspDto, this.messageMetadata);
             });
 
     // VERIFY

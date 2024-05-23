@@ -12,7 +12,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>super-osgp</artifactId>
-  <version>6.1.0-SNAPSHOT</version>
+  <version>6.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
   <!-- Description, Organization, Licences, URL and Distribution Management
@@ -44,10 +44,10 @@ SPDX-License-Identifier: Apache-2.0
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>6.1.0-SNAPSHOT</osgp.version>
-    <osgp.dlms.version>6.1.0-SNAPSHOT</osgp.dlms.version>
-    <osgp.shared.version>6.1.0-SNAPSHOT</osgp.shared.version>
-    <osgp.jasper-interface.version>6.1.0-SNAPSHOT</osgp.jasper-interface.version>
+    <osgp.version>6.2.0-SNAPSHOT</osgp.version>
+    <osgp.dlms.version>6.2.0-SNAPSHOT</osgp.dlms.version>
+    <osgp.shared.version>6.2.0-SNAPSHOT</osgp.shared.version>
+    <osgp.jasper-interface.version>6.2.0-SNAPSHOT</osgp.jasper-interface.version>
     <spring.version>6.1.6</spring.version>
     <spring.data.version>3.2.5</spring.data.version>
     <spring.data.commons.version>3.2.5</spring.data.commons.version>
@@ -69,7 +69,7 @@ SPDX-License-Identifier: Apache-2.0
     <artemis.jakarta.client.version>2.33.0</artemis.jakarta.client.version>
     <junit.version>5.10.1</junit.version>
     <junit.platform.launcher.version>1.10.1</junit.platform.launcher.version>
-    <byte.buddy.version>1.14.14</byte.buddy.version>
+    <byte.buddy.version>1.14.15</byte.buddy.version>
     <joda.version>2.12.7</joda.version>
     <flyway.version>9.22.3</flyway.version>
     <slf4j.version>2.0.13</slf4j.version>
@@ -131,7 +131,7 @@ SPDX-License-Identifier: Apache-2.0
     <ant.junit.version>1.10.14</ant.junit.version>
     <args4j.version>2.37</args4j.version>
     <cucumber.version>5.7.0</cucumber.version>
-    <testcontainers.version>1.19.7</testcontainers.version>
+    <testcontainers.version>1.19.8</testcontainers.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <postgresql.version>42.7.2</postgresql.version>
     <jakarta.xml.soap-api.version>3.0.1</jakarta.xml.soap-api.version>

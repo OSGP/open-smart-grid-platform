@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly
+@SmartMetering @Platform @SmartMeteringConfiguration @PushSetup @SetPushSetupUdp @NightlyBuildOnly
 Feature: SmartMetering Configuration - Set Push Setup UDP
   As a grid operator
   I want to be able to set the Push setup UDP on a device
@@ -11,7 +11,6 @@ Feature: SmartMetering Configuration - Set Push Setup UDP
       | CommunicationMethod  | GPRS              |
       | Protocol             | SMR               |
       | ProtocolVersion      | 5.5               |
-      | Port                 |              1030 |
     When the set PushSetupUdp request is received
       | DeviceIdentification | TEST1030000000001 |
     Then the PushSetupUdp response should be returned
@@ -20,16 +19,25 @@ Feature: SmartMetering Configuration - Set Push Setup UDP
     Then the PushSetupUdp should be set on the device
       | DeviceIdentification | TEST1030000000001 |
 
-  Scenario: Set push setup udp on a SMR5.2 device
+  Scenario Outline: Set push setup udp on a SMR5.2 device
     Given a dlms device
-      | DeviceIdentification | TEST1029000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | CommunicationMethod  | GPRS              |
-      | Protocol             | SMR               |
-      | ProtocolVersion      |               5.2 |
-      | Port                 |              1029 |
+      | DeviceIdentification | <deviceIdentification> |
+      | DeviceType           | SMART_METER_E          |
+      | CommunicationMethod  | GPRS                   |
+      | Protocol             | <protocol>             |
+      | ProtocolVersion      | <version>              |
     When the set PushSetupUdp request is received
-      | DeviceIdentification | TEST1029000000001 |
+      | DeviceIdentification | <deviceIdentification> |
     Then the PushSetupUdp response should be returned
-      | DeviceIdentification | TEST1029000000001 |
-      | Result               | NOT_OK            |
+      | DeviceIdentification | <deviceIdentification> |
+      | Result               | NOT_OK                 |
+
+     Examples:
+      | deviceIdentification | protocol | version |
+      | TEST1029000000001    | SMR      | 5.2     |
+    @NightlyBuildOnly
+    Examples:
+      | deviceIdentification | protocol | version |
+      | TEST1024000000001    | DSMR     | 4.2.2   |
+      | TEST1027000000001    | SMR      | 5.0.0   |
+      | TEST1028000000001    | SMR      | 5.1     |
