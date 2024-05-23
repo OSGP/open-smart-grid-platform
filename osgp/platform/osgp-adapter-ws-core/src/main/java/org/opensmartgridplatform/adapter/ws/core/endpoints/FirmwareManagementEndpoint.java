@@ -10,7 +10,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.FirmwareManagementMapper;
-import org.opensmartgridplatform.adapter.ws.core.application.services.FirmwareFileRequest;
+import org.opensmartgridplatform.adapter.ws.core.application.services.FirmwareFileAttributes;
 import org.opensmartgridplatform.adapter.ws.core.application.services.FirmwareManagementService;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -823,7 +823,7 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
 
       this.firmwareManagementService.addFirmware(
           organisationIdentification,
-          this.firmwareFileRequestFor(firmware),
+          this.firmwareFileAttributesFor(firmware),
           firmware.getFile(),
           manufacturer,
           modelCode,
@@ -854,13 +854,14 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
     return addFirmwareResponse;
   }
 
-  private FirmwareFileRequest firmwareFileRequestFor(final Firmware firmware) {
-    return new FirmwareFileRequest(
+  private FirmwareFileAttributes firmwareFileAttributesFor(final Firmware firmware) {
+    return new FirmwareFileAttributes(
         firmware.getIdentification(),
         firmware.getDescription(),
         firmware.getFilename(),
         firmware.isPushToNewDevices(),
         firmware.isActive(),
+        firmware.getImageIdentifier(),
         firmware.getHash(),
         firmware.getHashType());
   }
@@ -930,7 +931,7 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
 
       this.firmwareManagementService.addOrChangeFirmware(
           organisationIdentification,
-          this.firmwareFileRequestFor(firmware),
+          this.firmwareFileAttributesFor(firmware),
           firmware.getFile(),
           deviceModels,
           firmwareModuleData);

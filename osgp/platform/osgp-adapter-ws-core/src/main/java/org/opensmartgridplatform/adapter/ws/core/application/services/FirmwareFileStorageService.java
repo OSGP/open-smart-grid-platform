@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import lombok.extern.slf4j.Slf4j;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.springframework.stereotype.Service;
 
@@ -26,16 +27,24 @@ public class FirmwareFileStorageService {
   }
 
   public void storeFirmwareFile(final byte[] firmwareFile, final String firmwareIdentification)
-      throws IOException {
-    Files.write(this.firmwareDirectory.resolve(firmwareIdentification), firmwareFile);
+      throws TechnicalException {
+    try {
+      Files.write(this.firmwareDirectory.resolve(firmwareIdentification), firmwareFile);
+    } catch (final IOException e) {
+      throw new TechnicalException(ComponentType.WS_CORE, "Error storing firmware file", e);
+    }
   }
 
   public void storeImageIdentifier(
-      final byte[] imageIdentifier, final String firmwareIdentification) throws IOException {
-    Files.write(
-        this.firmwareDirectory.resolve(
-            String.format("%s.%s", firmwareIdentification, this.firmwareImageIdExtension)),
-        imageIdentifier);
+      final byte[] imageIdentifier, final String firmwareIdentification) throws TechnicalException {
+    try {
+      Files.write(
+          this.firmwareDirectory.resolve(
+              String.format("%s.%s", firmwareIdentification, this.firmwareImageIdExtension)),
+          imageIdentifier);
+    } catch (final IOException e) {
+      throw new TechnicalException(ComponentType.WS_CORE, "Error storing image identifier", e);
+    }
   }
 
   public String calculateHash(final String hashType, final byte[] firmwareFile)
