@@ -765,12 +765,13 @@ public class FirmwareManagementService {
 
     if (this.firmwareFileStorage) {
       final String algorithmName = HashTypeDto.SHA256.getAlgorithmName();
-      final String fileDigest = this.firmwareFileStorageService.calculateHash(algorithmName, file);
       final String identification = firmwareFileAttributes.getIdentification();
-      this.firmwareFileStorageService.storeFirmwareFile(file, identification);
       this.firmwareFileStorageService.storeImageIdentifier(
           firmwareFileAttributes.getImageIdentifier(), identification);
+      this.firmwareFileStorageService.storeFirmwareFile(file, identification);
 
+      final String fileDigest =
+          this.firmwareFileStorageService.createDigest(algorithmName, identification);
       final FirmwareFile firmwareFile = this.insertOrUdateDatabase(firmwareFileAttributes, null);
       firmwareFile.setHash(fileDigest);
       firmwareFile.setHashType("SHA-256");
@@ -812,8 +813,6 @@ public class FirmwareManagementService {
     if (existingFirmwareFile.getFile() == null || existingFirmwareFile.getFile().length == 0) {
       existingFirmwareFile.setFilename(firmwareFileAttributes.getFileName());
       existingFirmwareFile.setFile(file);
-      existingFirmwareFile.setHash(firmwareFileAttributes.getHash());
-      existingFirmwareFile.setHashType(firmwareFileAttributes.getHashType());
     } else {
       existingFirmwareFile.setFilename(existingFirmwareFile.getFilename());
       existingFirmwareFile.setFile(existingFirmwareFile.getFile());
