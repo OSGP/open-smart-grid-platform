@@ -18,6 +18,8 @@ public enum RegisterAttribute implements AttributeClass {
 
   private final int attributeId;
 
+  private final AttributeType attributeType;
+
   private RegisterAttribute(final int attributeId) {
     this.attributeId = attributeId;
     this.attributeType = AttributeType.UNKNOWN;
@@ -27,8 +29,6 @@ public enum RegisterAttribute implements AttributeClass {
     this.attributeId = attributeId;
     this.attributeType = attributeType;
   }
-
-  private final AttributeType attributeType;
 
   @Override
   public int attributeId() {

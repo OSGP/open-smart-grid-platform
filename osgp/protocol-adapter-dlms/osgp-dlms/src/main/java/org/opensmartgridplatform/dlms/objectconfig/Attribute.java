@@ -46,7 +46,7 @@ public class Attribute {
       final String description,
       final String note,
       final DlmsDataType datatype,
-      final AttributeType attributeType,
+      final AttributeType attributetype,
       final ValueType valuetype,
       final String value,
       final String rawValue,
@@ -56,7 +56,7 @@ public class Attribute {
     this.description = description;
     this.note = note;
     this.datatype = datatype;
-    this.attributetype = this.attributetype;
+    this.attributetype = attributetype;
     this.valuetype = valuetype;
     this.value = value;
     this.rawValue = rawValue;

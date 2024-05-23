@@ -4,8 +4,6 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder;
 
-import static org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass.interfaceClassFor;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -83,8 +81,7 @@ public class DataDecoder {
                   this.dlmsHelper.getDebugInfo(DataObject.newStructureData(attributeData)));
       log.warn(error, e);
 
-      return this.createCosemObject(
-          interfaceClassFor(classId).name(), classId, -1, obisCode, error, null);
+      return this.createCosemObject(null, classId, -1, obisCode, error, null);
     }
   }
 
@@ -219,8 +216,7 @@ public class DataDecoder {
     }
 
     String decodedValue =
-        this.profileDataDecoder.decodeAttributeValue(
-            objectFromProfile, attributeFromProfile, attributeData);
+        this.profileDataDecoder.decodeAttributeValue(attributeFromProfile, attributeData);
 
     if (decodedValue == null) {
       decodedValue =

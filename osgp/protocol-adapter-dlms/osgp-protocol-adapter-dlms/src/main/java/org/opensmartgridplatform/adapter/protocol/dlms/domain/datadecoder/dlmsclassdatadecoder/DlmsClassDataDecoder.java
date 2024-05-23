@@ -14,6 +14,7 @@ import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeT
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.PACKET_SWITCHED_STATUS;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.SCALER_UNIT;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.SORT_METHOD;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.SPECIAL_DAYS;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.UNKNOWN;
 
 import java.util.EnumMap;
@@ -43,7 +44,8 @@ public class DlmsClassDataDecoder {
       final DlmsHelper dlmsHelper,
       final BasicDlmsDataDecoder basicDlmsDataDecoder,
       final DataExchangeClassesDecoder dataExchangeDecoder,
-      final MeasurementDataClassesDecoder measurementDataDecoder) {
+      final MeasurementDataClassesDecoder measurementDataDecoder,
+      final TimeAndEventsClassesDecoder timeAndEventsClassesDecoder) {
     this.dlmsHelper = dlmsHelper;
     this.basicDlmsDataDecoder = basicDlmsDataDecoder;
 
@@ -57,6 +59,7 @@ public class DlmsClassDataDecoder {
     this.map.put(PACKET_SWITCHED_STATUS, dataExchangeDecoder::decodePsStatus);
     this.map.put(SCALER_UNIT, measurementDataDecoder::decodeAttributeScalerUnit);
     this.map.put(SORT_METHOD, measurementDataDecoder::decodeSortMethod);
+    this.map.put(SPECIAL_DAYS, timeAndEventsClassesDecoder::decodeSpecialDays);
     this.map.put(UNKNOWN, this::decodeUnknown);
   }
 

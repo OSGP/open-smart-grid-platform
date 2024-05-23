@@ -220,7 +220,7 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
         log.debug("ResultCode not SUCCESS for one or more attributes");
       }
 
-      return getResults.stream().map(result -> result.getResultData()).toList();
+      return getResults.stream().map(GetResult::getResultData).toList();
     } catch (final Exception e) {
       log.debug("Failed reading attributes from " + objectListElement.getLogicalName(), e);
       return List.of();

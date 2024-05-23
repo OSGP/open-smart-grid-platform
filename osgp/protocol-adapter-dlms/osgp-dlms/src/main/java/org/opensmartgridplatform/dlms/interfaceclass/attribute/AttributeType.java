@@ -16,9 +16,11 @@ public enum AttributeType {
   PACKET_SWITCHED_STATUS,
   SCALER_UNIT,
   SORT_METHOD,
+  SPECIAL_DAYS,
 
   UNKNOWN,
 
-  // Additional types, defined in profile (e.g. SMR)
+  // Additional types, defined in profile (e.g. DSMR)
+  DSMR_EQUIPMENT_IDENTIFIER,
   SIGNATURE
 }

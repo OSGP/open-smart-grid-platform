@@ -34,12 +34,15 @@ class DlmsClassDataDecoderTest {
       new DataExchangeClassesDecoder(this.dlmsHelper, this.dlmsDataDecoder);
   private final MeasurementDataClassesDecoder measurementDataClassesDecoder =
       new MeasurementDataClassesDecoder(this.dlmsHelper, this.dlmsDataDecoder);
+  private final TimeAndEventsClassesDecoder timeAndEventsClassesDecoder =
+      new TimeAndEventsClassesDecoder(this.dlmsHelper, this.dlmsDataDecoder);
   private final DlmsClassDataDecoder decoder =
       new DlmsClassDataDecoder(
           this.dlmsHelper,
           this.dlmsDataDecoder,
           this.dataExchangeClassesDecoder,
-          this.measurementDataClassesDecoder);
+          this.measurementDataClassesDecoder,
+          this.timeAndEventsClassesDecoder);
 
   @Test
   void testDecodeScalerUnit() {

@@ -6,6 +6,8 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder;
 
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.openmuc.jdlms.datatypes.CosemDate;
+import org.openmuc.jdlms.datatypes.CosemDateFormat.Field;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
@@ -69,7 +71,7 @@ public class BasicDlmsDataDecoder {
   }
 
   private String decodeBoolean(final DataObject attributeData) {
-    return (int) attributeData.getValue() == 1 ? "true" : "false";
+    return attributeData.getValue().toString();
   }
 
   private String decodeOctetString(final DataObject attributeData) {
@@ -89,6 +91,21 @@ public class BasicDlmsDataDecoder {
         this.dlmsHelper.readDateTime(attributeData, "Try to read time from bytes"));
   }
 
+  public String decodeDate(final DataObject attributeData) throws ProtocolAdapterException {
+    if (attributeData.isCosemDateFormat()) {
+      final CosemDate date = attributeData.getValue();
+      final int year = date.get(Field.YEAR);
+      return this.getDayOfWeek(date.get(Field.DAY_OF_WEEK))
+          + ", "
+          + ((year < 0) ? "Year not specified" : year)
+          + "-"
+          + date.get(Field.MONTH)
+          + "-"
+          + date.get(Field.DAY_OF_MONTH);
+    }
+    return "not a valid date";
+  }
+
   private String cosemDateTimeToString(final CosemDateTimeDto dateTimeDto) {
     return this.getDayOfWeek(dateTimeDto)
         + dateTimeDto.getDate().asLocalDate()
@@ -102,16 +119,20 @@ public class BasicDlmsDataDecoder {
   }
 
   private String getDayOfWeek(final CosemDateTimeDto dateTimeDto) {
-    return switch (dateTimeDto.getDate().getDayOfWeek()) {
-      case 1 -> "Monday ";
-      case 2 -> "Tuesday ";
-      case 3 -> "Wednesday ";
-      case 4 -> "Thursday ";
-      case 5 -> "Friday ";
-      case 6 -> "Saturday ";
-      case 7 -> "Sunday ";
-      case 0xFF -> "Day of week not specified, ";
-      default -> "DayOfWeek value unknown: " + dateTimeDto.getDate().getDayOfWeek() + ", ";
+    return this.getDayOfWeek(dateTimeDto.getDate().getDayOfWeek());
+  }
+
+  private String getDayOfWeek(final int dayOfWeek) {
+    return switch (dayOfWeek) {
+      case 1 -> "Monday";
+      case 2 -> "Tuesday";
+      case 3 -> "Wednesday";
+      case 4 -> "Thursday";
+      case 5 -> "Friday";
+      case 6 -> "Saturday";
+      case 7 -> "Sunday";
+      case 0xFF -> "Day of week not specified";
+      default -> "DayOfWeek value unknown: " + dayOfWeek + ", ";
     };
   }
 

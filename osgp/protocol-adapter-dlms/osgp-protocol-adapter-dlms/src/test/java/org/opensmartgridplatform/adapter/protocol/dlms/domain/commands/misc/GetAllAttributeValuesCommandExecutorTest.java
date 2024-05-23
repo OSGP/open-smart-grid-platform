@@ -32,6 +32,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.Profil
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.dlmsclassdatadecoder.DataExchangeClassesDecoder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.dlmsclassdatadecoder.DlmsClassDataDecoder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.dlmsclassdatadecoder.MeasurementDataClassesDecoder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.dlmsclassdatadecoder.TimeAndEventsClassesDecoder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -74,12 +75,15 @@ class GetAllAttributeValuesCommandExecutorTest {
         new DataExchangeClassesDecoder(dlmsHelper, basicDlmsDataDecoder);
     final MeasurementDataClassesDecoder measurementDataClassesDecoder =
         new MeasurementDataClassesDecoder(dlmsHelper, basicDlmsDataDecoder);
+    final TimeAndEventsClassesDecoder timeAndEventsClassesDecoder =
+        new TimeAndEventsClassesDecoder(dlmsHelper, basicDlmsDataDecoder);
     final DlmsClassDataDecoder dlmsClassDataDecoder =
         new DlmsClassDataDecoder(
             dlmsHelper,
             basicDlmsDataDecoder,
             dataExchangeClassesDecoder,
-            measurementDataClassesDecoder);
+            measurementDataClassesDecoder,
+            timeAndEventsClassesDecoder);
     final ProfileDataDecoder profileDataDecoder = new ProfileDataDecoder(dlmsHelper);
     final DataDecoder dataDecoder =
         new DataDecoder(dlmsHelper, basicDlmsDataDecoder, dlmsClassDataDecoder, profileDataDecoder);
