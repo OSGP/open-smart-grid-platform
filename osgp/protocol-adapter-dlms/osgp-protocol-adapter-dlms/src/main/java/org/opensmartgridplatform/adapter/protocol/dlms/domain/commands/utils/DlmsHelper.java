@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -57,16 +58,13 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service(value = "dlmsHelper")
 public class DlmsHelper {
 
   public static final int MILLISECONDS_PER_MINUTE = 60000;
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(DlmsHelper.class);
 
   private static final Map<Integer, TransportServiceTypeDto> TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE =
       new TreeMap<>();
@@ -132,7 +130,7 @@ public class DlmsHelper {
               resultCode.getCode(),
               this.getDebugInfo(getResult.getResultData()));
 
-      LOGGER.error(errorMessage);
+      log.error(errorMessage);
       throw new FunctionalException(
           FunctionalExceptionType.ERROR_RETRIEVING_ATTRIBUTE_VALUE,
           ComponentType.PROTOCOL_DLMS,
@@ -365,7 +363,7 @@ public class DlmsHelper {
 
   public String getScalerUnit(final DataObject scalerUnitObject, final String description)
       throws ProtocolAdapterException {
-    LOGGER.debug(this.getDebugInfo(scalerUnitObject));
+    log.debug(this.getDebugInfo(scalerUnitObject));
 
     if (!scalerUnitObject.isComplex()) {
       throw new ProtocolAdapterException(
@@ -398,7 +396,7 @@ public class DlmsHelper {
       final String description)
       throws ProtocolAdapterException {
 
-    LOGGER.debug(this.getDebugInfo(value));
+    log.debug(this.getDebugInfo(value));
 
     final Long rawValue = this.readLong(value, description);
     if (rawValue == null) {
@@ -421,7 +419,7 @@ public class DlmsHelper {
   private void checkResultCode(final GetResult getResult, final String description)
       throws ProtocolAdapterException {
     final AccessResultCode resultCode = getResult.getResultCode();
-    LOGGER.debug("{} - AccessResultCode: {}", description, resultCode);
+    log.debug("{} - AccessResultCode: {}", description, resultCode);
     if (resultCode != AccessResultCode.SUCCESS) {
       throw new ProtocolAdapterException(
           "No success retrieving " + description + ": AccessResultCode = " + resultCode);
@@ -515,7 +513,7 @@ public class DlmsHelper {
       final CosemDateTime cosemDateTime = resultData.getValue();
       return this.fromDateTimeValue(cosemDateTime.encode());
     } else {
-      LOGGER.error("Unexpected ResultData for DateTime value: {}", this.getDebugInfo(resultData));
+      log.error("Unexpected ResultData for DateTime value: {}", this.getDebugInfo(resultData));
       throw new ProtocolAdapterException(
           "Expected ResultData of ByteArray or CosemDateFormat, got: " + resultData.getType());
     }
@@ -660,7 +658,7 @@ public class DlmsHelper {
       return null;
     }
     if (objectDefinitionElements.size() != 4) {
-      LOGGER.error(
+      log.error(
           "Unexpected ResultData for Object Definition value: {}", this.getDebugInfo(resultData));
       throw new ProtocolAdapterException(
           "Expected list for Object Definition to contain 4 elements, got: "
@@ -721,7 +719,7 @@ public class DlmsHelper {
     final TransportServiceTypeDto transportService =
         this.getTransportServiceTypeForEnumValue(enumValue);
     if (transportService == null) {
-      LOGGER.error("Unexpected Enum value for TransportServiceType: {}", enumValue);
+      log.error("Unexpected Enum value for TransportServiceType: {}", enumValue);
       throw new ProtocolAdapterException(
           "Unknown Enum value for TransportServiceType: " + enumValue);
     }
@@ -752,7 +750,7 @@ public class DlmsHelper {
         break;
       default:
         if (enumValue < 128 || enumValue > 255) {
-          LOGGER.error("Unexpected Enum value for MessageType: {}", enumValue);
+          log.error("Unexpected Enum value for MessageType: {}", enumValue);
           throw new ProtocolAdapterException("Unknown Enum value for MessageType: " + enumValue);
         }
         message = MessageTypeDto.MANUFACTURER_SPECIFIC;
@@ -792,7 +790,7 @@ public class DlmsHelper {
   private WindowElementDto buildWindowElementFromDataObjects(
       final List<DataObject> elements, final String description) throws ProtocolAdapterException {
     if (elements.size() != 2) {
-      LOGGER.error(
+      log.error(
           "Unexpected number of ResultData elements for WindowElement value: {}", elements.size());
       throw new ProtocolAdapterException(
           "Expected list for WindowElement to contain 2 elements, got: " + elements.size());
@@ -1065,12 +1063,12 @@ public class DlmsHelper {
   }
 
   private void logDebugResultData(final DataObject resultData, final String description) {
-    LOGGER.debug("{} - ResultData: {}", description, this.getDebugInfo(resultData));
+    log.debug("{} - ResultData: {}", description, this.getDebugInfo(resultData));
   }
 
   private void logAndThrowExceptionForUnexpectedResultData(
       final DataObject resultData, final String expectedType) throws ProtocolAdapterException {
-    LOGGER.error(
+    log.error(
         "Unexpected ResultData for {} value: {}", expectedType, this.getDebugInfo(resultData));
     final String resultDataType =
         resultData.getValue() == null ? "null" : resultData.getValue().getClass().getName();
@@ -1103,7 +1101,7 @@ public class DlmsHelper {
 
       try {
         final DataObject scalerUnitObject = this.getAttributeValue(conn, attributeAddress);
-        LOGGER.debug(this.getDebugInfo(scalerUnitObject));
+        log.debug(this.getDebugInfo(scalerUnitObject));
 
         if (!scalerUnitObject.isComplex()) {
           throw new ProtocolAdapterException(

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -21,12 +22,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public abstract class GetConfigurationObjectService extends AbstractConfigurationObjectService {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(GetConfigurationObjectService.class);
 
   protected DlmsDeviceRepository dlmsDeviceRepository;
 
@@ -58,7 +56,7 @@ public abstract class GetConfigurationObjectService extends AbstractConfiguratio
   private GetResult getGetResult(
       final DlmsConnectionManager conn, final AttributeAddress attributeAddress)
       throws ProtocolAdapterException {
-    LOGGER.debug("Get current ConfigurationObject using AttributeAddress {}", attributeAddress);
+    log.debug("Get current ConfigurationObject using AttributeAddress {}", attributeAddress);
     try {
       return this.handleBadResults(conn.getConnection().get(attributeAddress));
     } catch (final IOException e) {
