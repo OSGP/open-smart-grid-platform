@@ -42,6 +42,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
+import org.opensmartgridplatform.dto.valueobjects.HashTypeDto;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -763,7 +764,8 @@ public class FirmwareManagementService {
       throws TechnicalException {
 
     if (this.firmwareFileStorage) {
-      final String fileDigest = this.firmwareFileStorageService.calculateHash("SHA-256", file);
+      final String algorithmName = HashTypeDto.SHA256.getAlgorithmName();
+      final String fileDigest = this.firmwareFileStorageService.calculateHash(algorithmName, file);
       final String identification = firmwareFileAttributes.getIdentification();
       this.firmwareFileStorageService.storeFirmwareFile(file, identification);
       this.firmwareFileStorageService.storeImageIdentifier(
@@ -771,6 +773,7 @@ public class FirmwareManagementService {
 
       final FirmwareFile firmwareFile = this.insertOrUdateDatabase(firmwareFileAttributes, null);
       firmwareFile.setHash(fileDigest);
+      firmwareFile.setHashType("SHA-256");
       return firmwareFile;
 
     } else {
