@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(
     features = {"classpath:features/common"},
-    tags = {"not @Skip", "@Common", "@Platform", "@FirmwareManagement", "@HBM"},
+    tags = {"not @Skip", "not @NightlyBuildOnly"},
     glue = {
       "classpath:org.opensmartgridplatform.cucumber.platform.glue",
       "classpath:org.opensmartgridplatform.cucumber.platform.common.glue"
