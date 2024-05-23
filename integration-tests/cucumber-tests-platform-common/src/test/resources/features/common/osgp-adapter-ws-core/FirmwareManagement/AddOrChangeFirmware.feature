@@ -8,18 +8,19 @@ Feature: FirmwareManagement add or change firmware
   I want to add a new or change an existing firmware
   In order to ...
 
-  Scenario: Add firmware with File Contents
+  Scenario Outline: Add firmware <content> File Contents and <identifier> Image Identifier
     Given a device model
       | ModelCode              | DeviceModelDBStorageModel_test |
       | DeviceModelFileStorage | false                          |
     When receiving an add or change firmware request
-      | FirmwareFileIdentification | 1234567890ABCBEF                                     |
-      | FirmwareFile               | 57696520646974206c656573742069732067656b             |
-      | FirmwareFilename           | NewFirmware_test1                                    |
-      | ManufacturerName           | Test                                                 |
-      | ModelCode                  | DeviceModelDBStorageModel_test                       |
-      | FirmwareDescription        | Add 1 - Firmware is newly created with File Contents |
-      | FirmwareModuleVersionComm  | comm_1.2                                             |
+      | FirmwareFileIdentification  | 1234567890ABCBEF                                     |
+      | FirmwareFile                | <file>                                               |
+      | FirmwareFilename            | NewFirmware_test1                                    |
+      | ManufacturerName            | Test                                                 |
+      | ModelCode                   | DeviceModelDBStorageModel_test                       |
+      | FirmwareDescription         | Add 1 - Firmware is newly created with File Contents |
+      | FirmwareModuleVersionComm   | comm_1.2                                             |
+      | FirmwareFileImageIdentifier | <imageidentifier>                                    |
     Then the add or change firmware response contains
       | Result | OK |
     And the firmware file '1234567890ABCBEF' exists
@@ -27,6 +28,14 @@ Feature: FirmwareManagement add or change firmware
       | FirmwareFilename           | NewFirmware_test1                                    |
       | FirmwareDescription        | Add 1 - Firmware is newly created with File Contents |
       | FirmwareModuleVersionComm  | comm_1.2                                             |
+      | FirmwareFileStoreLocation  | <location>                                           |
+      | FirmwareHashType           | <hashtype>                                           |
+    Examples:
+      | imageidentifier  | file                                     | location     | hashtype | content | identifier |
+      | FEDCBA0987654321 | 57696520646974206c656573742069732067656b | FILE_STORAGE | SHA256   | with    | with       |
+      |                  | 57696520646974206c656573742069732067656b | FILE_STORAGE | SHA256   | with    | without    |
+      | FEDCBA0987654321 |                                          |              |          | without | with       |
+      |                  |                                          |              |          | without | without    |
 
   Scenario: Add firmware without File Content
     Given a device model
@@ -68,6 +77,8 @@ Feature: FirmwareManagement add or change firmware
       | FirmwareFile               | 57696520646974206c656573742069732067656b                       |
       | FirmwareFilename           | NewFirmware_test3                                              |
       | FirmwareDescription        | Add 3 - Firmware is newly created with related FirmwareModules |
+      | FirmwareFileStoreLocation  | FILE_STORAGE                                                   |
+      | FirmwareHashType           | SHA256                                                         |
     And the firmware file '1234567890ABCBEF' has module versions
       | FirmwareModuleVersionComm  | comm_1.2                                                       |
       | FirmwareModuleVersionFunc  | func_1.3                                                       |
@@ -101,6 +112,8 @@ Feature: FirmwareManagement add or change firmware
       | FirmwareFile              | 57696520646974206c656573742069732067656b                                                        |
       | FirmwareFilename          | NewFirmware_test4                                                                               |
       | FirmwareDescription       | Add 4 - Firmware is newly created with multiple related DeviceModels                            |
+      | FirmwareFileStoreLocation | FILE_STORAGE                                                                                    |
+      | FirmwareHashType          | SHA256                                                                                          |
     And the firmware file '1234567890ABCBEF' has device models
       | ModelCode                 | DeviceModelDBStorageModel_test1;DeviceModelDBStorageModel_test2;DeviceModelDBStorageModel_test3 |
       
@@ -120,7 +133,9 @@ Feature: FirmwareManagement add or change firmware
       | FirmwareFile              | 57696520646974206c656573742069732067656b                                              |
       | FirmwareFilename          | NewFirmware_test5                                                                     |
       | FirmwareDescription       | Add 5 - Firmware is newly created with File Contents and without related DeviceModels |
-     
+      | FirmwareFileStoreLocation | FILE_STORAGE                                                                          |
+      | FirmwareHashType          | SHA256                                                                                |
+
   Scenario: Change firmware with File Content - Change Description
     Given a device model
       | ModelCode              | DeviceModelDBStorageModel_test  |
@@ -149,6 +164,8 @@ Feature: FirmwareManagement add or change firmware
       | ManufacturerName           | Test                                                |
       | ModelCode                  | DeviceModelDBStorageModel_test                      |
       | FirmwareDescription        | Change 1 - Firmware is changed  - Added Description |
+      | FirmwareFileStoreLocation  | FILE_STORAGE                                        |
+      | FirmwareHashType           | SHA256                                              |
 
   Scenario: Change firmware without File Content - Add File Content
     Given a device model
@@ -176,6 +193,8 @@ Feature: FirmwareManagement add or change firmware
       | FirmwareFilename           | NewFirmware_test4                                     |
       | FirmwarePushToNewDevices   | true                                                  |
       | FirmwareDescription        | Change 2 - Firmware is changed  - Added File Content  |
+      | FirmwareFileStoreLocation  | FILE_STORAGE                                          |
+      | FirmwareHashType           | SHA256                                                |
 
   Scenario: Change firmware without related DeviceModels- Add related DeviceModels
     Given a device model
@@ -205,7 +224,7 @@ Feature: FirmwareManagement add or change firmware
     And the firmware file '1234567890ABCBEF' exists
       | FirmwarePushToNewDevices   | true                                                         |
       | FirmwareDescription        | Change 3 - Firmware is changed  - Added related DeviceModels |
- 
+
   Scenario: Change firmware without related DeviceModels- Add related DeviceModels
     Given a device model
       | ModelCode              | DeviceModelDBStorageModel_test1 |

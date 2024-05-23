@@ -45,6 +45,7 @@ public class PlatformKeys extends Keys {
   public static final String FIRMWARE_FILE_IMAGE_IDENTIFIER = "FirmwareFileImageIdentifier";
   public static final String FIRMWARE_HASH_TYPE = "FirmwareHashType";
   public static final String FIRMWARE_HASH = "FirmwareHash";
+  public static final String FIRMWARE_FILE_STORE_LOCATION = "FirmwareFileStoreLocation";
   public static final String FIRMWARE_MODULE_VERSION_COMM = "FirmwareModuleVersionComm";
   public static final String FIRMWARE_MODULE_VERSION_FUNC = "FirmwareModuleVersionFunc";
   public static final String FIRMWARE_MODULE_VERSION_MA = "FirmwareModuleVersionMa";
