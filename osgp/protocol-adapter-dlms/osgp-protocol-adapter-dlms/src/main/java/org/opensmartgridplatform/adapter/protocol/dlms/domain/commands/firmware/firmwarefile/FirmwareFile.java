@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.AddressType;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.IdentificationNumber;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 /**
@@ -106,13 +107,13 @@ public class FirmwareFile {
             .array();
   }
 
-  public void setMbusDeviceIdentificationNumber(final String mbusDeviceIdentificationNumber)
-      throws ProtocolAdapterException {
+  public void setMbusDeviceIdentificationNumber(
+      final IdentificationNumber mbusDeviceIdentificationNumber) throws ProtocolAdapterException {
 
     final byte[] mbusDeviceIdentificationNumberByteArray =
         ByteBuffer.allocate(4)
             .order(ByteOrder.LITTLE_ENDIAN)
-            .putInt(Integer.parseInt(mbusDeviceIdentificationNumber, 16))
+            .putInt(mbusDeviceIdentificationNumber.getIntRepresentation())
             .array();
 
     this.checkWildcard(mbusDeviceIdentificationNumber);
@@ -135,16 +136,17 @@ public class FirmwareFile {
    * The Identification number can be wildcarded, a firmware file can be made available for a range
    * or all individual meters. The wildcard character is hex-value: 'F'.
    */
-  private void checkWildcard(final String mbusDeviceIdentificationNumber)
+  private void checkWildcard(final IdentificationNumber mbusDeviceIdentificationNumber)
       throws ProtocolAdapterException {
     final String lsbFirstPattern = this.getHeader().getMbusDeviceIdentificationNumber();
     final String msbFirstPattern = this.reverseHexString(lsbFirstPattern);
     if (!Pattern.matches(
-        msbFirstPattern.replaceAll("[fF]", "[0-9]"), mbusDeviceIdentificationNumber)) {
+        msbFirstPattern.replaceAll("[fF]", "[0-9]"),
+        mbusDeviceIdentificationNumber.getTextualRepresentation())) {
       throw new ProtocolAdapterException(
           String.format(
               "M-Bus Device Identification Number (%s) does not fit the range of Identification Numbers supported by this Firmware File (%s)",
-              mbusDeviceIdentificationNumber, msbFirstPattern));
+              mbusDeviceIdentificationNumber.getTextualRepresentation(), msbFirstPattern));
     }
   }
 
