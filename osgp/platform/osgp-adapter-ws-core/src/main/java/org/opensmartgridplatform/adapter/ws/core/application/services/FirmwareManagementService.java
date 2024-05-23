@@ -769,10 +769,11 @@ public class FirmwareManagementService {
         this.firmwareFileStorageService.storeImageIdentifier(
             file, firmwareFile.getIdentification());
       } catch (final IOException e) {
-        LOGGER.error("Error storing firmware file", e);
         throw new TechnicalException(ComponentType.WS_CORE, "Error storing firmware file", e);
       }
+
       return firmwareFile;
+
     } else {
       return this.insertOrUdateDatabase(firmwareFileRequest, file);
     }
