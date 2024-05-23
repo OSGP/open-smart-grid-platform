@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@Common @Platform @FirmwareManagement @HBM
+@Common @Platform @FirmwareManagement
 Feature: FirmwareManagement add or change firmware
   As OSGP 
   I want to add a new or change an existing firmware
