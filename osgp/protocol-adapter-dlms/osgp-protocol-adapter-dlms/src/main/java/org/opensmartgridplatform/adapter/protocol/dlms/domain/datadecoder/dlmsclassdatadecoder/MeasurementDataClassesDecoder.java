@@ -32,7 +32,7 @@ public class MeasurementDataClassesDecoder {
   }
 
   // Class-id 3, 4, 5: (Extended / Demand) Register
-  public String decodeAttributeScalerUnit(final DataObject attributeData) {
+  public String decodeScalerUnit(final DataObject attributeData) {
     try {
       return this.dlmsHelper.getScalerUnit(attributeData, "read scaler unit");
     } catch (final Exception e) {

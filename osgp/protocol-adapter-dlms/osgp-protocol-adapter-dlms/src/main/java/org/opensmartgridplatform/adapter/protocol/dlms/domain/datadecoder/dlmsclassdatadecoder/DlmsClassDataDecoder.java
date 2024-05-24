@@ -64,7 +64,7 @@ public class DlmsClassDataDecoder {
     this.map.put(DAY_PROFILE, timeAndEventsClassesDecoder::decodeDayProfiles);
     this.map.put(MODEM_REGISTRATION_STATUS, dataExchangeDecoder::decodeModemRegistrationStatus);
     this.map.put(PACKET_SWITCHED_STATUS, dataExchangeDecoder::decodePsStatus);
-    this.map.put(SCALER_UNIT, measurementDataDecoder::decodeAttributeScalerUnit);
+    this.map.put(SCALER_UNIT, measurementDataDecoder::decodeScalerUnit);
     this.map.put(SEASON_PROFILE, timeAndEventsClassesDecoder::decodeSeasonProfiles);
     this.map.put(SORT_METHOD, measurementDataDecoder::decodeSortMethod);
     this.map.put(SPECIAL_DAYS, timeAndEventsClassesDecoder::decodeSpecialDays);
