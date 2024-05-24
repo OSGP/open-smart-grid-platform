@@ -18,6 +18,9 @@ import org.springframework.stereotype.Service;
 @Service(value = "timeAndEventsClassesDecoder")
 public class TimeAndEventsClassesDecoder {
 
+  // This class contains decoding functions for the attributes of the DLMS classes in DLMS Blue
+  // book chapter "Interface classes for time- and event bound control".
+
   private final DlmsHelper dlmsHelper;
   private final BasicDlmsDataDecoder basicDlmsDataDecoder;
 

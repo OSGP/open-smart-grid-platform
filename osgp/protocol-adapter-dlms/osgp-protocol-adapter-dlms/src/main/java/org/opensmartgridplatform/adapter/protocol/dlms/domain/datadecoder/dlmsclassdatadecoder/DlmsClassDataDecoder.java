@@ -36,6 +36,9 @@ import org.springframework.stereotype.Service;
 @Service(value = "dlmsClassDataDecoder")
 public class DlmsClassDataDecoder {
 
+  // This service decodes attributes that have a special type in some DLMS classes, as described
+  // in the DLMS Blue book.
+
   private final DlmsHelper dlmsHelper;
   private final BasicDlmsDataDecoder basicDlmsDataDecoder;
 

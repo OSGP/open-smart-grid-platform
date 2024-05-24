@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 @Service(value = "basicDlmsDataDecoder")
 public class BasicDlmsDataDecoder {
 
+  // This service decodes attributes that have a basic DLMS data type.
+
   private static final List<DataObject.Type> simpleNumbers =
       List.of(
           DataObject.Type.DOUBLE_LONG,

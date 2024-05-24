@@ -23,6 +23,9 @@ import org.springframework.stereotype.Service;
 @Service(value = "profileDataDecoder")
 public class ProfileDataDecoder {
 
+  // This service decodes attributes that have a special type in some DLMS classes as defined in
+  // an additional specification, e.g. (D)SMR.
+
   private final DlmsHelper dlmsHelper;
 
   private final Map<AttributeType, Function<DataObject, String>> decoderMap =

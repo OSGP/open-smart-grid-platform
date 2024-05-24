@@ -20,6 +20,9 @@ import org.springframework.stereotype.Service;
 @Service(value = "dataExchangeClassesDecoder")
 public class DataExchangeClassesDecoder {
 
+  // This class contains decoding functions for the attributes of the DLMS classes in DLMS Blue
+  // book chapter "Interface classes for setting up data exchange via local ports and modems".
+
   private final DlmsHelper dlmsHelper;
   private final BasicDlmsDataDecoder basicDlmsDataDecoder;
 

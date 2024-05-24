@@ -18,6 +18,9 @@ import org.springframework.stereotype.Service;
 @Service(value = "measurementDataClassesDecoder")
 public class MeasurementDataClassesDecoder {
 
+  // This class contains decoding functions for the attributes of the DLMS classes in DLMS Blue
+  // book chapter "Interface classes for parameters and measurement data".
+
   private final DlmsHelper dlmsHelper;
   private final BasicDlmsDataDecoder basicDlmsDataDecoder;
 
