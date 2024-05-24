@@ -70,6 +70,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspRequest;
@@ -408,6 +412,20 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     this.waitForNotification(correlationUid);
 
     return (SetPushSetupLastGaspResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
+  }
+
+  public SetPushSetupAlarmAsyncResponse setPushSetupAlarm(final SetPushSetupAlarmRequest request)
+      throws WebServiceSecurityException {
+    return (SetPushSetupAlarmAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+  }
+
+  public SetPushSetupAlarmResponse getSetPushSetupAlarmResponse(
+      final SetPushSetupAlarmAsyncRequest asyncRequest) throws WebServiceSecurityException {
+
+    final String correlationUid = asyncRequest.getCorrelationUid();
+    this.waitForNotification(correlationUid);
+
+    return (SetPushSetupAlarmResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
   }
 
   public SetPushSetupSmsAsyncResponse setPushSetupSms(final SetPushSetupSmsRequest request)

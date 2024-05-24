@@ -21,16 +21,14 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class HsmEncryptionProvider extends AbstractEncryptionProvider {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(HsmEncryptionProvider.class);
 
   private static final int KEY_LENGTH = 16;
   private static final String ALGORITHM = "AES/CBC/NoPadding";
@@ -66,11 +64,10 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider {
       // bytes.
       final byte[] truncatedDecryptedSecretBytes =
           Arrays.copyOfRange(decryptedSecret, 0, KEY_LENGTH);
-      LOGGER.trace(
-          "Truncating decrypted key from "
-              + Hex.encodeHexString(decryptedSecret)
-              + " to "
-              + Hex.encodeHexString(truncatedDecryptedSecretBytes));
+      log.trace(
+          "Truncating decrypted key from {} to {}",
+          Hex.encodeHexString(decryptedSecret),
+          Hex.encodeHexString(truncatedDecryptedSecretBytes));
       return truncatedDecryptedSecretBytes;
     }
     return decryptedSecret;

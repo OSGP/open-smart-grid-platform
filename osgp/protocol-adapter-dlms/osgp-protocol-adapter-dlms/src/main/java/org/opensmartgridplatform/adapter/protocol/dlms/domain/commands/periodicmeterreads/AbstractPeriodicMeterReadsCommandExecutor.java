@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -36,13 +37,11 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
     extends AbstractCommandExecutor<T, R> {
 
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(AbstractPeriodicMeterReadsCommandExecutor.class);
   private final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
 
   AbstractPeriodicMeterReadsCommandExecutor(
@@ -77,7 +76,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
                 device.isSelectiveAccessPeriodicMeterReadsSupported())
             .orElseThrow(() -> new ProtocolAdapterException("No address found for " + type));
 
-    LOGGER.debug(
+    log.debug(
         "Dlms object config service returned profile buffer address {} ", attributeAddressProfile);
 
     return attributeAddressProfile;
@@ -244,7 +243,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
           "Could not read AMR profile register data. Invalid data type.");
     }
 
-    LOGGER.debug(
+    log.debug(
         "Received amrProfileStatusData {} - {}",
         amrProfileStatusData.toString(),
         amrProfileStatusData.getValue());
@@ -259,7 +258,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
       final Date meterReadTime, final Date beginDateTime, final Date endDateTime) {
 
     if (meterReadTime.before(beginDateTime) || meterReadTime.after(endDateTime)) {
-      LOGGER.info(
+      log.info(
           "Not using an object from capture buffer (clock= {}), because the date does not match the given period: [ {} .. {} ].",
           meterReadTime,
           beginDateTime,

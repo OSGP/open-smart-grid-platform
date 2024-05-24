@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.SetParameter;
@@ -27,12 +28,9 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFla
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public abstract class SetConfigurationObjectService extends AbstractConfigurationObjectService {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObjectService.class);
 
   private static final int NUMBER_OF_FLAG_BITS = 16;
   private static final int BYTE_SIZE = 8;
@@ -55,7 +53,7 @@ public abstract class SetConfigurationObjectService extends AbstractConfiguratio
 
     final DataObject dataObject =
         this.buildSetParameterData(configurationToSet, configurationOnDevice);
-    LOGGER.debug(
+    log.debug(
         "ConfigurationObject SetParameter Data : {}", this.dlmsHelper.getDebugInfo(dataObject));
 
     final AttributeAddress attributeAddress = this.getAttributeAddress(protocol);
@@ -79,7 +77,7 @@ public abstract class SetConfigurationObjectService extends AbstractConfiguratio
 
   private AccessResultCode getAccessResultCode(
       final DlmsConnectionManager conn, final SetParameter setParameter) {
-    LOGGER.debug("Set ConfigurationObject using SetParameter {}", setParameter);
+    log.debug("Set ConfigurationObject using SetParameter {}", setParameter);
     try {
       return conn.getConnection().set(setParameter);
     } catch (final IOException e) {

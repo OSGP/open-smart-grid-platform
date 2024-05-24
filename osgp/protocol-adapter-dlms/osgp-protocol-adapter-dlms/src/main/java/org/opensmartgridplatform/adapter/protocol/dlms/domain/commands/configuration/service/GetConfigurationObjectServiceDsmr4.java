@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.BitString;
@@ -23,15 +24,11 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFla
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectService {
-
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(GetConfigurationObjectServiceDsmr4.class);
 
   private static final int NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS = 2;
   private static final int INDEX_OF_GPRS_OPERATION_MODE = 0;
@@ -63,7 +60,7 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
       final String message =
           String.format(
               "Expected ConfigurationObject ResultData as Complex, but got: %s", resultData);
-      LOGGER.warn(message);
+      log.warn(message);
       throw new ProtocolAdapterException(message);
     }
     return this.getConfigurationObject(resultData);
@@ -71,14 +68,14 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
 
   private ConfigurationObjectDto getConfigurationObject(final DataObject resultData)
       throws ProtocolAdapterException {
-    LOGGER.debug("ConfigurationObject ResultData: {}", this.dlmsHelper.getDebugInfo(resultData));
+    log.debug("ConfigurationObject ResultData: {}", this.dlmsHelper.getDebugInfo(resultData));
     final List<DataObject> elements = resultData.getValue();
     if (elements == null || elements.size() != NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS) {
       final String message =
           String.format(
               "Expected ConfigurationObject ResultData with %d elements, but got %s",
               NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS, elements == null ? "null" : elements.size());
-      LOGGER.warn(message);
+      log.warn(message);
       throw new ProtocolAdapterException(message);
     }
     return this.getConfigurationObject(elements);
@@ -101,7 +98,7 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
       final String message =
           String.format(
               "Expected ConfigurationObject gprsOperationMode as Number, but got: %s", gprsMode);
-      LOGGER.warn(message);
+      log.warn(message);
       throw new ProtocolAdapterException(message);
     }
     final Number number = gprsMode.getValue();
@@ -114,7 +111,7 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
     if (flags == null || !flags.isBitString()) {
       final String message =
           String.format("Expected ConfigurationObject flags as BitString, but got: %s", flags);
-      LOGGER.warn(message);
+      log.warn(message);
       throw new ProtocolAdapterException(message);
     }
 

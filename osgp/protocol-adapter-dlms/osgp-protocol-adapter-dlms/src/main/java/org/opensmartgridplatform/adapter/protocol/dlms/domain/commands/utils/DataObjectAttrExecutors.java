@@ -7,6 +7,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
@@ -14,18 +15,15 @@ import org.openmuc.jdlms.SetParameter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Contains all information to be used when setting a {@link SetParameter} to the device. Further
  * the execute method, which needs a live {@link DlmsConnection}, will do the actual call to the
  * device.
  */
+@Slf4j
 public class DataObjectAttrExecutors {
-  private static final String REQUESTS_FAILED_FOR = ": Requests failed for: {}";
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(DataObjectAttrExecutors.class);
+  private static final String REQUESTS_FAILED_FOR = "{}: Requests failed for: {}";
 
   private final List<DataObjectAttrExecutor> dataObjectAttrExecutorList = new ArrayList<>();
   private String errString = "";
@@ -60,11 +58,11 @@ public class DataObjectAttrExecutors {
         }
       }
     } catch (final IOException e) {
-      LOGGER.error(this.executor + REQUESTS_FAILED_FOR, this.errString);
+      log.error(REQUESTS_FAILED_FOR, this.executor, this.errString);
       throw new ConnectionException(e);
     }
     if (this.containsError) {
-      LOGGER.error(this.executor + REQUESTS_FAILED_FOR, this.errString);
+      log.error(REQUESTS_FAILED_FOR, this.executor, this.errString);
       throw new ProtocolAdapterException(this.errString);
     }
   }
@@ -74,7 +72,7 @@ public class DataObjectAttrExecutors {
     this.errString += dataObjectAttrExecutor.createRequestAndResultCodeInfo();
     this.containsError = true;
     if (this.stopOnNoSuccess) {
-      LOGGER.error(this.executor + REQUESTS_FAILED_FOR, this.errString);
+      log.error(REQUESTS_FAILED_FOR, this.executor, this.errString);
       throw new ProtocolAdapterException(
           this.errString
               + ". Stopping execution after element: "

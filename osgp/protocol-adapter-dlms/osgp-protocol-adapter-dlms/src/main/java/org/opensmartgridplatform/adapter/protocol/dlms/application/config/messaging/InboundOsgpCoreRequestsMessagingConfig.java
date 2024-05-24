@@ -7,12 +7,11 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.config.messa
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.MessageListener;
 import javax.net.ssl.SSLException;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,11 +20,9 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 /** Configuration class for inbound requests from OSGP Core. */
+@Slf4j
 @Configuration
 public class InboundOsgpCoreRequestsMessagingConfig {
-
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(InboundOsgpCoreRequestsMessagingConfig.class);
 
   private final JmsConfigurationFactory jmsConfigurationFactory;
 
@@ -33,7 +30,7 @@ public class InboundOsgpCoreRequestsMessagingConfig {
       final Environment environment, final DefaultJmsConfiguration defaultJmsConfiguration)
       throws SSLException {
 
-    LOGGER.info(
+    log.info(
         "Init InboundOsgpCoreRequestsMessagingConfig. queue = {}",
         environment.getProperty("jms.dlms.requests.queue"));
 
@@ -43,7 +40,7 @@ public class InboundOsgpCoreRequestsMessagingConfig {
 
   @Bean(destroyMethod = "stop", name = "protocolDlmsInboundOsgpCoreRequestsConnectionFactory")
   public ConnectionFactory connectionFactory() {
-    LOGGER.info("Initializing protocolDlmsInboundOsgpCoreRequestsConnectionFactory bean.");
+    log.info("Initializing protocolDlmsInboundOsgpCoreRequestsConnectionFactory bean.");
 
     return this.jmsConfigurationFactory.getPooledConnectionFactory();
   }
@@ -56,7 +53,7 @@ public class InboundOsgpCoreRequestsMessagingConfig {
     final DefaultMessageListenerContainer container =
         this.jmsConfigurationFactory.initMessageListenerContainer(messageListener);
 
-    LOGGER.info(
+    log.info(
         "Initializing protocolDlmsInboundOsgpCoreRequestsMessageListenerContainer bean at Destination {}",
         container.getDestination());
     return container;
@@ -69,7 +66,7 @@ public class InboundOsgpCoreRequestsMessagingConfig {
 
   @Bean(name = "protocolDlmsDeviceRequestMessageSenderJmsTemplate")
   public JmsTemplate jmsTemplate() {
-    LOGGER.info("Initializing protocolDlmsDeviceRequestMessageSenderJmsTemplate bean.");
+    log.info("Initializing protocolDlmsDeviceRequestMessageSenderJmsTemplate bean.");
     return this.jmsConfigurationFactory.initJmsTemplate();
   }
 }

@@ -6,13 +6,15 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetu
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.PushSetupMapper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
@@ -29,12 +31,13 @@ public class SetPushSetupSmsCommandExecutor
 
   private static final Logger LOGGER =
       LoggerFactory.getLogger(SetPushSetupSmsCommandExecutor.class);
-  private static final ObisCode OBIS_CODE = new ObisCode("0.2.25.9.0.255");
 
   private final PushSetupMapper pushSetupMapper;
 
-  public SetPushSetupSmsCommandExecutor(final PushSetupMapper pushSetupMapper) {
-    super(SetPushSetupSmsRequestDto.class);
+  public SetPushSetupSmsCommandExecutor(
+      final PushSetupMapper pushSetupMapper,
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
+    super(SetPushSetupSmsRequestDto.class, objectConfigServiceHelper);
     this.pushSetupMapper = pushSetupMapper;
   }
 
@@ -85,10 +88,12 @@ public class SetPushSetupSmsCommandExecutor
   private SetParameter getSetParameter(final PushSetupSmsDto pushSetupSms, final DlmsDevice device)
       throws ProtocolAdapterException {
 
+    final AttributeAddress sendDestinationAndMethodAddress =
+        this.getSendDestinationAndMethodAddress(
+            Protocol.forDevice(device), DlmsObjectType.PUSH_SETUP_SMS);
+
     this.checkPushSetupSms(pushSetupSms);
 
-    final AttributeAddress sendDestinationAndMethodAddress =
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD);
     final DataObject value =
         this.pushSetupMapper.map(
             this.getUpdatedSendDestinationAndMethod(

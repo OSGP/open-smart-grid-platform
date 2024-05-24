@@ -13,6 +13,7 @@ import org.bouncycastle.util.encoders.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.IdentificationNumber;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
@@ -213,11 +214,11 @@ public class UpdateFirmwareCommandExecutor
           String.format(EXCEPTION_MSG_DEVICE_NOT_AVAILABLE_IN_DATABASE, deviceIdentification));
     }
 
-    final String identificationNumber = this.getIdentificationNumber(mbusDevice);
+    final IdentificationNumber identificationNumber = this.getIdentificationNumber(mbusDevice);
 
     log.debug("Original Firmware file header: {}", firmwareFile.getHeader());
-
-    log.debug("Setting M-Bus Identification number: {}", identificationNumber);
+    log.debug(
+        "Setting M-Bus Identification number: {}", identificationNumber.getTextualRepresentation());
     firmwareFile.setMbusDeviceIdentificationNumber(identificationNumber);
 
     final int mbusVersion = 80;
@@ -237,7 +238,7 @@ public class UpdateFirmwareCommandExecutor
     return firmwareFile;
   }
 
-  private String getIdentificationNumber(final DlmsDevice mbusDevice)
+  private IdentificationNumber getIdentificationNumber(final DlmsDevice mbusDevice)
       throws ProtocolAdapterException {
     final String mbusIdentificationNumberTextualRepresentation =
         mbusDevice.getMbusIdentificationNumberTextualRepresentation();
@@ -247,7 +248,8 @@ public class UpdateFirmwareCommandExecutor
               EXCEPTION_MSG_DEVICE_HAS_NO_MBUS_IDENTIFICATION_NUMBER,
               mbusDevice.getDeviceIdentification()));
     }
-    return mbusIdentificationNumberTextualRepresentation;
+    return IdentificationNumber.fromTextualRepresentation(
+        mbusIdentificationNumberTextualRepresentation);
   }
 
   private byte[] getImageIdentifier(

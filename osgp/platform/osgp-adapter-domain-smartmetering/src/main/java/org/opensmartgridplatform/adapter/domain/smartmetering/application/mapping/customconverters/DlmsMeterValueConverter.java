@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters;
 
 import java.math.BigDecimal;
+import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
@@ -12,8 +13,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpMete
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpUnit;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Calculate a osgp meter value:
@@ -24,9 +23,8 @@ import org.slf4j.LoggerFactory;
  * - apply the multiplier
  * </pre>
  */
+@Slf4j
 public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValueDto, OsgpMeterValue> {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(DlmsMeterValueConverter.class);
 
   @Override
   public OsgpMeterValue convert(
@@ -40,7 +38,7 @@ public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValueDto, 
         this.getMultiplierToOsgpUnit(
             source.getDlmsUnit(), this.toStandardUnit(source.getDlmsUnit()));
     final BigDecimal calculated = source.getValue().multiply(multiplier);
-    LOGGER.debug(String.format("calculated %s from %s", calculated, source));
+    log.debug("calculated {} from {}", calculated, source);
     return new OsgpMeterValue(calculated, this.toStandardUnit(source.getDlmsUnit()));
   }
 

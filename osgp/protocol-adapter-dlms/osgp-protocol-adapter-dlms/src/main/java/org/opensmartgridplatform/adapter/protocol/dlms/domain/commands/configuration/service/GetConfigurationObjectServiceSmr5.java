@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.BitString;
@@ -22,15 +23,11 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFla
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class GetConfigurationObjectServiceSmr5 extends GetConfigurationObjectService {
-
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(GetConfigurationObjectServiceSmr5.class);
 
   private final DlmsHelper dlmsHelper;
 
@@ -56,12 +53,12 @@ public class GetConfigurationObjectServiceSmr5 extends GetConfigurationObjectSer
 
     final DataObject resultData = result.getResultData();
     if (resultData == null || !resultData.isBitString()) {
-      LOGGER.warn("Configuration object result data is not a BitString: {}", resultData);
+      log.warn("Configuration object result data is not a BitString: {}", resultData);
       throw new ProtocolAdapterException(
           "Expected bit-string data as Configuration object result data, but got: "
               + (resultData == null ? "null" : resultData.getType()));
     }
-    LOGGER.debug(
+    log.debug(
         "SMR5 Configuration object current BitString: {}",
         this.dlmsHelper.getDebugInfo(resultData));
 
