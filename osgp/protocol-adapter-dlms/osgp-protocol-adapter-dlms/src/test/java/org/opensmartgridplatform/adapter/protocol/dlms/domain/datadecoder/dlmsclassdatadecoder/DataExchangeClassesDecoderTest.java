@@ -16,7 +16,7 @@ class DataExchangeClassesDecoderTest {
   private final DlmsHelper dlmsHelper = new DlmsHelper();
   private final BasicDlmsDataDecoder dlmsDataDecoder = new BasicDlmsDataDecoder(this.dlmsHelper);
   private final DataExchangeClassesDecoder decoder =
-      new DataExchangeClassesDecoder(this.dlmsHelper, this.dlmsDataDecoder);
+      new DataExchangeClassesDecoder(this.dlmsHelper);
 
   @Test
   void testDecodeModemRegistrationStatus() {

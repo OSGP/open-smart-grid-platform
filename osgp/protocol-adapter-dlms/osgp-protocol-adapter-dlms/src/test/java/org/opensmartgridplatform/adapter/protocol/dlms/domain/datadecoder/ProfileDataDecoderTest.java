@@ -14,7 +14,7 @@ import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 
 class ProfileDataDecoderTest {
   private final DlmsHelper dlmsHelper = new DlmsHelper();
-  private final ProfileDataDecoder decoder = new ProfileDataDecoder(this.dlmsHelper);
+  private final ProfileDataDecoder decoder = new ProfileDataDecoder();
 
   @Test
   void testDecodeSignature() {

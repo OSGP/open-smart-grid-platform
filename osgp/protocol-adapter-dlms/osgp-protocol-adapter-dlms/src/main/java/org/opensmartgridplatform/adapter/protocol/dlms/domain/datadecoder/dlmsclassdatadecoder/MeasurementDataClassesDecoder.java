@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.BasicDlmsDataDecoder;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,13 +21,10 @@ public class MeasurementDataClassesDecoder {
   // book chapter "Interface classes for parameters and measurement data".
 
   private final DlmsHelper dlmsHelper;
-  private final BasicDlmsDataDecoder basicDlmsDataDecoder;
 
   @Autowired
-  public MeasurementDataClassesDecoder(
-      final DlmsHelper dlmsHelper, final BasicDlmsDataDecoder basicDlmsDataDecoder) {
+  public MeasurementDataClassesDecoder(final DlmsHelper dlmsHelper) {
     this.dlmsHelper = dlmsHelper;
-    this.basicDlmsDataDecoder = basicDlmsDataDecoder;
   }
 
   // Class-id 3, 4, 5: (Extended / Demand) Register

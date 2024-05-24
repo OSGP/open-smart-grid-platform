@@ -21,6 +21,9 @@ public class TimeAndEventsClassesDecoder {
   // This class contains decoding functions for the attributes of the DLMS classes in DLMS Blue
   // book chapter "Interface classes for time- and event bound control".
 
+  private static final String ARRAY_EXPECTED_BUT_FOUND = "ARRAY expected, but found ";
+  private static final String STRUCTURE_EXPECTED_BUT_FOUND = "STRUCTURE expected, but found ";
+
   private final DlmsHelper dlmsHelper;
   private final BasicDlmsDataDecoder basicDlmsDataDecoder;
 
@@ -43,7 +46,7 @@ public class TimeAndEventsClassesDecoder {
         }
         return String.join("\n", specialDaysDecoded);
       } else {
-        return "ARRAY expected, but found " + attributeData.getType().name();
+        return ARRAY_EXPECTED_BUT_FOUND + attributeData.getType().name();
       }
     } catch (final Exception e) {
       return "decoding special days failed: " + e.getMessage();
@@ -60,7 +63,7 @@ public class TimeAndEventsClassesDecoder {
 
         return index + ". (id " + day_id + "): " + date;
       } else {
-        return "STRUCTURE expected, but found " + specialDay.getType().name();
+        return STRUCTURE_EXPECTED_BUT_FOUND + specialDay.getType().name();
       }
     } catch (final Exception e) {
       return "decoding special day failed: " + e.getMessage();
@@ -79,7 +82,7 @@ public class TimeAndEventsClassesDecoder {
         }
         return String.join("\n", dayProfilesDecoded);
       } else {
-        return "ARRAY expected, but found " + attributeData.getType().name();
+        return ARRAY_EXPECTED_BUT_FOUND + attributeData.getType().name();
       }
     } catch (final Exception e) {
       return "decoding day profiles failed: " + e.getMessage();
@@ -94,7 +97,7 @@ public class TimeAndEventsClassesDecoder {
         final String schedule = this.decodeDaySchedule(fields.get(1));
         return id + ": " + schedule;
       } else {
-        return "STRUCTURE expected, but found " + dayProfile.getType().name();
+        return STRUCTURE_EXPECTED_BUT_FOUND + dayProfile.getType().name();
       }
     } catch (final Exception e) {
       return "decoding day profile failed: " + e.getMessage();
@@ -112,7 +115,7 @@ public class TimeAndEventsClassesDecoder {
         }
         return String.join(", ", dayDayProfileActionsDecoded);
       } else {
-        return "ARRAY expected, but found " + daySchedule.getType().name();
+        return ARRAY_EXPECTED_BUT_FOUND + daySchedule.getType().name();
       }
     } catch (final Exception e) {
       return "decoding day profile actions failed: " + e.getMessage();
@@ -129,7 +132,7 @@ public class TimeAndEventsClassesDecoder {
         final int selector = this.dlmsHelper.readInteger(fields.get(2), "read selector");
         return startTime + " " + logicalName + " selector " + selector;
       } else {
-        return "STRUCTURE expected, but found " + dayProfileAction.getType().name();
+        return STRUCTURE_EXPECTED_BUT_FOUND + dayProfileAction.getType().name();
       }
     } catch (final Exception e) {
       return "decoding day profile action failed: " + e.getMessage();
@@ -147,7 +150,7 @@ public class TimeAndEventsClassesDecoder {
         }
         return String.join("\n", weekProfilesDecoded);
       } else {
-        return "ARRAY expected, but found " + attributeData.getType().name();
+        return ARRAY_EXPECTED_BUT_FOUND + attributeData.getType().name();
       }
     } catch (final Exception e) {
       return "decoding week profiles failed: " + e.getMessage();
@@ -182,7 +185,7 @@ public class TimeAndEventsClassesDecoder {
             + ", Sunday "
             + sunday;
       } else {
-        return "STRUCTURE expected, but found " + weekProfile.getType().name();
+        return STRUCTURE_EXPECTED_BUT_FOUND + weekProfile.getType().name();
       }
     } catch (final Exception e) {
       return "decoding week profile failed: " + e.getMessage();
@@ -200,7 +203,7 @@ public class TimeAndEventsClassesDecoder {
         }
         return String.join("\n", seasonProfilesDecoded);
       } else {
-        return "ARRAY expected, but found " + attributeData.getType().name();
+        return ARRAY_EXPECTED_BUT_FOUND + attributeData.getType().name();
       }
     } catch (final Exception e) {
       return "decoding season profiles failed: " + e.getMessage();
@@ -221,7 +224,7 @@ public class TimeAndEventsClassesDecoder {
 
         return name + ": " + start + ", weekName: " + weekName;
       } else {
-        return "STRUCTURE expected, but found " + seasonProfile.getType().name();
+        return STRUCTURE_EXPECTED_BUT_FOUND + seasonProfile.getType().name();
       }
     } catch (final Exception e) {
       return "decoding season profile failed: " + e.getMessage();

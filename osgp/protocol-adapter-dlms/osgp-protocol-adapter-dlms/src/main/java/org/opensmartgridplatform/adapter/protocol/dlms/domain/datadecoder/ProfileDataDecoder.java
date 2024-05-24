@@ -13,10 +13,8 @@ import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -26,15 +24,10 @@ public class ProfileDataDecoder {
   // This service decodes attributes that have a special type in some DLMS classes as defined in
   // an additional specification, e.g. (D)SMR.
 
-  private final DlmsHelper dlmsHelper;
-
   private final Map<AttributeType, Function<DataObject, String>> decoderMap =
       new EnumMap<>(AttributeType.class);
 
-  @Autowired
-  public ProfileDataDecoder(final DlmsHelper dlmsHelper) {
-    this.dlmsHelper = dlmsHelper;
-
+  public ProfileDataDecoder() {
     this.decoderMap.put(SIGNATURE, this::decodeSignature);
     this.decoderMap.put(DSMR_EQUIPMENT_IDENTIFIER, this::decodeDsmrEquipmentIdentifier);
   }

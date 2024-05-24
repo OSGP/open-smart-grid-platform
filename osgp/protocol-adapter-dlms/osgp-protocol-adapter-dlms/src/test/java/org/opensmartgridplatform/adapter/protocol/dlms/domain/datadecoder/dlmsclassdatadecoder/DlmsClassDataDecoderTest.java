@@ -31,14 +31,13 @@ class DlmsClassDataDecoderTest {
   private final DlmsHelper dlmsHelper = new DlmsHelper();
   private final BasicDlmsDataDecoder dlmsDataDecoder = new BasicDlmsDataDecoder(this.dlmsHelper);
   private final DataExchangeClassesDecoder dataExchangeClassesDecoder =
-      new DataExchangeClassesDecoder(this.dlmsHelper, this.dlmsDataDecoder);
+      new DataExchangeClassesDecoder(this.dlmsHelper);
   private final MeasurementDataClassesDecoder measurementDataClassesDecoder =
-      new MeasurementDataClassesDecoder(this.dlmsHelper, this.dlmsDataDecoder);
+      new MeasurementDataClassesDecoder(this.dlmsHelper);
   private final TimeAndEventsClassesDecoder timeAndEventsClassesDecoder =
       new TimeAndEventsClassesDecoder(this.dlmsHelper, this.dlmsDataDecoder);
   private final DlmsClassDataDecoder decoder =
       new DlmsClassDataDecoder(
-          this.dlmsHelper,
           this.dlmsDataDecoder,
           this.dataExchangeClassesDecoder,
           this.measurementDataClassesDecoder,

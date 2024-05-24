@@ -125,16 +125,15 @@ public enum InterfaceClass {
     return this.version;
   }
 
-  public Enum<?>[] getAttributeEnumValues() {
-    return this.attributeClass.getEnumConstants();
+  public AttributeClass[] getAttributeEnumValues() {
+    return (AttributeClass[]) this.attributeClass.getEnumConstants();
   }
 
   public AttributeType getAttributeType(final int attributeId) {
-    final Enum<?>[] attributesForClass = this.getAttributeEnumValues();
+    final AttributeClass[] attributesForClass = this.getAttributeEnumValues();
 
     final Optional<AttributeClass> optionalAttributeClass =
         Arrays.stream(attributesForClass)
-            .map(AttributeClass.class::cast)
             .filter(attribute -> attribute.attributeId() == attributeId)
             .findFirst();
 

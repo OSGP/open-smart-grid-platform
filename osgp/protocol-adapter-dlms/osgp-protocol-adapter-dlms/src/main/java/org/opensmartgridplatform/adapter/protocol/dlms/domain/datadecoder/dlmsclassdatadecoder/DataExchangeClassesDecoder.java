@@ -8,7 +8,6 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.BasicDlmsDataDecoder;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CircuitSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ModemRegistrationStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PacketSwitchedStatusDto;
@@ -24,13 +23,10 @@ public class DataExchangeClassesDecoder {
   // book chapter "Interface classes for setting up data exchange via local ports and modems".
 
   private final DlmsHelper dlmsHelper;
-  private final BasicDlmsDataDecoder basicDlmsDataDecoder;
 
   @Autowired
-  public DataExchangeClassesDecoder(
-      final DlmsHelper dlmsHelper, final BasicDlmsDataDecoder basicDlmsDataDecoder) {
+  public DataExchangeClassesDecoder(final DlmsHelper dlmsHelper) {
     this.dlmsHelper = dlmsHelper;
-    this.basicDlmsDataDecoder = basicDlmsDataDecoder;
   }
 
   // Class-id 47: GSM diagnostic

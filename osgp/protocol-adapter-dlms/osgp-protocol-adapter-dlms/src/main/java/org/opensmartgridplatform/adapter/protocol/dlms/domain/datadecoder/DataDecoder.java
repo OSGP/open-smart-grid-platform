@@ -232,9 +232,11 @@ public class DataDecoder {
   }
 
   private String getAttributeDescription(final InterfaceClass interfaceClass, final int attrId) {
-    for (final Enum<?> attributeClass : interfaceClass.getAttributeEnumValues()) {
-      if (((AttributeClass) attributeClass).attributeId() == attrId) {
-        return ((AttributeClass) attributeClass).attributeName().toLowerCase();
+    final AttributeClass[] attributesForClasses = interfaceClass.getAttributeEnumValues();
+
+    for (final AttributeClass attributeClass : attributesForClasses) {
+      if (attributeClass.attributeId() == attrId) {
+        return attributeClass.attributeName().toLowerCase();
       }
     }
 

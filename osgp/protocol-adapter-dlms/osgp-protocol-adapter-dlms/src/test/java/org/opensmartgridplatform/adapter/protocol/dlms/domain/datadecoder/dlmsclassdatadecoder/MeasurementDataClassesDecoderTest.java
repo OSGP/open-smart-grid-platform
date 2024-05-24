@@ -16,7 +16,7 @@ class MeasurementDataClassesDecoderTest {
   private final DlmsHelper dlmsHelper = new DlmsHelper();
   private final BasicDlmsDataDecoder dlmsDataDecoder = new BasicDlmsDataDecoder(this.dlmsHelper);
   private final MeasurementDataClassesDecoder decoder =
-      new MeasurementDataClassesDecoder(this.dlmsHelper, this.dlmsDataDecoder);
+      new MeasurementDataClassesDecoder(this.dlmsHelper);
 
   @Test
   void testDecodeScalerUnit() {

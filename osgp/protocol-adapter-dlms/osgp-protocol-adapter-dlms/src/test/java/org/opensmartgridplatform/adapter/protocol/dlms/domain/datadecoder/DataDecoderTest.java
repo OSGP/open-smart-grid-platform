@@ -49,19 +49,18 @@ class DataDecoderTest {
   private final BasicDlmsDataDecoder basicDlmsDataDecoder =
       new BasicDlmsDataDecoder(this.dlmsHelper);
   private final DataExchangeClassesDecoder dataExchangeClassesDecoder =
-      new DataExchangeClassesDecoder(this.dlmsHelper, this.basicDlmsDataDecoder);
+      new DataExchangeClassesDecoder(this.dlmsHelper);
   private final MeasurementDataClassesDecoder measurementDataClassesDecoder =
-      new MeasurementDataClassesDecoder(this.dlmsHelper, this.basicDlmsDataDecoder);
+      new MeasurementDataClassesDecoder(this.dlmsHelper);
   private final TimeAndEventsClassesDecoder timeAndEventsClassesDecoder =
       new TimeAndEventsClassesDecoder(this.dlmsHelper, this.basicDlmsDataDecoder);
   private final DlmsClassDataDecoder dlmsClassDataDecoder =
       new DlmsClassDataDecoder(
-          this.dlmsHelper,
           this.basicDlmsDataDecoder,
           this.dataExchangeClassesDecoder,
           this.measurementDataClassesDecoder,
           this.timeAndEventsClassesDecoder);
-  private final ProfileDataDecoder profileDataDecoder = new ProfileDataDecoder(this.dlmsHelper);
+  private final ProfileDataDecoder profileDataDecoder = new ProfileDataDecoder();
   private final DataDecoder decoder =
       new DataDecoder(
           this.dlmsHelper,

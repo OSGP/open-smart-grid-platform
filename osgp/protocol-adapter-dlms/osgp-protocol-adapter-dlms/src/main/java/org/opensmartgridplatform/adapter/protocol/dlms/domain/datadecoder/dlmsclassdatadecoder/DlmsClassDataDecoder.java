@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.BasicDlmsDataDecoder;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType;
@@ -39,7 +38,6 @@ public class DlmsClassDataDecoder {
   // This service decodes attributes that have a special type in some DLMS classes, as described
   // in the DLMS Blue book.
 
-  private final DlmsHelper dlmsHelper;
   private final BasicDlmsDataDecoder basicDlmsDataDecoder;
 
   private final Map<AttributeType, Function<DataObject, String>> map =
@@ -47,12 +45,10 @@ public class DlmsClassDataDecoder {
 
   @Autowired
   public DlmsClassDataDecoder(
-      final DlmsHelper dlmsHelper,
       final BasicDlmsDataDecoder basicDlmsDataDecoder,
       final DataExchangeClassesDecoder dataExchangeDecoder,
       final MeasurementDataClassesDecoder measurementDataDecoder,
       final TimeAndEventsClassesDecoder timeAndEventsClassesDecoder) {
-    this.dlmsHelper = dlmsHelper;
     this.basicDlmsDataDecoder = basicDlmsDataDecoder;
 
     this.map.put(ADJACENT_CELLS, dataExchangeDecoder::decodeAdjacentCells);

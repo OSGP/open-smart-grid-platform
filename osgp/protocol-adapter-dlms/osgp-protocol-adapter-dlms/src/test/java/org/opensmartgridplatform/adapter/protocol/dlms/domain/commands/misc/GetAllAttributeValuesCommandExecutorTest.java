@@ -72,19 +72,18 @@ class GetAllAttributeValuesCommandExecutorTest {
         new ObjectConfigServiceHelper(objectConfigService);
     final BasicDlmsDataDecoder basicDlmsDataDecoder = new BasicDlmsDataDecoder(dlmsHelper);
     final DataExchangeClassesDecoder dataExchangeClassesDecoder =
-        new DataExchangeClassesDecoder(dlmsHelper, basicDlmsDataDecoder);
+        new DataExchangeClassesDecoder(dlmsHelper);
     final MeasurementDataClassesDecoder measurementDataClassesDecoder =
-        new MeasurementDataClassesDecoder(dlmsHelper, basicDlmsDataDecoder);
+        new MeasurementDataClassesDecoder(dlmsHelper);
     final TimeAndEventsClassesDecoder timeAndEventsClassesDecoder =
         new TimeAndEventsClassesDecoder(dlmsHelper, basicDlmsDataDecoder);
     final DlmsClassDataDecoder dlmsClassDataDecoder =
         new DlmsClassDataDecoder(
-            dlmsHelper,
             basicDlmsDataDecoder,
             dataExchangeClassesDecoder,
             measurementDataClassesDecoder,
             timeAndEventsClassesDecoder);
-    final ProfileDataDecoder profileDataDecoder = new ProfileDataDecoder(dlmsHelper);
+    final ProfileDataDecoder profileDataDecoder = new ProfileDataDecoder();
     final DataDecoder dataDecoder =
         new DataDecoder(dlmsHelper, basicDlmsDataDecoder, dlmsClassDataDecoder, profileDataDecoder);
 
