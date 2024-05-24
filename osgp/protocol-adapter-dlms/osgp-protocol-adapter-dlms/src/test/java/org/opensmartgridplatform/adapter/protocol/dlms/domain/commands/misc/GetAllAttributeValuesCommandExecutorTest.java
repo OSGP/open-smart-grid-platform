@@ -117,7 +117,7 @@ class GetAllAttributeValuesCommandExecutorTest {
 
     final String result = this.executor.execute(this.connectionManager, DEVICE, null, MSG_METADATA);
 
-    assertThat(result)
+    assertThat(removeNewLines(result))
         .isEqualToIgnoringNewLines(
             """
 [ {
@@ -142,7 +142,7 @@ class GetAllAttributeValuesCommandExecutorTest {
     "id" : 3,
     "description" : "scaler_unit",
     "datatype" : "scal_unit_type",
-    "rawValue" : "STRUCTURE, Complex, value=[Arrays$ArrayList]: [\\r\\n\\tLONG_UNSIGNED, Number, value=[Integer]: 1\\r\\n\\tLONG_UNSIGNED, Number, value=[Integer]: 30\\r\\n]\\r\\n",
+    "rawValue" : "STRUCTURE, Complex, value=[Arrays$ArrayList]: [\\tLONG_UNSIGNED, Number, value=[Integer]: 1\\tLONG_UNSIGNED, Number, value=[Integer]: 30]",
     "value" : "1, WH",
     "access" : "RW"
   } ],
@@ -186,14 +186,14 @@ class GetAllAttributeValuesCommandExecutorTest {
 
     final String result = this.executor.execute(this.connectionManager, DEVICE, null, MSG_METADATA);
 
-    assertThat(result)
+    assertThat(removeNewLines(result))
         .isEqualToIgnoringNewLines(
             """
 [ {
   "dlmsClass" : "DATA",
   "version" : -1,
   "obis" : "1.0.1.8.0.255",
-  "note" : "Decoding failed, raw data: STRUCTURE, Complex, value=[ImmutableCollections$ListN]: [\\r\\n\\tOCTET_STRING, ByteArray, value=[B]: logical name: 1-0:1.8.0.255\\r\\n\\tLONG_UNSIGNED, Number, value=[Integer]: 26\\r\\n\\tSTRUCTURE, Complex, value=[Arrays$ArrayList]: [\\r\\n\\tLONG_UNSIGNED, Number, value=[Integer]: 2\\r\\n\\tLONG_UNSIGNED, Number, value=[Integer]: 31\\r\\n]\\r\\n\\r\\n]\\r\\n",
+  "note" : "Decoding failed, raw data: STRUCTURE, Complex, value=[ImmutableCollections$ListN]: [\\tOCTET_STRING, ByteArray, value=[B]: logical name: 1-0:1.8.0.255\\tLONG_UNSIGNED, Number, value=[Integer]: 26\\tSTRUCTURE, Complex, value=[Arrays$ArrayList]: [\\tLONG_UNSIGNED, Number, value=[Integer]: 2\\tLONG_UNSIGNED, Number, value=[Integer]: 31]]",
   "class-id" : 1
 } ]
 """);
@@ -215,7 +215,7 @@ class GetAllAttributeValuesCommandExecutorTest {
 
     final String result = this.executor.execute(this.connectionManager, DEVICE, null, MSG_METADATA);
 
-    assertThat(result)
+    assertThat(removeNewLines(result))
         .isEqualToIgnoringNewLines(
             """
 [ {
@@ -240,7 +240,7 @@ class GetAllAttributeValuesCommandExecutorTest {
     "id" : 3,
     "description" : "scaler_unit",
     "datatype" : "scal_unit_type",
-    "rawValue" : "STRUCTURE, Complex, value=[Arrays$ArrayList]: [\\r\\n\\tBOOLEAN, Boolean, value=[Boolean]: false\\r\\n\\tLONG_UNSIGNED, Number, value=[Integer]: 30\\r\\n]\\r\\n",
+    "rawValue" : "STRUCTURE, Complex, value=[Arrays$ArrayList]: [\\tBOOLEAN, Boolean, value=[Boolean]: false\\tLONG_UNSIGNED, Number, value=[Integer]: 30]",
     "value" : "decoding scaler unit failed: Expected ResultData of Number, got: BOOLEAN, value type: java.lang.Boolean",
     "access" : "RW"
   } ],
@@ -313,5 +313,14 @@ class GetAllAttributeValuesCommandExecutorTest {
     }
 
     return getResults;
+  }
+
+  private static String removeNewLines(final String text) {
+    return text.replace("\\r\\n", "")
+        .replace("\\r", "")
+        .replace("\\n", "")
+        .replace("\r\n", "")
+        .replace("\r", "")
+        .replace("\n", "");
   }
 }
