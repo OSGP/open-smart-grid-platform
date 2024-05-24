@@ -190,7 +190,6 @@ class GetAllAttributeValuesCommandExecutorTest {
         .isEqualToIgnoringNewLines(
             """
 [ {
-  "description" : "DATA",
   "dlmsClass" : "DATA",
   "version" : -1,
   "obis" : "1.0.1.8.0.255",

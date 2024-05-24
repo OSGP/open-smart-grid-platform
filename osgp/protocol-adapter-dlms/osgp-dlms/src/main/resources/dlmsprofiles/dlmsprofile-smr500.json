@@ -2827,6 +2827,216 @@
       ]
     },
     {
+      "tag": "MBUS_DEVICE_CONFIG_MODEL",
+      "description": "M-Bus device configuration, Model / Version",
+      "note": null,
+      "class-id": 4,
+      "version": 0,
+      "obis": "0.x.24.2.7.255",
+      "group": "MBUS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "0, undefined",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "status",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "capture_time",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_DEVICE_CONFIG_HARDWARE_VERSION",
+      "description": "M-Bus device configuration, Hardware version",
+      "note": null,
+      "class-id": 4,
+      "version": 0,
+      "obis": "0.x.24.2.8.255",
+      "group": "MBUS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "0, undefined",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "status",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "capture_time",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_DEVICE_CONFIG_METROLOGY_VERSION",
+      "description": "M-Bus device configuration, Metrology version",
+      "note": null,
+      "class-id": 4,
+      "version": 0,
+      "obis": "0.x.24.2.9.255",
+      "group": "MBUS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "0, undefined",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "status",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "capture_time",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_DEVICE_CONFIG_OTHER_FIRMWARE_VERSION",
+      "description": "M-Bus device configuration, Other firmware version",
+      "note": null,
+      "class-id": 4,
+      "version": 0,
+      "obis": "0.x.24.2.10.255",
+      "group": "MBUS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "0, undefined",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "status",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "capture_time",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_DEVICE_CONFIG_SIMPLE_VERSION_INFO",
+      "description": "M-Bus device configuration, Simple version info",
+      "note": null,
+      "class-id": 4,
+      "version": 0,
+      "obis": "0.x.24.2.11.255",
+      "group": "MBUS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "0, undefined",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "status",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "capture_time",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
       "tag": "ACTIVITY_CALENDAR",
       "description": "Activity calendar",
       "note": null,

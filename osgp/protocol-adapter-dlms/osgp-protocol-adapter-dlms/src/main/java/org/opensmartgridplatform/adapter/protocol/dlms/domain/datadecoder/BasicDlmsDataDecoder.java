@@ -4,10 +4,9 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.openmuc.jdlms.datatypes.CosemDate;
-import org.openmuc.jdlms.datatypes.CosemDateFormat.Field;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
@@ -91,19 +90,40 @@ public class BasicDlmsDataDecoder {
         this.dlmsHelper.readDateTime(attributeData, "Try to read time from bytes"));
   }
 
-  public String decodeDate(final DataObject attributeData) throws ProtocolAdapterException {
-    if (attributeData.isCosemDateFormat()) {
-      final CosemDate date = attributeData.getValue();
-      final int year = date.get(Field.YEAR);
-      return this.getDayOfWeek(date.get(Field.DAY_OF_WEEK))
+  public String decodeDate(final DataObject attributeData) {
+    if (attributeData.getType() == Type.OCTET_STRING) {
+
+      final ByteBuffer bb = ByteBuffer.wrap(attributeData.getValue());
+
+      final int year = bb.getShort() & 0xFFFF;
+      final int month = bb.get() & 0xFF;
+      final int dayOfMonth = bb.get() & 0xFF;
+      final int dayOfWeek = bb.get() & 0xFF;
+
+      return this.getDayOfWeek(dayOfWeek)
           + ", "
-          + ((year < 0) ? "Year not specified" : year)
+          + ((year == 65535) ? "Year not specified" : year)
           + "-"
-          + date.get(Field.MONTH)
+          + month
           + "-"
-          + date.get(Field.DAY_OF_MONTH);
+          + dayOfMonth;
     }
     return "not a valid date";
+  }
+
+  public String decodeTime(final DataObject attributeData) {
+    if (attributeData.getType() == Type.OCTET_STRING) {
+
+      final ByteBuffer bb = ByteBuffer.wrap(attributeData.getValue());
+
+      final int hour = bb.get() & 0xFF;
+      final int minute = bb.get() & 0xFF;
+      final int second = bb.get() & 0xFF;
+      final int hundredths = bb.get() & 0xFF;
+
+      return String.format("%d:%02d:%02d.%03d", hour, minute, second, hundredths);
+    }
+    return "not a valid time";
   }
 
   private String cosemDateTimeToString(final CosemDateTimeDto dateTimeDto) {

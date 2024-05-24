@@ -10,12 +10,15 @@ import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeT
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.CELL_INFO;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.CIRCUIT_SWITCHED_STATUS;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.DATE_TIME;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.DAY_PROFILE;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.MODEM_REGISTRATION_STATUS;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.PACKET_SWITCHED_STATUS;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.SCALER_UNIT;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.SEASON_PROFILE;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.SORT_METHOD;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.SPECIAL_DAYS;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.UNKNOWN;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.WEEK_PROFILE;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -55,11 +58,15 @@ public class DlmsClassDataDecoder {
     this.map.put(CELL_INFO, dataExchangeDecoder::decodeCellInfo);
     this.map.put(CIRCUIT_SWITCHED_STATUS, dataExchangeDecoder::decodeCsStatus);
     this.map.put(DATE_TIME, this::decodeDateTime);
+    this.map.put(DAY_PROFILE, timeAndEventsClassesDecoder::decodeDayProfiles);
     this.map.put(MODEM_REGISTRATION_STATUS, dataExchangeDecoder::decodeModemRegistrationStatus);
     this.map.put(PACKET_SWITCHED_STATUS, dataExchangeDecoder::decodePsStatus);
     this.map.put(SCALER_UNIT, measurementDataDecoder::decodeAttributeScalerUnit);
+    this.map.put(SEASON_PROFILE, timeAndEventsClassesDecoder::decodeSeasonProfiles);
     this.map.put(SORT_METHOD, measurementDataDecoder::decodeSortMethod);
     this.map.put(SPECIAL_DAYS, timeAndEventsClassesDecoder::decodeSpecialDays);
+    this.map.put(WEEK_PROFILE, timeAndEventsClassesDecoder::decodeWeekProfiles);
+
     this.map.put(UNKNOWN, this::decodeUnknown);
   }
 
