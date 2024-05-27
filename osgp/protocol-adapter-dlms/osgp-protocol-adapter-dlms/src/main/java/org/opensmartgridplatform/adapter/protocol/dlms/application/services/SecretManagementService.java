@@ -4,8 +4,6 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -384,7 +382,7 @@ public class SecretManagementService {
         this.createGenerateAndStoreSecretsRequest(deviceIdentification, secretTypes);
     secretTypes
         .getSecretType()
-        .addAll(keyTypes.stream().map(SecurityKeyType::toSecretType).collect(toList()));
+        .addAll(keyTypes.stream().map(SecurityKeyType::toSecretType).toList());
 
     final GenerateAndStoreSecretsResponse response =
         this.secretManagementClient.generateAndStoreSecrets(messageMetadata, request);

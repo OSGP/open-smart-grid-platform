@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedSet;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeableFirmware;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware;
@@ -294,9 +293,9 @@ public class FirmwareSteps {
     assertThat(databaseDeviceModels).hasSameSizeAs(deviceModels);
 
     final List<String> databaseDeviceModelCodes =
-        databaseDeviceModels.stream().map(ddm -> ddm.getModelCode()).collect(Collectors.toList());
+        databaseDeviceModels.stream().map(ddm -> ddm.getModelCode()).toList();
     final List<String> deviceModelCodes =
-        deviceModels.stream().map(dm -> dm.getModelCode()).collect(Collectors.toList());
+        deviceModels.stream().map(dm -> dm.getModelCode()).toList();
 
     assertThat(deviceModelCodes).containsExactlyInAnyOrderElementsOf(databaseDeviceModelCodes);
   }

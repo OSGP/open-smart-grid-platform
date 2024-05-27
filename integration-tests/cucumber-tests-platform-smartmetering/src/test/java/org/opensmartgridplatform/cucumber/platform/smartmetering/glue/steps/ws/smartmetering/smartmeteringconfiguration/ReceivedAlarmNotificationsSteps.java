@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetPushNotificationAlarmResponse;
 import org.opensmartgridplatform.cucumber.core.RetryableAssert;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -132,7 +131,7 @@ public class ReceivedAlarmNotificationsSteps {
               this.deviceLogItemRepository.findByDeviceIdentification(
                   deviceIdentification, pageable);
           final List<DeviceLogItem> filteredDeviceLogItems =
-              deviceLogPage.getContent().stream().filter(filter).collect(Collectors.toList());
+              deviceLogPage.getContent().stream().filter(filter).toList();
 
           assertThat(filteredDeviceLogItems.size())
               .as(

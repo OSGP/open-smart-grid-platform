@@ -14,7 +14,6 @@ import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsResponse;
@@ -196,7 +195,7 @@ public class FindOrganizationsSteps {
             getString(expectedResult, PlatformKeys.KEY_DOMAINS, PlatformDefaults.DEFAULT_DOMAINS)
                 .split(";"))
         .map(PlatformDomain::valueOf)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private boolean organisationMatches(final Organisation expected, final Organisation actual) {

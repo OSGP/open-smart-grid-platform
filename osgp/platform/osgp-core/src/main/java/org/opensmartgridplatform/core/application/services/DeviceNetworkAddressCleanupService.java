@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
@@ -52,7 +51,7 @@ public class DeviceNetworkAddressCleanupService {
           Collections.unmodifiableList(
               ipRangesAllowingMultipleDevicesPerAddress.stream()
                   .filter(StringUtils::isNotBlank)
-                  .collect(Collectors.toList()));
+                  .toList());
     }
     this.duplicatesAllowedByConfiguration =
         this.duplicatesAllowed(this.ipRangesAllowingMultipleDevicesPerAddress);

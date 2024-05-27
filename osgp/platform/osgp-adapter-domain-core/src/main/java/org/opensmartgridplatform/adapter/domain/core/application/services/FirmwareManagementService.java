@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -433,7 +432,7 @@ public class FirmwareManagementService extends AbstractService {
                     new FirmwareVersion(
                         FirmwareModuleType.forDescription(e.getKey().getDescription()),
                         e.getValue()))
-            .collect(Collectors.toList());
+            .toList();
 
     // remove the history versions
     firmwareVersionsToCheck.removeAll(firmwareVersionsInHistory);
@@ -507,7 +506,7 @@ public class FirmwareManagementService extends AbstractService {
                     new FirmwareVersion(
                         e.getFirmwareVersion().getFirmwareModuleType(),
                         e.getFirmwareVersion().getVersion()))
-            .collect(Collectors.toList());
+            .toList();
 
     // remove the latest history (module)versions from the firmwareVersions
     // parameter

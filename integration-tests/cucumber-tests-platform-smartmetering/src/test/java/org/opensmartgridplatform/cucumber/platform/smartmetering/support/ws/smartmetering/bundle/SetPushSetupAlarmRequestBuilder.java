@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetPushSetupAlarmRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues;
@@ -107,7 +106,7 @@ public class SetPushSetupAlarmRequestBuilder {
 
               return pushObject;
             })
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private ObisCodeValues convertObisCode(final String obisCode) {

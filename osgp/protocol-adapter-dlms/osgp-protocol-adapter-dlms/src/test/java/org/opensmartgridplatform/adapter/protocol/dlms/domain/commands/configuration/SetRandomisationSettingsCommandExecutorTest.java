@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -199,6 +198,6 @@ class SetRandomisationSettingsCommandExecutorTest {
 
     return Arrays.stream(ConfigurationFlagTypeDto.values())
         .map(flagType -> new ConfigurationFlagDto(flagType, true))
-        .collect(Collectors.toList());
+        .toList();
   }
 }

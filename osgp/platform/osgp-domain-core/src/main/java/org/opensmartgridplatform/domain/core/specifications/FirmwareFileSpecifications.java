@@ -10,7 +10,6 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.SetJoin;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.springframework.data.jpa.domain.Specification;
@@ -64,8 +63,7 @@ public class FirmwareFileSpecifications {
       final CriteriaBuilder cb,
       final List<DeviceModel> deviceModels) {
 
-    final List<String> modelCodes =
-        deviceModels.stream().map(DeviceModel::getModelCode).collect(Collectors.toList());
+    final List<String> modelCodes = deviceModels.stream().map(DeviceModel::getModelCode).toList();
 
     final SetJoin<FirmwareFile, DeviceModel> join =
         firmwareFileRoot.joinSet("deviceModels", JoinType.INNER);

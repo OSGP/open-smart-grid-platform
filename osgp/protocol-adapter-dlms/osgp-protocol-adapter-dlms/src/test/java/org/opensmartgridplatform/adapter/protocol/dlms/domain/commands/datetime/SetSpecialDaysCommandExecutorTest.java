@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AttributeAddress;
@@ -28,50 +27,56 @@ import org.openmuc.jdlms.datatypes.CosemDate;
 import org.openmuc.jdlms.datatypes.CosemDateFormat.Field;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDayDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 @Slf4j
 class SetSpecialDaysCommandExecutorTest {
 
   @Mock private DlmsConnectionManager dlmsConnectionManager;
-  @Mock private DlmsDevice device;
   @Mock private MessageMetadata messageMetadata;
-
-  private final DlmsHelper dlmsHelper = new DlmsHelper();
 
   @Mock private DlmsMessageListener dlmsMessageListener;
 
   @Mock private DlmsConnection dlmsConnection;
-  @InjectMocks private SetSpecialDaysCommandExecutor setSpecialDaysCommandExecutor;
+  private SetSpecialDaysCommandExecutor setSpecialDaysCommandExecutor;
 
   @Captor ArgumentCaptor<SetParameter> setParameterArgumentCaptor;
 
   @BeforeEach
-  void setup() {
-    ReflectionTestUtils.setField(this.setSpecialDaysCommandExecutor, "dlmsHelper", this.dlmsHelper);
-
+  void setup() throws IOException, ObjectConfigException {
+    final ObjectConfigService objectConfigService = new ObjectConfigService();
+    final ObjectConfigServiceHelper objectConfigServiceHelper =
+        new ObjectConfigServiceHelper(objectConfigService);
+    final DlmsHelper dlmsHelper = new DlmsHelper();
+    this.setSpecialDaysCommandExecutor =
+        new SetSpecialDaysCommandExecutor(objectConfigServiceHelper, dlmsHelper);
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.dlmsConnectionManager.getConnection()).thenReturn(this.dlmsConnection);
   }
 
   @Test
   void execute() throws ProtocolAdapterException, IOException {
+    final DlmsDevice device = new DlmsDevice();
+    device.setProtocol(Protocol.DSMR_4_2_2);
 
     final SpecialDayDto specialDayDto = new SpecialDayDto(new CosemDateDto(2016, 1, 1), 1);
     final List<SpecialDayDto> specialDayDtoList = Collections.singletonList(specialDayDto);
 
     this.setSpecialDaysCommandExecutor.execute(
-        this.dlmsConnectionManager, this.device, specialDayDtoList, this.messageMetadata);
+        this.dlmsConnectionManager, device, specialDayDtoList, this.messageMetadata);
     verify(this.dlmsConnection, times(1)).set(this.setParameterArgumentCaptor.capture());
 
     final List<SetParameter> setParameters = this.setParameterArgumentCaptor.getAllValues();

@@ -5,7 +5,6 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
@@ -29,7 +28,7 @@ public class EventsConverter extends BidirectionalConverter<EventDto, Event> {
     final List<EventDetail> eventDetails =
         source.getEventDetails().stream()
             .map(sourceDetail -> new EventDetail(sourceDetail.getName(), sourceDetail.getValue()))
-            .collect(Collectors.toList());
+            .toList();
 
     return new Event(
         source.getTimestamp(),

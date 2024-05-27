@@ -47,7 +47,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -946,7 +945,7 @@ public class DlmsDeviceSteps {
     final List<SecretType> secretTypesToCreate =
         Arrays.asList(E_METER_AUTHENTICATION_KEY, E_METER_ENCRYPTION_KEY_UNICAST);
     final List<String> keyTypeInputNames =
-        secretTypesToCreate.stream().map(this::getKeyTypeInputName).collect(Collectors.toList());
+        secretTypesToCreate.stream().map(this::getKeyTypeInputName).toList();
     if (Collections.disjoint(inputSettings.keySet(), keyTypeInputNames)) {
       throw new IllegalArgumentException(
           "None of the following keys provided: " + keyTypeInputNames);
@@ -1012,9 +1011,7 @@ public class DlmsDeviceSteps {
               "No dbEncryptedSecret for %s with status %s found", secretTypeString, secretStatus)
           .isNotEmpty();
       final List<String> actualEncodedSecrets =
-          dbEncryptedSecret.stream()
-              .map(DbEncryptedSecret::getEncodedSecret)
-              .collect(Collectors.toList());
+          dbEncryptedSecret.stream().map(DbEncryptedSecret::getEncodedSecret).toList();
       assertThat(this.decodeSecrets(actualEncodedSecrets))
           .withFailMessage(
               "Wrong dbEncryptedSecret for %s with status %s expected %s to be contained in: %s",
@@ -1024,9 +1021,7 @@ public class DlmsDeviceSteps {
   }
 
   private List<String> decodeSecrets(final List<String> encodedSecrets) {
-    return encodedSecrets.stream()
-        .map(encodedSecret -> this.decodeSecret(encodedSecret))
-        .collect(Collectors.toList());
+    return encodedSecrets.stream().map(encodedSecret -> this.decodeSecret(encodedSecret)).toList();
   }
 
   private String decodeSecret(final String encodedSecret) {
@@ -1094,7 +1089,7 @@ public class DlmsDeviceSteps {
             .stream()
             .map(DbEncryptedSecret::getEncodedSecret)
             .map(this::decodeSecret)
-            .collect(Collectors.toList());
+            .toList();
     final List<String> expiredAuthenticationKeys =
         this.encryptedSecretRepository
             .findSecrets(
@@ -1104,7 +1099,7 @@ public class DlmsDeviceSteps {
             .stream()
             .map(DbEncryptedSecret::getEncodedSecret)
             .map(this::decodeSecret)
-            .collect(Collectors.toList());
+            .toList();
     final List<String> activeEncryptionKeys =
         this.encryptedSecretRepository
             .findSecrets(
@@ -1114,7 +1109,7 @@ public class DlmsDeviceSteps {
             .stream()
             .map(DbEncryptedSecret::getEncodedSecret)
             .map(this::decodeSecret)
-            .collect(Collectors.toList());
+            .toList();
     final List<String> expiredEncryptionKeys =
         this.encryptedSecretRepository
             .findSecrets(
@@ -1124,7 +1119,7 @@ public class DlmsDeviceSteps {
             .stream()
             .map(DbEncryptedSecret::getEncodedSecret)
             .map(this::decodeSecret)
-            .collect(Collectors.toList());
+            .toList();
 
     final String[] authenticationKeyNames =
         inputSettings.get(PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY).split(",");

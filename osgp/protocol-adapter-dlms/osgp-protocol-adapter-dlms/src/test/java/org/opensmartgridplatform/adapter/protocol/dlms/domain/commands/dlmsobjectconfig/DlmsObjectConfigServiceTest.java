@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -288,7 +287,7 @@ class DlmsObjectConfigServiceTest {
                     c ->
                         !(c.getRelatedObject() instanceof DlmsRegister)
                             || ((DlmsRegister) c.getRelatedObject()).getMedium() == filterMedium)
-                .collect(Collectors.toList())
+                .toList()
             : this.captureObjectsCombined;
 
     final DataObject selectedValues =
@@ -296,7 +295,7 @@ class DlmsObjectConfigServiceTest {
             ? DataObject.newArrayData(
                 expectedSelectedObjects.stream()
                     .map(o -> this.getDataObject(o.getRelatedObject()))
-                    .collect(Collectors.toList()))
+                    .toList())
             : DataObject.newArrayData(List.of());
 
     final DataObject accessParams = this.getAccessParams(selectedValues);

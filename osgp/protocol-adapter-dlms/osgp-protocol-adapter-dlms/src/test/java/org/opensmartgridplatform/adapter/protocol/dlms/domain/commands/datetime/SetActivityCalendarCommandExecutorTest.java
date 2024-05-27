@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterEach;
@@ -401,10 +400,8 @@ class SetActivityCalendarCommandExecutorTest {
     final List<DayProfileActionDto> actions =
         IntStream.range(0, actionStartTimes.size())
             .mapToObj(i -> new DayProfileActionDto(i + 1, actionStartTimes.get(i)))
-            .collect(Collectors.toList());
-    return dayIds.stream()
-        .map(id -> new DayProfileDto(id.intValue(), actions))
-        .collect(Collectors.toList());
+            .toList();
+    return dayIds.stream().map(id -> new DayProfileDto(id.intValue(), actions)).toList();
   }
 
   private List<WeekProfileDto> createWeekProfiles(
@@ -424,7 +421,7 @@ class SetActivityCalendarCommandExecutorTest {
                     .withSaturday(dayProfiles.get(this.getIndexOr0(5, size)))
                     .withSunday(dayProfiles.get(this.getIndexOr0(6, size)))
                     .build())
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private List<SeasonProfileDto> createSeasonProfiles(
@@ -442,7 +439,7 @@ class SetActivityCalendarCommandExecutorTest {
                         0,
                         new ClockStatusDto(0)),
                     weekProfiles.get(this.getIndexOr0(i, weekProfiles.size()))))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private int getIndexOr0(final int index, final int size) {

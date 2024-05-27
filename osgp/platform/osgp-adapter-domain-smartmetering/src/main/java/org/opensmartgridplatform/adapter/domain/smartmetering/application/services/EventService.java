@@ -69,14 +69,14 @@ public class EventService {
             .filter(
                 lookup ->
                     lookup.getProtocol() == null || protocolName.startsWith(lookup.getProtocol()))
-            .collect(Collectors.toList());
+            .toList();
     if (eventTypes.size() == 1) {
       return eventTypes.get(0).getEventTypeDto();
     } else if (eventTypes.size() > 1) {
 
       /* Specific EventTypes overrule the Genric ones */
       final List<EventTypeDtoLookup> specificEventTypes =
-          eventTypes.stream().filter(lookup -> !lookup.isGeneric()).collect(Collectors.toList());
+          eventTypes.stream().filter(lookup -> !lookup.isGeneric()).toList();
       if (specificEventTypes.size() == 1) {
         return specificEventTypes.get(0).getEventTypeDto();
       }

@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -159,6 +158,6 @@ public class ActualPowerQualityResponseMappingTest {
   }
 
   private List<PowerQualityValue> makePowerQualityValue(final Serializable... values) {
-    return Arrays.stream(values).map(PowerQualityValue::new).collect(Collectors.toList());
+    return Arrays.stream(values).map(PowerQualityValue::new).toList();
   }
 }

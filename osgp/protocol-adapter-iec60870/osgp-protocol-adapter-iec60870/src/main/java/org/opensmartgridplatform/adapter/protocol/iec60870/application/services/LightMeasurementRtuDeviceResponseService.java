@@ -6,7 +6,6 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.application.services
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
@@ -106,7 +105,7 @@ public class LightMeasurementRtuDeviceResponseService extends AbstractDeviceResp
             .findByGatewayDeviceIdentification(rtuDeviceIdentification)
             .stream()
             .filter(device -> DeviceType.LIGHT_SENSOR == device.getDeviceType())
-            .collect(Collectors.toList());
+            .toList();
 
     if (CollectionUtils.isEmpty(lightMeasurementDevices)) {
       LOGGER.warn("No light sensors found for light measurement RTU {}", rtuDeviceIdentification);

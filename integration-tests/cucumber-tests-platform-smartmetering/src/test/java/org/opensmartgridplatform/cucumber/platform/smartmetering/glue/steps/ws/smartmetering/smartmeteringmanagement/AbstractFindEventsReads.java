@@ -9,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventDetail;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventType;
@@ -101,7 +100,7 @@ public abstract class AbstractFindEventsReads {
 
       for (final Event event : findEventsResponse.getEvents()) {
         final List<String> eventDetails =
-            event.getEventDetails().stream().map(EventDetail::getName).collect(Collectors.toList());
+            event.getEventDetails().stream().map(EventDetail::getName).toList();
         assertThat(eventDetails).containsExactlyInAnyOrder(expectedEventDetails);
       }
     }

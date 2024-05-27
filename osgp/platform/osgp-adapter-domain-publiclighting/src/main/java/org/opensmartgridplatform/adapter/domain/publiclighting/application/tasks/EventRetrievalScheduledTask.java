@@ -8,7 +8,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.config.SchedulingConfigForEventRetrievalScheduledTask;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -104,7 +103,7 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
 
     return devicesToFilter.stream()
         .filter(hasNoConnectionFailure.or(hasLastConnectionFailureBeforeThreshold))
-        .collect(Collectors.<Device>toList());
+        .toList();
   }
 
   private boolean calculateThresholdForDevice(final Device device) {

@@ -15,7 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
@@ -58,15 +57,13 @@ public class Iec60870DeviceSteps {
       final String gatewayDeviceIdentification, final List<Iec60870Device> devices) {
     return devices.stream()
         .filter(d -> gatewayDeviceIdentification.equals(d.getGatewayDeviceIdentification()))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Given("IEC60870 devices")
   public void givenIec60870Devices(final DataTable devicesTable) {
     this.devicesAreKnownInTheRepository(
-        devicesTable.asMaps().stream()
-            .map(Iec60870DeviceFactory::fromSettings)
-            .collect(Collectors.toList()));
+        devicesTable.asMaps().stream().map(Iec60870DeviceFactory::fromSettings).toList());
   }
 
   @Given("a light sensor")

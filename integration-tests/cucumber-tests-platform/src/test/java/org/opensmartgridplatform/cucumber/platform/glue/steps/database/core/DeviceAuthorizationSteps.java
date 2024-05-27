@@ -12,7 +12,6 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -102,7 +101,7 @@ public class DeviceAuthorizationSteps {
           final List<String> storedDeviceAuthorizations =
               this.deviceAuthorizationRepository.findByDevice(device).stream()
                   .map(da -> da.getFunctionGroup().name())
-                  .collect(Collectors.toList());
+                  .toList();
           assertThat(storedDeviceAuthorizations).contains(authorizations);
         });
 
