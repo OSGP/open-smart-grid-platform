@@ -217,7 +217,6 @@ public class FirmwareServiceTest {
   void updateFirmwareWhenFirmwareFileNotInCacheAndNotOnStore() throws OsgpException {
 
     final byte[] firmwareFile = firmwareIdentification.getBytes();
-    final HashTypeDto sha256 = HashTypeDto.SHA256;
 
     when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(false);
     when(this.firmwareFileStoreService.readFirmwareFile(firmwareIdentification)).thenReturn(null);
@@ -244,7 +243,6 @@ public class FirmwareServiceTest {
   void updateFirmwareWhenStoreThrowsException() throws OsgpException {
 
     final byte[] firmwareFile = firmwareIdentification.getBytes();
-    final HashTypeDto sha256 = HashTypeDto.SHA256;
     final String storeExceptionMessage = "firmware file store failed!";
 
     when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(false);
