@@ -4,41 +4,44 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime;
 
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.SPECIAL_DAYS_TABLE;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDayDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
 public class SetSpecialDaysCommandExecutor
     extends AbstractCommandExecutor<List<SpecialDayDto>, AccessResultCode> {
 
-  private static final int CLASS_ID = 11;
-  private static final ObisCode OBIS_CODE = new ObisCode("0.0.11.0.0.255");
-  private static final int ATTRIBUTE_ID = 2;
+  private final DlmsHelper dlmsHelper;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  @Autowired private DlmsHelper dlmsHelper;
-
-  public SetSpecialDaysCommandExecutor() {
+  public SetSpecialDaysCommandExecutor(
+      final ObjectConfigServiceHelper objectConfigServiceHelper, final DlmsHelper dlmsHelper) {
     super(SpecialDaysRequestDataDto.class);
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
+    this.dlmsHelper = dlmsHelper;
   }
 
   @Override
@@ -92,13 +95,20 @@ public class SetSpecialDaysCommandExecutor
     }
 
     final AttributeAddress specialDaysTableEntries =
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+        this.objectConfigServiceHelper
+            .findOptionalDefaultAttributeAddress(Protocol.forDevice(device), SPECIAL_DAYS_TABLE)
+            .orElseThrow(
+                () ->
+                    new NotSupportedByProtocolException(
+                        String.format(
+                            "No address found for %s in protocol %s",
+                            SPECIAL_DAYS_TABLE.name(), Protocol.forDevice(device).getName())));
     final DataObject entries = DataObject.newArrayData(specialDayEntries);
 
     final SetParameter request = new SetParameter(specialDaysTableEntries, entries);
 
     final String specialDayValues;
-    if (specialDayData.length() == 0) {
+    if (specialDayData.isEmpty()) {
       specialDayValues = "";
     } else {
       specialDayValues = ", values [" + specialDayData.substring(2) + "]";
