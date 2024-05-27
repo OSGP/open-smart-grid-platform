@@ -61,6 +61,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+@SuppressWarnings("java:S6813")
 @Service(value = "wsCoreFirmwareManagementService")
 @Transactional(value = "transactionManager")
 @Validated
