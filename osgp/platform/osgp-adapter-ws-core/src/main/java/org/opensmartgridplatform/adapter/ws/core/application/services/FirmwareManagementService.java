@@ -774,7 +774,7 @@ public class FirmwareManagementService {
           this.firmwareFileStorageService.createDigest(algorithmName, identification);
       final FirmwareFile firmwareFile = this.insertOrUdateDatabase(firmwareFileAttributes, null);
       firmwareFile.setHash(fileDigest);
-      firmwareFile.setHashType("SHA-256");
+      firmwareFile.setHashType(HashTypeDto.SHA256.name());
       return firmwareFile;
 
     } else {

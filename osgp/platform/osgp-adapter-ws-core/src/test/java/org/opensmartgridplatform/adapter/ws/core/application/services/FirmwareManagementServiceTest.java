@@ -112,7 +112,7 @@ class FirmwareManagementServiceTest {
     // TODO this property is not set in original implementation: isActive
     assertThat(firmwareFile.isActive()).isFalse();
     assertThat(firmwareFile.getHash()).isEqualTo(FILE_SHA256_DIGEST);
-    assertThat(firmwareFile.getHashType()).isEqualTo(HashTypeDto.SHA256.getAlgorithmName());
+    assertThat(firmwareFile.getHashType()).isEqualTo(HashTypeDto.SHA256.name());
   }
 
   @Test
