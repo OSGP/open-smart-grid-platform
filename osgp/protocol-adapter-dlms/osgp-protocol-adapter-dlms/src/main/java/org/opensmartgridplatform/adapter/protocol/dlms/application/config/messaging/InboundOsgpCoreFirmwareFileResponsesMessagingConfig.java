@@ -5,7 +5,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging;
 
 import jakarta.jms.ConnectionFactory;
-import jakarta.jms.Destination;
 import java.util.UUID;
 import javax.net.ssl.SSLException;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
@@ -45,21 +44,6 @@ public class InboundOsgpCoreFirmwareFileResponsesMessagingConfig {
     LOGGER.info(
         "Initializing protocolDlmsInboundOsgpCoreFirmwareFileResponsesConnectionFactory bean.");
     return this.jmsConfigurationFactory.getPooledConnectionFactory();
-  }
-
-  /**
-   * Instead of a fixed name for the responses queue, a 'reply-to' responses queue is used. This
-   * 'reply-to' responses queue is communicated to OSGP core by this protocol adapter instance when
-   * a request message is sent to OSGP core. OSGP core will send response messages to the 'reply-to'
-   * queue. This ensures that the response messages for this protocol adapter instance are sent back
-   * to this instance.
-   */
-  @Bean(name = "protocolDlmsReplyToQueue")
-  public Destination replyToQueue() {
-    final String queueName =
-        this.createUniqueQueueName(PROPERTY_NAME_FIRMWARE_FILE_RESPONSES_QUEUE);
-    LOGGER.info("------> replyToQueue: {}", queueName);
-    return this.jmsConfigurationFactory.getQueue(queueName);
   }
 
   private String createUniqueQueueName(final String responseQueuePropertyName) {
