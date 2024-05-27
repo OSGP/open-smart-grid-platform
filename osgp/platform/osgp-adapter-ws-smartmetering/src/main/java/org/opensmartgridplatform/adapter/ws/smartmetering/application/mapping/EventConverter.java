@@ -5,7 +5,6 @@
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -88,7 +87,7 @@ public class EventConverter
             .map(
                 sourceEventDetail ->
                     new EventDetail(sourceEventDetail.getName(), sourceEventDetail.getValue()))
-            .collect(Collectors.toList());
+            .toList();
 
     return new Event(
         timestamp, eventType, source.getEventCounter(), eventLogCategory, eventDetails);

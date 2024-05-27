@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
@@ -156,7 +155,7 @@ public class DlmsConnectionStub implements DlmsConnection {
         .filter(
             setParameter ->
                 setParameter.getAttributeAddress().getId() == attributeClass.attributeId())
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public boolean hasMethodBeenInvoked(final MethodClass methodClass) {

@@ -12,7 +12,6 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.ArrayUtils;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationKeyConfiguration;
@@ -90,9 +89,7 @@ public class GetKeys {
         .noneMatch(getKeysResponseData -> ArrayUtils.isEmpty(getKeysResponseData.getSecretValue()));
 
     final List<SecretType> secretTypesInResponse =
-        responseDataList.stream()
-            .map(GetKeysResponseData::getSecretType)
-            .collect(Collectors.toList());
+        responseDataList.stream().map(GetKeysResponseData::getSecretType).toList();
 
     final List<SecretType> expectedSecretTypes = getSecretTypesFromParameterMap(expectedValues);
 

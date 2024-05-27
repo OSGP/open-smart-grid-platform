@@ -6,7 +6,6 @@ package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.domain.core.application.config.PersistenceDomainCoreConfig;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
@@ -41,7 +40,7 @@ public class TransactionalEventService {
 
   public void deleteEvents(final List<Event> events) {
     final int size = events.size();
-    final List<Long> ids = events.stream().map(Event::getId).collect(Collectors.toList());
+    final List<Long> ids = events.stream().map(Event::getId).toList();
 
     final int listSize = ids.size();
 
