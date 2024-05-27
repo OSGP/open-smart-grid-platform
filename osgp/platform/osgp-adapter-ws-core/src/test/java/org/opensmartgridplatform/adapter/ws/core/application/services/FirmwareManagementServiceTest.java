@@ -91,9 +91,7 @@ class FirmwareManagementServiceTest {
   void addOrChangeFirmwareFirstTime() throws OsgpException {
     when(this.firmwareFileRepository.findByIdentification(FW_ID)).thenReturn(null);
 
-    final FirmwareFileAttributes fwAttr =
-        new FirmwareFileAttributes(
-            FW_ID, DESCRIPTION, FILE_NAME, PUSH_TO_NEW_DEVICES, ACTIVE, IMG_ID, null, null);
+    final FirmwareFileAttributes fwAttr = buildFirmwareFileAttributes();
 
     this.service.addOrChangeFirmware(
         ORG_ID, fwAttr, FIRMWARE_FILE, List.of(DEVICE_MODEL), this.firmwareModuleData);
@@ -109,7 +107,6 @@ class FirmwareManagementServiceTest {
     assertThat(firmwareFile.getDescription()).isEqualTo(DESCRIPTION);
     assertThat(firmwareFile.getFilename()).isEqualTo(FILE_NAME);
     assertThat(firmwareFile.getPushToNewDevices()).isEqualTo(PUSH_TO_NEW_DEVICES);
-    // TODO this property is not set in original implementation: isActive
     assertThat(firmwareFile.isActive()).isFalse();
     assertThat(firmwareFile.getHash()).isEqualTo(FILE_SHA256_DIGEST);
     assertThat(firmwareFile.getHashType()).isEqualTo(HashTypeDto.SHA256.name());
@@ -121,9 +118,7 @@ class FirmwareManagementServiceTest {
         new Builder().withIdentification("existing-firmware").build();
     when(this.firmwareFileRepository.findByIdentification(FW_ID)).thenReturn(existingFirmwareFile);
 
-    final FirmwareFileAttributes fwAttr =
-        new FirmwareFileAttributes(
-            FW_ID, DESCRIPTION, FILE_NAME, PUSH_TO_NEW_DEVICES, ACTIVE, IMG_ID, null, null);
+    final FirmwareFileAttributes fwAttr = buildFirmwareFileAttributes();
 
     this.service.addOrChangeFirmware(
         ORG_ID, fwAttr, FIRMWARE_FILE, List.of(DEVICE_MODEL), this.firmwareModuleData);
@@ -140,5 +135,20 @@ class FirmwareManagementServiceTest {
     assertThat(firmwareFile.getIdentification()).isEqualTo("existing-firmware");
     assertThat(firmwareFile.getPushToNewDevices()).isFalse();
     assertThat(firmwareFile.isActive()).isFalse();
+  }
+
+  private static FirmwareFileAttributes buildFirmwareFileAttributes() {
+    final FirmwareFileAttributes fwAttr =
+        FirmwareFileAttributes.builder()
+            .identification(FW_ID)
+            .description(DESCRIPTION)
+            .fileName(FILE_NAME)
+            .pushToNewDevices(PUSH_TO_NEW_DEVICES)
+            .active(ACTIVE)
+            .imageIdentifier(IMG_ID)
+            .hash(null)
+            .hashType(null)
+            .build();
+    return fwAttr;
   }
 }

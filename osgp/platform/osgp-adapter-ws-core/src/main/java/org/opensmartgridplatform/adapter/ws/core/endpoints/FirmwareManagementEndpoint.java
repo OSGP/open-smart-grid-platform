@@ -855,15 +855,17 @@ public class FirmwareManagementEndpoint extends CoreEndpoint {
   }
 
   private FirmwareFileAttributes firmwareFileAttributesFor(final Firmware firmware) {
-    return new FirmwareFileAttributes(
-        firmware.getIdentification(),
-        firmware.getDescription(),
-        firmware.getFilename(),
-        firmware.isPushToNewDevices(),
-        firmware.isActive(),
-        firmware.getImageIdentifier(),
-        firmware.getHash(),
-        firmware.getHashType());
+    final FirmwareFileAttributes.FirmwareFileAttributesBuilder builder =
+        FirmwareFileAttributes.builder()
+            .identification(firmware.getIdentification())
+            .description(firmware.getDescription())
+            .fileName(firmware.getFilename())
+            .pushToNewDevices(firmware.isPushToNewDevices())
+            .active(firmware.isActive())
+            .imageIdentifier(firmware.getImageIdentifier())
+            .hash(firmware.getHash())
+            .hashType(firmware.getHashType());
+    return builder.build();
   }
 
   @PayloadRoot(localPart = "ChangeFirmwareRequest", namespace = NAMESPACE)
