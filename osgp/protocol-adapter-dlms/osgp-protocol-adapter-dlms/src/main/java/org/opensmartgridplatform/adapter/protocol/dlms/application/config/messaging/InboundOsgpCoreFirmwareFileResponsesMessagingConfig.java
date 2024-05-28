@@ -22,12 +22,10 @@ public class InboundOsgpCoreFirmwareFileResponsesMessagingConfig {
       LoggerFactory.getLogger(InboundOsgpCoreFirmwareFileResponsesMessagingConfig.class);
 
   private final JmsConfigurationFactory jmsConfigurationFactory;
-  private final Environment environment;
 
   public InboundOsgpCoreFirmwareFileResponsesMessagingConfig(
       final Environment environment, final DefaultJmsConfiguration defaultJmsConfiguration)
       throws SSLException {
-    this.environment = environment;
     this.jmsConfigurationFactory =
         new JmsConfigurationFactory(
             environment, defaultJmsConfiguration, "jms.osgp.firmwarefile.responses");
