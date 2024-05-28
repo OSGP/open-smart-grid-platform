@@ -11,6 +11,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.enums.DayOfWeek;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -104,7 +105,7 @@ public class BasicDlmsDataDecoder {
 
       return this.getDayOfWeek(dayOfWeek)
           + ", "
-          + ((year == 65535) ? "Year not specified" : year)
+          + ((year == 0xFFFF) ? "Year not specified" : year)
           + "-"
           + month
           + "-"
@@ -144,18 +145,13 @@ public class BasicDlmsDataDecoder {
     return this.getDayOfWeek(dateTimeDto.getDate().getDayOfWeek());
   }
 
-  private String getDayOfWeek(final int dayOfWeek) {
-    return switch (dayOfWeek) {
-      case 1 -> "Monday";
-      case 2 -> "Tuesday";
-      case 3 -> "Wednesday";
-      case 4 -> "Thursday";
-      case 5 -> "Friday";
-      case 6 -> "Saturday";
-      case 7 -> "Sunday";
-      case 0xFF -> "Day of week not specified";
-      default -> "DayOfWeek value unknown: " + dayOfWeek + ", ";
-    };
+  private String getDayOfWeek(final int dayOfWeekNumber) {
+    final DayOfWeek dayOfWeek = DayOfWeek.getByValue(dayOfWeekNumber);
+    if (dayOfWeek == null) {
+      return "DayOfWeek value unknown: " + dayOfWeekNumber + ", ";
+    } else {
+      return dayOfWeek.getDescription();
+    }
   }
 
   private String decodeVisibleString(final DataObject attributeData) {

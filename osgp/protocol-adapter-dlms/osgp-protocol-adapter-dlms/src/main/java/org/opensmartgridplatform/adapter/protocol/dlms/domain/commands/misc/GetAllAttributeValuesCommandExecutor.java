@@ -47,13 +47,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecutor<Void, String> {
 
-  private static final int CLASS_ID_INDEX = 0;
-  private static final int VERSION_INDEX = 1;
-  private static final int OBIS_CODE_INDEX = 2;
-  private static final int ATTR_INDEX = 3;
-  private static final int ATTR_ID_INDEX = 0;
-  private static final int ACCESS_MODE_INDEX = 1;
-  private static final int ATTRIBUTE_ID = 2;
+  private static final int OBJECT_LIST_ELEMENT_CLASS_ID_INDEX = 0;
+  private static final int OBJECT_LIST_ELEMENT_VERSION_INDEX = 1;
+  private static final int OBJECT_LIST_ELEMENT_OBIS_CODE_INDEX = 2;
+  private static final int OBJECT_LIST_ELEMENT_ATTR_INDEX = 3;
+  private static final int ACCESS_ITEM_ATTR_ID_INDEX = 0;
+  private static final int ACCESS_ITEM_ACCESS_MODE_INDEX = 1;
+  private static final int ASSOCIATION_LN_OBJECT_LIST_ATTR_ID = 2;
 
   private final ObjectConfigService objectConfigService;
 
@@ -104,7 +104,11 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
 
     final AttributeAddress attributeAddress =
         this.objectConfigServiceHelper.findAttributeAddress(
-            device, Protocol.forDevice(device), DlmsObjectType.ASSOCIATION_LN, null, ATTRIBUTE_ID);
+            device,
+            Protocol.forDevice(device),
+            DlmsObjectType.ASSOCIATION_LN,
+            null,
+            ASSOCIATION_LN_OBJECT_LIST_ATTR_ID);
 
     conn.getDlmsMessageListener()
         .setDescription(
@@ -235,10 +239,10 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
       final List<DataObject> elementValues = objectListDataObject.getValue();
       final ObjectListElement element =
           new ObjectListElement(
-              this.getClassId(elementValues.get(CLASS_ID_INDEX)),
-              this.getVersion(elementValues.get(VERSION_INDEX)),
-              this.getObis(elementValues.get(OBIS_CODE_INDEX)),
-              this.getAttributeItems(elementValues.get(ATTR_INDEX)));
+              this.getClassId(elementValues.get(OBJECT_LIST_ELEMENT_CLASS_ID_INDEX)),
+              this.getVersion(elementValues.get(OBJECT_LIST_ELEMENT_VERSION_INDEX)),
+              this.getObis(elementValues.get(OBJECT_LIST_ELEMENT_OBIS_CODE_INDEX)),
+              this.getAttributeItems(elementValues.get(OBJECT_LIST_ELEMENT_ATTR_INDEX)));
 
       allElements.add(element);
     }
@@ -288,8 +292,8 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
       final List<DataObject> descriptorValues = descriptor.getValue();
       attributeAccessItems.add(
           new AttributeAccessItem(
-              this.getAttributeId(descriptorValues.get(ATTR_ID_INDEX)),
-              this.getAccessMode(descriptorValues.get(ACCESS_MODE_INDEX))));
+              this.getAttributeId(descriptorValues.get(ACCESS_ITEM_ATTR_ID_INDEX)),
+              this.getAccessMode(descriptorValues.get(ACCESS_ITEM_ACCESS_MODE_INDEX))));
     }
 
     return attributeAccessItems;
@@ -309,13 +313,7 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
     }
     final Number number = dataObject.getValue();
 
-    return switch (number.intValue()) {
-      case 0 -> null;
-      case 1 -> AccessType.R;
-      case 2 -> AccessType.W;
-      case 3 -> AccessType.RW;
-      default -> null;
-    };
+    return AccessType.accessTypeFor(number.intValue());
   }
 
   private void throwUnexpectedTypeProtocolAdapterException() throws ProtocolAdapterException {

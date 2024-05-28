@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.dlms.enums.SortMethod;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,32 +70,6 @@ public class MeasurementDataClassesDecoder {
       return SortMethod.getByValue(value).name();
     } catch (final Exception e) {
       return "decoding sort method failed: " + e.getMessage();
-    }
-  }
-
-  private enum SortMethod {
-    FIFO(1),
-    LIFO(2),
-    LARGEST(3),
-    SMALLEST(4),
-    NEAREST_TO_ZERO(5),
-    FURTHEST_FROM_ZERO(6),
-    UNKNOWN_SORT_METHOD(255);
-
-    private final int value;
-
-    SortMethod(final int value) {
-      this.value = value;
-    }
-
-    public static SortMethod getByValue(final int value) {
-      for (final SortMethod method : SortMethod.values()) {
-        if (method.value == value) {
-          return method;
-        }
-      }
-
-      return UNKNOWN_SORT_METHOD;
     }
   }
 }

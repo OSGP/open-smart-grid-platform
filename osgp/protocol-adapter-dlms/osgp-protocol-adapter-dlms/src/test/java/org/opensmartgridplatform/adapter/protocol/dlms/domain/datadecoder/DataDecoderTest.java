@@ -26,7 +26,6 @@ import org.opensmartgridplatform.dlms.objectconfig.DlmsDataType;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
 
 class DataDecoderTest {
-  private static final List<CosemObject> OBJECT_LIST = createObjectList();
   private static final List<AttributeAccessItem> ATTRIBUTE_ACCESS_ITEMS =
       List.of(
           new AttributeAccessItem(1, AccessType.R),
@@ -44,6 +43,7 @@ class DataDecoderTest {
   private static final byte[] OBIS_2_BYTES = new ObisCode(OBIS_2).bytes();
   private static final String OBIS_3 = "1.0.2.3.4.255";
   private static final byte[] OBIS_3_BYTES = new ObisCode(OBIS_3).bytes();
+  private static final String UNKNOWN_OBIS = "0.0.0.0.0.255";
 
   private final DlmsHelper dlmsHelper = new DlmsHelper();
   private final BasicDlmsDataDecoder basicDlmsDataDecoder =
@@ -69,14 +69,14 @@ class DataDecoderTest {
           this.profileDataDecoder);
 
   @BeforeAll
-  static void Setup() {
-    when(DLMS_PROFILE.getObjects()).thenReturn(OBJECT_LIST);
+  static void setup() {
+    when(DLMS_PROFILE.getObjects()).thenReturn(createObjectList());
   }
 
   @Test
   void testDecodeObjectDataWithUnknownObis() {
     final ObjectListElement objectListElement =
-        new ObjectListElement(CLASS_ID_DATA, VERSION_0, "0.0.0.0.0.0", ATTRIBUTE_ACCESS_ITEMS);
+        new ObjectListElement(CLASS_ID_DATA, VERSION_0, UNKNOWN_OBIS, ATTRIBUTE_ACCESS_ITEMS);
 
     final List<DataObject> attributeData =
         List.of(mock(DataObject.class), mock(DataObject.class), mock(DataObject.class));

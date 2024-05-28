@@ -17,7 +17,7 @@ public enum ProfileGenericAttribute implements AttributeClass {
   BUFFER(2),
   CAPTURE_OBJECTS(3, CAPTURE_OBJECT_LIST),
   CAPTURE_PERIOD(4),
-  SORT_METHOD(5, org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.SORT_METHOD),
+  SORT_METHOD(5, AttributeType.SORT_METHOD),
   SORT_OBJECT(6, CAPTURE_OBJECT_DEFINITION),
   ENTRIES_IN_USE(7),
   PROFILE_ENTRIES(8);
@@ -28,12 +28,12 @@ public enum ProfileGenericAttribute implements AttributeClass {
 
   private final AttributeType attributeType;
 
-  private ProfileGenericAttribute(final int attributeId) {
+  ProfileGenericAttribute(final int attributeId) {
     this.attributeId = attributeId;
     this.attributeType = AttributeType.UNKNOWN;
   }
 
-  private ProfileGenericAttribute(final int attributeId, final AttributeType attributeType) {
+  ProfileGenericAttribute(final int attributeId, final AttributeType attributeType) {
     this.attributeId = attributeId;
     this.attributeType = attributeType;
   }

@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openmuc.jdlms.datatypes.CosemDate;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
@@ -22,32 +21,44 @@ class BasicDlmsDataDecoderTest {
   private final DlmsHelper dlmsHelper = new DlmsHelper();
   private final BasicDlmsDataDecoder decoder = new BasicDlmsDataDecoder(this.dlmsHelper);
 
-  @ParameterizedTest
-  @EnumSource(
-      value = DataObject.Type.class,
-      names = {
-        "INTEGER",
-        "LONG_INTEGER",
-        "DOUBLE_LONG",
-        "LONG64",
-        "UNSIGNED",
-        "LONG_UNSIGNED",
-        "DOUBLE_LONG_UNSIGNED",
-        "LONG64_UNSIGNED"
-      })
-  void testDecodeNumber(final DataObject.Type type) throws ProtocolAdapterException {
-    switch (type) {
-      case INTEGER -> this.testNumber(DataObject.newInteger8Data((byte) 255), "-1");
-      case LONG_INTEGER -> this.testNumber(DataObject.newInteger16Data((short) -2500), "-2500");
-      case DOUBLE_LONG -> this.testNumber(DataObject.newInteger32Data(-10000), "-10000");
-      case LONG64 -> this.testNumber(DataObject.newInteger64Data(-75000), "-75000");
+  @Test
+  void testDecodeInteger() throws ProtocolAdapterException {
+    this.testNumber(DataObject.newInteger8Data((byte) 255), "-1");
+  }
 
-      case UNSIGNED -> this.testNumber(DataObject.newUInteger8Data((short) 255), "255");
-      case LONG_UNSIGNED -> this.testNumber(DataObject.newUInteger16Data(3000), "3000");
-      case DOUBLE_LONG_UNSIGNED -> this.testNumber(DataObject.newUInteger32Data(80000), "80000");
-      case LONG64_UNSIGNED ->
-          this.testNumber(DataObject.newUInteger64Data(10_000_000_000L), "10000000000");
-    }
+  @Test
+  void testDecodeLongInteger() throws ProtocolAdapterException {
+    this.testNumber(DataObject.newInteger16Data((short) -2500), "-2500");
+  }
+
+  @Test
+  void testDecodeDoubleLong() throws ProtocolAdapterException {
+    this.testNumber(DataObject.newInteger32Data(-10000), "-10000");
+  }
+
+  @Test
+  void testDecodeLong64() throws ProtocolAdapterException {
+    this.testNumber(DataObject.newInteger64Data(-75000), "-75000");
+  }
+
+  @Test
+  void testDecodeUnsigned() throws ProtocolAdapterException {
+    this.testNumber(DataObject.newUInteger8Data((short) 255), "255");
+  }
+
+  @Test
+  void testDecodeLongUnsigned() throws ProtocolAdapterException {
+    this.testNumber(DataObject.newUInteger16Data(3000), "3000");
+  }
+
+  @Test
+  void testDecodeDoubleLongUnsigned() throws ProtocolAdapterException {
+    this.testNumber(DataObject.newUInteger32Data(80000), "80000");
+  }
+
+  @Test
+  void testDecodeLong64Unsigned() throws ProtocolAdapterException {
+    this.testNumber(DataObject.newUInteger64Data(10_000_000_000L), "10000000000");
   }
 
   void testNumber(final DataObject dataObject, final String expectedResult)
