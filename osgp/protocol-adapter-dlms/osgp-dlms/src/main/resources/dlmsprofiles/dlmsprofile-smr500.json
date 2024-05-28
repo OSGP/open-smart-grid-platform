@@ -90,6 +90,45 @@
       ]
     },
     {
+      "tag": "DEVICE_ID_1",
+      "description": "E-meter serial number",
+      "note": null,
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.96.1.0.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "FIXED_IN_METER",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "DEVICE_ID_2",
+      "description": "E-meter equipment identifier",
+      "note": null,
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.96.1.1.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "attributetype": "DSMR_EQUIPMENT_IDENTIFIER",
+          "valuetype": "FIXED_IN_METER",
+          "access": "R"
+        }
+      ]
+    },
+    {
       "tag": "CLOCK",
       "description": "Clock",
       "note": null,
@@ -159,6 +198,199 @@
           "datatype": "enum",
           "valuetype": "FIXED_IN_METER",
           "value": "1",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ACTIVE_FIRMWARE_IDENTIFIER",
+      "description": "Active firmware identifier",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.0.0.2.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "ACTIVE_FIRMWARE_SIGNATURE",
+      "description": "Active firmware signature",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.0.0.2.8.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "attributetype": "SIGNATURE",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MODULE_ACTIVE_FIRMWARE_IDENTIFIER",
+      "description": "Module Active firmware identifier",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.1.0.2.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MODULE_FIRMWARE_SIGNATURE",
+      "description": "Module firmware signature",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.1.0.2.8.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "attributetype": "SIGNATURE",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "COMMUNICATION_MODULE_ACTIVE_FIRMWARE_IDENTIFIER",
+      "description": "Communication Module Active firmware identifier",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.2.0.2.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "COMMUNICATION_MODULE_FIRMWARE_SIGNATURE",
+      "description": "Communication Module firmware signature",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.2.0.2.8.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "attributetype": "SIGNATURE",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "P1_PORT_VERSION",
+      "description": "P1 Port DSMR Version",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.3.0.2.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_DRIVER_ACTIVE_FIRMWARE_IDENTIFIER",
+      "description": "M-Bus Driver Active firmware identifier",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.4.0.2.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_DRIVER_ACTIVE_FIRMWARE_SIGNATURE",
+      "description": "M-Bus Driver Active firmware signature",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.4.0.2.8.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "attributetype": "SIGNATURE",
+          "valuetype": "DYNAMIC",
           "access": "R"
         }
       ]
@@ -2425,6 +2657,26 @@
       ]
     },
     {
+      "tag": "MBUS_DEVICE_ID_1",
+      "description": "M-Bus Equipment identifier ",
+      "note": null,
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.x.96.1.1.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "attributetype": "DSMR_EQUIPMENT_IDENTIFIER",
+          "valuetype": "FIXED_IN_METER",
+          "access": "R"
+        }
+      ]
+    },
+    {
       "tag": "MBUS_MASTER_VALUE_5MIN",
       "description": "M-Bus volume 5 minute value",
       "note": null,
@@ -2553,6 +2805,216 @@
         {
           "id": 3,
           "description": "scalar_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "0, undefined",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "status",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "capture_time",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_DEVICE_CONFIG_MODEL",
+      "description": "M-Bus device configuration, Model / Version",
+      "note": null,
+      "class-id": 4,
+      "version": 0,
+      "obis": "0.x.24.2.7.255",
+      "group": "MBUS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "0, undefined",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "status",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "capture_time",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_DEVICE_CONFIG_HARDWARE_VERSION",
+      "description": "M-Bus device configuration, Hardware version",
+      "note": null,
+      "class-id": 4,
+      "version": 0,
+      "obis": "0.x.24.2.8.255",
+      "group": "MBUS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "0, undefined",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "status",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "capture_time",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_DEVICE_CONFIG_METROLOGY_VERSION",
+      "description": "M-Bus device configuration, Metrology version",
+      "note": null,
+      "class-id": 4,
+      "version": 0,
+      "obis": "0.x.24.2.9.255",
+      "group": "MBUS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "0, undefined",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "status",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "capture_time",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_DEVICE_CONFIG_OTHER_FIRMWARE_VERSION",
+      "description": "M-Bus device configuration, Other firmware version",
+      "note": null,
+      "class-id": 4,
+      "version": 0,
+      "obis": "0.x.24.2.10.255",
+      "group": "MBUS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "DYNAMIC",
+          "value": "0, undefined",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "status",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "capture_time",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_DEVICE_CONFIG_SIMPLE_VERSION_INFO",
+      "description": "M-Bus device configuration, Simple version info",
+      "note": null,
+      "class-id": 4,
+      "version": 0,
+      "obis": "0.x.24.2.11.255",
+      "group": "MBUS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
           "datatype": "scal_unit_type",
           "valuetype": "DYNAMIC",
           "value": "0, undefined",

@@ -42,9 +42,10 @@ The DLMS Object Config defined by json files.
  |-------------------|-----------------------------------------------------|
  | id                | id of attribute                                     |
  | description       | description of attribute                            |
- | datatype          | datatype name                                       |
+ | datatype          | datatype as defined in the DLMS blue book           |
+ | attributeType     | additional type as defined in a profile (e.g. SMR)  |
  | valuetype         | defines the source of the value                     |
- | value             | the fixed value or null                             |
+ | value             | the fixed value or null.                            |
  | valuebasedonmodel | defines the values if it depends on the devicemodel |
  | access            | access to attribute - read (R) write (W)            |
 

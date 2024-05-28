@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.dlms.objectconfig;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.Data;
 import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.ExtendedRegister;
 import org.opensmartgridplatform.dlms.objectconfig.dlmsclasses.ProfileGeneric;
@@ -37,6 +39,8 @@ public class CosemObject {
 
   @JsonProperty("class-id")
   protected int classId;
+
+  protected InterfaceClass dlmsClass;
 
   protected int version;
   protected String obis;
@@ -60,6 +64,7 @@ public class CosemObject {
     this.tag = tag;
     this.description = description;
     this.classId = classId;
+    this.dlmsClass = InterfaceClass.interfaceClassFor(classId);
     this.version = version;
     this.obis = obis;
     this.group = group;
@@ -137,6 +142,7 @@ public class CosemObject {
     return Collections.emptyList();
   }
 
+  @JsonIgnore
   public int getChannel() throws ObjectConfigException {
     final String[] obisParts = this.getObisInParts();
     if (obisParts[1].equals("x")) {

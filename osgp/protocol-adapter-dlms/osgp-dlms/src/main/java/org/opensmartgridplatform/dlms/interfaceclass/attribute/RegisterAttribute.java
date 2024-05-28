@@ -12,14 +12,22 @@ import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 public enum RegisterAttribute implements AttributeClass {
   LOGICAL_NAME(1),
   VALUE(2),
-  SCALER_UNIT(3);
+  SCALER_UNIT(3, AttributeType.SCALER_UNIT);
 
   static final InterfaceClass INTERFACE_CLASS = InterfaceClass.REGISTER;
 
   private final int attributeId;
 
+  private final AttributeType attributeType;
+
   private RegisterAttribute(final int attributeId) {
     this.attributeId = attributeId;
+    this.attributeType = AttributeType.UNKNOWN;
+  }
+
+  private RegisterAttribute(final int attributeId, final AttributeType attributeType) {
+    this.attributeId = attributeId;
+    this.attributeType = attributeType;
   }
 
   @Override
@@ -35,5 +43,10 @@ public enum RegisterAttribute implements AttributeClass {
   @Override
   public InterfaceClass interfaceClass() {
     return INTERFACE_CLASS;
+  }
+
+  @Override
+  public AttributeType attributeType() {
+    return this.attributeType;
   }
 }

@@ -6,6 +6,7 @@ package org.opensmartgridplatform.dlms.objectconfig;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType;
 
 @Getter
 @NoArgsConstructor
@@ -14,7 +15,9 @@ public class Attribute {
   private String description;
   private String note;
   private DlmsDataType datatype;
+  private AttributeType attributetype;
   private ValueType valuetype;
+  private String rawValue;
   private String value;
   private ValueBasedOnModel valuebasedonmodel;
   private AccessType access;
@@ -38,14 +41,39 @@ public class Attribute {
     this.access = access;
   }
 
+  public Attribute(
+      final int id,
+      final String description,
+      final String note,
+      final DlmsDataType datatype,
+      final AttributeType attributetype,
+      final ValueType valuetype,
+      final String value,
+      final String rawValue,
+      final ValueBasedOnModel valuebasedonmodel,
+      final AccessType access) {
+    this.id = id;
+    this.description = description;
+    this.note = note;
+    this.datatype = datatype;
+    this.attributetype = attributetype;
+    this.valuetype = valuetype;
+    this.value = value;
+    this.rawValue = rawValue;
+    this.valuebasedonmodel = valuebasedonmodel;
+    this.access = access;
+  }
+
   public Attribute copy() {
     return new Attribute(
         this.id,
         this.description,
         this.note,
         this.datatype,
+        this.attributetype,
         this.valuetype,
         this.value,
+        this.rawValue,
         this.valuebasedonmodel == null ? null : this.valuebasedonmodel.copy(),
         this.access);
   }
