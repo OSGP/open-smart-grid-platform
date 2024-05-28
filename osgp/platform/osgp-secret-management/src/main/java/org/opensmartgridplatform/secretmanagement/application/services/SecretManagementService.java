@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
@@ -208,7 +207,7 @@ public class SecretManagementService {
     return this.retrieveAesSecrets(deviceIdentification, secretTypes, status).stream()
         .map(this::reencryptAes2Rsa)
         .map(EncryptedTypedSecret::toTypedSecret)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private List<EncryptedTypedSecret> retrieveAesSecrets(
@@ -322,7 +321,7 @@ public class SecretManagementService {
         typedSecrets.stream()
             .map(ts -> new EncryptedTypedSecret(ts.getSecret(), ts.getSecretType()))
             .map(this::reencryptRsa2Aes)
-            .collect(toList());
+            .toList();
     this.storeAesSecrets(deviceIdentification, aesSecrets);
   }
 
@@ -395,14 +394,14 @@ public class SecretManagementService {
 
     this.withdrawExistingKeysWithStatusNew(deviceIdentification, secretTypes);
     final List<EncryptedTypedSecret> encryptedTypedSecrets =
-        secretTypes.stream().map(this::generateAes128BitsSecret).collect(Collectors.toList());
+        secretTypes.stream().map(this::generateAes128BitsSecret).toList();
 
     this.storeAesSecrets(deviceIdentification, encryptedTypedSecrets);
 
     return encryptedTypedSecrets.stream()
         .map(this::reencryptAes2Rsa)
         .map(EncryptedTypedSecret::toTypedSecret)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private EncryptedTypedSecret generateAes128BitsSecret(final SecretType secretType) {

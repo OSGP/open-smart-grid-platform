@@ -4,7 +4,6 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.steps;
 
-import static java.util.stream.Collectors.toList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.times;
@@ -62,7 +61,7 @@ public class OsgpCoreResponseSteps {
     LOGGER.debug("Then I should send get status response messages to osgp core");
 
     final List<ProtocolResponseMessage> responseMessages =
-        dataTable.asMaps().stream().map(this::protocolResponseMessage).collect(toList());
+        dataTable.asMaps().stream().map(this::protocolResponseMessage).toList();
 
     this.verifyNumberOfResponseMessages(responseMessages.size());
     this.verifyResponseMessages(responseMessages);

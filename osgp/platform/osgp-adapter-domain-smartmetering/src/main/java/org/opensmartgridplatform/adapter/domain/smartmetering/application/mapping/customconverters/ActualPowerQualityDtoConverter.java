@@ -6,7 +6,6 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.mappi
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MapperFactory;
@@ -59,6 +58,6 @@ public class ActualPowerQualityDtoConverter
 
     return responseDataDto.getPowerQualityValues().stream()
         .map(dto -> this.mapperFactory.getMapperFacade().map(dto, PowerQualityValue.class))
-        .collect(Collectors.toList());
+        .toList();
   }
 }

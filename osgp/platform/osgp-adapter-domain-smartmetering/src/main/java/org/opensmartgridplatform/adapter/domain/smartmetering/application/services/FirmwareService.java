@@ -5,7 +5,6 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareModule;
@@ -69,9 +68,7 @@ public class FirmwareService {
 
     final DeviceModel deviceModel = this.determineDeviceModel(smartMeter);
     final List<String> deviceModelCodes =
-        firmware.getDeviceModels().stream()
-            .map(DeviceModel::getModelCode)
-            .collect(Collectors.toList());
+        firmware.getDeviceModels().stream().map(DeviceModel::getModelCode).toList();
     if (!deviceModelCodes.contains(deviceModel.getModelCode())) {
       throw new FunctionalException(
           FunctionalExceptionType.FIRMWARE_DOES_NOT_SUPPORT_DEVICE_MODEL,

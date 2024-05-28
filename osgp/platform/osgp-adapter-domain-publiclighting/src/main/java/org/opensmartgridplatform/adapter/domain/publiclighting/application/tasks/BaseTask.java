@@ -315,7 +315,7 @@ public class BaseTask {
     return lightMeasurementDevices.stream()
         .filter(deviceFilter)
         .sorted(Comparator.comparing(LightMeasurementDevice::getDeviceIdentification))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private static long getTime(final Date date, final long valueIfNull) {
