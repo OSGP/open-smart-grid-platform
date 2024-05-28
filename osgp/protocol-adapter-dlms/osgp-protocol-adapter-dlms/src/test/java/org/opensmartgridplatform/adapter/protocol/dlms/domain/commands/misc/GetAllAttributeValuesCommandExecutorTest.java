@@ -116,7 +116,7 @@ class GetAllAttributeValuesCommandExecutorTest {
 
     final String result = this.executor.execute(this.connectionManager, DEVICE, null, MSG_METADATA);
 
-    assertThat(removeNewLines(result))
+    assertThat(replaceNewLinesWithSystemNewLines(result))
         .isEqualToIgnoringNewLines(
             """
 [ {
@@ -185,7 +185,7 @@ class GetAllAttributeValuesCommandExecutorTest {
 
     final String result = this.executor.execute(this.connectionManager, DEVICE, null, MSG_METADATA);
 
-    assertThat(removeNewLines(result))
+    assertThat(replaceNewLinesWithSystemNewLines(result))
         .isEqualToIgnoringNewLines(
             """
 [ {
@@ -214,7 +214,7 @@ class GetAllAttributeValuesCommandExecutorTest {
 
     final String result = this.executor.execute(this.connectionManager, DEVICE, null, MSG_METADATA);
 
-    assertThat(removeNewLines(result))
+    assertThat(this.replaceNewLinesWithSystemNewLines(result))
         .isEqualToIgnoringNewLines(
             """
 [ {
@@ -314,12 +314,8 @@ class GetAllAttributeValuesCommandExecutorTest {
     return getResults;
   }
 
-  private static String removeNewLines(final String text) {
-    return text.replace("\\r\\n", "")
-        .replace("\\r", "")
-        .replace("\\n", "")
-        .replace("\r\n", "")
-        .replace("\r", "")
-        .replace("\n", "");
+  private static String replaceNewLinesWithSystemNewLines(final String text) {
+    final String lineSeparator = System.lineSeparator();
+    return text.replace("\\r\\n", lineSeparator).replace("\\n", lineSeparator);
   }
 }

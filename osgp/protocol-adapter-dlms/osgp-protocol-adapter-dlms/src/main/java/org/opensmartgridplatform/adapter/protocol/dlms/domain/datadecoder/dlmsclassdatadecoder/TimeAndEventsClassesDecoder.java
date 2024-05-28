@@ -44,7 +44,7 @@ public class TimeAndEventsClassesDecoder {
         for (final DataObject specialDay : specialDays) {
           specialDaysDecoded.add(this.decodeSpecialDay(specialDay));
         }
-        return String.join("\n", specialDaysDecoded);
+        return String.join(System.lineSeparator(), specialDaysDecoded);
       } else {
         return ARRAY_EXPECTED_BUT_FOUND + attributeData.getType().name();
       }
@@ -80,7 +80,7 @@ public class TimeAndEventsClassesDecoder {
         for (final DataObject dayProfile : dayProfiles) {
           dayProfilesDecoded.add(this.decodeDayProfile(dayProfile));
         }
-        return String.join("\n", dayProfilesDecoded);
+        return String.join(System.lineSeparator(), dayProfilesDecoded);
       } else {
         return ARRAY_EXPECTED_BUT_FOUND + attributeData.getType().name();
       }
@@ -148,7 +148,7 @@ public class TimeAndEventsClassesDecoder {
         for (final DataObject weekProfile : weekProfiles) {
           weekProfilesDecoded.add(this.decodeWeekProfile(weekProfile));
         }
-        return String.join("\n", weekProfilesDecoded);
+        return String.join(System.lineSeparator(), weekProfilesDecoded);
       } else {
         return ARRAY_EXPECTED_BUT_FOUND + attributeData.getType().name();
       }
@@ -201,7 +201,7 @@ public class TimeAndEventsClassesDecoder {
         for (final DataObject seasonProfile : seasonProfiles) {
           seasonProfilesDecoded.add(this.decodeSeasonProfile(seasonProfile));
         }
-        return String.join("\n", seasonProfilesDecoded);
+        return String.join(System.lineSeparator(), seasonProfilesDecoded);
       } else {
         return ARRAY_EXPECTED_BUT_FOUND + attributeData.getType().name();
       }

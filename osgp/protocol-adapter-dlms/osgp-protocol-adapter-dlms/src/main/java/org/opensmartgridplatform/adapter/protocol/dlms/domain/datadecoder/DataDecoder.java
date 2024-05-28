@@ -132,7 +132,8 @@ public class DataDecoder {
           != objectListElement.getAttributes().size()) {
         note =
             note
-                + "\nRead number of attributes "
+                + System.lineSeparator()
+                + "Read number of attributes "
                 + objectListElement.getAttributes().size()
                 + " differs from number of attributes in profile "
                 + (objectFromProfile.getAttributes().size() + 1);
@@ -141,7 +142,8 @@ public class DataDecoder {
       if (objectListElement.getClassId() != objectFromProfile.getClassId()) {
         note =
             note
-                + "\nRead classId "
+                + System.lineSeparator()
+                + "Read classId "
                 + objectListElement.getClassId()
                 + " differs from classId in profile "
                 + objectFromProfile.getClassId();
