@@ -59,7 +59,7 @@ public class PushNotificationAlarm {
       default:
         throw new IllegalArgumentException(
             String.format(
-                "'New M-Bus device discovered channel {}' is not an valid alarm", channel));
+                "'New M-Bus device discovered channel %d' is not an valid alarm", channel));
     }
   }
 

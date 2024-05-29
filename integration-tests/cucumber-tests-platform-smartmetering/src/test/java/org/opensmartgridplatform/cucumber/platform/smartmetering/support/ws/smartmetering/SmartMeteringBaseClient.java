@@ -91,7 +91,7 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
         this.notificationService.getNotification(nextWait, TimeUnit.MILLISECONDS);
 
     if (notification == null) {
-      LOGGER.info("Did not receive a notification within " + nextWait + " milliseconds");
+      LOGGER.info("Did not receive a notification within {} milliseconds.", nextWait);
     }
     return notification;
   }
