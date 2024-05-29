@@ -681,14 +681,6 @@ public class FirmwareManagementService {
     return databaseManufacturer;
   }
 
-  /**
-   * @param organisationIdentification
-   * @param firmwareFileAttributes
-   * @param file
-   * @param deviceModels
-   * @param firmwareModuleData
-   * @throws OsgpException
-   */
   @Transactional(value = "writableTransactionManager")
   public void addOrChangeFirmware(
       @Identification final String organisationIdentification,
@@ -718,8 +710,8 @@ public class FirmwareManagementService {
   /**
    * Find for each DeviceModel from the WebServices the corresponding entity. There should be at
    * least one DeviceModel. If none found a FunctionalException should be raised. Each DeviceModel
-   * can have its own Manufacturer (at least a theory) if a Manufacturer entity related to the
-   * DeviceModel can not be found a FunctionalException should be raised if one of the DeviceModel
+   * can have its own Manufacturer (at least a theory). If a Manufacturer entity related to the
+   * DeviceModel can not be found a FunctionalException should be raised. If one of the DeviceModel
    * entities can not be found a FunctionalException should be raised.
    */
   private List<DeviceModel> getPersistedDeviceModels(
@@ -773,17 +765,17 @@ public class FirmwareManagementService {
 
       final String fileDigest =
           this.firmwareFileStorageService.createDigest(algorithmName, identification);
-      final FirmwareFile firmwareFile = this.insertOrUdateDatabase(firmwareFileAttributes, null);
+      final FirmwareFile firmwareFile = this.insertOrUpdateDatabase(firmwareFileAttributes, null);
       firmwareFile.setHash(fileDigest);
       firmwareFile.setHashType(HashTypeDto.SHA256.name());
       return firmwareFile;
 
     } else {
-      return this.insertOrUdateDatabase(firmwareFileAttributes, file);
+      return this.insertOrUpdateDatabase(firmwareFileAttributes, file);
     }
   }
 
-  private FirmwareFile insertOrUdateDatabase(
+  private FirmwareFile insertOrUpdateDatabase(
       final FirmwareFileAttributes firmwareFileAttributes, final byte[] file) {
     final String identification = firmwareFileAttributes.getIdentification();
     final FirmwareFile existingFirmwareFile =

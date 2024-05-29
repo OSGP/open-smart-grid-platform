@@ -77,7 +77,8 @@ class FirmwareManagementServiceTest {
 
   @BeforeEach
   void setup() throws TechnicalException {
-    // Only testing the file storage solution
+    // Only testing the file storage solution as used in SmartMetering application
+    // Database storage as used in other applications is not covered yet
     ReflectionTestUtils.setField(this.service, "firmwareFileStorage", true);
 
     when(this.manufacturerRepository.findByCodeIgnoreCase("LGB")).thenReturn(MANUFACTURER_ENTITY);

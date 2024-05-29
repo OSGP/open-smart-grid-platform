@@ -207,8 +207,14 @@ public class FirmwareSteps {
       assertThat(databaseFirmwareFile.getFile()).isEqualTo(expectedFirmware.getFile());
     }
     if (fileStoreLocation == FILE_STORAGE) {
-      // There is no check here whether the file is actually on the file storage. The file storage
-      // check is implicitly done in the tests using the file from file storage.
+      // There is no check here whether the file is actually on the file storage. Since the cucumber
+      // test is running outside the container in which the gxf common mudule runs there is no way
+      // to check the existence of the file on file storage inside the container. We can check that
+      // the file is NOT stored in the database and the hash for the file content is in the database
+      // as expected.
+      // Other cucumber tests that use the uploaded firmware file like UpdateFirmwareRequest test
+      // the existence of the file on storage by using the upload request as given condition for
+      // their test
       assertThat(databaseFirmwareFile.getFile()).isNull();
       assertThat(databaseFirmwareFile.getHashType()).isEqualTo(expectedFirmware.getHashType());
       assertThat(databaseFirmwareFile.getHash())

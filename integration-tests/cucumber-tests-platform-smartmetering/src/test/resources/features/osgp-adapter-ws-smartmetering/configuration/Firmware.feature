@@ -205,22 +205,6 @@ Feature: SmartMetering Configuration - Firmware
       | DeviceType           | SMART_METER_E     |
       | ManufacturerCode     | KAI               |
       | DeviceModelCode      | MA105             |
-#    And a firmware
-#      | FirmwareFileIdentification  | TEST_FW_FILE_0001                        |
-#      | FirmwareModuleVersionComm   | Telit 10.00.154                          |
-#      | FirmwareModuleVersionMa     | BL_012 XMX_N42_GprsV09                   |
-#      | FirmwareModuleVersionFunc   | M57 4836                                 |
-#      | FirmwareModuleVersionMbus   |                                          |
-#      | FirmwareModuleVersionSec    |                                          |
-#      | FirmwareFilename            | KFPP_V060100FA                           |
-#      | ModelCode                   | MA10X                                    |
-#      | FirmwareFileExists          | false                                    |
-#      | FirmwareIsForSmartMeters    | true                                     |
-#    And a firmware file and image identifier in a firmware file store and corresponding hash in database
-#      | FirmwareFileIdentification  | TEST_FW_FILE_0001              |
-#      | FirmwareFile                | 0000000000230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4ffbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d5fa821c678e71c05c47e1c69c4bfffe1fd |
-#      | FirmwareHashType            | SHA256                         |
-#      | FirmwareFileImageIdentifier | 496d6167654964656e746966696572 |
     And receiving an add or change firmware request
       | FirmwareFileIdentification  | TEST_FW_FILE_0001      |
       | FirmwareFile                | 0000000000230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4ffbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d5fa821c678e71c05c47e1c69c4bfffe1fd |

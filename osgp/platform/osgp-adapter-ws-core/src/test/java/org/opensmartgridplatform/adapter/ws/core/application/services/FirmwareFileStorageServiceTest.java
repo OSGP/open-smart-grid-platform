@@ -49,6 +49,24 @@ class FirmwareFileStorageServiceTest {
   }
 
   @Test
+  void storeFirmwareFileWhenNull() throws TechnicalException, IOException {
+    final String identification = "myFirmware";
+
+    this.service.storeFirmwareFile(null, identification);
+
+    assertThat(Files.exists(FIRMWARE_DIRECTORY.resolve(identification))).isFalse();
+  }
+
+  @Test
+  void storeFirmwareFileWhenEmpty() throws TechnicalException, IOException {
+    final String identification = "myFirmware";
+
+    this.service.storeFirmwareFile(new byte[0], identification);
+
+    assertThat(Files.exists(FIRMWARE_DIRECTORY.resolve(identification))).isFalse();
+  }
+
+  @Test
   void storeFirmwareFileFails() {
     final String identification = "subdirectory/myFirmware";
 
