@@ -14,7 +14,7 @@ import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
-import io.micrometer.prometheus.PrometheusMeterRegistry;
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -61,7 +61,7 @@ public class MetricsConfig extends AbstractConfig {
   public PrometheusMeterRegistry meterRegistry() {
     LOGGER.info("Enabling Prometheus metrics");
     final PrometheusMeterRegistry registry =
-        new PrometheusMeterRegistry(io.micrometer.prometheus.PrometheusConfig.DEFAULT);
+        new PrometheusMeterRegistry(io.micrometer.prometheusmetrics.PrometheusConfig.DEFAULT);
 
     if (this.metricsEnabled && this.enableDefaultMetrics) {
       this.bindDefaultMetrics(registry);
