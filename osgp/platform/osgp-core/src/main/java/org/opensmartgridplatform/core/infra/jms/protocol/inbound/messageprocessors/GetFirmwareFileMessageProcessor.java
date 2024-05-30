@@ -68,7 +68,8 @@ public class GetFirmwareFileMessageProcessor extends AbstractProtocolRequestMess
 
       final UpdateFirmwareRequestDto updateFirmwareRequestDto =
           (UpdateFirmwareRequestDto) requestMessage.getRequest();
-      firmwareFileIdentification = updateFirmwareRequestDto.getFirmwareIdentification();
+      firmwareFileIdentification =
+          updateFirmwareRequestDto.getUpdateFirmwareRequestDataDto().getFirmwareIdentification();
 
       final FirmwareFile firmwareFile =
           this.firmwareFileRepository.findByIdentificationOnly(firmwareFileIdentification);
@@ -78,7 +79,8 @@ public class GetFirmwareFileMessageProcessor extends AbstractProtocolRequestMess
               firmwareFileIdentification,
               updateFirmwareRequestDto.getDeviceIdentification(),
               firmwareFile.getFile(),
-              firmwareFile.getImageIdentifier());
+              firmwareFile.getHash(),
+              firmwareFile.getHashType());
 
       this.sendSuccessResponse(
           metadata, device.getProtocolInfo(), firmwareFileDto, message.getJMSReplyTo());

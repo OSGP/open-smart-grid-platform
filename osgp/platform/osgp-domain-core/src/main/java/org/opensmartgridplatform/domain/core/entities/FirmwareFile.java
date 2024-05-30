@@ -76,7 +76,8 @@ public class FirmwareFile extends AbstractEntity {
 
   @Column private boolean active;
 
-  @Column private byte[] imageIdentifier;
+  @Column(length = 12)
+  private String hashType;
 
   protected FirmwareFile() {
     // Default constructor
@@ -90,7 +91,7 @@ public class FirmwareFile extends AbstractEntity {
     this.file = builder.file;
     this.hash = builder.hash;
     this.active = builder.active;
-    this.imageIdentifier = builder.imageIdentifier;
+    this.hashType = builder.hashType;
   }
 
   public void updateFirmwareModuleData(final Map<FirmwareModule, String> versionsByModule) {
@@ -107,8 +108,8 @@ public class FirmwareFile extends AbstractEntity {
     return this.identification;
   }
 
-  public byte[] getImageIdentifier() {
-    return this.imageIdentifier;
+  public String getHashType() {
+    return this.hashType;
   }
 
   public SortedSet<DeviceModel> getDeviceModels() {
@@ -315,8 +316,8 @@ public class FirmwareFile extends AbstractEntity {
     this.pushToNewDevices = pushToNewDevices;
   }
 
-  public void setImageIdentifier(final byte[] imageIdentifier) {
-    this.imageIdentifier = imageIdentifier;
+  public void setHashType(final String hashType) {
+    this.hashType = hashType;
   }
 
   public String getHash() {
@@ -349,8 +350,8 @@ public class FirmwareFile extends AbstractEntity {
         + this.pushToNewDevices
         + ", file="
         + Arrays.toString(this.file)
-        + ", imageIdentifier="
-        + Arrays.toString(this.imageIdentifier)
+        + ", hashType="
+        + this.hashType
         + ", hash="
         + this.hash
         + "]";
@@ -365,7 +366,7 @@ public class FirmwareFile extends AbstractEntity {
     private byte[] file;
     private String hash;
     private boolean active;
-    private byte[] imageIdentifier;
+    private String hashType;
 
     public Builder withIdentification(final String identification) {
       if (identification != null) {
@@ -394,8 +395,8 @@ public class FirmwareFile extends AbstractEntity {
       return this;
     }
 
-    public Builder withImageIdentifier(final byte[] imageIdentifier) {
-      this.imageIdentifier = imageIdentifier;
+    public Builder withHashType(final String hashType) {
+      this.hashType = hashType;
       return this;
     }
 

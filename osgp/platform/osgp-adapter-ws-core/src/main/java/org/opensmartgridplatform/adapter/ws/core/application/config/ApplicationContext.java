@@ -61,6 +61,8 @@ public class ApplicationContext extends AbstractConfig {
   private static final String PROPERTY_NAME_FIRMWARE_PATH = "firmware.path";
   private static final String PROPERTY_NAME_FIRMWARE_DIRECTORY = "firmware.directory";
   private static final String PROPERTY_NAME_FIRMWARE_FILESTORAGE = "firmware.filestorage";
+  private static final String PROPERTY_NAME_FIRMWARE_IMAGEID_EXTENSION =
+      "firmware.imageid.extension";
   private static final String PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE = "paging.maximum.pagesize";
   private static final String PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE = "paging.default.pagesize";
 
@@ -125,6 +127,11 @@ public class ApplicationContext extends AbstractConfig {
   public boolean firmwareFileStorage() {
     return Boolean.parseBoolean(
         this.environment.getRequiredProperty(PROPERTY_NAME_FIRMWARE_FILESTORAGE));
+  }
+
+  @Bean
+  public String firmwareImageIdExtension() {
+    return this.environment.getRequiredProperty(PROPERTY_NAME_FIRMWARE_IMAGEID_EXTENSION);
   }
 
   @Bean

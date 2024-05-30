@@ -15,8 +15,9 @@ import static org.mockito.Mockito.when;
 import jakarta.jms.JMSException;
 import jakarta.jms.ObjectMessage;
 import org.apache.activemq.command.ActiveMQDestination;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -31,6 +32,8 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
+import org.opensmartgridplatform.dto.valueobjects.HashTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
@@ -39,7 +42,7 @@ import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class GetFirmwareFileMessageProcessorTest {
+class GetFirmwareFileMessageProcessorTest {
 
   @Mock private ProtocolResponseMessageSender protocolResponseMessageSender;
 
@@ -55,8 +58,10 @@ public class GetFirmwareFileMessageProcessorTest {
 
   @InjectMocks private GetFirmwareFileMessageProcessor getFirmwareFileMessageProcessor;
 
-  @Test
-  public void processMessageShouldSendFirmwareFile() throws JMSException {
+  @ParameterizedTest
+  @CsvSource({",", "SHA256,abcd"})
+  void processMessageShouldSendFirmwareFile(
+      final HashTypeDto firmwareHashType, final String firmwareDigest) throws JMSException {
     // arrange
     final String correlationUid = "corr-uid-1";
     final String organisationIdentification = "test-org";
@@ -66,7 +71,10 @@ public class GetFirmwareFileMessageProcessorTest {
     final byte[] firmwareFileBytes = firmwareFileIdentification.getBytes();
 
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
-        new UpdateFirmwareRequestDto(firmwareFileIdentification, deviceIdentification);
+        new UpdateFirmwareRequestDto(
+            deviceIdentification,
+            new UpdateFirmwareRequestDataDto(
+                firmwareFileIdentification, firmwareHashType, firmwareDigest));
     final RequestMessage requestMessage =
         new RequestMessage(
             correlationUid,

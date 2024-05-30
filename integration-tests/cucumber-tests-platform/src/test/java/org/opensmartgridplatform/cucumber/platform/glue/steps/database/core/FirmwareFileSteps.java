@@ -10,11 +10,12 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getHexDecoded;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
-import com.google.common.io.Files;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -136,9 +137,6 @@ public class FirmwareFileSteps {
       }
     }
 
-    final byte[] imageIdentifier =
-        getHexDecoded(settings, PlatformKeys.FIRMWARE_FILE_IMAGE_IDENTIFIER, null);
-
     FirmwareFile firmwareFile =
         new FirmwareFile.Builder()
             .withIdentification(identification)
@@ -157,7 +155,6 @@ public class FirmwareFileSteps {
                 getBoolean(
                     settings, PlatformKeys.FIRMWARE_ACTIVE, PlatformDefaults.FIRMWARE_ACTIVE))
             .withFile(file)
-            .withImageIdentifier(imageIdentifier)
             .build();
 
     if (!isForSmartMeters) {
@@ -165,6 +162,7 @@ public class FirmwareFileSteps {
       this.createFile(
           deviceModel.getManufacturer().getCode(), deviceModel.getModelCode(), filename);
     }
+
     /*
      * Save the firmware file before adding the device model and updating
      * the firmware module data. Trying to save a new firmware file with the
@@ -320,8 +318,7 @@ public class FirmwareFileSteps {
 
   private byte[] getFirmwareFileBytes(final String filename) throws IOException {
     final String path = this.getFirmwareFilepath(filename);
-    final File file = new File(path);
-    return Files.toByteArray(file);
+    return Files.readAllBytes(Paths.get(path));
   }
 
   private String getFirmwareFilepath(final String filename) {
