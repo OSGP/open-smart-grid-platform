@@ -9,8 +9,8 @@ import static org.mockito.Mockito.when;
 
 import com.hivemq.client.mqtt.MqttClientState;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
-import io.micrometer.prometheus.PrometheusConfig;
-import io.micrometer.prometheus.PrometheusMeterRegistry;
+import io.micrometer.prometheusmetrics.PrometheusConfig;
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
