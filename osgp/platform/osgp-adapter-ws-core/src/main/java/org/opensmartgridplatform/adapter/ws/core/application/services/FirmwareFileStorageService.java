@@ -24,10 +24,17 @@ public class FirmwareFileStorageService {
   private final String firmwareImageIdExtension;
 
   public FirmwareFileStorageService(
-      final String firmwareDirectory, final String firmwareImageIdExtension) throws IOException {
+      final String firmwareDirectory, final String firmwareImageIdExtension)
+      throws IOException, TechnicalException {
     this.firmwareDirectory = Paths.get(firmwareDirectory);
     this.firmwareImageIdExtension = firmwareImageIdExtension;
-    Files.createDirectories(this.firmwareDirectory);
+    if (!Files.exists(this.firmwareDirectory)) {
+      throw new TechnicalException(
+          ComponentType.WS_CORE,
+          String.format(
+              "Error initializing FirmwareFileStorageService. Storage location '%s' does not exist.",
+              firmwareDirectory));
+    }
   }
 
   /**

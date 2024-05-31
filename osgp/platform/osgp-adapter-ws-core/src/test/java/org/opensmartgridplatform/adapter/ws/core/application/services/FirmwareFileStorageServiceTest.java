@@ -31,7 +31,7 @@ class FirmwareFileStorageServiceTest {
   private FirmwareFileStorageService service;
 
   @BeforeEach
-  void setup() throws IOException {
+  void setup() throws IOException, TechnicalException {
     Files.createDirectories(FIRMWARE_DIRECTORY);
 
     this.service =
