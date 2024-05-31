@@ -25,7 +25,7 @@ public class FirmwareFileStorageService {
 
   public FirmwareFileStorageService(
       final String firmwareDirectory, final String firmwareImageIdExtension)
-      throws IOException, TechnicalException {
+      throws TechnicalException {
     this.firmwareDirectory = Paths.get(firmwareDirectory);
     this.firmwareImageIdExtension = firmwareImageIdExtension;
     if (!Files.exists(this.firmwareDirectory)) {
