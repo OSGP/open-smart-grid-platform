@@ -43,9 +43,9 @@ public class OsgpExceptionConverter {
       return osgpException;
     }
 
-    if (e instanceof ConnectionException) {
+    if (e instanceof final ConnectionException connectionException) {
       return new FunctionalException(
-          FunctionalExceptionType.CONNECTION_ERROR,
+          connectionException.getType(),
           ComponentType.PROTOCOL_DLMS,
           new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage()));
     }

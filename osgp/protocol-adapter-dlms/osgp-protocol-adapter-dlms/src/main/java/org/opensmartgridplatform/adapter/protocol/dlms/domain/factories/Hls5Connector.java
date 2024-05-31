@@ -21,7 +21,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Secr
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
@@ -81,18 +80,7 @@ public class Hls5Connector extends SecureDlmsConnector {
         this.recoverKeyProcessInitiator.initiate(messageMetadata, device.getDeviceIdentification());
       }
 
-      final String msg =
-          String.format(
-              "Error creating connection for device %s with Ip address:%s Port:%d UseHdlc:%b UseSn:%b "
-                  + "Message:%s",
-              device.getDeviceIdentification(),
-              device.getIpAddress(),
-              device.getPort(),
-              device.isUseHdlc(),
-              device.isUseSn(),
-              e.getMessage());
-      LOGGER.error(msg);
-      throw new ConnectionException(msg, e);
+      throw this.getExceptionWithExceptionType(device, e);
     } catch (final EncrypterException e) {
       throw new FunctionalException(
           FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);

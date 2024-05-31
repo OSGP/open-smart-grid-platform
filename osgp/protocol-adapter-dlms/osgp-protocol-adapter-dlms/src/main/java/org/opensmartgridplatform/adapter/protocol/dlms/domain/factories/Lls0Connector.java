@@ -21,7 +21,6 @@ import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.openmuc.jdlms.settings.client.ReferencingMethod;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.metrics.ProtocolAdapterMetrics;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -104,17 +103,7 @@ public class Lls0Connector extends DlmsConnector {
 
       return dlmsConnection;
     } catch (final IOException e) {
-      final String msg =
-          String.format(
-              "Error creating connection for device %s with Ip address:%s Port:%d UseHdlc:%b UseSn:%b Message:%s",
-              device.getDeviceIdentification(),
-              device.getIpAddress(),
-              device.getPort(),
-              device.isUseHdlc(),
-              device.isUseSn(),
-              e.getMessage());
-      LOGGER.error(msg);
-      throw new ConnectionException(msg, e);
+      throw this.getExceptionWithExceptionType(device, e);
     }
   }
 
