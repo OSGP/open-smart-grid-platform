@@ -4,12 +4,9 @@
 
 package org.opensmartgridplatform.cucumber.platform.publiclighting.domain.platform;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.platform.commons.util.StringUtils;
-import org.openqa.selenium.InvalidArgumentException;
 import org.opensmartgridplatform.cucumber.core.ReadSettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -27,6 +24,7 @@ import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 public abstract class AbstractPlatformDeviceCreator<T extends Device>
     implements PlatformDeviceCreator<T> {
@@ -41,14 +39,16 @@ public abstract class AbstractPlatformDeviceCreator<T extends Device>
 
   @Autowired private DomainInfoRepository domainInfoRepository;
 
-  protected InetAddress networkAddress(final Map<String, String> settings) {
-    try {
-      return InetAddress.getByName(
-          ReadSettingsHelper.getNullOrNonEmptyString(
-              settings, PlatformKeys.KEY_NETWORKADDRESS, PlatformDefaults.DEFAULT_NETWORK_ADDRESS));
-    } catch (final UnknownHostException e) {
-      throw new InvalidArgumentException("Invalid hostname");
-    }
+  @Value("${device.networkaddress}")
+  private String deviceNetworkAddress;
+
+  protected String networkAddress(final Map<String, String> settings) {
+    final var defaultNetworkAddress =
+        StringUtils.isNotBlank(this.deviceNetworkAddress)
+            ? this.deviceNetworkAddress
+            : PlatformDefaults.DEFAULT_NETWORK_ADDRESS;
+    return ReadSettingsHelper.getNullOrNonEmptyString(
+        settings, PlatformKeys.KEY_NETWORKADDRESS, defaultNetworkAddress);
   }
 
   protected String deviceIdentification(final Map<String, String> settings) {
@@ -81,17 +81,16 @@ public abstract class AbstractPlatformDeviceCreator<T extends Device>
   }
 
   protected Device gatewayDevice(final Map<String, String> settings) {
-    final String gatewayDeviceIdentification =
+    final var gatewayDeviceIdentification =
         ReadSettingsHelper.getString(settings, PlatformKeys.KEY_GATEWAY_DEVICE_ID, null);
     if (StringUtils.isNotBlank(gatewayDeviceIdentification)) {
       return this.deviceRepository.findByDeviceIdentification(gatewayDeviceIdentification);
-    } else {
-      return null;
     }
+    return null;
   }
 
   private Organisation getOrganisation(final Map<String, String> settings) {
-    final String organizationIdentification =
+    final var organizationIdentification =
         ReadSettingsHelper.getString(
             settings,
             PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
@@ -100,7 +99,7 @@ public abstract class AbstractPlatformDeviceCreator<T extends Device>
   }
 
   protected DeviceAuthorization addDeviceAuthorization(final Device device) {
-    return this.addDeviceAuthorization(device, new HashMap<String, String>());
+    return this.addDeviceAuthorization(device, new HashMap<>());
   }
 
   protected DeviceAuthorization addDeviceAuthorization(
@@ -110,9 +109,8 @@ public abstract class AbstractPlatformDeviceCreator<T extends Device>
 
   private DeviceAuthorization addDeviceAuthorization(
       final Device device, final Organisation organization) {
-    DeviceAuthorization deviceAuthorization =
+    final var deviceAuthorization =
         device.addAuthorization(organization, DeviceFunctionGroup.OWNER);
-    deviceAuthorization = this.deviceAuthorizationRepository.save(deviceAuthorization);
-    return deviceAuthorization;
+    return this.deviceAuthorizationRepository.save(deviceAuthorization);
   }
 }

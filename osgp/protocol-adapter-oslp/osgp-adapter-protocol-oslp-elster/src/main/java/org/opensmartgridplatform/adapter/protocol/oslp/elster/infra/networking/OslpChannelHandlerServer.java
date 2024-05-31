@@ -4,10 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelId;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
@@ -20,10 +18,8 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.servic
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.LoggingService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpDeviceSettingsService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpSigningService;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.core.db.api.application.services.DeviceDataService;
-import org.opensmartgridplatform.dto.valueobjects.GpsCoordinatesDto;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.Oslp.EventNotificationRequest;
 import org.opensmartgridplatform.oslp.Oslp.LocationInfo;
@@ -103,7 +99,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
   @Override
   public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message)
       throws Exception {
-    final ChannelId channelId = ctx.channel().id();
+    final var channelId = ctx.channel().id();
     if (LOGGER.isInfoEnabled()) {
       LOGGER.info("channelRead0 called for channel {}.", channelId.asLongText());
     }
@@ -172,9 +168,9 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
    */
   public void processSignedOslpEnvelope(final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
     // Try to find the channel.
-    final String channelIdAsLongText =
+    final var channelIdAsLongText =
         signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto().getCorrelationUid();
-    final Channel channel = this.channelCache.removeFromCache(channelIdAsLongText);
+    final var channel = this.channelCache.removeFromCache(channelIdAsLongText);
     if (channel == null) {
       LOGGER.error(
           "Unable to find channel for channelId: {}. Can't send response message to device.",
@@ -183,7 +179,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     }
 
     // Get signed envelope, log it and send it to device.
-    final OslpEnvelope response = signedOslpEnvelopeDto.getOslpEnvelope();
+    final var response = signedOslpEnvelopeDto.getOslpEnvelope();
     this.loggingService.logMessage(response, false);
     channel.writeAndFlush(response);
 
@@ -210,17 +206,17 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
       final Oslp.RegisterDeviceRequest registerRequest)
       throws UnknownHostException {
 
-    final String deviceIdentification = registerRequest.getDeviceIdentification();
-    final String deviceType = registerRequest.getDeviceType().toString();
-    final boolean hasSchedule = registerRequest.getHasSchedule();
-    final InetAddress inetAddress = this.getInetAddress(registerRequest, deviceIdentification);
+    final var deviceIdentification = registerRequest.getDeviceIdentification();
+    final var deviceType = registerRequest.getDeviceType().toString();
+    final var hasSchedule = registerRequest.getHasSchedule();
+    final var inetAddress = this.getInetAddress(registerRequest, deviceIdentification);
 
     // Send message to OSGP-CORE to save IP Address, device type and has
     // schedule values in OSGP-CORE database.
     this.deviceRegistrationService.sendDeviceRegisterRequest(
         inetAddress, deviceType, hasSchedule, deviceIdentification);
 
-    OslpDevice oslpDevice =
+    var oslpDevice =
         this.oslpDeviceSettingsService.getDeviceByDeviceIdentification(
             registerRequest.getDeviceIdentification());
 
@@ -231,7 +227,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     oslpDevice = this.oslpDeviceSettingsService.updateDevice(oslpDevice);
 
     // Return current date and time in UTC so the device can sync the clock.
-    final Oslp.RegisterDeviceResponse.Builder responseBuilder =
+    final var responseBuilder =
         Oslp.RegisterDeviceResponse.newBuilder()
             .setStatus(Oslp.Status.OK)
             .setCurrentTime(Instant.now().toString(format))
@@ -240,11 +236,11 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
 
     // Return local time zone information of the platform. Devices can use
     // this to convert UTC times to local times.
-    final LocationInfo.Builder locationInfo = LocationInfo.newBuilder();
+    final var locationInfo = LocationInfo.newBuilder();
     locationInfo.setTimeOffset(this.timeZoneOffsetMinutes);
 
     // Get the GPS values from OSGP-CORE database.
-    final GpsCoordinatesDto gpsCoordinates =
+    final var gpsCoordinates =
         this.deviceDataService.getGpsCoordinatesForDevice(deviceIdentification);
     if (gpsCoordinates != null
         && gpsCoordinates.getLatitude() != null
@@ -265,22 +261,19 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     return Oslp.Message.newBuilder().setRegisterDeviceResponse(responseBuilder.build()).build();
   }
 
-  private InetAddress getInetAddress(
+  private String getInetAddress(
       final Oslp.RegisterDeviceRequest registerRequest, final String deviceIdentification)
       throws UnknownHostException {
-    final InetAddress inetAddress;
 
     // In case the optional properties 'testDeviceId' and 'testDeviceIp' are
     // set, the values will be used to set an IP address for a device.
     if (this.testDeviceIps != null && this.testDeviceIps.containsKey(deviceIdentification)) {
-      final String testDeviceIp = this.testDeviceIps.get(deviceIdentification);
+      final var testDeviceIp = this.testDeviceIps.get(deviceIdentification);
       LOGGER.info(
           "Using testDeviceId: {} and testDeviceIp: {}", deviceIdentification, testDeviceIp);
-      inetAddress = InetAddress.getByName(testDeviceIp);
-    } else {
-      inetAddress = InetAddress.getByAddress(registerRequest.getIpAddress().toByteArray());
+      return testDeviceIp;
     }
-    return inetAddress;
+    return InetAddress.getByAddress(registerRequest.getIpAddress().toByteArray()).getHostAddress();
   }
 
   private int convertGpsCoordinateFromFloatToInt(final Float input) {
@@ -316,7 +309,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
 
   private void handleSetSchedule(final byte[] deviceUid) throws TechnicalException {
 
-    final String deviceUidBase64Encoded = Base64.encodeBase64String(deviceUid);
+    final var deviceUidBase64Encoded = Base64.encodeBase64String(deviceUid);
     this.deviceManagementService.handleSetSchedule(deviceUidBase64Encoded);
   }
 
@@ -336,8 +329,8 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
           .build();
     }
 
-    final Oslp.Status oslpStatus = Oslp.Status.OK;
-    final String deviceUidBase64Encoded = Base64.encodeBase64String(deviceUid);
+    final var oslpStatus = Oslp.Status.OK;
+    final var deviceUidBase64Encoded = Base64.encodeBase64String(deviceUid);
 
     this.deviceManagementService.addEventNotifications(
         deviceUidBase64Encoded, request.getNotificationsList());
