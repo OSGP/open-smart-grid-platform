@@ -70,7 +70,7 @@ public class Lls1Connector extends SecureDlmsConnector {
       throw new TechnicalException(
           ComponentType.PROTOCOL_DLMS, "The IP address is not found: " + device.getIpAddress());
     } catch (final IOException e) {
-      throw this.getExceptionWithExceptionType(device, e);
+      throw getExceptionWithExceptionType(device, e);
     } catch (final EncrypterException e) {
       LOGGER.error(
           "decryption of security keys failed for device: {}", device.getDeviceIdentification(), e);
