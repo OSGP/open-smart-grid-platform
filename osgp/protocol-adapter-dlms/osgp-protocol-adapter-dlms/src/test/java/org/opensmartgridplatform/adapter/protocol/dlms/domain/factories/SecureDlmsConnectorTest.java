@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedConstruction;
@@ -42,6 +41,7 @@ import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.openmuc.jdlms.settings.client.ReferencingMethod;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.metrics.ProtocolAdapterMetrics;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -64,18 +64,22 @@ class SecureDlmsConnectorTest {
   final DlmsDevice device = mock(DlmsDevice.class);
   final DlmsMessageListener dlmsMessageListener = mock(DlmsMessageListener.class);
 
-  private SecureDlmsConnector connector;
+  private final SecureDlmsConnector connectorLls1 =
+      new Lls1Connector(
+          this.RESPONSE_TIMEOUT,
+          this.LOGICAL_DEVICE_ADDRESS,
+          this.DEVICE_ASSOCIATION,
+          this.SECRET_MANAGEMENT_SERVICE,
+          this.PROTOCOL_ADAPTER_METRICS);
 
-  @BeforeEach
-  void setUp() {
-    this.connector =
-        new Lls1Connector(
-            this.RESPONSE_TIMEOUT,
-            this.LOGICAL_DEVICE_ADDRESS,
-            this.DEVICE_ASSOCIATION,
-            this.SECRET_MANAGEMENT_SERVICE,
-            this.PROTOCOL_ADAPTER_METRICS);
-  }
+  private final SecureDlmsConnector connectorHls5 =
+      new Hls5Connector(
+          mock(RecoverKeyProcessInitiator.class),
+          this.RESPONSE_TIMEOUT,
+          this.LOGICAL_DEVICE_ADDRESS,
+          this.DEVICE_ASSOCIATION,
+          this.SECRET_MANAGEMENT_SERVICE,
+          this.PROTOCOL_ADAPTER_METRICS);
 
   @Test
   void testConnect() throws OsgpException {
@@ -99,7 +103,7 @@ class SecureDlmsConnectorTest {
           .thenReturn(timer);
 
       final DlmsConnection result =
-          this.connector.connect(this.messageMetadata, this.device, this.dlmsMessageListener);
+          this.connectorLls1.connect(this.messageMetadata, this.device, this.dlmsMessageListener);
       assertThat(result).isEqualTo(dlmsConnection);
 
       verify(this.PROTOCOL_ADAPTER_METRICS)
@@ -116,7 +120,16 @@ class SecureDlmsConnectorTest {
   }
 
   @Test
-  void testConnectionError() throws OsgpException {
+  void testConnectionErrorLls1() throws OsgpException {
+    this.testConnectionError(this.connectorLls1);
+  }
+
+  @Test
+  void testConnectionErrorHls5() throws OsgpException {
+    this.testConnectionError(this.connectorHls5);
+  }
+
+  void testConnectionError(final SecureDlmsConnector connector) throws OsgpException {
     when(this.device.getIpAddress()).thenReturn("127.0.0.1");
     when(this.device.getChallengeLength()).thenReturn(8);
     when(this.device.getDeviceIdentification()).thenReturn("device1");
@@ -129,18 +142,20 @@ class SecureDlmsConnectorTest {
             TcpConnectionBuilder.class,
             (mock, context) -> {
               this.prepareTcpBuidlerMock(mock);
-              when(mock.build()).thenThrow(new IOException());
+              when(mock.build()).thenThrow(new IOException("Connection reset"));
             })) {
       final Timer timer = mock(Timer.class);
       when(this.PROTOCOL_ADAPTER_METRICS.createTimer(
               METRIC_REQUEST_TIMER_PREFIX + TIMER_NAME, this.getTags()))
           .thenReturn(timer);
 
-      assertThrows(
-          ConnectionException.class,
-          () -> {
-            this.connector.connect(this.messageMetadata, this.device, this.dlmsMessageListener);
-          });
+      final ConnectionException connectionException =
+          assertThrows(
+              ConnectionException.class,
+              () -> {
+                connector.connect(this.messageMetadata, this.device, this.dlmsMessageListener);
+              });
+      assertThat(connectionException.getType()).isEqualTo(FunctionalExceptionType.CONNECTION_RESET);
     }
   }
 
@@ -149,7 +164,7 @@ class SecureDlmsConnectorTest {
     assertThrows(
         IllegalStateException.class,
         () -> {
-          this.connector.connect(this.messageMetadata, null, this.dlmsMessageListener);
+          this.connectorLls1.connect(this.messageMetadata, null, this.dlmsMessageListener);
         });
   }
 
@@ -160,7 +175,8 @@ class SecureDlmsConnectorTest {
         assertThrows(
             FunctionalException.class,
             () -> {
-              this.connector.connect(this.messageMetadata, this.device, this.dlmsMessageListener);
+              this.connectorLls1.connect(
+                  this.messageMetadata, this.device, this.dlmsMessageListener);
             });
     assertThat(functionalException.getExceptionType())
         .isEqualTo(FunctionalExceptionType.INVALID_IP_ADDRESS);

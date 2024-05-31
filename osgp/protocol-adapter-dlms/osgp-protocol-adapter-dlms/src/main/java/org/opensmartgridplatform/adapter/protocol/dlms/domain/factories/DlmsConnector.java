@@ -113,7 +113,7 @@ public abstract class DlmsConnector {
     }
   }
 
-  protected ConnectionException getExceptionWithExceptionType(
+  protected static ConnectionException getExceptionWithExceptionType(
       final DlmsDevice device, final Exception e) {
     final String errorMessage = e.getMessage();
 

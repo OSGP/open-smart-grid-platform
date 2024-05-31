@@ -80,7 +80,7 @@ public class Hls5Connector extends SecureDlmsConnector {
         this.recoverKeyProcessInitiator.initiate(messageMetadata, device.getDeviceIdentification());
       }
 
-      throw this.getExceptionWithExceptionType(device, e);
+      throw getExceptionWithExceptionType(device, e);
     } catch (final EncrypterException e) {
       throw new FunctionalException(
           FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
