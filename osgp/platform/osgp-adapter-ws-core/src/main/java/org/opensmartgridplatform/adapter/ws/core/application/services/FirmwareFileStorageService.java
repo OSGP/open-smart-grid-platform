@@ -24,17 +24,10 @@ public class FirmwareFileStorageService {
   private final String firmwareImageIdExtension;
 
   public FirmwareFileStorageService(
-      final String firmwareDirectory, final String firmwareImageIdExtension)
+      final String firmwareFileStorageDirectory, final String firmwareImageIdExtension)
       throws TechnicalException {
-    this.firmwareDirectory = Paths.get(firmwareDirectory);
+    this.firmwareDirectory = Paths.get(firmwareFileStorageDirectory);
     this.firmwareImageIdExtension = firmwareImageIdExtension;
-    if (!Files.exists(this.firmwareDirectory)) {
-      throw new TechnicalException(
-          ComponentType.WS_CORE,
-          String.format(
-              "Error initializing FirmwareFileStorageService. Storage location '%s' does not exist.",
-              firmwareDirectory));
-    }
   }
 
   /**
@@ -50,6 +43,7 @@ public class FirmwareFileStorageService {
   public void storeFirmwareFile(final byte[] firmwareFile, final String firmwareIdentification)
       throws TechnicalException {
 
+    this.checkStorageDirectory();
     if (firmwareFile == null || firmwareFile.length == 0) {
       log.info(
           "Firmware file with identifier '{}' is null or empty. File is not stored",
@@ -78,6 +72,7 @@ public class FirmwareFileStorageService {
   public void storeImageIdentifier(
       final byte[] imageIdentifier, final String firmwareIdentification) throws TechnicalException {
 
+    this.checkStorageDirectory();
     if (imageIdentifier == null || imageIdentifier.length == 0) {
       log.info(
           "Image identifier with identifier '{}' is null or empty. Image identifier is not stored",
@@ -126,6 +121,16 @@ public class FirmwareFileStorageService {
     }
 
     return digest;
+  }
+
+  private void checkStorageDirectory() throws TechnicalException {
+    if (!Files.exists(this.firmwareDirectory)) {
+      throw new TechnicalException(
+          ComponentType.WS_CORE,
+          String.format(
+              "%s cannot be used. Configured firmware.filestorage.directory '%s' does not exist.",
+              this.getClass().getSimpleName(), this.firmwareDirectory));
+    }
   }
 
   private boolean isExistingFirmwareFile(final String firmwareIdentification) {

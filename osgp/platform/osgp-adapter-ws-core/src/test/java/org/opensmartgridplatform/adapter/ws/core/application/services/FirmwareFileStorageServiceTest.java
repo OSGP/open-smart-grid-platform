@@ -58,6 +58,23 @@ class FirmwareFileStorageServiceTest {
   }
 
   @Test
+  void storeFirmwareFileWhenStorageMalConfigured() throws TechnicalException, IOException {
+    final String identification = "myFirmware";
+
+    final String nonexistingDirectory = "target/nonexisting";
+    final FirmwareFileStorageService malconfiguredService =
+        new FirmwareFileStorageService(nonexistingDirectory, IMAGE_ID_EXTENSION);
+
+    assertThatThrownBy(() -> malconfiguredService.storeFirmwareFile(FIRMWARE_FILE, identification))
+        .isInstanceOf(TechnicalException.class)
+        .hasMessageContainingAll(
+            String.format(
+                "FirmwareFileStorageService cannot be used. Configured firmware.filestorage.directory",
+                "does not exist.",
+                nonexistingDirectory));
+  }
+
+  @Test
   void storeFirmwareFileWhenEmpty() throws TechnicalException, IOException {
     final String identification = "myFirmware";
 
