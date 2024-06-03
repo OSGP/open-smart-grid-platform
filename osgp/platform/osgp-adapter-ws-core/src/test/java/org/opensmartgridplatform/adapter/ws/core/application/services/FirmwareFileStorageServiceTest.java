@@ -68,10 +68,8 @@ class FirmwareFileStorageServiceTest {
     assertThatThrownBy(() -> malconfiguredService.storeFirmwareFile(FIRMWARE_FILE, identification))
         .isInstanceOf(TechnicalException.class)
         .hasMessageContainingAll(
-            String.format(
-                "FirmwareFileStorageService cannot be used. Configured firmware.filestorage.directory",
-                "does not exist.",
-                nonexistingDirectory));
+            "FirmwareFileStorageService cannot be used. Configured firmware.filestorage.directory",
+            "does not exist.");
   }
 
   @Test
