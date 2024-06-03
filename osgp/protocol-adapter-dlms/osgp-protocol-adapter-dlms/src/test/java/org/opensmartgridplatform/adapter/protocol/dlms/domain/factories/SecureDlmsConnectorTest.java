@@ -120,12 +120,12 @@ class SecureDlmsConnectorTest {
   }
 
   @Test
-  void testConnectionErrorLls1() throws OsgpException {
+  void testConnectionErrorLls1() {
     this.testConnectionError(this.connectorLls1);
   }
 
   @Test
-  void testConnectionErrorHls5() throws OsgpException {
+  void testConnectionErrorHls5() {
     this.testConnectionError(this.connectorHls5);
   }
 
