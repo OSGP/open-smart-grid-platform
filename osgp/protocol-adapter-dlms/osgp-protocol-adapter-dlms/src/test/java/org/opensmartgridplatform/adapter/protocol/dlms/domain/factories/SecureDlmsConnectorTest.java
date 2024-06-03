@@ -129,7 +129,7 @@ class SecureDlmsConnectorTest {
     this.testConnectionError(this.connectorHls5);
   }
 
-  void testConnectionError(final SecureDlmsConnector connector) throws OsgpException {
+  void testConnectionError(final SecureDlmsConnector connector) {
     when(this.device.getIpAddress()).thenReturn("127.0.0.1");
     when(this.device.getChallengeLength()).thenReturn(8);
     when(this.device.getDeviceIdentification()).thenReturn("device1");

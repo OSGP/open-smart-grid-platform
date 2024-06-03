@@ -15,13 +15,12 @@ import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExcep
 import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.RESPONSE_TIMEOUT;
 import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.SOCKET_CLOSED_BY_REMOTE;
 import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.UNABLE_TO_DECYPHER;
-import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.UNKNOWN;
 import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.UNKNOWN_ASSOCIATION_RESULT;
-import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.WRAPPER_HEADER_ERROR;
+import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.WRAPPER_HEADER_INVALID;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
@@ -39,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public abstract class DlmsConnector {
   private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConnector.class);
 
-  private static final Map<String, FunctionalExceptionType> errorMap = new HashMap<>();
+  private static final SortedMap<String, FunctionalExceptionType> errorMap = new TreeMap<>();
 
   static {
     errorMap.put("AUTHENTICATION_ERROR", AUTHENTICATION_ERROR);
@@ -50,14 +49,10 @@ public abstract class DlmsConnector {
     errorMap.put("CONNECTION_ESTABLISH_ERROR", CONNECTION_ESTABLISH_ERROR);
     errorMap.put("Socket was closed by remote host.", SOCKET_CLOSED_BY_REMOTE);
     errorMap.put("Unable to decypher/decrypt xDLMS pdu", UNABLE_TO_DECYPHER);
-    errorMap.put("WRAPPER_HEADER_INVALID_VERSION", WRAPPER_HEADER_ERROR);
-    errorMap.put("WRAPPER_HEADER_INVALID_SRC_DEST_ADDR", WRAPPER_HEADER_ERROR);
-    errorMap.put("WRAPPER_HEADER_INVALID_PAYLOAD_LENGTH", WRAPPER_HEADER_ERROR);
-    errorMap.put("WRAPPER_HEADER_INVALID", WRAPPER_HEADER_ERROR);
+    errorMap.put("WRAPPER_HEADER_INVALID", WRAPPER_HEADER_INVALID);
     errorMap.put("ILLEGAL_RESPONSE", ILLEGAL_RESPONSE);
     errorMap.put("RESPONSE_TIMEOUT", RESPONSE_TIMEOUT);
     errorMap.put("UNKNOWN_ASSOCIATION_RESULT", UNKNOWN_ASSOCIATION_RESULT);
-    errorMap.put("UNKNOWN", UNKNOWN);
   }
 
   public abstract DlmsConnection connect(
