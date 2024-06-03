@@ -24,8 +24,7 @@ public class FirmwareFileStorageService {
   private final String firmwareImageIdExtension;
 
   public FirmwareFileStorageService(
-      final String firmwareFileStorageDirectory, final String firmwareImageIdExtension)
-      throws TechnicalException {
+      final String firmwareFileStorageDirectory, final String firmwareImageIdExtension) {
     this.firmwareDirectory = Paths.get(firmwareFileStorageDirectory);
     this.firmwareImageIdExtension = firmwareImageIdExtension;
   }

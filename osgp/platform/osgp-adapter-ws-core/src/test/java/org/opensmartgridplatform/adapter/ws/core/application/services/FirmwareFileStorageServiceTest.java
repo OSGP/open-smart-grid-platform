@@ -31,7 +31,7 @@ class FirmwareFileStorageServiceTest {
   private FirmwareFileStorageService service;
 
   @BeforeEach
-  void setup() throws IOException, TechnicalException {
+  void setup() throws IOException {
     Files.createDirectories(FIRMWARE_DIRECTORY);
 
     this.service =
@@ -49,7 +49,7 @@ class FirmwareFileStorageServiceTest {
   }
 
   @Test
-  void storeFirmwareFileWhenNull() throws TechnicalException, IOException {
+  void storeFirmwareFileWhenNull() throws TechnicalException {
     final String identification = "myFirmware";
 
     this.service.storeFirmwareFile(null, identification);
@@ -58,7 +58,7 @@ class FirmwareFileStorageServiceTest {
   }
 
   @Test
-  void storeFirmwareFileWhenStorageMalConfigured() throws TechnicalException, IOException {
+  void storeFirmwareFileWhenStorageMalConfigured() {
     final String identification = "myFirmware";
 
     final String nonexistingDirectory = "target/nonexisting";
@@ -75,7 +75,7 @@ class FirmwareFileStorageServiceTest {
   }
 
   @Test
-  void storeFirmwareFileWhenEmpty() throws TechnicalException, IOException {
+  void storeFirmwareFileWhenEmpty() throws TechnicalException {
     final String identification = "myFirmware";
 
     this.service.storeFirmwareFile(new byte[0], identification);
