@@ -13,8 +13,8 @@ Feature: SmartMetering functional exceptions regarding connections
     When the get administrative status request generating an error is received
       | DeviceIdentification | TEST1024000000001 |
     Then a SOAP fault should have been returned
-      | Code    |              211 |
-      | Message | CONNECTION_ERROR |
+      | Code    |                225 |
+      | Message | CONNECTION_REFUSED |
 
   Scenario: Connect to a smart meter with an invalid ip address
     Given a dlms device
@@ -24,8 +24,8 @@ Feature: SmartMetering functional exceptions regarding connections
     When the get administrative status request generating an error is received
       | DeviceIdentification | TEST1024000000001 |
     Then a SOAP fault should have been returned
-      | Code    |              211 |
-      | Message | CONNECTION_ERROR |
+      | Code    |                  227 |
+      | Message | CONNECTION_TIMED_OUT |
 
   Scenario: Connect to a smart meter without an ip address
     Given a dlms device
