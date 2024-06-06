@@ -6,11 +6,15 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.dlmsc
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.BasicDlmsDataDecoder;
+import org.opensmartgridplatform.dlms.enums.ClockBase;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusBitDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +36,33 @@ public class TimeAndEventsClassesDecoder {
       final DlmsHelper dlmsHelper, final BasicDlmsDataDecoder basicDlmsDataDecoder) {
     this.dlmsHelper = dlmsHelper;
     this.basicDlmsDataDecoder = basicDlmsDataDecoder;
+  }
+
+  // Class-id 8: Clock
+  public String decodeClockStatus(final DataObject attributeData) {
+    try {
+      final int value = this.dlmsHelper.readInteger(attributeData, "read clock status");
+      final Set<ClockStatusBitDto> statusBits = ClockStatusBitDto.forClockStatus(value);
+      if (statusBits != null && !statusBits.isEmpty()) {
+        return "status: "
+            + statusBits.stream()
+                .map(ClockStatusBitDto::getDescription)
+                .collect(Collectors.joining(", "));
+      } else {
+        return "no status set";
+      }
+    } catch (final Exception e) {
+      return "decoding clock base failed: " + e.getMessage();
+    }
+  }
+
+  public String decodeClockBase(final DataObject attributeData) {
+    try {
+      final int value = this.dlmsHelper.readInteger(attributeData, "read clock base");
+      return ClockBase.getByValue(value).name();
+    } catch (final Exception e) {
+      return "decoding clock base failed: " + e.getMessage();
+    }
   }
 
   // Class-id 11: Special days table

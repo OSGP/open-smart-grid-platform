@@ -9,6 +9,8 @@ import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeT
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.CAPTURE_OBJECT_LIST;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.CELL_INFO;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.CIRCUIT_SWITCHED_STATUS;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.CLOCK_BASE;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.CLOCK_STATUS;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.DATE_TIME;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.DAY_PROFILE;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType.MODEM_REGISTRATION_STATUS;
@@ -56,6 +58,8 @@ public class DlmsClassDataDecoder {
     this.map.put(CAPTURE_OBJECT_DEFINITION, measurementDataDecoder::decodeCaptureObject);
     this.map.put(CELL_INFO, dataExchangeDecoder::decodeCellInfo);
     this.map.put(CIRCUIT_SWITCHED_STATUS, dataExchangeDecoder::decodeCsStatus);
+    this.map.put(CLOCK_BASE, timeAndEventsClassesDecoder::decodeClockBase);
+    this.map.put(CLOCK_STATUS, timeAndEventsClassesDecoder::decodeClockStatus);
     this.map.put(DATE_TIME, this::decodeDateTime);
     this.map.put(DAY_PROFILE, timeAndEventsClassesDecoder::decodeDayProfiles);
     this.map.put(MODEM_REGISTRATION_STATUS, dataExchangeDecoder::decodeModemRegistrationStatus);

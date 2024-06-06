@@ -19,6 +19,20 @@ class TimeAndEventsClassesDecoderTest {
       new TimeAndEventsClassesDecoder(this.dlmsHelper, this.dlmsDataDecoder);
 
   @Test
+  void testClockStatus() {
+    final DataObject clockStatus = DataObject.newUInteger8Data((short) 3);
+    final String result = this.decoder.decodeClockStatus(clockStatus);
+    assertThat(result).isEqualToIgnoringNewLines("status: invalid value, doubtful value");
+  }
+
+  @Test
+  void testClockBase() {
+    final DataObject clockBase = DataObject.newEnumerateData(4);
+    final String result = this.decoder.decodeClockBase(clockBase);
+    assertThat(result).isEqualToIgnoringNewLines("GPS");
+  }
+
+  @Test
   void testSpecialDays() {
 
     final DataObject index1 = DataObject.newUInteger16Data(1);
