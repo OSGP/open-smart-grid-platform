@@ -8,14 +8,24 @@ Feature: SmartMetering AdHoc
   I want to be able to synchronize time on a device
   So time related data on the device will have reliable timestamps
 
-  Scenario: Retrieve SynchronizeTime result from a device
+  Scenario Outline: Retrieve SynchronizeTime result from a <protocol> <version> device
     Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | <deviceIdentification> |
       | DeviceType           | SMART_METER_E     |
+      | Protocol             | <protocol>             |
+      | ProtocolVersion      | <version>              |
     When receiving a get synchronize time request
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | <deviceIdentification> |
     Then the date and time is synchronized on the device
-      | DeviceIdentification | TEST1024000000001 |
-    And the dlms device with identification "TEST1024000000001" exists with properties
+      | DeviceIdentification | <deviceIdentification> |
+    And the dlms device with identification "<deviceIdentification>" exists with properties
       | DlmsDeviceTimezone | Europe/Amsterdam |
-
+    Examples:
+      | deviceIdentification | protocol | version |
+      | TEST1024000000001    | DSMR     | 2.2     |
+      | TEST1024000000001    | DSMR     | 4.2.2   |
+      | TEST1031000000001    | SMR      | 4.3     |
+      | TEST1027000000001    | SMR      | 5.0.0   |
+      | TEST1028000000001    | SMR      | 5.1     |
+      | TEST1029000000001    | SMR      | 5.2     |
+      | TEST1030000000001    | SMR      | 5.5     |
