@@ -52,8 +52,15 @@ public class DecoupleMBusDeviceCommandExecutor
     final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(device, channel);
 
     // Get the current channel element values before resetting the channel
-    final ChannelElementValuesDto channelElementValues =
-        this.deviceChannelsHelper.getChannelElementValues(conn, device, channel);
+    ChannelElementValuesDto channelElementValues;
+    boolean readChannelElementSuccessfully = true;
+    try {
+      channelElementValues =
+          this.deviceChannelsHelper.getChannelElementValues(conn, device, channel);
+    } catch (final InvalidIdentificationNumberException e) {
+      channelElementValues = e.getChannelElementValuesDto();
+      readChannelElementSuccessfully = false;
+    }
 
     // Deinstall and reset channel
     final CosemObjectAccessor mBusSetup =
@@ -65,6 +72,6 @@ public class DecoupleMBusDeviceCommandExecutor
         conn, device, channel, this.getClass().getSimpleName());
 
     // return the channel element values as before decoupling
-    return new DecoupleMbusDeviceResponseDto(channelElementValues);
+    return new DecoupleMbusDeviceResponseDto(readChannelElementSuccessfully, channelElementValues);
   }
 }
