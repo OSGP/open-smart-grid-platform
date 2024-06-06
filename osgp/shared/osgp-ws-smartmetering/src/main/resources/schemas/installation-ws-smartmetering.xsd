@@ -12,6 +12,7 @@
       <xsd:sequence>
         <xsd:element name="Device" type="tns:Device" />
         <xsd:element name="DeviceModel" type="tns:DeviceModel" />
+        <xsd:element name="overwrite" type="xsd:boolean" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>

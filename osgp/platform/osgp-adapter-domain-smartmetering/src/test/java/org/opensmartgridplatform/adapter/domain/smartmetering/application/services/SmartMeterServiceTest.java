@@ -64,7 +64,8 @@ class SmartMeterServiceTest {
     final FunctionalException exception =
         Assertions.assertThrows(
             FunctionalException.class,
-            () -> this.smartMeterService.validateSmartMeterDoesNotExist(deviceIdentification));
+            () ->
+                this.smartMeterService.validateSmartMeterDoesNotExist(deviceIdentification, false));
     assertThat(exception.getExceptionType()).isEqualTo(FunctionalExceptionType.EXISTING_DEVICE);
   }
 

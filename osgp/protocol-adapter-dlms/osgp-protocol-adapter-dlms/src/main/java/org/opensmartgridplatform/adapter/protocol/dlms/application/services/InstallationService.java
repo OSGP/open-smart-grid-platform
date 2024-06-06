@@ -73,10 +73,22 @@ public class InstallationService {
           ComponentType.PROTOCOL_DLMS,
           new IllegalArgumentException("Provided device does not contain device identification"));
     }
+    // TODO overwrite??
+
     this.storeAndActivateKeys(messageMetadata, smartMeteringDevice);
     final DlmsDevice dlmsDevice =
         this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
-    this.dlmsDeviceRepository.save(dlmsDevice);
+    if (smartMeteringDevice.isOverwrite()) {
+      DlmsDevice existingDlmsDevice =
+          this.dlmsDeviceRepository.findByDeviceIdentification(
+              smartMeteringDevice.getDeviceIdentification());
+      if (existingDlmsDevice != null) {
+        existingDlmsDevice = this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
+        this.dlmsDeviceRepository.save(existingDlmsDevice);
+      }
+    } else {
+      this.dlmsDeviceRepository.save(dlmsDevice);
+    }
   }
 
   private void storeAndActivateKeys(

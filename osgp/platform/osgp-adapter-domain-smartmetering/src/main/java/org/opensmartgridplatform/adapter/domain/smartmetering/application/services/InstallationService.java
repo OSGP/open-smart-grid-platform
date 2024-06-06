@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import java.util.Optional;
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
@@ -75,14 +76,25 @@ public class InstallationService {
     final SmartMeteringDevice smartMeteringDevice = addSmartMeterRequest.getDevice();
 
     final String deviceIdentification = messageMetadata.getDeviceIdentification();
-
-    this.smartMeterService.validateSmartMeterDoesNotExist(deviceIdentification);
+    // TODO overwrite smartmeter??
+    final Optional<SmartMeter> existingSmartMeter =
+        this.smartMeterService.validateSmartMeterDoesNotExist(
+            deviceIdentification, addSmartMeterRequest.getOverwrite());
 
     final SmartMeter smartMeter = this.smartMeterService.convertSmartMeter(smartMeteringDevice);
-    this.smartMeterService.storeMeter(organisationId, addSmartMeterRequest, smartMeter);
+    if (existingSmartMeter.isPresent() && addSmartMeterRequest.getOverwrite()) {
+      this.smartMeterService.updateMeter(
+          organisationId,
+          addSmartMeterRequest,
+          this.smartMeterService.convertToExistingSmartMeter(smartMeter, existingSmartMeter.get()));
+    } else {
+      this.smartMeterService.storeMeter(organisationId, addSmartMeterRequest, smartMeter);
+    }
+
     final SmartMeteringDeviceDto requestDto =
         this.mapperFactory.getMapperFacade().map(smartMeteringDevice, SmartMeteringDeviceDto.class);
-    this.osgpCoreRequestMessageSender.send(requestDto, messageMetadata);
+    requestDto.setOverwrite(addSmartMeterRequest.getOverwrite());
+    this.osgpCoreRequestMessageSender.send(requestDto, messageMetadata); // EN dan??
   }
 
   /**

@@ -8,8 +8,11 @@ import java.util.List;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface SmartMeterRepository extends JpaRepository<SmartMeter, Long> {
@@ -38,4 +41,18 @@ public interface SmartMeterRepository extends JpaRepository<SmartMeter, Long> {
   SmartMeter findByGatewayDeviceAndChannel(Device gatewayDevice, Short channel);
 
   List<SmartMeter> findByGatewayDevice(Device gatewayDevice);
+
+  @Transactional
+  @Modifying
+  @Query(
+      "UPDATE SmartMeter s SET s.supplier = :supplier, s.channel = :channel, s.mbusIdentificationNumber = :mbusIdentificationNumber, s.mbusManufacturerIdentification = :mbusManufacturerIdentification, s.mbusVersion = :mbusVersion, s.mbusDeviceTypeIdentification = :mbusDeviceTypeIdentification, s.mbusPrimaryAddress = :mbusPrimaryAddress WHERE s.id = :id")
+  void updateSmartMeter(
+      @Param("id") Long id,
+      @Param("supplier") String supplier,
+      @Param("channel") Short channel,
+      @Param("mbusIdentificationNumber") String mbusIdentificationNumber,
+      @Param("mbusManufacturerIdentification") String mbusManufacturerIdentification,
+      @Param("mbusVersion") Short mbusVersion,
+      @Param("mbusDeviceTypeIdentification") Short mbusDeviceTypeIdentification,
+      @Param("mbusPrimaryAddress") Short mbusPrimaryAddress);
 }
