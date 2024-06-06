@@ -48,7 +48,7 @@ public class DefaultConnectionPoolFactory {
     return new HikariDataSource(hikariConfig);
   }
 
-  /** Builder class which can construct an {@link DefaultConnectionPoolFactory} instance.} */
+  /** Builder class which can construct an {@link DefaultConnectionPoolFactory} instance. */
   public static class Builder {
     private String driverClassName = "org.postgresql.Driver";
     private String protocol = "jdbc:postgresql://";
@@ -87,8 +87,8 @@ public class DefaultConnectionPoolFactory {
       return this;
     }
 
-    public Builder withDatabaseUrl(final String databaesUrl) {
-      this.databaseUrl = databaesUrl;
+    public Builder withDatabaseUrl(final String databaseUrl) {
+      this.databaseUrl = databaseUrl;
       return this;
     }
 

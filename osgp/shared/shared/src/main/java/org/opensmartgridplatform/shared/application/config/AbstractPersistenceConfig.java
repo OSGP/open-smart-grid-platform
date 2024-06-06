@@ -37,7 +37,7 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
   @Value("${db.driver}")
   private String driverClassName;
 
-  // Accept a direct property db.url or else construct it from the individual db propeties
+  // Accept a direct property db.url or else construct it from the individual db properties
 
   /**
    * The JDBC URL for the database. This can be constructed in two ways:
