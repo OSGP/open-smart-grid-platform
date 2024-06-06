@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import java.util.Optional;
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -33,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class SmartMeterService {
 
   @Autowired private SmartMeterRepository smartMeterRepository;
-
   @Autowired private ManufacturerRepository manufacturerRepository;
 
   @Autowired private DeviceModelRepository deviceModelRepository;
@@ -58,6 +58,29 @@ public class SmartMeterService {
     this.storeAuthorization(organisationIdentification, smartMeter);
   }
 
+  public void updateMeter(
+      final String organisationIdentification,
+      final AddSmartMeterRequest addSmartMeterRequest,
+      final SmartMeter smartMeter)
+      throws FunctionalException {
+    final SmartMeteringDevice smartMeteringDevice = addSmartMeterRequest.getDevice();
+    smartMeter.updateProtocol(this.getProtocolInfo(smartMeteringDevice));
+    smartMeter.setDeviceModel(this.getDeviceModel(addSmartMeterRequest.getDeviceModel()));
+    //  smartMeter = this.smartMeterRepository.save(smartMeter);
+
+    this.smartMeterRepository.updateSmartMeter(
+        smartMeter.getId(),
+        smartMeter.getSupplier(),
+        smartMeter.getChannel(),
+        smartMeter.getMbusIdentificationNumber(),
+        smartMeter.getMbusManufacturerIdentification(),
+        smartMeter.getMbusVersion(),
+        smartMeter.getMbusDeviceTypeIdentification(),
+        smartMeter.getMbusPrimaryAddress());
+
+    //  this.storeAuthorization(organisationIdentification, smartMeter);
+  }
+
   public void removeMeter(final MessageMetadata messageMetadata) {
 
     final SmartMeter device =
@@ -68,16 +91,46 @@ public class SmartMeterService {
     this.smartMeterRepository.delete(device);
   }
 
-  public void validateSmartMeterDoesNotExist(final String deviceIdentification)
-      throws FunctionalException {
-    if (this.smartMeterRepository.findByDeviceIdentification(deviceIdentification) != null) {
+  public Optional<SmartMeter> validateSmartMeterDoesNotExist(
+      final String deviceIdentification, final boolean overwrite) throws FunctionalException {
+    final Optional<SmartMeter> existingSmartMeter =
+        Optional.ofNullable(
+            this.smartMeterRepository.findByDeviceIdentification(deviceIdentification));
+    if (existingSmartMeter.isPresent() && !overwrite) {
       throw new FunctionalException(
           FunctionalExceptionType.EXISTING_DEVICE, ComponentType.DOMAIN_SMART_METERING);
     }
+    return existingSmartMeter;
   }
 
   public SmartMeter convertSmartMeter(final SmartMeteringDevice smartMeteringDevice) {
     return this.mapperFactory.getMapperFacade().map(smartMeteringDevice, SmartMeter.class);
+  }
+
+  public SmartMeter convertToExistingSmartMeter(
+      final SmartMeter newSmartMeter, final SmartMeter existingSmartMeter) {
+    existingSmartMeter.setChannel(newSmartMeter.getChannel());
+    existingSmartMeter.setDeviceType(newSmartMeter.getDeviceType());
+    existingSmartMeter.setSupplier(newSmartMeter.getSupplier());
+    existingSmartMeter.setMbusIdentificationNumber(newSmartMeter.getMbusIdentificationNumber());
+    existingSmartMeter.setMbusDeviceTypeIdentification(
+        newSmartMeter.getMbusDeviceTypeIdentification());
+    existingSmartMeter.setMbusManufacturerIdentification(
+        newSmartMeter.getMbusManufacturerIdentification());
+    existingSmartMeter.setMbusVersion(newSmartMeter.getMbusVersion());
+    existingSmartMeter.setMbusPrimaryAddress(newSmartMeter.getMbusPrimaryAddress());
+    existingSmartMeter.setActivated(newSmartMeter.isActivated());
+    existingSmartMeter.setAlias(newSmartMeter.getAlias());
+    existingSmartMeter.setBtsId(newSmartMeter.getBtsId());
+    existingSmartMeter.setCellId(newSmartMeter.getCellId());
+    existingSmartMeter.setDeviceLifecycleStatus(newSmartMeter.getDeviceLifecycleStatus());
+    existingSmartMeter.setVersion(newSmartMeter.getVersion());
+    existingSmartMeter.setTechnicalInstallationDate(newSmartMeter.getTechnicalInstallationDate());
+    existingSmartMeter.setNetworkAddress(newSmartMeter.getNetworkAddress());
+    existingSmartMeter.setLastSuccessfulConnectionTimestamp(
+        newSmartMeter.getLastSuccessfulConnectionTimestamp());
+
+    return existingSmartMeter;
   }
 
   private ProtocolInfo getProtocolInfo(final SmartMeteringDevice smartMeteringDevice)
