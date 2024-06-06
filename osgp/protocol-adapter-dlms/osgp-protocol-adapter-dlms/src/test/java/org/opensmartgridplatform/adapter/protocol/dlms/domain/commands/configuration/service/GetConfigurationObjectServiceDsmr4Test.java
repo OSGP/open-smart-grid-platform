@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,43 +10,56 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 
 @ExtendWith(MockitoExtension.class)
-public class GetConfigurationObjectServiceDsmr4Test {
+class GetConfigurationObjectServiceDsmr4Test {
 
   private GetConfigurationObjectServiceDsmr4 instance;
 
   @Mock private GetResult getResult;
   @Mock private DlmsHelper dlmsHelper;
 
+  @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
+  @Mock private DlmsDeviceRepository dlmsDeviceRepository;
+
   @BeforeEach
-  public void setUp() {
-    this.instance = new GetConfigurationObjectServiceDsmr4(this.dlmsHelper);
+  void setUp() {
+    this.instance =
+        new GetConfigurationObjectServiceDsmr4(
+            this.dlmsHelper, this.objectConfigServiceHelper, this.dlmsDeviceRepository);
+  }
+
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  @NullSource
+  void handles(final Protocol protocol) {
+    assertThat(this.instance.handles(protocol)).isEqualTo(protocol != null && protocol.isDsmr42());
   }
 
   @Test
-  public void handles() {
-    assertThat(this.instance.handles(Protocol.SMR_5_0_0)).isFalse();
-    assertThat(this.instance.handles(Protocol.SMR_5_1)).isFalse();
-    assertThat(this.instance.handles(Protocol.DSMR_4_2_2)).isTrue();
-    assertThat(this.instance.handles(Protocol.OTHER_PROTOCOL)).isFalse();
-    assertThat(this.instance.handles(null)).isFalse();
-  }
-
-  @Test
-  public void getFlagType() {
+  void getFlagType() {
     for (final ConfigurationFlagTypeDto flagTypeDto : ConfigurationFlagTypeDto.values()) {
       flagTypeDto
           .getBitPositionDsmr4()
@@ -66,7 +74,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectResultDataNull() throws ProtocolAdapterException {
+  void getConfigurationObjectResultDataNull() throws ProtocolAdapterException {
     // SETUP
     when(this.getResult.getResultData()).thenReturn(null);
 
@@ -79,7 +87,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectResultDataNotComplex() throws ProtocolAdapterException {
+  void getConfigurationObjectResultDataNotComplex() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject nonComplex = mock(DataObject.class);
@@ -95,7 +103,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectElementsNull() throws ProtocolAdapterException {
+  void getConfigurationObjectElementsNull() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);
@@ -113,7 +121,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectElementsSizeNotTwo() throws ProtocolAdapterException {
+  void getConfigurationObjectElementsSizeNotTwo() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);
@@ -132,7 +140,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectGprsModeNull() throws ProtocolAdapterException {
+  void getConfigurationObjectGprsModeNull() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);
@@ -153,7 +161,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectGprsModeNotNumber() throws ProtocolAdapterException {
+  void getConfigurationObjectGprsModeNotNumber() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);
@@ -176,7 +184,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectFlagsNull() throws ProtocolAdapterException {
+  void getConfigurationObjectFlagsNull() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);
@@ -200,7 +208,7 @@ public class GetConfigurationObjectServiceDsmr4Test {
   }
 
   @Test
-  public void getConfigurationObjectFlagsNotBitString() throws ProtocolAdapterException {
+  void getConfigurationObjectFlagsNotBitString() throws ProtocolAdapterException {
 
     // SETUP
     final DataObject structure = mock(DataObject.class);
@@ -223,6 +231,52 @@ public class GetConfigurationObjectServiceDsmr4Test {
               // CALL
               this.instance.getConfigurationObject(this.getResult);
             });
+  }
+
+  @Test
+  void getConfigurationObjectFlagsIncludeHighAndLowFlags() throws ProtocolAdapterException {
+
+    whenParseGetResult(this.getResult, new byte[] {82, 0});
+
+    final ConfigurationObjectDto configurationObject =
+        this.instance.getConfigurationObject(this.getResult);
+
+    final Predicate<ConfigurationFlagTypeDto> protocolVersionPredicate =
+        fl -> fl.getBitPositionDsmr4().isPresent();
+
+    assertAllProtocolSpecificFlags(configurationObject, protocolVersionPredicate);
+  }
+
+  static void whenParseGetResult(final GetResult getResult, final byte[] flagBytes) {
+    final DataObject resultData = mock(DataObject.class);
+    when(resultData.isComplex()).thenReturn(true);
+    when(getResult.getResultData()).thenReturn(resultData);
+    final List<DataObject> listOfDataObject = mock(List.class);
+    when(resultData.getValue()).thenReturn(listOfDataObject);
+    final DataObject dataObject = mock(DataObject.class);
+    final DataObject gprsMode = mock(DataObject.class);
+    when(gprsMode.isNumber()).thenReturn(true);
+    when(gprsMode.getValue()).thenReturn(Integer.valueOf(1));
+    when(listOfDataObject.size()).thenReturn(2);
+    when(listOfDataObject.get(0)).thenReturn(gprsMode);
+    when(listOfDataObject.get(1)).thenReturn(dataObject);
+    when(dataObject.isBitString()).thenReturn(true);
+    final BitString bitString = mock(BitString.class);
+    when(dataObject.getValue()).thenReturn(bitString);
+    when(bitString.getBitString()).thenReturn(flagBytes);
+  }
+
+  static void assertAllProtocolSpecificFlags(
+      final ConfigurationObjectDto configurationObject,
+      final Predicate<ConfigurationFlagTypeDto> protocolVersionPredicate) {
+    final List<ConfigurationFlagTypeDto> protocolVersionSpecificFlags =
+        Arrays.stream(ConfigurationFlagTypeDto.values()).filter(protocolVersionPredicate).toList();
+    final List<ConfigurationFlagTypeDto> flagsFromDevice =
+        configurationObject.getConfigurationFlags().getFlags().stream()
+            .map(ConfigurationFlagDto::getConfigurationFlagType)
+            .toList();
+    assertThat(flagsFromDevice).hasSameSizeAs(protocolVersionSpecificFlags);
+    assertThat(flagsFromDevice).containsAll(protocolVersionSpecificFlags);
   }
 
   // happy flows covered in IT's

@@ -1,21 +1,15 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -30,12 +24,13 @@ import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
-import org.opensmartgridplatform.dlms.objectconfig.MeterType;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
 import org.opensmartgridplatform.dlms.objectconfig.PowerQualityProfile;
 import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
+import org.opensmartgridplatform.dlms.objectconfig.ValueType;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityRequestDto;
@@ -113,51 +108,116 @@ public class GetActualPowerQualityCommandExecutor
 
     int idx = 0;
     for (final CosemObject pqObject : pqObjects) {
-      final PowerQualityObjectDto powerQualityObject;
-      final PowerQualityValueDto powerQualityValue;
-
+      final PowerQualityDtos powerQualityDtos;
       final GetResult resultValue = resultList.get(idx++);
 
       if (pqObject.getClassId() == CLASS_ID_CLOCK) {
-        final CosemDateTimeDto cosemDateTime =
-            this.dlmsHelper.readDateTime(resultValue, "Actual Power Quality - Time");
-        powerQualityValue = new PowerQualityValueDto(cosemDateTime.asDateTime().toDate());
-        powerQualityObject = new PowerQualityObjectDto(pqObject.getTag(), null);
+        powerQualityDtos = this.createClockObject(pqObject, resultValue);
 
       } else if (pqObject.getClassId() == CLASS_ID_REGISTER) {
-        final String scalerUnit =
-            pqObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId()).getValue();
-
-        final DlmsMeterValueDto meterValue =
-            this.dlmsHelper.getScaledMeterValueWithScalerUnit(
-                resultValue, scalerUnit, "Actual Power Quality - " + pqObject.getObis());
-
-        final BigDecimal value = meterValue != null ? meterValue.getValue() : null;
-        final String unit = meterValue != null ? meterValue.getDlmsUnit().getUnit() : null;
-        powerQualityValue = new PowerQualityValueDto(value);
-
-        powerQualityObject = new PowerQualityObjectDto(pqObject.getTag(), unit);
+        GetResult resultValueScalerUnit = null;
+        if (this.readScalerValueFromMeter(pqObject)) {
+          resultValueScalerUnit = resultList.get(idx++);
+        }
+        powerQualityDtos = this.createRegisterObject(pqObject, resultValue, resultValueScalerUnit);
 
       } else if (pqObject.getClassId() == CLASS_ID_DATA) {
-        final Integer meterValue =
-            this.dlmsHelper.readInteger(
-                resultValue, "Actual Power Quality - " + pqObject.getObis());
+        powerQualityDtos = this.createDataObject(pqObject, resultValue);
 
-        powerQualityValue =
-            meterValue != null ? new PowerQualityValueDto(new BigDecimal(meterValue)) : null;
-
-        powerQualityObject = new PowerQualityObjectDto(pqObject.getTag(), null);
       } else {
         throw new ProtocolAdapterException(
             String.format(
                 "Unsupported ClassId %d for logical name %s",
                 pqObject.getClassId(), pqObject.getObis()));
       }
-      powerQualityObjects.add(powerQualityObject);
-      powerQualityValues.add(powerQualityValue);
+      powerQualityObjects.add(powerQualityDtos.powerQualityObject);
+      powerQualityValues.add(powerQualityDtos.powerQualityValue);
     }
 
     return new ActualPowerQualityDataDto(powerQualityObjects, powerQualityValues);
+  }
+
+  private PowerQualityDtos createRegisterObject(
+      final CosemObject pqObject,
+      final GetResult resultValue,
+      final GetResult resultValueScalerUnit)
+      throws ProtocolAdapterException {
+    final DlmsMeterValueDto meterValue;
+    final PowerQualityDtos powerQualityDtos;
+    if (resultValueScalerUnit != null) {
+      meterValue =
+          this.dlmsHelper.getScaledMeterValue(
+              resultValue, resultValueScalerUnit, getDescription(pqObject));
+    } else {
+      final String scalerUnit =
+          pqObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId()).getValue();
+      meterValue =
+          this.dlmsHelper.getScaledMeterValueWithScalerUnit(
+              resultValue, scalerUnit, getDescription(pqObject));
+    }
+
+    final BigDecimal value = meterValue != null ? meterValue.getValue() : null;
+    final String unit = meterValue != null ? meterValue.getDlmsUnit().getUnit() : null;
+    final PowerQualityValueDto powerQualityValue = new PowerQualityValueDto(value);
+    final PowerQualityObjectDto powerQualityObject =
+        new PowerQualityObjectDto(pqObject.getTag(), unit);
+    powerQualityDtos = new PowerQualityDtos(powerQualityObject, powerQualityValue);
+    return powerQualityDtos;
+  }
+
+  private PowerQualityDtos createDataObject(final CosemObject pqObject, final GetResult resultValue)
+      throws ProtocolAdapterException {
+    final PowerQualityDtos powerQualityDtos;
+    final Integer meterValue = this.dlmsHelper.readInteger(resultValue, getDescription(pqObject));
+
+    final PowerQualityValueDto powerQualityValue =
+        meterValue != null ? new PowerQualityValueDto(new BigDecimal(meterValue)) : null;
+
+    final PowerQualityObjectDto powerQualityObject =
+        new PowerQualityObjectDto(pqObject.getTag(), null);
+    powerQualityDtos = new PowerQualityDtos(powerQualityObject, powerQualityValue);
+    return powerQualityDtos;
+  }
+
+  private static String getDescription(final CosemObject pqObject) {
+    return "Actual Power Quality - " + pqObject.getObis();
+  }
+
+  private PowerQualityDtos createClockObject(
+      final CosemObject pqObject, final GetResult resultValue) throws ProtocolAdapterException {
+    final PowerQualityDtos powerQualityDtos;
+    final CosemDateTimeDto cosemDateTime =
+        this.dlmsHelper.readDateTime(resultValue, "Actual Power Quality - Time");
+    final PowerQualityValueDto powerQualityValue =
+        new PowerQualityValueDto(cosemDateTime.asDateTime().toDate());
+    final PowerQualityObjectDto powerQualityObject =
+        new PowerQualityObjectDto(pqObject.getTag(), null);
+    powerQualityDtos = new PowerQualityDtos(powerQualityObject, powerQualityValue);
+    return powerQualityDtos;
+  }
+
+  private class PowerQualityDtos {
+    final PowerQualityObjectDto powerQualityObject;
+    final PowerQualityValueDto powerQualityValue;
+
+    public PowerQualityDtos(
+        final PowerQualityObjectDto powerQualityObject,
+        final PowerQualityValueDto powerQualityValue) {
+      this.powerQualityObject = powerQualityObject;
+      this.powerQualityValue = powerQualityValue;
+    }
+  }
+
+  private boolean readScalerValueFromMeter(final CosemObject pqObject) {
+    if (pqObject.getClassId() == CLASS_ID_CLOCK) {
+      return false;
+    }
+    if (pqObject.hasAttribute(RegisterAttribute.SCALER_UNIT.attributeId())) {
+      final Attribute attribute =
+          pqObject.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId());
+      return attribute.getValuetype() != ValueType.FIXED_IN_PROFILE;
+    }
+    return false;
   }
 
   private PowerQualityProfile determineProfile(final ActualPowerQualityRequestDto request) {
@@ -182,36 +242,41 @@ public class GetActualPowerQualityCommandExecutor
       allPQObjects.add(clockObject);
 
       // Create map with the required properties and values for the power quality objects
-      final EnumMap<ObjectProperty, List<Object>> pqProperties =
+      final EnumMap<ObjectProperty, List<String>> pqProperties =
           new EnumMap<>(ObjectProperty.class);
       pqProperties.put(ObjectProperty.PQ_PROFILE, Collections.singletonList(profile.name()));
       pqProperties.put(
           ObjectProperty.PQ_REQUEST,
-          Arrays.asList(PowerQualityRequest.ONDEMAND.name(), PowerQualityRequest.BOTH.name()));
+          List.of(
+              device.isPolyphase()
+                  ? PowerQualityRequest.ACTUAL_PP.name()
+                  : PowerQualityRequest.ACTUAL_SP.name()));
 
       // Get matching power quality objects from config
-      final List<CosemObject> objectsForProfile =
+      final List<CosemObject> pqObjects =
           this.objectConfigService.getCosemObjectsWithProperties(
               device.getProtocolName(), device.getProtocolVersion(), pqProperties);
-
-      // Filter for single phase / poly phase
-      final List<CosemObject> pqObjects =
-          objectsForProfile.stream()
-              .filter(object -> this.objectHasCorrectMeterType(object, device))
-              .collect(Collectors.toList());
 
       allPQObjects.addAll(pqObjects);
       return allPQObjects;
     } catch (final ObjectConfigException e) {
-      throw new ProtocolAdapterException("Error in object config", e);
+      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
     }
   }
 
   private List<AttributeAddress> getAttributeAddresses(final List<CosemObject> pqObjects) {
-    return pqObjects.stream()
-        .map(this::getAttributeAddress)
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+    final List<AttributeAddress> attributeAddresses = new ArrayList<>();
+    for (final CosemObject pqObject : pqObjects) {
+      attributeAddresses.add(this.getAttributeAddress(pqObject));
+      if (this.readScalerValueFromMeter(pqObject)) {
+        attributeAddresses.add(
+            new AttributeAddress(
+                pqObject.getClassId(),
+                pqObject.getObis(),
+                RegisterAttribute.SCALER_UNIT.attributeId()));
+      }
+    }
+    return attributeAddresses.stream().filter(Objects::nonNull).toList();
   }
 
   private AttributeAddress getAttributeAddress(final CosemObject object) {
@@ -227,10 +292,5 @@ public class GetActualPowerQualityCommandExecutor
       log.warn("No attribute addresses returned for interface class of {}", object.getTag());
       return null;
     }
-  }
-
-  private boolean objectHasCorrectMeterType(final CosemObject object, final DlmsDevice device) {
-    return (!device.isPolyphase() && object.getMeterTypes().contains(MeterType.SP))
-        || (device.isPolyphase() && object.getMeterTypes().contains(MeterType.PP));
   }
 }

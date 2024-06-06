@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.io.Serializable;
@@ -15,6 +11,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.Set
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.GetConfigurationObjectCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetConfigurationObjectCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetRandomisationSettingsCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetThdConfigurationCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SetActivityCalendarCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SetClockConfigurationCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SetSpecialDaysCommandExecutor;
@@ -29,6 +26,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetA
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupAlarmCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupLastGaspCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupSmsCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup.SetPushSetupUdpCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.GenerateAndReplaceKeyCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.ReplaceKeyCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.SetKeyOnGMeterCommandExecutor;
@@ -61,7 +59,9 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfiguration
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupUdpRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDayDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
@@ -97,6 +97,10 @@ public class ConfigurationService {
   @Autowired private SetPushSetupLastGaspCommandExecutor setPushSetupLastGaspCommandExecutor;
 
   @Autowired private SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor;
+
+  @Autowired private SetPushSetupUdpCommandExecutor setPushSetupUdpCommandExecutor;
+
+  @Autowired private SetThdConfigurationCommandExecutor setThdConfigurationCommandExecutor;
 
   @Autowired private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
 
@@ -381,6 +385,43 @@ public class ConfigurationService {
     }
   }
 
+  public void setPushSetupUdp(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final SetPushSetupUdpRequestDto pushSetupUdpRequest,
+      final MessageMetadata messageMetadata)
+      throws ProtocolAdapterException {
+
+    LOGGER.info("Push Setup UDP to set on the device: {}", pushSetupUdpRequest);
+
+    final AccessResultCode accessResultCode =
+        this.setPushSetupUdpCommandExecutor.execute(
+            conn, device, pushSetupUdpRequest, messageMetadata);
+
+    if (AccessResultCode.SUCCESS != accessResultCode) {
+      throw new ProtocolAdapterException(
+          "AccessResultCode for set push setup udp was not SUCCESS: " + accessResultCode);
+    }
+  }
+
+  public void setThdConfiguration(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final SetThdConfigurationRequestDto requestDto,
+      final MessageMetadata messageMetadata)
+      throws ProtocolAdapterException {
+
+    LOGGER.info("THD Configuration to set on the device: {}", requestDto);
+
+    final AccessResultCode accessResultCode =
+        this.setThdConfigurationCommandExecutor.execute(conn, device, requestDto, messageMetadata);
+
+    if (AccessResultCode.SUCCESS != accessResultCode) {
+      throw new ProtocolAdapterException(
+          "AccessResultCode for set push setup sms was not SUCCESS: " + accessResultCode);
+    }
+  }
+
   public Serializable requestFirmwareVersion(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
@@ -455,7 +496,7 @@ public class ConfigurationService {
     LOGGER.info(
         "Updating firmware of device {} to firmware with identification {}",
         device,
-        updateFirmwareRequestDto.getFirmwareIdentification());
+        updateFirmwareRequestDto.getUpdateFirmwareRequestDataDto().getFirmwareIdentification());
 
     return this.firmwareService.updateFirmware(
         conn, device, updateFirmwareRequestDto, messageMetadata);

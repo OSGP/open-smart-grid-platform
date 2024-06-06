@@ -1,11 +1,7 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import org.opensmartgridplatform.dto.testutil.DateBuilder;
@@ -26,6 +22,7 @@ public class SmartMeteringDeviceDtoBuilder {
     dto.setProtocolName("protocolName" + counter);
     dto.setProtocolVersion("protocolVersion" + counter);
     dto.setGlobalEncryptionUnicastKey(("globalEncryptionUnicastKey" + counter).getBytes());
+    dto.setLls1Active(true);
     dto.setHls3Active(true);
     dto.setHls4Active(true);
     dto.setHls5Active(true);
@@ -41,7 +38,7 @@ public class SmartMeteringDeviceDtoBuilder {
     dto.setPort(4000L);
     dto.setChallengeLength(15);
     dto.setIpAddressIsStatic(false);
-    dto.setWithListSupported(true);
+    dto.setWithListMax(32);
     dto.setSelectiveAccessSupported(false);
     return dto;
   }

@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitoring;
 
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter.toDateTime;
@@ -38,12 +34,12 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.objectconfig.ObjectProperty;
+import org.opensmartgridplatform.dlms.objectconfig.PowerQualityRequest;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
@@ -56,6 +52,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityProfileDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SignalQualityDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +67,9 @@ public abstract class AbstractGetPowerQualityProfileHandler {
   private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
 
   private static final int ATTRIBUTE_ID_INTERVAL = 4;
+
+  private static final int DATA_INDEX_SIGNAL_QUALITY = 3;
+  private static final int DATA_INDEX_BER = 4;
 
   private static final List<Integer> CHANNELS = Arrays.asList(1, 2, 3, 4);
 
@@ -137,7 +138,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       // meter. This list can then be used to filter the retrieved values. A LinkedHashMap is used
       // to preserve the order of entries (which will be used in the handler for selective access).
       final LinkedHashMap<Integer, SelectableObject> selectableObjects =
-          this.determineSelectableObjects(captureObjects, configObjects);
+          this.determineSelectableObjects(conn, captureObjects, configObjects);
 
       // Get the values from the buffer in the meter
       final List<GetResult> bufferList =
@@ -151,7 +152,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
 
       // Convert the retrieved values (e.g. add timestamps and add unit) and apply filter if needed
       final PowerQualityProfileDataDto responseDataDto =
-          this.processData(profile, captureObjects, selectableObjects, bufferList);
+          this.processData(profile, captureObjects, selectableObjects, bufferList, privateOrPublic);
 
       responseDatas.add(responseDataDto);
     }
@@ -182,6 +183,13 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     this.addToMapIfNeeded(POWER_QUALITY_PROFILE_1, privateOrPublic, device, profilesWithObjects);
     this.addToMapIfNeeded(POWER_QUALITY_PROFILE_2, privateOrPublic, device, profilesWithObjects);
 
+    if (profilesWithObjects.isEmpty()) {
+      throw new ProtocolAdapterException(
+          String.format(
+              "No PQ profile found in profile %s version %s",
+              device.getProtocolName(), device.getProtocolVersion()));
+    }
+
     return profilesWithObjects;
   }
 
@@ -195,8 +203,13 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     final String version = device.getProtocolVersion();
 
     try {
-      final CosemObject profileObject =
-          this.objectConfigService.getCosemObject(protocol, version, profileType);
+      final Optional<CosemObject> optionalCosemObject =
+          this.objectConfigService.getOptionalCosemObject(protocol, version, profileType);
+      if (optionalCosemObject.isEmpty()) {
+        // Cosem object is not in profile, then skip it
+        return;
+      }
+      final CosemObject profileObject = optionalCosemObject.get();
 
       // Get all selectable objects for this profile
       final List<CosemObject> selectableObjectsFromConfig =
@@ -208,7 +221,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
               .filter(
                   object ->
                       object.getClassId() == InterfaceClass.CLOCK.id()
-                          || this.hasPqProfile(object, privateOrPublic))
+                          || this.hasPeriodicPqProfile(device, object, privateOrPublic))
               .toList();
 
       // Use this profile when at least the clock object and one other object should be read
@@ -220,8 +233,18 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     }
   }
 
-  private boolean hasPqProfile(final CosemObject object, final String privateOrPublic) {
-    return ((String) object.getProperty(ObjectProperty.PQ_PROFILE)).equals(privateOrPublic);
+  private boolean hasPeriodicPqProfile(
+      final DlmsDevice device, final CosemObject object, final String privateOrPublic) {
+    if (object.getListProperty(ObjectProperty.PQ_REQUEST) != null
+        && object
+            .getListProperty(ObjectProperty.PQ_REQUEST)
+            .contains(
+                device.isPolyphase()
+                    ? PowerQualityRequest.PERIODIC_PP.name()
+                    : PowerQualityRequest.PERIODIC_SP.name())) {
+      return ((String) object.getProperty(ObjectProperty.PQ_PROFILE)).equals(privateOrPublic);
+    }
+    return false;
   }
 
   private List<GetResult> retrieveCaptureObjects(
@@ -265,7 +288,8 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       final CosemObject profile,
       final List<GetResult> captureObjects,
       final LinkedHashMap<Integer, SelectableObject> selectableCaptureObjects,
-      final List<GetResult> bufferList)
+      final List<GetResult> bufferList,
+      final String publicOrPrivate)
       throws ProtocolAdapterException {
 
     final List<CaptureObjectDto> captureObjectDtos =
@@ -275,8 +299,12 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     final List<ProfileEntryDto> profileEntryDtos =
         this.createProfileEntries(
             bufferList, selectableCaptureObjects, this.getIntervalInMinutes(profile));
+    final ProfileTypeDto profileTypeDto = ProfileTypeDto.valueOf(publicOrPrivate);
     return new PowerQualityProfileDataDto(
-        new ObisCodeValuesDto(profile.getObis()), captureObjectDtos, profileEntryDtos);
+        new ObisCodeValuesDto(profile.getObis()),
+        captureObjectDtos,
+        profileEntryDtos,
+        profileTypeDto);
   }
 
   private List<ProfileEntryDto> createProfileEntries(
@@ -429,6 +457,8 @@ public abstract class AbstractGetPowerQualityProfileHandler {
       final int timeInterval) {
     if (InterfaceClass.CLOCK.id() == selectableObject.getClassId()) {
       return this.makeDateProfileEntryValueDto(dataObject, previousProfileEntryDto, timeInterval);
+    } else if (InterfaceClass.GSM_DIAGNOSTIC.id() == selectableObject.getClassId()) {
+      return this.makeGsmDiagnosticProfileEntryValueDto(dataObject, selectableObject);
     } else if (dataObject.isNumber()) {
       return this.createNumericProfileEntryValueDto(dataObject, selectableObject);
     } else if (dataObject.isNull()) {
@@ -465,6 +495,41 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     }
   }
 
+  private ProfileEntryValueDto makeGsmDiagnosticProfileEntryValueDto(
+      final DataObject dataObject, final SelectableObject selectableObject) {
+
+    try {
+      if (selectableObject.attributeIndex == GsmDiagnosticAttribute.CELL_INFO.attributeId()) {
+        if (selectableObject.dataIndex == DATA_INDEX_SIGNAL_QUALITY) {
+          final Long signalQualityLong =
+              this.dlmsHelper.readLong(dataObject, "Read signal quality");
+          if (signalQualityLong == null) {
+            return notKnownProfileEntryValue();
+          }
+          final int value = signalQualityLong.intValue();
+          final SignalQualityDto signalQuality = SignalQualityDto.fromIndexValue(value);
+          return new ProfileEntryValueDto(signalQuality.value());
+        } else if (selectableObject.dataIndex == DATA_INDEX_BER) {
+          final Long berLong = this.dlmsHelper.readLong(dataObject, "Read ber");
+          if (berLong == null) {
+            return notKnownProfileEntryValue();
+          }
+          final int value = berLong.intValue();
+          return new ProfileEntryValueDto(value);
+        }
+      }
+    } catch (final ProtocolAdapterException | IllegalArgumentException e) {
+      LOGGER.error("Error creating ProfileEntryDto from {}", dataObject, e);
+    }
+
+    final String debugInfo = this.dlmsHelper.getDebugInfo(dataObject);
+    return new ProfileEntryValueDto(debugInfo);
+  }
+
+  private static ProfileEntryValueDto notKnownProfileEntryValue() {
+    return new ProfileEntryValueDto(99);
+  }
+
   private ProfileEntryValueDto createNumericProfileEntryValueDto(
       final DataObject dataObject, final SelectableObject selectableObject) {
     try {
@@ -490,7 +555,9 @@ public abstract class AbstractGetPowerQualityProfileHandler {
   }
 
   private LinkedHashMap<Integer, SelectableObject> determineSelectableObjects(
-      final List<GetResult> captureObjects, final List<CosemObject> cosemConfigObjects)
+      final DlmsConnectionManager conn,
+      final List<GetResult> captureObjects,
+      final List<CosemObject> cosemConfigObjects)
       throws ProtocolAdapterException {
 
     final LinkedHashMap<Integer, SelectableObject> selectableObjects = new LinkedHashMap<>();
@@ -523,7 +590,7 @@ public abstract class AbstractGetPowerQualityProfileHandler {
                   obis,
                   (byte) objectDefinition.getAttributeIndex(),
                   objectDefinition.getDataIndex(),
-                  this.getScalerUnit(matchedCosemObject.get())));
+                  this.getScalerUnit(conn, matchedCosemObject.get())));
         }
       }
     }
@@ -542,11 +609,11 @@ public abstract class AbstractGetPowerQualityProfileHandler {
     return obisCodesToMatch.contains(captureObis);
   }
 
-  private String getScalerUnit(final CosemObject object) {
-    if (object.getClassId() == InterfaceClass.REGISTER.id()) {
-      return object.getAttribute(RegisterAttribute.SCALER_UNIT.attributeId()).getValue();
-    } else if (object.getClassId() == InterfaceClass.EXTENDED_REGISTER.id()) {
-      return object.getAttribute(ExtendedRegisterAttribute.SCALER_UNIT.attributeId()).getValue();
+  private String getScalerUnit(final DlmsConnectionManager conn, final CosemObject object)
+      throws ProtocolAdapterException {
+    if (object.getClassId() == InterfaceClass.REGISTER.id()
+        || object.getClassId() == InterfaceClass.EXTENDED_REGISTER.id()) {
+      return this.dlmsHelper.getScalerUnitValue(conn, object);
     } else {
       return null;
     }

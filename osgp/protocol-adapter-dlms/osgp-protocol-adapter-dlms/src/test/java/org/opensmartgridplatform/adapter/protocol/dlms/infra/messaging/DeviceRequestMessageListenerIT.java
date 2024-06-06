@@ -1,11 +1,7 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -14,9 +10,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.util.Date;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
@@ -31,11 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /** Tests the incoming JMS messages and processors. Verifies that response messages were sent. */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = MessagingTestConfiguration.class)
+@TestPropertySource(properties = {"throttling.max.new.connection.requests=200"})
 class DeviceRequestMessageListenerIT {
 
   private static final Logger LOGGER =

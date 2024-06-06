@@ -1,26 +1,25 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.webdemoapp.infra.platform;
 
 import java.io.IOException;
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.protocol.HttpContext;
+import org.apache.hc.core5.http.EntityDetails;
+import org.apache.hc.core5.http.HttpException;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpRequest;
+import org.apache.hc.core5.http.HttpRequestInterceptor;
+import org.apache.hc.core5.http.protocol.HttpContext;
 
 public class ContentLengthHeaderRemoveInterceptor implements HttpRequestInterceptor {
 
   @Override
-  public void process(final HttpRequest request, final HttpContext context)
+  public void process(
+      final HttpRequest httpRequest,
+      final EntityDetails entityDetails,
+      final HttpContext httpContext)
       throws HttpException, IOException {
-    request.removeHeaders(HTTP.CONTENT_LEN);
+    httpRequest.removeHeaders(HttpHeaders.CONTENT_LENGTH);
   }
 }

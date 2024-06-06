@@ -1,22 +1,23 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup;
 
 import java.io.IOException;
 import org.openmuc.jdlms.AccessResultCode;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.SetParameter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.PushSetupAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MessageTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SendDestinationAndMethodDto;
@@ -24,20 +25,13 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.TransportService
 
 public abstract class SetPushSetupCommandExecutor<T, R> extends AbstractCommandExecutor<T, R> {
 
-  protected static final int CLASS_ID = 40;
-  protected static final int ATTRIBUTE_ID_PUSH_OBJECT_LIST = 2;
-  protected static final int ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD = 3;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  protected SetPushSetupCommandExecutor() {
-    /*
-     * No argument constructor for subclasses that do not act in a bundle
-     * context, so they do not need to be looked up by ActionRequestDto
-     * class.
-     */
-  }
-
-  protected SetPushSetupCommandExecutor(final Class<? extends ActionRequestDto> clazz) {
+  protected SetPushSetupCommandExecutor(
+      final Class<? extends ActionRequestDto> clazz,
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(clazz);
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   protected AccessResultCode doSetRequest(
@@ -72,5 +66,39 @@ public abstract class SetPushSetupCommandExecutor<T, R> extends AbstractCommandE
     } else {
       return MessageTypeDto.MANUFACTURER_SPECIFIC;
     }
+  }
+
+  protected AttributeAddress getSendDestinationAndMethodAddress(
+      final Protocol protocol, final DlmsObjectType dlmsObjectType)
+      throws NotSupportedByProtocolException {
+    return this.getAttributeAddress(
+        protocol, dlmsObjectType, PushSetupAttribute.SEND_DESTINATION_AND_METHOD.attributeId());
+  }
+
+  protected AttributeAddress getPushObjectListAddress(
+      final Protocol protocol, final DlmsObjectType dlmsObjectType)
+      throws NotSupportedByProtocolException {
+    return this.getAttributeAddress(
+        protocol, dlmsObjectType, PushSetupAttribute.PUSH_OBJECT_LIST.attributeId());
+  }
+
+  protected AttributeAddress getCommunicationWindowAddress(
+      final Protocol protocol, final DlmsObjectType dlmsObjectType)
+      throws NotSupportedByProtocolException {
+    return this.getAttributeAddress(
+        protocol, dlmsObjectType, PushSetupAttribute.COMMUNICATION_WINDOW.attributeId());
+  }
+
+  protected AttributeAddress getAttributeAddress(
+      final Protocol protocol, final DlmsObjectType dlmsObjectType, final int attributeId)
+      throws NotSupportedByProtocolException {
+    return this.objectConfigServiceHelper
+        .findOptionalAttributeAddress(protocol, dlmsObjectType, null, attributeId)
+        .orElseThrow(
+            () ->
+                new NotSupportedByProtocolException(
+                    String.format(
+                        "No address found for %s in protocol %s %s",
+                        dlmsObjectType.name(), protocol.getName(), protocol.getVersion())));
   }
 }

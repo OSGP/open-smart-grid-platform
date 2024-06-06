@@ -1,19 +1,32 @@
-/*
- * Copyright 2022 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
 
 package org.opensmartgridplatform.dlms.objectconfig;
 
+import lombok.Getter;
+
+@Getter
 public enum AccessType {
-  R,
-  W,
-  RW,
-  X
+  NO_ACCESS(0),
+  R(1),
+  W(2),
+  RW(3),
+  X(4);
+
+  final int id;
+
+  AccessType(final int id) {
+    this.id = id;
+  }
+
+  public static AccessType accessTypeFor(final int id) {
+    for (final AccessType accessType : AccessType.values()) {
+      if (accessType.id == id) {
+        return accessType;
+      }
+    }
+
+    return null;
+  }
 }

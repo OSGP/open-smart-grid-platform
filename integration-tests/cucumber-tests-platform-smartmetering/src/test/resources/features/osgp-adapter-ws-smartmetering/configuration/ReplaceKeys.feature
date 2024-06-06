@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly
 Feature: SmartMetering Configuration - Replace Keys
   As a grid operator
@@ -12,6 +16,7 @@ Feature: SmartMetering Configuration - Replace Keys
       | Master_key           | SECURITY_KEY_M    |
       | Encryption_key       | SECURITY_KEY_E    |
       | Authentication_key   | SECURITY_KEY_A    |
+      | InvocationCounter    | 7500              |
     When the replace keys request is received
       | DeviceIdentification | TEST1024000000001 |
       | Encryption_key       | SECURITY_KEY_1    |
@@ -28,12 +33,14 @@ Feature: SmartMetering Configuration - Replace Keys
       | SECURITY_KEY_E | EXPIRED |
       | SECURITY_KEY_1 | ACTIVE  |
     And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"
+    And the dlms device with identification "TEST1024000000001" has invocationcounter with value "250"
 
   @ResetKeysOnDevice
   Scenario: Replace keys on a device while NEW key already present in SecretManagement
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
+      | InvocationCounter    | 7500              |
     And new keys are registered in the secret management database 1440 minutes ago
       | DeviceIdentification | TEST1024000000001 |
       | Encryption_key       | SECURITY_KEY_1    |
@@ -62,6 +69,7 @@ Feature: SmartMetering Configuration - Replace Keys
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
+      | InvocationCounter    | 7500              |
     And new keys are registered in the secret management database 1440 minutes ago
       | DeviceIdentification | TEST1024000000001 |
       | Encryption_key       | SECURITY_KEY_1    |
@@ -90,6 +98,7 @@ Feature: SmartMetering Configuration - Replace Keys
       | SECURITY_KEY_3 | WITHDRAWN |
       | SECURITY_KEY_1 | WITHDRAWN |
     And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"
+    And the dlms device with identification "TEST1024000000001" has invocationcounter with value "250"
 
   @ResetKeysOnDevice
   Scenario: Replace keys on a device (multiple concurrent single requests are executed after one other)
@@ -99,6 +108,7 @@ Feature: SmartMetering Configuration - Replace Keys
       | Master_key           | SECURITY_KEY_M    |
       | Encryption_key       | SECURITY_KEY_E    |
       | Authentication_key   | SECURITY_KEY_A    |
+      | InvocationCounter    | 7500              |
     When multiple replace keys requests are received
       | DeviceIdentification | TEST1024000000001,TEST1024000000001 |
       | Encryption_key       | SECURITY_KEY_1,SECURITY_KEY_3       |
@@ -114,6 +124,7 @@ Feature: SmartMetering Configuration - Replace Keys
       | Authentication_key | SECURITY_KEY_2,SECURITY_KEY_4 |
       | Encryption_key     | SECURITY_KEY_1,SECURITY_KEY_3 |
     And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"
+    And the dlms device with identification "TEST1024000000001" has invocationcounter with value "250"
 
   @ResetKeysOnDevice
   Scenario: Replace keys on a device (multiple requests in one bundle are executed after one other)
@@ -123,6 +134,7 @@ Feature: SmartMetering Configuration - Replace Keys
       | Master_key           | SECURITY_KEY_M    |
       | Encryption_key       | SECURITY_KEY_E    |
       | Authentication_key   | SECURITY_KEY_A    |
+      | InvocationCounter    | 7500              |
     Given a bundle request
       | DeviceIdentification | TEST1024000000001 |
     And the bundle request contains a replace keys action
@@ -146,3 +158,4 @@ Feature: SmartMetering Configuration - Replace Keys
       | Authentication_key | SECURITY_KEY_2,SECURITY_KEY_4,SECURITY_KEY_6 |
       | Encryption_key     | SECURITY_KEY_1,SECURITY_KEY_3,SECURITY_KEY_5 |
     And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"
+    And the dlms device with identification "TEST1024000000001" has invocationcounter with value "250"

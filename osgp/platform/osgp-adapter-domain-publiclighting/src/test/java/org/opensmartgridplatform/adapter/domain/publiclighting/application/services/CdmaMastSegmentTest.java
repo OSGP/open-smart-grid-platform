@@ -1,11 +1,7 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,12 +13,12 @@ import org.opensmartgridplatform.adapter.domain.publiclighting.application.value
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatchDevice;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaMastSegment;
 
-public class CdmaMastSegmentTest {
+class CdmaMastSegmentTest {
 
-  private final InetAddress loopbackAddress = InetAddress.getLoopbackAddress();
+  private final String loopbackAddress = InetAddress.getLoopbackAddress().getHostAddress();
 
   @Test
-  public void newNameNull() {
+  void newNameNull() {
     assertThatExceptionOfType(IllegalArgumentException.class)
         .isThrownBy(
             () -> {
@@ -31,7 +27,7 @@ public class CdmaMastSegmentTest {
   }
 
   @Test
-  public void newBatchNumberNull() {
+  void newBatchNumberNull() {
     final CdmaMastSegment mastSegment = new CdmaMastSegment("200/1");
 
     final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress);
@@ -43,7 +39,7 @@ public class CdmaMastSegmentTest {
   }
 
   @Test
-  public void newCdmaMastSegment() {
+  void newCdmaMastSegment() {
     final CdmaMastSegment mastSegment = new CdmaMastSegment("200/1");
 
     final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress);
@@ -56,7 +52,7 @@ public class CdmaMastSegmentTest {
   }
 
   @Test
-  public void popCdmaBatch() {
+  void popCdmaBatch() {
     final CdmaMastSegment mastSegment = new CdmaMastSegment("200/1");
 
     final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress);
@@ -76,7 +72,7 @@ public class CdmaMastSegmentTest {
   }
 
   @Test
-  public void equalsWhenSegmentNameMatch() {
+  void equalsWhenSegmentNameMatch() {
     final CdmaMastSegment mastSegment1 = new CdmaMastSegment("200/1");
     final CdmaMastSegment mastSegment2 = new CdmaMastSegment("200/1");
     assertThat(mastSegment1)
@@ -85,7 +81,7 @@ public class CdmaMastSegmentTest {
   }
 
   @Test
-  public void testSegmentNameDefaultIsLastItem() {
+  void testSegmentNameDefaultIsLastItem() {
     final CdmaMastSegment mastSegmentDefault =
         new CdmaMastSegment(CdmaMastSegment.DEFAULT_MASTSEGMENT);
     final CdmaMastSegment mastSegmentNormal = new CdmaMastSegment("zzzMast");
@@ -96,7 +92,7 @@ public class CdmaMastSegmentTest {
   }
 
   @Test
-  public void testPopBatches() {
+  void testPopBatches() {
     final CdmaMastSegment mastSegment = new CdmaMastSegment("200/55");
     for (short i = 0; i < 10; i++) {
       // Each device has a different batch

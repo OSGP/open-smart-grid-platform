@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import java.util.HashMap;
@@ -71,7 +67,7 @@ public class DeviceInstallationService extends AbstractService {
         new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null),
         actualMessageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   public void handleGetStatusResponse(
@@ -222,7 +218,7 @@ public class DeviceInstallationService extends AbstractService {
         new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   // === STOP DEVICE TEST ===
@@ -247,6 +243,6 @@ public class DeviceInstallationService extends AbstractService {
         new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 }

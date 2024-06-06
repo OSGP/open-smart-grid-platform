@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 
 class AlarmHelperServiceTest {
@@ -77,10 +73,16 @@ class AlarmHelperServiceTest {
     alarmTypes.add(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L1);
     alarmTypes.add(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L2);
     alarmTypes.add(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3);
+    alarmTypes.add(AlarmTypeDto.THD_OVERLIMIT_IN_PHASE_L1);
+    alarmTypes.add(AlarmTypeDto.THD_OVERLIMIT_IN_PHASE_L2);
+    alarmTypes.add(AlarmTypeDto.THD_OVERLIMIT_IN_PHASE_L3);
+    alarmTypes.add(AlarmTypeDto.THD_LONG_OVERLIMIT_IN_PHASE_L1);
+    alarmTypes.add(AlarmTypeDto.THD_LONG_OVERLIMIT_IN_PHASE_L2);
+    alarmTypes.add(AlarmTypeDto.THD_LONG_OVERLIMIT_IN_PHASE_L3);
 
     assertThat(
             (long) this.alarmHelperService.toLongValue(DlmsObjectType.ALARM_REGISTER_2, alarmTypes))
-        .isEqualTo(63L);
+        .isEqualTo(16191L);
   }
 
   @Test
@@ -97,7 +99,8 @@ class AlarmHelperServiceTest {
 
   @Test
   void testConvertToAlarmTypesAlarmRegister2() {
-    final long registerValue = Long.parseLong("00000000000000000000000000111111", 2);
+    final long registerValue = Long.parseLong("11111111111111", 2);
+    final AlarmTypeDto emptyBit = null;
 
     final Set<AlarmTypeDto> alarmTypes =
         this.alarmHelperService.toAlarmTypes(DlmsObjectType.ALARM_REGISTER_2, registerValue);
@@ -109,7 +112,14 @@ class AlarmHelperServiceTest {
             AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L3,
             AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L1,
             AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L2,
-            AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3);
+            AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3,
+            AlarmTypeDto.THD_OVERLIMIT_IN_PHASE_L1,
+            AlarmTypeDto.THD_OVERLIMIT_IN_PHASE_L2,
+            AlarmTypeDto.THD_OVERLIMIT_IN_PHASE_L3,
+            AlarmTypeDto.THD_LONG_OVERLIMIT_IN_PHASE_L1,
+            AlarmTypeDto.THD_LONG_OVERLIMIT_IN_PHASE_L2,
+            AlarmTypeDto.THD_LONG_OVERLIMIT_IN_PHASE_L3,
+            emptyBit);
   }
 
   @Test
@@ -126,6 +136,19 @@ class AlarmHelperServiceTest {
         .isEqualTo(4);
     assertThat((int) this.toBitPositionRegister(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3))
         .isEqualTo(5);
+
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.THD_OVERLIMIT_IN_PHASE_L1))
+        .isEqualTo(8);
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.THD_OVERLIMIT_IN_PHASE_L2))
+        .isEqualTo(9);
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.THD_OVERLIMIT_IN_PHASE_L3))
+        .isEqualTo(10);
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.THD_LONG_OVERLIMIT_IN_PHASE_L1))
+        .isEqualTo(11);
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.THD_LONG_OVERLIMIT_IN_PHASE_L2))
+        .isEqualTo(12);
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.THD_LONG_OVERLIMIT_IN_PHASE_L3))
+        .isEqualTo(13);
   }
 
   private int toBitPositionRegister(final AlarmTypeDto alarmTypeDto) {

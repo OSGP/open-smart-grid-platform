@@ -1,17 +1,12 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.kafka.logging.infra.kafka.in;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -43,9 +38,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
     partitions = 1,
     topics = {"${distributionautomation.kafka.topic.message}"},
     brokerProperties = {
-      "listeners=PLAINTEXT://${distributionautomation.kafka.bootstrap.servers}",
       "log.dirs=target/kafka-logs-distributionautomation-messages",
-      "auto.create.topics.enable=true"
     })
 @DirtiesContext
 class StringMessageConsumerTest {
@@ -94,18 +87,18 @@ class StringMessageConsumerTest {
   }
 
   private void whenDistributionAutomationDataIsSentToTheTopic() {
-    final Map<String, Object> producerProps = KafkaTestUtils.producerProps(this.broker);
+    final var producerProps = KafkaTestUtils.producerProps(this.broker);
     final ProducerFactory<String, String> producerFactory =
         new DefaultKafkaProducerFactory<>(
             producerProps, new StringSerializer(), new StringSerializer());
-    final KafkaTemplate<String, String> template = new KafkaTemplate<>(producerFactory);
+    final var template = new KafkaTemplate<>(producerFactory);
     template.setDefaultTopic(this.topic);
     template.send(this.topic, LocalDateTime.now().toString(), this.distributionAutomationMessage);
   }
 
   private void theKafkaLoggerLogsTheDistributionAutomationData() throws Exception {
-    final long timeout = 30;
-    final TimeUnit timeUnit = TimeUnit.SECONDS;
+    final var timeout = 30L;
+    final var timeUnit = TimeUnit.SECONDS;
     assertThat(this.countDownLatch.await(timeout, timeUnit))
         .overridingErrorMessage(
             "KafkaLogger did not receive a record to log within " + timeout + " " + timeUnit)

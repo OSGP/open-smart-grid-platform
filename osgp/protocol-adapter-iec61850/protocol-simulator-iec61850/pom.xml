@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
+SPDX-FileCopyrightText: Contributors to the GXF project
 
-    Copyright 2016 Smart Society Services B.V.
-
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
+SPDX-License-Identifier: Apache-2.0
 -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -40,12 +38,12 @@
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
-  <version>5.39.0-SNAPSHOT</version>
+  <version>6.2.0-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.7.2</version>
+    <version>3.2.5</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
@@ -54,12 +52,12 @@
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>17</java.version>
-    <spring.boot.version>2.1.3.RELEASE</spring.boot.version>
+    <spring.boot.version>3.2.0</spring.boot.version>
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
 
-    <jxr.version>3.0.0</jxr.version>
-    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
-    <maven.site.plugin>3.9.0</maven.site.plugin>
+    <jxr.version>3.3.2</jxr.version>
+    <maven.project.info.reports.plugin.version>3.5.0</maven.project.info.reports.plugin.version>
+    <maven.site.plugin>3.12.1</maven.site.plugin>
   </properties>
 
   <dependencies>

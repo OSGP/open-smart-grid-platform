@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.shared.exceptionhandling;
 
 public enum FunctionalExceptionType {
@@ -39,6 +35,18 @@ public enum FunctionalExceptionType {
   GATEWAY_DEVICE_NOT_SET_FOR_MBUS_DEVICE(220, "GATEWAY_DEVICE_NOT_SET_FOR_MBUS_DEVICE"),
   GATEWAY_DEVICE_INVALID_FOR_MBUS_DEVICE(221, "GATEWAY_DEVICE_INVALID_FOR_MBUS_DEVICE"),
   MBUS_DEVICE_NOT_MOVED_TO_ANOTHER_EMETER(222, "MBUS_DEVICE_NOT_MOVED_TO_ANOTHER_EMETER"),
+  AUTHENTICATION_ERROR(223, "AUTHENTICATION_ERROR"),
+  AUTHENTICATION_REQUIRED(224, "AUTHENTICATION_REQUIRED"),
+  CONNECTION_REFUSED(225, "CONNECTION_REFUSED"),
+  CONNECTION_RESET(226, "CONNECTION_RESET"),
+  CONNECTION_TIMED_OUT(227, "CONNECTION_TIMED_OUT"),
+  CONNECTION_ESTABLISH_ERROR(228, "CONNECTION_ESTABLISH_ERROR"),
+  SOCKET_CLOSED_BY_REMOTE(229, "SOCKET_CLOSED_BY_REMOTE"),
+  UNABLE_TO_DECYPHER(230, "UNABLE_TO_DECYPHER"),
+  WRAPPER_HEADER_INVALID(231, "WRAPPER_HEADER_INVALID"),
+  ILLEGAL_RESPONSE(232, "ILLEGAL_RESPONSE"),
+  RESPONSE_TIMEOUT(233, "RESPONSE_TIMEOUT"),
+  UNKNOWN_ASSOCIATION_RESULT(234, "UNKNOWN_ASSOCIATION_RESULT"),
 
   // Authorization exceptions
   UNAUTHORIZED(301, "UNAUTHORIZED"),

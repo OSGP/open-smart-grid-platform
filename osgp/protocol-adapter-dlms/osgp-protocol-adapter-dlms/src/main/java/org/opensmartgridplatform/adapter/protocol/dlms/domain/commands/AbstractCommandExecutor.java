@@ -1,15 +1,12 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
-import javax.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -23,15 +20,14 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Slf4j
 public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T, R> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommandExecutor.class);
-
   @Autowired private CommandExecutorMap bundleCommandExecutorMap;
+
+  protected static final String ERROR_IN_OBJECT_CONFIG = "Error in object config";
 
   private final Class<? extends ActionRequestDto> bundleExecutorMapKey;
 
@@ -74,13 +70,13 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
     }
 
     final T commandInput = this.fromBundleRequestInput(actionRequestDto);
-    LOGGER.debug(
+    log.debug(
         "Translated {} from bundle to {} for call to CommandExecutor.",
         this.className(actionRequestDto),
         this.className(commandInput));
     final R executionResult = this.execute(conn, device, commandInput, messageMetadata);
     final ActionResponseDto bundleResponse = this.asBundleResponse(executionResult);
-    LOGGER.debug(
+    log.debug(
         "Translated {} to {} for bundle response after call to CommandExecutor.",
         this.className(executionResult),
         this.className(bundleResponse));

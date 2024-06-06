@@ -1,11 +1,7 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform;
 
 import org.opensmartgridplatform.cucumber.core.Keys;
@@ -47,7 +43,9 @@ public class PlatformKeys extends Keys {
   public static final String FIRMWARE_FILE_EXISTS = "FirmwareFileExists";
   public static final String FIRMWARE_FILE_IDENTIFICATION = "FirmwareFileIdentification";
   public static final String FIRMWARE_FILE_IMAGE_IDENTIFIER = "FirmwareFileImageIdentifier";
+  public static final String FIRMWARE_HASH_TYPE = "FirmwareHashType";
   public static final String FIRMWARE_HASH = "FirmwareHash";
+  public static final String FIRMWARE_FILE_STORE_LOCATION = "FirmwareFileStoreLocation";
   public static final String FIRMWARE_MODULE_VERSION_COMM = "FirmwareModuleVersionComm";
   public static final String FIRMWARE_MODULE_VERSION_FUNC = "FirmwareModuleVersionFunc";
   public static final String FIRMWARE_MODULE_VERSION_MA = "FirmwareModuleVersionMa";
@@ -96,6 +94,7 @@ public class PlatformKeys extends Keys {
   public static final String KEY_DEVICE_PROTOCOL_VARIANT = "protocolVariant";
   public static final String KEY_DEVICE_EXTERNAL_MANAGED = "DeviceExternalManaged";
   public static final String KEY_DEVICE_FUNCTION_GROUP = "DeviceFunctionGroup";
+  public static final String KEY_DEVICE_LLS1ACTIVE = "LLS1_active";
   public static final String KEY_DEVICE_HLS3ACTIVE = "HLS3_active";
   public static final String KEY_DEVICE_HLS4ACTIVE = "HLS4_active";
   public static final String KEY_DEVICE_HLS5ACTIVE = "HLS5_active";
@@ -106,6 +105,9 @@ public class PlatformKeys extends Keys {
   public static final String KEY_DEVICE_ICCID = "ICC_id";
 
   public static final String KEY_DEVICE_IDENTIFICATION = "DeviceIdentification";
+  public static final String KEY_MBUS_DEVICE_IDENTIFICATION = "MbusDeviceIdentification";
+  public static final String KEY_PRIMARY_ADDRESS = "PrimaryAddress";
+
   public static final String ALIAS = "Alias";
   public static final String CONTAINER_STREET = "ContainerStreet";
   public static final String CONTAINER_NUMBER = "ContainerNumber";
@@ -300,7 +302,7 @@ public class PlatformKeys extends Keys {
 
   public static final String HOSTNAME = "Hostname";
   public static final String PORT = "Port";
-  public static final String IP_ADDRESS = "IpAddress";
+  public static final String NETWORK_ADDRESS = "NetworkAddress";
   public static final String BTS_ID = "BtsId";
   public static final String CELL_ID = "CellId";
 

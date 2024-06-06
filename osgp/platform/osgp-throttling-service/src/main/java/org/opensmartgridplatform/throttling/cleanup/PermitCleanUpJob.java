@@ -1,12 +1,6 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
 
 package org.opensmartgridplatform.throttling.cleanup;
 
@@ -17,6 +11,7 @@ import java.util.List;
 import org.opensmartgridplatform.throttling.SegmentedNetworkThrottler;
 import org.opensmartgridplatform.throttling.entities.Permit;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
@@ -27,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 @Component
+@DisallowConcurrentExecution
 public class PermitCleanUpJob implements Job {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PermitCleanUpJob.class);
@@ -42,6 +38,7 @@ public class PermitCleanUpJob implements Job {
 
   @Override
   public void execute(final JobExecutionContext jobExecutionContext) {
+    LOGGER.info("Start executing PermitCleanUpJob");
     if (this.batchSize < 1) {
       LOGGER.warn(
           "Not cleaning any permits, as batch size is configured at a value less than one: cleanup.permits.batch.size={}",
@@ -55,10 +52,11 @@ public class PermitCleanUpJob implements Job {
       final List<Permit> expiredPermits =
           this.permitRepository.findByCreatedAtBefore(createdAtBefore, pageRequest);
       final int numberOfExpiredPermits = expiredPermits.size();
-      LOGGER.debug("Found {} permits to be cleaned", numberOfExpiredPermits);
+      LOGGER.info("Found {} permits to be cleaned", numberOfExpiredPermits);
       this.cleanUpPermits(expiredPermits);
       done = numberOfExpiredPermits < this.batchSize;
     }
+    LOGGER.info("Finished executing PermitCleanUpJob");
   }
 
   private void cleanUpPermits(final List<Permit> expiredPermits) {

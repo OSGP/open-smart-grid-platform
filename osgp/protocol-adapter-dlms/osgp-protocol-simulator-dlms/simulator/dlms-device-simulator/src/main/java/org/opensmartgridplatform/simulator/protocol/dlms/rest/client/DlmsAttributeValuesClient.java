@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.simulator.protocol.dlms.rest.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -15,7 +11,11 @@ import com.fasterxml.jackson.databind.node.DecimalNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.StatusType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -29,10 +29,6 @@ import java.util.Map;
 import java.util.function.Function;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.StatusType;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
@@ -91,6 +87,7 @@ public class DlmsAttributeValuesClient {
         "array", json -> DataObject.newArrayData(asDataObjectList(json)));
     JSON_TO_DATA_OBJECT_CONVERTERS.put(
         "structure", json -> DataObject.newStructureData(asDataObjectList(json)));
+    JSON_TO_DATA_OBJECT_CONVERTERS.put("boolean", json -> DataObject.newBoolData(json.asBoolean()));
   }
 
   private final WebClient webClient;
@@ -404,7 +401,7 @@ public class DlmsAttributeValuesClient {
   private WebClient configureWebClient(final String baseAddress) {
 
     final List<Object> providers = new ArrayList<>();
-    providers.add(new JacksonJaxbJsonProvider());
+    providers.add(new JacksonJsonProvider());
 
     final WebClient client = WebClient.create(baseAddress, providers);
 

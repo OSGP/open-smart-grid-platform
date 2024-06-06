@@ -1,18 +1,17 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
+
+import static org.opensmartgridplatform.adapter.domain.smartmetering.application.services.util.DeviceModelCodeUtil.createDeviceModelCodes;
 
 import java.util.Arrays;
 import java.util.List;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
+import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMessageRequest;
@@ -25,7 +24,9 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageData
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionGasResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseDto;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
@@ -40,7 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service(value = "domainSmartMeteringBundleService")
 @Transactional(value = "transactionManager")
 public class BundleService {
-
+  private static final String SMART_METER_G = "SMART_METER_G";
   private static final Logger LOGGER = LoggerFactory.getLogger(BundleService.class);
 
   @Autowired
@@ -85,6 +86,11 @@ public class BundleService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
+    this.checkIfBundleRequestIsAllowed(smartMeter);
+
+    final List<SmartMeter> smartMeters = this.domainHelperService.searchMBusDevicesFor(smartMeter);
+    final String deviceModelCodes = createDeviceModelCodes(smartMeter, smartMeters);
+
     final BundleMessagesRequestDto requestDto =
         this.actionMapperService.mapAllActions(bundleMessageRequest, smartMeter);
 
@@ -94,8 +100,9 @@ public class BundleService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .withDeviceModelCode(deviceModelCodes)
             .build());
   }
 
@@ -166,5 +173,19 @@ public class BundleService {
             Arrays.asList(firmwareVersion));
       }
     }
+  }
+
+  private void checkIfBundleRequestIsAllowed(final Device smartMeter) throws FunctionalException {
+    if (this.isGasMeter(smartMeter.getDeviceType())) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.DOMAIN_SMART_METERING,
+          new AssertionError(
+              "Bundle request is not allowed for gas meter (possible cause: gateway not defined for gas meter)"));
+    }
+  }
+
+  private boolean isGasMeter(final String deviceType) {
+    return SMART_METER_G.equals(deviceType);
   }
 }

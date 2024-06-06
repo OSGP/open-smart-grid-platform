@@ -1,11 +1,7 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,13 +66,16 @@ public class GetMbusEncryptionKeyStatusByChannelSteps {
     final GetMbusEncryptionKeyStatusByChannelResponse response =
         this.smartMeterConfigurationClient.retrieveGetMbusEncryptionKeyStatusByChannelResponse(
             asyncRequest);
+    final EncryptionKeyStatus expectedEncryptionKeyStatus =
+        EncryptionKeyStatus.valueOf(
+            settings.get(PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTION_KEY_STATUS));
 
     assertThat(response.getResult())
         .as(OPERATION + ", Checking result:")
         .isEqualTo(OsgpResultType.OK);
     assertThat(response.getEncryptionKeyStatus())
         .as(OPERATION + ", Checking EncryptionKeyStatus:")
-        .isEqualTo(EncryptionKeyStatus.ENCRYPTION_KEY_IN_USE);
+        .isEqualTo(expectedEncryptionKeyStatus);
   }
 
   @Then("^the get M-Bus encryption key status by channel request should return an exception$")

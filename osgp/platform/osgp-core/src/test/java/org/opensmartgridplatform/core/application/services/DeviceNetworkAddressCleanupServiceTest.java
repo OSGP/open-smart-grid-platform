@@ -1,11 +1,7 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.core.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,11 +11,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -40,11 +34,11 @@ public class DeviceNetworkAddressCleanupServiceTest {
   private DeviceRepository deviceRepository;
   private DeviceNetworkAddressCleanupService deviceNetworkAddressCleanupService;
   private String host;
-  private InetAddress inetAddress;
+  private String networkAddress;
 
-  private void withHostAndInetAddress(final String host) throws Exception {
+  private void withHostAndInetAddress(final String host) {
     this.host = host;
-    this.inetAddress = InetAddress.getByName(host);
+    this.networkAddress = host;
   }
 
   private void setUpDeviceNetworkAddressCleanupService(
@@ -75,17 +69,17 @@ public class DeviceNetworkAddressCleanupServiceTest {
   public void noDevicesAreCleanedWhenTheNetworkAddressIsNotUsed() throws Exception {
     this.withConfigurationNotAllowingDuplicates();
     this.withHostAndInetAddress(IP_ADDRESS);
-    this.theNetworkAddressIsNotUsed(this.inetAddress);
+    this.theNetworkAddressIsNotUsed(this.networkAddress);
 
     this.deviceNetworkAddressCleanupService.clearDuplicateAddresses(
         DEVICE_IDENTIFICATION, this.host);
 
-    verify(this.deviceRepository, times(1)).findByNetworkAddress(this.inetAddress);
+    verify(this.deviceRepository, times(1)).findByNetworkAddress(this.networkAddress);
     verify(this.deviceRepository, never()).save(any(Device.class));
   }
 
-  private void theNetworkAddressIsNotUsed(final InetAddress inetAddress) {
-    when(this.deviceRepository.findByNetworkAddress(inetAddress))
+  private void theNetworkAddressIsNotUsed(final String networkAddress) {
+    when(this.deviceRepository.findByNetworkAddress(networkAddress))
         .thenReturn(Collections.emptyList());
   }
 
@@ -97,7 +91,7 @@ public class DeviceNetworkAddressCleanupServiceTest {
     this.deviceNetworkAddressCleanupService.clearDuplicateAddresses(
         DEVICE_IDENTIFICATION, this.host);
 
-    verify(this.deviceRepository, never()).findByNetworkAddress(this.inetAddress);
+    verify(this.deviceRepository, never()).findByNetworkAddress(this.networkAddress);
     verify(this.deviceRepository, never()).save(any(Device.class));
   }
 
@@ -110,7 +104,7 @@ public class DeviceNetworkAddressCleanupServiceTest {
     this.deviceNetworkAddressCleanupService.clearDuplicateAddresses(
         DEVICE_IDENTIFICATION, this.host);
 
-    verify(this.deviceRepository, never()).findByNetworkAddress(this.inetAddress);
+    verify(this.deviceRepository, never()).findByNetworkAddress(this.networkAddress);
     verify(this.deviceRepository, never()).save(any(Device.class));
   }
 
@@ -126,7 +120,7 @@ public class DeviceNetworkAddressCleanupServiceTest {
     this.deviceNetworkAddressCleanupService.clearDuplicateAddresses(
         DEVICE_IDENTIFICATION, this.host);
 
-    verify(this.deviceRepository, never()).findByNetworkAddress(this.inetAddress);
+    verify(this.deviceRepository, never()).findByNetworkAddress(this.networkAddress);
     verify(this.deviceRepository, never()).save(any(Device.class));
   }
 
@@ -138,7 +132,7 @@ public class DeviceNetworkAddressCleanupServiceTest {
     this.deviceNetworkAddressCleanupService.clearDuplicateAddresses(
         DEVICE_IDENTIFICATION, this.host);
 
-    verify(this.deviceRepository, never()).findByNetworkAddress(this.inetAddress);
+    verify(this.deviceRepository, never()).findByNetworkAddress(this.networkAddress);
     verify(this.deviceRepository, never()).save(any(Device.class));
   }
 
@@ -147,12 +141,12 @@ public class DeviceNetworkAddressCleanupServiceTest {
       throws Exception {
     this.withConfigurationNotAllowingDuplicates();
     this.withHostAndInetAddress(IP_ADDRESS);
-    this.theNetworkAddressIsUsedBy(this.inetAddress, "device1", "device2");
+    this.theNetworkAddressIsUsedBy(this.networkAddress, "device1", "device2");
 
     this.deviceNetworkAddressCleanupService.clearDuplicateAddresses(
         DEVICE_IDENTIFICATION, this.host);
 
-    verify(this.deviceRepository, times(1)).findByNetworkAddress(this.inetAddress);
+    verify(this.deviceRepository, times(1)).findByNetworkAddress(this.networkAddress);
     final ArgumentCaptor<Device> deviceCaptor = ArgumentCaptor.forClass(Device.class);
     verify(this.deviceRepository, times(2)).save(deviceCaptor.capture());
     final List<Device> savedDevices = deviceCaptor.getAllValues();
@@ -161,17 +155,17 @@ public class DeviceNetworkAddressCleanupServiceTest {
   }
 
   private void theNetworkAddressIsUsedBy(
-      final InetAddress inetAddress, final String... deviceIdentifications) {
+      final String networkAddress, final String... deviceIdentifications) {
     final List<Device> devicesWithSameNetworkAddress =
         Arrays.stream(deviceIdentifications)
             .map(
                 deviceIdentification -> {
                   final Device device = new Device(deviceIdentification);
-                  device.updateRegistrationData(inetAddress, "deviceType");
+                  device.updateRegistrationData(networkAddress, "deviceType");
                   return device;
                 })
-            .collect(Collectors.toList());
-    when(this.deviceRepository.findByNetworkAddress(inetAddress))
+            .toList();
+    when(this.deviceRepository.findByNetworkAddress(networkAddress))
         .thenReturn(devicesWithSameNetworkAddress);
   }
 

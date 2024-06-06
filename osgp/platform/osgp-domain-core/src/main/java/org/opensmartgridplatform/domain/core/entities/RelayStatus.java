@@ -1,20 +1,15 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.domain.core.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.time.Instant;
-import java.util.Date;
 import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 /** An entity class which contains the information of a single relay of a device. */
@@ -31,11 +26,11 @@ public class RelayStatus extends AbstractEntity {
 
   @Column private boolean lastSwitchingEventState;
 
-  @Column private Date lastSwitchingEventTime;
+  @Column private Instant lastSwitchingEventTime;
 
   @Column private boolean lastKnownState;
 
-  @Column private Date lastKnownStateTime;
+  @Column private Instant lastKnownStateTime;
 
   public RelayStatus() {
     // Default constructor for Hibernate
@@ -50,16 +45,17 @@ public class RelayStatus extends AbstractEntity {
         builder.lastSwitchingEventState, builder.lastSwitchingEventTime);
   }
 
-  public void updateLastSwitchingEventState(final boolean state, final Date time) {
+  public void updateLastSwitchingEventState(final boolean state, final Instant time) {
     this.lastSwitchingEventState = state;
     this.lastSwitchingEventTime = time;
 
-    if (time != null && (this.lastKnownStateTime == null || this.lastKnownStateTime.before(time))) {
+    if (time != null
+        && (this.lastKnownStateTime == null || this.lastKnownStateTime.isBefore(time))) {
       this.updateLastKnownState(state, time);
     }
   }
 
-  public void updateLastKnownState(final boolean state, final Date time) {
+  public void updateLastKnownState(final boolean state, final Instant time) {
     this.lastKnownState = state;
     this.lastKnownStateTime = time;
   }
@@ -68,7 +64,7 @@ public class RelayStatus extends AbstractEntity {
     return this.lastSwitchingEventState;
   }
 
-  public Date getLastSwitchingEventTime() {
+  public Instant getLastSwitchingEventTime() {
     return this.lastSwitchingEventTime;
   }
 
@@ -76,7 +72,7 @@ public class RelayStatus extends AbstractEntity {
     return this.lastKnownState;
   }
 
-  public Date getLastKnownStateTime() {
+  public Instant getLastKnownStateTime() {
     return this.lastKnownStateTime;
   }
 
@@ -114,19 +110,19 @@ public class RelayStatus extends AbstractEntity {
         "index: %d, lastSwitchingEventState: %s, lastSwitchingEventTime: %s, lastKnownState: %s, lastKnownStateTime: %s",
         this.index,
         this.lastSwitchingEventState,
-        Instant.ofEpochMilli(this.lastSwitchingEventTime.getTime()).toString(),
+        this.lastSwitchingEventTime.toString(),
         this.lastKnownState,
-        Instant.ofEpochMilli(this.lastKnownStateTime.getTime()).toString());
+        this.lastKnownStateTime.toString());
   }
 
   public static class Builder {
 
     private Device device;
-    private int index;
+    private final int index;
     private boolean lastSwitchingEventState;
-    private Date lastSwitchingEventTime;
+    private Instant lastSwitchingEventTime;
     private boolean lastKnownState;
-    private Date lastKnownStateTime;
+    private Instant lastKnownStateTime;
 
     public Builder(final Device device, final int index) {
       this.device = device;
@@ -138,13 +134,14 @@ public class RelayStatus extends AbstractEntity {
     }
 
     public Builder withLastSwitchingEventState(
-        final boolean lastSwitchingEventState, final Date lastSwitchingEventTime) {
+        final boolean lastSwitchingEventState, final Instant lastSwitchingEventTime) {
       this.lastSwitchingEventState = lastSwitchingEventState;
       this.lastSwitchingEventTime = lastSwitchingEventTime;
       return this;
     }
 
-    public Builder withLastKnownState(final boolean lastKnownState, final Date lastKnownStateTime) {
+    public Builder withLastKnownState(
+        final boolean lastKnownState, final Instant lastKnownStateTime) {
       this.lastKnownState = lastKnownState;
       this.lastKnownStateTime = lastKnownStateTime;
       return this;

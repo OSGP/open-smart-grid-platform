@@ -1,15 +1,11 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 public class CosemDate implements Serializable, Comparable<CosemDate> {
 
@@ -47,7 +43,7 @@ public class CosemDate implements Serializable, Comparable<CosemDate> {
   }
 
   public CosemDate(final LocalDate date) {
-    this(date.getYear(), date.getMonthOfYear(), date.getDayOfMonth(), DAY_OF_WEEK_NOT_SPECIFIED);
+    this(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), DAY_OF_WEEK_NOT_SPECIFIED);
   }
 
   public CosemDate(final CosemDate cosemDate) {
@@ -263,7 +259,7 @@ public class CosemDate implements Serializable, Comparable<CosemDate> {
    */
   public LocalDate asLocalDate() {
     if (this.isLocalDateSpecified()) {
-      return new LocalDate(this.year, this.month, this.dayOfMonth);
+      return LocalDate.of(this.year, this.month, this.dayOfMonth);
     }
     return null;
   }

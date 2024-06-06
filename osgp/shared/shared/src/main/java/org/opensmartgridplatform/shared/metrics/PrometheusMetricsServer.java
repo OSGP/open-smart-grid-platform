@@ -1,11 +1,7 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.shared.metrics;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -14,11 +10,11 @@ import static java.util.Objects.requireNonNull;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.shared.config.MetricsConfig;
 import org.opensmartgridplatform.shared.config.PrometheusEnabledCondition;

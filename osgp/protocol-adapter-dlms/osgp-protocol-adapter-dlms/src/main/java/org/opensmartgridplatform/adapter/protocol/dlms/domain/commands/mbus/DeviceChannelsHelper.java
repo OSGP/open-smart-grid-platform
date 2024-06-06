@@ -1,11 +1,7 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import java.util.ArrayList;
@@ -408,16 +404,5 @@ public class DeviceChannelsHelper {
     return (channelElementValues.getIdentificationNumber() == null
         || "00000000".equals(channelElementValues.getIdentificationNumber())
             && (channelElementValues.getPrimaryAddress() == 0));
-  }
-
-  /*
-   * @param channelElementValues
-   *
-   * @return 0-based offset for the channel as opposed to the channels in
-   * ChannelElementValues, where the channels are incremented from
-   * FIRST_CHANNEL.
-   */
-  protected short correctFirstChannelOffset(final ChannelElementValuesDto channelElementValues) {
-    return (short) (channelElementValues.getChannel() - FIRST_CHANNEL);
   }
 }

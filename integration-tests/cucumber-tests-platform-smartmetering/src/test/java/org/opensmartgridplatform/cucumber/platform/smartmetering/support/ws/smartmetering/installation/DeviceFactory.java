@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
@@ -59,6 +55,11 @@ public class DeviceFactory {
     device.setSupplier(settings.get(PlatformKeys.KEY_DEVICE_SUPPLIER));
     device.setTimezone(settings.get(PlatformSmartmeteringKeys.KEY_DEVICE_TIMEZONE));
 
+    device.setLls1Active(
+        getBoolean(
+            settings,
+            PlatformKeys.KEY_DEVICE_LLS1ACTIVE,
+            PlatformDefaults.DLMS_DEFAULT_LLS1_ACTIVE));
     device.setHls3Active(
         getBoolean(
             settings,
@@ -103,6 +104,19 @@ public class DeviceFactory {
         RequestFactoryHelper.hexDecodeDeviceKey(
             getHexDecodeDeviceKey(settings, PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY),
             PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY));
+    device.setMbusUserKey(
+        RequestFactoryHelper.hexDecodeDeviceKey(
+            getHexDecodeDeviceKey(settings, PlatformSmartmeteringKeys.MBUS_USER_KEY),
+            PlatformSmartmeteringKeys.MBUS_USER_KEY));
+    device.setMbusFirmwareUpdateAuthenticationKey(
+        RequestFactoryHelper.hexDecodeDeviceKey(
+            getHexDecodeDeviceKey(
+                settings, PlatformSmartmeteringKeys.MBUS_FIRMWARE_UPDATE_AUTHENTICATION_KEY),
+            PlatformSmartmeteringKeys.MBUS_FIRMWARE_UPDATE_AUTHENTICATION_KEY));
+    device.setMbusP0Key(
+        RequestFactoryHelper.hexDecodeDeviceKey(
+            getHexDecodeDeviceKey(settings, PlatformSmartmeteringKeys.MBUS_P0_KEY),
+            PlatformSmartmeteringKeys.MBUS_P0_KEY));
 
     return device;
   }

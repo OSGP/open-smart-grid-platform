@@ -1,15 +1,11 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.throttling.web.api;
 
 import java.util.Optional;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.opensmartgridplatform.throttling.SegmentedNetworkThrottler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PermitController {
 
   private static final int NO_ID_PROVIDED = -1;
+  private static final int NO_PRIORITY_PROVIDED = MessagePriorityEnum.DEFAULT.getPriority();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PermitController.class);
 
@@ -53,6 +51,7 @@ public class PermitController {
    *     baseTransceiverStationId}
    * @param requestId a unique ID for this permit request in the context of the client identified by
    *     {@code clientId}
+   * @param priority a priority for this permit request
    * @return an entity with the int value for the number of permits granted based on this request:
    *     {@code 1} with HTTP status {@code 200 OK} if the permit is granted, {@code 0} with HTTP
    *     status {@code 409 CONFLICT} if the request is denied
@@ -67,11 +66,13 @@ public class PermitController {
       @PathVariable final int clientId,
       @PathVariable(required = false) final Optional<Integer> baseTransceiverStationId,
       @PathVariable(required = false) final Optional<Integer> cellId,
+      @RequestParam(name = "priority", required = false) final Optional<Integer> priority,
       @RequestBody(required = false) final Optional<Integer> requestId) {
 
     final int actualBaseTransceiverStationId = baseTransceiverStationId.orElse(NO_ID_PROVIDED);
     final int actualCellId = cellId.orElse(NO_ID_PROVIDED);
     final int actualRequestId = requestId.orElse(NO_ID_PROVIDED);
+    final int actualPriority = priority.orElse(NO_PRIORITY_PROVIDED);
 
     final boolean granted =
         this.segmentedNetworkThrottler.requestPermit(
@@ -79,13 +80,15 @@ public class PermitController {
             clientId,
             actualBaseTransceiverStationId,
             actualCellId,
-            actualRequestId);
+            actualRequestId,
+            actualPriority);
 
     LOGGER.debug(
-        "Requesting permit for network segment ({}, {}) using requestId {} for clientId {} and throttlingConfigId {}, granted: {}",
+        "Requesting permit for network segment ({}, {}) using requestId {} with priority {} for clientId {} and throttlingConfigId {}, granted: {}",
         actualBaseTransceiverStationId,
         actualCellId,
         actualRequestId,
+        actualPriority,
         clientId,
         throttlingConfigId,
         granted);
@@ -149,7 +152,7 @@ public class PermitController {
         "Releasing permit for network segment ({}, {}) using requestId {} for clientId {} and throttlingConfigId {}, released: {}",
         actualBaseTransceiverStationId,
         actualCellId,
-        actualRequestId,
+        requestId,
         clientId,
         throttlingConfigId,
         released);

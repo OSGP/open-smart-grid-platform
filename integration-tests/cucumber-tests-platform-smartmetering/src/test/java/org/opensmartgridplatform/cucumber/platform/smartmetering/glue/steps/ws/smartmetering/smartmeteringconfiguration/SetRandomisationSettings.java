@@ -1,11 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,12 +41,22 @@ public class SetRandomisationSettings {
 
   @Then("the randomisation settings should be set on the device")
   public void theRandomisationSettingsShouldBeSetOnTheDevice() throws Throwable {
+    this.theRandomisationSettingsShouldResultIn(OsgpResultType.OK);
+  }
+
+  @Then("the randomisation settings should not be set on the device")
+  public void theRandomisationSettingsShouldNotBeSetOnTheDevice() throws Throwable {
+    this.theRandomisationSettingsShouldResultIn(OsgpResultType.NOT_OK);
+  }
+
+  private void theRandomisationSettingsShouldResultIn(final OsgpResultType result)
+      throws Throwable {
     final SetRandomisationSettingsAsyncRequest asyncRequest =
         SetRandomisationSettingsFactory.fromScenarioContext();
     final SetRandomisationSettingsResponse response =
         this.smartMeteringConfigurationClient.retrieveSetRandomisationSettingsResponse(
             asyncRequest);
 
-    assertThat(response.getResult()).isEqualTo(OsgpResultType.OK);
+    assertThat(response.getResult()).isEqualTo(result);
   }
 }

@@ -1,14 +1,8 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
-package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
 
-import static java.util.stream.Collectors.toList;
+package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -340,11 +334,22 @@ public class SecretManagementService {
     requestAKey.setSecretType(SecretType.E_METER_AUTHENTICATION_KEY);
     final HasNewSecretResponse responseAKey =
         this.secretManagementClient.hasNewSecretRequest(messageMetadata, requestAKey);
+    this.logResult(deviceIdentification, responseAKey.isHasNewSecret(), "Authentication");
     requestEKey.setDeviceId(deviceIdentification);
     requestEKey.setSecretType(SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
     final HasNewSecretResponse responseEKey =
         this.secretManagementClient.hasNewSecretRequest(messageMetadata, requestEKey);
+    this.logResult(deviceIdentification, responseEKey.isHasNewSecret(), "Encryption");
     return responseAKey.isHasNewSecret() || responseEKey.isHasNewSecret();
+  }
+
+  private void logResult(
+      final String deviceIdentification, final boolean result, final String keyType) {
+    if (result) {
+      LOGGER.info("{} key with status New found for device {}", keyType, deviceIdentification);
+    } else {
+      LOGGER.info("No {} key with status New found for device {}", keyType, deviceIdentification);
+    }
   }
 
   public byte[] generate128BitsKeyAndStoreAsNewKey(
@@ -377,7 +382,7 @@ public class SecretManagementService {
         this.createGenerateAndStoreSecretsRequest(deviceIdentification, secretTypes);
     secretTypes
         .getSecretType()
-        .addAll(keyTypes.stream().map(SecurityKeyType::toSecretType).collect(toList()));
+        .addAll(keyTypes.stream().map(SecurityKeyType::toSecretType).toList());
 
     final GenerateAndStoreSecretsResponse response =
         this.secretManagementClient.generateAndStoreSecrets(messageMetadata, request);

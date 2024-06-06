@@ -1,16 +1,12 @@
-/*
- * Copyright 2020 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities;
 
-import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,7 +33,7 @@ public class PendingSetScheduleRequest extends AbstractEntity {
 
   @Column(nullable = false)
   @Getter
-  private Date expiredAt;
+  private Instant expiredAt;
 
   @Column(nullable = false)
   @Getter

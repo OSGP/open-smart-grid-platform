@@ -1,18 +1,13 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.publiclighting.endpoints;
 
+import jakarta.validation.ConstraintViolationException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.ConstraintViolationException;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.AdHocManagementMapper;
@@ -412,9 +407,9 @@ public class PublicLightingAdHocManagementEndpoint {
                 request.getTransitionType(),
                 org.opensmartgridplatform.domain.core.valueobjects.TransitionType.class));
       }
-      DateTime dateTime = null;
+      ZonedDateTime dateTime = null;
       if (request.getTime() != null) {
-        dateTime = new DateTime(request.getTime().toGregorianCalendar().getTime());
+        dateTime = request.getTime().toGregorianCalendar().toZonedDateTime();
       }
       transitionMessageDataContainer.setDateTime(dateTime);
 

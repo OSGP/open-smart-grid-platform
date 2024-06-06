@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,6 +12,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.SetParameter;
@@ -27,29 +23,36 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configura
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.SetConfigurationObjectService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.SetConfigurationObjectServiceSmr5;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 
 @ExtendWith(MockitoExtension.class)
-public class SetConfigurationObjectCommandExecutorSmr5IT
+class SetConfigurationObjectCommandExecutorSmr5IT
     extends SetConfigurationObjectCommandExecutorITBase {
 
+  @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
+  @Mock private DlmsDeviceRepository dlmsDeviceRepository;
+
   @BeforeEach
-  public void setUp() throws IOException {
+  void setUp() throws IOException {
     final DlmsHelper dlmsHelper = new DlmsHelper();
     final GetConfigurationObjectService getService =
-        new GetConfigurationObjectServiceSmr5(dlmsHelper);
+        new GetConfigurationObjectServiceSmr5(
+            dlmsHelper, this.objectConfigServiceHelper, this.dlmsDeviceRepository);
     final SetConfigurationObjectService setService =
-        new SetConfigurationObjectServiceSmr5(dlmsHelper);
+        new SetConfigurationObjectServiceSmr5(
+            dlmsHelper, this.objectConfigServiceHelper, this.dlmsDeviceRepository);
     super.setUp(getService, setService);
   }
 
   @Test
-  public void execute() throws IOException, ProtocolAdapterException {
+  void execute() throws IOException, ProtocolAdapterException {
 
     // SETUP
     // configurationToSet: ------1---10101-
@@ -58,7 +61,7 @@ public class SetConfigurationObjectCommandExecutorSmr5IT
     final ConfigurationObjectDto configurationToSet =
         this.createConfigurationObjectDto(
             gprsMode,
-            this.createFlagDto(ConfigurationFlagTypeDto.HLS_5_ON_P_3_ENABLE, true),
+            this.createFlagDto(ConfigurationFlagTypeDto.HLS_5_ON_P3_ENABLE, true),
             this.createFlagDto(ConfigurationFlagTypeDto.DIRECT_ATTACH_AT_POWER_ON, true),
             this.createFlagDto(ConfigurationFlagTypeDto.HLS_6_ON_P3_ENABLE, false),
             this.createFlagDto(ConfigurationFlagTypeDto.HLS_7_ON_P3_ENABLE, true),
@@ -68,7 +71,7 @@ public class SetConfigurationObjectCommandExecutorSmr5IT
     // flagsOnDevice: 0000000001110100
     final byte[] flagsOnDevice =
         this.createFlagBytes(
-            ConfigurationFlagTypeDto.HLS_5_ON_PO_ENABLE,
+            ConfigurationFlagTypeDto.HLS_5_ON_P0_ENABLE,
             ConfigurationFlagTypeDto.DIRECT_ATTACH_AT_POWER_ON,
             ConfigurationFlagTypeDto.HLS_6_ON_P3_ENABLE,
             ConfigurationFlagTypeDto.HLS_6_ON_P0_ENABLE);
@@ -80,7 +83,9 @@ public class SetConfigurationObjectCommandExecutorSmr5IT
     final DataObject deviceData = this.createBitStringData(flagsOnDevice);
     when(this.getResult.getResultData()).thenReturn(deviceData);
 
+    final String deviceIdentification = "device-1";
     final DlmsDevice device = new DlmsDevice();
+    device.setDeviceIdentification(deviceIdentification);
     device.setProtocol(Protocol.SMR_5_0_0);
 
     // CALL
@@ -95,6 +100,12 @@ public class SetConfigurationObjectCommandExecutorSmr5IT
 
     assertThat(flagsSentToDevice[0]).isEqualTo(firstExpectedByte);
     assertThat(flagsSentToDevice[1]).isEqualTo(secondExpectedByte);
+
+    // after Getting current configuration object from device
+    verify(this.dlmsDeviceRepository).updateHlsActive(deviceIdentification, null, null, null);
+    // after Setting configuration object on device
+    verify(this.dlmsDeviceRepository)
+        .updateHlsActive(deviceIdentification, Boolean.TRUE, null, null);
   }
 
   @Override

@@ -1,19 +1,15 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.core.factories;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getDate;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
+import java.time.ZonedDateTime;
 import java.util.Map;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.domain.core.entities.RelayStatus;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
@@ -34,15 +30,16 @@ public class RelayStatusFactory {
     final Integer index = getInteger(settings, PlatformKeys.KEY_INDEX);
     final boolean lastSwitchingEventState =
         "On".equals(getString(settings, PlatformKeys.LAST_SWITCHING_EVENT_STATE));
-    final DateTime lastSwitchingEventTime =
+    final ZonedDateTime lastSwitchingEventTime =
         getDate(settings, PlatformKeys.LAST_SWITCHING_EVENT_TIME);
     final boolean lastKnownState = "On".equals(getString(settings, PlatformKeys.LAST_KNOWN_STATE));
-    final DateTime lastKnownStateTime = getDate(settings, PlatformKeys.LAST_KNOWN_STATE_TIME);
+    final ZonedDateTime lastKnownStateTime = getDate(settings, PlatformKeys.LAST_KNOWN_STATE_TIME);
 
     final RelayStatus relayStatus =
         new RelayStatus.Builder(ssld, index)
-            .withLastKnownState(lastKnownState, lastKnownStateTime.toDate())
-            .withLastSwitchingEventState(lastSwitchingEventState, lastSwitchingEventTime.toDate())
+            .withLastKnownState(lastKnownState, lastKnownStateTime.toInstant())
+            .withLastSwitchingEventState(
+                lastSwitchingEventState, lastSwitchingEventTime.toInstant())
             .build();
 
     return relayStatus;
@@ -54,18 +51,19 @@ public class RelayStatusFactory {
     final RelayStatus.Builder builder = new RelayStatus.Builder(index);
 
     final String eventState = getString(settings, PlatformKeys.LAST_SWITCHING_EVENT_STATE);
-    final DateTime lastSwitchingEventTime =
+    final ZonedDateTime lastSwitchingEventTime =
         getDate(settings, PlatformKeys.LAST_SWITCHING_EVENT_TIME);
     if (eventState != null && lastSwitchingEventTime != null) {
       final boolean lastSwitchingEventState = "On".equals(eventState);
-      builder.withLastSwitchingEventState(lastSwitchingEventState, lastSwitchingEventTime.toDate());
+      builder.withLastSwitchingEventState(
+          lastSwitchingEventState, lastSwitchingEventTime.toInstant());
     }
 
     final String knownState = getString(settings, PlatformKeys.LAST_KNOWN_STATE);
-    final DateTime lastKnownStateTime = getDate(settings, PlatformKeys.LAST_KNOWN_STATE_TIME);
+    final ZonedDateTime lastKnownStateTime = getDate(settings, PlatformKeys.LAST_KNOWN_STATE_TIME);
     if (knownState != null && lastKnownStateTime != null) {
       final boolean lastKnownState = "On".equals(knownState);
-      builder.withLastKnownState(lastKnownState, lastKnownStateTime.toDate());
+      builder.withLastKnownState(lastKnownState, lastKnownStateTime.toInstant());
     }
 
     return builder.build();

@@ -1,11 +1,7 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.core.infra.jms.protocol.inbound.messageprocessors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,10 +11,10 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -108,7 +104,7 @@ public class PushNotificationAlarmMessageProcessorTest {
         .when(this.eventNotificationMessageService)
         .handleEvent(
             any(String.class),
-            any(Date.class),
+            any(Instant.class),
             any(EventType.class),
             any(String.class),
             any(Integer.class));

@@ -1,13 +1,12 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import static org.opensmartgridplatform.adapter.domain.smartmetering.application.services.util.DeviceModelCodeUtil.createDeviceModelCodes;
+
+import java.util.List;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
@@ -20,6 +19,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmReg
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearAlarmRegisterRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetThdFingerprintRequest;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetThdFingerprintResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReads;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
@@ -34,6 +35,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigureDefinableLoadProfileRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetThdFingerprintRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetThdFingerprintResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
@@ -127,15 +130,26 @@ public class MonitoringService {
             new AssertionError(
                 "Meter for gas reads should have an energy meter as gateway device."));
       }
+
+      final SmartMeter gatewaySmartMeter =
+          this.domainHelperService.findSmartMeter(gatewayDevice.getDeviceIdentification());
+      final List<SmartMeter> smartMeters =
+          this.domainHelperService.searchMBusDevicesFor(gatewaySmartMeter);
+      final String deviceModelCodes = createDeviceModelCodes(gatewaySmartMeter, smartMeters);
+
       this.osgpCoreRequestMessageSender.send(
           requestDto,
           messageMetadata
               .builder()
               .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
-              .withIpAddress(gatewayDevice.getIpAddress())
+              .withNetworkAddress(gatewayDevice.getNetworkAddress())
               .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
+              .withDeviceModelCode(deviceModelCodes)
               .build());
     } else {
+      final List<SmartMeter> smartMeters =
+          this.domainHelperService.searchMBusDevicesFor(smartMeter);
+      final String deviceModelCodes = createDeviceModelCodes(smartMeter, smartMeters);
 
       final PeriodicMeterReadsRequestDto requestDto =
           this.monitoringMapper.map(
@@ -144,8 +158,9 @@ public class MonitoringService {
           requestDto,
           messageMetadata
               .builder()
-              .withIpAddress(smartMeter.getIpAddress())
+              .withNetworkAddress(smartMeter.getNetworkAddress())
               .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+              .withDeviceModelCode(deviceModelCodes)
               .build());
     }
   }
@@ -215,7 +230,6 @@ public class MonitoringService {
 
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
-
     if (actualMeterReadsQuery.isMbusDevice()) {
 
       if (smartMeter.getChannel() == null) {
@@ -244,6 +258,13 @@ public class MonitoringService {
             new AssertionError(
                 "Meter for gas reads should have an energy meter as gateway device."));
       }
+
+      final SmartMeter gatewaySmartMeter =
+          this.domainHelperService.findSmartMeter(gatewayDevice.getDeviceIdentification());
+      final List<SmartMeter> smartMeters =
+          this.domainHelperService.searchMBusDevicesFor(gatewaySmartMeter);
+      final String deviceModelCodes = createDeviceModelCodes(gatewaySmartMeter, smartMeters);
+
       final ActualMeterReadsQueryDto requestDto =
           new ActualMeterReadsQueryDto(ChannelDto.fromNumber(smartMeter.getChannel()));
       this.osgpCoreRequestMessageSender.send(
@@ -251,16 +272,23 @@ public class MonitoringService {
           messageMetadata
               .builder()
               .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
-              .withIpAddress(gatewayDevice.getIpAddress())
+              .withNetworkAddress(gatewayDevice.getNetworkAddress())
               .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
+              .withDeviceModelCode(deviceModelCodes)
               .build());
     } else {
+
+      final List<SmartMeter> smartMeters =
+          this.domainHelperService.searchMBusDevicesFor(smartMeter);
+      final String deviceModelCodes = createDeviceModelCodes(smartMeter, smartMeters);
+
       this.osgpCoreRequestMessageSender.send(
           new ActualMeterReadsQueryDto(),
           messageMetadata
               .builder()
-              .withIpAddress(smartMeter.getIpAddress())
+              .withNetworkAddress(smartMeter.getNetworkAddress())
               .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+              .withDeviceModelCode(deviceModelCodes)
               .build());
     }
   }
@@ -327,6 +355,9 @@ public class MonitoringService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
+    final List<SmartMeter> smartMeters = this.domainHelperService.searchMBusDevicesFor(smartMeter);
+    final String deviceModelCodes = createDeviceModelCodes(smartMeter, smartMeters);
+
     final ActualPowerQualityRequestDto requestDto =
         this.monitoringMapper.map(request, ActualPowerQualityRequestDto.class);
 
@@ -334,8 +365,9 @@ public class MonitoringService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .withDeviceModelCode(deviceModelCodes)
             .build());
   }
 
@@ -389,7 +421,7 @@ public class MonitoringService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -434,6 +466,9 @@ public class MonitoringService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
+    final List<SmartMeter> smartMeters = this.domainHelperService.searchMBusDevicesFor(smartMeter);
+    final String deviceModelCodes = createDeviceModelCodes(smartMeter, smartMeters);
+
     final ConfigureDefinableLoadProfileRequestDto requestDto =
         this.monitoringMapper.map(request, ConfigureDefinableLoadProfileRequestDto.class);
 
@@ -441,8 +476,9 @@ public class MonitoringService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .withDeviceModelCode(deviceModelCodes)
             .build());
   }
 
@@ -496,7 +532,7 @@ public class MonitoringService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -511,6 +547,59 @@ public class MonitoringService {
         messageMetadata.getMessageType());
 
     this.handleMetadataOnlyResponseMessage(messageMetadata, deviceResult, exception);
+  }
+
+  public void getThdFingerprint(
+      final MessageMetadata messageMetadata,
+      final GetThdFingerprintRequest getThdFingerprintRequest)
+      throws FunctionalException {
+
+    LOGGER.info(
+        "GetThdFingerprint for organisationIdentification: {} for deviceIdentification: {}",
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
+
+    final SmartMeter smartMeter =
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
+
+    final GetThdFingerprintRequestDto requestDto =
+        this.monitoringMapper.map(getThdFingerprintRequest, GetThdFingerprintRequestDto.class);
+
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
+  }
+
+  public void handleGetThdFingerprintResponse(
+      final MessageMetadata messageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception,
+      final GetThdFingerprintResponseDto resultData) {
+
+    LOGGER.info(
+        "handle GetThdFingerprint response for MessageType: {}", messageMetadata.getMessageType());
+
+    final GetThdFingerprintResponse response =
+        this.monitoringMapper.map(resultData, GetThdFingerprintResponse.class);
+
+    ResponseMessageResultType result = deviceResult;
+    if (exception != null) {
+      LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
+      result = ResponseMessageResultType.NOT_OK;
+    }
+
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withMessageMetadata(messageMetadata)
+            .withResult(result)
+            .withOsgpException(exception)
+            .withDataObject(response)
+            .build();
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
   private void handleMetadataOnlyResponseMessage(

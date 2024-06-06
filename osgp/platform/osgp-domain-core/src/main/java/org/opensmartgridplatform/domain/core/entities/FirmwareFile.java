@@ -1,13 +1,19 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.domain.core.entities;
 
+import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -20,18 +26,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import org.hibernate.annotations.SortNatural;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
@@ -60,8 +54,6 @@ public class FirmwareFile extends AbstractEntity {
       name = "device_model_firmware_file",
       joinColumns = @JoinColumn(name = "firmware_file_id"),
       inverseJoinColumns = @JoinColumn(name = "device_model_id"))
-  @OrderBy("modelCode")
-  @SortNatural
   private final SortedSet<DeviceModel> deviceModels = new TreeSet<>();
 
   @OneToMany(
@@ -84,7 +76,8 @@ public class FirmwareFile extends AbstractEntity {
 
   @Column private boolean active;
 
-  @Column private byte[] imageIdentifier;
+  @Column(length = 12)
+  private String hashType;
 
   protected FirmwareFile() {
     // Default constructor
@@ -98,7 +91,7 @@ public class FirmwareFile extends AbstractEntity {
     this.file = builder.file;
     this.hash = builder.hash;
     this.active = builder.active;
-    this.imageIdentifier = builder.imageIdentifier;
+    this.hashType = builder.hashType;
   }
 
   public void updateFirmwareModuleData(final Map<FirmwareModule, String> versionsByModule) {
@@ -115,8 +108,8 @@ public class FirmwareFile extends AbstractEntity {
     return this.identification;
   }
 
-  public byte[] getImageIdentifier() {
-    return this.imageIdentifier;
+  public String getHashType() {
+    return this.hashType;
   }
 
   public SortedSet<DeviceModel> getDeviceModels() {
@@ -323,8 +316,8 @@ public class FirmwareFile extends AbstractEntity {
     this.pushToNewDevices = pushToNewDevices;
   }
 
-  public void setImageIdentifier(final byte[] imageIdentifier) {
-    this.imageIdentifier = imageIdentifier;
+  public void setHashType(final String hashType) {
+    this.hashType = hashType;
   }
 
   public String getHash() {
@@ -357,8 +350,8 @@ public class FirmwareFile extends AbstractEntity {
         + this.pushToNewDevices
         + ", file="
         + Arrays.toString(this.file)
-        + ", imageIdentifier="
-        + Arrays.toString(this.imageIdentifier)
+        + ", hashType="
+        + this.hashType
         + ", hash="
         + this.hash
         + "]";
@@ -373,7 +366,7 @@ public class FirmwareFile extends AbstractEntity {
     private byte[] file;
     private String hash;
     private boolean active;
-    private byte[] imageIdentifier;
+    private String hashType;
 
     public Builder withIdentification(final String identification) {
       if (identification != null) {
@@ -402,8 +395,8 @@ public class FirmwareFile extends AbstractEntity {
       return this;
     }
 
-    public Builder withImageIdentifier(final byte[] imageIdentifier) {
-      this.imageIdentifier = imageIdentifier;
+    public Builder withHashType(final String hashType) {
+      this.hashType = hashType;
       return this;
     }
 

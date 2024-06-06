@@ -1,16 +1,12 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.shared.infra.jms;
 
+import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
@@ -28,6 +24,7 @@ public abstract class BaseNotificationMessageProcessor implements MessageProcess
   /** Logger for this class. */
   private static final Logger LOGGER =
       LoggerFactory.getLogger(BaseNotificationMessageProcessor.class);
+
   /**
    * This is the message sender needed for the message processor implementation to handle an error.
    */

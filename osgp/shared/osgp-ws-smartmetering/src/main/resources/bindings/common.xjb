@@ -1,15 +1,10 @@
 <!--
-
-    Copyright 2015 Smart Society Services B.V.
-
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
+        SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+        SPDX-License-Identifier: Apache-2.0
 -->
 <jxb:bindings
-  version="2.0"
-  xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+  version="3.0"
+  xmlns:jxb="https://jakarta.ee/xml/ns/jaxb"
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
   <jxb:bindings schemaLocation="../schemas/base-ws-smartmetering.xsd">
@@ -57,6 +52,24 @@
     </jxb:bindings>
     <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='VOLTAGE_SWELL_IN_PHASE_DETECTED_L3']">
       <jxb:typesafeEnumMember name="VOLTAGE_SWELL_IN_PHASE_DETECTED_L3"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='THD_OVERLIMIT_IN_PHASE_L1']">
+      <jxb:typesafeEnumMember name="THD_OVERLIMIT_IN_PHASE_L1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='THD_OVERLIMIT_IN_PHASE_L2']">
+      <jxb:typesafeEnumMember name="THD_OVERLIMIT_IN_PHASE_L2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='THD_OVERLIMIT_IN_PHASE_L3']">
+      <jxb:typesafeEnumMember name="THD_OVERLIMIT_IN_PHASE_L3"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='THD_LONG_OVERLIMIT_IN_PHASE_L1']">
+      <jxb:typesafeEnumMember name="THD_LONG_OVERLIMIT_IN_PHASE_L1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='THD_LONG_OVERLIMIT_IN_PHASE_L2']">
+      <jxb:typesafeEnumMember name="THD_LONG_OVERLIMIT_IN_PHASE_L2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='AlarmType']/xs:restriction/xs:enumeration[@value='THD_LONG_OVERLIMIT_IN_PHASE_L3']">
+      <jxb:typesafeEnumMember name="THD_LONG_OVERLIMIT_IN_PHASE_L3"/>
     </jxb:bindings>
   </jxb:bindings>
 

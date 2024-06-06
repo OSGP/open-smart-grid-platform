@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
@@ -21,14 +16,15 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusOnAllChannelsRequestDto;
@@ -43,13 +39,13 @@ public class ClearMBusStatusOnAllChannelsCommandExecutor
 
   private static final int[] CHANNELS = {1, 2, 3, 4};
 
-  final DlmsObjectConfigService dlmsObjectConfigService;
+  final ObjectConfigServiceHelper config;
 
   @Autowired
   public ClearMBusStatusOnAllChannelsCommandExecutor(
-      final DlmsObjectConfigService dlmsObjectConfigService) {
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(ClearMBusStatusOnAllChannelsRequestDto.class);
-    this.dlmsObjectConfigService = dlmsObjectConfigService;
+    this.config = objectConfigServiceHelper;
   }
 
   @Override
@@ -93,15 +89,19 @@ public class ClearMBusStatusOnAllChannelsCommandExecutor
       final DlmsConnectionManager conn, final int channel, final DlmsDevice device)
       throws IOException, ProtocolAdapterException {
 
+    final Protocol protocol = Protocol.forDevice(device);
+
     final AttributeAddress readMBusStatusAttributeAddress =
-        this.dlmsObjectConfigService.getAttributeAddress(
-            device, DlmsObjectType.READ_MBUS_STATUS, channel);
+        this.config.findDefaultAttributeAddress(
+            device, protocol, DlmsObjectType.READ_MBUS_STATUS, channel);
+
     final AttributeAddress clearMBusStatusAttributeAddress =
-        this.dlmsObjectConfigService.getAttributeAddress(
-            device, DlmsObjectType.CLEAR_MBUS_STATUS, channel);
+        this.config.findDefaultAttributeAddress(
+            device, protocol, DlmsObjectType.CLEAR_MBUS_STATUS, channel);
+
     final AttributeAddress clientSetupMbus =
-        this.dlmsObjectConfigService.getAttributeAddress(
-            device, DlmsObjectType.CLIENT_SETUP_MBUS, channel);
+        this.config.findDefaultAttributeAddress(
+            device, protocol, DlmsObjectType.MBUS_CLIENT_SETUP, channel);
 
     final long statusMask = this.readStatus(conn, channel, readMBusStatusAttributeAddress);
     if (statusMask == 0L) {

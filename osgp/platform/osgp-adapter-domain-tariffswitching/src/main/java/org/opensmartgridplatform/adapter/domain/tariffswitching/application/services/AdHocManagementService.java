@@ -1,14 +1,10 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.tariffswitching.application.services;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,7 +78,7 @@ public class AdHocManagementService extends AbstractService {
             correlationUid, organisationIdentification, deviceIdentification, allowedDomainTypeDto),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   public void handleGetStatusResponse(
@@ -158,12 +154,12 @@ public class AdHocManagementService extends AbstractService {
       final RelayStatus oldRelayStatus = device.getRelayStatusByIndex(externalIndex);
       if (oldRelayStatus != null) {
         // Update the old relay status value
-        oldRelayStatus.updateLastKnownState(state, new Date());
+        oldRelayStatus.updateLastKnownState(state, Instant.now());
       } else {
         // Create a new relay status value
         final RelayStatus newRelayStatus =
             new RelayStatus.Builder(device, externalIndex)
-                .withLastKnownState(state, new Date())
+                .withLastKnownState(state, Instant.now())
                 .build();
         relayStatuses.add(newRelayStatus);
       }

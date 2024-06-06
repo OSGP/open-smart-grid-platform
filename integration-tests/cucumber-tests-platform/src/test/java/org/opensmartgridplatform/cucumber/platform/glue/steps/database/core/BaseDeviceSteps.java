@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
@@ -75,7 +71,7 @@ public abstract class BaseDeviceSteps {
     if (settings.containsKey(PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE)
         && StringUtils.isNotBlank(settings.get(PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE))) {
       device.setTechnicalInstallationDate(
-          getDate(settings, PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE).toDate());
+          getDate(settings, PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE).toInstant());
     }
 
     /*
@@ -112,7 +108,9 @@ public abstract class BaseDeviceSteps {
       inetAddress =
           InetAddress.getByName(
               getString(
-                  settings, PlatformKeys.IP_ADDRESS, this.configuration.getDeviceNetworkAddress()));
+                  settings,
+                  PlatformKeys.NETWORK_ADDRESS,
+                  this.configuration.getDeviceNetworkAddress()));
     } catch (final UnknownHostException e) {
       inetAddress = InetAddress.getLoopbackAddress();
     }
@@ -121,7 +119,7 @@ public abstract class BaseDeviceSteps {
     device.setCellId(getInteger(settings, PlatformKeys.CELL_ID, null));
 
     device.updateRegistrationData(
-        inetAddress,
+        inetAddress.getHostAddress(),
         getString(settings, PlatformKeys.KEY_DEVICE_TYPE, PlatformDefaults.DEFAULT_DEVICE_TYPE));
 
     device.updateInMaintenance(

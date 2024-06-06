@@ -1,16 +1,11 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.core.application.config;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeZone;
+import java.time.Instant;
+import java.time.ZoneId;
 import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaDeviceSpecifications;
 import org.opensmartgridplatform.adapter.ws.infra.specifications.JpaEventSpecifications;
 import org.opensmartgridplatform.adapter.ws.shared.db.application.config.WritablePersistenceConfigCore;
@@ -66,15 +61,21 @@ public class ApplicationContext extends AbstractConfig {
   private static final String PROPERTY_NAME_FIRMWARE_PATH = "firmware.path";
   private static final String PROPERTY_NAME_FIRMWARE_DIRECTORY = "firmware.directory";
   private static final String PROPERTY_NAME_FIRMWARE_FILESTORAGE = "firmware.filestorage";
+  private static final String PROPERTY_NAME_FIRMWARE_FILESTORAGE_DIRECTORY =
+      "firmware.filestorage.directory";
+  private static final String PROPERTY_NAME_FIRMWARE_IMAGEID_EXTENSION =
+      "firmware.imageid.extension";
   private static final String PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE = "paging.maximum.pagesize";
   private static final String PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE = "paging.default.pagesize";
 
   private static final String LOCAL_TIME_ZONE_IDENTIFIER = "Europe/Paris";
-  private static final DateTimeZone LOCAL_TIME_ZONE =
-      DateTimeZone.forID(LOCAL_TIME_ZONE_IDENTIFIER);
+  private static final ZoneId LOCAL_TIME_ZONE = ZoneId.of(LOCAL_TIME_ZONE_IDENTIFIER);
+
+  public static final int SECONDS_PER_MINUTE = 60;
+
   private static final int TIME_ZONE_OFFSET_MINUTES =
-      LOCAL_TIME_ZONE.getStandardOffset(new DateTime().getMillis())
-          / DateTimeConstants.MILLIS_PER_MINUTE;
+      LOCAL_TIME_ZONE.getRules().getStandardOffset(Instant.now()).getTotalSeconds()
+          / SECONDS_PER_MINUTE;
 
   private static final String PROPERTY_NAME_NET_MANAGEMENT_ORGANISATION =
       "net.management.organisation";
@@ -131,6 +132,16 @@ public class ApplicationContext extends AbstractConfig {
   }
 
   @Bean
+  public String firmwareFileStorageDirectory() {
+    return this.environment.getRequiredProperty(PROPERTY_NAME_FIRMWARE_FILESTORAGE_DIRECTORY);
+  }
+
+  @Bean
+  public String firmwareImageIdExtension() {
+    return this.environment.getRequiredProperty(PROPERTY_NAME_FIRMWARE_IMAGEID_EXTENSION);
+  }
+
+  @Bean
   public EventSpecifications eventSpecifications() {
     return new JpaEventSpecifications();
   }
@@ -163,7 +174,7 @@ public class ApplicationContext extends AbstractConfig {
   }
 
   @Bean
-  public DateTimeZone localTimeZone() {
+  public ZoneId localTimeZone() {
     return LOCAL_TIME_ZONE;
   }
 

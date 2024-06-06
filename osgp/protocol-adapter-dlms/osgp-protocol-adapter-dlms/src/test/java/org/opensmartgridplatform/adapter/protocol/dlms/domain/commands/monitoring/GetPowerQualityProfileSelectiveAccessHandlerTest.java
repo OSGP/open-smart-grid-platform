@@ -1,18 +1,16 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitoring;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.DEFINABLE_LOAD_PROFILE;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.INSTANTANEOUS_VOLTAGE_L1;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.POWER_QUALITY_PROFILE_1;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.POWER_QUALITY_PROFILE_2;
 
@@ -21,6 +19,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -33,6 +33,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.PowerQualityProfile;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
@@ -46,6 +47,12 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends GetPowerQualityPr
   @Mock private DlmsDevice dlmsDevice;
   @Mock private ObjectConfigService objectConfigService;
 
+  @BeforeEach
+  public void init() {
+    when(this.dlmsDevice.getProtocolName()).thenReturn(PROTOCOL_NAME);
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(PROTOCOL_VERSION);
+  }
+
   @ParameterizedTest
   @EnumSource(PowerQualityProfile.class)
   void testHandlePublicOrPrivateProfileWithSelectiveAccessWithPartialNonAllowedObjects(
@@ -58,8 +65,18 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends GetPowerQualityPr
             Date.from(Instant.now().minus(2, ChronoUnit.DAYS)),
             new Date(),
             new ArrayList<>());
-    when(this.dlmsDevice.getProtocolName()).thenReturn(PROTOCOL_NAME);
-    when(this.dlmsDevice.getProtocolVersion()).thenReturn(PROTOCOL_VERSION);
+
+    final CosemObject cosemObjectInstVoltage =
+        allPqObjectsForThisMeter.stream()
+            .filter(obj -> obj.getTag().equals(INSTANTANEOUS_VOLTAGE_L1.name()))
+            .findFirst()
+            .get();
+    when(this.dlmsHelper.getScalerUnitValue(this.conn, cosemObjectInstVoltage))
+        .thenReturn(
+            cosemObjectInstVoltage
+                .getAttribute(RegisterAttribute.SCALER_UNIT.attributeId())
+                .getValue());
+
     when(this.dlmsHelper.readLogicalName(any(DataObject.class), any(String.class)))
         .thenCallRealMethod();
     when(this.dlmsHelper.readObjectDefinition(any(DataObject.class), any(String.class)))
@@ -73,15 +90,15 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends GetPowerQualityPr
 
     when(this.dlmsHelper.convertDataObjectToDateTime(any(DataObject.class))).thenCallRealMethod();
     when(this.dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
-    when(this.objectConfigService.getCosemObject(
+    when(this.objectConfigService.getOptionalCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_2))
         .thenReturn(
             this.createProfile(PQ_PROFILE_2, "POWER_QUALITY_PROFILE_2", PQ_PROFILE_2_INTERVAL));
-    when(this.objectConfigService.getCosemObject(
+    when(this.objectConfigService.getOptionalCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_1))
         .thenReturn(
             this.createProfile(PQ_PROFILE_1, "POWER_QUALITY_PROFILE_1", PQ_PROFILE_1_INTERVAL));
-    when(this.objectConfigService.getCosemObject(
+    when(this.objectConfigService.getOptionalCosemObject(
             PROTOCOL_NAME, PROTOCOL_VERSION, DEFINABLE_LOAD_PROFILE))
         .thenReturn(
             this.createProfile(PQ_DEFINABLE, "DEFINABLE_LOAD_PROFILE", PQ_DEFINABLE_INTERVAL));
@@ -114,5 +131,33 @@ class GetPowerQualityProfileSelectiveAccessHandlerTest extends GetPowerQualityPr
     this.verifyResponseData(responseDto, PQ_PROFILE_1, PQ_PROFILE_1_INTERVAL);
     this.verifyResponseData(responseDto, PQ_PROFILE_2, PQ_PROFILE_2_INTERVAL);
     this.verifyResponseData(responseDto, PQ_DEFINABLE, PQ_DEFINABLE_INTERVAL);
+  }
+
+  @ParameterizedTest
+  @EnumSource(PowerQualityProfile.class)
+  void testSkipIfProfileDoesNotContainObject(final PowerQualityProfile profile)
+      throws ObjectConfigException {
+    final GetPowerQualityProfileRequestDataDto requestDto =
+        new GetPowerQualityProfileRequestDataDto(
+            profile.name(),
+            Date.from(Instant.now().minus(2, ChronoUnit.DAYS)),
+            new Date(),
+            new ArrayList<>());
+    when(this.objectConfigService.getOptionalCosemObject(
+            PROTOCOL_NAME, PROTOCOL_VERSION, DEFINABLE_LOAD_PROFILE))
+        .thenReturn(Optional.empty());
+    when(this.objectConfigService.getOptionalCosemObject(
+            PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_1))
+        .thenReturn(Optional.empty());
+    when(this.objectConfigService.getOptionalCosemObject(
+            PROTOCOL_NAME, PROTOCOL_VERSION, POWER_QUALITY_PROFILE_2))
+        .thenReturn(Optional.empty());
+
+    final GetPowerQualityProfileSelectiveAccessHandler handler =
+        new GetPowerQualityProfileSelectiveAccessHandler(this.dlmsHelper, this.objectConfigService);
+
+    assertThrows(
+        ProtocolAdapterException.class,
+        () -> handler.handle(this.conn, this.dlmsDevice, requestDto));
   }
 }

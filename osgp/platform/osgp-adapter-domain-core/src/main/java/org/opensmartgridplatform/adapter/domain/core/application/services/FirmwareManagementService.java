@@ -1,18 +1,14 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -20,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -121,7 +116,7 @@ public class FirmwareManagementService extends AbstractService {
                     .class)),
         messageType,
         messagePriority,
-        device.getIpAddress(),
+        device.getNetworkAddress(),
         scheduleTime);
   }
 
@@ -296,7 +291,7 @@ public class FirmwareManagementService extends AbstractService {
         new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null),
         messageType,
         messagePriority,
-        device.getIpAddress(),
+        device.getNetworkAddress(),
         delay);
   }
 
@@ -437,7 +432,7 @@ public class FirmwareManagementService extends AbstractService {
                     new FirmwareVersion(
                         FirmwareModuleType.forDescription(e.getKey().getDescription()),
                         e.getValue()))
-            .collect(Collectors.toList());
+            .toList();
 
     // remove the history versions
     firmwareVersionsToCheck.removeAll(firmwareVersionsInHistory);
@@ -474,7 +469,7 @@ public class FirmwareManagementService extends AbstractService {
     for (final DeviceFirmwareFile firmwareFile : deviceFirmwareFiles) {
 
       final Map<FirmwareModule, String> fwms = firmwareFile.getFirmwareFile().getModuleVersions();
-      final Date installationDate = firmwareFile.getInstallationDate();
+      final Instant installationDate = firmwareFile.getInstallationDate();
 
       for (final Map.Entry<FirmwareModule, String> entry : fwms.entrySet()) {
         final String version = entry.getValue();
@@ -485,7 +480,7 @@ public class FirmwareManagementService extends AbstractService {
             && currentlyInstalledFirmwareVersionsPerType
                 .get(fwm.getDescription())
                 .getInstallationDate()
-                .before(installationDate)) {
+                .isBefore(installationDate)) {
           currentlyInstalledFirmwareVersionsPerType.replace(
               fwm.getDescription(),
               new FirmwareVersionWithInstallationDate(
@@ -511,7 +506,7 @@ public class FirmwareManagementService extends AbstractService {
                     new FirmwareVersion(
                         e.getFirmwareVersion().getFirmwareModuleType(),
                         e.getFirmwareVersion().getVersion()))
-            .collect(Collectors.toList());
+            .toList();
 
     // remove the latest history (module)versions from the firmwareVersions
     // parameter
@@ -522,16 +517,16 @@ public class FirmwareManagementService extends AbstractService {
 
   // Helper class to keep track of InstallationDate and FirmwareVersion
   private static class FirmwareVersionWithInstallationDate {
-    private final Date installationDate;
+    private final Instant installationDate;
     private final FirmwareVersion firmwareVersion;
 
     public FirmwareVersionWithInstallationDate(
-        final Date installationDate, final FirmwareVersion firmwareVersion) {
+        final Instant installationDate, final FirmwareVersion firmwareVersion) {
       this.installationDate = installationDate;
       this.firmwareVersion = firmwareVersion;
     }
 
-    public Date getInstallationDate() {
+    public Instant getInstallationDate() {
       return this.installationDate;
     }
 
@@ -562,7 +557,7 @@ public class FirmwareManagementService extends AbstractService {
       if (firmwareFileContainsAllOfTheseModules(file, firmwareVersionsNotCurrent)) {
         // file found, insert a record into the history
         final DeviceFirmwareFile deviceFirmwareFile =
-            new DeviceFirmwareFile(device, file, new Date(), INSTALLER);
+            new DeviceFirmwareFile(device, file, Instant.now(), INSTALLER);
         this.deviceFirmwareFileRepository.save(deviceFirmwareFile);
 
         if (LOGGER.isInfoEnabled()) {
@@ -663,6 +658,6 @@ public class FirmwareManagementService extends AbstractService {
             correlationUid, organisationIdentification, deviceIdentification, version),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 }

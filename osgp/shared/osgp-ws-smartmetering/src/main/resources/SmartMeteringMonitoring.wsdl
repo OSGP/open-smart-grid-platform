@@ -211,6 +211,29 @@
     </wsdl:part>
   </wsdl:message>
 
+  <!-- GET THD FINGERPRINT -->
+
+  <wsdl:message name="GetThdFingerprintRequest">
+    <wsdl:part element="smmon:GetThdFingerprintRequest"
+      name="GetThdFingerprintRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetThdFingerprintAsyncResponse">
+    <wsdl:part element="smmon:GetThdFingerprintAsyncResponse"
+      name="GetThdFingerprintAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetThdFingerprintAsyncRequest">
+    <wsdl:part element="smmon:GetThdFingerprintAsyncRequest"
+      name="GetThdFingerprintAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetThdFingerprintResponse">
+    <wsdl:part element="smmon:GetThdFingerprintResponse"
+      name="GetThdFingerprintResponse">
+    </wsdl:part>
+  </wsdl:message>
+
   <!-- FOR USE IN BINDING -->
   <wsdl:message name="SoapHeaders">
     <wsdl:part name="org" element="common:OrganisationIdentification" />
@@ -347,6 +370,23 @@
       </wsdl:input>
       <wsdl:output message="tns:GetPowerQualityProfileResponse"
         name="GetPowerQualityProfileResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetThdFingerprint">
+      <wsdl:input message="tns:GetThdFingerprintRequest"
+        name="GetThdFingerprintRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetThdFingerprintAsyncResponse"
+        name="GetThdFingerprintAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetThdFingerprintResponse">
+      <wsdl:input message="tns:GetThdFingerprintAsyncRequest"
+        name="GetThdFingerprintAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetThdFingerprintResponse"
+        name="GetThdFingerprintResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -606,6 +646,38 @@
       </wsdl:input>
       <wsdl:output name="GetPowerQualityProfileResponse">
         <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetThdFingerprint">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetThdFingerprintRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetThdFingerprintAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetThdFingerprintResponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetThdFingerprintAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetThdFingerprintResponse">
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 

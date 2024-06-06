@@ -1,11 +1,7 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsClassVersion.VERSION_1;
@@ -37,6 +33,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.POWER_QUALITY_EVENT_LOG;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SCHEDULER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SETUP_ALARM;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SETUP_CSD_SMS;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SETUP_SCHEDULER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.RANDOMISATION_SETTINGS;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.READ_MBUS_STATUS;
@@ -116,6 +113,7 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
     final DlmsObject internalTriggerAlarm =
         new DlmsRegisterMonitor(INTERNAL_TRIGGER_ALARM, "0.0.16.1.0.255");
     final DlmsObject pushSetupAlarm = new DlmsPushSetup(PUSH_SETUP_ALARM, "0.1.25.9.0.255");
+    final DlmsObject pushSetupCsdSms = new DlmsPushSetup(PUSH_SETUP_CSD_SMS, "0.2.25.9.0.255");
     final DlmsObject schedulePhaseOutageTestAlarm =
         new DlmsSingleActionSchedule(PHASE_OUTAGE_TEST, "0.0.15.1.4.255");
 
@@ -126,6 +124,7 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
             externalTriggerSmsOrCsd,
             internalTriggerAlarm,
             pushSetupAlarm,
+            pushSetupCsdSms,
             schedulePhaseOutageTestAlarm));
 
     final DlmsObject standardEventLogCode = new DlmsData(STANDARD_EVENT_CODE, "0.0.96.11.0.255");

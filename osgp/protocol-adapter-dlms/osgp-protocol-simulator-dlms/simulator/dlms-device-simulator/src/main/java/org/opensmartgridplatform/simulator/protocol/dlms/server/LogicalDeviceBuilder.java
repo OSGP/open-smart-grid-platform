@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.simulator.protocol.dlms.server;
 
 import java.io.File;
@@ -34,20 +30,38 @@ public class LogicalDeviceBuilder {
   private String encryptionKeyPath;
   private String masterKeyPath;
 
-  private List<CosemInterfaceObject> cosemClasses = new ArrayList<>();
+  private final List<CosemInterfaceObject> cosemClasses = new ArrayList<>();
 
   public LogicalDevice build() throws IOException {
     final LogicalDevice logicalDevice =
         new LogicalDevice(
             this.logicalDeviceId, this.logicalDeviceName, this.manufacturer, this.deviceId);
 
-    if (this.authenticationKeyPath != null
-        && this.encryptionKeyPath != null
-        && this.masterKeyPath != null) {
-      final byte[] auth = Files.readAllBytes(new File(this.authenticationKeyPath).toPath());
-      final byte[] enc = Files.readAllBytes(new File(this.encryptionKeyPath).toPath());
-      final byte[] master = Files.readAllBytes(new File(this.masterKeyPath).toPath());
+    byte[] auth = new byte[0];
+    byte[] enc = new byte[0];
+    byte[] master = new byte[0];
+    if (this.authenticationKeyPath != null) {
+      auth = Files.readAllBytes(new File(this.authenticationKeyPath).toPath());
+    }
+    if (this.encryptionKeyPath != null) {
+      enc = Files.readAllBytes(new File(this.encryptionKeyPath).toPath());
+    }
+    if (this.masterKeyPath != null) {
+      master = Files.readAllBytes(new File(this.masterKeyPath).toPath());
+    }
 
+    if (1 == this.securityLevel) {
+      final SecuritySuite securitySuite =
+          SecuritySuite.builder()
+              .setAuthenticationKey(auth)
+              .setPassword("11111111".getBytes(StandardCharsets.UTF_8))
+              .setAuthenticationMechanism(AuthenticationMechanism.LOW)
+              .setGlobalUnicastEncryptionKey(enc)
+              .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
+              .build();
+      logicalDevice.addRestriction(this.clientId, securitySuite);
+      logicalDevice.setMasterKey(master);
+    } else if (5 == this.securityLevel) {
       final SecuritySuite securitySuite =
           SecuritySuite.builder()
               .setAuthenticationKey(auth)
@@ -57,14 +71,6 @@ public class LogicalDeviceBuilder {
               .build();
       logicalDevice.addRestriction(this.clientId, securitySuite);
       logicalDevice.setMasterKey(master);
-    } else if (1 == this.securityLevel) {
-      final SecuritySuite securitySuite =
-          SecuritySuite.builder()
-              .setPassword("11111111".getBytes(StandardCharsets.UTF_8))
-              .setAuthenticationMechanism(AuthenticationMechanism.LOW)
-              .setEncryptionMechanism(EncryptionMechanism.NONE)
-              .build();
-      logicalDevice.addRestriction(this.clientId, securitySuite);
     }
 
     if (this.clientId != PUBLIC_CLIENT_CLIENT_ID && this.securityLevel != 0) {

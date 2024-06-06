@@ -1,16 +1,12 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.core.infra.jms.protocol.inbound.messageprocessors;
 
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.Destination;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.core.domain.model.protocol.ProtocolResponseService;
 import org.opensmartgridplatform.core.infra.jms.protocol.inbound.AbstractProtocolRequestMessageProcessor;
@@ -72,7 +68,8 @@ public class GetFirmwareFileMessageProcessor extends AbstractProtocolRequestMess
 
       final UpdateFirmwareRequestDto updateFirmwareRequestDto =
           (UpdateFirmwareRequestDto) requestMessage.getRequest();
-      firmwareFileIdentification = updateFirmwareRequestDto.getFirmwareIdentification();
+      firmwareFileIdentification =
+          updateFirmwareRequestDto.getUpdateFirmwareRequestDataDto().getFirmwareIdentification();
 
       final FirmwareFile firmwareFile =
           this.firmwareFileRepository.findByIdentificationOnly(firmwareFileIdentification);
@@ -82,7 +79,8 @@ public class GetFirmwareFileMessageProcessor extends AbstractProtocolRequestMess
               firmwareFileIdentification,
               updateFirmwareRequestDto.getDeviceIdentification(),
               firmwareFile.getFile(),
-              firmwareFile.getImageIdentifier());
+              firmwareFile.getHash(),
+              firmwareFile.getHashType());
 
       this.sendSuccessResponse(
           metadata, device.getProtocolInfo(), firmwareFileDto, message.getJMSReplyTo());

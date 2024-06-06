@@ -1,15 +1,13 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.simulator.trigger;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -20,8 +18,6 @@ import java.util.List;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -67,7 +63,7 @@ public class SimulatorTriggerClient extends AbstractClient {
 
       // Create Apache CXF WebClient with JSON provider.
       final List<Object> providers = new ArrayList<>();
-      providers.add(new JacksonJaxbJsonProvider());
+      providers.add(new JacksonJsonProvider());
 
       this.webClient = WebClient.create(baseAddress, providers);
       if (this.webClient == null) {
@@ -96,7 +92,7 @@ public class SimulatorTriggerClient extends AbstractClient {
   private WebClient configureInsecureWebClient(final String baseAddress) {
 
     final List<Object> providers = new ArrayList<>();
-    providers.add(new JacksonJaxbJsonProvider());
+    providers.add(new JacksonJsonProvider());
 
     final WebClient client = WebClient.create(baseAddress, providers);
 

@@ -1,23 +1,20 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.core.application.mapping;
 
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import org.assertj.core.api.Assertions;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.Configuration;
 import org.opensmartgridplatform.domain.core.valueobjects.DaliConfiguration;
@@ -129,8 +126,12 @@ class DomainCoreMapperTest {
     source.setSwitchingDelays(asList(142, 143));
     source.setRelayLinking(asList(new RelayMatrixDto(144, true), new RelayMatrixDto(145, false)));
     source.setRelayRefreshing(true);
-    source.setSummerTimeDetails(new DateTime(146L * 24 * 60 * 60 * 1000));
-    source.setWinterTimeDetails(new DateTime(147L * 24 * 60 * 60 * 1000));
+    source.setSummerTimeDetails(
+        ZonedDateTime.ofInstant(
+            Instant.ofEpochMilli(146L * 24 * 60 * 60 * 1000), ZoneId.systemDefault()));
+    source.setWinterTimeDetails(
+        ZonedDateTime.ofInstant(
+            Instant.ofEpochMilli(147L * 24 * 60 * 60 * 1000), ZoneId.systemDefault()));
     return source;
   }
 
@@ -168,9 +169,7 @@ class DomainCoreMapperTest {
   }
 
   private List<RelayMatrix> toRelayLinking(final List<RelayMatrixDto> relayLinking) {
-    return relayLinking.stream()
-        .map(relayMatrixDto -> this.toRelayMatrix(relayMatrixDto))
-        .collect(toList());
+    return relayLinking.stream().map(relayMatrixDto -> this.toRelayMatrix(relayMatrixDto)).toList();
   }
 
   private RelayMatrix toRelayMatrix(final RelayMatrixDto dto) {
@@ -187,9 +186,7 @@ class DomainCoreMapperTest {
 
   private RelayConfiguration toRelayConfiguration(final RelayConfigurationDto dto) {
     final List<RelayMap> relayMaps =
-        dto.getRelayMap().stream()
-            .map(relayMapDto -> this.toRelayMap(relayMapDto))
-            .collect(toList());
+        dto.getRelayMap().stream().map(relayMapDto -> this.toRelayMap(relayMapDto)).toList();
     return new RelayConfiguration(relayMaps);
   }
 

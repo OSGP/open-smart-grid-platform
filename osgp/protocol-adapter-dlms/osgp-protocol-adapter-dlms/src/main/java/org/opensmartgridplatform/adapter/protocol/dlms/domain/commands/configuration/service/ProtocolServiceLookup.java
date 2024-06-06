@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
 import java.util.List;
@@ -17,9 +12,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProtocolServiceLookup {
 
-  private final List<ProtocolService> protocolServices;
+  private final List<ConfigurationObjectService> protocolServices;
 
-  public ProtocolServiceLookup(final List<ProtocolService> protocolServices) {
+  public ProtocolServiceLookup(final List<ConfigurationObjectService> protocolServices) {
     this.protocolServices = protocolServices;
   }
 
@@ -33,7 +28,7 @@ public class ProtocolServiceLookup {
     return this.lookupProtocolService(SetConfigurationObjectService.class, protocol);
   }
 
-  private <T extends ProtocolService> T lookupProtocolService(
+  private <T extends ConfigurationObjectService> T lookupProtocolService(
       final Class<T> type, final Protocol protocol) throws ProtocolAdapterException {
     return this.protocolServices.stream()
         .filter(type::isInstance)

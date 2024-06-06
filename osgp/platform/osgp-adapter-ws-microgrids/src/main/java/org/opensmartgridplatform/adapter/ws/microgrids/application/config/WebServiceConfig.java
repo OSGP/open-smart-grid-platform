@@ -1,11 +1,7 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.microgrids.application.config;
 
 import java.util.ArrayList;
@@ -83,6 +79,9 @@ public class WebServiceConfig extends AbstractConfig {
 
   @Value("${web.service.notification.application.name}")
   private String webserviceNotificationApplicationName;
+
+  @Value("${web.service.notification.supported.tls.protocols:TLSv1.2,TLSv1.3}")
+  private String[] webserviceNotificationSupportedTlsProtocols;
 
   private static final String SERVER = "SERVER";
 
@@ -240,7 +239,10 @@ public class WebServiceConfig extends AbstractConfig {
             .build();
 
     return new NotificationWebServiceTemplateFactory(
-        configRepository, this.messageFactory(), Arrays.asList(addOsgpHeadersInterceptor));
+        configRepository,
+        this.messageFactory(),
+        Arrays.asList(addOsgpHeadersInterceptor),
+        this.webserviceNotificationSupportedTlsProtocols);
   }
 
   @Bean

@@ -1,35 +1,30 @@
-/*
- * Copyright 2020 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.util.Arrays;
 import java.util.function.Consumer;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.BundleService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.throttling.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
@@ -37,6 +32,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.MessagePriorityHandler;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RetryHeaderFactory;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
@@ -70,7 +66,7 @@ class BundleMessageProcessorTest {
 
   @Mock private DlmsMessageListener messageListener;
 
-  @Mock private ThrottlingClientConfig throttlingClientConfig;
+  @Mock private MessagePriorityHandler messagePriorityHandler;
 
   private DlmsDevice dlmsDevice;
   private MessageMetadata messageMetadata;
@@ -81,11 +77,10 @@ class BundleMessageProcessorTest {
   void setUp() throws OsgpException, JMSException {
     this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
     this.messageMetadata = MessageMetadata.fromMessage(this.message);
-    when(this.throttlingClientConfig.clientEnabled()).thenReturn(false);
   }
 
   @Test
-  void shouldSetEmptyHeaderOnSuccessfulOperation() throws OsgpException, JMSException {
+  void shouldNotCreateErrorHeaderOnSuccessfulOperation() throws OsgpException, JMSException {
     this.prepareBundleServiceMockWithRequestAndResponse(new ActionResponseDto());
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
 
@@ -95,11 +90,13 @@ class BundleMessageProcessorTest {
         this.dlmsConnectionManager,
         this.dlmsDevice);
 
-    verify(this.retryHeaderFactory, times(1)).createEmptyRetryHeader();
+    verifyNoInteractions(this.retryHeaderFactory);
+    verifyNoInteractions(this.messagePriorityHandler);
   }
 
   @Test
-  void shouldSetRetryHeaderOnRuntimeException() throws OsgpException, JMSException {
+  void shouldCreateRetryHeaderAndRecalculatePriorityOnRuntimeException()
+      throws OsgpException, JMSException {
     when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class)))
         .thenReturn(this.dlmsDevice);
     doThrow(new RuntimeException())
@@ -113,10 +110,12 @@ class BundleMessageProcessorTest {
     this.messageProcessor.processMessage(this.message);
 
     verify(this.retryHeaderFactory).createRetryHeader(0);
+    verify(this.messagePriorityHandler).recalculatePriority(any());
   }
 
   @Test
-  void shouldSetRetryHeaderOnOsgpException() throws OsgpException, JMSException {
+  void shouldCreateRetryHeaderAndRecalculatePriorityOnOsgpException()
+      throws OsgpException, JMSException {
     when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class)))
         .thenReturn(this.dlmsDevice);
     doThrow(new OsgpException(ComponentType.PROTOCOL_DLMS, ""))
@@ -130,11 +129,13 @@ class BundleMessageProcessorTest {
     this.messageProcessor.processMessage(this.message);
 
     verify(this.retryHeaderFactory).createRetryHeader(0);
+    verify(this.messagePriorityHandler).recalculatePriority(any());
   }
 
   @Test
-  void shouldSetRetryHeaderOnSuccessfulOperationWithRetryableFaultResponse()
-      throws OsgpException, JMSException {
+  void
+      shouldCreateRetryHeaderAndRecalculatePriorityOnSuccessfulOperationWithRetryableFaultResponse()
+          throws OsgpException, JMSException {
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
 
     this.prepareBundleServiceMockWithRequestAndResponse(
@@ -147,10 +148,11 @@ class BundleMessageProcessorTest {
         this.dlmsDevice);
 
     verify(this.retryHeaderFactory).createRetryHeader(0);
+    verify(this.messagePriorityHandler).recalculatePriority(any());
   }
 
   @Test
-  void shouldSetEmptyHeaderOnSuccessfulOperationWithNonRetryableFaultResponse()
+  void shouldNotCreateRetryHeaderOnSuccessfulOperationWithNonRetryableFaultResponse()
       throws OsgpException, JMSException {
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
 
@@ -163,7 +165,7 @@ class BundleMessageProcessorTest {
         this.dlmsConnectionManager,
         this.dlmsDevice);
 
-    verify(this.retryHeaderFactory).createEmptyRetryHeader();
+    verifyNoInteractions(this.retryHeaderFactory);
   }
 
   private void prepareBundleServiceMockWithRequestAndResponse(final ActionResponseDto response)

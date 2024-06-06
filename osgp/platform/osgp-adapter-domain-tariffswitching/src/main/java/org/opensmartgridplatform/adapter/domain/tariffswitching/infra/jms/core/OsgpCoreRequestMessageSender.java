@@ -1,17 +1,13 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.core;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Session;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +54,7 @@ public class OsgpCoreRequestMessageSender {
                 requestMessage.getOrganisationIdentification());
             objectMessage.setStringProperty(
                 Constants.DEVICE_IDENTIFICATION, requestMessage.getDeviceIdentification());
-            objectMessage.setStringProperty(Constants.IP_ADDRESS, ipAddress);
+            objectMessage.setStringProperty(Constants.NETWORK_ADDRESS, ipAddress);
             if (scheduleTime != null) {
               objectMessage.setLongProperty(Constants.SCHEDULE_TIME, scheduleTime);
             }

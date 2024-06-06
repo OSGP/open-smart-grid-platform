@@ -1,19 +1,14 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 
 /**
@@ -93,6 +88,19 @@ public enum AlarmTypeRegisterLookup {
       AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L2, DlmsObjectType.ALARM_REGISTER_2, 4),
   VOLTAGE_SWELL_IN_PHASE_DETECTED_L3(
       AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3, DlmsObjectType.ALARM_REGISTER_2, 5),
+
+  THD_OVERLIMIT_IN_PHASE_L1(
+      AlarmTypeDto.THD_OVERLIMIT_IN_PHASE_L1, DlmsObjectType.ALARM_REGISTER_2, 8),
+  THD_OVERLIMIT_IN_PHASE_L2(
+      AlarmTypeDto.THD_OVERLIMIT_IN_PHASE_L2, DlmsObjectType.ALARM_REGISTER_2, 9),
+  THD_OVERLIMIT_IN_PHASE_L3(
+      AlarmTypeDto.THD_OVERLIMIT_IN_PHASE_L3, DlmsObjectType.ALARM_REGISTER_2, 10),
+  THD_LONG_OVERLIMIT_IN_PHASE_L1(
+      AlarmTypeDto.THD_LONG_OVERLIMIT_IN_PHASE_L1, DlmsObjectType.ALARM_REGISTER_2, 11),
+  THD_LONG_OVERLIMIT_IN_PHASE_L2(
+      AlarmTypeDto.THD_LONG_OVERLIMIT_IN_PHASE_L2, DlmsObjectType.ALARM_REGISTER_2, 12),
+  THD_LONG_OVERLIMIT_IN_PHASE_L3(
+      AlarmTypeDto.THD_LONG_OVERLIMIT_IN_PHASE_L3, DlmsObjectType.ALARM_REGISTER_2, 13),
 
   LAST_GASP(AlarmTypeDto.LAST_GASP, DlmsObjectType.ALARM_REGISTER_3, 0),
   LAST_GASP_TEST(AlarmTypeDto.LAST_GASP_TEST, DlmsObjectType.ALARM_REGISTER_3, 1);

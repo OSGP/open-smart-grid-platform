@@ -1,11 +1,7 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
 import static java.util.Arrays.asList;
@@ -30,7 +26,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceActivatedFilterT
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceExternalManagedFilterType;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceInMaintenanceFilterType;
 
-public class DeviceManagementMapperTest {
+class DeviceManagementMapperTest {
 
   private static final String STREET = "Main street";
   private static final int HOUSE_NUMBER = 10;
@@ -77,7 +73,7 @@ public class DeviceManagementMapperTest {
   }
 
   @Test
-  public void mapsDeviceFilter() {
+  void mapsDeviceFilter() {
     final DeviceFilter deviceFilter = new DeviceFilter();
     deviceFilter.setOrganisationIdentification("organisationIdentification1");
     deviceFilter.setAlias("alias1");
@@ -111,7 +107,7 @@ public class DeviceManagementMapperTest {
   }
 
   @Test
-  public void mapsUpdatedDeviceToDevice() {
+  void mapsUpdatedDeviceToDevice() {
 
     final UpdatedDevice updatedDevice = new UpdatedDevice();
     final DeviceOutputSetting outputSetting = new DeviceOutputSetting();
@@ -161,7 +157,7 @@ public class DeviceManagementMapperTest {
   }
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.mapper = new DeviceManagementMapper();
     this.mapper.initialize();
   }

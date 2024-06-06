@@ -1,14 +1,23 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.domain.core.entities;
 
-import java.net.InetAddress;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,22 +31,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import javax.persistence.AttributeOverride;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 import org.hibernate.annotations.SortNatural;
-import org.hibernate.annotations.Type;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
@@ -93,8 +87,7 @@ public class Device extends AbstractEntity {
 
   /** IP address of a device. */
   @Column(length = 50)
-  @Type(type = "org.opensmartgridplatform.shared.hibernate.InetAddressUserType")
-  protected InetAddress networkAddress;
+  protected String networkAddress;
 
   /** Cell ID on a Base Transceiver Station. */
   @Column private Integer cellId;
@@ -136,7 +129,7 @@ public class Device extends AbstractEntity {
   private DeviceModel deviceModel;
 
   /** Installation time of this entity. */
-  @Column() protected Date technicalInstallationDate;
+  @Column() protected Instant technicalInstallationDate;
 
   /** DeviceLifecycleStatus of this entity */
   @Column(nullable = false)
@@ -265,15 +258,11 @@ public class Device extends AbstractEntity {
     this.deviceType = deviceType;
   }
 
-  public String getIpAddress() {
-    return this.networkAddress == null ? null : this.networkAddress.getHostAddress();
-  }
-
-  public InetAddress getNetworkAddress() {
+  public String getNetworkAddress() {
     return this.networkAddress;
   }
 
-  public void setNetworkAddress(final InetAddress networkAddress) {
+  public void setNetworkAddress(final String networkAddress) {
     this.networkAddress = networkAddress;
   }
 
@@ -376,7 +365,7 @@ public class Device extends AbstractEntity {
     this.protocolInfo = protocolInfo;
   }
 
-  public void updateRegistrationData(final InetAddress networkAddress, final String deviceType) {
+  public void updateRegistrationData(final String networkAddress, final String deviceType) {
     this.networkAddress = networkAddress;
     this.deviceType = deviceType;
     this.isActivated = true;
@@ -387,11 +376,11 @@ public class Device extends AbstractEntity {
     this.gatewayDevice = gatewayDevice;
   }
 
-  public Date getTechnicalInstallationDate() {
+  public Instant getTechnicalInstallationDate() {
     return this.technicalInstallationDate;
   }
 
-  public void setTechnicalInstallationDate(final Date technicalInstallationDate) {
+  public void setTechnicalInstallationDate(final Instant technicalInstallationDate) {
     this.technicalInstallationDate = technicalInstallationDate;
   }
 
@@ -500,11 +489,6 @@ public class Device extends AbstractEntity {
   public void updateConnectionDetailsToSuccess() {
     this.failedConnectionCount = 0;
     this.lastSuccessfulConnectionTimestamp = new Date();
-  }
-
-  public void updateConnectionDetailsToFailure() {
-    this.failedConnectionCount++;
-    this.lastFailedConnectionTimestamp = new Date();
   }
 
   public boolean hasConnectionFailures() {

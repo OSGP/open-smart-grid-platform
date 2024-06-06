@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import java.util.List;
@@ -16,8 +12,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class CoupleMBusDeviceCommandExecutor
-    extends AbstractCommandExecutor<MbusChannelElementsDto, MbusChannelElementsResponseDto> {
+    extends AbstractCommandExecutor<CoupleMbusDeviceRequestDataDto, CoupleMbusDeviceResponseDto> {
 
   @Autowired private DeviceChannelsHelper deviceChannelsHelper;
 
@@ -34,41 +31,42 @@ public class CoupleMBusDeviceCommandExecutor
   }
 
   @Override
-  public MbusChannelElementsResponseDto execute(
+  public CoupleMbusDeviceResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final MbusChannelElementsDto requestDto,
+      final CoupleMbusDeviceRequestDataDto requestDto,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
+    final String mbusDeviceIdentification = requestDto.getMbusDeviceIdentification();
+    final MbusChannelElementsDto mbusChannelElementsDto = requestDto.getMbusChannelElements();
 
     log.debug("retrieving mbus info on e-meter");
 
     final List<ChannelElementValuesDto> candidateChannelElementValues =
-        this.deviceChannelsHelper.findCandidateChannelsForDevice(conn, device, requestDto);
+        this.deviceChannelsHelper.findCandidateChannelsForDevice(
+            conn, device, mbusChannelElementsDto);
 
     final ChannelElementValuesDto lastChannelElementValuesRetrieved =
         candidateChannelElementValues.get(candidateChannelElementValues.size() - 1);
 
-    if (FindMatchingChannelHelper.matches(requestDto, lastChannelElementValuesRetrieved)) {
+    if (FindMatchingChannelHelper.matches(
+        mbusChannelElementsDto, lastChannelElementValuesRetrieved)) {
       /*
        * Match found, indicating device is already coupled on this
        * channel: return it.
        */
-      return new MbusChannelElementsResponseDto(
-          requestDto,
-          lastChannelElementValuesRetrieved.getChannel(),
-          candidateChannelElementValues);
+      return new CoupleMbusDeviceResponseDto(
+          mbusDeviceIdentification, lastChannelElementValuesRetrieved);
     }
 
     final ChannelElementValuesDto bestMatch =
-        FindMatchingChannelHelper.bestMatch(requestDto, candidateChannelElementValues);
+        FindMatchingChannelHelper.bestMatch(mbusChannelElementsDto, candidateChannelElementValues);
     if (bestMatch != null) {
       /*
        * Good enough match found indicating a channel the device is
        * already coupled on: return it.
        */
-      return new MbusChannelElementsResponseDto(
-          requestDto, bestMatch.getChannel(), candidateChannelElementValues);
+      return new CoupleMbusDeviceResponseDto(mbusDeviceIdentification, bestMatch);
     }
 
     final ChannelElementValuesDto emptyChannelMatch =
@@ -76,9 +74,9 @@ public class CoupleMBusDeviceCommandExecutor
     if (emptyChannelMatch == null) {
       /*
        * No channel free, all are occupied by M-Bus devices not matching
-       * the one to be coupled here. Return null for the channel.
+       * the one to be coupled here. Return null.
        */
-      return new MbusChannelElementsResponseDto(requestDto, null, candidateChannelElementValues);
+      return new CoupleMbusDeviceResponseDto(mbusDeviceIdentification, null);
     }
 
     /*
@@ -92,18 +90,12 @@ public class CoupleMBusDeviceCommandExecutor
      */
     final ChannelElementValuesDto updatedChannelElementValues =
         this.deviceChannelsHelper.writeUpdatedMbus(
-            conn, device, requestDto, emptyChannelMatch.getChannel(), "CoupleMBusDevice");
+            conn,
+            device,
+            mbusChannelElementsDto,
+            emptyChannelMatch.getChannel(),
+            "CoupleMBusDevice");
 
-    /*
-     * Also update the entry in the candidateChannelElementValues list. Take
-     * into account that the candidateChannelElementsValues List is 0-based,
-     * while the channel in emptyChannelMatch is not
-     */
-    candidateChannelElementValues.set(
-        this.deviceChannelsHelper.correctFirstChannelOffset(emptyChannelMatch),
-        updatedChannelElementValues);
-
-    return new MbusChannelElementsResponseDto(
-        requestDto, updatedChannelElementValues.getChannel(), candidateChannelElementValues);
+    return new CoupleMbusDeviceResponseDto(mbusDeviceIdentification, updatedChannelElementValues);
   }
 }

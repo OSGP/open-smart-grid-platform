@@ -1,21 +1,16 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.throttling.web.api;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
-import javax.validation.Valid;
-import org.opensmartgridplatform.throttling.MaxConcurrencyByThrottlingConfig;
 import org.opensmartgridplatform.throttling.PermitsByThrottlingConfig;
+import org.opensmartgridplatform.throttling.ThrottlingConfigCache;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
 import org.opensmartgridplatform.throttling.mapping.ThrottlingMapper;
 import org.opensmartgridplatform.throttling.repositories.ThrottlingConfigRepository;
@@ -47,18 +42,18 @@ public class ThrottlingConfigController {
 
   private final ThrottlingMapper throttlingMapper;
   private final ThrottlingConfigRepository throttlingConfigRepository;
-  private final MaxConcurrencyByThrottlingConfig maxConcurrencyByThrottlingConfig;
+  private final ThrottlingConfigCache throttlingConfigCache;
   private final PermitsByThrottlingConfig permitsByThrottlingConfig;
 
   public ThrottlingConfigController(
       final ThrottlingMapper throttlingMapper,
       final ThrottlingConfigRepository throttlingConfigRepository,
-      final MaxConcurrencyByThrottlingConfig maxConcurrencyByThrottlingConfig,
+      final ThrottlingConfigCache throttlingConfigCache,
       final PermitsByThrottlingConfig permitsByThrottlingConfig) {
 
     this.throttlingMapper = throttlingMapper;
     this.throttlingConfigRepository = throttlingConfigRepository;
-    this.maxConcurrencyByThrottlingConfig = maxConcurrencyByThrottlingConfig;
+    this.throttlingConfigCache = throttlingConfigCache;
     this.permitsByThrottlingConfig = permitsByThrottlingConfig;
   }
 
@@ -125,18 +120,18 @@ public class ThrottlingConfigController {
               throttlingConfig.getId());
         }
 
-        final int oldMaxConcurrency = throttlingConfigEntity.getMaxConcurrency();
+        final String oldThrottlingConfigValues = throttlingConfigEntity.toString();
         this.updateThrottlingConfig(throttlingConfigEntity, throttlingConfig);
         throttlingConfigEntity =
             this.throttlingConfigRepository.saveAndFlush(throttlingConfigEntity);
         LOGGER.info(
-            "Updated throttling configuration: {} (previous max concurrency: {})",
+            "Updated throttling configuration: {} (previous: {})",
             throttlingConfigEntity,
-            oldMaxConcurrency);
+            oldThrottlingConfigValues);
       }
 
-      this.maxConcurrencyByThrottlingConfig.setMaxConcurrency(
-          throttlingConfigEntity.getId(), throttlingConfigEntity.getMaxConcurrency());
+      this.throttlingConfigCache.setThrottlingConfig(
+          throttlingConfigEntity.getId(), throttlingConfigEntity);
 
     } finally {
       this.throttlingConfigLock.unlock();
@@ -148,7 +143,12 @@ public class ThrottlingConfigController {
   private boolean throttlingConfigNeedsUpdate(
       final org.opensmartgridplatform.throttling.entities.ThrottlingConfig throttlingConfigEntity,
       final ThrottlingConfig throttlingConfig) {
-    return throttlingConfigEntity.getMaxConcurrency() != throttlingConfig.getMaxConcurrency();
+    return throttlingConfigEntity.getMaxConcurrency() != throttlingConfig.getMaxConcurrency()
+        || throttlingConfigEntity.getMaxNewConnections() != throttlingConfig.getMaxNewConnections()
+        || throttlingConfigEntity.getMaxNewConnectionsResetTimeInMs()
+            != throttlingConfig.getMaxNewConnectionsResetTimeInMs()
+        || throttlingConfigEntity.getMaxNewConnectionsWaitTimeInMs()
+            != throttlingConfig.getMaxNewConnectionsWaitTimeInMs();
   }
 
   private void updateThrottlingConfig(

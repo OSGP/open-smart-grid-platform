@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @PublicLighting @Platform @OslpAdapter
 Feature: ProtocolAdapterOSLP Device Registration
   As a ...
@@ -13,7 +17,7 @@ Feature: ProtocolAdapterOSLP Device Registration
       | DeviceIdentification | TESTDEVICE0000001 |
       | Protocol             | <Protocol>        |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
-      | IpAddress            | 127.0.0.2         |
+      | NetworkAddress       | 127.0.0.2         |
       | DeviceType           | SSLD              |
       | HasSchedule          | false             |
     Then the register device response contains
@@ -23,7 +27,7 @@ Feature: ProtocolAdapterOSLP Device Registration
       | DeviceType           | SSLD              |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
       | HasSchedule          | false             |
-      | IpAddress            | 127.0.0.2         |
+      | NetworkAddress       | 127.0.0.2         |
 
     Examples: 
       | Protocol    |
@@ -45,7 +49,7 @@ Feature: ProtocolAdapterOSLP Device Registration
       | DeviceIdentification | TESTDEVICE0000001 |
       | Protocol             | <Protocol>        |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
-      | IpAddress            | 127.0.0.2         |
+      | NetworkAddress       | 127.0.0.2         |
       | DeviceType           | SSLD              |
     Then the register device response contains
       | Status | OK |
@@ -54,7 +58,7 @@ Feature: ProtocolAdapterOSLP Device Registration
       | DeviceType           | SSLD              |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
       | HasSchedule          | false             |
-      | IpAddress            | 127.0.0.2         |
+      | NetworkAddress       | 127.0.0.2         |
 
     Examples: 
       | Protocol    |
@@ -76,7 +80,7 @@ Feature: ProtocolAdapterOSLP Device Registration
       | DeviceIdentification | TESTDEVICE0000001 |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
       | Protocol             | <Protocol>        |
-      | IpAddress            | 127.0.0.2         |
+      | NetworkAddress       | 127.0.0.2         |
       | DeviceType           | SSLD              |
     Then the register device response contains
       | Status | OK |
@@ -85,31 +89,31 @@ Feature: ProtocolAdapterOSLP Device Registration
       | DeviceType           | SSLD              |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
       | HasSchedule          | false             |
-      | IpAddress            | 127.0.0.2         |
+      | NetworkAddress       | 127.0.0.2         |
 
     Examples: 
       | Protocol    |
       | OSLP ELSTER |
 
   @OslpMockServer
-  Scenario Outline: Register device with IpAddress already in use by another device
+  Scenario Outline: Register device with NetworkAddress already in use by another device
     Given an ssld oslp device
       | DeviceIdentification | TESTDEVICE0000002 |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
       | Protocol             | <Protocol>        |
-      | IpAddress            | 127.0.0.3         |
+      | NetworkAddress       | 127.0.0.3         |
       | DeviceType           | SSLD              |
     And an ssld oslp device
       | DeviceIdentification | TESTDEVICE0000003 |
       | DeviceUid            | sdfhDFDFLS34FDLSd |
-      | IpAddress            | 127.0.0.5         |
+      | NetworkAddress       | 127.0.0.5         |
       | Protocol             | <Protocol>        |
       | DeviceType           | SSLD              |
     When the device sends a register device request to the platform over "<Protocol>"
       | DeviceIdentification | TESTDEVICE0000003 |
       | DeviceUid            | fIX1fFGaO1S3Ple6  |
       | Protocol             | <Protocol>        |
-      | IpAddress            | 127.0.0.3         |
+      | NetworkAddress       | 127.0.0.3         |
       | DeviceType           | SSLD              |
     Then the register device response contains
       | Status | OK |
@@ -117,13 +121,13 @@ Feature: ProtocolAdapterOSLP Device Registration
       | DeviceIdentification | TESTDEVICE0000003 |
       | DeviceUid            | fIX1fFGaO1S3Ple6  |
       | Protocol             | <Protocol>        |
-      | IpAddress            | 127.0.0.3         |
+      | NetworkAddress       | 127.0.0.3         |
       | DeviceType           | SSLD              |
     And the ssld oslp device contains
       | DeviceIdentification | TESTDEVICE0000002 |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
       | Protocol             | <Protocol>        |
-      | IpAddress            | null              |
+      | NetworkAddress       | null              |
       | DeviceType           | SSLD              |
 
     Examples: 

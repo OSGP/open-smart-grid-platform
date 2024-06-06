@@ -1,11 +1,7 @@
-/*
- * Copyright 2014-2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.reporting;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -18,6 +14,9 @@ import com.beanit.openiec61850.BdaVisibleString;
 import com.beanit.openiec61850.FcModelNode;
 import com.beanit.openiec61850.Report;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -68,7 +67,7 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
     TRG_TYPE_DESCRIPTION_PER_CODE.put((short) 4, "autonomous trigger");
   }
 
-  private DeviceMessageLoggingService loggingService;
+  private final DeviceMessageLoggingService loggingService;
   private final String organizationIdentification;
   private final List<EventNotificationDto> eventNotifications = new ArrayList<>();
   private final Map<Integer, Integer> externalIndexByInternalIndex = new TreeMap<>();
@@ -110,7 +109,7 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
 
   @Override
   public void newReport(final Report report) {
-    final DateTime timeOfEntry = this.getTimeOfEntry(report);
+    final ZonedDateTime timeOfEntry = this.getTimeOfEntry(report);
 
     final String reportDescription = this.getReportDescription(report, timeOfEntry);
 
@@ -165,13 +164,15 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
     }
   }
 
-  private DateTime getTimeOfEntry(final Report report) {
+  private ZonedDateTime getTimeOfEntry(final Report report) {
     return report.getTimeOfEntry() == null
         ? null
-        : new DateTime(report.getTimeOfEntry().getTimestampValue());
+        : ZonedDateTime.ofInstant(
+            Instant.ofEpochMilli(report.getTimeOfEntry().getTimestampValue()),
+            ZoneId.systemDefault());
   }
 
-  private String getReportDescription(final Report report, final DateTime timeOfEntry) {
+  private String getReportDescription(final Report report, final ZonedDateTime timeOfEntry) {
     return String.format(
         "device: %s, reportId: %s, timeOfEntry: %s, sqNum: %s%s%s",
         this.deviceIdentification,
@@ -183,12 +184,12 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
   }
 
   private void addEventNotificationForReportedData(
-      final FcModelNode evnRpn, final DateTime timeOfEntry, final String reportDescription) {
+      final FcModelNode evnRpn, final ZonedDateTime timeOfEntry, final String reportDescription) {
 
     final EventTypeDto eventType = this.determineEventType(evnRpn, reportDescription);
     final Integer index = this.determineRelayIndex(evnRpn, reportDescription);
     final String description = this.determineDescription(evnRpn);
-    final DateTime dateTime = this.determineDateTime(evnRpn, timeOfEntry);
+    final ZonedDateTime dateTime = this.determineDateTime(evnRpn, timeOfEntry);
 
     final EventNotificationDto eventNotification =
         new EventNotificationDto(
@@ -297,11 +298,12 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
     return EMPTY;
   }
 
-  private DateTime determineDateTime(final FcModelNode evnRpn, final DateTime timeOfEntry) {
+  private ZonedDateTime determineDateTime(
+      final FcModelNode evnRpn, final ZonedDateTime timeOfEntry) {
 
     final BdaTimestamp trgTimeNode = (BdaTimestamp) evnRpn.getChild(EVENT_NODE_TRIGGER_TIME);
     if (trgTimeNode != null && trgTimeNode.getDate() != null) {
-      return new DateTime(trgTimeNode.getDate());
+      return ZonedDateTime.ofInstant(trgTimeNode.getDate().toInstant(), ZoneId.systemDefault());
     }
 
     if (timeOfEntry != null) {
@@ -318,7 +320,7 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
      * No time of entry or trigger time available for the report. As a
      * fallback use the time the report is processed here as event time.
      */
-    return DateTime.now();
+    return ZonedDateTime.now();
   }
 
   private IllegalArgumentException childNodeNotAvailableException(

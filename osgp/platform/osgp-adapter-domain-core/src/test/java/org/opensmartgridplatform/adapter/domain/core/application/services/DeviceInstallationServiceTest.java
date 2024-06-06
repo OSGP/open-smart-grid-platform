@@ -1,11 +1,7 @@
-/*
- * Copyright 2020 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -93,7 +89,7 @@ public class DeviceInstallationServiceTest {
   @Test
   public void testGetStatusTestDeviceTypeIsNotLmdType() throws FunctionalException {
     final Device device = Mockito.mock(Device.class);
-    when(device.getIpAddress()).thenReturn(TEST_IP);
+    when(device.getNetworkAddress()).thenReturn(TEST_IP);
     when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE))
         .thenReturn(device);
 
@@ -119,7 +115,7 @@ public class DeviceInstallationServiceTest {
   public void testGetStatusTestDeviceTypeIsLmdType() throws FunctionalException {
     final Device device = Mockito.mock(Device.class);
     when(device.getDeviceType()).thenReturn("LMD");
-    when(device.getIpAddress()).thenReturn(TEST_IP);
+    when(device.getNetworkAddress()).thenReturn(TEST_IP);
     when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE))
         .thenReturn(device);
 
@@ -285,7 +281,7 @@ public class DeviceInstallationServiceTest {
   @Test
   public void testStartSelfTest() throws FunctionalException {
     final Device device = Mockito.mock(Device.class);
-    when(device.getIpAddress()).thenReturn(TEST_IP);
+    when(device.getNetworkAddress()).thenReturn(TEST_IP);
     when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE))
         .thenReturn(device);
 
@@ -310,7 +306,7 @@ public class DeviceInstallationServiceTest {
   @Test
   public void testStopSelfTest() throws FunctionalException {
     final Device device = Mockito.mock(Device.class);
-    when(device.getIpAddress()).thenReturn(TEST_IP);
+    when(device.getNetworkAddress()).thenReturn(TEST_IP);
     when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE))
         .thenReturn(device);
 

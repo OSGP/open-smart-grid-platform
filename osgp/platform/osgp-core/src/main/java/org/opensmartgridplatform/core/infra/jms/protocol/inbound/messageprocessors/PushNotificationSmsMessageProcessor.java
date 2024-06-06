@@ -1,18 +1,12 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.core.infra.jms.protocol.inbound.messageprocessors;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Date;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
+import java.time.Instant;
 import org.opensmartgridplatform.core.application.services.EventNotificationMessageService;
 import org.opensmartgridplatform.core.infra.jms.protocol.inbound.AbstractProtocolRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -77,10 +71,7 @@ public class PushNotificationSmsMessageProcessor extends AbstractProtocolRequest
             requestMessage.getIpAddress(),
             pushNotificationSms.getIpAddress());
 
-        // Convert the IP address from String to InetAddress.
-        final InetAddress address = InetAddress.getByName(pushNotificationSms.getIpAddress());
-
-        device.updateRegistrationData(address, device.getDeviceType());
+        device.updateRegistrationData(pushNotificationSms.getIpAddress(), device.getDeviceType());
         device.updateConnectionDetailsToSuccess();
         this.deviceRepository.save(device);
 
@@ -90,7 +81,7 @@ public class PushNotificationSmsMessageProcessor extends AbstractProtocolRequest
             metadata.getDeviceIdentification());
       }
 
-    } catch (final UnknownHostException | FunctionalException e) {
+    } catch (final FunctionalException e) {
       final String errorMessage =
           String.format("%s occurred, reason: %s", e.getClass().getName(), e.getMessage());
       LOGGER.error(errorMessage, e);
@@ -122,7 +113,7 @@ public class PushNotificationSmsMessageProcessor extends AbstractProtocolRequest
        */
       this.eventNotificationMessageService.handleEvent(
           pushNotificationSms.getDeviceIdentification(),
-          new Date(),
+          Instant.now(),
           org.opensmartgridplatform.domain.core.valueobjects.EventType.SMS_NOTIFICATION,
           pushNotificationSms.getIpAddress(),
           0);

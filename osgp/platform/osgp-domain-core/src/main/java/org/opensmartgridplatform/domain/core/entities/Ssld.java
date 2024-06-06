@@ -1,30 +1,25 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.domain.core.entities;
 
-import java.net.InetAddress;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.PrimaryKeyJoinColumn;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
@@ -87,7 +82,7 @@ public class Ssld extends Device {
   public Ssld(
       final String deviceIdentification,
       final String deviceType,
-      final InetAddress networkAddress,
+      final String networkAddress,
       final boolean activated,
       final boolean hasSchedule) {
     this.deviceIdentification = deviceIdentification;
@@ -262,7 +257,7 @@ public class Ssld extends Device {
       final RelayStatus newStatus = unhandledStatusesByIndex.remove(r.getIndex());
       if (newStatus != null
           && (r.getLastSwitchingEventTime() == null
-              || newStatus.getLastSwitchingEventTime().after(r.getLastSwitchingEventTime()))) {
+              || newStatus.getLastSwitchingEventTime().isAfter(r.getLastSwitchingEventTime()))) {
         r.updateLastSwitchingEventState(
             newStatus.isLastSwitchingEventState(), newStatus.getLastSwitchingEventTime());
       }

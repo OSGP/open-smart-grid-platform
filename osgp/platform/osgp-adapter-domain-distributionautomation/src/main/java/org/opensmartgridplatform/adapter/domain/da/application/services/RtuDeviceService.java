@@ -1,15 +1,9 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.da.application.services;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
@@ -83,22 +77,9 @@ public class RtuDeviceService {
 
   private void addRegistrationData(
       final RtuDevice rtuDevice,
-      final org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDeviceEntity)
-      throws FunctionalException {
+      final org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDeviceEntity) {
     final String networkAddress = rtuDevice.getNetworkAddress();
-    final InetAddress inetAddress;
-    try {
-      inetAddress =
-          LOCAL_HOST.equals(networkAddress)
-              ? InetAddress.getLoopbackAddress()
-              : InetAddress.getByName(networkAddress);
-    } catch (final UnknownHostException e) {
-      throw new FunctionalException(
-          FunctionalExceptionType.INVALID_IP_ADDRESS,
-          ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION,
-          e);
-    }
-    rtuDeviceEntity.updateRegistrationData(inetAddress, RtuDevice.PSD_TYPE);
+    rtuDeviceEntity.updateRegistrationData(networkAddress, RtuDevice.PSD_TYPE);
   }
 
   private void addDeviceModel(

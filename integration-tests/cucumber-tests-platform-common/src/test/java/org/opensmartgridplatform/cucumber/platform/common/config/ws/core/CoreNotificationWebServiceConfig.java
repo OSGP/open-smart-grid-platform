@@ -1,17 +1,16 @@
-/*
- * Copyright 2022 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.common.config.ws.core;
 
+import com.sun.net.httpserver.HttpServer;
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.remoting.support.SimpleHttpServerFactoryBean;
 import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.config.annotation.WsConfigurerAdapter;
 import org.springframework.ws.server.EndpointInterceptor;
@@ -78,9 +76,10 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
   }
 
   @Bean("wsCoreNotificationHttpServer")
-  public SimpleHttpServerFactoryBean httpServer(
+  public HttpServer httpServer(
       final SaajSoapMessageFactory messageFactory,
-      final PayloadRootAnnotationMethodEndpointMapping mapping) {
+      final PayloadRootAnnotationMethodEndpointMapping mapping)
+      throws IOException {
 
     LOGGER.info(
         "Initializing core notifications HTTP server with context path: '{}' and port: '{}'",
@@ -97,9 +96,11 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
     httpHandler.setMessageReceiver(soapMessageDispatcher);
     httpHandler.setMessageFactory(messageFactory);
 
-    final SimpleHttpServerFactoryBean httpServer = new SimpleHttpServerFactoryBean();
-    httpServer.setContexts(Collections.singletonMap(this.notificationContextPath, httpHandler));
-    httpServer.setPort(this.notificationPort);
+    final HttpServer httpServer =
+        HttpServer.create(new InetSocketAddress(this.notificationPort), 1024);
+    httpServer.createContext(this.notificationContextPath, httpHandler);
+    httpServer.setExecutor(Executors.newCachedThreadPool());
+    httpServer.start();
 
     return httpServer;
   }

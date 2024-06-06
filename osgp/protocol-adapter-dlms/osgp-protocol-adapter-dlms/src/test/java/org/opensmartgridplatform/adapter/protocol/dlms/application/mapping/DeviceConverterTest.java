@@ -1,11 +1,7 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
 import org.assertj.core.api.Assertions;
@@ -47,6 +43,7 @@ class DeviceConverterTest {
     dlmsDevice.setCommunicationMethod(dto.getCommunicationMethod());
     dlmsDevice.setCommunicationProvider(dto.getCommunicationProvider());
     dlmsDevice.setIccId(dto.getIccId());
+    dlmsDevice.setLls1Active(dto.isLls1Active());
     dlmsDevice.setHls3Active(dto.isHls3Active());
     dlmsDevice.setHls4Active(dto.isHls4Active());
     dlmsDevice.setHls5Active(dto.isHls5Active());
@@ -57,7 +54,7 @@ class DeviceConverterTest {
     dlmsDevice.setPort(dto.getPort());
     dlmsDevice.setChallengeLength(dto.getChallengeLength());
     dlmsDevice.setIpAddressIsStatic(dto.isIpAddressIsStatic());
-    dlmsDevice.setWithListSupported(dto.isWithListSupported());
+    dlmsDevice.setWithListMax(dto.getWithListMax());
     dlmsDevice.setSelectiveAccessSupported(dto.isSelectiveAccessSupported());
     return dlmsDevice;
   }

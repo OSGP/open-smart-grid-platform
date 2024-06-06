@@ -1,20 +1,17 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -61,6 +58,8 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
 
   @Autowired private DeviceRequestMessageSender deviceRequestMessageSender;
 
+  @Autowired private ThrottlingConfig throttlingConfig;
+
   protected final MessageType messageType;
 
   /**
@@ -95,7 +94,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       } else {
         device = null;
       }
-      if (this.usesDeviceConnection()) {
+      if (this.usesDeviceConnection(messageObject)) {
         /*
          * Set up a consumer to be called back with a DlmsConnectionManager for which the connection
          * with the device has been created. Note that when usesDeviceConnection is true, in this
@@ -115,8 +114,17 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
        * Throttling permit for network access not granted, send the request back to the queue to be
        * picked up again a little later by the message listener for device requests.
        */
-      this.deviceRequestMessageSender.send(
-          messageObject, messageMetadata, this.throttlingClientConfig.permitRejectedDelay());
+      final Duration permitRejectDelay =
+          this.throttlingConfig.permitRejectedDelay(messageMetadata.getMessagePriority());
+      log.info(
+          "Throttling permit was denied for deviceIdentification {} for network segment ({}, {}) with priority {} for {}. retry message in {} ms",
+          messageMetadata.getDeviceIdentification(),
+          exception.getBaseTransceiverStationId(),
+          exception.getCellId(),
+          exception.getPriority(),
+          exception.getConfigurationName(),
+          permitRejectDelay.toMillis());
+      this.deviceRequestMessageSender.send(messageObject, messageMetadata, permitRejectDelay);
 
     } catch (final DeviceKeyProcessAlreadyRunningException exception) {
 
@@ -194,11 +202,11 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       final MessageMetadata metadata, final Exception exception, final Serializable requestObject) {
     // Return original request + exception
     if (!(exception instanceof SilentException)) {
-      final String errorMessage =
-          String.format(
-              "Unexpected exception during %s, correlationUID: %s",
-              this.messageType.name(), metadata.getCorrelationUid());
-      log.error(errorMessage, exception);
+      log.error(
+          "Unexpected exception during {}, correlationUID: {}",
+          this.messageType.name(),
+          metadata.getCorrelationUid(),
+          exception);
     }
     this.sendResponseMessage(
         metadata,
@@ -236,7 +244,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       final MessageMetadata messageMetadata)
       throws OsgpException {
     throw new UnsupportedOperationException(
-        "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return"
+        "handleMessage(Serializable) should be overridden by a subclass, or usesDeviceConnection should return"
             + " true.");
   }
 
@@ -246,7 +254,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
    *
    * @return Use device connection in handleMessage.
    */
-  protected boolean usesDeviceConnection() {
+  protected boolean usesDeviceConnection(final Serializable messageObject) {
     return true;
   }
 

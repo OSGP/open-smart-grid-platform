@@ -1,11 +1,7 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.core.application.tasks;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,8 +10,8 @@ import static org.mockito.ArgumentMatchers.any;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,7 +58,7 @@ public class DeviceMessageCleanupJobTest {
     final List<DeviceLogItem> deviceLogItems = this.createDeviceLogItems();
     Mockito.when(
             this.transactionalDeviceLogItemService.findDeviceLogItemsBeforeDate(
-                any(Date.class), any(Integer.class)))
+                any(Instant.class), any(Integer.class)))
         .thenReturn(deviceLogItems);
 
     // Act

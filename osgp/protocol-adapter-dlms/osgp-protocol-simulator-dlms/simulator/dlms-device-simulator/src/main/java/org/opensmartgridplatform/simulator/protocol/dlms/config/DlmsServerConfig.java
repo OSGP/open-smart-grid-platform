@@ -1,11 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.simulator.protocol.dlms.config;
 
 import java.io.IOException;
@@ -43,7 +39,6 @@ public class DlmsServerConfig implements ApplicationContextAware {
   private static final long DEVICE_ID = 9999L;
 
   private static final int DLMS_PUBLIC_CLIENT_ID = 16;
-  private static final int DLMS_DATA_COLLECTION_CLIENT = 32;
   private static final int DLMS_MANAGEMENT_CLIENT = 1;
 
   private ApplicationContext applicationContext;
@@ -110,10 +105,7 @@ public class DlmsServerConfig implements ApplicationContextAware {
       case NO_SECURITY:
         builder.setClientId(DLMS_PUBLIC_CLIENT_ID);
         break;
-      case LLS1:
-        builder.setClientId(DLMS_DATA_COLLECTION_CLIENT);
-        break;
-      case HLS5:
+      case LLS1, HLS5: // LLS1 needs same keys as HLS5
         builder
             .setClientId(DLMS_MANAGEMENT_CLIENT)
             .setAuthenticationKeyPath(

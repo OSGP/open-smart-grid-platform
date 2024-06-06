@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
@@ -16,13 +12,14 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
@@ -34,13 +31,14 @@ import org.springframework.stereotype.Component;
 public class ClearAlarmRegisterCommandExecutor
     extends AbstractCommandExecutor<ClearAlarmRegisterRequestDto, AccessResultCode> {
 
-  final DlmsObjectConfigService dlmsObjectConfigService;
+  final ObjectConfigServiceHelper objectConfigServiceHelper;
 
   private static final int ALARM_CODE = 0;
 
-  public ClearAlarmRegisterCommandExecutor(final DlmsObjectConfigService dlmsObjectConfigService) {
+  public ClearAlarmRegisterCommandExecutor(
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(ClearAlarmRegisterRequestDto.class);
-    this.dlmsObjectConfigService = dlmsObjectConfigService;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
@@ -72,7 +70,7 @@ public class ClearAlarmRegisterCommandExecutor
     // Clear alarm 1
     final Optional<AccessResultCode> optionalResultCodeAlarm1 =
         this.clearAlarmRegister(conn, device, DlmsObjectType.ALARM_REGISTER_1);
-    if (!optionalResultCodeAlarm1.isPresent()) {
+    if (optionalResultCodeAlarm1.isEmpty()) {
       throw new ProtocolAdapterException("Unable to find alarm register 1.");
     }
     final AccessResultCode resultCodeAlarmRegister1 = optionalResultCodeAlarm1.get();
@@ -83,7 +81,7 @@ public class ClearAlarmRegisterCommandExecutor
     // Clear alarm 2
     final Optional<AccessResultCode> optionalResultCodeAlarm2 =
         this.clearAlarmRegister(conn, device, DlmsObjectType.ALARM_REGISTER_2);
-    if (!optionalResultCodeAlarm2.isPresent()) {
+    if (optionalResultCodeAlarm2.isEmpty()) {
       return resultCodeAlarmRegister1;
     }
     final AccessResultCode resultCodeAlarmRegister2 = optionalResultCodeAlarm2.get();
@@ -100,10 +98,12 @@ public class ClearAlarmRegisterCommandExecutor
   private Optional<AccessResultCode> clearAlarmRegister(
       final DlmsConnectionManager conn, final DlmsDevice device, final DlmsObjectType objectType)
       throws ProtocolAdapterException {
+    log.debug("clearAlarmRegister {}", objectType);
     final Optional<AttributeAddress> optAlarmRegisterAttributeAddress =
-        this.dlmsObjectConfigService.findAttributeAddress(device, objectType, null);
+        this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
+            Protocol.forDevice(device), objectType);
 
-    if (!optAlarmRegisterAttributeAddress.isPresent()) {
+    if (optAlarmRegisterAttributeAddress.isEmpty()) {
       return Optional.empty();
     } else {
       final AccessResultCode resultCodeAlarmRegister =

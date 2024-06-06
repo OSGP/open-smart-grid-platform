@@ -1,13 +1,6 @@
-/*
- * Copyright 2022 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
 
 package org.opensmartgridplatform.dlms.objectconfig;
 
@@ -15,10 +8,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import lombok.Data;
+import lombok.Getter;
 import lombok.ToString;
 
-@Data
+@Getter
 @ToString
 public class DlmsProfile {
   private String profile;

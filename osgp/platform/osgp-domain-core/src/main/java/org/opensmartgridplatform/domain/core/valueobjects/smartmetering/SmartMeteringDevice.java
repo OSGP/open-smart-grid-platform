@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
@@ -39,6 +35,8 @@ public class SmartMeteringDevice implements Serializable {
 
   private String supplier;
 
+  private boolean lls1Active;
+
   private boolean hls3Active;
 
   private boolean hls4Active;
@@ -56,12 +54,15 @@ public class SmartMeteringDevice implements Serializable {
   private Short mbusDeviceTypeIdentification;
 
   private byte[] mbusDefaultKey;
+  private byte[] mbusUserKey;
+  private byte[] mbusFirmwareUpdateAuthenticationKey;
+  private byte[] mbusP0Key;
 
   private String timezone;
   private boolean polyphase;
   private Long port;
   private Integer challengeLength;
   private boolean ipAddressIsStatic;
-  private boolean withListSupported;
+  private Integer withListMax;
   private boolean selectiveAccessSupported;
 }

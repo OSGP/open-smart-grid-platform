@@ -1,15 +1,15 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.notification;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.cucumber.java.en.Then;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.beanutils.BeanUtils;
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.Notification;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -58,9 +58,27 @@ public class SmartMeteringNotificationSteps {
     this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, correlationUid, false);
   }
 
-  private void waitForNotification(
-      final int maxTimeOut, final String correlationUid, final boolean expectCorrelationUid)
-      throws Throwable {
+  @Then("^check notification$")
+  public void checkNotification(final Map<String, String> notificationData) throws Throwable {
+    final String correlationUid =
+        (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
+    if (correlationUid == null) {
+      Assertions.fail(
+          "No "
+              + PlatformKeys.KEY_CORRELATION_UID
+              + " stored in the scenario context. Unable to make assumptions as to whether a notification has been sent.");
+    }
+    final Notification notification =
+        this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, correlationUid, true);
+
+    assertThat(notification).isNotNull();
+    for (final String key : notificationData.keySet()) {
+      assertThat(BeanUtils.getProperty(notification, key)).isEqualTo(notificationData.get(key));
+    }
+  }
+
+  private Notification waitForNotification(
+      final int maxTimeOut, final String correlationUid, final boolean expectCorrelationUid) {
 
     LOGGER.info(
         "Waiting to make sure {} notification is received for correlation UID {} for at most {} milliseconds.",
@@ -74,7 +92,7 @@ public class SmartMeteringNotificationSteps {
     final boolean gotExpectedNotification = expectCorrelationUid && notification != null;
     final boolean didNotGetUnexpectedNotification = !expectCorrelationUid && notification == null;
     if (gotExpectedNotification || didNotGetUnexpectedNotification) {
-      return;
+      return notification;
     }
 
     if (expectCorrelationUid) {
@@ -87,5 +105,7 @@ public class SmartMeteringNotificationSteps {
     } else {
       Assertions.fail("Received notification for correlation UID: " + correlationUid);
     }
+
+    return notification;
   }
 }

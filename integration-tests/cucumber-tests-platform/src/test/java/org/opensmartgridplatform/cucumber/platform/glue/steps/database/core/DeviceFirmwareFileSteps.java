@@ -1,11 +1,7 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,11 +10,11 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -58,9 +54,10 @@ public class DeviceFirmwareFileSteps {
     final FirmwareFile firmwareFile =
         this.getFirmwareFile(getString(settings, PlatformKeys.FIRMWARE_FILE_FILENAME));
 
-    final Date installationDate =
-        getDateTime2(getString(settings, PlatformKeys.FIRMWARE_INSTALLATION_DATE), DateTime.now())
-            .toDate();
+    final Instant installationDate =
+        getDateTime2(
+                getString(settings, PlatformKeys.FIRMWARE_INSTALLATION_DATE), ZonedDateTime.now())
+            .toInstant();
     final String installedBy =
         getString(
             settings, PlatformKeys.FIRMWARE_INSTALLED_BY, PlatformDefaults.FIRMWARE_INSTALLED_BY);
@@ -71,7 +68,7 @@ public class DeviceFirmwareFileSteps {
   }
 
   private FirmwareFile getFirmwareFile(final String firmwareFileName) {
-    FirmwareFile firmwareFile;
+    final FirmwareFile firmwareFile;
     if (StringUtils.isEmpty(firmwareFileName)) {
       final List<FirmwareFile> firmwareFiles = this.firmwareFileRepository.findAll();
       firmwareFile = firmwareFiles.get(firmwareFiles.size() - 1);

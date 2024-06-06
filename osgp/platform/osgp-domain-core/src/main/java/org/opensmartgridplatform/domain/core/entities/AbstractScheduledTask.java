@@ -1,18 +1,14 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.domain.core.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.domain.core.valueobjects.ScheduledTaskStatusType;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
@@ -61,6 +57,9 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
   @Column(name = "retry")
   protected int retry;
 
+  @Column(name = "device_model_code", length = 1279)
+  protected String deviceModelCode;
+
   AbstractScheduledTask() {
     // Default empty constructor for Hibernate.
   }
@@ -77,6 +76,7 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
     this.deviceIdentification = messageMetadata.getDeviceIdentification();
     this.messageType = messageMetadata.getMessageType();
     this.messagePriority = messageMetadata.getMessagePriority();
+    this.deviceModelCode = messageMetadata.getDeviceModelCode();
     this.domain = domain;
     this.domainVersion = domainVersion;
     this.scheduledTime = (Timestamp) scheduledTime.clone();
@@ -107,6 +107,10 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
 
   public String getDeviceIdentification() {
     return this.deviceIdentification;
+  }
+
+  public String getDeviceModelCode() {
+    return this.deviceModelCode;
   }
 
   public String getErrorLog() {
@@ -150,6 +154,10 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
     this.retry++;
     this.scheduledTime = new Timestamp(retryTime.getTime());
     this.status = ScheduledTaskStatusType.RETRY;
+  }
+
+  public void setMessagePriority(final Integer messagePriority) {
+    this.messagePriority = messagePriority;
   }
 
   @Override

@@ -1,15 +1,13 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.tariffswitching.infra.jms;
 
 import java.io.Serializable;
-import org.joda.time.DateTime;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
@@ -20,7 +18,7 @@ public class TariffSwitchingRequestMessage extends RequestMessage {
   private static final long serialVersionUID = -5747625524754499878L;
 
   private final MessageType messageType;
-  private final DateTime scheduleTime;
+  private final ZonedDateTime scheduleTime;
   private final Integer messagePriority;
 
   private TariffSwitchingRequestMessage(
@@ -38,7 +36,9 @@ public class TariffSwitchingRequestMessage extends RequestMessage {
     if (messageMetadata.getScheduleTime() == null) {
       this.scheduleTime = null;
     } else {
-      this.scheduleTime = new DateTime(messageMetadata.getScheduleTime());
+      this.scheduleTime =
+          ZonedDateTime.ofInstant(
+              Instant.ofEpochMilli(messageMetadata.getScheduleTime()), ZoneId.systemDefault());
     }
   }
 
@@ -46,7 +46,7 @@ public class TariffSwitchingRequestMessage extends RequestMessage {
     return this.messageType;
   }
 
-  public DateTime getScheduleTime() {
+  public ZonedDateTime getScheduleTime() {
     return this.scheduleTime;
   }
 

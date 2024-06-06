@@ -1,11 +1,7 @@
-/*
- * Copyright 2014-2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.domain.core.valueobjects;
 
 import java.io.Serializable;
@@ -22,36 +18,43 @@ public class FirmwareModuleData implements Serializable {
    * {@link #moduleVersionComm}.
    */
   public static final String MODULE_DESCRIPTION_COMM = "communication_module_active_firmware";
+
   /**
    * Description of the FirmwareModule for which the module version in a FirmwareFile should equal
    * {@link #moduleVersionFunc} with devices other than smart meters.
    */
   public static final String MODULE_DESCRIPTION_FUNC = "functional";
+
   /**
    * Description of the FirmwareModule for which the module version in a FirmwareFile should equal
    * {@link #moduleVersionFunc} with smart meter devices.
    */
   public static final String MODULE_DESCRIPTION_FUNC_SMART_METERING = "active_firmware";
+
   /**
    * Description of the FirmwareModule for which the module version in a FirmwareFile should equal
    * {@link #moduleVersionMa}.
    */
   public static final String MODULE_DESCRIPTION_MA = "module_active_firmware";
+
   /**
    * Description of the FirmwareModule for which the module version in a FirmwareFile should equal
    * {@link #moduleVersionMbus}.
    */
   public static final String MODULE_DESCRIPTION_MBUS = "m_bus";
+
   /**
    * Description of the FirmwareModule for which the module version in a FirmwareFile should equal
    * {@link #moduleVersionSec}.
    */
   public static final String MODULE_DESCRIPTION_SEC = "security";
+
   /**
    * Description of the FirmwareModule for which the module version in a FirmwareFile should equal
    * {@link #moduleVersionMBusDriverActive}.
    */
   public static final String MODULE_DESCRIPTION_MBUS_DRIVER_ACTIVE = "m_bus_driver_active_firmware";
+
   /**
    * Description of the FirmwareModule for which the module version in a FirmwareFile should equal
    * {@link #moduleVersionSimple}.

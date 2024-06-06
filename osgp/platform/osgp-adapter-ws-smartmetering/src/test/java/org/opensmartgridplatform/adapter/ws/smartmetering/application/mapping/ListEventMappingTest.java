@@ -1,11 +1,7 @@
-/*
- * Copyright 2014-2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -288,6 +284,54 @@ class ListEventMappingTest {
               EventType.MODULE_COVER_CLOSED,
               null,
               EventLogCategory.FRAUD_DETECTION_LOG));
+
+  private static final List<Event> POWER_QUALITY_THD_EVENTS =
+      Arrays.asList(
+          newEvent(
+              DateTime.now(),
+              EventType.THD_OVER_LIMIT_L1,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.THD_OVER_LIMIT_L2,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.THD_OVER_LIMIT_L3,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.THD_NORMAL_L1,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.THD_NORMAL_L2,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.THD_NORMAL_L3,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.THD_LONG_OVER_LIMIT_L1,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.THD_LONG_OVER_LIMIT_L2,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.THD_LONG_OVER_LIMIT_L3,
+              0,
+              EventLogCategory.POWER_QUALITY_THD_EVENT_LOG));
 
   private static final List<Event> COMMUNICATION_SESSIONS_EVENTS =
       Arrays.asList(
@@ -782,7 +826,7 @@ class ListEventMappingTest {
               EventLogCategory.AUXILIARY_EVENT_LOG),
           newEvent(
               DateTime.now(),
-              EventType.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_1,
+              EventType.MBUS_STATUS_BIT_19_RESERVED_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
           newEvent(
@@ -952,7 +996,7 @@ class ListEventMappingTest {
               EventLogCategory.AUXILIARY_EVENT_LOG),
           newEvent(
               DateTime.now(),
-              EventType.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_2,
+              EventType.MBUS_STATUS_BIT_19_RESERVED_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
           newEvent(
@@ -1122,7 +1166,7 @@ class ListEventMappingTest {
               EventLogCategory.AUXILIARY_EVENT_LOG),
           newEvent(
               DateTime.now(),
-              EventType.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_3,
+              EventType.MBUS_STATUS_BIT_19_RESERVED_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
           newEvent(
@@ -1292,7 +1336,7 @@ class ListEventMappingTest {
               EventLogCategory.AUXILIARY_EVENT_LOG),
           newEvent(
               DateTime.now(),
-              EventType.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_4,
+              EventType.MBUS_STATUS_BIT_19_RESERVED_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
           newEvent(
@@ -1529,6 +1573,23 @@ class ListEventMappingTest {
         this.managementMapper.mapAsList(mappedFraudDetectionEvents, Event.class);
 
     this.checkEventsMappedFromWsSchema(mappedFraudDetectionEvents, fraudDetectionEvents);
+  }
+
+  @Test
+  void testMappingForListOfPowerQualityThdEvents() {
+
+    final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
+        mappedPowerQualityThdEvents =
+            this.managementMapper.mapAsList(
+                POWER_QUALITY_THD_EVENTS,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);
+
+    this.checkEventsMappedToWsSchema(POWER_QUALITY_THD_EVENTS, mappedPowerQualityThdEvents);
+
+    final List<Event> powerQualityThdEvents =
+        this.managementMapper.mapAsList(mappedPowerQualityThdEvents, Event.class);
+
+    this.checkEventsMappedFromWsSchema(mappedPowerQualityThdEvents, powerQualityThdEvents);
   }
 
   @Test

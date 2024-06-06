@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.ws.publiclighting.firmwaremanagement;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,6 +11,7 @@ import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHel
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 import javax.xml.datatype.DatatypeFactory;
@@ -73,7 +70,9 @@ public class UpdateFirmwareSteps {
     if (requestParameters.containsKey(PlatformCommonKeys.SCHEDULED_TIME)) {
       final GregorianCalendar c = new GregorianCalendar();
       c.setTime(
-          getDateTime(getString(requestParameters, PlatformCommonKeys.SCHEDULED_TIME)).toDate());
+          Date.from(
+              getDateTime(getString(requestParameters, PlatformCommonKeys.SCHEDULED_TIME))
+                  .toInstant()));
       final XMLGregorianCalendar scheduledTime =
           DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
       request.setScheduledTime(scheduledTime);

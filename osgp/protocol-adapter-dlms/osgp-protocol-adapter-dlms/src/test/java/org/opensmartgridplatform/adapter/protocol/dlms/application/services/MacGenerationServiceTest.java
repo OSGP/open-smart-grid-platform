@@ -1,11 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.IdentificationNumber;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -57,7 +54,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  void calculateMac1() throws IOException, ProtocolAdapterException {
+  void calculateMac1() throws ProtocolAdapterException {
     this.calculateMac(
         byteArray1,
         this.deviceIdentification1,
@@ -66,7 +63,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  void calculateMac2() throws IOException, ProtocolAdapterException {
+  void calculateMac2() throws ProtocolAdapterException {
 
     this.calculateMac(
         byteArray2,
@@ -80,7 +77,7 @@ public class MacGenerationServiceTest {
       final String deviceIdentification,
       final byte[] firmwareUpdateAuthenticationKey,
       final String expectedMac)
-      throws IOException, ProtocolAdapterException {
+      throws ProtocolAdapterException {
 
     when(this.secretManagementService.getKey(
             messageMetadata,
@@ -88,10 +85,8 @@ public class MacGenerationServiceTest {
             SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION))
         .thenReturn(firmwareUpdateAuthenticationKey);
 
-    final String mbusDeviceIdentificationNumber = deviceIdentification.substring(7, 15);
-
     final FirmwareFile firmwareFile =
-        this.createFirmwareFile(byteArray, mbusDeviceIdentificationNumber);
+        this.createFirmwareFile(byteArray, getIdentificationNumber(deviceIdentification));
 
     final byte[] calculatedMac =
         this.macGenerationService.calculateMac(messageMetadata, deviceIdentification, firmwareFile);
@@ -100,7 +95,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  void testNoKey() throws IOException, ProtocolAdapterException {
+  void testNoKey() throws ProtocolAdapterException {
     when(this.secretManagementService.getKey(
             messageMetadata,
             this.deviceIdentification1,
@@ -108,7 +103,7 @@ public class MacGenerationServiceTest {
         .thenReturn(null);
 
     final FirmwareFile firmwareFile =
-        this.createFirmwareFile(byteArray1, this.deviceIdentification1.substring(7, 15));
+        this.createFirmwareFile(byteArray1, getIdentificationNumber(this.deviceIdentification1));
 
     final Exception exception =
         assertThrows(
@@ -123,18 +118,20 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testIV1() throws IOException, ProtocolAdapterException {
-    this.testIV(byteArray1, this.expectedIv1, this.deviceIdentification1.substring(7, 15));
+  void testIV1() throws ProtocolAdapterException {
+    this.testIV(byteArray1, this.expectedIv1, getIdentificationNumber(this.deviceIdentification1));
   }
 
   @Test
-  public void testIV2() throws IOException, ProtocolAdapterException {
-    this.testIV(byteArray2, this.expectedIv1, this.deviceIdentification1.substring(7, 15));
+  void testIV2() throws ProtocolAdapterException {
+    this.testIV(byteArray2, this.expectedIv1, getIdentificationNumber(this.deviceIdentification1));
   }
 
   public void testIV(
-      final byte[] byteArray, final String expectedIv, final String mbusDeviceIdentificationNumber)
-      throws IOException, ProtocolAdapterException {
+      final byte[] byteArray,
+      final String expectedIv,
+      final IdentificationNumber mbusDeviceIdentificationNumber)
+      throws ProtocolAdapterException {
 
     final FirmwareFile firmwareFile =
         this.createFirmwareFile(byteArray, mbusDeviceIdentificationNumber);
@@ -145,18 +142,17 @@ public class MacGenerationServiceTest {
   }
 
   private FirmwareFile createFirmwareFile(
-      final byte[] byteArray, final String mbusDeviceIdentificationNumber)
+      final byte[] byteArray, final IdentificationNumber mbusDeviceIdentificationNumber)
       throws ProtocolAdapterException {
     final FirmwareFile firmwareFile = new FirmwareFile(byteArray.clone());
-    System.out.println(firmwareFile.getHeader());
+
     firmwareFile.setMbusDeviceIdentificationNumber(mbusDeviceIdentificationNumber);
     firmwareFile.setMbusVersion(80);
-    System.out.println(firmwareFile.getHeader());
     return firmwareFile;
   }
 
   @Test
-  public void testInvalidFirmwareImageMagicNumber() throws IOException, ProtocolAdapterException {
+  void testInvalidFirmwareImageMagicNumber() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[0] = (byte) 0;
@@ -168,7 +164,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testInvalidHeaderLength() throws IOException, ProtocolAdapterException {
+  void testInvalidHeaderLength() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[5] = (byte) 0;
@@ -180,7 +176,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testInvalidAddressLength() throws IOException, ProtocolAdapterException {
+  void testInvalidAddressLength() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[18] = (byte) 0;
@@ -192,7 +188,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testInvalidAddressType() throws IOException, ProtocolAdapterException {
+  void testInvalidAddressType() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[19] = (byte) 0;
@@ -204,7 +200,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testNonExistingSecurityType() throws IOException, ProtocolAdapterException {
+  void testNonExistingSecurityType() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[17] = (byte) 6;
@@ -216,7 +212,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testNotExpectedSecurityType() throws IOException, ProtocolAdapterException {
+  void testNotExpectedSecurityType() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[17] = (byte) 0;
@@ -228,7 +224,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testInvalidSecurityLength() throws IOException, ProtocolAdapterException {
+  void testInvalidSecurityLength() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[15] = (byte) 0;
@@ -240,7 +236,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testNotExpectedActivationType() throws IOException, ProtocolAdapterException {
+  void testNotExpectedActivationType() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[28] = (byte) 1;
@@ -252,7 +248,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testNonExistingActivationType() throws IOException, ProtocolAdapterException {
+  void testNonExistingActivationType() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[28] = (byte) 0;
@@ -264,7 +260,7 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testNonExistingDeviceType() throws IOException, ProtocolAdapterException {
+  void testNonExistingDeviceType() throws ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray1.clone();
     clonedByteArray[27] = (byte) 0;
@@ -283,7 +279,7 @@ public class MacGenerationServiceTest {
       throws ProtocolAdapterException {
 
     final FirmwareFile firmwareFile = new FirmwareFile(malformedFirmwareFile);
-    firmwareFile.setMbusDeviceIdentificationNumber(deviceIdentification.substring(7, 15));
+    firmwareFile.setMbusDeviceIdentificationNumber(getIdentificationNumber(deviceIdentification));
 
     final Exception exception =
         assertThrows(
@@ -293,5 +289,9 @@ public class MacGenerationServiceTest {
                   messageMetadata, deviceIdentification, firmwareFile);
             });
     assertThat(exception).hasMessageContaining(partOfExceptionMessage);
+  }
+
+  private static IdentificationNumber getIdentificationNumber(final String deviceIdentification) {
+    return IdentificationNumber.fromTextualRepresentation(deviceIdentification.substring(7, 15));
   }
 }

@@ -1,14 +1,11 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters;
 
 import java.math.BigDecimal;
+import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
@@ -16,8 +13,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpMete
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpUnit;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Calculate a osgp meter value:
@@ -28,9 +23,8 @@ import org.slf4j.LoggerFactory;
  * - apply the multiplier
  * </pre>
  */
+@Slf4j
 public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValueDto, OsgpMeterValue> {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(DlmsMeterValueConverter.class);
 
   @Override
   public OsgpMeterValue convert(
@@ -44,7 +38,7 @@ public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValueDto, 
         this.getMultiplierToOsgpUnit(
             source.getDlmsUnit(), this.toStandardUnit(source.getDlmsUnit()));
     final BigDecimal calculated = source.getValue().multiply(multiplier);
-    LOGGER.debug(String.format("calculated %s from %s", calculated, source));
+    log.debug("calculated {} from {}", calculated, source);
     return new OsgpMeterValue(calculated, this.toStandardUnit(source.getDlmsUnit()));
   }
 
@@ -59,7 +53,8 @@ public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValueDto, 
       final DlmsUnitTypeDto dlmsUnit, final OsgpUnit osgpUnit) {
 
     switch (dlmsUnit) {
-      case KWH:
+      case WH:
+        // Dlms Unit is WH, OsgpUnit is kWh, so multiply by 0.001
         return BigDecimal.valueOf(0.001d);
       case M3: // intentional fallthrough.
       case M3_CORR: // intentional fallthrough.
@@ -80,9 +75,11 @@ public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValueDto, 
    * @throws IllegalArgumentException when no osgp unit is found
    */
   private OsgpUnit toStandardUnit(final DlmsUnitTypeDto dlmsUnit) {
-    // this is needed because the xsd generates M_3 from the M3 tag!
     if ("M_3".equals(dlmsUnit.getUnit())) {
+      // this is needed because the xsd generates M_3 from the M3 tag!
       return OsgpUnit.M3;
+    } else if ("WH".equals(dlmsUnit.getUnit())) {
+      return OsgpUnit.KWH;
     } else {
       for (final OsgpUnit osgpUnit : OsgpUnit.values()) {
         if (osgpUnit.name().equals(dlmsUnit.getUnit())) {

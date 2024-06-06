@@ -1,18 +1,14 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 import java.time.Instant;
 import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 @Entity
@@ -32,7 +28,7 @@ public class DlmsDevice extends AbstractEntity {
 
   @Column private String iccId;
 
-  @Column private boolean lls1Active = true;
+  @Column private boolean lls1Active;
 
   @Column private boolean hls3Active;
 
@@ -42,9 +38,11 @@ public class DlmsDevice extends AbstractEntity {
 
   @Column private Integer challengeLength;
 
-  @Column private boolean withListSupported;
+  @Column private Integer withListMax;
 
   @Column private boolean selectiveAccessSupported;
+
+  @Column private boolean selectiveAccessPeriodicMeterReadsSupported = true;
 
   @Column private boolean ipAddressIsStatic;
 
@@ -92,6 +90,9 @@ public class DlmsDevice extends AbstractEntity {
   // After each session with the device it is incremented with the number of invocations in the
   // session.
   @Column private Long invocationCounter = 0L;
+
+  @Column(length = 64)
+  private String firmwareHash;
 
   public DlmsDevice() {
     // Default constructor
@@ -228,12 +229,12 @@ public class DlmsDevice extends AbstractEntity {
     this.challengeLength = challengeLength;
   }
 
-  public boolean isWithListSupported() {
-    return this.withListSupported;
+  public Integer getWithListMax() {
+    return this.withListMax;
   }
 
-  public void setWithListSupported(final boolean withListSupported) {
-    this.withListSupported = withListSupported;
+  public void setWithListMax(final Integer withListMax) {
+    this.withListMax = withListMax;
   }
 
   public boolean isSelectiveAccessSupported() {
@@ -242,6 +243,15 @@ public class DlmsDevice extends AbstractEntity {
 
   public void setSelectiveAccessSupported(final boolean selectiveAccessSupported) {
     this.selectiveAccessSupported = selectiveAccessSupported;
+  }
+
+  public boolean isSelectiveAccessPeriodicMeterReadsSupported() {
+    return this.selectiveAccessPeriodicMeterReadsSupported;
+  }
+
+  public void setSelectiveAccessPeriodicMeterReadsSupported(
+      final boolean selectiveAccessPeriodicMeterReadsSupported) {
+    this.selectiveAccessPeriodicMeterReadsSupported = selectiveAccessPeriodicMeterReadsSupported;
   }
 
   public void setDeviceIdentification(final String deviceIdentification) {
@@ -406,5 +416,13 @@ public class DlmsDevice extends AbstractEntity {
 
   public void setTimezone(final String timezone) {
     this.timezone = timezone;
+  }
+
+  public String getFirmwareHash() {
+    return this.firmwareHash;
+  }
+
+  public void setFirmwareHash(final String firmwareHash) {
+    this.firmwareHash = firmwareHash;
   }
 }

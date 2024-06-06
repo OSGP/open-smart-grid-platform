@@ -1,20 +1,15 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.domain.core.specifications;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.SetJoin;
 import java.util.List;
-import java.util.stream.Collectors;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.SetJoin;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.springframework.data.jpa.domain.Specification;
@@ -68,8 +63,7 @@ public class FirmwareFileSpecifications {
       final CriteriaBuilder cb,
       final List<DeviceModel> deviceModels) {
 
-    final List<String> modelCodes =
-        deviceModels.stream().map(DeviceModel::getModelCode).collect(Collectors.toList());
+    final List<String> modelCodes = deviceModels.stream().map(DeviceModel::getModelCode).toList();
 
     final SetJoin<FirmwareFile, DeviceModel> join =
         firmwareFileRoot.joinSet("deviceModels", JoinType.INNER);

@@ -1,11 +1,7 @@
-/*
- * Copyright 2022 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.jasper.infra.ws;
 
 import com.jasperwireless.api.ws.service.GetSMSDetailsRequest;
@@ -16,7 +12,7 @@ import com.jasperwireless.api.ws.service.SendSMSResponse;
 import java.util.List;
 import org.apache.ws.security.WSConstants;
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessSmsClient;
-import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
+import org.opensmartgridplatform.jasper.config.JasperWirelessAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;

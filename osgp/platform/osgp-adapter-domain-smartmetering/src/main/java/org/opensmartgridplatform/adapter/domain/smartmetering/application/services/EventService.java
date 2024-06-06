@@ -1,14 +1,11 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -63,26 +60,23 @@ public class EventService {
 
     final Integer eventCode = eventDto.getEventCode();
 
-    final List<EventTypeDtoLookup> possibleEventTypes = this.eventTypsByCode.get(eventCode);
+    List<EventTypeDtoLookup> possibleEventTypes = this.eventTypsByCode.get(eventCode);
     if (possibleEventTypes == null) {
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.DOMAIN_SMART_METERING,
-          new AssertionError("Event Type should be defined for eventCode: " + eventCode));
+      possibleEventTypes = Collections.singletonList(EventTypeDtoLookup.UNKNOWN_EVENT_HEADEND);
     }
     final List<EventTypeDtoLookup> eventTypes =
         possibleEventTypes.stream()
             .filter(
                 lookup ->
                     lookup.getProtocol() == null || protocolName.startsWith(lookup.getProtocol()))
-            .collect(Collectors.toList());
+            .toList();
     if (eventTypes.size() == 1) {
       return eventTypes.get(0).getEventTypeDto();
     } else if (eventTypes.size() > 1) {
 
       /* Specific EventTypes overrule the Genric ones */
       final List<EventTypeDtoLookup> specificEventTypes =
-          eventTypes.stream().filter(lookup -> !lookup.isGeneric()).collect(Collectors.toList());
+          eventTypes.stream().filter(lookup -> !lookup.isGeneric()).toList();
       if (specificEventTypes.size() == 1) {
         return specificEventTypes.get(0).getEventTypeDto();
       }
@@ -136,6 +130,15 @@ public class EventService {
     CONFIGURATION_CHANGE(EventTypeDto.CONFIGURATION_CHANGE, 47, null),
     MODULE_COVER_OPENED(EventTypeDto.MODULE_COVER_OPENED, 48, null),
     MODULE_COVER_CLOSED(EventTypeDto.MODULE_COVER_CLOSED, 49, null),
+    THD_OVER_LIMIT_L1(EventTypeDto.THD_OVER_LIMIT_L1, 51, null),
+    THD_OVER_LIMIT_L2(EventTypeDto.THD_OVER_LIMIT_L2, 52, null),
+    THD_OVER_LIMIT_L3(EventTypeDto.THD_OVER_LIMIT_L3, 53, null),
+    THD_NORMAL_L1(EventTypeDto.THD_NORMAL_L1, 54, null),
+    THD_NORMAL_L2(EventTypeDto.THD_NORMAL_L2, 55, null),
+    THD_NORMAL_L3(EventTypeDto.THD_NORMAL_L3, 56, null),
+    THD_LONG_OVER_LIMIT_L1(EventTypeDto.THD_LONG_OVER_LIMIT_L1, 57, null),
+    THD_LONG_OVER_LIMIT_L2(EventTypeDto.THD_LONG_OVER_LIMIT_L2, 58, null),
+    THD_LONG_OVER_LIMIT_L3(EventTypeDto.THD_LONG_OVER_LIMIT_L3, 59, null),
     METROLOGICAL_MAINTENANCE(EventTypeDto.METROLOGICAL_MAINTENANCE, 71, null),
     TECHNICAL_MAINTENANCE(EventTypeDto.TECHNICAL_MAINTENANCE, 72, null),
     RETRIEVE_METER_READINGS_E(EventTypeDto.RETRIEVE_METER_READINGS_E, 73, null),
@@ -344,8 +347,8 @@ public class EventService {
         EventTypeDto.MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_1, 0x8091, null),
     MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_1(
         EventTypeDto.MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_1, 0x8092, null),
-    MBUS_STATUS_BIT_18_RESERVED_CHANNEL_1(
-        EventTypeDto.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_1, 0x8093, null),
+    MBUS_STATUS_BIT_19_RESERVED_CHANNEL_1(
+        EventTypeDto.MBUS_STATUS_BIT_19_RESERVED_CHANNEL_1, 0x8093, null),
     MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_1(
         EventTypeDto.MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_1, 0x8094, null),
     MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_1(
@@ -413,8 +416,8 @@ public class EventService {
         EventTypeDto.MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_2, 0x8191, null),
     MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_2(
         EventTypeDto.MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_2, 0x8192, null),
-    MBUS_STATUS_BIT_18_RESERVED_CHANNEL_2(
-        EventTypeDto.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_2, 0x8193, null),
+    MBUS_STATUS_BIT_19_RESERVED_CHANNEL_2(
+        EventTypeDto.MBUS_STATUS_BIT_19_RESERVED_CHANNEL_2, 0x8193, null),
     MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_2(
         EventTypeDto.MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_2, 0x8194, null),
     MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_2(
@@ -482,8 +485,8 @@ public class EventService {
         EventTypeDto.MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_3, 0x8291, null),
     MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_3(
         EventTypeDto.MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_3, 0x8292, null),
-    MBUS_STATUS_BIT_18_RESERVED_CHANNEL_3(
-        EventTypeDto.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_3, 0x8293, null),
+    MBUS_STATUS_BIT_19_RESERVED_CHANNEL_3(
+        EventTypeDto.MBUS_STATUS_BIT_19_RESERVED_CHANNEL_3, 0x8293, null),
     MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_3(
         EventTypeDto.MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_3, 0x8294, null),
     MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_3(
@@ -551,8 +554,8 @@ public class EventService {
         EventTypeDto.MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_4, 0x8391, null),
     MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_4(
         EventTypeDto.MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_4, 0x8392, null),
-    MBUS_STATUS_BIT_18_RESERVED_CHANNEL_4(
-        EventTypeDto.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_4, 0x8393, null),
+    MBUS_STATUS_BIT_19_RESERVED_CHANNEL_4(
+        EventTypeDto.MBUS_STATUS_BIT_19_RESERVED_CHANNEL_4, 0x8393, null),
     MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_4(
         EventTypeDto.MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_4, 0x8394, null),
     MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_4(
@@ -580,7 +583,8 @@ public class EventService {
     KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_4(
         EventTypeDto.KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_4, 0x83A0, null),
     KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_4(
-        EventTypeDto.KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_4, 0x83A1, null);
+        EventTypeDto.KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_4, 0x83A1, null),
+    UNKNOWN_EVENT_HEADEND(EventTypeDto.UNKNOWN_EVENT_HEADEND, 999, null);
 
     private final EventTypeDto eventTypeDto;
     private final int eventCode;

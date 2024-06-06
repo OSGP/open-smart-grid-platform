@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,14 +17,12 @@ import io.cucumber.java.en.Then;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -151,12 +145,13 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
             InetAddress.getByName(
                 getString(
                     settings,
-                    PlatformKeys.IP_ADDRESS,
+                    PlatformKeys.NETWORK_ADDRESS,
                     this.configuration.getDeviceNetworkAddress()));
       } catch (final UnknownHostException e) {
         inetAddress = InetAddress.getLoopbackAddress();
       }
-      lmd.updateRegistrationData(inetAddress, getString(settings, PlatformKeys.KEY_DEVICE_TYPE));
+      lmd.updateRegistrationData(
+          inetAddress.getHostAddress(), getString(settings, PlatformKeys.KEY_DEVICE_TYPE));
     }
     lmd.updateMetaData(
         getString(settings, PlatformKeys.ALIAS, PlatformDefaults.DEFAULT_ALIAS),
@@ -259,20 +254,20 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
 
     final String deviceType = "LMD";
     final InetAddress networkAddress = InetAddress.getLoopbackAddress();
-    final Date technicalInstallationDate = DateTime.now().withZone(DateTimeZone.UTC).toDate();
+    final Instant technicalInstallationDate = ZonedDateTime.now(ZoneId.of("UTC")).toInstant();
     final ProtocolInfo protocolInfo =
         this.protocolInfoRepository.findByProtocolAndProtocolVersion("IEC61850", "1.0");
 
     final LightMeasurementDevice lightMeasurementDevice =
         new LightMeasurementDevice(deviceIdentification);
     lightMeasurementDevice.setTechnicalInstallationDate(technicalInstallationDate);
-    lightMeasurementDevice.updateRegistrationData(networkAddress, deviceType);
+    lightMeasurementDevice.updateRegistrationData(networkAddress.getHostAddress(), deviceType);
     lightMeasurementDevice.updateProtocol(protocolInfo);
     lightMeasurementDevice.updateInMaintenance(false);
     lightMeasurementDevice.setDescription(deviceIdentification);
     lightMeasurementDevice.setCode(code);
     lightMeasurementDevice.setColor(color);
-    lightMeasurementDevice.setLastCommunicationTime(technicalInstallationDate.toInstant());
+    lightMeasurementDevice.setLastCommunicationTime(technicalInstallationDate);
     lightMeasurementDevice.setDigitalInput(digitalInput);
 
     // Both creates the device and adds the device authorization as owner for the identified

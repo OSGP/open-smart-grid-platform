@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
@@ -20,13 +16,14 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificationDto;
@@ -46,16 +43,17 @@ public class SetAlarmNotificationsCommandExecutor
   private static final Logger LOGGER =
       LoggerFactory.getLogger(SetAlarmNotificationsCommandExecutor.class);
   private static final int NUMBER_OF_BITS_IN_ALARM_FILTER = 32;
+  private static final int DEFAULT_ATTRIBUTE_ID = 2;
 
   private final AlarmHelperService alarmHelperService = new AlarmHelperService();
-  private final DlmsObjectConfigService dlmsObjectConfigService;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
   @Autowired
   public SetAlarmNotificationsCommandExecutor(
-      final DlmsObjectConfigService dlmsObjectConfigService) {
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(SetAlarmNotificationsRequestDto.class);
 
-    this.dlmsObjectConfigService = dlmsObjectConfigService;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
@@ -86,9 +84,11 @@ public class SetAlarmNotificationsCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
+    final Protocol protocol = Protocol.forDevice(device);
+
     final AttributeAddress alarmFilter1AttributeAddress =
-        this.dlmsObjectConfigService.getAttributeAddress(
-            device, DlmsObjectType.ALARM_FILTER_1, null);
+        this.objectConfigServiceHelper.findAttributeAddress(
+            device, protocol, DlmsObjectType.ALARM_FILTER_1, null, DEFAULT_ATTRIBUTE_ID);
 
     final AccessResultCode resultCodeAlarmFilter1 =
         this.setAlarmNotifications(
@@ -98,8 +98,8 @@ public class SetAlarmNotificationsCommandExecutor
             DlmsObjectType.ALARM_REGISTER_1);
 
     final Optional<AttributeAddress> alarmFilter2AttributeAddress =
-        this.dlmsObjectConfigService.findAttributeAddress(
-            device, DlmsObjectType.ALARM_FILTER_2, null);
+        this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
+            protocol, DlmsObjectType.ALARM_FILTER_2);
 
     if (alarmFilter2AttributeAddress.isPresent()) {
       final AccessResultCode accessResultCode =
@@ -114,8 +114,8 @@ public class SetAlarmNotificationsCommandExecutor
     }
 
     final Optional<AttributeAddress> alarmFilter3AttributeAddress =
-        this.dlmsObjectConfigService.findAttributeAddress(
-            device, DlmsObjectType.ALARM_FILTER_3, null);
+        this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
+            protocol, DlmsObjectType.ALARM_FILTER_3);
 
     if (alarmFilter3AttributeAddress.isPresent()) {
       return this.setAlarmNotifications(

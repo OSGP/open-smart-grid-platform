@@ -1,11 +1,7 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.logging;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,7 +10,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -79,7 +74,7 @@ public class DeviceLogItemSteps {
       final long deviceLogItemId, final ZonedDateTime modificationTime) {
     if (modificationTime != null) {
       this.deviceLogItemRepository.setModificationTime(
-          deviceLogItemId, Date.from(modificationTime.toInstant()));
+          deviceLogItemId, modificationTime.toInstant());
     }
   }
 

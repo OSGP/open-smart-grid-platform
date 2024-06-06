@@ -1,17 +1,15 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.services;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LightMeasurementService;
@@ -346,7 +344,7 @@ public class LightSensorDeviceResponseService extends AbstractDeviceResponseServ
           device.getDeviceIdentification());
     }
 
-    final DateTime dateTime = this.findTimeValue(measurementGroup).orElse(null);
+    final ZonedDateTime dateTime = this.findTimeValue(measurementGroup).orElse(null);
     if (dateTime == null) {
       LOGGER.warn(
           "Unable to determine the time for event notification for device {}",
@@ -371,12 +369,13 @@ public class LightSensorDeviceResponseService extends AbstractDeviceResponseServ
         .findFirst();
   }
 
-  private Optional<DateTime> findTimeValue(final MeasurementGroupDto measurementGroup) {
+  private Optional<ZonedDateTime> findTimeValue(final MeasurementGroupDto measurementGroup) {
     return measurementGroup.getMeasurements().stream()
         .flatMap(measurement -> measurement.getMeasurementElements().stream())
         .filter(element -> element instanceof TimestampMeasurementElementDto)
         .map(element -> ((TimestampMeasurementElementDto) element).getValue())
-        .map(DateTime::new)
+        .map(
+            millis -> ZonedDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault()))
         .findFirst();
   }
 }

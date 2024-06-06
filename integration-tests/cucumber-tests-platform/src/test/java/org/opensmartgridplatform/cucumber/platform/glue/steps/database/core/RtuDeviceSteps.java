@@ -1,19 +1,15 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_LAST_COMMUNICATION_TIME;
 
 import io.cucumber.java.en.Given;
+import java.time.ZonedDateTime;
 import java.util.Map;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -44,7 +40,7 @@ public class RtuDeviceSteps extends BaseDeviceSteps {
         this.domainInfoRepository.findByDomainAndDomainVersion(
             getString(settings, PlatformKeys.KEY_DOMAIN, PlatformDefaults.DOMAIN),
             getString(settings, PlatformKeys.KEY_DOMAIN_VERSION, PlatformDefaults.DOMAIN_VERSION)));
-    rtuDevice.messageReceived(this.getLastCommunicationTime(settings).toDate().toInstant());
+    rtuDevice.messageReceived(this.getLastCommunicationTime(settings).toInstant());
     return this.rtuDeviceRepository.save(rtuDevice);
   }
 
@@ -56,10 +52,10 @@ public class RtuDeviceSteps extends BaseDeviceSteps {
         settings);
   }
 
-  private DateTime getLastCommunicationTime(final Map<String, String> settings) {
+  private ZonedDateTime getLastCommunicationTime(final Map<String, String> settings) {
     if (settings.containsKey(KEY_LAST_COMMUNICATION_TIME)) {
       return DateTimeHelper.getDateTime(settings.get(KEY_LAST_COMMUNICATION_TIME));
     }
-    return DateTime.now();
+    return ZonedDateTime.now();
   }
 }

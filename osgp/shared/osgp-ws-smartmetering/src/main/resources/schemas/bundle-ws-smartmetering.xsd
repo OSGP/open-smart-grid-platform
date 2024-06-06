@@ -1,4 +1,3 @@
-<!-- Copyright 2015 Smart Society Services B.V. -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
   xmlns:smman="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
@@ -98,6 +97,14 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="GetThdFingerprintRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smmon:GetThdFingerprintRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:element name="SetAdministrativeStatusRequest">
     <xsd:complexType>
       <xsd:complexContent>
@@ -176,6 +183,22 @@
       <xsd:complexContent>
         <xsd:extension
           base="smconf:SetPushSetupSmsRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetPushSetupUdpRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:SetPushSetupUdpRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetThdConfigurationRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:SetThdConfigurationRequestData" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -373,58 +396,45 @@
         <xsd:element ref="tns:ReadAlarmRegisterRequest" />
         <xsd:element ref="tns:GetActualMeterReadsRequest" />
         <xsd:element ref="tns:GetActualMeterReadsGasRequest" />
-        <xsd:element
-          ref="tns:GetAdministrativeStatusRequest" />
+        <xsd:element ref="tns:GetAdministrativeStatusRequest" />
         <xsd:element ref="tns:GetPeriodicMeterReadsRequest" />
-        <xsd:element
-          ref="tns:GetPeriodicMeterReadsGasRequest" />
-        <xsd:element
-          ref="tns:SetAdministrativeStatusRequest" />
+        <xsd:element ref="tns:GetPeriodicMeterReadsGasRequest" />
+        <xsd:element ref="tns:GetThdFingerprintRequest" />
+        <xsd:element ref="tns:SetAdministrativeStatusRequest" />
         <xsd:element ref="tns:SetActivityCalendarRequest" />
-        <xsd:element
-          ref="tns:SetKeyOnGMeterRequest" />
-        <xsd:element
-          ref="tns:GetMbusEncryptionKeyStatusRequest" />
+        <xsd:element ref="tns:SetKeyOnGMeterRequest" />
+        <xsd:element ref="tns:GetMbusEncryptionKeyStatusRequest" />
         <xsd:element ref="tns:SetAlarmNotificationsRequest" />
         <xsd:element ref="tns:SetConfigurationObjectRequest" />
         <xsd:element ref="tns:SetPushSetupAlarmRequest" />
         <xsd:element ref="tns:SetPushSetupLastGaspRequest" />
         <xsd:element ref="tns:SetPushSetupSmsRequest" />
+        <xsd:element ref="tns:SetPushSetupUdpRequest" />
+        <xsd:element ref="tns:SetThdConfigurationRequest" />
         <xsd:element ref="tns:SynchronizeTimeRequest" />
         <xsd:element ref="tns:GetFirmwareVersionRequest" />
         <xsd:element ref="tns:GetFirmwareVersionGasRequest"/>
         <xsd:element ref="tns:UpdateFirmwareRequest" />
         <xsd:element ref="tns:GetAllAttributeValuesRequest" />
-        <xsd:element
-          ref="tns:GetSpecificAttributeValueRequest" />
+        <xsd:element ref="tns:GetSpecificAttributeValueRequest" />
         <xsd:element ref="tns:SetKeysRequest" />
-        <xsd:element
-          ref="tns:GetAssociationLnObjectsRequest" />
+        <xsd:element ref="tns:GetAssociationLnObjectsRequest" />
         <xsd:element ref="tns:SetClockConfigurationRequest" />
         <xsd:element ref="tns:GetConfigurationObjectRequest" />
         <xsd:element ref="tns:GetPowerQualityProfileRequest" />
         <xsd:element ref="tns:GetActualPowerQualityRequest" />
         <xsd:element ref="tns:GenerateAndReplaceKeysRequest" />
-        <xsd:element
-          ref="tns:ConfigureDefinableLoadProfileRequest" />
-        <xsd:element
-          ref="tns:SetMbusUserKeyByChannelRequest" />
-        <xsd:element
-          ref="tns:CoupleMbusDeviceByChannelRequest" />
-        <xsd:element
-          ref="tns:DecoupleMbusDeviceByChannelRequest" />
+        <xsd:element ref="tns:ConfigureDefinableLoadProfileRequest" />
+        <xsd:element ref="tns:SetMbusUserKeyByChannelRequest" />
+        <xsd:element ref="tns:CoupleMbusDeviceByChannelRequest" />
+        <xsd:element ref="tns:DecoupleMbusDeviceByChannelRequest" />
         <xsd:element ref="tns:ClearAlarmRegisterRequest" />
-        <xsd:element
-          ref="tns:GetMbusEncryptionKeyStatusByChannelRequest" />
-        <xsd:element
-          ref="tns:SetDeviceLifecycleStatusByChannelRequest" />
-        <xsd:element
-          ref="tns:ClearMBusStatusOnAllChannelsRequest" />
+        <xsd:element ref="tns:GetMbusEncryptionKeyStatusByChannelRequest" />
+        <xsd:element ref="tns:SetDeviceLifecycleStatusByChannelRequest" />
+        <xsd:element ref="tns:ClearMBusStatusOnAllChannelsRequest" />
         <xsd:element ref="tns:ScanMbusChannelsRequest" />
-        <xsd:element
-          ref="tns:SetRandomisationSettingsRequest" />
-        <xsd:element
-          ref="tns:GetGsmDiagnosticRequest" />
+        <xsd:element ref="tns:SetRandomisationSettingsRequest" />
+        <xsd:element ref="tns:GetGsmDiagnosticRequest" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
@@ -521,6 +531,14 @@
       <xsd:complexContent>
         <xsd:extension
           base="smmon:PeriodicMeterReadsGasResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetThdFingerprintResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smmon:GetThdFingerprintResponseData" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -676,28 +694,21 @@
         <xsd:element ref="tns:AdministrativeStatusResponse" />
         <xsd:element ref="tns:PeriodicMeterReadsResponse" />
         <xsd:element ref="tns:PeriodicMeterReadsGasResponse" />
-        <xsd:element
-          ref="tns:GetMbusEncryptionKeyStatusResponse" />
+        <xsd:element ref="tns:GetThdFingerprintResponse" />
+        <xsd:element ref="tns:GetMbusEncryptionKeyStatusResponse" />
         <xsd:element ref="tns:GetAllAttributeValuesResponse" />
-        <xsd:element
-          ref="tns:GetSpecificAttributeValueResponse" />
+        <xsd:element ref="tns:GetSpecificAttributeValueResponse" />
         <xsd:element ref="tns:GetFirmwareVersionResponse" />
         <xsd:element ref="tns:GetFirmwareVersionGasResponse"/>
         <xsd:element ref="tns:UpdateFirmwareResponse" />
         <xsd:element ref="tns:AssociationLnObjectsResponse" />
-        <xsd:element
-          ref="tns:GetConfigurationObjectResponse" />
-        <xsd:element
-          ref="tns:GetPowerQualityProfileResponse" />
+        <xsd:element ref="tns:GetConfigurationObjectResponse" />
+        <xsd:element ref="tns:GetPowerQualityProfileResponse" />
         <xsd:element ref="tns:ActualPowerQualityResponse" />
-        <xsd:element
-          ref="tns:CoupleMbusDeviceByChannelResponse" />
-        <xsd:element
-          ref="tns:DecoupleMbusDeviceByChannelResponse" />
-        <xsd:element
-          ref="tns:GetMbusEncryptionKeyStatusByChannelResponse" />
-        <xsd:element
-          ref="tns:SetDeviceLifecycleStatusByChannelResponse" />
+        <xsd:element ref="tns:CoupleMbusDeviceByChannelResponse" />
+        <xsd:element ref="tns:DecoupleMbusDeviceByChannelResponse" />
+        <xsd:element ref="tns:GetMbusEncryptionKeyStatusByChannelResponse" />
+        <xsd:element ref="tns:SetDeviceLifecycleStatusByChannelResponse" />
         <xsd:element ref="tns:ScanMbusChannelsResponse" />
         <xsd:element ref="tns:GetOutagesResponse" />
         <xsd:element ref="tns:GetGsmDiagnosticResponse" />

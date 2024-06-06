@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 version: 2
 updates:
 - package-ecosystem: maven
@@ -5,4 +9,4 @@ updates:
   schedule:
     interval: daily
     time: "04:00"
-  open-pull-requests-limit: 5
+  open-pull-requests-limit: 10

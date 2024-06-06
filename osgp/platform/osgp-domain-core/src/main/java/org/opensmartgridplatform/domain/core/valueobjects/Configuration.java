@@ -1,17 +1,13 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.domain.core.valueobjects;
 
+import jakarta.validation.Valid;
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.List;
-import javax.validation.Valid;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.domain.core.validation.LightTypeAndConfiguration;
 import org.opensmartgridplatform.domain.core.validation.TlsConfiguration;
 
@@ -30,51 +26,51 @@ public class Configuration implements Serializable {
 
   private final LinkType preferredLinkType;
 
-  private Integer timeSyncFrequency;
+  private final Integer timeSyncFrequency;
 
-  private DeviceFixedIp deviceFixedIp;
+  private final DeviceFixedIp deviceFixedIp;
 
-  private Boolean dhcpEnabled;
+  private final Boolean dhcpEnabled;
 
-  private Boolean tlsEnabled;
+  private final Boolean tlsEnabled;
 
-  private Integer tlsPortNumber;
+  private final Integer tlsPortNumber;
 
-  private String commonNameString;
+  private final String commonNameString;
 
-  private Integer communicationTimeout;
+  private final Integer communicationTimeout;
 
-  private Integer communicationNumberOfRetries;
+  private final Integer communicationNumberOfRetries;
 
-  private Integer communicationPauseTimeBetweenConnectionTrials;
+  private final Integer communicationPauseTimeBetweenConnectionTrials;
 
-  private String osgpIpAddress;
+  private final String osgpIpAddress;
 
-  private Integer osgpPortNumber;
+  private final Integer osgpPortNumber;
 
-  private String ntpHost;
+  private final String ntpHost;
 
-  private Boolean ntpEnabled;
+  private final Boolean ntpEnabled;
 
-  private Integer ntpSyncInterval;
+  private final Integer ntpSyncInterval;
 
-  private Boolean testButtonEnabled;
+  private final Boolean testButtonEnabled;
 
-  private Boolean automaticSummerTimingEnabled;
+  private final Boolean automaticSummerTimingEnabled;
 
-  private Integer astroGateSunRiseOffset;
+  private final Integer astroGateSunRiseOffset;
 
-  private Integer astroGateSunSetOffset;
+  private final Integer astroGateSunSetOffset;
 
-  private List<Integer> switchingDelays;
+  private final List<Integer> switchingDelays;
 
-  private List<RelayMatrix> relayLinking;
+  private final List<RelayMatrix> relayLinking;
 
-  private Boolean relayRefreshing;
+  private final Boolean relayRefreshing;
 
-  private DateTime summerTimeDetails;
+  private final ZonedDateTime summerTimeDetails;
 
-  private DateTime winterTimeDetails;
+  private final ZonedDateTime winterTimeDetails;
 
   private Configuration(final Configuration.Builder builder) {
     this.lightType = builder.lightType;
@@ -207,11 +203,11 @@ public class Configuration implements Serializable {
     return this.relayLinking;
   }
 
-  public DateTime getSummerTimeDetails() {
+  public ZonedDateTime getSummerTimeDetails() {
     return this.summerTimeDetails;
   }
 
-  public DateTime getWinterTimeDetails() {
+  public ZonedDateTime getWinterTimeDetails() {
     return this.winterTimeDetails;
   }
 
@@ -241,8 +237,8 @@ public class Configuration implements Serializable {
     private List<Integer> switchingDelays;
     private List<RelayMatrix> relayLinking;
     private Boolean relayRefreshing;
-    private DateTime summerTimeDetails;
-    private DateTime winterTimeDetails;
+    private ZonedDateTime summerTimeDetails;
+    private ZonedDateTime winterTimeDetails;
 
     public Builder withLightType(final LightType lightType) {
       this.lightType = lightType;
@@ -371,12 +367,12 @@ public class Configuration implements Serializable {
       return this;
     }
 
-    public Builder withSummerTimeDetails(final DateTime summerTimeDetails) {
+    public Builder withSummerTimeDetails(final ZonedDateTime summerTimeDetails) {
       this.summerTimeDetails = summerTimeDetails;
       return this;
     }
 
-    public Builder withWinterTimeDetails(final DateTime winterTimeDetails) {
+    public Builder withWinterTimeDetails(final ZonedDateTime winterTimeDetails) {
       this.winterTimeDetails = winterTimeDetails;
       return this;
     }

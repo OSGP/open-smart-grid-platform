@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.oslp;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,10 +11,10 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.spec.InvalidKeySpecException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import org.apache.commons.lang3.ArrayUtils;
-import org.joda.time.Instant;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.opensmartgridplatform.oslp.Oslp.RegisterDeviceResponse;
@@ -50,7 +46,8 @@ public class OslpEnvelopeEcDsaTest {
   private static final String SIGNATURE = "SHA256withECDSA";
   private static final String PROVIDER = "SunEC";
 
-  private static final DateTimeFormatter FORMAT = DateTimeFormat.forPattern("yyyyMMddHHmmss");
+  private static final DateTimeFormatter FORMAT =
+      DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneId.of("UTC"));
 
   /**
    * Valid must pass when decryption succeeds using correct keys
@@ -62,8 +59,11 @@ public class OslpEnvelopeEcDsaTest {
    */
   @Test
   public void buildOslpMessageSuccess()
-      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
-          NoSuchProviderException, Exception {
+      throws IOException,
+          NoSuchAlgorithmException,
+          InvalidKeySpecException,
+          NoSuchProviderException,
+          Exception {
     final OslpEnvelope request = this.buildMessage();
 
     // Validate security key is set in request
@@ -99,8 +99,11 @@ public class OslpEnvelopeEcDsaTest {
    */
   @Test
   public void buildOslpMessageDecryptFailure()
-      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
-          NoSuchProviderException, Exception {
+      throws IOException,
+          NoSuchAlgorithmException,
+          InvalidKeySpecException,
+          NoSuchProviderException,
+          Exception {
     final OslpEnvelope request = this.buildMessage();
 
     // Verify the message using wrong public certificate
@@ -132,7 +135,9 @@ public class OslpEnvelopeEcDsaTest {
    */
   @Test
   public void buildOslpMessageSignatureFailure()
-      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
+      throws IOException,
+          NoSuchAlgorithmException,
+          InvalidKeySpecException,
           NoSuchProviderException {
     final OslpEnvelope request = this.buildMessage();
 
@@ -171,7 +176,9 @@ public class OslpEnvelopeEcDsaTest {
    */
   @Test
   public void buildOslpMessageSignatureCorrupt()
-      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
+      throws IOException,
+          NoSuchAlgorithmException,
+          InvalidKeySpecException,
           NoSuchProviderException {
     final OslpEnvelope request = this.buildMessage();
 
@@ -215,7 +222,9 @@ public class OslpEnvelopeEcDsaTest {
    */
   @Test()
   public void buildOslpMessageIncorrectSignature()
-      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
+      throws IOException,
+          NoSuchAlgorithmException,
+          InvalidKeySpecException,
           NoSuchProviderException {
     final byte[] deviceId = new byte[] {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     final byte[] sequenceNumber = new byte[] {0, 1};
@@ -248,7 +257,9 @@ public class OslpEnvelopeEcDsaTest {
    */
   @Test()
   public void buildOslpMessageIncorrectProvider()
-      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
+      throws IOException,
+          NoSuchAlgorithmException,
+          InvalidKeySpecException,
           NoSuchProviderException {
     final byte[] deviceId = new byte[] {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     final byte[] sequenceNumber = new byte[] {0, 1};
@@ -272,7 +283,9 @@ public class OslpEnvelopeEcDsaTest {
   }
 
   private OslpEnvelope buildMessage()
-      throws NoSuchAlgorithmException, InvalidKeySpecException, IOException,
+      throws NoSuchAlgorithmException,
+          InvalidKeySpecException,
+          IOException,
           NoSuchProviderException {
     final byte[] deviceId = new byte[] {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     final byte[] sequenceNumber = new byte[] {0, 1};
@@ -298,7 +311,7 @@ public class OslpEnvelopeEcDsaTest {
         .setRegisterDeviceResponse(
             RegisterDeviceResponse.newBuilder()
                 .setStatus(Oslp.Status.OK)
-                .setCurrentTime(Instant.now().toString(FORMAT))
+                .setCurrentTime(FORMAT.format(Instant.now()))
                 .setRandomDevice(randomDevice)
                 .setRandomPlatform(randomPlatform))
         .build();

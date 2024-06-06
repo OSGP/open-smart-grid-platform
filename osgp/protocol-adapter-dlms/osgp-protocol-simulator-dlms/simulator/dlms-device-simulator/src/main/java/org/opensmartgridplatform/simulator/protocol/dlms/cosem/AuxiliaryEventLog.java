@@ -1,15 +1,12 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.simulator.protocol.dlms.cosem;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.TimeZone;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.openmuc.jdlms.AttributeAccessMode;
 import org.openmuc.jdlms.CosemAttribute;
@@ -141,12 +138,20 @@ public class AuxiliaryEventLog extends ProfileGeneric {
     this.addEvents(0x81A0, 0x81A1); // M-Bus key events channel 2
     this.addEvents(0x82A0, 0x82A1); // M-Bus key events channel 3
     this.addEvents(0x83A0, 0x83A1); // M-Bus key events channel 4
+
+    this.addUnknownEvent();
   }
 
   private void addEvents(final int begin, final int end) {
     for (long i = begin; i <= end; i++) {
       this.bufferData.add(Arrays.asList(this.getNextDateTime(), (int) i));
     }
+  }
+
+  private void addUnknownEvent() {
+    final Calendar eventDate = Calendar.getInstance(TimeZone.getTimeZone("Europe/Amsterdam"));
+    eventDate.set(2014, 1, 2, 13, 23, 45);
+    this.bufferData.add(Arrays.asList(eventDate, 0x85A1));
   }
 
   private Calendar getNextDateTime() {

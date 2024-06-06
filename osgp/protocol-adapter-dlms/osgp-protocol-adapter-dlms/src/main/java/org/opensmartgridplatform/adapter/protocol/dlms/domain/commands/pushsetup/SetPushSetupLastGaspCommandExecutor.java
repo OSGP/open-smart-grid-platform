@@ -1,44 +1,40 @@
-/*
- * Copyright 2022 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup;
 
+import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.PushSetupMapper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupLastGaspDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupLastGaspRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.TransportServiceTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component()
 public class SetPushSetupLastGaspCommandExecutor
     extends SetPushSetupCommandExecutor<PushSetupLastGaspDto, AccessResultCode> {
 
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(SetPushSetupLastGaspCommandExecutor.class);
-  private static final ObisCode OBIS_CODE = new ObisCode("0.3.25.9.0.255");
-
   private final PushSetupMapper pushSetupMapper;
 
-  public SetPushSetupLastGaspCommandExecutor(final PushSetupMapper pushSetupMapper) {
-    super(SetPushSetupLastGaspRequestDto.class);
+  public SetPushSetupLastGaspCommandExecutor(
+      final PushSetupMapper pushSetupMapper,
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
+    super(SetPushSetupLastGaspRequestDto.class, objectConfigServiceHelper);
     this.pushSetupMapper = pushSetupMapper;
   }
 
@@ -93,7 +89,9 @@ public class SetPushSetupLastGaspCommandExecutor
     this.checkPushSetupLastGasp(pushSetupLastGasp);
 
     final AttributeAddress sendDestinationAndMethodAddress =
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD);
+        this.getSendDestinationAndMethodAddress(
+            Protocol.forDevice(device), DlmsObjectType.PUSH_SETUP_UDP);
+
     final DataObject value =
         this.pushSetupMapper.map(
             this.getUpdatedSendDestinationAndMethod(
@@ -105,34 +103,34 @@ public class SetPushSetupLastGaspCommandExecutor
   private void checkPushSetupLastGasp(final PushSetupLastGaspDto pushSetupLastGasp)
       throws ProtocolAdapterException {
     if (!pushSetupLastGasp.hasSendDestinationAndMethod()) {
-      LOGGER.error("Send Destination and Method of the Push Setup LastGasp is expected to be set.");
+      log.error("Send Destination and Method of the Push Setup LastGasp is expected to be set.");
       throw new ProtocolAdapterException(
           "Error setting LastGasp push setup data. No destination and method data");
     }
 
     if (pushSetupLastGasp.hasPushObjectList()) {
-      LOGGER.warn(
+      log.warn(
           "Setting Push Object List of Push Setup LastGasp not implemented: {}",
           pushSetupLastGasp.getPushObjectList());
     }
 
     if (pushSetupLastGasp.hasCommunicationWindow()) {
-      LOGGER.warn(
+      log.warn(
           "Setting Communication Window of Push Setup LastGasp not implemented: {}",
           pushSetupLastGasp.getCommunicationWindow());
     }
     if (pushSetupLastGasp.hasRandomisationStartInterval()) {
-      LOGGER.warn(
+      log.warn(
           "Setting Randomisation Start Interval of Push Setup LastGasp not implemented: {}",
           pushSetupLastGasp.getRandomisationStartInterval());
     }
     if (pushSetupLastGasp.hasNumberOfRetries()) {
-      LOGGER.warn(
+      log.warn(
           "Setting Number of Retries of Push Setup LastGasp not implemented: {}",
           pushSetupLastGasp.getNumberOfRetries());
     }
     if (pushSetupLastGasp.hasRepetitionDelay()) {
-      LOGGER.warn(
+      log.warn(
           "Setting Repetition Delay of Push Setup LastGasp not implemented: {}",
           pushSetupLastGasp.getRepetitionDelay());
     }

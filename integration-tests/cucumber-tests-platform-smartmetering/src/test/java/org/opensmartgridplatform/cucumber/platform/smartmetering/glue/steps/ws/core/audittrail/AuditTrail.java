@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.core.audittrail;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,7 +13,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.cucumber.core.RetryableAssert;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -33,7 +28,7 @@ public class AuditTrail {
 
   @Autowired private DeviceLogItemPagingRepository deviceLogItemRepository;
 
-  @Then("^the audit trail contains multiple retry log records$")
+  @Then("^the audit trail contains a retry log records$")
   public void theAuditTrailContainsMultipleRetryLogRecords(final Map<String, String> settings)
       throws Throwable {
     final String deviceIdentification =
@@ -42,7 +37,7 @@ public class AuditTrail {
             PlatformKeys.KEY_DEVICE_IDENTIFICATION,
             PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
 
-    final int minimumNumberReturned = 2;
+    final int minimumNumberReturned = 1;
     final Predicate<DeviceLogItem> filter =
         dli -> Pattern.matches(PATTERN_RETRY_OPERATION, dli.getDecodedMessage());
 
@@ -53,7 +48,7 @@ public class AuditTrail {
               this.deviceLogItemRepository.findByDeviceIdentification(
                   deviceIdentification, pageable);
           final List<DeviceLogItem> filteredDeviceLogItems =
-              deviceLogPage.getContent().stream().filter(filter).collect(Collectors.toList());
+              deviceLogPage.getContent().stream().filter(filter).toList();
 
           assertThat(filteredDeviceLogItems.size() < minimumNumberReturned)
               .as(

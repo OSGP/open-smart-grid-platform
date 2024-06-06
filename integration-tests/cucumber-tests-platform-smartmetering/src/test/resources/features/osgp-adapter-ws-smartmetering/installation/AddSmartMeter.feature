@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform
 Feature: SmartMetering Installation - Add smart meter
   As a grid operator
@@ -13,6 +17,7 @@ Feature: SmartMetering Installation - Add smart meter
       | protocolName          | DSMR              |
       | protocolVersion       | 4.2.2             |
       | Supplier              | Kaifa             |
+      | LLS1_active           | false             |
       | HLS3_active           | false             |
       | HLS4_active           | false             |
       | HLS5_active           | true              |
@@ -30,6 +35,7 @@ Feature: SmartMetering Installation - Add smart meter
       | ModelCode        | Test |
     And the dlms device with identification "TEST1024000000001" exists with properties
       | DlmsDeviceTimezone | <Timezone> |
+      | Lls1active         | false      |
     And a request to the device can be performed after activation
     And the new keys are stored in the database in another encryption then the encryption of the keys received in the SOAP request
 
@@ -49,6 +55,7 @@ Feature: SmartMetering Installation - Add smart meter
       | protocolName          | DSMR                     |
       | protocolVersion       | 4.2.2                    |
       | Supplier              | Kaifa                    |
+      | LLS1_active           | false                    |
       | HLS3_active           | false                    |
       | HLS4_active           | false                    |
       | HLS5_active           | true                     |

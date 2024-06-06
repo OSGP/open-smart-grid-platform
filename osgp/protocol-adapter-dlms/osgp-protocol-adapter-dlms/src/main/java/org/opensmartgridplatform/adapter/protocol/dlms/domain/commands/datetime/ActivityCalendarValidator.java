@@ -1,13 +1,7 @@
-/*
- * Copyright 2022 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime;
 
 import java.util.List;
@@ -67,7 +61,7 @@ public class ActivityCalendarValidator {
 
     // Get list of weeks of all seasons
     final List<WeekProfileDto> weekProfiles =
-        seasonProfiles.stream().map(SeasonProfileDto::getWeekProfile).collect(Collectors.toList());
+        seasonProfiles.stream().map(SeasonProfileDto::getWeekProfile).toList();
 
     // Check if number of unique weeks (with unique week profile name)
     final long numberOfUniqueWeekNames =
@@ -114,18 +108,12 @@ public class ActivityCalendarValidator {
     // unique
     final List<DayProfileDto> dayProfiles =
         weekProfiles.stream().map(WeekProfileDto::getMonday).collect(Collectors.toList());
-    dayProfiles.addAll(
-        weekProfiles.stream().map(WeekProfileDto::getTuesday).collect(Collectors.toList()));
-    dayProfiles.addAll(
-        weekProfiles.stream().map(WeekProfileDto::getWednesday).collect(Collectors.toList()));
-    dayProfiles.addAll(
-        weekProfiles.stream().map(WeekProfileDto::getThursday).collect(Collectors.toList()));
-    dayProfiles.addAll(
-        weekProfiles.stream().map(WeekProfileDto::getFriday).collect(Collectors.toList()));
-    dayProfiles.addAll(
-        weekProfiles.stream().map(WeekProfileDto::getSaturday).collect(Collectors.toList()));
-    dayProfiles.addAll(
-        weekProfiles.stream().map(WeekProfileDto::getSunday).collect(Collectors.toList()));
+    dayProfiles.addAll(weekProfiles.stream().map(WeekProfileDto::getTuesday).toList());
+    dayProfiles.addAll(weekProfiles.stream().map(WeekProfileDto::getWednesday).toList());
+    dayProfiles.addAll(weekProfiles.stream().map(WeekProfileDto::getThursday).toList());
+    dayProfiles.addAll(weekProfiles.stream().map(WeekProfileDto::getFriday).toList());
+    dayProfiles.addAll(weekProfiles.stream().map(WeekProfileDto::getSaturday).toList());
+    dayProfiles.addAll(weekProfiles.stream().map(WeekProfileDto::getSunday).toList());
     final long numberOfUniqueDayIds =
         dayProfiles.stream().map(DayProfileDto::getDayId).distinct().count();
     if (numberOfUniqueDayIds > MAX_NUMBER_OF_DAYS) {

@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
 import ma.glasnost.orika.MapperFactory;
@@ -15,6 +11,7 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.ActualPowerQualityDtoConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.DlmsMeterValueConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.GetPowerQualityProfileDtoConverter;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.GetThdFingerprintResponseConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.MeterReadsResponseItemDtoConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.PeriodicMeterReadsResponseItemDtoConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.PowerQualityValueConverter;
@@ -41,5 +38,6 @@ public class MonitoringMapper extends ConfigurableMapper {
     converterFactory.registerConverter(new GetPowerQualityProfileDtoConverter(mapperFactory));
     converterFactory.registerConverter(new ActualPowerQualityDtoConverter(mapperFactory));
     converterFactory.registerConverter(new PowerQualityValueConverter());
+    converterFactory.registerConverter(new GetThdFingerprintResponseConverter());
   }
 }

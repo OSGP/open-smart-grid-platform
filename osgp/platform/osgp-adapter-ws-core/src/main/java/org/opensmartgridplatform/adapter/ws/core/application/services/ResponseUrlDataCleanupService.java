@@ -1,16 +1,11 @@
-/*
- * Copyright 2022 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,8 +21,8 @@ public class ResponseUrlDataCleanupService {
 
   public void execute() {
 
-    final DateTime removeBeforeDateTime =
-        DateTime.now(DateTimeZone.UTC).minusDays(this.cleanupJobRetentionTimeInDays);
-    this.responseUrlDataRepository.removeByCreationTimeBefore(removeBeforeDateTime.toDate());
+    final ZonedDateTime removeBeforeDateTime =
+        ZonedDateTime.now(ZoneId.of("UTC")).minusDays(this.cleanupJobRetentionTimeInDays);
+    this.responseUrlDataRepository.removeByCreationTimeBefore(removeBeforeDateTime.toInstant());
   }
 }

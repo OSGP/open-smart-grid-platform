@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -24,8 +19,8 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.SetParameter;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.ConfigurationObjectService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.GetConfigurationObjectService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.ProtocolService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.ProtocolServiceLookup;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.SetConfigurationObjectService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -52,7 +47,7 @@ public abstract class SetConfigurationObjectCommandExecutorITBase {
       final GetConfigurationObjectService getService,
       final SetConfigurationObjectService setService)
       throws IOException {
-    final List<ProtocolService> protocolServices = new ArrayList<>();
+    final List<ConfigurationObjectService> protocolServices = new ArrayList<>();
     protocolServices.add(getService);
     protocolServices.add(setService);
     final ProtocolServiceLookup protocolServiceLookup = new ProtocolServiceLookup(protocolServices);

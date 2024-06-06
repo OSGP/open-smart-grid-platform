@@ -1,15 +1,11 @@
-/*
- * Copyright 2022 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -19,10 +15,12 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -35,11 +33,14 @@ import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.PushSetupMapper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MessageTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SendDestinationAndMethodDto;
@@ -60,8 +61,6 @@ class SetPushSetupSmsCommandExecutorTest {
   private static final SendDestinationAndMethodDto SEND_DESTINATION_AND_METHOD =
       new SendDestinationAndMethodDto(null, DESTINATION, null);
 
-  private final DlmsDevice DLMS_DEVICE = this.createDlmsDevice(Protocol.SMR_5_0_0);
-
   @Captor ArgumentCaptor<SetParameter> setParameterArgumentCaptor;
 
   @Mock private DlmsConnectionManager conn;
@@ -72,11 +71,20 @@ class SetPushSetupSmsCommandExecutorTest {
 
   @Mock private MessageMetadata messageMetadata;
 
-  private final SetPushSetupSmsCommandExecutor executor =
-      new SetPushSetupSmsCommandExecutor(new PushSetupMapper());
+  private SetPushSetupSmsCommandExecutor executor;
+
+  @BeforeEach
+  public void init() throws IOException, ObjectConfigException {
+    this.executor =
+        new SetPushSetupSmsCommandExecutor(
+            new PushSetupMapper(), new ObjectConfigServiceHelper(new ObjectConfigService()));
+  }
 
   @ParameterizedTest
-  @EnumSource(Protocol.class)
+  @EnumSource(
+      value = Protocol.class,
+      names = {"DSMR_2_2", "OTHER_PROTOCOL"},
+      mode = Mode.EXCLUDE)
   void testSetSendDestinationAndMethod(final Protocol protocol)
       throws ProtocolAdapterException, IOException {
     // SETUP
@@ -101,9 +109,22 @@ class SetPushSetupSmsCommandExecutorTest {
     this.verifySendDestinationAndMethodParameter(setParameters.get(0), protocol);
   }
 
+  @ParameterizedTest
+  @EnumSource(
+      value = Protocol.class,
+      names = {"DSMR_2_2", "OTHER_PROTOCOL"},
+      mode = Mode.INCLUDE)
+  void protocolNotSupported(final Protocol protocol) {
+    final DlmsDevice device = new DlmsDevice();
+    device.setProtocol(protocol);
+    assertThatExceptionOfType(ProtocolAdapterException.class)
+        .isThrownBy(() -> this.executor.execute(this.conn, device, null, this.messageMetadata));
+  }
+
   @Test
   void testSetWithUnsupportedFieldsSet() {
     // SETUP
+    final DlmsDevice device = this.createDlmsDevice(Protocol.SMR_5_0_0);
     final PushSetupSmsDto pushSetupSmsDto =
         new PushSetupSmsDto.Builder().withCommunicationWindow(new ArrayList<>()).build();
 
@@ -111,8 +132,7 @@ class SetPushSetupSmsCommandExecutorTest {
     final Throwable thrown =
         catchThrowable(
             () -> {
-              this.executor.execute(
-                  this.conn, this.DLMS_DEVICE, pushSetupSmsDto, this.messageMetadata);
+              this.executor.execute(this.conn, device, pushSetupSmsDto, this.messageMetadata);
             });
 
     // VERIFY

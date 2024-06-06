@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -25,18 +29,18 @@ class RetryHeaderFactoryTest {
 
   @Test
   void testMultiplierSmallerThanOneShouldResultInFasterScheduledRetryTimeWithMultipleRetries() {
-    RetryHeader retryHeaderWithOneRetry = this.retryHeaderFactory.createRetryHeader(1);
-    RetryHeader retryHeaderWithTwoRetries = this.retryHeaderFactory.createRetryHeader(2);
-    RetryHeader retryHeaderWithThreeRetries = this.retryHeaderFactory.createRetryHeader(3);
+    final RetryHeader retryHeaderWithOneRetry = this.retryHeaderFactory.createRetryHeader(1);
+    final RetryHeader retryHeaderWithTwoRetries = this.retryHeaderFactory.createRetryHeader(2);
+    final RetryHeader retryHeaderWithThreeRetries = this.retryHeaderFactory.createRetryHeader(3);
 
     assertNotNull(retryHeaderWithOneRetry);
     assertNotNull(retryHeaderWithTwoRetries);
     assertNotNull(retryHeaderWithThreeRetries);
 
-    long timeDifferenceBetweenOneAndTwo =
+    final long timeDifferenceBetweenOneAndTwo =
         retryHeaderWithOneRetry.getScheduledRetryTime().getTime()
             - retryHeaderWithTwoRetries.getScheduledRetryTime().getTime();
-    long timeDifferenceBetweenTwoAndThree =
+    final long timeDifferenceBetweenTwoAndThree =
         retryHeaderWithTwoRetries.getScheduledRetryTime().getTime()
             - retryHeaderWithThreeRetries.getScheduledRetryTime().getTime();
 

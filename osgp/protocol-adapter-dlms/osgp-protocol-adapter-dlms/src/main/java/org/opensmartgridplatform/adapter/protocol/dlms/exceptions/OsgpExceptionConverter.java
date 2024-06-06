@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.exceptions;
 
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -38,15 +34,18 @@ public class OsgpExceptionConverter {
   public OsgpException ensureOsgpOrTechnicalException(final Exception e) {
 
     final boolean osgpExceptionSupportedByShared =
-        !(e instanceof ImageTransferException || e instanceof ProtocolAdapterException);
+        !(e instanceof ImageTransferException
+            || e instanceof ProtocolAdapterException
+            || (e instanceof FunctionalException
+                && e.getCause() instanceof ProtocolAdapterException));
 
-    if (e instanceof OsgpException && osgpExceptionSupportedByShared) {
-      return (OsgpException) e;
+    if (e instanceof final OsgpException osgpException && osgpExceptionSupportedByShared) {
+      return osgpException;
     }
 
-    if (e instanceof ConnectionException) {
+    if (e instanceof final ConnectionException connectionException) {
       return new FunctionalException(
-          FunctionalExceptionType.CONNECTION_ERROR,
+          connectionException.getType(),
           ComponentType.PROTOCOL_DLMS,
           new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage()));
     }
@@ -56,6 +55,15 @@ public class OsgpExceptionConverter {
           FunctionalExceptionType.OPERATION_NOT_SUPPORTED_BY_PLATFORM_FOR_PROTOCOL,
           ComponentType.PROTOCOL_DLMS,
           new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage()));
+    }
+
+    if (e instanceof final FunctionalException functionalException
+        && e.getCause() instanceof final ProtocolAdapterException protocolAdapterException) {
+      return new FunctionalException(
+          functionalException.getExceptionType(),
+          functionalException.getComponentType(),
+          new OsgpException(
+              protocolAdapterException.getComponentType(), protocolAdapterException.getMessage()));
     }
 
     return new TechnicalException(

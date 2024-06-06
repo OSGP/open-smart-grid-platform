@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter.toDateTime;
@@ -23,15 +19,16 @@ import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.DataObjectToEventListConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto;
@@ -61,7 +58,7 @@ public class FindEventsCommandExecutor
         EventLogCategoryDto.FRAUD_DETECTION_LOG, DlmsObjectType.FRAUD_DETECTION_EVENT_LOG);
     EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
         EventLogCategoryDto.COMMUNICATION_SESSION_LOG,
-        DlmsObjectType.COMMUNICATION_SESSIONS_EVENT_LOG);
+        DlmsObjectType.COMMUNICATION_SESSION_EVENT_LOG);
     EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
         EventLogCategoryDto.M_BUS_EVENT_LOG, DlmsObjectType.MBUS_EVENT_LOG);
     EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
@@ -71,23 +68,26 @@ public class FindEventsCommandExecutor
     EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
         EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG,
         DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_LOG);
+    EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
+        EventLogCategoryDto.POWER_QUALITY_THD_EVENT_LOG,
+        DlmsObjectType.POWER_QUALITY_THD_EVENT_LOG);
   }
 
   private final DataObjectToEventListConverter dataObjectToEventListConverter;
 
   private final DlmsHelper dlmsHelper;
 
-  private final DlmsObjectConfigService dlmsObjectConfigService;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
   @Autowired
   public FindEventsCommandExecutor(
       final DlmsHelper dlmsHelper,
       final DataObjectToEventListConverter dataObjectToEventListConverter,
-      final DlmsObjectConfigService dlmsObjectConfigService) {
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(FindEventsRequestDto.class);
     this.dlmsHelper = dlmsHelper;
     this.dataObjectToEventListConverter = dataObjectToEventListConverter;
-    this.dlmsObjectConfigService = dlmsObjectConfigService;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
@@ -108,16 +108,20 @@ public class FindEventsCommandExecutor
         this.getSelectiveAccessDescription(
             device, findEventsQuery.getFrom(), findEventsQuery.getUntil());
 
-    final DlmsObject eventLogObject =
-        this.dlmsObjectConfigService.getDlmsObject(
-            device, EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()));
+    final DlmsObjectType dlmsObjectType =
+        EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory());
 
-    final AttributeAddress eventLogBuffer =
-        new AttributeAddress(
-            eventLogObject.getClassId(),
-            eventLogObject.getObisCode(),
-            eventLogObject.getDefaultAttributeId(),
-            selectiveAccessDescription);
+    final Protocol protocol = Protocol.forDevice(device);
+    final AttributeAddress attributeAddress =
+        this.objectConfigServiceHelper
+            .findOptionalDefaultAttributeAddress(
+                protocol, dlmsObjectType, selectiveAccessDescription)
+            .orElseThrow(
+                () ->
+                    new NotSupportedByProtocolException(
+                        String.format(
+                            "No address found for %s in protocol %s %s",
+                            dlmsObjectType.name(), protocol.getName(), protocol.getVersion())));
 
     conn.getDlmsMessageListener()
         .setDescription(
@@ -128,11 +132,11 @@ public class FindEventsCommandExecutor
                 + " until "
                 + findEventsQuery.getUntil()
                 + ", retrieve attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(eventLogBuffer));
+                + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
 
     final GetResult getResult;
     try {
-      getResult = conn.getConnection().get(eventLogBuffer);
+      getResult = conn.getConnection().get(attributeAddress);
     } catch (final IOException e) {
       throw new ConnectionException(e);
     }
@@ -157,12 +161,12 @@ public class FindEventsCommandExecutor
 
     final DataObject resultData = getResult.getResultData();
     return this.dataObjectToEventListConverter.convert(
-        resultData, findEventsQuery.getEventLogCategory());
+        resultData, findEventsQuery.getEventLogCategory(), protocol);
   }
 
   private SelectiveAccessDescription getSelectiveAccessDescription(
       final DlmsDevice device, final DateTime beginDateTime, final DateTime endDateTime)
-      throws ProtocolAdapterException {
+      throws NotSupportedByProtocolException {
 
     /*
      * Define the clock object {8,0-0:1.0.0.255,2,0} to be used as
@@ -174,17 +178,7 @@ public class FindEventsCommandExecutor
     final DateTime convertedBeginDateTime = toDateTime(beginDateTime, device.getTimezone());
     final DateTime convertedEndDateTime = toDateTime(endDateTime, device.getTimezone());
 
-    final DlmsObject clockObject =
-        this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.CLOCK);
-
-    final DataObject clockDefinition =
-        DataObject.newStructureData(
-            Arrays.asList(
-                DataObject.newUInteger16Data(clockObject.getClassId()),
-                DataObject.newOctetStringData(clockObject.getObisCode().bytes()),
-                DataObject.newInteger8Data((byte) clockObject.getDefaultAttributeId()),
-                DataObject.newUInteger16Data(0)));
-
+    final DataObject clockDefinition = this.getClockDefinition(device);
     final DataObject fromValue = this.dlmsHelper.asDataObject(convertedBeginDateTime);
     final DataObject toValue = this.dlmsHelper.asDataObject(convertedEndDateTime);
 
@@ -199,5 +193,27 @@ public class FindEventsCommandExecutor
             Arrays.asList(clockDefinition, fromValue, toValue, selectedValues));
 
     return new SelectiveAccessDescription(ACCESS_SELECTOR_RANGE_DESCRIPTOR, accessParameter);
+  }
+
+  private DataObject getClockDefinition(final DlmsDevice device)
+      throws NotSupportedByProtocolException {
+
+    final Protocol protocol = Protocol.forDevice(device);
+    final AttributeAddress attributeAddress =
+        this.objectConfigServiceHelper
+            .findOptionalDefaultAttributeAddress(protocol, DlmsObjectType.CLOCK)
+            .orElseThrow(
+                () ->
+                    new NotSupportedByProtocolException(
+                        String.format(
+                            "No address found for %s in protocol %s %s",
+                            DlmsObjectType.CLOCK, protocol.getName(), protocol.getVersion())));
+
+    return DataObject.newStructureData(
+        Arrays.asList(
+            DataObject.newUInteger16Data(attributeAddress.getClassId()),
+            DataObject.newOctetStringData(attributeAddress.getInstanceId().bytes()),
+            DataObject.newInteger8Data((byte) attributeAddress.getId()),
+            DataObject.newUInteger16Data(0)));
   }
 }

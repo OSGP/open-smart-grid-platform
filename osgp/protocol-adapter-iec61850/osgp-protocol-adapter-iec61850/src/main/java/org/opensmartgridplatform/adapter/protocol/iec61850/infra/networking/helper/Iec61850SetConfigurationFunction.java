@@ -1,19 +1,13 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
 
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper;
 
 import com.beanit.openiec61850.BdaInt8;
 import com.beanit.openiec61850.Fc;
+import java.time.ZonedDateTime;
 import java.util.List;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DaylightSavingTimeTransition;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeException;
@@ -325,8 +319,8 @@ public class Iec61850SetConfigurationFunction implements Function<Void> {
      */
     final DaylightSavingTimeTransition.DstTransitionFormat dstFormatMwd =
         DaylightSavingTimeTransition.DstTransitionFormat.DAY_OF_WEEK_OF_MONTH;
-    final DateTime summerTimeDetails = configuration.getSummerTimeDetails();
-    final DateTime winterTimeDetails = configuration.getWinterTimeDetails();
+    final ZonedDateTime summerTimeDetails = configuration.getSummerTimeDetails();
+    final ZonedDateTime winterTimeDetails = configuration.getWinterTimeDetails();
     if (summerTimeDetails != null) {
 
       final String mwdValueForBeginOfDst =

@@ -1,16 +1,11 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.shared.application.config.kafka;
 
 import java.util.Map;
-import org.opensmartgridplatform.shared.application.config.kafka.oauth.KafkaOAuthConfig;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -79,6 +74,6 @@ public abstract class AbstractKafkaConsumerConfig<K, V> extends KafkaConfig {
   }
 
   private Map<String, Object> consumerConfigs(final String propertiesPrefix) {
-    return configDefToProperties(KafkaOAuthConfig.consumerConfigDef(), propertiesPrefix);
+    return configDefToProperties(ConsumerConfig.configDef(), propertiesPrefix);
   }
 }

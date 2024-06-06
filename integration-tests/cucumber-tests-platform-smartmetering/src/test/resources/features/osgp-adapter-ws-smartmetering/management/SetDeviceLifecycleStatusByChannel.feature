@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform @SmartMeteringManagement @NightlyBuildOnly
 Feature: SmartMetering Management - Set Device Lifecycle Status by Channel
   As a grid operator

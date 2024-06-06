@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @PublicLighting @Platform @CoreAdhocManagement
 Feature: CoreAdhocManagement Set Reboot
   As OSGP

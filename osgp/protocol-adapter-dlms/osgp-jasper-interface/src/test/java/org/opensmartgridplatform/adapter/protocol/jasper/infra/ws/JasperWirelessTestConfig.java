@@ -1,15 +1,11 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.jasper.infra.ws;
 
-import javax.annotation.Resource;
-import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
+import jakarta.annotation.Resource;
+import org.opensmartgridplatform.jasper.config.JasperWirelessAccess;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;

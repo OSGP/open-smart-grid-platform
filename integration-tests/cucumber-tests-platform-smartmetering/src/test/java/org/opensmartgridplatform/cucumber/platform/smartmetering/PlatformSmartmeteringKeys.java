@@ -1,11 +1,8 @@
-/*
- * Copyright 2016-2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// Copyright 2016-2017 Smart Society Services B.V.
+// SPDX-FileCopyrightText: Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering;
 
 /**
@@ -64,6 +61,7 @@ public class PlatformSmartmeteringKeys
   public static final String MODULE_ACTIVE_FIRMWARE = "module_active_firmware";
   public static final String COMM_MODULE_ACTIVE_FIRMWARE = "communication_module_active_firmware";
   public static final String ACTIVE_FIRMWARE = "active_firmware";
+  public static final String FIRMWARE_HASH = "FirmwareHash";
   public static final String KEY_DEVICE_MASTERKEY = "Master_key";
   public static final String KEY_DEVICE_AUTHENTICATIONKEY = "Authentication_key";
   public static final String KEY_DEVICE_ENCRYPTIONKEY = "Encryption_key";
@@ -72,6 +70,9 @@ public class PlatformSmartmeteringKeys
   public static final String KEY_DEVICE_TIMEZONE = "Timezone";
   public static final String MBUS_DEFAULT_KEY = "MbusDefaultKey";
   public static final String MBUS_USER_KEY = "MbusUserKey";
+  public static final String MBUS_FIRMWARE_UPDATE_AUTHENTICATION_KEY =
+      "MbusFirmwareUpdateAuthenticationKey";
+  public static final String MBUS_P0_KEY = "MbusP0Key";
   public static final String PASSWORD = "Password";
 
   public static final String OBIS_CODE_A = "ObisCodeA";
@@ -94,7 +95,7 @@ public class PlatformSmartmeteringKeys
   public static final String TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";
   public static final String VALID_FROM = "ValidFrom";
   public static final String VERSION = "Version";
-  public static final String WITH_LIST_SUPPORTED = "WithListSupported";
+  public static final String WITH_LIST_MAX = "WithListMax";
   public static final String MODULE_ACTIVE_FIRMWARE_VERSION = "ModuleActiveFirmwareVersion";
 
   public static final String DAYLIGHT_SAVINGS_BEGIN = "DaylightSavingsBegin";
@@ -167,4 +168,15 @@ public class PlatformSmartmeteringKeys
 
   public static final String SECRET_TYPE = "SecretType";
   public static final String CLOSE_OPTICAL_PORT = "CloseOpticalPort";
+
+  public static final String THD_VALUE_THRESHOLD = "Thd Value Threshold";
+  public static final String THD_VALUE_HYSTERESIS = "Thd Value Hysteresis";
+  public static final String THD_MIN_DURATION_NORMAL_TO_OVER = "Thd Min Duration Normal To Over";
+  public static final String THD_MIN_DURATION_OVER_TO_NORMAL = "Thd Min Duration Over To Normal";
+  public static final String THD_TIME_THRESHOLD = "Thd Time Threshold";
+
+  public static final String PUSH_OBJECT_CLASS_IDS = "PushObjectClassIds";
+  public static final String PUSH_OBJECT_OBIS_CODES = "PushObjectObisCodes";
+  public static final String PUSH_OBJECT_ATTRIBUTE_IDS = "PushObjectAttributeIds";
+  public static final String PUSH_OBJECT_DATA_INDEXES = "PushObjectDataIndexes";
 }

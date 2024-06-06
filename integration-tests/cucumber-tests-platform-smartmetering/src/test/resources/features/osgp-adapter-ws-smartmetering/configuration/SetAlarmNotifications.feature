@@ -1,15 +1,22 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform @SmartMeteringConfiguration
 Feature: SmartMetering Configuration - Set Alarm Notifications
   As a grid operator
   I want to be able to set alarm notifications on a device
   So I can control which types of alarms result in pushed notifications
 
-  Scenario: Set alarm notifications in register 1 on a DSMR 4.2.2 device (other alarms in request that are not in register 1 are ignored)
+  Scenario Outline: Set alarm notifications in register 1 on a <protocol> <version> device (other alarms in request that are not in register 1 are ignored)
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-      | Protocol             | DSMR              |
-      | ProtocolVersion      | 4.2.2             |
+      | Protocol             | <protocol>        |
+      | ProtocolVersion      | <version>         |
+      | Lls1active           | <lls1active>      |
+      | Hls5active           | <hls5active>      |
+      | Port                 | <port>            |
     When the set alarm notifications request is received
       | DeviceIdentification | TEST1024000000001 |
       | AlarmType_1          | CLOCK_INVALID                    |
@@ -21,12 +28,20 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1024000000001 |
 
-  Scenario: Set alarm notifications in register 1 and 2 on a DSMR 5.2 device (other alarms in request that are not in register 1 or 2 are ignored)
+    Examples:
+      | protocol | version | lls1active | hls5active | port |
+      | DSMR     | 2.2     | true       | false      | 1026 |
+      | DSMR     | 4.2.2   | false      | true       |      |
+      | SMR      | 4.3     | false      | true       |      |
+      | SMR      | 5.0.0   | false      | true       |      |
+      | SMR      | 5.1     | false      | true       |      |
+
+  Scenario Outline: Set alarm notifications in register 1 and 2 on a <protocol> <version> device (other alarms in request that are not in register 1 or 2 are ignored)
     Given a dlms device
       | DeviceIdentification | TEST1029000000001 |
       | DeviceType           | SMART_METER_E     |
-      | Protocol             | SMR               |
-      | ProtocolVersion      | 5.2               |
+      | Protocol             | <protocol>        |
+      | ProtocolVersion      | <version>         |
     When the set alarm notifications request is received
       | DeviceIdentification | TEST1029000000001                |
       | AlarmType_1          | CLOCK_INVALID                    |
@@ -35,8 +50,15 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
       | AlarmTypeEnabled2    | TRUE                             |
       | AlarmType_3          | LAST_GASP                        |
       | AlarmTypeEnabled3    | TRUE                             |
+      | AlarmType_4          | THD_OVERLIMIT_IN_PHASE_L1        |
+      | AlarmTypeEnabled4    | TRUE                             |
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1029000000001 |
+
+    Examples:
+      | protocol | version |
+      | SMR      | 5.2     |
+      | SMR      | 5.5     |
 
   Scenario: Set alarm notifications in register 1, 2 and 3 on a SMR 5.5 device
     Given a dlms device
@@ -56,12 +78,15 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
       | DeviceIdentification | TEST1030000000001 |
 
   @NightlyBuildOnly
-  Scenario: Set all alarm notifications disabled on a DSMR 4.2.2 device
+  Scenario Outline: Set all alarm notifications disabled on a <protocol> <version> device
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-      | Protocol             | DSMR              |
-      | ProtocolVersion      | 4.2.2             |
+      | Protocol             | <protocol>        |
+      | ProtocolVersion      | <version>         |
+      | Lls1active           | <lls1active>      |
+      | Hls5active           | <hls5active>      |
+      | Port                 | <port>            |
     When the set alarm notifications request is received
       | DeviceIdentification | TEST1024000000001                     |
       | AlarmType_1          | CLOCK_INVALID                         |
@@ -121,6 +146,14 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1024000000001                     |
 
+    Examples:
+      | protocol | version | lls1active | hls5active | port |
+      | DSMR     | 2.2     | true       | false      | 1026 |
+      | DSMR     | 4.2.2   | false      | true       |      |
+      | SMR      | 4.3     | false      | true       |      |
+      | SMR      | 5.0.0   | false      | true       |      |
+      | SMR      | 5.1     | false      | true       |      |
+
   @NightlyBuildOnly
   Scenario: Set all alarm notifications disabled on a SMR 5.2 device
     Given a dlms device
@@ -129,21 +162,33 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
       | Protocol             | SMR               |
       | ProtocolVersion      | 5.2               |
     When the set alarm notifications request is received
-      | DeviceIdentification | TEST1029000000001                     |
-      | AlarmType_1          | VOLTAGE_SAG_IN_PHASE_DETECTED_L1      |
-      | AlarmTypeEnabled1    | false                                 |
-      | AlarmType_2          | VOLTAGE_SAG_IN_PHASE_DETECTED_L2      |
-      | AlarmTypeEnabled2    | false                                 |
-      | AlarmType_3          | VOLTAGE_SAG_IN_PHASE_DETECTED_L3      |
-      | AlarmTypeEnabled3    | false                                 |
-      | AlarmType_4          | VOLTAGE_SWELL_IN_PHASE_DETECTED_L1    |
-      | AlarmTypeEnabled4    | false                                 |
-      | AlarmType_5          | VOLTAGE_SWELL_IN_PHASE_DETECTED_L2    |
-      | AlarmTypeEnabled5    | false                                 |
-      | AlarmType_6          | VOLTAGE_SWELL_IN_PHASE_DETECTED_L3    |
-      | AlarmTypeEnabled6    | false                                 |
+      | DeviceIdentification | TEST1029000000001                   |
+      | AlarmType_1          | VOLTAGE_SAG_IN_PHASE_DETECTED_L1    |
+      | AlarmTypeEnabled1    | false                               |
+      | AlarmType_2          | VOLTAGE_SAG_IN_PHASE_DETECTED_L2    |
+      | AlarmTypeEnabled2    | false                               |
+      | AlarmType_3          | VOLTAGE_SAG_IN_PHASE_DETECTED_L3    |
+      | AlarmTypeEnabled3    | false                               |
+      | AlarmType_4          | VOLTAGE_SWELL_IN_PHASE_DETECTED_L1  |
+      | AlarmTypeEnabled4    | false                               |
+      | AlarmType_5          | VOLTAGE_SWELL_IN_PHASE_DETECTED_L2  |
+      | AlarmTypeEnabled5    | false                               |
+      | AlarmType_6          | VOLTAGE_SWELL_IN_PHASE_DETECTED_L3  |
+      | AlarmTypeEnabled6    | false                               |
+      | AlarmType_7          | THD_OVERLIMIT_IN_PHASE_L1           |
+      | AlarmTypeEnabled7    | false                               |
+      | AlarmType_8          | THD_OVERLIMIT_IN_PHASE_L2           |
+      | AlarmTypeEnabled8    | false                               |
+      | AlarmType_9          | THD_OVERLIMIT_IN_PHASE_L3           |
+      | AlarmTypeEnabled9    | false                               |
+      | AlarmType_10         | THD_LONG_OVERLIMIT_IN_PHASE_L1      |
+      | AlarmTypeEnabled10   | false                               |
+      | AlarmType_11         | THD_LONG_OVERLIMIT_IN_PHASE_L2      |
+      | AlarmTypeEnabled11   | false                               |
+      | AlarmType_12         | THD_LONG_OVERLIMIT_IN_PHASE_L3      |
+      | AlarmTypeEnabled12   | false                               |
     Then the specified alarm notifications should be set on the device
-      | DeviceIdentification | TEST1029000000001                     |
+      | DeviceIdentification | TEST1029000000001                   |
 
   @NightlyBuildOnly
   Scenario: Set all alarm notifications disabled on a SMR 5.5 device

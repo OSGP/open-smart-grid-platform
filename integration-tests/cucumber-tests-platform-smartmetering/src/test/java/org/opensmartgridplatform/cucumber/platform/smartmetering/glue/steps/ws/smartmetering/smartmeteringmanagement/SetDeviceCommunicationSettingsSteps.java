@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,18 +83,24 @@ public class SetDeviceCommunicationSettingsSteps {
     final DlmsDevice device =
         this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
 
-    final int expectedResult =
+    final int expectedResultChallengeLength =
         getInteger(
             settings,
             PlatformSmartmeteringKeys.CHALLENGE_LENGTH,
             PlatformSmartmeteringDefaults.CHALLENGE_LENGTH);
 
+    final int expectedResultGetWithListMax =
+        getInteger(
+            settings,
+            PlatformSmartmeteringKeys.WITH_LIST_MAX,
+            PlatformSmartmeteringDefaults.WITH_LIST_MAX);
+
     assertThat(device.getChallengeLength().intValue())
         .as("Number of challenge length should match")
-        .isEqualTo(expectedResult);
-    assertThat(device.isWithListSupported())
-        .as("With list supported should match")
-        .isEqualTo(getBoolean(settings, PlatformSmartmeteringKeys.WITH_LIST_SUPPORTED));
+        .isEqualTo(expectedResultChallengeLength);
+    assertThat(device.getWithListMax().intValue())
+        .as("With list max should match")
+        .isEqualTo(expectedResultGetWithListMax);
     assertThat(device.isSelectiveAccessSupported())
         .as("Selective access supported should match")
         .isEqualTo(getBoolean(settings, PlatformSmartmeteringKeys.SELECTIVE_ACCESS_SUPPORTED));

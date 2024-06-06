@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil.describeGetResults;
@@ -22,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -40,7 +34,6 @@ import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdjacentCellInfoDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.BitErrorRateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CellInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CircuitSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
@@ -125,7 +118,9 @@ public class GetGsmDiagnosticCommandExecutor
     final List<GetResult> getResultList =
         this.dlmsHelper.getAndCheck(conn, device, "Get GsmDiagnostic", attributeAddresses);
 
-    LOGGER.debug("GetResultList: {}", describeGetResults(getResultList));
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("GetResultList: {}", describeGetResults(getResultList));
+    }
 
     if (!getResultList.stream()
         .allMatch(result -> result.getResultCode() == AccessResultCode.SUCCESS)) {
@@ -146,7 +141,7 @@ public class GetGsmDiagnosticCommandExecutor
           device.getProtocolName(), device.getProtocolVersion(), dlmsObjectType);
 
     } catch (final ObjectConfigException e) {
-      throw new ProtocolAdapterException("Error in object config", e);
+      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
     }
   }
 
@@ -255,8 +250,7 @@ public class GetGsmDiagnosticCommandExecutor
           cellInfoDataObjects.get(CELL_INFO_LOCATION_ID_INDEX).getValue(),
           SignalQualityDto.fromIndexValue(
               (short) cellInfoDataObjects.get(CELL_INFO_SIGNAL_QUALITY_INDEX).getValue()),
-          BitErrorRateDto.fromIndexValue(
-              (short) cellInfoDataObjects.get(CELL_INFO_BIT_ERROR_RATE_INDEX).getValue()),
+          (short) cellInfoDataObjects.get(CELL_INFO_BIT_ERROR_RATE_INDEX).getValue(),
           cellInfoDataObjects.get(CELL_INFO_MOBILE_COUNTRY_CODE_INDEX).getValue(),
           cellInfoDataObjects.get(CELL_INFO_MOBILE_NETWORK_CODE_INDEX).getValue(),
           cellInfoDataObjects.get(CELL_INFO_CHANNEL_NUMBER_INDEX).getValue());
@@ -285,7 +279,7 @@ public class GetGsmDiagnosticCommandExecutor
                     SignalQualityDto.fromIndexValue(
                         (short) adjacentCell.get(ADJACENT_CELLS_SIGNAL_QUALITY_INDEX).getValue()));
               })
-          .collect(Collectors.toList());
+          .toList();
     }
   }
 

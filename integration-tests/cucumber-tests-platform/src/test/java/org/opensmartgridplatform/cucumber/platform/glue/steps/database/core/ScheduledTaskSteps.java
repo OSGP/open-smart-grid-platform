@@ -1,11 +1,7 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_CORRELATION_UID;
@@ -22,6 +18,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
 import org.opensmartgridplatform.cucumber.core.ReadSettingsHelper;
@@ -57,9 +54,12 @@ public class ScheduledTaskSteps extends BaseDeviceSteps {
     final String messageType = MessageType.UPDATE_FIRMWARE.toString();
     final int messagePriority = 4;
     final Long scheduleTime =
-        DateTimeHelper.getDateTime(
-                ReadSettingsHelper.getString(settings, KEY_SCHEDULED_TIME, DEFAULT_SCHEDULED_TIME))
-            .getMillis();
+        Objects.requireNonNull(
+                DateTimeHelper.getDateTime(
+                    ReadSettingsHelper.getString(
+                        settings, KEY_SCHEDULED_TIME, DEFAULT_SCHEDULED_TIME)))
+            .toInstant()
+            .toEpochMilli();
     final MessageMetadata messageMetadata =
         new MessageMetadata.Builder()
             .withDeviceIdentification(deviceIdentification)

@@ -1,15 +1,11 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.core.messageprocessors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.DefaultDeviceResponseService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -68,7 +64,7 @@ public class PublicLightingSetTransitionResponseMessageProcessor extends BaseMes
     String organisationIdentification = null;
     String deviceIdentification = null;
 
-    ResponseMessage responseMessage;
+    final ResponseMessage responseMessage;
     ResponseMessageResultType responseMessageResultType = null;
     OsgpException osgpException = null;
 

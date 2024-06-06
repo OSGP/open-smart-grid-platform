@@ -1,11 +1,8 @@
-/*
- * Copyright 2021 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// Copyright 2021 Smart Society Services B.V.
+// SPDX-FileCopyrightText: Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.firmwaremanagement;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,11 +11,14 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getHexD
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStringList;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedSet;
-import java.util.stream.Collectors;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeableFirmware;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleData;
@@ -40,6 +40,8 @@ public class FirmwareSteps {
   public static final String ACTIVE_FIRMWARE = "active_firmware";
   public static final String M_BUS_DRIVER_ACTIVE_FIRMWARE = "m_bus_driver_active_firmware";
   public static final String SIMPLE_VERSION_INFO = "simple_version_info";
+  public static final String DATABASE = "database";
+  public static final String FILE_STORAGE = "file_storage";
 
   @Autowired private FirmwareFileRepository firmwareFileRepository;
 
@@ -49,14 +51,22 @@ public class FirmwareSteps {
         getString(requestParameters, PlatformKeys.FIRMWARE_FILE_IDENTIFICATION, null));
     firmware.setFilename(getString(requestParameters, PlatformKeys.FIRMWARE_FILE_FILENAME, null));
     firmware.setDescription(getString(requestParameters, PlatformKeys.FIRMWARE_DESCRIPTION, null));
-    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_FILE)) {
+    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_FILE)
+        && requestParameters.get(PlatformKeys.FIRMWARE_FILE) != null) {
       firmware.setFile(getHexDecoded(requestParameters, PlatformKeys.FIRMWARE_FILE, null));
+    }
+    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_FILE_IMAGE_IDENTIFIER)
+        && requestParameters.get(PlatformKeys.FIRMWARE_FILE_IMAGE_IDENTIFIER) != null) {
+      firmware.setImageIdentifier(
+          getHexDecoded(requestParameters, PlatformKeys.FIRMWARE_FILE_IMAGE_IDENTIFIER, null));
     }
     firmware.setPushToNewDevices(
         getBoolean(
             requestParameters,
             PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
             PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE));
+
+    firmware.setHashType(getString(requestParameters, PlatformKeys.FIRMWARE_HASH_TYPE, null));
 
     firmware.setFirmwareModuleData(new FirmwareModuleData());
     if (requestParameters.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM)) {
@@ -119,8 +129,62 @@ public class FirmwareSteps {
     return firmware;
   }
 
+  protected ChangeableFirmware createAndGetChangeableFirmware(
+      final Map<String, String> requestParameters) {
+    final ChangeableFirmware firmware = new ChangeableFirmware();
+    firmware.setDescription(getString(requestParameters, PlatformKeys.FIRMWARE_DESCRIPTION, null));
+    firmware.setPushToNewDevices(
+        getBoolean(
+            requestParameters,
+            PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
+            PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE));
+
+    firmware.setFirmwareModuleData(new FirmwareModuleData());
+    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM)) {
+      firmware
+          .getFirmwareModuleData()
+          .setModuleVersionComm(
+              getString(requestParameters, PlatformKeys.FIRMWARE_MODULE_VERSION_COMM, null));
+    }
+    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC)) {
+      firmware
+          .getFirmwareModuleData()
+          .setModuleVersionFunc(
+              getString(requestParameters, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC, null));
+    }
+    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_MA)) {
+      firmware
+          .getFirmwareModuleData()
+          .setModuleVersionMa(
+              getString(requestParameters, PlatformKeys.FIRMWARE_MODULE_VERSION_MA, null));
+    }
+    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS)) {
+      firmware
+          .getFirmwareModuleData()
+          .setModuleVersionMbus(
+              getString(requestParameters, PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS, null));
+    }
+    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_SEC)) {
+      firmware
+          .getFirmwareModuleData()
+          .setModuleVersionSec(
+              getString(requestParameters, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC, null));
+    }
+    if (requestParameters.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_M_BUS_DRIVER_ACTIVE)) {
+      firmware
+          .getFirmwareModuleData()
+          .setModuleVersionMBusDriverActive(
+              getString(
+                  requestParameters,
+                  PlatformKeys.FIRMWARE_MODULE_VERSION_M_BUS_DRIVER_ACTIVE,
+                  null));
+    }
+    return firmware;
+  }
+
   protected void assertFirmwareFileExists(
-      final String identification, final Map<String, String> firmwareFileProperties) {
+      final String identification, final Map<String, String> firmwareFileProperties)
+      throws NoSuchAlgorithmException {
     final Firmware expectedFirmware = this.createAndGetFirmware(firmwareFileProperties);
     final FirmwareFile databaseFirmwareFile =
         this.firmwareFileRepository.findByIdentification(identification);
@@ -130,8 +194,40 @@ public class FirmwareSteps {
         .as("Firmware File {} should exist", identification);
 
     assertThat(databaseFirmwareFile.getDescription()).isEqualTo(expectedFirmware.getDescription());
-    assertThat(databaseFirmwareFile.getFile()).isEqualTo(expectedFirmware.getFile());
     assertThat(databaseFirmwareFile.getFilename()).isEqualTo(expectedFirmware.getFilename());
+
+    if (expectedFirmware.getFile() == null) {
+      return;
+    }
+
+    final String fileStoreLocation =
+        getString(firmwareFileProperties, PlatformKeys.FIRMWARE_FILE_STORE_LOCATION, DATABASE);
+
+    if (fileStoreLocation == DATABASE) {
+      assertThat(databaseFirmwareFile.getFile()).isEqualTo(expectedFirmware.getFile());
+    }
+    if (fileStoreLocation == FILE_STORAGE) {
+      // There is no check here whether the file is actually on the file storage. Since the cucumber
+      // test is running outside the container in which the gxf common mudule runs there is no way
+      // to check the existence of the file on file storage inside the container. We can check that
+      // the file is NOT stored in the database and the hash for the file content is in the database
+      // as expected.
+      // Other cucumber tests that use the uploaded firmware file like UpdateFirmwareRequest test
+      // the existence of the file on storage by using the upload request as given condition for
+      // their test
+      assertThat(databaseFirmwareFile.getFile()).isNull();
+      assertThat(databaseFirmwareFile.getHashType()).isEqualTo(expectedFirmware.getHashType());
+      assertThat(databaseFirmwareFile.getHash())
+          .isEqualTo(
+              this.calculateHash(expectedFirmware.getHashType(), expectedFirmware.getFile()));
+    }
+  }
+
+  private String calculateHash(final String hashType, final byte[] firmwareFile)
+      throws NoSuchAlgorithmException {
+    final MessageDigest messageDigest = MessageDigest.getInstance(hashType);
+    final byte[] digest = messageDigest.digest(firmwareFile);
+    return new BigInteger(1, digest).toString(16);
   }
 
   protected void assertFirmwareFileHasModuleVersions(
@@ -203,9 +299,9 @@ public class FirmwareSteps {
     assertThat(databaseDeviceModels).hasSameSizeAs(deviceModels);
 
     final List<String> databaseDeviceModelCodes =
-        databaseDeviceModels.stream().map(ddm -> ddm.getModelCode()).collect(Collectors.toList());
+        databaseDeviceModels.stream().map(ddm -> ddm.getModelCode()).toList();
     final List<String> deviceModelCodes =
-        deviceModels.stream().map(dm -> dm.getModelCode()).collect(Collectors.toList());
+        deviceModels.stream().map(dm -> dm.getModelCode()).toList();
 
     assertThat(deviceModelCodes).containsExactlyInAnyOrderElementsOf(databaseDeviceModelCodes);
   }

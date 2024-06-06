@@ -1,18 +1,14 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.simulator.protocol.iec60870.domain.lightmeasurementdevice;
 
+import jakarta.annotation.PostConstruct;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
-import javax.annotation.PostConstruct;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
@@ -39,7 +35,7 @@ public class LightMeasurementDeviceAsduFactory implements Iec60870AsduFactory {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(LightMeasurementDeviceAsduFactory.class);
 
-  private SecureRandom random = new SecureRandom();
+  private final SecureRandom random = new SecureRandom();
 
   @Value("${general_interrogation_object_addresses}")
   private final int[] ioa = new int[0];

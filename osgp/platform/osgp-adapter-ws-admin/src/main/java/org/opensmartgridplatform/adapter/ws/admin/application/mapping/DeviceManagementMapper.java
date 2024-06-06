@@ -1,16 +1,13 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.admin.application.mapping;
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
+import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToInstantConverter;
 import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToZonedDateTimeConverter;
 import org.springframework.stereotype.Component;
 
@@ -69,5 +66,8 @@ public class DeviceManagementMapper extends ConfigurableMapper {
     mapperFactory
         .getConverterFactory()
         .registerConverter(new XMLGregorianCalendarToZonedDateTimeConverter());
+    mapperFactory
+        .getConverterFactory()
+        .registerConverter(new XMLGregorianCalendarToInstantConverter());
   }
 }

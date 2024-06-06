@@ -1,16 +1,12 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.microgrids.application.services;
 
+import jakarta.persistence.OptimisticLockException;
 import java.time.Duration;
 import java.time.Instant;
-import javax.persistence.OptimisticLockException;
 import org.opensmartgridplatform.adapter.domain.microgrids.application.mapping.DomainMicrogridsMapper;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
@@ -80,7 +76,7 @@ public class AdHocManagementService extends BaseService {
     this.osgpCoreRequestMessageSender.send(
         new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto),
         messageType,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   public void handleInternalDataResponse(
@@ -170,7 +166,7 @@ public class AdHocManagementService extends BaseService {
     this.osgpCoreRequestMessageSender.send(
         new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto),
         messageType,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   public void handleSetDataResponse(

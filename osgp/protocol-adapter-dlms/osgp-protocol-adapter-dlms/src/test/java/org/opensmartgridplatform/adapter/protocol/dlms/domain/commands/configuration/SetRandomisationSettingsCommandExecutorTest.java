@@ -1,25 +1,22 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import java.util.Optional;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -33,12 +30,12 @@ import org.openmuc.jdlms.SetParameter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.GetConfigurationObjectService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.ProtocolServiceLookup;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.SetConfigurationObjectService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
@@ -48,15 +45,15 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class SetRandomisationSettingsCommandExecutorTest {
-
-  @Mock private DlmsObjectConfigService dlmsObjectConfigService;
+class SetRandomisationSettingsCommandExecutorTest {
 
   @Mock private ProtocolServiceLookup protocolServiceLookup;
 
   @Mock private GetConfigurationObjectService getConfigurationObjectService;
 
   @Mock private SetConfigurationObjectService setConfigurationObjectService;
+
+  @Mock private ObjectConfigServiceHelper objectConfigServiceHelper;
 
   @InjectMocks private SetRandomisationSettingsCommandExecutor executor;
 
@@ -68,16 +65,11 @@ public class SetRandomisationSettingsCommandExecutorTest {
   private DlmsDevice device;
   private MessageMetadata messageMetadata;
 
-  @BeforeEach
-  public void init() throws ProtocolAdapterException, IOException {
+  public void init(final Protocol protocol) throws ProtocolAdapterException, IOException {
 
-    // SETUP
-    final Protocol smr51 = Protocol.SMR_5_1;
-    this.device = this.createDlmsDevice(smr51);
+    this.device = this.createDlmsDevice(protocol);
 
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
-
-    final AttributeAddress address = new AttributeAddress(1, new ObisCode("0.1.94.31.12.255"), 1);
 
     this.dataDto = new SetRandomisationSettingsRequestDataDto(0, 1, 1, 1);
 
@@ -86,28 +78,36 @@ public class SetRandomisationSettingsCommandExecutorTest {
     final ConfigurationObjectDto currentConfigurationObjectDto =
         new ConfigurationObjectDto(currentConfigurationFlagsDto);
 
-    when(this.protocolServiceLookup.lookupGetService(smr51))
+    when(this.protocolServiceLookup.lookupGetService(protocol))
         .thenReturn(this.getConfigurationObjectService);
-    when(this.protocolServiceLookup.lookupSetService(smr51))
+    when(this.protocolServiceLookup.lookupSetService(protocol))
         .thenReturn(this.setConfigurationObjectService);
-    when(this.getConfigurationObjectService.getConfigurationObject(this.dlmsConnectionManager))
+    when(this.getConfigurationObjectService.getConfigurationObject(
+            this.dlmsConnectionManager, protocol, this.device))
         .thenReturn(currentConfigurationObjectDto);
     when(this.setConfigurationObjectService.setConfigurationObject(
             any(DlmsConnectionManager.class),
             any(ConfigurationObjectDto.class),
-            any(ConfigurationObjectDto.class)))
+            any(ConfigurationObjectDto.class),
+            eq(protocol),
+            eq(this.device)))
         .thenReturn(AccessResultCode.SUCCESS);
-    when(this.dlmsObjectConfigService.getAttributeAddress(
-            this.device, DlmsObjectType.RANDOMISATION_SETTINGS, null))
-        .thenReturn(address);
+
+    when(this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
+            protocol, DlmsObjectType.RANDOMISATION_SETTINGS))
+        .thenReturn(Optional.of(new AttributeAddress(-1, (ObisCode) null, -1)));
 
     when(this.dlmsConnectionManager.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
   }
 
-  @Test
-  public void testExecuteSuccess() throws ProtocolAdapterException {
+  @ParameterizedTest
+  @EnumSource(
+      value = Protocol.class,
+      names = {"DSMR_4_2_2", "SMR_5_0_0"})
+  void testExecuteSuccess(final Protocol protocol) throws ProtocolAdapterException, IOException {
 
+    this.init(protocol);
     // CALL
     final AccessResultCode resultCode =
         this.executor.execute(
@@ -117,13 +117,21 @@ public class SetRandomisationSettingsCommandExecutorTest {
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
   }
 
-  @Test
-  public void testExecuteFailConfiguration() throws ProtocolAdapterException {
+  @ParameterizedTest
+  @EnumSource(
+      value = Protocol.class,
+      names = {"DSMR_4_2_2", "SMR_5_0_0"})
+  void testExecuteFailConfiguration(final Protocol protocol)
+      throws ProtocolAdapterException, IOException {
     // SETUP
+    this.init(protocol);
+
     when(this.setConfigurationObjectService.setConfigurationObject(
             any(DlmsConnectionManager.class),
             any(ConfigurationObjectDto.class),
-            any(ConfigurationObjectDto.class)))
+            any(ConfigurationObjectDto.class),
+            eq(protocol),
+            eq(this.device)))
         .thenReturn(AccessResultCode.OTHER_REASON);
 
     assertThatExceptionOfType(ProtocolAdapterException.class)
@@ -135,11 +143,16 @@ public class SetRandomisationSettingsCommandExecutorTest {
             });
   }
 
-  @Test
-  public void testExecuteFailSetRandomisationSettings()
+  @ParameterizedTest
+  @EnumSource(
+      value = Protocol.class,
+      names = {"DSMR_4_2_2", "SMR_5_0_0"})
+  void testExecuteFailSetRandomisationSettings(final Protocol protocol)
       throws ProtocolAdapterException, IOException {
 
     // SETUP
+    this.init(protocol);
+
     when(this.dlmsConnection.set(any(SetParameter.class)))
         .thenReturn(AccessResultCode.OTHER_REASON);
 
@@ -152,13 +165,18 @@ public class SetRandomisationSettingsCommandExecutorTest {
             });
   }
 
-  @Test
-  public void testUnknownAttribute() throws ProtocolAdapterException {
+  @ParameterizedTest
+  @EnumSource(
+      value = Protocol.class,
+      names = {"DSMR_4_2_2", "SMR_5_0_0"})
+  void testUnknownAttribute(final Protocol protocol) throws ProtocolAdapterException, IOException {
 
     // SETUP
-    when(this.dlmsObjectConfigService.getAttributeAddress(
-            this.device, DlmsObjectType.RANDOMISATION_SETTINGS, null))
-        .thenThrow(new ProtocolAdapterException("unknown"));
+    this.init(protocol);
+
+    when(this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
+            protocol, DlmsObjectType.RANDOMISATION_SETTINGS))
+        .thenReturn(Optional.empty());
 
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
@@ -180,6 +198,6 @@ public class SetRandomisationSettingsCommandExecutorTest {
 
     return Arrays.stream(ConfigurationFlagTypeDto.values())
         .map(flagType -> new ConfigurationFlagDto(flagType, true))
-        .collect(Collectors.toList());
+        .toList();
   }
 }

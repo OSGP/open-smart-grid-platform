@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.util.HashMap;
@@ -30,7 +26,7 @@ public enum DlmsUnitTypeDto {
   CURRENCY(10, "CURRENCY"),
   METER(11, "M"),
   METER_PER_SECOND(12, "METER_PER_SECOND"),
-  M3(13, "M_3"), // this underscore is needed because the xsd generates this!
+  M3(13, "M_3", "M3"), // this underscore is needed because the xsd generates this!
   M3_CORR(14, "M_3"),
   M3_FLUX(15, "M_3_FLUX"),
   M3_FLUX_CORR(16, "M_3_FLUX_CORR"),
@@ -47,7 +43,7 @@ public enum DlmsUnitTypeDto {
   WATT(27, "W"),
   VOLT_AMPERE(28, "VOLT_AMPERE"),
   VAR(29, "VAR"),
-  KWH(30, "KWH"),
+  WH(30, "WH"),
   VOLT_AMP_HOUR(31, "VOLT_AMP_HOUR"),
   VAR_HOUR(32, "VAR_HOUR"),
   AMPERE(33, "AMP", "A"),

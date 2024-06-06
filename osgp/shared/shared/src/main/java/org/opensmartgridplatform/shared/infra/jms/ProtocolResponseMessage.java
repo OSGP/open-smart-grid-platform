@@ -1,16 +1,13 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.shared.infra.jms;
 
 import java.io.Serializable;
 import lombok.Getter;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage.Builder;
 
 @Getter
 public class ProtocolResponseMessage extends ResponseMessage {
@@ -101,6 +98,11 @@ public class ProtocolResponseMessage extends ResponseMessage {
       return this;
     }
 
+    public Builder deviceModelCode(final String deviceModelCode) {
+      this.superBuilder.withDeviceModelCode(deviceModelCode);
+      return this;
+    }
+
     public Builder retryCount(final int retryCount) {
       this.retryCount = retryCount;
       return this;
@@ -108,6 +110,11 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     public Builder retryHeader(final RetryHeader retryHeader) {
       this.superBuilder.withRetryHeader(retryHeader);
+      return this;
+    }
+
+    public Builder messagePriority(final int messagePriority) {
+      this.superBuilder.withMessagePriority(messagePriority);
       return this;
     }
 

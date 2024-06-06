@@ -1,11 +1,7 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,6 +11,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.refEq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -28,6 +25,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AttributeAddress;
@@ -48,6 +46,7 @@ import org.slf4j.LoggerFactory;
 class InvocationCounterManagerTest {
   private static final AttributeAddress ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE =
       new AttributeAddress(1, new ObisCode(new byte[] {0, 0, 43, 1, 0, -1}), 2);
+  private static final String IP_ADDRESS = "1.2.3.4";
 
   private InvocationCounterManager manager;
   private MessageMetadata messageMetadata;
@@ -78,19 +77,28 @@ class InvocationCounterManagerTest {
   }
 
   @Test
-  void initializeInvocationCounterForDeviceTaskExecuted() throws OsgpException {
+  void resetIpAddressAfterInitialize() throws OsgpException {
+    this.device = mock(DlmsDevice.class);
+
     this.manager.initializeInvocationCounter(this.messageMetadata, this.device);
 
-    verify(this.connectionFactory, times(1))
+    final InOrder inOrder = inOrder(this.connectionFactory, this.device);
+    inOrder.verify(this.device).setIpAddress(null);
+    inOrder
+        .verify(this.connectionFactory, times(1))
         .createAndHandlePublicClientConnection(
             any(MessageMetadata.class), eq(this.device), isNull(), isNull(), any());
+    inOrder.verify(this.device).setIpAddress(null);
   }
 
   @Test
   void initializeInvocationCounterForDeviceTaskExecutedDebugEnabled() throws OsgpException {
     this.device.setInDebugMode(true);
+    this.device.setIpAddress(IP_ADDRESS);
+
     this.manager.initializeInvocationCounter(this.messageMetadata, this.device);
 
+    assertThat(this.device.getIpAddress()).isNull();
     verify(this.connectionFactory, times(1))
         .createAndHandlePublicClientConnection(
             any(MessageMetadata.class), eq(this.device), isNotNull(), isNull(), any());

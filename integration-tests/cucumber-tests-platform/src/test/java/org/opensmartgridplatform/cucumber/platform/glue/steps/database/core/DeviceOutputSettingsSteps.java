@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
@@ -13,8 +9,8 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInte
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import io.cucumber.java.en.Given;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -150,7 +146,7 @@ public class DeviceOutputSettingsSteps {
     for (final DeviceOutputSetting deviceOutputSetting : deviceOutputSettings) {
       final RelayStatus relayStatus =
           new RelayStatus.Builder(device, deviceOutputSetting.getExternalId())
-              .withLastSwitchingEventState(false, new Date())
+              .withLastSwitchingEventState(false, Instant.now())
               .build();
 
       this.relayStatusRepository.save(relayStatus);

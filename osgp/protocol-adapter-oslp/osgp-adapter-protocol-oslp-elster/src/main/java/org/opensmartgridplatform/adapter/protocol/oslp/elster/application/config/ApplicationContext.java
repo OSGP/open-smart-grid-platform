@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.config;
 
 import io.micrometer.core.instrument.Clock;
@@ -14,9 +10,8 @@ import io.micrometer.jmx.JmxConfig;
 import io.micrometer.jmx.JmxMeterRegistry;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Slf4JLoggerFactory;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeZone;
+import java.time.Instant;
+import java.time.ZoneId;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.FirmwareLocation;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
@@ -48,11 +43,10 @@ public class ApplicationContext extends AbstractConfig {
   private static final String PROPERTY_NAME_FIRMWARE_PATH = "firmware.path";
   private static final String PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE = "paging.maximum.pagesize";
   private static final String PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE = "paging.default.pagesize";
-
   private static final String PROPERTY_NAME_LOCAL_TIME_ZONE_IDENTIFIER = "local.time.zone";
-
   private static final String PROPERTY_NAME_DEVICE_PENDINGSETSCHEDULEREQUEST_EXPIRES_IN_MINUTES =
       "device.pendingsetschedulerequest.expires_in_minutes";
+  public static final int SECONDS_PER_MINUTE = 60;
 
   public ApplicationContext() {
     InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
@@ -101,13 +95,13 @@ public class ApplicationContext extends AbstractConfig {
   }
 
   @Bean
-  public DateTimeZone localTimeZone() {
-    return DateTimeZone.forID(this.localTimeZoneIdentifier());
+  public ZoneId localTimeZone() {
+    return ZoneId.of(this.localTimeZoneIdentifier());
   }
 
   @Bean
   public Integer timeZoneOffsetMinutes() {
-    return this.localTimeZone().getStandardOffset(new DateTime().getMillis())
-        / DateTimeConstants.MILLIS_PER_MINUTE;
+    return this.localTimeZone().getRules().getStandardOffset(Instant.now()).getTotalSeconds()
+        / SECONDS_PER_MINUTE;
   }
 }

@@ -1,11 +1,7 @@
-/*
- * Copyright 2014-2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.core.application.tasks;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,23 +9,28 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.net.InetAddress;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.core.application.config.ScheduledTaskExecutorJobConfig;
 import org.opensmartgridplatform.core.application.services.DeviceRequestMessageService;
@@ -45,25 +46,42 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
 import org.quartz.JobExecutionException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /** test class for ScheduledTaskExecutorService */
 @ExtendWith(MockitoExtension.class)
-public class ScheduledTaskExecutorServiceTest {
+class ScheduledTaskExecutorServiceTest {
+  private static final long AWAIT_TERMINATION_IN_SEC = 5;
 
   private static final String DOMAIN = "Domain";
 
   private static final String DATA_OBJECT = "data object";
 
-  private static final Timestamp SCHEDULED_TIME = new Timestamp(System.currentTimeMillis());
+  private static final Timestamp INITIAL_SCHEDULED_TIME = new Timestamp(System.currentTimeMillis());
+
+  private static final int MAX_RETRY_COUNT = 0;
 
   @Mock private DeviceRequestMessageService deviceRequestMessageService;
 
   @Mock private ScheduledTaskRepository scheduledTaskRepository;
   @Mock private DeviceRepository deviceRepository;
-  @InjectMocks private ScheduledTaskExecutorService scheduledTaskExecutorService;
+  private ScheduledTaskExecutorService scheduledTaskExecutorService;
   @Mock private ScheduledTaskExecutorJobConfig scheduledTaskExecutorJobConfig;
 
-  @Captor private ArgumentCaptor<ScheduledTask> scheduledTaskCaptor;
+  @Captor private ArgumentCaptor<List<ScheduledTask>> scheduledTaskCaptor;
+
+  @Captor private ArgumentCaptor<ProtocolRequestMessage> protocolRequestMessageCaptor;
+
+  @BeforeEach
+  void setUp() {
+    this.scheduledTaskExecutorService =
+        new ScheduledTaskExecutorService(
+            this.deviceRequestMessageService,
+            this.scheduledTaskRepository,
+            this.deviceRepository,
+            this.scheduledTaskExecutorJobConfig,
+            MAX_RETRY_COUNT);
+  }
 
   /**
    * Test the scheduled task runner for the case when the deviceRequestMessageService gives a
@@ -74,8 +92,7 @@ public class ScheduledTaskExecutorServiceTest {
    * @throws JobExecutionException
    */
   @Test
-  void testRunFunctionalException()
-      throws FunctionalException, UnknownHostException, JobExecutionException {
+  void testRunFunctionalException() throws FunctionalException {
     final List<ScheduledTask> scheduledTasks = new ArrayList<>();
     final Timestamp scheduledTime = new Timestamp(System.currentTimeMillis());
     final ScheduledTask scheduledTask =
@@ -83,15 +100,23 @@ public class ScheduledTaskExecutorServiceTest {
     scheduledTasks.add(scheduledTask);
 
     when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
-            any(ScheduledTaskStatusType.class), any(Timestamp.class), any(Pageable.class)))
-        .thenReturn(new ArrayList<ScheduledTask>())
+            eq(ScheduledTaskStatusType.PENDING), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(new ArrayList<>());
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.NEW), any(Timestamp.class), any(Pageable.class)))
         .thenReturn(scheduledTasks)
-        .thenReturn(new ArrayList<ScheduledTask>());
+        .thenReturn(new ArrayList<>());
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.RETRY), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(new ArrayList<>());
+    when(this.scheduledTaskExecutorJobConfig.getScheduledTaskThreadPoolSize()).thenReturn(1);
 
     final Device device = new Device();
-    device.updateRegistrationData(InetAddress.getByName("127.0.0.1"), "deviceType");
+    device.updateRegistrationData("127.0.0.1", "deviceType");
     when(this.deviceRepository.findByDeviceIdentification(anyString())).thenReturn(device);
-    when(this.scheduledTaskRepository.save(any(ScheduledTask.class))).thenReturn(scheduledTask);
+    when(this.scheduledTaskRepository.updateStatus(
+            scheduledTask.getId(), ScheduledTaskStatusType.PENDING))
+        .thenReturn(1);
     when(this.scheduledTaskExecutorJobConfig.scheduledTaskPageSize()).thenReturn(30);
     doThrow(new FunctionalException(FunctionalExceptionType.ARGUMENT_NULL, ComponentType.OSGP_CORE))
         .when(this.deviceRequestMessageService)
@@ -101,6 +126,52 @@ public class ScheduledTaskExecutorServiceTest {
 
     // check if task is deleted
     verify(this.scheduledTaskRepository).delete(scheduledTask);
+  }
+
+  @Test
+  void testRunNewAndRetryTasks() throws FunctionalException {
+    final List<ScheduledTask> scheduledTasks = new ArrayList<>();
+    for (int i = 0; i < 1000; i++) {
+      final Timestamp scheduledTime = new Timestamp(System.currentTimeMillis());
+      final ScheduledTask scheduledTask =
+          new ScheduledTask(
+              this.createMessageMetadata(), DOMAIN, DOMAIN, DATA_OBJECT, scheduledTime);
+      ReflectionTestUtils.setField(scheduledTask, "id", Integer.valueOf(i).longValue());
+      scheduledTasks.add(scheduledTask);
+    }
+
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.PENDING), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(new ArrayList<>());
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.NEW), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(scheduledTasks)
+        .thenReturn(new ArrayList<>());
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.RETRY), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(scheduledTasks)
+        .thenReturn(new ArrayList<>());
+    when(this.scheduledTaskExecutorJobConfig.getScheduledTaskThreadPoolSize()).thenReturn(1);
+
+    final Device device = new Device();
+    device.updateRegistrationData("127.0.0.1", "deviceType");
+    when(this.deviceRepository.findByDeviceIdentification(anyString())).thenReturn(device);
+    when(this.scheduledTaskExecutorJobConfig.scheduledTaskPageSize()).thenReturn(30);
+
+    try (final MockedStatic<MoreExecutors> mockStatic = mockStatic(MoreExecutors.class)) {
+      this.scheduledTaskExecutorService.processScheduledTasks();
+
+      mockStatic.verify(
+          () ->
+              MoreExecutors.shutdownAndAwaitTermination(
+                  any(ExecutorService.class), eq(Duration.ofSeconds(AWAIT_TERMINATION_IN_SEC))),
+          times(2));
+    }
+
+    verify(this.deviceRequestMessageService, times(scheduledTasks.size() * 2))
+        .processMessage(any(ProtocolRequestMessage.class));
+    verify(this.scheduledTaskRepository, times(scheduledTasks.size() * 2))
+        .updateStatus(any(Long.class), eq(ScheduledTaskStatusType.PENDING));
   }
 
   @Test
@@ -116,17 +187,58 @@ public class ScheduledTaskExecutorServiceTest {
         .thenReturn(-1L);
     when(this.scheduledTaskExecutorJobConfig.scheduledTaskPageSize()).thenReturn(30);
     this.whenFindByStatusAndScheduledTime(
-        expiredPendingTasks, new ArrayList<ScheduledTask>(), new ArrayList<ScheduledTask>());
+        expiredPendingTasks, new ArrayList<>(), new ArrayList<>());
 
     this.scheduledTaskExecutorService.processScheduledTasks();
 
-    verify(this.scheduledTaskRepository, times(4)).save(this.scheduledTaskCaptor.capture());
-    final List<ScheduledTask> savedScheduledTasks = this.scheduledTaskCaptor.getAllValues();
+    verify(this.scheduledTaskRepository).saveAll(this.scheduledTaskCaptor.capture());
+    final List<ScheduledTask> retryScheduledTasks = this.scheduledTaskCaptor.getValue();
+    assertThat(retryScheduledTasks).hasSize(1);
+    assertThat(retryScheduledTasks.get(0).getStatus()).isEqualTo(ScheduledTaskStatusType.RETRY);
+    assertThat(retryScheduledTasks.get(0).getScheduledTime()).isAfter(INITIAL_SCHEDULED_TIME);
 
-    assertThat(savedScheduledTasks.get(0).getStatus()).isEqualTo(ScheduledTaskStatusType.FAILED);
-    assertThat(savedScheduledTasks.get(1).getStatus()).isEqualTo(ScheduledTaskStatusType.RETRY);
-    assertThat(savedScheduledTasks.get(2).getStatus()).isEqualTo(ScheduledTaskStatusType.FAILED);
-    assertThat(savedScheduledTasks.get(3).getStatus()).isEqualTo(ScheduledTaskStatusType.FAILED);
+    verify(this.scheduledTaskRepository).deleteAll(this.scheduledTaskCaptor.capture());
+    final List<ScheduledTask> deleteScheduledTasks = this.scheduledTaskCaptor.getValue();
+    assertThat(deleteScheduledTasks).hasSize(3);
+  }
+
+  @Test
+  void testMetadataOfScheduledTaskToRetryRequest() throws FunctionalException {
+    final String deviceIdentification = "device-1";
+    final String deviceModelCode = "E,M1,M2,M3,M4";
+    final MessageMetadata messageMetadata =
+        this.createMessageMetadata(deviceIdentification, deviceModelCode);
+    final ScheduledTask scheduledTask =
+        new ScheduledTask(messageMetadata, DOMAIN, DOMAIN, DATA_OBJECT, INITIAL_SCHEDULED_TIME);
+    final Device device = new Device();
+
+    when(this.scheduledTaskExecutorJobConfig.scheduledTaskPendingDurationMaxSeconds())
+        .thenReturn(-1L);
+    when(this.scheduledTaskExecutorJobConfig.scheduledTaskPageSize()).thenReturn(30);
+    when(this.scheduledTaskRepository.updateStatus(
+            scheduledTask.getId(), ScheduledTaskStatusType.PENDING))
+        .thenReturn(1);
+    when(this.deviceRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(device);
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.PENDING), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(new ArrayList<>());
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.NEW), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(List.of(scheduledTask), Collections.emptyList());
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.RETRY), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(new ArrayList<>());
+    when(this.scheduledTaskExecutorJobConfig.getScheduledTaskThreadPoolSize()).thenReturn(1);
+
+    this.scheduledTaskExecutorService.processScheduledTasks();
+
+    verify(this.deviceRequestMessageService)
+        .processMessage(this.protocolRequestMessageCaptor.capture());
+    final ProtocolRequestMessage protocolRequestMessage =
+        this.protocolRequestMessageCaptor.getValue();
+    assertThat(protocolRequestMessage).isNotNull();
+    assertThat(protocolRequestMessage.getDeviceIdentification()).isEqualTo(deviceIdentification);
+    assertThat(protocolRequestMessage.getDeviceModelCode()).isEqualTo(deviceModelCode);
   }
 
   private void whenFindByStatusAndScheduledTime(
@@ -156,20 +268,20 @@ public class ScheduledTaskExecutorServiceTest {
 
   private ScheduledTask createScheduledTask(
       final boolean exceededMaxRetry, final boolean expiredTask) {
-    MessageMetadata messageMetadata;
+    final MessageMetadata messageMetadata;
     if (expiredTask) {
       messageMetadata = this.createExpiredMessageMetadata();
     } else {
       messageMetadata = this.createMessageMetadata();
     }
     final ScheduledTask expiredScheduledTask =
-        new ScheduledTask(messageMetadata, DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
+        new ScheduledTask(messageMetadata, DOMAIN, DOMAIN, DATA_OBJECT, INITIAL_SCHEDULED_TIME);
     // retryOn() will raise the number of retries. The retry time will not change since it is the
     // same as the retry time in the message metadata. State will be set RETRY and will be reset to
     // PENDING by the setPending method. This is the only way to raise the number of retry above the
     // maxRetries (0)
     if (exceededMaxRetry) {
-      expiredScheduledTask.retryOn(SCHEDULED_TIME);
+      expiredScheduledTask.retryOn(INITIAL_SCHEDULED_TIME);
     }
     expiredScheduledTask.setPending();
     return expiredScheduledTask;
@@ -183,7 +295,15 @@ public class ScheduledTaskExecutorServiceTest {
   }
 
   private MessageMetadata createMessageMetadata() {
-    return this.createMessageMetadataBuilder().withDeviceIdentification("retryable").build();
+    return this.createMessageMetadata("retryable", null);
+  }
+
+  private MessageMetadata createMessageMetadata(
+      final String deviceIdentification, final String deviceModelCode) {
+    return this.createMessageMetadataBuilder()
+        .withDeviceIdentification(deviceIdentification)
+        .withDeviceModelCode(deviceModelCode)
+        .build();
   }
 
   private MessageMetadata.Builder createMessageMetadataBuilder() {

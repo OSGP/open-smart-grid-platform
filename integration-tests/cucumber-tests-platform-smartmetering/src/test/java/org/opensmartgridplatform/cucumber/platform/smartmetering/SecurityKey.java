@@ -1,11 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering;
 
 /*
@@ -59,7 +55,8 @@ public enum SecurityKey {
       "23c7754b66d48da6d34cc72b1ae68188144c7488ae409eb04bd32af91d44e902450ca1739c42fd5f005624b8fa26d65e",
       null),
 
-  PASSWORD("a23e88d5a3145b9b8b6f621fc58af6ebc0e24e7d01c1897bfb88407d6f1ca7437319c744edad1484", ""),
+  LLS_PASSWORD(
+      "a23e88d5a3145b9b8b6f621fc58af6ebc0e24e7d01c1897bfb88407d6f1ca7437319c744edad1484", ""),
 
   SECURITY_KEY_1(
       "9367e7b78e6ebf40c9e7c1a7fff1955af89d0436abeb8c1f91a4931ab9bb339ade708df02f54ba4ff309eecf30289115",
@@ -115,7 +112,20 @@ public enum SecurityKey {
   INCORRECT_SECURITY_KEY_3(
       "567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234", "abcdef0123456789"),
 
-  EMPTY_SECURITY_KEY("", "");
+  EMPTY_SECURITY_KEY("", ""),
+
+  MBUS_DEFAULT_KEY(
+      "f2d45f475b56051b92b9ad188f557c42bdbbefc863f8fba5b9dd90e5714391d6b2208dd7d740112720c70d80c2449c94",
+      "68f6e459452e3430605dee8899f141e1a6d6a778822ef56c0b70bd925ee9eb7bc3befe8d34f04137ad4fb4da41f7bb07"),
+  MBUS_USERKEY(
+      "d2a54c35a800755df0b8d0f7bb02af040473714068bfe3c5d0804d06a56364a7072cdcf422fc1a7fc1ce27dcc7103564",
+      "416d677947475a7a42427145416e7436"),
+  MBUS_FIRMWARE_UPDATE_AUTHENTICATION_KEY(
+      "a70fe2e641c0bed7a0e84952dae7014863c1a012508d16af96bef46689cee5ab91b5aa877c4c45168296f55fc5e96d3e",
+      "416d677947475a7a42427145416e7436"),
+  MBUS_P0_KEY(
+      "76f6b8bbdc5ac5d726e012282e6c232ab8d3cac6f937a8e05e95cbeb57ccf505df4e93f8400ac2f55a71e4c6cb10cf80",
+      "416d677947475a7a42427145416e7436");
 
   private final String databaseKey;
   private final String soapRequestKey;

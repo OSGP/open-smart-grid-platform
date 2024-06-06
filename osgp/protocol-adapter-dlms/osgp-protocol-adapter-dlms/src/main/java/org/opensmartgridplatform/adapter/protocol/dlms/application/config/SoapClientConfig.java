@@ -1,11 +1,7 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
 import java.io.File;
@@ -82,6 +78,9 @@ public class SoapClientConfig {
   @Value("${soapclient.max-conn-total:100}")
   private int maxConnTotal;
 
+  @Value("${soapclient.supported.tls.protocols:TLSv1.2,TLSv1.3}")
+  private String[] supportedTlsProtocols;
+
   @Bean
   Jaxb2Marshaller soapClientJaxb2Marshaller() {
     final Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
@@ -90,7 +89,13 @@ public class SoapClientConfig {
   }
 
   @Bean
-  public WebServiceTemplate webServiceTemplate() throws Exception {
+  public WebServiceTemplate webServiceTemplate()
+      throws UnrecoverableKeyException,
+          CertificateException,
+          IOException,
+          NoSuchAlgorithmException,
+          KeyStoreException,
+          KeyManagementException {
 
     final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
     webServiceTemplate.setMarshaller(this.soapClientJaxb2Marshaller());
@@ -106,14 +111,22 @@ public class SoapClientConfig {
 
   @Bean
   public HttpComponentsMessageSender httpComponentsMessageSender()
-      throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException,
-          KeyStoreException, KeyManagementException {
+      throws IOException,
+          UnrecoverableKeyException,
+          CertificateException,
+          NoSuchAlgorithmException,
+          KeyStoreException,
+          KeyManagementException {
     return new HttpComponentsMessageSender(this.httpClient());
   }
 
   public HttpClient httpClient()
-      throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException,
-          KeyStoreException, KeyManagementException {
+      throws IOException,
+          UnrecoverableKeyException,
+          CertificateException,
+          NoSuchAlgorithmException,
+          KeyStoreException,
+          KeyManagementException {
 
     return HttpClientBuilder.create()
         .setSSLSocketFactory(this.sslConnectionSocketFactory())
@@ -124,18 +137,31 @@ public class SoapClientConfig {
   }
 
   public SSLConnectionSocketFactory sslConnectionSocketFactory()
-      throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException,
-          KeyStoreException, KeyManagementException {
+      throws IOException,
+          UnrecoverableKeyException,
+          CertificateException,
+          NoSuchAlgorithmException,
+          KeyStoreException,
+          KeyManagementException {
     if (!Boolean.parseBoolean(this.useHostNameVerifier)) {
-      return new SSLConnectionSocketFactory(this.sslContext(), NoopHostnameVerifier.INSTANCE);
+      return new SSLConnectionSocketFactory(
+          this.sslContext(), this.supportedTlsProtocols, null, NoopHostnameVerifier.INSTANCE);
     } else {
-      return new SSLConnectionSocketFactory(this.sslContext());
+      return new SSLConnectionSocketFactory(
+          this.sslContext(),
+          this.supportedTlsProtocols,
+          null,
+          SSLConnectionSocketFactory.getDefaultHostnameVerifier());
     }
   }
 
   public SSLContext sslContext()
-      throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException,
-          KeyStoreException, KeyManagementException {
+      throws IOException,
+          UnrecoverableKeyException,
+          CertificateException,
+          NoSuchAlgorithmException,
+          KeyStoreException,
+          KeyManagementException {
     return SSLContextBuilder.create()
         .loadKeyMaterial(
             this.keyStore.getFile(),

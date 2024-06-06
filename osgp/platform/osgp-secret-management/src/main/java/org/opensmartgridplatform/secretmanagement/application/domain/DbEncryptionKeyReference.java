@@ -1,22 +1,18 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.secretmanagement.application.domain;
 
-import java.util.Date;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import java.time.Instant;
 import lombok.Getter;
 import lombok.Setter;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
@@ -34,15 +30,15 @@ public class DbEncryptionKeyReference {
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "encryption_key_seq_gen")
   private Long id;
 
-  private Date creationTime;
-  private Date modificationTime;
+  private Instant creationTime;
+  private Instant modificationTime;
   private Long version; // for optimistic locking
 
   @Enumerated(EnumType.STRING)
   private EncryptionProviderType encryptionProviderType;
 
   private String reference;
-  private Date validFrom;
-  private Date validTo;
+  private Instant validFrom;
+  private Instant validTo;
   private String modifiedBy;
 }

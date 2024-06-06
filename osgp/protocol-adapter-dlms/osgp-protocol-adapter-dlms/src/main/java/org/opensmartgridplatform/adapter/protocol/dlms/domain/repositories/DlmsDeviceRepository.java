@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories;
 
 import java.time.Instant;
@@ -47,4 +43,43 @@ public interface DlmsDeviceRepository extends JpaRepository<DlmsDevice, Long> {
   int updateInvocationCounter(
       @Param("deviceIdentification") String deviceIdentification,
       @Param("invocationCounter") Long invocationCounter);
+
+  @Transactional
+  @Modifying
+  @Query(
+      value =
+          "UPDATE DlmsDevice"
+              + "   SET invocationCounter = invocationCounter + :incrementValue"
+              + " WHERE deviceIdentification = :deviceIdentification")
+  int incrementInvocationCounter(
+      @Param("deviceIdentification") String deviceIdentification,
+      @Param("incrementValue") Long incrementValue);
+
+  @Transactional
+  @Modifying
+  @Query(
+      value =
+          """
+              UPDATE dlms_device
+                 SET hls3Active = coalesce(:hls3active, hls3Active)
+                    ,hls4Active = coalesce(:hls4active, hls4Active)
+                    ,hls5Active = coalesce(:hls5active, hls5Active)
+               WHERE device_identification = :deviceIdentification""",
+      nativeQuery = true)
+  int updateHlsActive(
+      @Param("deviceIdentification") String deviceIdentification,
+      @Param("hls3active") Boolean hls3active,
+      @Param("hls4active") Boolean hls4active,
+      @Param("hls5active") Boolean hls5active);
+
+  @Transactional
+  @Modifying
+  @Query(
+      value =
+          "UPDATE DlmsDevice"
+              + "   SET firmwareHash = :firmwareHash"
+              + " WHERE deviceIdentification = :deviceIdentification")
+  int storeFirmwareHash(
+      @Param("deviceIdentification") String deviceIdentification,
+      @Param("firmwareHash") String firmwareHash);
 }

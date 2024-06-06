@@ -1,13 +1,11 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.domain.core.services;
 
+import com.google.common.collect.Lists;
+import java.util.List;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.exceptions.InactiveDeviceException;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
@@ -69,5 +67,20 @@ public class SmartMeterDomainService {
     }
 
     return smartMeter;
+  }
+
+  /**
+   * Search the MBus Devices coupled on this SmartMeter.
+   *
+   * @param smartMeter
+   * @return the active device for the given identification
+   * @throws FunctionalException when the device is not in the database or is not in use
+   */
+  public List<SmartMeter> searchMBusDevicesFor(final SmartMeter smartMeter) {
+
+    if (smartMeter.getChannel() == null || smartMeter.getChannel() == 0) {
+      return this.smartMeterRepository.findByGatewayDevice(smartMeter);
+    }
+    return Lists.newArrayList();
   }
 }

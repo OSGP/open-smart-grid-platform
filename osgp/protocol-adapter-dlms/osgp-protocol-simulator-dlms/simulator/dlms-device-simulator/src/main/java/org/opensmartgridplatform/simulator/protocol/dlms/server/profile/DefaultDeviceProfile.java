@@ -1,11 +1,7 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.simulator.protocol.dlms.server.profile;
 
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.AlarmObject.ALARM_OBJECT_1;
@@ -35,6 +31,7 @@ import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQuali
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2_LOGICAL_NAME;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3_LOGICAL_NAME;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_IMPORT_LOGICAL_NAME;
+import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2.INSTANTANEOUS_ACTIVE_POWER_IMPORT_LOGICAL_NAME_DSMR22;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2.INSTANTANEOUS_CURRENT_L1_LOGICAL_NAME;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2.INSTANTANEOUS_CURRENT_L2_LOGICAL_NAME;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile2.INSTANTANEOUS_CURRENT_L3_LOGICAL_NAME;
@@ -58,7 +55,6 @@ import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ActiveFirmwareIdentifier;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ActiveFirmwareSignature;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ActivityCalendar;
@@ -73,7 +69,6 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.CommunicationModu
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.CommunicationSessionLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ConfigurationObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.CurrentlyActiveTariff;
-import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DoubleLongUnsignedExtendedRegister;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DoubleLongUnsignedRegister;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ErrorObject;
@@ -827,26 +822,6 @@ public class DefaultDeviceProfile {
   }
 
   @Bean
-  public DefinableLoadProfile definableLoadProfile(final Calendar cal) {
-    final Integer classId = InterfaceClass.PROFILE_GENERIC.id();
-    final ObisCode obisCode = new ObisCode(0, 1, 94, 31, 6, 255);
-    this.dynamicValues()
-        .setDefaultAttributeValue(
-            classId,
-            obisCode,
-            ProfileGenericAttribute.CAPTURE_PERIOD.attributeId(),
-            DataObject.newUInteger32Data(300));
-    this.dynamicValues()
-        .setDefaultAttributeValue(
-            classId,
-            obisCode,
-            ProfileGenericAttribute.PROFILE_ENTRIES.attributeId(),
-            DataObject.newUInteger32Data(960));
-
-    return new DefinableLoadProfile(cal);
-  }
-
-  @Bean
   public AmrProfileStatusCodeEMeter amrProfileStatusCodeEMeter() {
     return new AmrProfileStatusCodeEMeter(this.amrProfileStatusCodeEMeter);
   }
@@ -1084,6 +1059,12 @@ public class DefaultDeviceProfile {
   public LongUnsignedRegister instantaneousActivePowerImport() {
     return new LongUnsignedRegister(
         INSTANTANEOUS_ACTIVE_POWER_IMPORT_LOGICAL_NAME, 1, 0, UnitType.WATT);
+  }
+
+  @Bean
+  public LongUnsignedRegister instantaneousActivePowerImportDsmr22() {
+    return new LongUnsignedRegister(
+        INSTANTANEOUS_ACTIVE_POWER_IMPORT_LOGICAL_NAME_DSMR22, 1, 0, UnitType.WATT);
   }
 
   @Bean

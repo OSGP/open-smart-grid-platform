@@ -1,11 +1,7 @@
-/*
- * Copyright 2020 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -94,7 +90,7 @@ public class DeviceManagementServiceTest {
     final List<EventNotificationType> eventNotifications =
         Arrays.asList(EventNotificationType.COMM_EVENTS, EventNotificationType.DIAG_EVENTS);
     final Device device = mock(Device.class);
-    when(device.getIpAddress()).thenReturn(TEST_IP);
+    when(device.getNetworkAddress()).thenReturn(TEST_IP);
     when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE))
         .thenReturn(device);
 
@@ -140,7 +136,7 @@ public class DeviceManagementServiceTest {
   @Test
   public void testUpdateDeviceSslCertification() throws FunctionalException {
     final Device device = mock(Device.class);
-    when(device.getIpAddress()).thenReturn(TEST_IP);
+    when(device.getNetworkAddress()).thenReturn(TEST_IP);
     when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE))
         .thenReturn(device);
     final Certification certification = new Certification("testUrl", "testDomain");
@@ -180,7 +176,7 @@ public class DeviceManagementServiceTest {
   @Test
   public void testSetDeviceVerificationKey() throws FunctionalException {
     final Device device = mock(Device.class);
-    when(device.getIpAddress()).thenReturn(TEST_IP);
+    when(device.getNetworkAddress()).thenReturn(TEST_IP);
     when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE))
         .thenReturn(device);
     this.deviceManagementService.setDeviceVerificationKey(

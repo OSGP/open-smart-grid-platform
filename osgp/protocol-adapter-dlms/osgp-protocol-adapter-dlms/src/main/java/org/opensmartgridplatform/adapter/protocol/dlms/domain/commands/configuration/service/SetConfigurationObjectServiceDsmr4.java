@@ -1,22 +1,21 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
@@ -25,13 +24,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class SetConfigurationObjectServiceDsmr4 extends SetConfigurationObjectService {
 
-  public SetConfigurationObjectServiceDsmr4(final DlmsHelper dlmsHelper) {
-    super(dlmsHelper);
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
+
+  public SetConfigurationObjectServiceDsmr4(
+      final DlmsHelper dlmsHelper,
+      final ObjectConfigServiceHelper objectConfigServiceHelper,
+      final DlmsDeviceRepository dlmsDeviceRepository) {
+    super(dlmsHelper, dlmsDeviceRepository);
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
   public boolean handles(final Protocol protocol) {
-    return protocol == Protocol.DSMR_4_2_2;
+    return protocol != null && protocol.isDsmr42();
   }
 
   @Override
@@ -74,5 +79,12 @@ public class SetConfigurationObjectServiceDsmr4 extends SetConfigurationObjectSe
   @Override
   Optional<Integer> getBitPosition(final ConfigurationFlagTypeDto type) {
     return type.getBitPositionDsmr4();
+  }
+
+  @Override
+  AttributeAddress getAttributeAddress(final Protocol protocol) throws ProtocolAdapterException {
+    return this.objectConfigServiceHelper
+        .findOptionalDefaultAttributeAddress(protocol, DlmsObjectType.CONFIGURATION_OBJECT)
+        .orElseThrow();
   }
 }

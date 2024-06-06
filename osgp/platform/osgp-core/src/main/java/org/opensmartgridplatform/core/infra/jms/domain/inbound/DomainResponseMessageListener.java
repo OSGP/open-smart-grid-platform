@@ -1,18 +1,14 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.core.infra.jms.domain.inbound;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
+import jakarta.jms.ObjectMessage;
 import java.util.List;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.core.domain.model.protocol.ProtocolResponseService;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.domain.core.exceptions.OsgpCoreException;
@@ -26,9 +22,9 @@ public class DomainResponseMessageListener implements MessageListener {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DomainResponseMessageListener.class);
 
-  private ProtocolResponseService protocolResponseService;
+  private final ProtocolResponseService protocolResponseService;
 
-  private List<ProtocolInfo> protocolInfos;
+  private final List<ProtocolInfo> protocolInfos;
 
   public DomainResponseMessageListener(
       final ProtocolResponseService protocolResponseService,

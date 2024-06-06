@@ -1,24 +1,20 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.application.threads;
 
+import jakarta.inject.Provider;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import javax.inject.Provider;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 public class RecoverKeyProcessInitiator {
-  private ScheduledExecutorService executorService;
+  private final ScheduledExecutorService executorService;
 
-  private Provider<RecoverKeyProcess> recoverKeyProcessProvider;
+  private final Provider<RecoverKeyProcess> recoverKeyProcessProvider;
 
-  private int recoverKeyDelay;
+  private final int recoverKeyDelay;
 
   public RecoverKeyProcessInitiator(
       final ScheduledExecutorService executorService,

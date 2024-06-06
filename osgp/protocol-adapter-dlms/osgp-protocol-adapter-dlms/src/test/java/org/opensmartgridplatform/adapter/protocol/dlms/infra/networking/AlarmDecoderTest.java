@@ -1,12 +1,7 @@
-/*
- * Copyright 2022 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.networking;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,17 +21,16 @@ import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmType
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 
 @ExtendWith(MockitoExtension.class)
 class AlarmDecoderTest {
-
-  static final int NUMBER_OF_BYTES_FOR_ALARM = 4;
 
   private final AlarmDecoder decoder = new AlarmDecoder();
 
@@ -118,5 +112,29 @@ class AlarmDecoderTest {
         () ->
             this.decoder.decodeAlarmRegisterData(
                 inputStream, builder, DlmsObjectType.ALARM_REGISTER_1));
+  }
+
+  @Test
+  void testSkipThrowsExceptionWhenUnableToSkipRequestedBytes() {
+    final InputStream inputStream = new ByteArrayInputStream(new byte[] {0x01, 0x02, 0x03});
+    final int length = 5; // length is greater than the number of bytes in the input stream
+
+    assertThrows(
+        UnrecognizedMessageDataException.class, () -> this.decoder.skip(inputStream, length));
+  }
+
+  @Test
+  void testSkipThrowsExceptionWhenIOExceptionOccurs() {
+    final InputStream inputStream =
+        new InputStream() {
+          @Override
+          public int read() throws IOException {
+            throw new IOException("Test IOException");
+          }
+        };
+    final int length = 3;
+
+    assertThrows(
+        UnrecognizedMessageDataException.class, () -> this.decoder.skip(inputStream, length));
   }
 }

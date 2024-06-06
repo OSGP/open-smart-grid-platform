@@ -1,18 +1,16 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
+import io.micrometer.core.instrument.Timer;
 import java.io.IOException;
 import java.net.InetAddress;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.openmuc.jdlms.settings.client.ReferencingMethod;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.metrics.ProtocolAdapterMetrics;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.InvocationCountingDlmsMessageListener;
@@ -24,8 +22,9 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
   public SecureDlmsConnector(
       final int responseTimeout,
       final int logicalDeviceAddress,
-      final DlmsDeviceAssociation deviceAssociation) {
-    super(responseTimeout, logicalDeviceAddress, deviceAssociation);
+      final DlmsDeviceAssociation deviceAssociation,
+      final ProtocolAdapterMetrics protocolAdapterMetrics) {
+    super(responseTimeout, logicalDeviceAddress, deviceAssociation, protocolAdapterMetrics);
   }
 
   /**
@@ -69,6 +68,10 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
         .setReferencingMethod(
             device.isUseSn() ? ReferencingMethod.SHORT : ReferencingMethod.LOGICAL);
 
+    if (device.isLls1Active()) {
+      tcpConnectionBuilder.setAlwaysSendSecurityMechanismName(true).setSkipAARQEncryption(true);
+    }
+
     if (device.isUseHdlc()) {
       tcpConnectionBuilder.useHdlc();
     }
@@ -81,6 +84,13 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
       tcpConnectionBuilder.setRawMessageListener(dlmsMessageListener);
     }
 
-    return tcpConnectionBuilder.build();
+    final Timer timer = this.createTimer(device, messageMetadata);
+    final long starttime = System.currentTimeMillis();
+
+    final DlmsConnection dlmsConnection = tcpConnectionBuilder.build();
+
+    this.recordTimer(timer, starttime);
+
+    return dlmsConnection;
   }
 }

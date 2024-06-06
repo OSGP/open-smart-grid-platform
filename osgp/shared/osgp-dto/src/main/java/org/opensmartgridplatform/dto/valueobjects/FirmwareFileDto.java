@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.dto.valueobjects;
 
 import java.io.Serializable;
@@ -17,17 +13,20 @@ public class FirmwareFileDto implements Serializable {
   private final String firmwareIdentification;
   private final String deviceIdentification;
   private final byte[] firmwareFile;
-  private final byte[] imageIdentifier;
+  private final String hash;
+  private final String hashType;
 
   public FirmwareFileDto(
       final String firmwareIdentification,
       final String deviceIdentification,
       final byte[] firmwareFile,
-      final byte[] imageIdentifier) {
+      final String hash,
+      final String hashType) {
     this.firmwareIdentification = firmwareIdentification;
     this.deviceIdentification = deviceIdentification;
     this.firmwareFile = firmwareFile;
-    this.imageIdentifier = imageIdentifier;
+    this.hash = hash;
+    this.hashType = hashType;
   }
 
   public String getFirmwareIdentification() {
@@ -45,7 +44,11 @@ public class FirmwareFileDto implements Serializable {
     return this.firmwareFile.clone();
   }
 
-  public byte[] getImageIdentifier() {
-    return this.imageIdentifier;
+  public String getHash() {
+    return this.hash;
+  }
+
+  public String getHashType() {
+    return this.hashType;
   }
 }

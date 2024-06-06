@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
 import ma.glasnost.orika.MappingContext;
@@ -26,6 +22,7 @@ public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceD
     dlmsDevice.setCommunicationMethod(source.getCommunicationMethod());
     dlmsDevice.setCommunicationProvider(source.getCommunicationProvider());
     dlmsDevice.setIccId(source.getIccId());
+    dlmsDevice.setLls1Active(source.isLls1Active());
     dlmsDevice.setHls3Active(source.isHls3Active());
     dlmsDevice.setHls4Active(source.isHls4Active());
     dlmsDevice.setHls5Active(source.isHls5Active());
@@ -34,7 +31,7 @@ public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceD
     dlmsDevice.setProtocol(source.getProtocolName(), source.getProtocolVersion());
     dlmsDevice.setTimezone(source.getTimezone());
     dlmsDevice.setIpAddressIsStatic(source.isIpAddressIsStatic());
-    dlmsDevice.setWithListSupported(source.isWithListSupported());
+    dlmsDevice.setWithListMax(source.getWithListMax());
     dlmsDevice.setSelectiveAccessSupported(source.isSelectiveAccessSupported());
     dlmsDevice.setPolyphase(source.isPolyphase());
     if (source.getPort() != null) {

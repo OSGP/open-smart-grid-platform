@@ -1,21 +1,16 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.config;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -50,7 +45,6 @@ public class LoggingPersistenceConfig extends ApplicationPersistenceConfiguratio
    *
    * @return DataSource
    */
-  @Primary
   @Bean(name = "dsLogging")
   public DataSource dataSource() {
     return this.makeDataSource();
@@ -62,7 +56,6 @@ public class LoggingPersistenceConfig extends ApplicationPersistenceConfiguratio
    * @return LocalContainerEntityManagerFactoryBean
    * @throws ClassNotFoundException when class not found
    */
-  @Primary
   @Bean(name = "entityMgrLogging")
   public LocalContainerEntityManagerFactoryBean entityMgrCore(
       @Qualifier("dsLogging") final DataSource dataSource) throws ClassNotFoundException {
@@ -76,7 +69,6 @@ public class LoggingPersistenceConfig extends ApplicationPersistenceConfiguratio
    * @return JpaTransactionManager
    * @throws ClassNotFoundException when class not found
    */
-  @Primary
   @Bean(name = "txMgrLogging")
   public JpaTransactionManager txMgrCore(
       @Qualifier("entityMgrLogging") final EntityManagerFactory entityMgrCore)

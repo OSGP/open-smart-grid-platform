@@ -1,16 +1,12 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Session;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
@@ -63,7 +59,7 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
     if (responseMessage.getOsgpException() == null) {
       objectMessage.setObject(responseMessage.getDataObject());
     } else {
-      String description;
+      final String description;
 
       // If an exception had a cause, get the message of the
       // cause. If not, get the message of the exception itself

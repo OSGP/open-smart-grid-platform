@@ -1,12 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services;
 
 import com.beanit.openiec61850.ClientAssociation;
@@ -57,7 +52,8 @@ public class Iec61850DeviceConnectionService {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(Iec61850DeviceConnectionService.class);
 
-  private static ConcurrentHashMap<String, Iec61850Connection> cache = new ConcurrentHashMap<>();
+  private static final ConcurrentHashMap<String, Iec61850Connection> cache =
+      new ConcurrentHashMap<>();
 
   @Autowired private Iec61850DeviceRepository iec61850DeviceRepository;
 
@@ -124,13 +120,13 @@ public class Iec61850DeviceConnectionService {
     }
 
     final InetAddress inetAddress =
-        this.convertIpAddress(deviceConnectionParameters.getIpAddress());
+        this.convertIpAddress(deviceConnectionParameters.getNetworkAddress());
 
     // Connect to obtain ClientAssociation and ServerModel.
     LOGGER.info(
         "Trying to connect to deviceIdentification: {} at IP address {} using response time-out: {}",
         deviceIdentification,
-        deviceConnectionParameters.getIpAddress(),
+        deviceConnectionParameters.getNetworkAddress(),
         this.responseTimeout);
     final DateTime startTime = DateTime.now();
 
@@ -156,7 +152,7 @@ public class Iec61850DeviceConnectionService {
     // Set response time-out.
     clientAssociation.setResponseTimeout(this.responseTimeout);
     // Read the ServerModel, either from the device or from a SCL file.
-    ServerModel serverModel;
+    final ServerModel serverModel;
     try {
       serverModel = this.readServerModel(clientAssociation, deviceIdentification, iec61850Device);
     } catch (final ProtocolAdapterException e) {

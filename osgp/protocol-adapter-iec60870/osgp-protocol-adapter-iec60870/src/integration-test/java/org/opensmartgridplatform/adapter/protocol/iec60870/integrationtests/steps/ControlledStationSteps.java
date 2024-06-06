@@ -1,11 +1,7 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.steps;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -17,7 +13,6 @@ import io.cucumber.java.en.Given;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.CauseOfTransmission;
@@ -100,9 +95,7 @@ public class ControlledStationSteps {
     public static ProcessImage fromDataTable(final DataTable processImageTable) {
 
       final List<InformationObject> informationObjects =
-          processImageTable.asMaps().stream()
-              .map(ProcessImage::informationObject)
-              .collect(Collectors.toList());
+          processImageTable.asMaps().stream().map(ProcessImage::informationObject).toList();
       return new ProcessImage(informationObjects);
     }
 

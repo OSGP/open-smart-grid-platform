@@ -1,18 +1,14 @@
-/*
- * Copyright 2014-2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services;
 
+import jakarta.jms.JMSException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.jms.JMSException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.mapping.Iec61850Mapper;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
@@ -560,7 +556,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
 
     final DeviceConnectionParameters deviceConnectionParameters =
         DeviceConnectionParameters.newBuilder()
-            .ipAddress(deviceRequest.getIpAddress())
+            .networkAddress(deviceRequest.getNetworkAddress())
             .deviceIdentification(deviceRequest.getDeviceIdentification())
             .ied(IED.FLEX_OVL)
             .serverName(IED.FLEX_OVL.getDescription())

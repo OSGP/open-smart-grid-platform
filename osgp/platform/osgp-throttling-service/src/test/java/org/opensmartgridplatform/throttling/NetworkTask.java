@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.throttling;
 
 import java.security.SecureRandom;
@@ -15,20 +10,25 @@ import java.util.concurrent.TimeUnit;
 
 public class NetworkTask {
 
-  private Random random = new SecureRandom();
+  private final Random random = new SecureRandom();
 
   public final int baseTransceiverStationId;
   public final int cellId;
+  public final int priority;
   public final int maxDurationInMillis;
 
   public volatile boolean finished = false;
   public volatile Throwable throwable = null;
 
   public NetworkTask(
-      final int baseTransceiverStationId, final int cellId, final int maxDurationInMillis) {
+      final int baseTransceiverStationId,
+      final int cellId,
+      final int priority,
+      final int maxDurationInMillis) {
 
     this.baseTransceiverStationId = baseTransceiverStationId;
     this.cellId = cellId;
+    this.priority = priority;
     this.maxDurationInMillis = maxDurationInMillis;
   }
 

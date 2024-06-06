@@ -1,11 +1,7 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters;
 
 import java.util.ArrayList;
@@ -21,6 +17,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCode
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntry;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityProfileDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
@@ -60,8 +57,13 @@ public class GetPowerQualityProfileDtoConverter
 
       final List<ProfileEntry> profileEntries = this.makeProfileEntries(responseDataDto);
 
+      final ProfileType profileType =
+          this.mapperFactory
+              .getMapperFacade()
+              .map(responseDataDto.getProfileType(), ProfileType.class);
+
       powerQualityProfileDatas.add(
-          new PowerQualityProfileData(obisCodeValues, captureObjects, profileEntries));
+          new PowerQualityProfileData(obisCodeValues, captureObjects, profileEntries, profileType));
     }
 
     response.setPowerQualityProfileDatas(powerQualityProfileDatas);

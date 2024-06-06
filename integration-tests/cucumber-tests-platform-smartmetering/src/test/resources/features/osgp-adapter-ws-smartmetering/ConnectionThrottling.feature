@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @Skip @SmartMetering @Platform @NightlyBuildOnly
 Feature: SmartMetering Connection throttling
   As a grid operator

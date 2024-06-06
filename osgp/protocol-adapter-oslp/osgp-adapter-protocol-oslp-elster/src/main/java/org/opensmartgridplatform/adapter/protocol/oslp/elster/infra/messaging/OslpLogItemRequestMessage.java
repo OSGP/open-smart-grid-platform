@@ -1,35 +1,32 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging;
 
 import com.google.protobuf.Message;
+import jakarta.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.StringUtils;
 
 public class OslpLogItemRequestMessage {
 
   private static final int MAX_MESSAGE_LENGTH = 8000;
 
-  private boolean incoming;
+  private final boolean incoming;
 
-  private String deviceUid;
+  private final String deviceUid;
 
-  private String encodedMessage;
+  private final String encodedMessage;
 
-  private String decodedMessage;
+  private final String decodedMessage;
 
-  private String deviceIdentification;
+  private final String deviceIdentification;
 
-  private String organisationIdentification;
+  private final String organisationIdentification;
 
-  private boolean valid;
+  private final boolean valid;
 
-  private int payloadMessageSerializedSize;
+  private final int payloadMessageSerializedSize;
 
   public OslpLogItemRequestMessage(
       final String organisationIdentification,
@@ -79,7 +76,7 @@ public class OslpLogItemRequestMessage {
   private static String bytesToCArray(final byte[] bytes) {
     String s = "";
     if (bytes.length > 0) {
-      s = javax.xml.bind.DatatypeConverter.printHexBinary(bytes);
+      s = DatatypeConverter.printHexBinary(bytes);
       // Split every two chars with
       // ', ' to create a C array.
       s = s.replaceAll("(.{2})", ", 0x$1");

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @Microgrids @Platform @Iec61850MockServerSchoteroog
 Feature: Microgrids Receive reports for Gas Furnace
   I want to receive reports from the RTU

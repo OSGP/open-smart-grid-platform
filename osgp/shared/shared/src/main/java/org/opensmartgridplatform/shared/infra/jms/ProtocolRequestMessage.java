@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.shared.infra.jms;
 
 import java.io.Serializable;
@@ -24,6 +20,8 @@ public class ProtocolRequestMessage extends RequestMessage {
   private final Long maxScheduleTime;
   private final boolean bypassRetry;
   private final int retryCount;
+
+  private final String deviceModelCode;
 
   private ProtocolRequestMessage(final Builder builder) {
     super(
@@ -44,6 +42,7 @@ public class ProtocolRequestMessage extends RequestMessage {
     this.maxScheduleTime = builder.maxScheduleTime;
     this.bypassRetry = builder.bypassRetry;
     this.retryCount = builder.retryCount;
+    this.deviceModelCode = builder.deviceModelCode;
   }
 
   public String getDomain() {
@@ -82,6 +81,10 @@ public class ProtocolRequestMessage extends RequestMessage {
     return this.bypassRetry;
   }
 
+  public String getDeviceModelCode() {
+    return this.deviceModelCode;
+  }
+
   @Override
   public MessageMetadata messageMetadata() {
     return super.messageMetadata()
@@ -94,6 +97,7 @@ public class ProtocolRequestMessage extends RequestMessage {
         .withMaxScheduleTime(this.maxScheduleTime)
         .withBypassRetry(this.bypassRetry)
         .withRetryCount(this.retryCount)
+        .withDeviceModelCode(this.deviceModelCode)
         .build();
   }
 
@@ -120,6 +124,8 @@ public class ProtocolRequestMessage extends RequestMessage {
     private int retryCount;
     private Serializable request;
 
+    private String deviceModelCode;
+
     public Builder messageMetadata(final MessageMetadata messageMetadata) {
       this.deviceIdentification = messageMetadata.getDeviceIdentification();
       this.organisationIdentification = messageMetadata.getOrganisationIdentification();
@@ -127,7 +133,7 @@ public class ProtocolRequestMessage extends RequestMessage {
       this.messageType = messageMetadata.getMessageType();
       this.domain = messageMetadata.getDomain();
       this.domainVersion = messageMetadata.getDomainVersion();
-      this.ipAddress = messageMetadata.getIpAddress();
+      this.ipAddress = messageMetadata.getNetworkAddress();
       this.baseTransceiverStationId = messageMetadata.getBaseTransceiverStationId();
       this.cellId = messageMetadata.getCellId();
       this.messagePriority = messageMetadata.getMessagePriority();
@@ -135,6 +141,8 @@ public class ProtocolRequestMessage extends RequestMessage {
       this.maxScheduleTime = messageMetadata.getMaxScheduleTime();
       this.bypassRetry = messageMetadata.isBypassRetry();
       this.retryCount = messageMetadata.getRetryCount();
+      this.deviceModelCode = messageMetadata.getDeviceModelCode();
+
       return this;
     }
 

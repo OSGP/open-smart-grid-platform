@@ -1,11 +1,7 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.core.application.services;
 
 import java.math.BigInteger;
@@ -15,7 +11,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
@@ -56,7 +51,7 @@ public class DeviceNetworkAddressCleanupService {
           Collections.unmodifiableList(
               ipRangesAllowingMultipleDevicesPerAddress.stream()
                   .filter(StringUtils::isNotBlank)
-                  .collect(Collectors.toList()));
+                  .toList());
     }
     this.duplicatesAllowedByConfiguration =
         this.duplicatesAllowed(this.ipRangesAllowingMultipleDevicesPerAddress);
@@ -95,7 +90,7 @@ public class DeviceNetworkAddressCleanupService {
     }
 
     final List<Predicate<BigInteger>> rangePredicates =
-        configuredRanges.stream().map(this::rangePredicate).collect(Collectors.toList());
+        configuredRanges.stream().map(this::rangePredicate).toList();
 
     return inetAddress -> {
       if (inetAddress == null) {
@@ -187,50 +182,39 @@ public class DeviceNetworkAddressCleanupService {
    *
    * @param deviceIdentification identification of the only device that is allowed to have the given
    *     {@code address} as its network address
-   * @param host the network address that may not remain stored with other devices than the one
-   *     identified by the given {@code deviceIdentification}
-   * @throws UnknownHostException
-   */
-  public void clearDuplicateAddresses(final String deviceIdentification, final String host)
-      throws UnknownHostException {
-
-    this.clearDuplicateAddresses(deviceIdentification, InetAddress.getByName(host));
-  }
-
-  /**
-   * Make sure that no other device than the one identified by {@code deviceIdentification} has the
-   * given {@code address} as network address, by removing the network address with other devices
-   * where it is stored.
-   *
-   * @param deviceIdentification identification of the only device that is allowed to have the given
-   *     {@code address} as its network address
-   * @param inetAddress the network address that may not remain stored with other devices than the
-   *     one identified by the given {@code deviceIdentification}
+   * @param networkAddress the network address that may not remain stored with other devices than
+   *     the one identified by the given {@code deviceIdentification}
    */
   public void clearDuplicateAddresses(
-      final String deviceIdentification, final InetAddress inetAddress) {
+      final String deviceIdentification, final String networkAddress) {
 
-    if (this.allowDuplicateEntries(inetAddress)) {
-      if (inetAddress != null) {
+    if (this.allowDuplicateEntries(networkAddress)) {
+      if (networkAddress != null) {
         if (this.allowMultipleDevicesPerNetworkAddress) {
           LOGGER.info(
               "Not clearing duplicate network addresses, as these are allowed by configuration.");
         } else {
           LOGGER.info(
               "Not clearing duplicate network addresses, as {} is part of a configured exception in: {}",
-              inetAddress.getHostAddress(),
+              networkAddress,
               this.ipRangesAllowingMultipleDevicesPerAddress);
         }
       }
       return;
     }
 
-    this.deviceRepository.findByNetworkAddress(inetAddress).stream()
+    this.deviceRepository.findByNetworkAddress(networkAddress).stream()
         .filter(this.clearAddressForDevice(deviceIdentification))
         .forEach(this::clearNetworkAddress);
   }
 
-  public boolean allowDuplicateEntries(final InetAddress inetAddress) {
+  public boolean allowDuplicateEntries(final String networkAddress) {
+    final InetAddress inetAddress;
+    try {
+      inetAddress = InetAddress.getByName(networkAddress);
+    } catch (final UnknownHostException e) {
+      return false;
+    }
     return this.allowMultipleDevicesPerNetworkAddress
         || inetAddress == null
         || LOCALHOST.equals(inetAddress)
@@ -244,7 +228,7 @@ public class DeviceNetworkAddressCleanupService {
   private void clearNetworkAddress(final Device device) {
     LOGGER.info(
         "Clearing duplicate network address {} with device {}",
-        device.getIpAddress(),
+        device.getNetworkAddress(),
         device.getDeviceIdentification());
     device.clearNetworkAddress();
     this.deviceRepository.save(device);

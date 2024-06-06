@@ -1,11 +1,7 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.shared.infra.jms;
 
 public enum MessageType {
@@ -19,6 +15,7 @@ public enum MessageType {
   COUPLE_MBUS_DEVICE,
   COUPLE_MBUS_DEVICE_BY_CHANNEL,
   DECOUPLE_MBUS_DEVICE,
+  DECOUPLE_MBUS_DEVICE_ADMINISTRATIVE,
   DECOUPLE_MBUS_DEVICE_BY_CHANNEL,
   DEVICE_REGISTRATION_COMPLETED,
   DISABLE_DEBUGGING,
@@ -31,6 +28,7 @@ public enum MessageType {
   GET_ADMINISTRATIVE_STATUS,
   GET_ALL_ATTRIBUTE_VALUES,
   GET_ASSOCIATION_LN_OBJECTS,
+  GET_COMMUNICATION_NETWORK_INFORMATION,
   GET_CONFIGURATION,
   GET_CONFIGURATION_OBJECT,
   GET_DATA,
@@ -54,8 +52,8 @@ public enum MessageType {
   GET_PROFILE_GENERIC_DATA,
   GET_SPECIFIC_ATTRIBUTE_VALUE,
   GET_STATUS,
-  GET_COMMUNICATION_NETWORK_INFORMATION,
   GET_TARIFF_STATUS,
+  GET_THD_FINGERPRINT,
   HANDLE_BUNDLED_ACTIONS,
   PUSH_NOTIFICATION_ALARM,
   PUSH_NOTIFICATION_SMS,
@@ -92,10 +90,12 @@ public enum MessageType {
   SET_PUSH_SETUP_ALARM,
   SET_PUSH_SETUP_LAST_GASP,
   SET_PUSH_SETUP_SMS,
+  SET_PUSH_SETUP_UDP,
   SET_RANDOMISATION_SETTINGS,
   SET_REBOOT,
   SET_SPECIAL_DAYS,
   SET_TARIFF_SCHEDULE,
+  SET_THD_CONFIGURATION,
   SET_TRANSITION,
   START_SELF_TEST,
   STOP_SELF_TEST,

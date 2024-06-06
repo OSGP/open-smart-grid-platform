@@ -1,15 +1,10 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.secretmanagement.application.endpoints;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
@@ -28,7 +23,7 @@ public class SoapEndpointDataTypeConverter {
     }
     final List<org.opensmartgridplatform.ws.schema.core.secret.management.SecretType>
         soapSecretTypeList = soapSecretTypes.getSecretType();
-    return soapSecretTypeList.stream().map(this::convertToSecretType).collect(Collectors.toList());
+    return soapSecretTypeList.stream().map(this::convertToSecretType).toList();
   }
 
   public List<TypedSecret> convertToTypedSecrets(final TypedSecrets soapTypedSecrets)
@@ -38,9 +33,7 @@ public class SoapEndpointDataTypeConverter {
     }
     final List<org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret>
         soapTypedSecretsList = soapTypedSecrets.getTypedSecret();
-    return soapTypedSecretsList.stream()
-        .map(this::decryptAndConvertSoapTypedSecret)
-        .collect(Collectors.toList());
+    return soapTypedSecretsList.stream().map(this::decryptAndConvertSoapTypedSecret).toList();
   }
 
   public TypedSecrets convertToSoapTypedSecrets(final List<TypedSecret> typedSecrets) {

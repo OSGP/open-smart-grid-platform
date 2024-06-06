@@ -1,16 +1,11 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.services;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
@@ -110,7 +105,7 @@ public class LightMeasurementRtuDeviceResponseService extends AbstractDeviceResp
             .findByGatewayDeviceIdentification(rtuDeviceIdentification)
             .stream()
             .filter(device -> DeviceType.LIGHT_SENSOR == device.getDeviceType())
-            .collect(Collectors.toList());
+            .toList();
 
     if (CollectionUtils.isEmpty(lightMeasurementDevices)) {
       LOGGER.warn("No light sensors found for light measurement RTU {}", rtuDeviceIdentification);

@@ -1,11 +1,7 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import java.util.Objects;
@@ -63,8 +59,24 @@ public class InvocationCounterManager {
    */
   public void initializeInvocationCounter(
       final MessageMetadata messageMetadata, final DlmsDevice device) throws OsgpException {
+    /*
+     * When the invocation counter is out of sync, some devices close the session.
+     * By setting the ip-address to null, the application will be forced to get a new ip-address.
+     * The meter will start a new session.
+     * This is done by the DlmsConnectionFactory in the method:
+     * this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider
+     */
+    device.setIpAddress(null);
 
     this.initializeWithInvocationCounterStoredOnDevice(messageMetadata, device, null);
+
+    /*
+     * by setting the ip-address to null again, the application will be forced to get a new ip-address.
+     * The meter will start a new session.
+     * This is done by the DlmsConnectionFactory in the method:
+     * this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider
+     */
+    device.setIpAddress(null);
   }
 
   /**
@@ -72,12 +84,6 @@ public class InvocationCounterManager {
    * be called for a device that actually has an invocation counter stored on the device itself. If
    * a permit for network access is passed, it is to be released upon closing the connection.
    */
-  public void initializeInvocationCounter(
-      final MessageMetadata messageMetadata, final DlmsDevice device, final Permit permit)
-      throws OsgpException {
-    this.initializeWithInvocationCounterStoredOnDevice(messageMetadata, device, permit);
-  }
-
   private void initializeWithInvocationCounterStoredOnDevice(
       final MessageMetadata messageMetadata, final DlmsDevice device, final Permit permit)
       throws OsgpException {

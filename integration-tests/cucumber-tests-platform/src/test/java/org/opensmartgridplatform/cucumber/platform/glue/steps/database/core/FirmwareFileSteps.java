@@ -1,11 +1,7 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,12 +10,13 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getHexDecoded;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
-import com.google.common.io.Files;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -140,9 +137,6 @@ public class FirmwareFileSteps {
       }
     }
 
-    final byte[] imageIdentifier =
-        getHexDecoded(settings, PlatformKeys.FIRMWARE_FILE_IMAGE_IDENTIFIER, null);
-
     FirmwareFile firmwareFile =
         new FirmwareFile.Builder()
             .withIdentification(identification)
@@ -161,7 +155,6 @@ public class FirmwareFileSteps {
                 getBoolean(
                     settings, PlatformKeys.FIRMWARE_ACTIVE, PlatformDefaults.FIRMWARE_ACTIVE))
             .withFile(file)
-            .withImageIdentifier(imageIdentifier)
             .build();
 
     if (!isForSmartMeters) {
@@ -169,6 +162,7 @@ public class FirmwareFileSteps {
       this.createFile(
           deviceModel.getManufacturer().getCode(), deviceModel.getModelCode(), filename);
     }
+
     /*
      * Save the firmware file before adding the device model and updating
      * the firmware module data. Trying to save a new firmware file with the
@@ -218,7 +212,7 @@ public class FirmwareFileSteps {
             getString(
                 settings, PlatformKeys.FIRMWARE_FILE_FILENAME, PlatformDefaults.FIRMWARE_FILENAME));
 
-    final Date installationDate = new Date();
+    final Instant installationDate = Instant.now();
 
     final String installedByUser = "installed by test code";
 
@@ -324,12 +318,11 @@ public class FirmwareFileSteps {
 
   private byte[] getFirmwareFileBytes(final String filename) throws IOException {
     final String path = this.getFirmwareFilepath(filename);
-    final File file = new File(path);
-    return Files.toByteArray(file);
+    return Files.readAllBytes(Paths.get(path));
   }
 
   private String getFirmwareFilepath(final String filename) {
-    String path;
+    final String path;
     if (StringUtils.endsWith(this.firmwareFilePath, File.separator)) {
       path = this.firmwareFilePath + filename;
     } else {

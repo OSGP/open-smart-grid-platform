@@ -1,11 +1,7 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
@@ -48,6 +44,10 @@ public class DlmsCaptureObject {
   public static DlmsCaptureObject createWithChannel(
       final DlmsObject relatedObject, final int channel, final int attributeId) {
     return new DlmsCaptureObject(relatedObject, attributeId, channel);
+  }
+
+  public Integer getChannel() {
+    return this.channel;
   }
 
   public DlmsObject getRelatedObject() {

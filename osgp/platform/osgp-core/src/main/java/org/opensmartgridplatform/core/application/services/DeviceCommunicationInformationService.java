@@ -1,14 +1,10 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.core.application.services;
 
-import org.opensmartgridplatform.domain.core.entities.Device;
+import java.time.ZonedDateTime;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -16,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DeviceCommunicationInformationService {
@@ -32,44 +27,33 @@ public class DeviceCommunicationInformationService {
    *
    * @param message The {@link ProtocolResponseMessage} containing the response message.
    */
-  @Transactional
   public void updateDeviceConnectionInformation(final ProtocolResponseMessage message) {
-
     final String deviceIdentification = message.getDeviceIdentification();
-    Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-
-    if (device == null) {
-      LOGGER.info(
-          "No device {} found to update connection information for with {} {} response with correlation UID {}."
-              + " This may be appropriate as the device could be expected to be unknown to GXF.",
-          deviceIdentification,
-          message.getMessageType(),
-          message.getResult(),
-          message.getCorrelationUid());
-      return;
-    }
-
     final ResponseMessageResultType result = message.getResult();
 
     if (ResponseMessageResultType.OK == result) {
-      device.updateConnectionDetailsToSuccess();
+      final int updatedRecords =
+          this.deviceRepository.updateConnectionDetailsToSuccess(deviceIdentification);
+      LOGGER.info(
+          "Updated connection information for device: {}, last successful connection timestamp: {} based on result type: {} (updated {} records)",
+          deviceIdentification,
+          ZonedDateTime.now(),
+          result.name(),
+          updatedRecords);
     } else if (ResponseMessageResultType.NOT_OK == result) {
-      device.updateConnectionDetailsToFailure();
+      final int updatedRecords =
+          this.deviceRepository.updateConnectionDetailsToFailure(deviceIdentification);
+      LOGGER.info(
+          "Updated connection information for device: {}, last failed connection timestamp: {} based on result type: {} (updated {} records)",
+          deviceIdentification,
+          ZonedDateTime.now(),
+          result.name(),
+          updatedRecords);
     } else {
       LOGGER.warn(
           "Unexpected result type: {}, connection information not updated for device: {}",
           result,
           deviceIdentification);
-      return;
     }
-
-    device = this.deviceRepository.save(device);
-    LOGGER.info(
-        "Updated connection information for device: {}, last successful connection timestamp: {}, last failed connection timestamp: {}, connection failure count: {} based on result type: {}",
-        deviceIdentification,
-        device.getLastSuccessfulConnectionTimestamp(),
-        device.getLastFailedConnectionTimestamp(),
-        device.getFailedConnectionCount(),
-        result.name());
   }
 }

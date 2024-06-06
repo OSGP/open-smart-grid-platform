@@ -1,19 +1,13 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
@@ -161,12 +155,18 @@ public class DlmsConnectionStub implements DlmsConnection {
         .filter(
             setParameter ->
                 setParameter.getAttributeAddress().getId() == attributeClass.attributeId())
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public boolean hasMethodBeenInvoked(final MethodClass methodClass) {
     return this.methodsInvoked.stream()
         .anyMatch(parameter -> parameter.getId() == methodClass.getMethodId());
+  }
+
+  public long getMethodInvocationCount(final MethodClass methodClass) {
+    return this.methodsInvoked.stream()
+        .filter(parameter -> parameter.getId() == methodClass.getMethodId())
+        .count();
   }
 
   public void addReturnValue(

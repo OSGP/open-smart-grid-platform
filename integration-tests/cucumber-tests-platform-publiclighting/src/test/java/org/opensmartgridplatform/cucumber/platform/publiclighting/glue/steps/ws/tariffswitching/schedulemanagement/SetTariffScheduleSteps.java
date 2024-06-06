@@ -1,11 +1,7 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.ws.tariffswitching.schedulemanagement;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,11 +13,12 @@ import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHel
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.GregorianCalendar;
 import java.util.Map;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.Page;
@@ -39,6 +36,7 @@ import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponse
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.tariffswitching.TariffSwitchingScheduleManagementClient;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,14 +88,15 @@ public class SetTariffScheduleSteps {
       request.setScheduledTime(
           DatatypeFactory.newInstance()
               .newXMLGregorianCalendar(
-                  ((requestParameters
+                  GregorianCalendar.from(
+                      (requestParameters
                               .get(PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME)
                               .isEmpty())
-                          ? DateTime.now()
+                          ? ZonedDateTime.now(ZoneId.of("UTC"))
                           : getDate(
-                              requestParameters, PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME))
-                      .toDateTime(DateTimeZone.UTC)
-                      .toGregorianCalendar()));
+                                  requestParameters,
+                                  PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME)
+                              .withZoneSameInstant(ZoneId.of("UTC")))));
     }
 
     for (int i = 0; i < countSchedules; i++) {
@@ -145,13 +144,17 @@ public class SetTariffScheduleSteps {
       schedule.setStartDay(
           DatatypeFactory.newInstance()
               .newXMLGregorianCalendar(
-                  DateTime.parse(startDay).toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
+                  GregorianCalendar.from(
+                      JavaTimeHelpers.parseToZonedDateTime(startDay)
+                          .withZoneSameInstant(ZoneId.of("UTC")))));
     }
     if (!endDay.isEmpty()) {
       schedule.setEndDay(
           DatatypeFactory.newInstance()
               .newXMLGregorianCalendar(
-                  DateTime.parse(endDay).toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
+                  GregorianCalendar.from(
+                      JavaTimeHelpers.parseToZonedDateTime(endDay)
+                          .withZoneSameInstant(ZoneId.of("UTC")))));
     }
     schedule.setTime(time);
 

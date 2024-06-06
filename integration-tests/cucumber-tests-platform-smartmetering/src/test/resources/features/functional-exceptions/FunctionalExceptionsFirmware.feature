@@ -1,4 +1,8 @@
-@SmartMetering @Platform @NightlyBuildOnly
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
+@SmartMetering @Platform @NightlyBuildOnly @SmartMeteringFirmware
 Feature: SmartMetering functional exceptions regarding firmware
 
   Scenario: firmware upgrade with unknown firmware
@@ -23,7 +27,6 @@ Feature: SmartMetering functional exceptions regarding firmware
       | FirmwareModuleVersionSec    |                                          |
       | FirmwareFilename            | KFPP_V060100FF.bin                       |
       | ModelCode                   | MA105                                    |
-      | FirmwareFileImageIdentifier | 496d6167654964656e746966696572           |
       | FirmwareIsForSmartMeters    | true                                     |
     When the request for a firmware upgrade is received
       | DeviceIdentification        | TEST1024000000002  |
@@ -51,7 +54,6 @@ Feature: SmartMetering functional exceptions regarding firmware
       | FirmwareModuleVersionSec    |                                          |
       | FirmwareFilename            | KFPP_V060100FF.bin                       |
       | ModelCode                   | MA105                                    |
-      | FirmwareFileImageIdentifier | 496d6167654964656e746966696572           |
       | FirmwareIsForSmartMeters    | true                                     |
     When the request for a firmware upgrade is received
       | DeviceIdentification        | TEST1024000000002     |

@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
@@ -18,7 +13,7 @@ public class CellInfoDto implements Serializable {
   private final long cellId;
   private final int locationId;
   private final SignalQualityDto signalQuality;
-  private final BitErrorRateDto bitErrorRate;
+  private final int bitErrorRate;
   private final int mobileCountryCode;
   private final int mobileNetworkCode;
   private final long channelNumber;
@@ -27,7 +22,7 @@ public class CellInfoDto implements Serializable {
       final long cellId,
       final int locationId,
       final SignalQualityDto signalQuality,
-      final BitErrorRateDto bitErrorRate,
+      final int bitErrorRate,
       final int mobileCountryCode,
       final int mobileNetworkCode,
       final long channelNumber) {
@@ -52,7 +47,7 @@ public class CellInfoDto implements Serializable {
     return this.signalQuality;
   }
 
-  public BitErrorRateDto getBitErrorRate() {
+  public int getBitErrorRate() {
     return this.bitErrorRate;
   }
 

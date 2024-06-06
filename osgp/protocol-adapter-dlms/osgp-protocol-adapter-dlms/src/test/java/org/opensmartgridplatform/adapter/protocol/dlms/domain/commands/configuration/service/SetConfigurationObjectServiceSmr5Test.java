@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,6 +9,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.GetResult;
@@ -21,29 +19,26 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 
 @ExtendWith(MockitoExtension.class)
-public class SetConfigurationObjectServiceSmr5Test {
+class SetConfigurationObjectServiceSmr5Test {
 
   private SetConfigurationObjectServiceSmr5 instance;
 
   @Mock private GetResult getResult;
 
   @BeforeEach
-  public void setUp() {
-    this.instance = new SetConfigurationObjectServiceSmr5(null);
+  void setUp() {
+    this.instance = new SetConfigurationObjectServiceSmr5(null, null, null);
+  }
+
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  @NullSource
+  void handles(final Protocol protocol) {
+    assertThat(this.instance.handles(protocol)).isEqualTo(protocol != null && protocol.isSmr5());
   }
 
   @Test
-  public void handles() {
-    assertThat(this.instance.handles(Protocol.SMR_5_0_0)).isTrue();
-    assertThat(this.instance.handles(Protocol.SMR_5_1)).isTrue();
-    assertThat(this.instance.handles(Protocol.SMR_5_2)).isTrue();
-    assertThat(this.instance.handles(Protocol.DSMR_4_2_2)).isFalse();
-    assertThat(this.instance.handles(Protocol.OTHER_PROTOCOL)).isFalse();
-    assertThat(this.instance.handles(null)).isFalse();
-  }
-
-  @Test
-  public void getBitPosition() {
+  void getBitPosition() {
     for (final ConfigurationFlagTypeDto flagTypeDto : ConfigurationFlagTypeDto.values()) {
       flagTypeDto
           .getBitPositionSmr5()

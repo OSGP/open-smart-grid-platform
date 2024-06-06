@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.publiclighting.mocks.oslpdevice;
 
 import static org.opensmartgridplatform.oslp.Oslp.RelayType.LIGHT;
@@ -23,6 +19,7 @@ import java.net.InetSocketAddress;
 import java.security.PrivateKey;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.codec.binary.Base64;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.Oslp.Message;
@@ -535,9 +531,10 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
   public static class OutOfSequenceEvent {
     private final Long deviceId;
     private final String request;
-    private final DateTime timestamp;
+    private final ZonedDateTime timestamp;
 
-    public OutOfSequenceEvent(final Long deviceId, final String request, final DateTime timestamp) {
+    public OutOfSequenceEvent(
+        final Long deviceId, final String request, final ZonedDateTime timestamp) {
       this.deviceId = deviceId;
       this.request = request;
       this.timestamp = timestamp;
@@ -551,7 +548,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
       return this.request;
     }
 
-    public DateTime getTimestamp() {
+    public ZonedDateTime getTimestamp() {
       return this.timestamp;
     }
   }

@@ -1,16 +1,13 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import java.time.Duration;
 import java.util.function.Consumer;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.ConnectionProperties;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -40,12 +37,15 @@ public class DlmsConnectionHelper {
   private final DevicePingConfig devicePingConfig;
   private final Duration delayBetweenDlmsConnections;
 
+  private final DomainHelperService domainHelperService;
+
   @Autowired
   public DlmsConnectionHelper(
       final InvocationCounterManager invocationCounterManager,
       final DlmsConnectionFactory connectionFactory,
       final DevicePingConfig devicePingConfig,
-      @Value("${dlms.connections.delay.seconds:30}") final int secondsBetweenDlmsConnections) {
+      @Value("${dlms.connections.delay.seconds:30}") final int secondsBetweenDlmsConnections,
+      final DomainHelperService domainHelperService) {
 
     this.invocationCounterManager = invocationCounterManager;
     this.connectionFactory = connectionFactory;
@@ -54,6 +54,7 @@ public class DlmsConnectionHelper {
         secondsBetweenDlmsConnections < 1
             ? NO_DELAY
             : Duration.ofSeconds(secondsBetweenDlmsConnections);
+    this.domainHelperService = domainHelperService;
   }
 
   /**
@@ -83,6 +84,9 @@ public class DlmsConnectionHelper {
       final Permit permit,
       final Consumer<DlmsConnectionManager> taskForConnectionManager)
       throws OsgpException {
+
+    this.domainHelperService.setIpAddressFromMessageMetadataOrSessionProvider(
+        device, messageMetadata);
 
     final boolean pingDevice =
         this.devicePingConfig.pingingEnabled() && StringUtils.hasText(device.getIpAddress());

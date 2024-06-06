@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.firmwaremanagement;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,7 +13,7 @@ import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeableFirmware;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
@@ -53,8 +49,7 @@ public class ChangeFirmwareSteps extends FirmwareSteps {
 
     request.setId((int) firmwareFileId);
 
-    final Firmware firmware = this.createAndGetFirmware(requestParameters);
-    firmware.setId((int) firmwareFileId);
+    final ChangeableFirmware firmware = this.createAndGetChangeableFirmware(requestParameters);
     request.setFirmware(firmware);
 
     try {

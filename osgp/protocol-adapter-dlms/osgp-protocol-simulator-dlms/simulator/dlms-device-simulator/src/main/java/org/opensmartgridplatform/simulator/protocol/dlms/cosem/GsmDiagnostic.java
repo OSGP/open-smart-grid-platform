@@ -1,16 +1,11 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.simulator.protocol.dlms.cosem;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.openmuc.jdlms.AttributeAccessMode;
 import org.openmuc.jdlms.CosemAttribute;
 import org.openmuc.jdlms.CosemClass;
@@ -68,9 +63,7 @@ public class GsmDiagnostic extends CosemInterfaceObject {
 
   private DataObject createAdjacentCellsDataObject(final List<AdjacentCellInfo> adjacentCellInfos) {
     return DataObject.newArrayData(
-        adjacentCellInfos.stream()
-            .map(AdjacentCellInfo::getDataObject)
-            .collect(Collectors.toList()));
+        adjacentCellInfos.stream().map(AdjacentCellInfo::getDataObject).toList());
   }
 
   public static class CellInfo {

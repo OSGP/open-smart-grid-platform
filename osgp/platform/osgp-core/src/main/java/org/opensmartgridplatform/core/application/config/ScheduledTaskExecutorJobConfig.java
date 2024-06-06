@@ -1,14 +1,10 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.core.application.config;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.opensmartgridplatform.core.application.tasks.ScheduledTaskExecutorJob;
 import org.opensmartgridplatform.shared.application.scheduling.OsgpScheduler;
 import org.quartz.SchedulerException;
@@ -33,6 +29,9 @@ public class ScheduledTaskExecutorJobConfig {
   @Value("${scheduling.task.pending.duration.max.seconds:3600}")
   private int scheduledTaskPendingDurationMaxSeconds;
 
+  @Value("${scheduling.task.thread.pool.size:10}")
+  private int scheduledTaskThreadPoolSize;
+
   @Autowired private OsgpScheduler osgpScheduler;
 
   @Bean
@@ -49,5 +48,9 @@ public class ScheduledTaskExecutorJobConfig {
   private void initializeScheduledJob() throws SchedulerException {
     this.osgpScheduler.createAndScheduleJob(
         ScheduledTaskExecutorJob.class, this.cronExpressionScheduledTaskExecution);
+  }
+
+  public int getScheduledTaskThreadPoolSize() {
+    return this.scheduledTaskThreadPoolSize;
   }
 }

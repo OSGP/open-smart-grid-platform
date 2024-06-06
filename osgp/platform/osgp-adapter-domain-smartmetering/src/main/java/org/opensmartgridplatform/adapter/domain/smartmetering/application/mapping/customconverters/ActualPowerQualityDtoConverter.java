@@ -1,16 +1,11 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MapperFactory;
@@ -63,6 +58,6 @@ public class ActualPowerQualityDtoConverter
 
     return responseDataDto.getPowerQualityValues().stream()
         .map(dto -> this.mapperFactory.getMapperFacade().map(dto, PowerQualityValue.class))
-        .collect(Collectors.toList());
+        .toList();
   }
 }

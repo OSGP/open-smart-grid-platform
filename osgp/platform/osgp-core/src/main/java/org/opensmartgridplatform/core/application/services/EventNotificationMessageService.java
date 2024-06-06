@@ -1,23 +1,19 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.core.application.services;
 
 import java.io.Serializable;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import org.apache.commons.lang3.NotImplementedException;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
@@ -36,6 +32,7 @@ import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -52,21 +49,25 @@ public class EventNotificationMessageService {
 
   @Autowired private EventNotificationHelperService eventNotificationHelperService;
 
+  @Value("${event.persist.enabled}")
+  private boolean eventPersistEnabled;
+
   public void handleEvent(
       final String deviceIdentification,
-      final Date dateTime,
+      final Instant dateTime,
       final EventType eventType,
       final String description,
       final Integer index)
       throws UnknownEntityException {
 
-    this.eventNotificationHelperService.saveEvent(
+    final Event event =
         new Event(
             deviceIdentification,
-            dateTime != null ? dateTime : DateTime.now().toDate(),
+            dateTime != null ? dateTime : Instant.now(),
             eventType,
             description,
-            index));
+            index);
+    this.saveEventIfRequired(event);
 
     if (this.isSwitchingEvent(eventType)) {
       this.handleSwitchingEvent(deviceIdentification, dateTime, eventType, index);
@@ -93,8 +94,8 @@ public class EventNotificationMessageService {
 
     LOGGER.info("handleEvent() called for device: {} with event: {}", deviceIdentification, event);
 
-    final Date dateTime =
-        event.getDateTime() != null ? event.getDateTime().toDate() : DateTime.now().toDate();
+    final Instant dateTime =
+        event.getDateTime() != null ? event.getDateTime().toInstant() : Instant.now();
     final EventType eventType = EventType.valueOf(event.getEventType().name());
     final String description = event.getDescription();
     final Integer index = event.getIndex();
@@ -125,24 +126,17 @@ public class EventNotificationMessageService {
     final List<Event> switchDeviceEvents = new ArrayList<>();
 
     for (final EventNotificationDto eventNotification : eventNotifications) {
-      final DateTime eventTime = eventNotification.getDateTime();
+      final ZonedDateTime eventTime = eventNotification.getDateTime();
       final EventType eventType = EventType.valueOf(eventNotification.getEventType().name());
       final Event event =
           new Event(
               deviceIdentification,
-              eventTime != null ? eventTime.toDate() : DateTime.now().toDate(),
+              eventTime != null ? eventTime.toInstant() : Instant.now(),
               eventType,
               eventNotification.getDescription(),
               eventNotification.getIndex());
 
-      LOGGER.info(
-          "Saving event for device: {} with eventType: {} eventTime: {} description: {} index: {}",
-          deviceIdentification,
-          eventType.name(),
-          eventTime,
-          eventNotification.getDescription(),
-          eventNotification.getIndex());
-      this.eventNotificationHelperService.saveEvent(event);
+      this.saveEventIfRequired(event);
 
       if (this.isSwitchingEvent(eventType)) {
         switchDeviceEvents.add(event);
@@ -152,6 +146,20 @@ public class EventNotificationMessageService {
     }
 
     this.handleSwitchDeviceEvents(device, switchDeviceEvents);
+  }
+
+  private void saveEventIfRequired(final Event event) {
+    if (!this.eventPersistEnabled) {
+      return;
+    }
+    LOGGER.info(
+        "Saving event for device: {} with eventType: {} eventTime: {} description: {} index: {}",
+        event.getDeviceIdentification(),
+        event.getEventType(),
+        event.getDateTime(),
+        event.getDescription(),
+        event.getIndex());
+    this.eventNotificationHelperService.saveEvent(event);
   }
 
   private void handleSwitchDeviceEvents(final Device device, final List<Event> switchDeviceEvents)
@@ -221,7 +229,7 @@ public class EventNotificationMessageService {
 
     this.handleLightMeasurementDeviceEvent(
         deviceIdentification,
-        event.getDateTime().toDate(),
+        event.getDateTime().toInstant(),
         eventType,
         event.getDescription(),
         event.getIndex());
@@ -251,7 +259,7 @@ public class EventNotificationMessageService {
     if (lastRelayStatusPerIndex.get(relayIndex) == null
         || switchingEvent
             .getDateTime()
-            .after(lastRelayStatusPerIndex.get(relayIndex).getLastSwitchingEventTime())) {
+            .isAfter(lastRelayStatusPerIndex.get(relayIndex).getLastSwitchingEventTime())) {
       final RelayStatus relayStatus =
           new RelayStatus.Builder(device, relayIndex)
               .withLastSwitchingEventState(isRelayOn, switchingEvent.getDateTime())
@@ -262,7 +270,7 @@ public class EventNotificationMessageService {
 
   private void handleSwitchingEvent(
       final String deviceIdentification,
-      final Date dateTime,
+      final Instant dateTime,
       final EventType eventType,
       final int index)
       throws UnknownEntityException {
@@ -288,7 +296,10 @@ public class EventNotificationMessageService {
   }
 
   private void updateRelayStatusForEvent(
-      final int index, final Ssld ssld, final Date dateTime, final EventType eventType) {
+      final int index,
+      final Ssld ssld,
+      final java.time.Instant dateTime,
+      final EventType eventType) {
 
     final boolean isRelayOn =
         EventType.LIGHT_EVENTS_LIGHT_ON.equals(eventType)
@@ -298,8 +309,8 @@ public class EventNotificationMessageService {
     // if the timestamp of the event is after the timestamp of the last
     // switching event in the DB.
     final RelayStatus oldRelayStatus = ssld.getRelayStatusByIndex(index);
-    final Date eventTime = dateTime == null ? DateTime.now().toDate() : dateTime;
-    if (oldRelayStatus == null || eventTime.after(oldRelayStatus.getLastSwitchingEventTime())) {
+    final Instant eventTime = dateTime == null ? Instant.now() : dateTime;
+    if (oldRelayStatus == null || eventTime.isAfter(oldRelayStatus.getLastSwitchingEventTime())) {
       LOGGER.info(
           "Handling new event {} for device {} to update the relay status for index {} with date {}.",
           eventType.name(),
@@ -308,7 +319,7 @@ public class EventNotificationMessageService {
           dateTime);
 
       if (ssld.getRelayStatusByIndex(index) == null
-          || eventTime.after(ssld.getRelayStatusByIndex(index).getLastSwitchingEventTime())) {
+          || eventTime.isAfter(ssld.getRelayStatusByIndex(index).getLastSwitchingEventTime())) {
         final RelayStatus newRelayState =
             new RelayStatus.Builder(ssld, index)
                 .withLastSwitchingEventState(isRelayOn, eventTime)
@@ -321,7 +332,7 @@ public class EventNotificationMessageService {
 
   private void handleLightMeasurementDeviceEvent(
       final String deviceIdentification,
-      final Date dateTime,
+      final Instant dateTime,
       final EventType eventType,
       final String description,
       final int index) {
@@ -330,7 +341,7 @@ public class EventNotificationMessageService {
       final Event lightMeasurementDeviceEvent =
           new Event(
               deviceIdentification,
-              dateTime != null ? dateTime : DateTime.now().toDate(),
+              dateTime != null ? dateTime : Instant.now(),
               eventType,
               description,
               index);

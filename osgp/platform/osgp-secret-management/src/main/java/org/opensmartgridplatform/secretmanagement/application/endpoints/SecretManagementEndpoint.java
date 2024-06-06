@@ -1,24 +1,26 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.secretmanagement.application.endpoints;
 
+import static org.opensmartgridplatform.secretmanagement.application.services.SecretManagementMetrics.METRIC_REQUEST_TIMER_PREFIX;
+import static org.opensmartgridplatform.secretmanagement.application.services.SecretManagementMetrics.TAG_NR_OF_KEYS;
+
+import io.micrometer.core.instrument.Timer;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
+import org.opensmartgridplatform.secretmanagement.application.services.SecretManagementMetrics;
 import org.opensmartgridplatform.secretmanagement.application.services.SecretManagementService;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
@@ -62,13 +64,171 @@ public class SecretManagementEndpoint {
   public static final String CORRELATION_UID = "correlationUid";
   private static final String CORRELATION_HEADER = "{" + NAMESPACE_URI + "}" + CORRELATION_UID;
   private final SecretManagementService secretManagementService;
+  private final SecretManagementMetrics secretManagementMetrics;
   private final SoapEndpointDataTypeConverter converter;
 
   public SecretManagementEndpoint(
       final SecretManagementService secretManagementService,
+      final SecretManagementMetrics secretManagementMetrics,
       final SoapEndpointDataTypeConverter converter) {
     this.secretManagementService = secretManagementService;
+    this.secretManagementMetrics = secretManagementMetrics;
     this.converter = converter;
+  }
+
+  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getSecretsRequest")
+  @ResponsePayload
+  public GetSecretsResponse getSecretsRequest(
+      @RequestPayload final GetSecretsRequest request,
+      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
+      final MessageContext messageContext)
+      throws OsgpException {
+    final Timer timer =
+        this.createTimer("GetSecrets", request.getSecretTypes().getSecretType().size());
+    final long starttime = System.currentTimeMillis();
+
+    final GetSecretsResponse response =
+        this.handleRequest(
+            request,
+            this::getSecrets,
+            header,
+            messageContext,
+            this.nameList(request.getSecretTypes()));
+
+    this.recordTimer(timer, starttime);
+
+    return response;
+  }
+
+  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getNewSecretsRequest")
+  @ResponsePayload
+  public GetNewSecretsResponse getNewSecretsRequest(
+      @RequestPayload final GetNewSecretsRequest request,
+      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
+      final MessageContext messageContext)
+      throws OsgpException {
+    final Timer timer =
+        this.createTimer("GetNewSecrets", request.getSecretTypes().getSecretType().size());
+    final long starttime = System.currentTimeMillis();
+
+    final GetNewSecretsResponse response =
+        this.handleRequest(
+            request,
+            this::getNewSecrets,
+            header,
+            messageContext,
+            this.nameList(request.getSecretTypes()));
+
+    this.recordTimer(timer, starttime);
+
+    return response;
+  }
+
+  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "storeSecretsRequest")
+  @ResponsePayload
+  public StoreSecretsResponse storeSecretsRequest(
+      @RequestPayload final StoreSecretsRequest request,
+      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
+      final MessageContext messageContext)
+      throws OsgpException {
+    final Timer timer =
+        this.createTimer("StoreSecrets", request.getTypedSecrets().getTypedSecret().size());
+    final long starttime = System.currentTimeMillis();
+
+    final StoreSecretsResponse response =
+        this.handleRequest(
+            request,
+            this::storeSecrets,
+            header,
+            messageContext,
+            this.nameList(request.getTypedSecrets()));
+
+    this.recordTimer(timer, starttime);
+
+    return response;
+  }
+
+  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "generateAndStoreSecretsRequest")
+  @ResponsePayload
+  public GenerateAndStoreSecretsResponse generateAndStoreSecretsRequest(
+      @RequestPayload final GenerateAndStoreSecretsRequest request,
+      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
+      final MessageContext messageContext)
+      throws OsgpException {
+    final Timer timer =
+        this.createTimer(
+            "GenerateAndStoreSecrets", request.getSecretTypes().getSecretType().size());
+    final long starttime = System.currentTimeMillis();
+
+    final GenerateAndStoreSecretsResponse response =
+        this.handleRequest(
+            request,
+            this::generateAndStoreSecrets,
+            header,
+            messageContext,
+            this.nameList(request.getSecretTypes()));
+
+    this.recordTimer(timer, starttime);
+
+    return response;
+  }
+
+  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "activateSecretsRequest")
+  @ResponsePayload
+  public ActivateSecretsResponse activateSecretsRequest(
+      @RequestPayload final ActivateSecretsRequest request,
+      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
+      final MessageContext messageContext)
+      throws OsgpException {
+    final Timer timer =
+        this.createTimer("ActivateSecrets", request.getSecretTypes().getSecretType().size());
+    final long starttime = System.currentTimeMillis();
+
+    final ActivateSecretsResponse response =
+        this.handleRequest(
+            request,
+            this::activateSecrets,
+            header,
+            messageContext,
+            this.nameList(request.getSecretTypes()));
+
+    this.recordTimer(timer, starttime);
+
+    return response;
+  }
+
+  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "hasNewSecretRequest")
+  @ResponsePayload
+  public HasNewSecretResponse hasNewSecretRequest(
+      @RequestPayload final HasNewSecretRequest request,
+      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
+      final MessageContext messageContext)
+      throws OsgpException {
+    final Timer timer = this.createTimer("HasNewSecret", 1);
+    final long starttime = System.currentTimeMillis();
+
+    final HasNewSecretResponse response =
+        this.handleRequest(
+            request,
+            this::hasNewSecret,
+            header,
+            messageContext,
+            List.of(request.getSecretType().name()));
+
+    this.recordTimer(timer, starttime);
+
+    return response;
+  }
+
+  private Timer createTimer(final String timerName, final int nrOfKeys) {
+    final Map<String, String> tags = new HashMap<>();
+    tags.put(TAG_NR_OF_KEYS, String.valueOf(nrOfKeys));
+    return this.secretManagementMetrics.createTimer(METRIC_REQUEST_TIMER_PREFIX + timerName, tags);
+  }
+
+  private void recordTimer(final Timer timer, final long starttime) {
+    this.secretManagementMetrics.recordTimer(
+        timer, System.currentTimeMillis() - starttime, TimeUnit.MILLISECONDS);
   }
 
   private String getCorrelationUidFromHeader(final SoapHeaderElement header)
@@ -87,6 +247,20 @@ public class SecretManagementEndpoint {
       final org.springframework.ws.soap.SoapHeader responseHeader = soapResponse.getSoapHeader();
       responseHeader.addHeaderElement(header.getName()).setText(header.getText());
     }
+  }
+
+  private <T> String requestToString(final T request) {
+    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    try {
+      final JAXBContext ctx = JAXBContext.newInstance(request.getClass());
+      final Marshaller marshaller = ctx.createMarshaller();
+      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+      marshaller.marshal(request, baos);
+    } catch (final JAXBException e) {
+      final String logFormat = "Could not serialize request of type %s";
+      log.error(String.format(logFormat, request.getClass()), e);
+    }
+    return baos.toString();
   }
 
   private <R extends AbstractRequest, S extends AbstractResponse> S handleRequest(
@@ -170,121 +344,19 @@ public class SecretManagementEndpoint {
     return response;
   }
 
-  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getSecretsRequest")
-  @ResponsePayload
-  public GetSecretsResponse getSecretsRequest(
-      @RequestPayload final GetSecretsRequest request,
-      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
-      final MessageContext messageContext)
-      throws OsgpException {
-    return this.handleRequest(
-        request, this::getSecrets, header, messageContext, this.nameList(request.getSecretTypes()));
-  }
-
-  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getNewSecretsRequest")
-  @ResponsePayload
-  public GetNewSecretsResponse getNewSecretsRequest(
-      @RequestPayload final GetNewSecretsRequest request,
-      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
-      final MessageContext messageContext)
-      throws OsgpException {
-    return this.handleRequest(
-        request,
-        this::getNewSecrets,
-        header,
-        messageContext,
-        this.nameList(request.getSecretTypes()));
-  }
-
-  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "storeSecretsRequest")
-  @ResponsePayload
-  public StoreSecretsResponse storeSecretsRequest(
-      @RequestPayload final StoreSecretsRequest request,
-      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
-      final MessageContext messageContext)
-      throws OsgpException {
-    return this.handleRequest(
-        request,
-        this::storeSecrets,
-        header,
-        messageContext,
-        this.nameList(request.getTypedSecrets()));
-  }
-
-  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "generateAndStoreSecretsRequest")
-  @ResponsePayload
-  public GenerateAndStoreSecretsResponse generateAndStoreSecretsRequest(
-      @RequestPayload final GenerateAndStoreSecretsRequest request,
-      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
-      final MessageContext messageContext)
-      throws OsgpException {
-    return this.handleRequest(
-        request,
-        this::generateAndStoreSecrets,
-        header,
-        messageContext,
-        this.nameList(request.getSecretTypes()));
-  }
-
-  private <T> String requestToString(final T request) {
-    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    try {
-      final JAXBContext ctx = JAXBContext.newInstance(request.getClass());
-      final Marshaller marshaller = ctx.createMarshaller();
-      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-      marshaller.marshal(request, baos);
-    } catch (final JAXBException e) {
-      final String logFormat = "Could not serialize request of type %s";
-      log.error(String.format(logFormat, request.getClass()), e);
-    }
-    return baos.toString();
-  }
-
-  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "activateSecretsRequest")
-  @ResponsePayload
-  public ActivateSecretsResponse activateSecretsRequest(
-      @RequestPayload final ActivateSecretsRequest request,
-      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
-      final MessageContext messageContext)
-      throws OsgpException {
-    return this.handleRequest(
-        request,
-        this::activateSecrets,
-        header,
-        messageContext,
-        this.nameList(request.getSecretTypes()));
-  }
-
-  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "hasNewSecretRequest")
-  @ResponsePayload
-  public HasNewSecretResponse hasNewSecretRequest(
-      @RequestPayload final HasNewSecretRequest request,
-      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
-      final MessageContext messageContext)
-      throws OsgpException {
-    return this.handleRequest(
-        request,
-        this::hasNewSecret,
-        header,
-        messageContext,
-        Arrays.asList(request.getSecretType().name()));
-  }
-
   private List<String> nameList(final SecretTypes secretTypes) {
     if (secretTypes == null) {
       return Collections.emptyList();
     }
     return secretTypes.getSecretType().stream()
         .map(org.opensmartgridplatform.ws.schema.core.secret.management.SecretType::name)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private List<String> nameList(final TypedSecrets typedSecrets) {
     if (typedSecrets == null) {
       return Collections.emptyList();
     }
-    return typedSecrets.getTypedSecret().stream()
-        .map(ts -> ts.getType().name())
-        .collect(Collectors.toList());
+    return typedSecrets.getTypedSecret().stream().map(ts -> ts.getType().name()).toList();
   }
 }

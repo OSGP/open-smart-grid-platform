@@ -1,11 +1,7 @@
-/*
- * Copyright 2014-2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import java.util.ArrayList;
@@ -23,7 +19,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.WeekProf
 public class ActivityCalendarBuilder {
 
   private String calendarName;
-  private List<SeasonProfile> seasonProfileList = new ArrayList<>();
+  private final List<SeasonProfile> seasonProfileList = new ArrayList<>();
   private CosemDateTime activatePassiveCalendarTime;
 
   public ActivityCalendarBuilder withCosemDateTime(
@@ -52,10 +48,10 @@ public class ActivityCalendarBuilder {
     final CosemDateTime seasonStart = new CosemDateTime(date, time, deviation, clockStatus);
 
     final CosemTime startTime = time;
-    final DayProfileAction dayProfileAction = new DayProfileAction(new Integer(10), startTime);
+    final DayProfileAction dayProfileAction = new DayProfileAction(Integer.valueOf(10), startTime);
     final List<DayProfileAction> dayProfileActionList = new ArrayList<>();
     dayProfileActionList.add(dayProfileAction);
-    final DayProfile dayProfile = new DayProfile(new Integer(10), dayProfileActionList);
+    final DayProfile dayProfile = new DayProfile(Integer.valueOf(10), dayProfileActionList);
 
     final WeekProfile weekProfile =
         WeekProfile.newBuilder()

@@ -1,16 +1,13 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.secretmanagement.application.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,10 +30,10 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
   @BeforeEach
   public void persistTestData() {
     this.dbEncryptionKeyReference = new DbEncryptionKeyReference();
-    this.dbEncryptionKeyReference.setCreationTime(new Date());
+    this.dbEncryptionKeyReference.setCreationTime(Instant.now());
     this.dbEncryptionKeyReference.setReference("keyRef1");
     this.dbEncryptionKeyReference.setEncryptionProviderType(EncryptionProviderType.HSM);
-    this.dbEncryptionKeyReference.setValidFrom(new Date(System.currentTimeMillis() - 60000));
+    this.dbEncryptionKeyReference.setValidFrom(Instant.now().minus(60000, ChronoUnit.MILLIS));
     this.dbEncryptionKeyReference.setVersion(1L);
     this.dbEncryptionKeyReference = this.entityManager.persist(this.dbEncryptionKeyReference);
     final DbEncryptedSecret instance = new DbEncryptedSecret();
@@ -45,7 +42,7 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
     instance.setSecretStatus(SecretStatus.ACTIVE);
     instance.setEncodedSecret(HexUtils.toHexString("$3cr3t".getBytes()));
     instance.setEncryptionKeyReference(this.dbEncryptionKeyReference);
-    instance.setCreationTime(new Date());
+    instance.setCreationTime(Instant.now());
     this.dbEncryptedSecret = this.entityManager.persist(instance);
     this.entityManager.flush();
   }
@@ -70,7 +67,7 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
     final List<DbEncryptedSecret> secretsList =
         this.repository.findSecrets(
             this.dbEncryptedSecret.getDeviceIdentification(),
-            this.dbEncryptedSecret.getSecretType(),
+            List.of(this.dbEncryptedSecret.getSecretType()),
             SecretStatus.ACTIVE);
     assertThat(secretsList).hasSize(1);
     assertThat(secretsList.iterator().next().getId()).isEqualTo(this.dbEncryptedSecret.getId());
@@ -78,7 +75,7 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
 
   @Test
   public void findSecretsOutdatedKeyRef() {
-    final Date now = new Date();
+    final Instant now = Instant.now();
     this.dbEncryptionKeyReference.setValidTo(now);
     this.dbEncryptionKeyReference = this.entityManager.persist(this.dbEncryptionKeyReference);
 
@@ -93,7 +90,7 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
     final List<DbEncryptedSecret> secretsList =
         this.repository.findSecrets(
             this.dbEncryptedSecret.getDeviceIdentification(),
-            this.dbEncryptedSecret.getSecretType(),
+            List.of(this.dbEncryptedSecret.getSecretType()),
             SecretStatus.ACTIVE);
     assertThat(secretsList).hasSize(1);
     final DbEncryptedSecret secret = secretsList.get(0);

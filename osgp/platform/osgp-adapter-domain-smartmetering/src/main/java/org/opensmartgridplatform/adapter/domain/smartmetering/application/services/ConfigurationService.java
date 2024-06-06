@@ -1,21 +1,17 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActivityCalendar;
@@ -41,13 +37,16 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfi
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeyOnGMeterRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupUdpRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetThdConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import org.opensmartgridplatform.domain.smartmetering.exceptions.GatewayDeviceNotSetForMbusDeviceException;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionGasDto;
+import org.opensmartgridplatform.dto.valueobjects.HashTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificationsDto;
@@ -72,8 +71,11 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfiguration
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupUdpRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -133,7 +135,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -159,7 +161,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -183,7 +185,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -207,7 +209,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -231,7 +233,61 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
+  }
+
+  public void setPushSetupUdp(
+      final MessageMetadata messageMetadata,
+      final SetPushSetupUdpRequestData setPushSetupUdpRequestData)
+      throws FunctionalException {
+
+    log.info(
+        "setPushSetupUdp for organisationIdentification: {} for deviceIdentification: {}",
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
+
+    final SmartMeter smartMeter =
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
+
+    final SetPushSetupUdpRequestDto requestDto =
+        this.configurationMapper.map(setPushSetupUdpRequestData, SetPushSetupUdpRequestDto.class);
+
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
+  }
+
+  public void setThdConfiguration(
+      final MessageMetadata messageMetadata, final SetThdConfigurationRequestData requestData)
+      throws FunctionalException {
+
+    log.info(
+        "setThdConfiguration for organisationIdentification: {} for deviceIdentification: {}",
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
+
+    final SmartMeter smartMeter =
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
+
+    final SetThdConfigurationRequestDto requestDto =
+        new SetThdConfigurationRequestDto(
+            requestData.getMinDurationNormalToOver(),
+            requestData.getMinDurationOverToNormal(),
+            requestData.getTimeThreshold(),
+            requestData.getValueHysteresis(),
+            requestData.getValueThreshold());
+
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -277,7 +333,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -304,7 +360,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -356,7 +412,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -410,7 +466,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -531,6 +587,51 @@ public class ConfigurationService {
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
+  public void handleSetPushSetupUdpResponse(
+      final MessageMetadata messageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception) {
+
+    log.info("handleSetPushSetupUdpResponse for MessageType: {}", messageMetadata.getMessageType());
+
+    ResponseMessageResultType result = deviceResult;
+    if (exception != null) {
+      log.error("Set Push Setup Udp Response not ok. Unexpected Exception", exception);
+      result = ResponseMessageResultType.NOT_OK;
+    }
+
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withMessageMetadata(messageMetadata)
+            .withResult(result)
+            .withOsgpException(exception)
+            .build();
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
+  }
+
+  public void handleSetThdConfigurationResponse(
+      final MessageMetadata messageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception) {
+
+    log.info(
+        "handleThdConfigurationResponse for MessageType: {}", messageMetadata.getMessageType());
+
+    ResponseMessageResultType result = deviceResult;
+    if (exception != null) {
+      log.error("Set THD Configuration Response not ok. Unexpected Exception", exception);
+      result = ResponseMessageResultType.NOT_OK;
+    }
+
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withMessageMetadata(messageMetadata)
+            .withResult(result)
+            .withOsgpException(exception)
+            .build();
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
+  }
+
   public void handleSetActivityCalendarResponse(
       final MessageMetadata messageMetadata,
       final ResponseMessageResultType responseMessageResultType,
@@ -593,7 +694,7 @@ public class ConfigurationService {
         messageMetadata
             .builder()
             .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
-            .withIpAddress(gatewayDevice.getIpAddress())
+            .withNetworkAddress(gatewayDevice.getNetworkAddress())
             .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
             .build());
   }
@@ -639,7 +740,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(gatewayDevice.getIpAddress())
+            .withNetworkAddress(gatewayDevice.getNetworkAddress())
             .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
             .build());
   }
@@ -685,7 +786,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -726,7 +827,7 @@ public class ConfigurationService {
         null,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -818,7 +919,7 @@ public class ConfigurationService {
           messageMetadata
               .builder()
               .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
-              .withIpAddress(gatewayDevice.getIpAddress())
+              .withNetworkAddress(gatewayDevice.getNetworkAddress())
               .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
               .build());
 
@@ -829,7 +930,7 @@ public class ConfigurationService {
           requestDto,
           messageMetadata
               .builder()
-              .withIpAddress(smartMeter.getIpAddress())
+              .withNetworkAddress(smartMeter.getNetworkAddress())
               .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
               .build());
     }
@@ -925,8 +1026,11 @@ public class ConfigurationService {
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     final String firmwareIdentification = updateFirmwareRequestData.getFirmwareIdentification();
-    this.firmwareService.checkFirmwareFileSupportsDeviceModel(
-        smartMeter, this.firmwareService.getFirmwareFile(firmwareIdentification));
+    final FirmwareFile firmwareFile = this.firmwareService.getFirmwareFile(firmwareIdentification);
+    final String hash = firmwareFile.getHash();
+    final HashTypeDto hashTypeDto = getHashTypeDto(firmwareFile);
+
+    this.firmwareService.checkFirmwareFileSupportsDeviceModel(smartMeter, firmwareFile);
 
     /*
      * The request here is applicable for an E-meter or G-meter. The assumption here
@@ -944,26 +1048,36 @@ public class ConfigurationService {
     final Device gatewayDevice = smartMeter.getGatewayDevice();
     if (gatewayDevice != null) {
       deviceIdentification = gatewayDevice.getDeviceIdentification();
-      ipAddress = gatewayDevice.getIpAddress();
+      ipAddress = gatewayDevice.getNetworkAddress();
       baseTransceiverStationId = gatewayDevice.getBtsId();
       cellId = gatewayDevice.getCellId();
     } else {
       deviceIdentification = smartMeter.getDeviceIdentification();
-      ipAddress = smartMeter.getIpAddress();
+      ipAddress = smartMeter.getNetworkAddress();
       baseTransceiverStationId = smartMeter.getBtsId();
       cellId = smartMeter.getCellId();
     }
-    final UpdateFirmwareRequestDto requestDto =
-        new UpdateFirmwareRequestDto(firmwareIdentification, identificationOfDeviceToBeUpdated);
 
+    final UpdateFirmwareRequestDto requestDto =
+        new UpdateFirmwareRequestDto(
+            identificationOfDeviceToBeUpdated,
+            new UpdateFirmwareRequestDataDto(firmwareIdentification, hashTypeDto, hash));
     this.osgpCoreRequestMessageSender.send(
         requestDto,
         messageMetadata
             .builder()
             .withDeviceIdentification(deviceIdentification)
-            .withIpAddress(ipAddress)
+            .withNetworkAddress(ipAddress)
             .withNetworkSegmentIds(baseTransceiverStationId, cellId)
             .build());
+  }
+
+  private static HashTypeDto getHashTypeDto(final FirmwareFile firmwareFile) {
+    final String hashType = firmwareFile.getHashType();
+    if (hashType == null) {
+      return null;
+    }
+    return HashTypeDto.valueOf(hashType);
   }
 
   public void handleUpdateFirmwareResponse(
@@ -1014,7 +1128,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -1064,7 +1178,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -1119,7 +1233,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -1177,7 +1291,7 @@ public class ConfigurationService {
         messageMetadata
             .builder()
             .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
-            .withIpAddress(gatewayDevice.getIpAddress())
+            .withNetworkAddress(gatewayDevice.getNetworkAddress())
             .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
             .build());
   }
@@ -1235,7 +1349,7 @@ public class ConfigurationService {
         messageMetadata
             .builder()
             .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
-            .withIpAddress(gatewayDevice.getIpAddress())
+            .withNetworkAddress(gatewayDevice.getNetworkAddress())
             .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
             .build());
   }
@@ -1288,7 +1402,7 @@ public class ConfigurationService {
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -1332,14 +1446,14 @@ public class ConfigurationService {
     final List<SecretTypeDto> secretTypes =
         getKeysRequestData.getSecretTypes().stream()
             .map(secretType -> SecretTypeDto.valueOf(secretType.name()))
-            .collect(Collectors.toList());
+            .toList();
     final GetKeysRequestDto requestDto = new GetKeysRequestDto(secretTypes);
 
     this.osgpCoreRequestMessageSender.send(
         requestDto,
         messageMetadata
             .builder()
-            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkAddress(smartMeter.getNetworkAddress())
             .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
             .build());
   }
@@ -1360,7 +1474,7 @@ public class ConfigurationService {
                 key ->
                     new GetKeysResponseData(
                         SecretType.valueOf(key.getSecretType().name()), key.getSecret()))
-            .collect(Collectors.toList());
+            .toList();
 
     final GetKeysResponse getKeysResponse = new GetKeysResponse(getKeysResponseData);
 

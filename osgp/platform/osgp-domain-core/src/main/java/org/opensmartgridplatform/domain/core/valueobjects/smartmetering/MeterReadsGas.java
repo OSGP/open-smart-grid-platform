@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
@@ -22,7 +18,7 @@ public class MeterReadsGas extends ActionResponse implements Serializable {
   public MeterReadsGas(
       final Date logTime, final OsgpMeterValue consumption, final Date captureTime) {
     this.logTime = new Date(logTime.getTime());
-    this.captureTime = new Date(captureTime.getTime());
+    this.captureTime = captureTime == null ? null : new Date(captureTime.getTime());
     this.consumption = consumption;
   }
 
@@ -31,7 +27,7 @@ public class MeterReadsGas extends ActionResponse implements Serializable {
   }
 
   public Date getCaptureTime() {
-    return new Date(this.captureTime.getTime());
+    return this.captureTime == null ? null : new Date(this.captureTime.getTime());
   }
 
   public OsgpMeterValue getConsumption() {

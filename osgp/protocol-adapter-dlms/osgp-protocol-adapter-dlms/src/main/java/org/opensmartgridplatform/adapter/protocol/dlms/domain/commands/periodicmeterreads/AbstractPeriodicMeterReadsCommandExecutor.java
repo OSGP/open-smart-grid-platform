@@ -1,11 +1,7 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
 import java.time.Duration;
@@ -15,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -40,13 +37,11 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
     extends AbstractCommandExecutor<T, R> {
 
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(AbstractPeriodicMeterReadsCommandExecutor.class);
   private final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper;
 
   AbstractPeriodicMeterReadsCommandExecutor(
@@ -54,6 +49,37 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
       final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper) {
     super(clazz);
     this.amrProfileStatusCodeHelper = amrProfileStatusCodeHelper;
+  }
+
+  protected AttributeAddressForProfile getProfileBufferAddress(
+      final PeriodTypeDto periodType,
+      final DateTime beginDateTime,
+      final DateTime endDateTime,
+      final DlmsDevice device,
+      final DlmsObjectConfigService dlmsObjectConfigService,
+      final Medium medium,
+      final int channelNumber)
+      throws ProtocolAdapterException {
+
+    final DlmsObjectType type = DlmsObjectType.getTypeForPeriodType(periodType);
+
+    // Add the attribute address for the profile
+    final AttributeAddressForProfile attributeAddressProfile =
+        dlmsObjectConfigService
+            .findAttributeAddressForProfile(
+                device,
+                type,
+                channelNumber,
+                beginDateTime,
+                endDateTime,
+                medium,
+                device.isSelectiveAccessPeriodicMeterReadsSupported())
+            .orElseThrow(() -> new ProtocolAdapterException("No address found for " + type));
+
+    log.debug(
+        "Dlms object config service returned profile buffer address {} ", attributeAddressProfile);
+
+    return attributeAddressProfile;
   }
 
   /**
@@ -209,7 +235,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
    * @return AmrProfileStatusCode object holding status enum values.
    * @throws ProtocolAdapterException on invalid register data.
    */
-  private AmrProfileStatusCodeDto readAmrProfileStatusCode(final DataObject amrProfileStatusData)
+  AmrProfileStatusCodeDto readAmrProfileStatusCode(final DataObject amrProfileStatusData)
       throws ProtocolAdapterException {
 
     if (!amrProfileStatusData.isNumber()) {
@@ -217,7 +243,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
           "Could not read AMR profile register data. Invalid data type.");
     }
 
-    LOGGER.debug(
+    log.debug(
         "Received amrProfileStatusData {} - {}",
         amrProfileStatusData.toString(),
         amrProfileStatusData.getValue());
@@ -232,7 +258,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
       final Date meterReadTime, final Date beginDateTime, final Date endDateTime) {
 
     if (meterReadTime.before(beginDateTime) || meterReadTime.after(endDateTime)) {
-      LOGGER.info(
+      log.info(
           "Not using an object from capture buffer (clock= {}), because the date does not match the given period: [ {} .. {} ].",
           meterReadTime,
           beginDateTime,

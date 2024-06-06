@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,6 +14,9 @@ class IdentificationNumberTest {
   private final String IDENTIFICATION_NUMBER_AS_STRING = "12049260";
   private final Long IDENTIFICATION_NUMBER_AS_NUMBER = 12049260L;
   private final Long IDENTIFICATION_NUMBER_IN_BCD_AS_LONG = 302289504L;
+
+  private final String IDENTIFICATION_NUMBER_AS_STRING_LARGE = "90000023";
+  private final int IDENTIFICATION_NUMBER_AS_INT = -1879048157;
 
   @Test
   void testFromBcdRepresentation() {
@@ -38,6 +36,26 @@ class IdentificationNumberTest {
 
     assertThat(identificationNumber.getIdentificationNumberInBcdRepresentationAsLong())
         .isEqualTo(this.IDENTIFICATION_NUMBER_IN_BCD_AS_LONG);
+  }
+
+  @Test
+  void testIntRepresentation() {
+
+    final IdentificationNumber identificationNumber =
+        IdentificationNumber.fromTextualRepresentation(this.IDENTIFICATION_NUMBER_AS_STRING);
+
+    assertThat(identificationNumber.getIntRepresentation())
+        .isEqualTo(Integer.parseInt(identificationNumber.getTextualRepresentation(), 16));
+  }
+
+  @Test
+  void testFromTextualRepresentationIntOverflow() {
+
+    final IdentificationNumber identificationNumber =
+        IdentificationNumber.fromTextualRepresentation(this.IDENTIFICATION_NUMBER_AS_STRING_LARGE);
+
+    assertThat(identificationNumber.getIntRepresentation())
+        .isEqualTo(this.IDENTIFICATION_NUMBER_AS_INT);
   }
 
   @Test

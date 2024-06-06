@@ -4,8 +4,151 @@
   "description": "Profile for Smart Meter Requirements 5.1",
   "inherit": {
     "profile": "SMR",
-    "version": "5.0"
+    "version": "5.0.0"
   },
   "properties": [],
-  "objects": []
+  "objects": [
+    {
+      "tag": "CLEAR_MBUS_STATUS",
+      "description": "Clear MBus Status",
+      "note": null,
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.x.94.31.10.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "RW"
+        }
+      ]
+    },
+    {
+      "tag": "PHASE_OUTAGE_TEST",
+      "description": "Phase outage test scheduler",
+      "note": null,
+      "class-id": 22,
+      "version": 0,
+      "obis": "0.0.15.1.4.255",
+      "group": "ELECTRICITY",
+      "meterTypes": ["PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "executed_script",
+          "datatype": "script",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "type",
+          "datatype": "enum",
+          "valuetype": "DYNAMIC",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "execution time",
+          "datatype": "array",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        }
+      ]
+    },
+    {
+      "tag": "AUXILIARY_EVENT_LOG",
+      "description": "Extra event log containing auxiliary events",
+      "note": null,
+      "class-id": 7,
+      "version": 1,
+      "obis": "0.0.99.98.6.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "buffer",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture objects",
+          "datatype": "array",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "CLOCK,2|AUXILIARY_EVENT_CODE,2",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "capture period",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "sort method",
+          "datatype": "enum",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "1",
+          "access": "R"
+        },
+        {
+          "id": 6,
+          "description": "sort object",
+          "datatype": "object_definition",
+          "valuetype": "FIXED_IN_METER",
+          "value": "NONE",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "entries in use",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 8,
+          "description": "profile entries",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "80",
+          "access": "R"
+        }
+
+      ]
+    },
+    {
+      "tag": "AUXILIARY_EVENT_CODE",
+      "description": "Last auxiliary event",
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.0.96.11.6.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    }
+  ]
 }

@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -15,8 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -78,19 +71,15 @@ class ConfigurationServiceTest {
               new KeyDto(SecretTypeDto.E_METER_AUTHENTICATION_KEY, KEY_1),
               new KeyDto(SecretTypeDto.E_METER_MASTER_KEY, KEY_2)));
 
-  private static final String IP_ADDRESS;
+  private static final String NETWORK_ADDRESS;
   private static final Integer BASE_TRANSCEIVER_STATION_ID;
   private static final Integer CELL_ID;
 
   static {
-    try {
-      device.setNetworkAddress(InetAddress.getByAddress(new byte[] {127, 0, 0, 1}));
-      IP_ADDRESS = device.getIpAddress();
-      BASE_TRANSCEIVER_STATION_ID = device.getBtsId();
-      CELL_ID = device.getCellId();
-    } catch (final UnknownHostException e) {
-      throw new AssertionError(e);
-    }
+    device.setNetworkAddress("127.0.0.1");
+    NETWORK_ADDRESS = device.getNetworkAddress();
+    BASE_TRANSCEIVER_STATION_ID = device.getBtsId();
+    CELL_ID = device.getCellId();
   }
 
   @InjectMocks private ConfigurationService instance;
@@ -120,7 +109,7 @@ class ConfigurationServiceTest {
     final MessageMetadata expectedMessageMetadata =
         messageMetadata
             .builder()
-            .withIpAddress(IP_ADDRESS)
+            .withNetworkAddress(NETWORK_ADDRESS)
             .withNetworkSegmentIds(BASE_TRANSCEIVER_STATION_ID, CELL_ID)
             .build();
 

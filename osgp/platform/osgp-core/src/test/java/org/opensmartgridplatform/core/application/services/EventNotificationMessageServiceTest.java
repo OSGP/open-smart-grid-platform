@@ -1,11 +1,7 @@
-/*
- * Copyright 2020 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.core.application.services;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -13,7 +9,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatcher;
@@ -45,7 +41,7 @@ public class EventNotificationMessageServiceTest {
   void sendsLightSensorReportsLightEventToDomainTest() throws UnknownEntityException {
     final String deviceUid = "testUid";
     final String deviceIdentification = "testIdentification";
-    final DateTime dateTime = DateTime.now();
+    final ZonedDateTime dateTime = ZonedDateTime.now();
     final EventTypeDto eventTypeDto = EventTypeDto.LIGHT_SENSOR_REPORTS_LIGHT;
     final String description = "Sensor reports light";
     final Integer index = 0;

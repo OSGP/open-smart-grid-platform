@@ -1,18 +1,14 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.config.messaging;
 
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.MessageListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
-import javax.jms.ConnectionFactory;
-import javax.jms.MessageListener;
 import javax.net.ssl.SSLException;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
@@ -36,8 +32,8 @@ public class InboundSigningServerResponsesMessagingConfig {
   private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_QUEUE =
       "jms.incoming.signing.server.responses.queue";
 
-  private JmsConfigurationFactory jmsConfigurationFactory;
-  private Environment environment;
+  private final JmsConfigurationFactory jmsConfigurationFactory;
+  private final Environment environment;
 
   public InboundSigningServerResponsesMessagingConfig(
       final Environment environment, final DefaultJmsConfiguration defaultJmsConfiguration)

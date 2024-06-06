@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_AUTHENTICATION;
@@ -15,17 +11,16 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
 import org.openmuc.jdlms.SecuritySuite.EncryptionMechanism;
 import org.openmuc.jdlms.TcpConnectionBuilder;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.metrics.ProtocolAdapterMetrics;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
@@ -43,7 +38,7 @@ public class Hls5Connector extends SecureDlmsConnector {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Hls5Connector.class);
 
-  private static final int AES_GMC_128 = 128;
+  private static final int AES_GCM_128 = 128;
 
   private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
@@ -54,8 +49,9 @@ public class Hls5Connector extends SecureDlmsConnector {
       final int responseTimeout,
       final int logicalDeviceAddress,
       final DlmsDeviceAssociation deviceAssociation,
-      final SecretManagementService secretManagementService) {
-    super(responseTimeout, logicalDeviceAddress, deviceAssociation);
+      final SecretManagementService secretManagementService,
+      final ProtocolAdapterMetrics protocolAdapterMetrics) {
+    super(responseTimeout, logicalDeviceAddress, deviceAssociation, protocolAdapterMetrics);
     this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
     this.secretManagementService = secretManagementService;
   }
@@ -84,18 +80,7 @@ public class Hls5Connector extends SecureDlmsConnector {
         this.recoverKeyProcessInitiator.initiate(messageMetadata, device.getDeviceIdentification());
       }
 
-      final String msg =
-          String.format(
-              "Error creating connection for device %s with Ip address:%s Port:%d UseHdlc:%b UseSn:%b "
-                  + "Message:%s",
-              device.getDeviceIdentification(),
-              device.getIpAddress(),
-              device.getPort(),
-              device.isUseHdlc(),
-              device.isUseSn(),
-              e.getMessage());
-      LOGGER.error(msg);
-      throw new ConnectionException(msg, e);
+      throw getExceptionWithExceptionType(device, e);
     } catch (final EncrypterException e) {
       throw new FunctionalException(
           FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
@@ -172,18 +157,7 @@ public class Hls5Connector extends SecureDlmsConnector {
      * builder the library is enabled to meet the IV requirements of DLMS
      * HLS5 communication.
      */
-    final String manufacturerId;
-    if (StringUtils.isEmpty(device.getManufacturerId())) {
-      LOGGER.warn(
-          "Device {} does not have its manufacturer ID stored in the database. "
-              + "Using a default value which makes the system title (part of the IV in HLS 5) less "
-              + "unique.",
-          device.getDeviceIdentification());
-      manufacturerId = "   ";
-    } else {
-      manufacturerId = device.getManufacturerId();
-    }
-    tcpConnectionBuilder.setSystemTitle(manufacturerId, device.getDeviceId());
+    tcpConnectionBuilder.setSystemTitle("   ", device.getDeviceId());
 
     final long frameCounter = device.getInvocationCounter();
 
@@ -204,13 +178,13 @@ public class Hls5Connector extends SecureDlmsConnector {
           "The authentication key is empty", FunctionalExceptionType.KEY_NOT_PRESENT);
     }
 
-    if (this.checkLenghtKey(encryptionKey)) {
+    if (this.checkLengthKey(encryptionKey)) {
       this.throwFunctionalException(
           "The encryption key has an invalid length",
           FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT);
     }
 
-    if (this.checkLenghtKey(authenticationKey)) {
+    if (this.checkLengthKey(authenticationKey)) {
       this.throwFunctionalException(
           "The authentication key has an invalid length",
           FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT);
@@ -221,8 +195,8 @@ public class Hls5Connector extends SecureDlmsConnector {
     return key == null;
   }
 
-  private boolean checkLenghtKey(final byte[] key) {
-    return key.length * 8 != AES_GMC_128;
+  private boolean checkLengthKey(final byte[] key) {
+    return key.length * 8 != AES_GCM_128;
   }
 
   private void throwFunctionalException(final String msg, final FunctionalExceptionType type)

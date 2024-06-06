@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -99,7 +94,7 @@ class SystemEventServiceTest {
 
     final MessageMetadata messageMetadata =
         new Builder()
-            .withIpAddress("127.0-.0.1")
+            .withNetworkAddress("127.0-.0.1")
             .withOrganisationIdentification("org-id")
             .withDomain("domain")
             .withDomainVersion("1.0")
@@ -128,7 +123,7 @@ class SystemEventServiceTest {
     assertThat(requestMessage.getCorrelationUid()).isEqualTo("corr-id");
     assertThat(requestMessage.getOrganisationIdentification())
         .isEqualTo(messageMetadata.getOrganisationIdentification());
-    assertThat(requestMessage.getIpAddress()).isEqualTo(messageMetadata.getIpAddress());
+    assertThat(requestMessage.getIpAddress()).isEqualTo(messageMetadata.getNetworkAddress());
     assertThat(requestMessage.getRequest()).isInstanceOf(SystemEventDto.class);
 
     final SystemEventDto systemEventDto = (SystemEventDto) requestMessage.getRequest();
@@ -143,7 +138,7 @@ class SystemEventServiceTest {
     assertThat(metadata.getCorrelationUid()).isEqualTo("corr-id");
     assertThat(metadata.getOrganisationIdentification())
         .isEqualTo(messageMetadata.getOrganisationIdentification());
-    assertThat(metadata.getIpAddress()).isEqualTo(messageMetadata.getIpAddress());
+    assertThat(metadata.getNetworkAddress()).isEqualTo(messageMetadata.getNetworkAddress());
     assertThat(metadata.getMessagePriority()).isEqualTo(MessagePriorityEnum.HIGH.getPriority());
     assertThat(metadata.getMessageType()).isEqualTo(MessageType.SYSTEM_EVENT.name());
     assertThat(metadata.getDomain()).isEqualTo(messageMetadata.getDomain());

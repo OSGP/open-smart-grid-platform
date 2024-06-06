@@ -1,11 +1,7 @@
-/*
- * Copyright 2020 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,7 +51,7 @@ public class AdHocManagementServiceTest {
 
   @BeforeEach
   public void setup() throws Exception {
-    when(this.device.getIpAddress()).thenReturn("127.0.0.1");
+    when(this.device.getNetworkAddress()).thenReturn("127.0.0.1");
     when(this.deviceDomainService.searchActiveDevice(any(String.class), any(ComponentType.class)))
         .thenReturn(this.device);
   }

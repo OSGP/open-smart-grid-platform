@@ -1,11 +1,7 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
 import static java.util.Arrays.asList;
@@ -112,8 +108,7 @@ class GetPeriodicMeterReadsCommandExecutorTest {
             this.fromDateTime.toDate(),
             this.toDateTime.toDate(),
             ChannelDto.ONE);
-    when(this.dlmsObjectConfigService.findAttributeAddressForProfile(
-            any(), any(), any(), any(), any(), any()))
+    when(this.dlmsObjectConfigService.findAttributeAddressForProfile(any(), any(), any()))
         .thenReturn(Optional.empty());
 
     // CALL
@@ -192,7 +187,8 @@ class GetPeriodicMeterReadsCommandExecutorTest {
             0,
             convertedFromTime,
             convertedToTime,
-            Medium.ELECTRICITY))
+            Medium.ELECTRICITY,
+            true))
         .thenReturn(Optional.of(attributeAddressForProfile));
 
     final DlmsObject intervalTime = mock(DlmsObject.class);
@@ -310,6 +306,7 @@ class GetPeriodicMeterReadsCommandExecutorTest {
   private DlmsDevice createDevice(final Protocol protocol) {
     final DlmsDevice device = new DlmsDevice();
     device.setProtocol(protocol);
+    device.setSelectiveAccessPeriodicMeterReadsSupported(true);
     return device;
   }
 }

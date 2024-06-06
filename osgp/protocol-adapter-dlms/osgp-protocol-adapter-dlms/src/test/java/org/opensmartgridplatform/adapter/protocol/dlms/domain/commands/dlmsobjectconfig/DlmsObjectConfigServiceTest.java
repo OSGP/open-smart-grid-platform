@@ -1,11 +1,7 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,11 +13,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -265,7 +262,8 @@ class DlmsObjectConfigServiceTest {
             channel,
             this.from,
             this.to,
-            filterMedium);
+            filterMedium,
+            true);
 
     // VERIFY
     assertThat(attributeAddressForProfile).isPresent();
@@ -275,25 +273,30 @@ class DlmsObjectConfigServiceTest {
         .isEqualTo(this.captureObjectsE);
   }
 
-  @Test
-  void testProfileWithMediumCombinedAndFilterMedium() {
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void testProfileWithMediumCombinedAndFilterMedium(final boolean selectedValuesSupported) {
     // SETUP
     final Integer channel = null;
     final Medium filterMedium = Medium.ELECTRICITY;
 
     final List<DlmsCaptureObject> expectedSelectedObjects =
-        this.captureObjectsCombined.stream()
-            .filter(
-                c ->
-                    !(c.getRelatedObject() instanceof DlmsRegister)
-                        || ((DlmsRegister) c.getRelatedObject()).getMedium() == filterMedium)
-            .collect(Collectors.toList());
+        selectedValuesSupported
+            ? this.captureObjectsCombined.stream()
+                .filter(
+                    c ->
+                        !(c.getRelatedObject() instanceof DlmsRegister)
+                            || ((DlmsRegister) c.getRelatedObject()).getMedium() == filterMedium)
+                .toList()
+            : this.captureObjectsCombined;
 
     final DataObject selectedValues =
-        DataObject.newArrayData(
-            expectedSelectedObjects.stream()
-                .map(o -> this.getDataObject(o.getRelatedObject()))
-                .collect(Collectors.toList()));
+        selectedValuesSupported
+            ? DataObject.newArrayData(
+                expectedSelectedObjects.stream()
+                    .map(o -> this.getDataObject(o.getRelatedObject()))
+                    .toList())
+            : DataObject.newArrayData(List.of());
 
     final DataObject accessParams = this.getAccessParams(selectedValues);
 
@@ -314,7 +317,8 @@ class DlmsObjectConfigServiceTest {
             channel,
             this.from,
             this.to,
-            filterMedium);
+            filterMedium,
+            selectedValuesSupported);
 
     // VERIFY
     assertThat(attributeAddressForProfile).isPresent();
@@ -351,7 +355,8 @@ class DlmsObjectConfigServiceTest {
             channel,
             this.from,
             this.to,
-            filterMedium);
+            filterMedium,
+            true);
 
     // VERIFY
     assertThat(attributeAddressForProfile).isPresent();

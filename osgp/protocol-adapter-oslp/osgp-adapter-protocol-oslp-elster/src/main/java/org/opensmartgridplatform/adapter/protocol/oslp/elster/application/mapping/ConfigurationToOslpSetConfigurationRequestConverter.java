@@ -1,20 +1,16 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.mapping;
 
 import com.google.protobuf.ByteString;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.ZonedDateTime;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.dto.valueobjects.ConfigurationDto;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.Oslp.SetConfigurationRequest;
@@ -277,14 +273,14 @@ public class ConfigurationToOslpSetConfigurationRequestConverter
    * Default value for summer time: 0360100 Default value for summer time:
    * 1060200
    */
-  private String convertSummerTimeWinterTimeDetails(final DateTime dateTime) {
+  private String convertSummerTimeWinterTimeDetails(final ZonedDateTime dateTime) {
     LOGGER.info("dateTime: {}", dateTime);
 
     final String formattedTimeDetails =
-        String.format("%02d", dateTime.getMonthOfYear())
-            + (dateTime.getDayOfWeek() - 1)
-            + String.format("%02d", dateTime.getHourOfDay())
-            + String.format("%02d", dateTime.getMinuteOfHour());
+        String.format("%02d", dateTime.getMonthValue())
+            + (dateTime.getDayOfWeek().getValue() - 1)
+            + String.format("%02d", dateTime.getHour())
+            + String.format("%02d", dateTime.getMinute());
 
     LOGGER.info("formattedTimeDetails: {}", formattedTimeDetails);
 

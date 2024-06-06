@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: Contributors to the GXF project
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # How to Contribute
 
 We'd love to accept your patches and contributions to this project. There are just a couple guidelines you need to follow before making a change.

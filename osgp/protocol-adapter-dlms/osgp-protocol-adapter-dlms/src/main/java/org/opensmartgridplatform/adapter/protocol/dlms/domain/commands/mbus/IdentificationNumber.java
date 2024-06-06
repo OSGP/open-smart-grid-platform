@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -116,7 +112,7 @@ public class IdentificationNumber {
     if (StringUtils.isBlank(this.textualRepresentation)) {
       return DataObject.newNullData();
     }
-    return DataObject.newUInteger32Data(this.getNumericalRepresentation());
+    return DataObject.newUInteger32Data(Long.parseLong(this.getTextualRepresentation()));
   }
 
   public Long getIdentificationNumberInBcdRepresentationAsLong() {
@@ -127,7 +123,14 @@ public class IdentificationNumber {
     return this.textualRepresentation;
   }
 
-  public Long getNumericalRepresentation() {
-    return Long.parseLong(this.getTextualRepresentation());
+  /**
+   * In the firmware file header 4 bytes are reserved for the device identification. Therefor the
+   * textual (hex) representation of the device identification is parsed to an integer ignoring the
+   * four least significant of the long (eight bytes). There first four bytes are assumed to be
+   * empty (zero). Since textual representation is always checked on length and digits this is
+   * always the case
+   */
+  public Integer getIntRepresentation() {
+    return (int) Long.parseLong(this.textualRepresentation, 16);
   }
 }

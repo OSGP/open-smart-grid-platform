@@ -1,12 +1,7 @@
-/*
- * Copyright 2022 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
@@ -22,21 +17,20 @@ import org.openmuc.jdlms.datatypes.CosemDate;
 import org.openmuc.jdlms.datatypes.CosemTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsDateTimeConverter;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.SingleActionScheduleAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.TestAlarmSchedulerRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.TestAlarmTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -44,10 +38,12 @@ import org.springframework.stereotype.Component;
 public class TestAlarmSchedulerCommandExecutor
     extends AbstractCommandExecutor<TestAlarmSchedulerRequestDto, AccessResultCode> {
 
-  @Autowired private DlmsObjectConfigService dlmsObjectConfigService;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  public TestAlarmSchedulerCommandExecutor() {
+  public TestAlarmSchedulerCommandExecutor(
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(TestAlarmSchedulerRequestDto.class);
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
@@ -84,16 +80,18 @@ public class TestAlarmSchedulerCommandExecutor
 
     final DlmsObjectType alarmObjectType = toAlarmObjectType(alarmTypeDto);
 
-    final DlmsObject dlmsObject =
-        this.dlmsObjectConfigService.getDlmsObject(device, alarmObjectType);
-    final DateTime convertedDateTime =
-        DlmsDateTimeConverter.toDateTime(scheduleDate, device.getTimezone());
+    final Protocol protocol = Protocol.forDevice(device);
 
     final AttributeAddress attributeAddress =
-        new AttributeAddress(
-            dlmsObject.getClassId(),
-            dlmsObject.getObisCode(),
+        this.objectConfigServiceHelper.findAttributeAddress(
+            device,
+            protocol,
+            alarmObjectType,
+            null,
             SingleActionScheduleAttribute.EXECUTION_TIME.attributeId());
+
+    final DateTime convertedDateTime =
+        DlmsDateTimeConverter.toDateTime(scheduleDate, device.getTimezone());
 
     final DataObject timeDataObject = getDataObjectTime(convertedDateTime);
     final DataObject dateDataObject = getDataObjectDate(convertedDateTime);

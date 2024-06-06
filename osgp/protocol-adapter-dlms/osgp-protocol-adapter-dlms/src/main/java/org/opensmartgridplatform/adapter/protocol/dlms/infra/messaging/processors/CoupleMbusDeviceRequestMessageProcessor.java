@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
 import java.io.Serializable;
@@ -13,7 +9,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Inst
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -37,9 +33,10 @@ public class CoupleMbusDeviceRequestMessageProcessor extends DeviceRequestMessag
       final MessageMetadata messageMetadata)
       throws OsgpException {
 
-    this.assertRequestObjectType(MbusChannelElementsDto.class, requestObject);
+    this.assertRequestObjectType(CoupleMbusDeviceRequestDataDto.class, requestObject);
 
-    final MbusChannelElementsDto requestDto = (MbusChannelElementsDto) requestObject;
+    final CoupleMbusDeviceRequestDataDto requestDto =
+        (CoupleMbusDeviceRequestDataDto) requestObject;
     return this.installationService.coupleMbusDevice(conn, device, requestDto, messageMetadata);
   }
 }

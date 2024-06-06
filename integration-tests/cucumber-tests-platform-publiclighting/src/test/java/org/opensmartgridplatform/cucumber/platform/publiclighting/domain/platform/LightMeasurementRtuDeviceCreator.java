@@ -1,11 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.publiclighting.domain.platform;
 
 import java.util.Map;
@@ -25,7 +21,7 @@ public class LightMeasurementRtuDeviceCreator extends AbstractPlatformDeviceCrea
   public RtuDevice apply(final Protocol protocol, final Map<String, String> settings) {
     RtuDevice device = new RtuDevice(this.deviceIdentification(settings));
     device.setDeviceType(DeviceType.LIGHT_MEASUREMENT_RTU.getPlatformDeviceType());
-    device.setNetworkAddress(this.networkAddress(settings));
+    device.setNetworkAddress(this.networkAddress(settings).getHostAddress());
     device.setDeviceLifecycleStatus(this.deviceLifecycleStatus(settings));
     device.setActivated(this.activated(settings));
     device.updateProtocol(this.protocolInfo(protocol));

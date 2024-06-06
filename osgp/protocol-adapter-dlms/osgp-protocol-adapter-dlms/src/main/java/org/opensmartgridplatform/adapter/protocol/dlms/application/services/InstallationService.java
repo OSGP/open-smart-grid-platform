@@ -1,18 +1,18 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_AUTHENTICATION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_ENCRYPTION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_MASTER;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_ENCRYPTION;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_MASTER;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_OPTICAL_PORT_KEY;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
@@ -30,10 +30,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsD
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -102,17 +102,11 @@ public class InstallationService {
 
   private List<SecurityKeyType> determineKeyTypesToStore(final SmartMeteringDeviceDto deviceDto)
       throws FunctionalException {
-    final byte[] deviceGmeterMasterKey = this.getKeyFromDeviceDto(deviceDto, G_METER_MASTER);
-    final byte[] deviceEmeterMasterKey = this.getKeyFromDeviceDto(deviceDto, E_METER_MASTER);
-    final byte[] deviceEmeterAuthenticationKey =
-        this.getKeyFromDeviceDto(deviceDto, E_METER_AUTHENTICATION);
-    final byte[] deviceEmeterEncryptionKey =
-        this.getKeyFromDeviceDto(deviceDto, E_METER_ENCRYPTION);
+    final List<SecurityKeyType> eMeterKeyTypes = this.getEMeterKeyTypes(deviceDto);
+    final List<SecurityKeyType> gMeterKeyTypes = this.getGMeterKeyTypes(deviceDto);
 
-    if (this.isKeyPresent(deviceGmeterMasterKey)) {
-      if (this.isKeyPresent(deviceEmeterMasterKey)
-          || this.isKeyPresent(deviceEmeterAuthenticationKey)
-          || this.isKeyPresent(deviceEmeterEncryptionKey)) {
+    if (gMeterKeyTypes.contains(G_METER_MASTER)) {
+      if (!eMeterKeyTypes.isEmpty()) {
         final String msg =
             "Device "
                 + deviceDto.getDeviceIdentification()
@@ -122,10 +116,57 @@ public class InstallationService {
             ComponentType.PROTOCOL_DLMS,
             new IllegalArgumentException(msg));
       }
-      return Arrays.asList(G_METER_MASTER);
+      return Arrays.asList(
+          G_METER_MASTER,
+          G_METER_ENCRYPTION,
+          G_METER_FIRMWARE_UPDATE_AUTHENTICATION,
+          G_METER_OPTICAL_PORT_KEY);
     } else {
       return Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
     }
+  }
+
+  private List<SecurityKeyType> getEMeterKeyTypes(final SmartMeteringDeviceDto deviceDto) {
+    final byte[] deviceEmeterMasterKey = this.getKeyFromDeviceDto(deviceDto, E_METER_MASTER);
+    final byte[] deviceEmeterAuthenticationKey =
+        this.getKeyFromDeviceDto(deviceDto, E_METER_AUTHENTICATION);
+    final byte[] deviceEmeterEncryptionKey =
+        this.getKeyFromDeviceDto(deviceDto, E_METER_ENCRYPTION);
+
+    final List<SecurityKeyType> securityEmeterKeyTypes = new ArrayList<>();
+    if (this.isKeyPresent(deviceEmeterMasterKey)) {
+      securityEmeterKeyTypes.add(E_METER_MASTER);
+    }
+    if (this.isKeyPresent(deviceEmeterAuthenticationKey)) {
+      securityEmeterKeyTypes.add(E_METER_AUTHENTICATION);
+    }
+    if (this.isKeyPresent(deviceEmeterEncryptionKey)) {
+      securityEmeterKeyTypes.add(E_METER_ENCRYPTION);
+    }
+    return securityEmeterKeyTypes;
+  }
+
+  private List<SecurityKeyType> getGMeterKeyTypes(final SmartMeteringDeviceDto deviceDto) {
+    final byte[] deviceGmeterMasterKey = this.getKeyFromDeviceDto(deviceDto, G_METER_MASTER);
+    final byte[] deviceGmeterEncryption = this.getKeyFromDeviceDto(deviceDto, G_METER_ENCRYPTION);
+    final byte[] deviceGmeterFirmwareUpdateAuthenticationKey =
+        this.getKeyFromDeviceDto(deviceDto, G_METER_FIRMWARE_UPDATE_AUTHENTICATION);
+    final byte[] deviceGmeterP0Key = this.getKeyFromDeviceDto(deviceDto, G_METER_OPTICAL_PORT_KEY);
+
+    final List<SecurityKeyType> securityGmeterKeyTypes = new ArrayList<>();
+    if (this.isKeyPresent(deviceGmeterMasterKey)) {
+      securityGmeterKeyTypes.add(G_METER_MASTER);
+    }
+    if (this.isKeyPresent(deviceGmeterEncryption)) {
+      securityGmeterKeyTypes.add(G_METER_ENCRYPTION);
+    }
+    if (this.isKeyPresent(deviceGmeterFirmwareUpdateAuthenticationKey)) {
+      securityGmeterKeyTypes.add(G_METER_FIRMWARE_UPDATE_AUTHENTICATION);
+    }
+    if (this.isKeyPresent(deviceGmeterP0Key)) {
+      securityGmeterKeyTypes.add(G_METER_OPTICAL_PORT_KEY);
+    }
+    return securityGmeterKeyTypes;
   }
 
   private boolean isKeyPresent(final byte[] deviceKey) {
@@ -143,19 +184,26 @@ public class InstallationService {
         return deviceDto.getGlobalEncryptionUnicastKey();
       case G_METER_MASTER:
         return deviceDto.getMbusDefaultKey();
+      case G_METER_ENCRYPTION:
+        return deviceDto.getMbusUserKey();
+      case G_METER_FIRMWARE_UPDATE_AUTHENTICATION:
+        return deviceDto.getMbusFirmwareUpdateAuthenticationKey();
+      case G_METER_OPTICAL_PORT_KEY:
+        return deviceDto.getMbusP0Key();
+
       default:
         throw new IllegalArgumentException("Unknown type " + keyType);
     }
   }
 
-  public MbusChannelElementsResponseDto coupleMbusDevice(
+  public CoupleMbusDeviceResponseDto coupleMbusDevice(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final MbusChannelElementsDto mbusChannelElements,
+      final CoupleMbusDeviceRequestDataDto requestDataDto,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
     return this.coupleMBusDeviceCommandExecutor.execute(
-        conn, device, mbusChannelElements, messageMetadata);
+        conn, device, requestDataDto, messageMetadata);
   }
 
   public CoupleMbusDeviceByChannelResponseDto coupleMbusDeviceByChannel(

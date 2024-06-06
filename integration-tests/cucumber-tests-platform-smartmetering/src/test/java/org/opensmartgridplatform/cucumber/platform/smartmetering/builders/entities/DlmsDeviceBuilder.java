@@ -1,11 +1,7 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
@@ -33,7 +29,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
   private boolean useHdlc = PlatformSmartmeteringDefaults.USE_HDLC;
   private boolean polyphase = PlatformSmartmeteringDefaults.POLYPHASE;
   private Integer challengeLength = PlatformSmartmeteringDefaults.CHALLENGE_LENGTH;
-  private boolean withListSupported = PlatformSmartmeteringDefaults.WITH_LIST_SUPPORTED;
+  private Integer withListMax = PlatformSmartmeteringDefaults.WITH_LIST_MAX;
   private boolean selectiveAccessSupported =
       PlatformSmartmeteringDefaults.SELECTIVE_ACCESS_SUPPORTED;
   private boolean ipAddressIsStatic = PlatformSmartmeteringDefaults.IP_ADDRESS_IS_STATIC;
@@ -46,6 +42,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
   private String protocolName = PlatformSmartmeteringDefaults.PROTOCOL;
   private String protocolVersion = PlatformSmartmeteringDefaults.PROTOCOL_VERSION;
   private Long invocationCounter = PlatformSmartmeteringDefaults.INVOCATION_COUNTER;
+  private String firmwareHash = null;
 
   private String timezone;
 
@@ -114,8 +111,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     return this;
   }
 
-  public DlmsDeviceBuilder setWithListSupported(final boolean withListSupported) {
-    this.withListSupported = withListSupported;
+  public DlmsDeviceBuilder setWithListMax(final Integer withListMax) {
+    this.withListMax = withListMax;
     return this;
   }
 
@@ -170,6 +167,11 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     return this;
   }
 
+  public DlmsDeviceBuilder setFirmwareHash(final String firmwareHash) {
+    this.firmwareHash = firmwareHash;
+    return this;
+  }
+
   @Override
   public DlmsDeviceBuilder withSettings(final Map<String, String> inputSettings) {
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION)) {
@@ -220,9 +222,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
       this.setChallengeLength(
           Integer.parseInt(inputSettings.get(PlatformSmartmeteringKeys.CHALLENGE_LENGTH)));
     }
-    if (inputSettings.containsKey(PlatformSmartmeteringKeys.WITH_LIST_SUPPORTED)) {
-      this.setWithListSupported(
-          Boolean.parseBoolean(inputSettings.get(PlatformSmartmeteringKeys.WITH_LIST_SUPPORTED)));
+    if (inputSettings.containsKey(PlatformSmartmeteringKeys.WITH_LIST_MAX)) {
+      this.setWithListMax(
+          Integer.parseInt(inputSettings.get(PlatformSmartmeteringKeys.WITH_LIST_MAX)));
     }
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.SELECTIVE_ACCESS_SUPPORTED)) {
       this.setSelectiveAccessSupported(
@@ -255,6 +257,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_TIMEZONE)) {
       this.setTimezone(getString(inputSettings, PlatformSmartmeteringKeys.KEY_DEVICE_TIMEZONE));
     }
+    if (inputSettings.containsKey(PlatformSmartmeteringKeys.FIRMWARE_HASH)) {
+      this.setFirmwareHash(getString(inputSettings, PlatformSmartmeteringKeys.FIRMWARE_HASH));
+    }
 
     /**
      * For port/logical_id we want to be able to override the default value to be null to enable
@@ -267,8 +272,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         this.setLogicalId(Long.parseLong(inputSettings.get(PlatformSmartmeteringKeys.LOGICAL_ID)));
       }
     }
-    if (inputSettings.containsKey(PlatformSmartmeteringKeys.PORT)) {
-      if (inputSettings.get(PlatformSmartmeteringKeys.PORT).isEmpty()) {
+    final String port = inputSettings.get(PlatformSmartmeteringKeys.PORT);
+    if (hasPortDefined(inputSettings, port)) {
+      if (port.isEmpty()) {
         this.setPort(null);
       } else {
         this.setPort(Long.parseLong(inputSettings.get(PlatformSmartmeteringKeys.PORT)));
@@ -278,6 +284,11 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     }
 
     return this;
+  }
+
+  private static boolean hasPortDefined(
+      final Map<String, String> inputSettings, final String port) {
+    return inputSettings.containsKey(PlatformSmartmeteringKeys.PORT) && port != null;
   }
 
   private void setTimezone(final String timezone) {
@@ -300,7 +311,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     dlmsDevice.setUseSn(this.useSn);
     dlmsDevice.setPolyphase(this.polyphase);
     dlmsDevice.setChallengeLength(this.challengeLength);
-    dlmsDevice.setWithListSupported(this.withListSupported);
+    dlmsDevice.setWithListMax(this.withListMax);
     dlmsDevice.setSelectiveAccessSupported(this.selectiveAccessSupported);
     dlmsDevice.setIpAddressIsStatic(this.ipAddressIsStatic);
     dlmsDevice.setPort(this.port);
@@ -312,15 +323,16 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     dlmsDevice.setProtocol(this.protocolName, this.protocolVersion);
     dlmsDevice.setInvocationCounter(this.invocationCounter);
     dlmsDevice.setTimezone(this.timezone);
+    dlmsDevice.setFirmwareHash(this.firmwareHash);
 
     return dlmsDevice;
   }
 
   public Long getPortBasedOnProtocolInfo(final String protocol, final String protocolVersion) {
-    return PlatformSmartmeteringDefaults.PORT_MAPPING.entrySet().stream()
-        .filter(e -> this.protocolsAreEqual(protocol, protocolVersion, e.getValue()))
+    return PlatformSmartmeteringDefaults.PORT_MAPPING.keySet().stream()
+        .filter(protocol1 -> this.protocolsAreEqual(protocol, protocolVersion, protocol1))
         .findFirst()
-        .map(e2 -> e2.getKey())
+        .map(protocol2 -> PlatformSmartmeteringDefaults.PORT_MAPPING.get(protocol2))
         .orElseThrow(
             () ->
                 new IllegalArgumentException(

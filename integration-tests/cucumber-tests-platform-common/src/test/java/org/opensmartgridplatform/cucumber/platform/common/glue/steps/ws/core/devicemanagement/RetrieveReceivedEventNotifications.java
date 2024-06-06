@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,10 +15,10 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindEventsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindEventsResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
@@ -60,7 +56,7 @@ public class RetrieveReceivedEventNotifications {
       final Event event =
           new Event(
               deviceIdentification,
-              getDateTime(PlatformDefaults.TIMESTAMP).toDate(),
+              getDateTime(PlatformDefaults.TIMESTAMP).toInstant(),
               eventType,
               PlatformDefaults.DEFAULT_EVENT_DESCRIPTION,
               PlatformDefaults.DEFAULT_INDEX);
@@ -77,7 +73,7 @@ public class RetrieveReceivedEventNotifications {
           new Event(
               deviceIdentification,
               getDateTime(getString(data, PlatformKeys.TIMESTAMP, PlatformDefaults.TIMESTAMP))
-                  .toDate(),
+                  .toInstant(),
               getEnum(data, PlatformKeys.EVENT_TYPE, EventType.class, EventType.ALARM_NOTIFICATION),
               getString(
                   data, PlatformKeys.KEY_DESCRIPTION, PlatformDefaults.DEFAULT_EVENT_DESCRIPTION),
@@ -216,13 +212,13 @@ public class RetrieveReceivedEventNotifications {
       throws Throwable {
     final List<Event> events = new ArrayList<>();
     final List<Event> eventIterator = this.retrieveStoredEvents(deviceIdentification);
-    final DateTime
+    final ZonedDateTime
         fromTimestamp = getDateTime(getString(expectedResponse, PlatformKeys.FROM_TIMESTAMP)),
         toTimestamp = getDateTime(getString(expectedResponse, PlatformKeys.TO_TIMESTAMP));
 
     for (final Event e : eventIterator) {
-      if (fromTimestamp.isBefore(e.getDateTime().getTime())
-          && toTimestamp.isAfter(e.getDateTime().getTime())) {
+      if (fromTimestamp.isBefore(ZonedDateTime.from(e.getDateTime()))
+          && toTimestamp.isAfter(ZonedDateTime.from(e.getDateTime()))) {
         events.add(e);
       }
     }
@@ -263,7 +259,7 @@ public class RetrieveReceivedEventNotifications {
   @Then("^the stored events are filtered and retrieved$")
   public void theStoredEventsAreFilteredAndRetrieved(final Map<String, String> expectedResponse)
       throws Throwable {
-    List<Event> events;
+    final List<Event> events;
 
     if (getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION).isEmpty()) {
       events = this.retrieveStoredEvents();

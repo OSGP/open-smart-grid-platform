@@ -1,21 +1,16 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.throttling.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import java.time.Instant;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
 
 @Entity
 public class Permit {
@@ -44,16 +39,6 @@ public class Permit {
 
   protected Permit() {
     // no-arg constructor required by JPA specification
-  }
-
-  public Permit(
-      final short throttlingConfigId,
-      final int clientId,
-      final int baseTransceiverStationId,
-      final int cellId,
-      final int requestId) {
-
-    this(null, null, throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
   }
 
   public Permit(

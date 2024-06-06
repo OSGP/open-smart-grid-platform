@@ -1,12 +1,6 @@
-/*
- * Copyright 2022 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
 
 package org.opensmartgridplatform.shared.config;
 
@@ -14,6 +8,8 @@ import io.micrometer.core.instrument.binder.db.PostgreSQLDatabaseMetrics;
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
 import io.micrometer.core.instrument.binder.jvm.DiskSpaceMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmInfoMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
@@ -82,8 +78,10 @@ public class MetricsConfig extends AbstractConfig {
     new ClassLoaderMetrics().bindTo(registry);
     new JvmMemoryMetrics().bindTo(registry);
     new JvmGcMetrics().bindTo(registry); // do not auto-close, no metrics after that
+    new JvmThreadMetrics().bindTo(registry); // do not auto-close, no metrics after that
+    new JvmHeapPressureMetrics().bindTo(registry); // do not auto-close, no metrics after that
+    new JvmInfoMetrics().bindTo(registry); // do not auto-close, no metrics after that
     new ProcessorMetrics().bindTo(registry);
-    new JvmThreadMetrics().bindTo(registry);
     new LogbackMetrics().bindTo(registry); // do not auto-close, no metrics after that
     new DiskSpaceMetrics(new File("/")).bindTo(registry);
     if (this.dataSource != null) {

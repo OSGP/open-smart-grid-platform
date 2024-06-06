@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
@@ -16,12 +12,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetPushSetupAlarmRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.PushObject;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequestData;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class SetPushSetupAlarmRequestBuilder {
@@ -59,6 +55,25 @@ public class SetPushSetupAlarmRequestBuilder {
     return request;
   }
 
+  public org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
+          .SetPushSetupAlarmRequest
+      buildSingle() {
+    final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
+            .SetPushSetupAlarmRequest
+        request =
+            new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
+                .SetPushSetupAlarmRequest();
+    final PushSetupAlarm pushSetupAlarm = new PushSetupAlarm();
+    pushSetupAlarm.setHost(this.host);
+    pushSetupAlarm.setPort(this.port);
+    pushSetupAlarm.getPushObjectList().addAll(this.pushObjectList);
+
+    final SetPushSetupAlarmRequestData requestData = new SetPushSetupAlarmRequestData();
+    requestData.setPushSetupAlarm(pushSetupAlarm);
+    request.setSetPushSetupAlarmRequestData(requestData);
+    return request;
+  }
+
   private String getHost(final Map<String, String> parameters) {
     return getString(parameters, PlatformSmartmeteringKeys.HOSTNAME, DEFAULT_HOST);
   }
@@ -91,11 +106,11 @@ public class SetPushSetupAlarmRequestBuilder {
 
               return pushObject;
             })
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private ObisCodeValues convertObisCode(final String obisCode) {
-    final String[] obisCodeSplit = obisCode.split("\\.");
+    final String[] obisCodeSplit = obisCode.split("[:\\.-]");
 
     final ObisCodeValues obisCodeValues = new ObisCodeValues();
     obisCodeValues.setA(Short.parseShort(obisCodeSplit[0]));

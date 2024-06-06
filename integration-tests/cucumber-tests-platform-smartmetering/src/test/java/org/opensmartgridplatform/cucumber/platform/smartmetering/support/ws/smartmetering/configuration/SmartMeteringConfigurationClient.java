@@ -1,11 +1,7 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigureDefinableLoadProfileAsyncRequest;
@@ -74,6 +70,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupLastGaspRequest;
@@ -82,6 +82,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupUdpAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupUdpAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupUdpRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupUdpResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomisationSettingsAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomisationSettingsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomisationSettingsRequest;
@@ -90,6 +94,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetThdConfigurationAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetThdConfigurationAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetThdConfigurationRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetThdConfigurationResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequest;
@@ -406,6 +414,20 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     return (SetPushSetupLastGaspResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
   }
 
+  public SetPushSetupAlarmAsyncResponse setPushSetupAlarm(final SetPushSetupAlarmRequest request)
+      throws WebServiceSecurityException {
+    return (SetPushSetupAlarmAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+  }
+
+  public SetPushSetupAlarmResponse getSetPushSetupAlarmResponse(
+      final SetPushSetupAlarmAsyncRequest asyncRequest) throws WebServiceSecurityException {
+
+    final String correlationUid = asyncRequest.getCorrelationUid();
+    this.waitForNotification(correlationUid);
+
+    return (SetPushSetupAlarmResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
+  }
+
   public SetPushSetupSmsAsyncResponse setPushSetupSms(final SetPushSetupSmsRequest request)
       throws WebServiceSecurityException {
     return (SetPushSetupSmsAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
@@ -418,6 +440,34 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     this.waitForNotification(correlationUid);
 
     return (SetPushSetupSmsResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
+  }
+
+  public SetPushSetupUdpAsyncResponse setPushSetupUdp(final SetPushSetupUdpRequest request)
+      throws WebServiceSecurityException {
+    return (SetPushSetupUdpAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+  }
+
+  public SetPushSetupUdpResponse getSetPushSetupUdpResponse(
+      final SetPushSetupUdpAsyncRequest asyncRequest) throws WebServiceSecurityException {
+
+    final String correlationUid = asyncRequest.getCorrelationUid();
+    this.waitForNotification(correlationUid);
+
+    return (SetPushSetupUdpResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
+  }
+
+  public SetThdConfigurationAsyncResponse setThdConfiguration(
+      final SetThdConfigurationRequest request) throws WebServiceSecurityException {
+    return (SetThdConfigurationAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+  }
+
+  public SetThdConfigurationResponse getSetThdConfigurationResponse(
+      final SetThdConfigurationAsyncRequest asyncRequest) throws WebServiceSecurityException {
+
+    final String correlationUid = asyncRequest.getCorrelationUid();
+    this.waitForNotification(correlationUid);
+
+    return (SetThdConfigurationResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
   }
 
   private WebServiceTemplate getTemplate() throws WebServiceSecurityException {

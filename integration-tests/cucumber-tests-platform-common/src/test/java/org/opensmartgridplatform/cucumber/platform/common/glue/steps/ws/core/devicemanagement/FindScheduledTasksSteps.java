@@ -1,11 +1,7 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,11 +15,12 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import javax.xml.datatype.XMLGregorianCalendar;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindScheduledTasksRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindScheduledTasksResponse;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
@@ -31,6 +28,7 @@ import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.ScheduledTaskSteps;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class FindScheduledTasksSteps {
@@ -81,34 +79,36 @@ public class FindScheduledTasksSteps {
     }
   }
 
-  private static final Predicate<
+  private static Predicate<
           org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask>
       hasOrganizationIdentification(final String organizationIdentification) {
     return task -> task.getOrganisationIdentification().equals(organizationIdentification);
   }
 
-  private static final Predicate<
+  private static Predicate<
           org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask>
       hasDeviceIdentification(final String deviceIdentification) {
     return task -> task.getDeviceIdentification().equals(deviceIdentification);
   }
 
-  private static final Predicate<
+  private static Predicate<
           org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask>
       hasMessageType(final String messageType) {
     return task -> task.getMessageType().equals(messageType);
   }
 
-  private static final Predicate<
+  private static Predicate<
           org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask>
       hasScheduledTime(final String scheduledTime) {
     return task -> isEqual(task.getScheduledTime(), scheduledTime);
   }
 
-  private static final boolean isEqual(final XMLGregorianCalendar actual, final String expected) {
-    final DateTime expectedDateTime =
-        DateTimeHelper.shiftSystemZoneToUtc(DateTimeHelper.getDateTime(expected));
-    final DateTime actualDateTime = new DateTime(actual.toGregorianCalendar());
+  private static boolean isEqual(final XMLGregorianCalendar actual, final String expected) {
+    final ZonedDateTime expectedDateTime =
+        DateTimeHelper.getDateTime(expected).withZoneSameInstant(ZoneId.of("UTC"));
+    final ZonedDateTime actualDateTime =
+        JavaTimeHelpers.gregorianCalendarToZonedDateTime(
+            actual.toGregorianCalendar(), ZoneId.of("UTC"));
     return actualDateTime.isEqual(expectedDateTime);
   }
 }

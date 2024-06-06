@@ -1,21 +1,26 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
+import static org.opensmartgridplatform.adapter.protocol.dlms.application.metrics.ProtocolAdapterMetrics.METRIC_REQUEST_TIMER_PREFIX;
+import static org.opensmartgridplatform.adapter.protocol.dlms.application.metrics.ProtocolAdapterMetrics.TAG_BTS_ID;
+import static org.opensmartgridplatform.adapter.protocol.dlms.application.metrics.ProtocolAdapterMetrics.TAG_CELL_ID;
+import static org.opensmartgridplatform.adapter.protocol.dlms.application.metrics.ProtocolAdapterMetrics.TAG_COMMUNICATION_METHOD;
+
+import io.micrometer.core.instrument.Timer;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.openmuc.jdlms.settings.client.ReferencingMethod;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.metrics.ProtocolAdapterMetrics;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -28,19 +33,25 @@ public class Lls0Connector extends DlmsConnector {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Lls0Connector.class);
 
+  private static final String TIMER_NAME = "create_connection";
+
   protected final int responseTimeout;
 
   protected final int logicalDeviceAddress;
 
   protected final int clientId;
 
+  protected ProtocolAdapterMetrics protocolAdapterMetrics;
+
   public Lls0Connector(
       final int responseTimeout,
       final int logicalDeviceAddress,
-      final DlmsDeviceAssociation deviceAssociation) {
+      final DlmsDeviceAssociation deviceAssociation,
+      final ProtocolAdapterMetrics protocolAdapterMetrics) {
     this.responseTimeout = responseTimeout;
     this.logicalDeviceAddress = logicalDeviceAddress;
     this.clientId = deviceAssociation.getClientId();
+    this.protocolAdapterMetrics = protocolAdapterMetrics;
   }
 
   @Override
@@ -83,19 +94,33 @@ public class Lls0Connector extends DlmsConnector {
     }
 
     try {
-      return tcpConnectionBuilder.build();
+      final Timer timer = this.createTimer(device, messageMetadata);
+      final long starttime = System.currentTimeMillis();
+
+      final DlmsConnection dlmsConnection = tcpConnectionBuilder.build();
+
+      this.recordTimer(timer, starttime);
+
+      return dlmsConnection;
     } catch (final IOException e) {
-      final String msg =
-          String.format(
-              "Error creating connection for device %s with Ip address:%s Port:%d UseHdlc:%b UseSn:%b Message:%s",
-              device.getDeviceIdentification(),
-              device.getIpAddress(),
-              device.getPort(),
-              device.isUseHdlc(),
-              device.isUseSn(),
-              e.getMessage());
-      LOGGER.error(msg);
-      throw new ConnectionException(msg, e);
+      throw getExceptionWithExceptionType(device, e);
     }
+  }
+
+  protected Timer createTimer(final DlmsDevice device, final MessageMetadata messageMetadata) {
+    final Map<String, String> tags = new HashMap<>();
+    tags.put(TAG_COMMUNICATION_METHOD, String.valueOf(device.getCommunicationMethod()));
+    if (messageMetadata.getBaseTransceiverStationId() != null) {
+      tags.put(TAG_BTS_ID, String.valueOf(messageMetadata.getBaseTransceiverStationId()));
+    }
+    if (messageMetadata.getCellId() != null) {
+      tags.put(TAG_CELL_ID, String.valueOf(messageMetadata.getCellId()));
+    }
+    return this.protocolAdapterMetrics.createTimer(METRIC_REQUEST_TIMER_PREFIX + TIMER_NAME, tags);
+  }
+
+  void recordTimer(final Timer timer, final long starttime) {
+    this.protocolAdapterMetrics.recordTimer(
+        timer, System.currentTimeMillis() - starttime, TimeUnit.MILLISECONDS);
   }
 }

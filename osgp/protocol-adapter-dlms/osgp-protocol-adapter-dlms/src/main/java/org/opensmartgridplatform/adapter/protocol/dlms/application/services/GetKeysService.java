@@ -1,18 +1,11 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDto;
@@ -48,9 +41,7 @@ public class GetKeysService {
       final MessageMetadata messageMetadata) {
 
     final List<SecurityKeyType> securityKeyTypes =
-        getKeysRequestDto.getSecretTypes().stream()
-            .map(this::convertToSecurityKeyType)
-            .collect(Collectors.toList());
+        getKeysRequestDto.getSecretTypes().stream().map(this::convertToSecurityKeyType).toList();
 
     final Map<SecurityKeyType, byte[]> unencryptedKeys =
         this.secretManagementService.getKeys(
@@ -65,7 +56,7 @@ public class GetKeysService {
       final Map<SecurityKeyType, byte[]> unencryptedKeys) {
     return unencryptedKeys.entrySet().stream()
         .map(entry -> this.convertToKeyDtoWithEncryptedKey(entry.getKey(), entry.getValue()))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private KeyDto convertToKeyDtoWithEncryptedKey(

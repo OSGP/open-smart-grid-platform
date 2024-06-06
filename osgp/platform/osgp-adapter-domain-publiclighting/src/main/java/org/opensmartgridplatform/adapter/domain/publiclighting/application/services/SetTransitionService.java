@@ -1,23 +1,18 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.services;
 
-import java.net.InetAddress;
+import jakarta.annotation.PreDestroy;
+import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.PreDestroy;
-import javax.validation.constraints.NotNull;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatch;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatchDevice;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaMastSegment;
@@ -48,7 +43,7 @@ public class SetTransitionService extends AbstractService {
   public void setTransitionForDevice(
       final MessageMetadata metadata,
       @NotNull final TransitionType transitionType,
-      final DateTime transitionTime)
+      final ZonedDateTime transitionTime)
       throws FunctionalException {
 
     final String organisationIdentification = metadata.getOrganisationIdentification();
@@ -62,14 +57,15 @@ public class SetTransitionService extends AbstractService {
     this.findOrganisation(organisationIdentification);
     final Device device = this.findActiveDevice(deviceIdentification);
 
-    this.setTransitionForDevice(metadata, device.getIpAddress(), transitionType, transitionTime);
+    this.setTransitionForDevice(
+        metadata, device.getNetworkAddress(), transitionType, transitionTime);
   }
 
   private void setTransitionForDevice(
       final MessageMetadata metadata,
       final String ipAddress,
       @NotNull final TransitionType transitionType,
-      final DateTime transitionTime) {
+      final ZonedDateTime transitionTime) {
 
     final String organisationIdentification = metadata.getOrganisationIdentification();
     final String deviceIdentification = metadata.getDeviceIdentification();
@@ -216,13 +212,12 @@ public class SetTransitionService extends AbstractService {
                   DeviceFunction.SET_TRANSITION.name())
               .build();
 
-      final DateTime emptyTransitionTime = null;
-      final InetAddress inetAddress = device.getInetAddress();
+      final String networkAddress = device.getNetworkAddress();
 
       try {
-        if (inetAddress != null) {
+        if (networkAddress != null) {
           SetTransitionService.this.setTransitionForDevice(
-              metadata, inetAddress.getHostAddress(), transitionType, emptyTransitionTime);
+              metadata, networkAddress, transitionType, null);
         } else {
           LOGGER.warn(
               "setTransition not possible, because InetAddress is null for device {}",

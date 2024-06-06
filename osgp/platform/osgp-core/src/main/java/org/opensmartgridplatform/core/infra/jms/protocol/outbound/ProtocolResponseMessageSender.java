@@ -1,15 +1,11 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.core.infra.jms.protocol.outbound;
 
-import javax.jms.Destination;
-import javax.jms.ObjectMessage;
+import jakarta.jms.Destination;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.core.domain.model.protocol.ProtocolResponseService;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
@@ -83,7 +79,8 @@ public class ProtocolResponseMessageSender implements ProtocolResponseService {
           objectMessage.setStringProperty(Constants.DOMAIN, messageMetadata.getDomain());
           objectMessage.setStringProperty(
               Constants.DOMAIN_VERSION, messageMetadata.getDomainVersion());
-          objectMessage.setStringProperty(Constants.IP_ADDRESS, messageMetadata.getIpAddress());
+          objectMessage.setStringProperty(
+              Constants.NETWORK_ADDRESS, messageMetadata.getNetworkAddress());
           objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, messageMetadata.isScheduled());
           objectMessage.setIntProperty(Constants.RETRY_COUNT, messageMetadata.getRetryCount());
           objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, messageMetadata.isBypassRetry());

@@ -1,11 +1,7 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
@@ -16,9 +12,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.EncryptionKeySta
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,8 +50,10 @@ public class GetMbusEncryptionKeyStatusByChannelCommandExecutor
     if (!channelElementValues.hasChannel()
         || !channelElementValues.hasDeviceTypeIdentification()
         || !channelElementValues.hasManufacturerIdentification()) {
-      throw new FunctionalException(
-          FunctionalExceptionType.NO_DEVICE_FOUND_ON_CHANNEL, ComponentType.DOMAIN_SMART_METERING);
+      return new GetMbusEncryptionKeyStatusByChannelResponseDto(
+          device.getDeviceIdentification(),
+          EncryptionKeyStatusTypeDto.NO_ENCRYPTION_KEY,
+          request.getChannel());
     }
 
     final EncryptionKeyStatusTypeDto encryptionKeyStatusType =

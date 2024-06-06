@@ -1,11 +1,7 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import java.util.ArrayList;
@@ -45,6 +41,7 @@ public class ScanMbusChannelsCommandExecutor
       LoggerFactory.getLogger(ScanMbusChannelsCommandExecutor.class);
 
   private static final int CLASS_ID = InterfaceClass.MBUS_CLIENT.id();
+
   /**
    * IDs of the attributes of the M-Bus Client Setup that make up the Short ID.
    *

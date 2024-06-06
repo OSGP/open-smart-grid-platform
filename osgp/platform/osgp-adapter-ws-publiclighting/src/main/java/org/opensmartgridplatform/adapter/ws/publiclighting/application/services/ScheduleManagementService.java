@@ -1,15 +1,11 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.services;
 
-import javax.validation.Valid;
-import org.joda.time.DateTime;
+import jakarta.validation.Valid;
+import java.time.ZonedDateTime;
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessage;
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -52,7 +48,7 @@ public class ScheduleManagementService {
       @Identification final String organisationIdentification,
       @Identification final String deviceIdentification,
       @Valid final Schedule schedule,
-      final DateTime scheduledTime,
+      final ZonedDateTime scheduledTime,
       final int messagePriority)
       throws FunctionalException {
 
@@ -79,7 +75,8 @@ public class ScheduleManagementService {
             .withCorrelationUid(correlationUid)
             .withMessageType(MessageType.SET_LIGHT_SCHEDULE.name())
             .withMessagePriority(messagePriority)
-            .withScheduleTime(scheduledTime == null ? null : scheduledTime.getMillis())
+            .withScheduleTime(
+                scheduledTime == null ? null : scheduledTime.toInstant().toEpochMilli())
             .build();
 
     final PublicLightingRequestMessage message =

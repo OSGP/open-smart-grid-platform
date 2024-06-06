@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import java.util.ArrayList;
@@ -92,7 +88,7 @@ public class ConfigurationManagementService extends AbstractService {
         new RequestMessage(ids, configurationDto),
         messageType,
         messagePriority,
-        device.getIpAddress(),
+        device.getNetworkAddress(),
         scheduleTime);
   }
 
@@ -143,7 +139,7 @@ public class ConfigurationManagementService extends AbstractService {
         new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   public void handleGetConfigurationResponse(
@@ -224,7 +220,7 @@ public class ConfigurationManagementService extends AbstractService {
             correlationUid, organisationIdentification, deviceIdentification, configurationBank),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   private void replaceEmptyOutputSettings(

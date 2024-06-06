@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.networking;
 
 import java.io.IOException;
@@ -13,8 +9,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Set;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.AlarmHelperService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 
 public class AlarmDecoder {
@@ -73,10 +69,27 @@ public class AlarmDecoder {
     }
   }
 
+  byte[] resetAndReadAllBytes(final InputStream inputStream)
+      throws UnrecognizedMessageDataException {
+    try {
+      return inputStream.readAllBytes();
+    } catch (final IOException io) {
+      throw new UnrecognizedMessageDataException(io.getMessage(), io);
+    }
+  }
+
   void skip(final InputStream inputStream, final int length)
       throws UnrecognizedMessageDataException {
     try {
-      inputStream.skip(length);
+      final long bytesActuallySkipped = inputStream.skip(length);
+
+      if (bytesActuallySkipped != length) {
+        throw new UnrecognizedMessageDataException(
+            "Could not skip the requested number of bytes. Requested: "
+                + length
+                + ", Skipped: "
+                + bytesActuallySkipped);
+      }
     } catch (final IOException io) {
       throw new UnrecognizedMessageDataException(io.getMessage(), io);
     }

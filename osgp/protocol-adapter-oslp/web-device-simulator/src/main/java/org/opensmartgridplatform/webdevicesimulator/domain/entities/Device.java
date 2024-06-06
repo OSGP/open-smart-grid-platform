@@ -1,27 +1,24 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.webdevicesimulator.domain.entities;
 
 import com.google.common.base.Joiner;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Transient;
+import java.io.Serial;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.Transient;
 import org.apache.commons.codec.binary.Base64;
 import org.hibernate.annotations.Proxy;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
@@ -38,6 +35,8 @@ public class Device extends AbstractEntity {
   public static final String PSLD_TYPE = "PSLD";
 
   public static final String SSLD_TYPE = "SSLD";
+
+  @Serial private static final long serialVersionUID = 7491360758865068487L;
 
   @Column(unique = true, nullable = false)
   private String deviceUid;

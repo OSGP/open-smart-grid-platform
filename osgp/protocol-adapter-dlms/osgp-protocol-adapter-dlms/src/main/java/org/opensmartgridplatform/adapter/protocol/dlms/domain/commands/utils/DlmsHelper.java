@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
 import java.io.IOException;
@@ -21,12 +17,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.CosemDate;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
@@ -38,6 +36,12 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.Attribute;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.ValueType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
@@ -54,21 +58,16 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service(value = "dlmsHelper")
 public class DlmsHelper {
 
   public static final int MILLISECONDS_PER_MINUTE = 60000;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DlmsHelper.class);
-
   private static final Map<Integer, TransportServiceTypeDto> TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE =
       new TreeMap<>();
-
-  private static final int MAX_CONCURRENT_ATTRIBUTE_ADDRESSES = 32;
 
   static {
     TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(0, TransportServiceTypeDto.TCP);
@@ -81,7 +80,7 @@ public class DlmsHelper {
     TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(7, TransportServiceTypeDto.ZIG_BEE);
   }
 
-  private static String getDataType(final DataObject dataObject) {
+  public static String getDataType(final DataObject dataObject) {
     final String dataType;
     if (dataObject.isBitString()) {
       dataType = "BitString";
@@ -131,7 +130,7 @@ public class DlmsHelper {
               resultCode.getCode(),
               this.getDebugInfo(getResult.getResultData()));
 
-      LOGGER.error(errorMessage);
+      log.error(errorMessage);
       throw new FunctionalException(
           FunctionalExceptionType.ERROR_RETRIEVING_ATTRIBUTE_VALUE,
           ComponentType.PROTOCOL_DLMS,
@@ -193,25 +192,20 @@ public class DlmsHelper {
       final DlmsConnectionManager conn, final DlmsDevice device, final AttributeAddress... params)
       throws ProtocolAdapterException {
     try {
-      if (device.isWithListSupported()) {
-        // Getting a too large list of attribute addresses in one get
-        // from the DlmsConnection
-        // might result in a SCOPE_OF_ACCESS_VIOLATED error
-        final List<GetResult> getResults = new ArrayList<>();
-        final List<AttributeAddress[]> maximizedSubsetsOfParams =
-            this.getMaximizedSubsetsOfParams(params);
-        for (final AttributeAddress[] maximizedSubsetOfParams : maximizedSubsetsOfParams) {
-          getResults.addAll(conn.getConnection().get(Arrays.asList(maximizedSubsetOfParams)));
-        }
-        return getResults;
-      } else {
-        return this.getWithListWorkaround(conn, params);
+      // Getting a too large list of attribute addresses in one get from the DlmsConnection
+      // might result in a SCOPE_OF_ACCESS_VIOLATED error
+      final int maxItemsInRequest = this.getMaxItemsInRequest(device);
+
+      final List<GetResult> getResults = new ArrayList<>();
+      final List<AttributeAddress[]> maximizedSubsetsOfParams =
+          this.getMaximizedSubsetsOfParams(maxItemsInRequest, params);
+      for (final AttributeAddress[] maximizedSubsetOfParams : maximizedSubsetsOfParams) {
+        getResults.addAll(conn.getConnection().get(Arrays.asList(maximizedSubsetOfParams)));
       }
+      return getResults;
     } catch (final IOException | NullPointerException e) {
-      // The jDMLS code throws a NullPointerException instead of a
-      // ResponseTimeoutException
-      // (specific type of IOException via NonFatalJDlmsException and
-      // JDlmsException).
+      // The jDMLS code throws a NullPointerException instead of a ResponseTimeoutException
+      // (specific type of IOException via NonFatalJDlmsException and JDlmsException).
       throw new ConnectionException(
           "Connection error retrieving values with-list for device: "
               + device.getDeviceIdentification(),
@@ -220,20 +214,69 @@ public class DlmsHelper {
       throw new ProtocolAdapterException(
           "Error retrieving values with-list for device: "
               + device.getDeviceIdentification()
-              + ", with-list: "
-              + (device.isWithListSupported() ? "supported" : "not supported"),
+              + ", with-list max: "
+              + device.getWithListMax(),
           e);
     }
   }
 
+  public List<AccessResultCode> setWithList(
+      final DlmsConnectionManager conn, final DlmsDevice device, final List<SetParameter> params)
+      throws ProtocolAdapterException {
+    try {
+      // Setting a too large list of attribute addresses in one set to the DlmsConnection
+      // might result in a SCOPE_OF_ACCESS_VIOLATED error
+      final int maxItemsInRequest = this.getMaxItemsInRequest(device);
+
+      final List<AccessResultCode> resultCodes = new ArrayList<>();
+      final List<List<SetParameter>> maximizedSubsetsOfParams =
+          this.getMaximizedSubsetsOfParams(maxItemsInRequest, params);
+      for (final List<SetParameter> maximizedSubsetOfParams : maximizedSubsetsOfParams) {
+        resultCodes.addAll(conn.getConnection().set(maximizedSubsetOfParams));
+      }
+      return resultCodes;
+    } catch (final IOException | NullPointerException e) {
+      // The jDMLS code throws a NullPointerException instead of a ResponseTimeoutException
+      // (specific type of IOException via NonFatalJDlmsException and JDlmsException).
+      throw new ConnectionException(
+          "Connection error setting values with-list for device: "
+              + device.getDeviceIdentification(),
+          e);
+    } catch (final Exception e) {
+      throw new ProtocolAdapterException(
+          "Error setting values with-list for device: "
+              + device.getDeviceIdentification()
+              + ", with-list max: "
+              + device.getWithListMax(),
+          e);
+    }
+  }
+
+  private int getMaxItemsInRequest(final DlmsDevice device) {
+    Integer maxItemsInRequest = device.getWithListMax();
+    if (maxItemsInRequest == null || maxItemsInRequest < 1) {
+      maxItemsInRequest = 1;
+    }
+
+    return maxItemsInRequest;
+  }
+
   private List<AttributeAddress[]> getMaximizedSubsetsOfParams(
-      final AttributeAddress[] attributeAddresses) {
-    final int chunk = MAX_CONCURRENT_ATTRIBUTE_ADDRESSES;
+      final int chunk, final AttributeAddress[] attributeAddresses) {
     final List<AttributeAddress[]> maximizedCurrentSets = new ArrayList<>();
     for (int i = 0; i < attributeAddresses.length; i += chunk) {
       maximizedCurrentSets.add(
           Arrays.copyOfRange(
               attributeAddresses, i, Math.min(attributeAddresses.length, i + chunk)));
+    }
+    return maximizedCurrentSets;
+  }
+
+  private List<List<SetParameter>> getMaximizedSubsetsOfParams(
+      final int chunk, final List<SetParameter> setParameters) {
+    final List<List<SetParameter>> maximizedCurrentSets = new ArrayList<>();
+    for (int i = 0; i < setParameters.size(); i += chunk) {
+      maximizedCurrentSets.add(setParameters.subList(i, Math.min(setParameters.size(), i + chunk)));
     }
     return maximizedCurrentSets;
   }
@@ -313,7 +356,14 @@ public class DlmsHelper {
       final DataObject value, final DataObject scalerUnitObject, final String description)
       throws ProtocolAdapterException {
 
-    LOGGER.debug(this.getDebugInfo(scalerUnitObject));
+    final String scalerUnit = this.getScalerUnit(scalerUnitObject, description);
+
+    return this.getScaledMeterValueWithScalerUnit(value, scalerUnit, description);
+  }
+
+  public String getScalerUnit(final DataObject scalerUnitObject, final String description)
+      throws ProtocolAdapterException {
+    log.debug(this.getDebugInfo(scalerUnitObject));
 
     if (!scalerUnitObject.isComplex()) {
       throw new ProtocolAdapterException(
@@ -331,7 +381,12 @@ public class DlmsHelper {
         DlmsUnitTypeDto.getUnitType(
             this.readLongNotNull(dataObjects.get(1), description).intValue());
 
-    return this.createDlmsMeterValueBasedOnValueAndScalerAndUnit(value, scaler, unit, description);
+    if (unit == DlmsUnitTypeDto.UNDEFINED) {
+      throw new ProtocolAdapterException(
+          "expected a unit instead of unit UNDEFINED." + this.getDebugInfo(scalerUnitObject));
+    }
+
+    return scaler + ", " + unit.getUnitShort();
   }
 
   private DlmsMeterValueDto createDlmsMeterValueBasedOnValueAndScalerAndUnit(
@@ -341,7 +396,7 @@ public class DlmsHelper {
       final String description)
       throws ProtocolAdapterException {
 
-    LOGGER.debug(this.getDebugInfo(value));
+    log.debug(this.getDebugInfo(value));
 
     final Long rawValue = this.readLong(value, description);
     if (rawValue == null) {
@@ -361,25 +416,10 @@ public class DlmsHelper {
     return DataObjectDefinitions.getAMRProfileDefinition();
   }
 
-  /**
-   * Workaround method mimicking a Get-Request with-list for devices that do not support the actual
-   * functionality from DLMS.
-   *
-   * @see #getWithList(DlmsConnectionManager, DlmsDevice, AttributeAddress...)
-   */
-  private List<GetResult> getWithListWorkaround(
-      final DlmsConnectionManager conn, final AttributeAddress... params) throws IOException {
-    final List<GetResult> getResultList = new ArrayList<>();
-    for (final AttributeAddress param : params) {
-      getResultList.add(conn.getConnection().get(param));
-    }
-    return getResultList;
-  }
-
   private void checkResultCode(final GetResult getResult, final String description)
       throws ProtocolAdapterException {
     final AccessResultCode resultCode = getResult.getResultCode();
-    LOGGER.debug("{} - AccessResultCode: {}", description, resultCode);
+    log.debug("{} - AccessResultCode: {}", description, resultCode);
     if (resultCode != AccessResultCode.SUCCESS) {
       throw new ProtocolAdapterException(
           "No success retrieving " + description + ": AccessResultCode = " + resultCode);
@@ -421,6 +461,12 @@ public class DlmsHelper {
       throws ProtocolAdapterException {
     this.checkResultCode(getResult, description);
     final Long value = this.readLong(getResult.getResultData(), description);
+    return (value == null) ? null : value.intValue();
+  }
+
+  public Integer readInteger(final DataObject resultData, final String description)
+      throws ProtocolAdapterException {
+    final Long value = this.readLong(resultData, description);
     return (value == null) ? null : value.intValue();
   }
 
@@ -467,7 +513,7 @@ public class DlmsHelper {
       final CosemDateTime cosemDateTime = resultData.getValue();
       return this.fromDateTimeValue(cosemDateTime.encode());
     } else {
-      LOGGER.error("Unexpected ResultData for DateTime value: {}", this.getDebugInfo(resultData));
+      log.error("Unexpected ResultData for DateTime value: {}", this.getDebugInfo(resultData));
       throw new ProtocolAdapterException(
           "Expected ResultData of ByteArray or CosemDateFormat, got: " + resultData.getType());
     }
@@ -612,7 +658,7 @@ public class DlmsHelper {
       return null;
     }
     if (objectDefinitionElements.size() != 4) {
-      LOGGER.error(
+      log.error(
           "Unexpected ResultData for Object Definition value: {}", this.getDebugInfo(resultData));
       throw new ProtocolAdapterException(
           "Expected list for Object Definition to contain 4 elements, got: "
@@ -673,7 +719,7 @@ public class DlmsHelper {
     final TransportServiceTypeDto transportService =
         this.getTransportServiceTypeForEnumValue(enumValue);
     if (transportService == null) {
-      LOGGER.error("Unexpected Enum value for TransportServiceType: {}", enumValue);
+      log.error("Unexpected Enum value for TransportServiceType: {}", enumValue);
       throw new ProtocolAdapterException(
           "Unknown Enum value for TransportServiceType: " + enumValue);
     }
@@ -704,7 +750,7 @@ public class DlmsHelper {
         break;
       default:
         if (enumValue < 128 || enumValue > 255) {
-          LOGGER.error("Unexpected Enum value for MessageType: {}", enumValue);
+          log.error("Unexpected Enum value for MessageType: {}", enumValue);
           throw new ProtocolAdapterException("Unknown Enum value for MessageType: " + enumValue);
         }
         message = MessageTypeDto.MANUFACTURER_SPECIFIC;
@@ -744,7 +790,7 @@ public class DlmsHelper {
   private WindowElementDto buildWindowElementFromDataObjects(
       final List<DataObject> elements, final String description) throws ProtocolAdapterException {
     if (elements.size() != 2) {
-      LOGGER.error(
+      log.error(
           "Unexpected number of ResultData elements for WindowElement value: {}", elements.size());
       throw new ProtocolAdapterException(
           "Expected list for WindowElement to contain 2 elements, got: " + elements.size());
@@ -1017,12 +1063,12 @@ public class DlmsHelper {
   }
 
   private void logDebugResultData(final DataObject resultData, final String description) {
-    LOGGER.debug("{} - ResultData: {}", description, this.getDebugInfo(resultData));
+    log.debug("{} - ResultData: {}", description, this.getDebugInfo(resultData));
   }
 
   private void logAndThrowExceptionForUnexpectedResultData(
       final DataObject resultData, final String expectedType) throws ProtocolAdapterException {
-    LOGGER.error(
+    log.error(
         "Unexpected ResultData for {} value: {}", expectedType, this.getDebugInfo(resultData));
     final String resultDataType =
         resultData.getValue() == null ? "null" : resultData.getValue().getClass().getName();
@@ -1033,5 +1079,54 @@ public class DlmsHelper {
             + resultData.getType()
             + ", value type: "
             + resultDataType);
+  }
+
+  public String getScalerUnitValue(final DlmsConnectionManager conn, final CosemObject object)
+      throws ProtocolAdapterException {
+    final int attributeId;
+    if (object.getClassId() == InterfaceClass.REGISTER.id()) {
+      attributeId = RegisterAttribute.SCALER_UNIT.attributeId();
+    } else if (object.getClassId() == InterfaceClass.EXTENDED_REGISTER.id()) {
+      attributeId = ExtendedRegisterAttribute.SCALER_UNIT.attributeId();
+    } else {
+      return null;
+    }
+
+    final Attribute attribute = object.getAttribute(attributeId);
+    if (attribute.getValuetype() == ValueType.FIXED_IN_PROFILE) {
+      return attribute.getValue();
+    } else {
+      final AttributeAddress attributeAddress =
+          new AttributeAddress(object.getClassId(), object.getObis(), attributeId);
+
+      try {
+        final DataObject scalerUnitObject = this.getAttributeValue(conn, attributeAddress);
+        log.debug(this.getDebugInfo(scalerUnitObject));
+
+        if (!scalerUnitObject.isComplex()) {
+          throw new ProtocolAdapterException(
+              "complex data (structure) expected while retrieving scaler and unit."
+                  + this.getDebugInfo(scalerUnitObject));
+        }
+        final List<DataObject> dataObjects = scalerUnitObject.getValue();
+        if (dataObjects.size() != 2) {
+          throw new ProtocolAdapterException(
+              "expected 2 values while retrieving scaler and unit."
+                  + this.getDebugInfo(scalerUnitObject));
+        }
+        final int scaler =
+            this.readLongNotNull(dataObjects.get(0), object.getDescription()).intValue();
+        final DlmsUnitTypeDto unit =
+            DlmsUnitTypeDto.getUnitType(
+                this.readLongNotNull(dataObjects.get(1), object.getDescription()).intValue());
+
+        return String.format("%s, %s", scaler, unit.getUnit());
+      } catch (final FunctionalException e) {
+        throw new ProtocolAdapterException(
+            "FunctionalException occurred when reading dynamic scalar unit for object: "
+                + object.getObis(),
+            e);
+      }
+    }
   }
 }

@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
@@ -26,11 +22,12 @@ public class SetDeviceCommunicationSettingsRequestDataFactory {
 
     setDeviceCommunicationSettingsData.setChallengeLength(
         BigInteger.valueOf(getInteger(parameters, PlatformSmartmeteringKeys.CHALLENGE_LENGTH)));
-    setDeviceCommunicationSettingsData.setWithListSupported(
-        getBoolean(
-            parameters,
-            PlatformSmartmeteringKeys.WITH_LIST_SUPPORTED,
-            PlatformSmartmeteringDefaults.WITH_LIST_SUPPORTED));
+    setDeviceCommunicationSettingsData.setWithListMax(
+        BigInteger.valueOf(
+            getInteger(
+                parameters,
+                PlatformSmartmeteringKeys.WITH_LIST_MAX,
+                PlatformSmartmeteringDefaults.WITH_LIST_MAX)));
     setDeviceCommunicationSettingsData.setSelectiveAccessSupported(
         getBoolean(
             parameters,

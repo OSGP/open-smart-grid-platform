@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @Common @Platform @CoreDeviceManagement
 Feature: CoreDeviceManagement Find Events
   As a Grid Operator, my smart devices send events to OSGP which will be stored in the database
@@ -90,11 +94,11 @@ Feature: CoreDeviceManagement Find Events
 
     Examples: 
       | DeviceIdentification | PageSize | RequestedPage | ActualNumberOfEvents | NumberOfPages | numberOfEventsInPage |
-      | TEST-1024000000001   |       25 |             0 |                   47 |             2 |                   25 |
-      | TEST-1024000000001   |       25 |             1 |                   47 |             2 |                   22 |
-      | TEST-1024000000002   |        2 |             0 |                   47 |            24 |                    2 |
-      | TEST-1024000000002   |        2 |            23 |                   47 |            24 |                    1 |
-      | TEST-1024000000002   |        2 |            24 |                   47 |            24 |                    0 |
+      | TEST-1024000000001   |       25 |             0 |                   48 |             2 |                   25 |
+      | TEST-1024000000001   |       25 |             1 |                   48 |             2 |                   23 |
+      | TEST-1024000000002   |        2 |             0 |                   48 |            24 |                    2 |
+      | TEST-1024000000002   |        2 |            23 |                   48 |            24 |                    2 |
+      | TEST-1024000000002   |        2 |            24 |                   48 |            24 |                    0 |
 
   Scenario: Find events for a device by filtering the description
     Given a device

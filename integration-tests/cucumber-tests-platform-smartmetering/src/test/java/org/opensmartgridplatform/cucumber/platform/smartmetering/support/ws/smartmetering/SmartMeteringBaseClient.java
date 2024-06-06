@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering;
 
 import java.util.concurrent.TimeUnit;
@@ -42,7 +38,7 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
     return this.waitFailMillis;
   }
 
-  protected void waitForNotification(final String correlationUid) {
+  protected Notification waitForNotification(final String correlationUid) {
     final int nextWait = this.getNextWait();
     LOGGER.info(
         "Waiting for a notification for correlation UID {} for at most {} milliseconds.",
@@ -60,6 +56,7 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
               + nextWait
               + " milliseconds");
     }
+    return notification;
   }
 
   protected Notification waitForNotification(final NotificationType notificationType) {
@@ -83,10 +80,8 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
         notificationType,
         nextWait);
 
-    final Notification notification =
-        this.notificationService.getNotification(notificationType, nextWait, TimeUnit.MILLISECONDS);
-
-    return notification;
+    return this.notificationService.getNotification(
+        notificationType, nextWait, TimeUnit.MILLISECONDS);
   }
 
   protected Notification waitForNotification(final int nextWait) {
@@ -96,7 +91,7 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
         this.notificationService.getNotification(nextWait, TimeUnit.MILLISECONDS);
 
     if (notification == null) {
-      LOGGER.info("Did not receive a notification within " + nextWait + " milliseconds");
+      LOGGER.info("Did not receive a notification within {} milliseconds.", nextWait);
     }
     return notification;
   }

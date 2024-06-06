@@ -1,20 +1,16 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.admin.infra.specifications;
 
 import static org.opensmartgridplatform.shared.utils.SearchUtil.replaceAndEscapeWildcards;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.Date;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.ws.admin.application.specifications.DeviceLogItemSpecifications;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
@@ -60,7 +56,7 @@ public class JpaDeviceLogItemSpecifications implements DeviceLogItemSpecificatio
       return ALL;
     } else {
       return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) ->
-          cb.greaterThanOrEqualTo(r.<Date>get(MODIFICATION_TIME), Date.from(startDate.toInstant()));
+          cb.greaterThanOrEqualTo(r.<Instant>get(MODIFICATION_TIME), startDate.toInstant());
     }
   }
 
@@ -70,7 +66,7 @@ public class JpaDeviceLogItemSpecifications implements DeviceLogItemSpecificatio
       return ALL;
     } else {
       return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) ->
-          cb.lessThanOrEqualTo(r.<Date>get(MODIFICATION_TIME), Date.from(endDate.toInstant()));
+          cb.lessThanOrEqualTo(r.<Instant>get(MODIFICATION_TIME), endDate.toInstant());
     }
   }
 }

@@ -1,11 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,8 +67,8 @@ public class FirmwareFileTest {
 
     final FirmwareFile firmwareFile = this.createPartialWildcardFirmwareFile("FFFF0000");
 
-    final String fittingMbusDeviceIdentificationNumber =
-        IdentificationNumber.fromTextualRepresentation("00009999").getTextualRepresentation();
+    final IdentificationNumber fittingMbusDeviceIdentificationNumber =
+        IdentificationNumber.fromTextualRepresentation("00009999");
     assertDoesNotThrow(
         () ->
             firmwareFile.setMbusDeviceIdentificationNumber(fittingMbusDeviceIdentificationNumber));
@@ -84,8 +80,8 @@ public class FirmwareFileTest {
 
     final FirmwareFile firmwareFile = this.createPartialWildcardFirmwareFile("FFFFFFFF");
 
-    final String fittingMbusDeviceIdentificationNumber =
-        IdentificationNumber.fromTextualRepresentation("16019864").getTextualRepresentation();
+    final IdentificationNumber fittingMbusDeviceIdentificationNumber =
+        IdentificationNumber.fromTextualRepresentation("16019864");
 
     assertDoesNotThrow(
         () ->
@@ -99,9 +95,8 @@ public class FirmwareFileTest {
     final String reversedWildcard = "0000FFFF";
     final String identificationNumber = "00010000";
 
-    final String misfittingMbusDeviceIdentificationNumber =
-        IdentificationNumber.fromTextualRepresentation(identificationNumber)
-            .getTextualRepresentation();
+    final IdentificationNumber misfittingMbusDeviceIdentificationNumber =
+        IdentificationNumber.fromTextualRepresentation(identificationNumber);
 
     final Exception exception =
         assertThrows(
@@ -120,8 +115,8 @@ public class FirmwareFileTest {
   void acceptIdentificationNumberThatDoesNotMatchLessRegularPattern() {
     final FirmwareFile firmwareFile1 = this.createPartialWildcardFirmwareFile("FFFF0116");
 
-    final String fittingMbusIdentificationNumber =
-        IdentificationNumber.fromTextualRepresentation("16019864").getTextualRepresentation();
+    final IdentificationNumber fittingMbusIdentificationNumber =
+        IdentificationNumber.fromTextualRepresentation("16019864");
 
     assertDoesNotThrow(
         () -> firmwareFile1.setMbusDeviceIdentificationNumber(fittingMbusIdentificationNumber));
@@ -134,9 +129,8 @@ public class FirmwareFileTest {
 
     final String identificationNumber = "16019864";
 
-    final String misfittingMbusIdentificationNumber =
-        IdentificationNumber.fromTextualRepresentation(identificationNumber)
-            .getTextualRepresentation();
+    final IdentificationNumber misfittingMbusIdentificationNumber =
+        IdentificationNumber.fromTextualRepresentation(identificationNumber);
 
     final Exception exception =
         assertThrows(
@@ -164,11 +158,12 @@ public class FirmwareFileTest {
   @Test
   public void testMbusDeviceIdentificationNumber() throws IOException, ProtocolAdapterException {
     final String id = "10000540";
-    final String mbusDeviceIdentificationNumberInput = id;
+    final IdentificationNumber mbusDeviceIdentificationNumberInput =
+        IdentificationNumber.fromTextualRepresentation(id);
     final byte[] mbusDeviceIdentificationNumberByteArrayOutput =
         ByteBuffer.allocate(4)
             .order(ByteOrder.LITTLE_ENDIAN)
-            .putInt(Integer.parseInt(String.valueOf(mbusDeviceIdentificationNumberInput), 16))
+            .putInt(mbusDeviceIdentificationNumberInput.getIntRepresentation())
             .array();
 
     final FirmwareFile firmwareFile = new FirmwareFile(byteArray);
@@ -186,7 +181,7 @@ public class FirmwareFileTest {
   public void testImageIdentifierForMbusDevice() throws ProtocolAdapterException {
     final FirmwareFile firmwareFile = new FirmwareFile(byteArray);
     firmwareFile.setMbusDeviceIdentificationNumber(
-        IdentificationNumber.fromTextualRepresentation("16019864").getTextualRepresentation());
+        IdentificationNumber.fromTextualRepresentation("16019864"));
 
     assertThat(firmwareFile.createImageIdentifierForMbusDevice())
         .isEqualTo(

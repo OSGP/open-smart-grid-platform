@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform
 Feature: SmartMetering Installation - Couple M-Bus Device
   As a grid operator
@@ -22,7 +26,10 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusVersion                    |       66 |
       | MbusDeviceTypeIdentification   |        3 |
     When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
-    Then the Couple response is "OK"
+    Then the Couple response has the following values
+      | MbusDeviceIdentification | TESTG101205673117 |
+      | Channel                  |                 1 |
+      | PrimaryAddress           |                 9 |
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "9"
 
     Examples:
@@ -55,7 +62,10 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusVersion                    |       66 |
       | MbusDeviceTypeIdentification   |        3 |
     When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
-    Then the Couple response is "OK"
+    Then the Couple response has the following values
+      | MbusDeviceIdentification | TESTG101205673117 |
+      | Channel                  |                 1 |
+      | PrimaryAddress           |                 9 |
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "9"
 
   @NightlyBuildOnly
@@ -84,7 +94,10 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusVersion                    |       66 |
       | MbusDeviceTypeIdentification   |        3 |
     When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
-    Then the Couple response is "OK"
+    Then the Couple response has the following values
+      | MbusDeviceIdentification | TESTG101205673117 |
+      | Channel                  |                 2 |
+      | PrimaryAddress           |                 9 |
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "2" with PrimaryAddress "9"
 
   @NightlyBuildOnly
@@ -149,7 +162,10 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusVersion                    |       66 |
       | MbusDeviceTypeIdentification   |        3 |
     When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
-    Then the Couple response is "OK"
+    Then the Couple response has the following values
+      | MbusDeviceIdentification | TESTG101205673117 |
+      | Channel                  |                 2 |
+      | PrimaryAddress           |                 9 |
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "2" with PrimaryAddress "9"
 
   @NightlyBuildOnly
@@ -208,7 +224,10 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusVersion                    |       66 |
       | MbusDeviceTypeIdentification   |        3 |
     When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
-    Then the Couple response is "OK"
+    Then the Couple response has the following values
+      | MbusDeviceIdentification | TESTG101205673117 |
+      | Channel                  |                 2 |
+      | PrimaryAddress           |                 9 |
     And the M-Bus device "TESTG102400000001" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "2" with PrimaryAddress "9"
 
@@ -254,7 +273,10 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
-    Then the Couple response is "OK"
+    Then the Couple response has the following values
+      | MbusDeviceIdentification | TESTG101205673117 |
+      | Channel                  |                 1 |
+      | PrimaryAddress           |                 3 |
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
     And the values for the M-Bus client for channel 1 on device simulator "TEST1024000000001" are
       | MbusPrimaryAddress             |        3 |
@@ -283,7 +305,10 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
-    Then the Couple response is "OK"
+    Then the Couple response has the following values
+      | MbusDeviceIdentification | TESTG101205673117 |
+      | Channel                  |                 1 |
+      | PrimaryAddress           |                 0 |
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1"
     And the values for the M-Bus client for channel 1 on device simulator "TEST1024000000001" are
       | MbusIdentificationNumber       | 12056731 |
@@ -318,7 +343,10 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
-    Then the Couple response is "OK"
+    Then the Couple response has the following values
+      | MbusDeviceIdentification | TESTG101205673117 |
+      | Channel                  |                 2 |
+      | PrimaryAddress           |                 3 |
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "2" with PrimaryAddress "3"
     And the values for the M-Bus client for channel 1 on device simulator "TEST1024000000001" are
       | MbusPrimaryAddress             |      241 |
@@ -388,7 +416,10 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
-    Then the Couple response is "OK"
+    Then the Couple response has the following values
+      | MbusDeviceIdentification | TESTG101205673117 |
+      | Channel                  |                 1 |
+      | PrimaryAddress           |                 3 |
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
     And the values for the M-Bus client for channel 2 on device simulator "TEST1024000000001" are
       | MbusPrimaryAddress             |      241 |
@@ -444,7 +475,10 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
-    Then the Couple response is "OK"
+    Then the Couple response has the following values
+      | MbusDeviceIdentification | TESTG101205673117 |
+      | Channel                  |                 1 |
+      | PrimaryAddress           |                 3 |
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
     And the values for the M-Bus client for channel 1 on device simulator "TEST1024000000001" are
       | MbusPrimaryAddress             |        3 |
@@ -514,7 +548,10 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | GatewayDeviceIdentification    | <GatewayDeviceIdentification> |
       | Channel                        |                             1 |
     When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001" with force
-    Then the Couple response is "OK"
+    Then the Couple response has the following values
+      | MbusDeviceIdentification | TESTG101205673117 |
+      | Channel                  |                 1 |
+      | PrimaryAddress           |                 3 |
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
     And the values for the M-Bus client for channel 1 on device simulator "TEST1024000000001" are
       | MbusPrimaryAddress             |        3 |

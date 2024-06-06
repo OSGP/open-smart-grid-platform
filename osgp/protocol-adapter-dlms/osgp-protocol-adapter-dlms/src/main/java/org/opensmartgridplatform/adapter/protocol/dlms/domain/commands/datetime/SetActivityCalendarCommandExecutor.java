@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime;
 
 import java.util.HashSet;
@@ -23,6 +19,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
@@ -44,8 +44,6 @@ public class SetActivityCalendarCommandExecutor
   private static final Logger LOGGER =
       LoggerFactory.getLogger(SetActivityCalendarCommandExecutor.class);
 
-  private static final int CLASS_ID = 20;
-  private static final ObisCode OBIS_CODE = new ObisCode("0.0.13.0.0.255");
   private static final int ATTRIBUTE_ID_CALENDAR_NAME_PASSIVE = 6;
   private static final int ATTRIBUTE_ID_SEASON_PROFILE_PASSIVE = 7;
   private static final int ATTRIBUTE_ID_WEEK_PROFILE_TABLE_PASSIVE = 8;
@@ -58,17 +56,21 @@ public class SetActivityCalendarCommandExecutor
 
   private final DlmsHelper dlmsHelper;
 
+  private final ObjectConfigService objectConfigService;
+
   @Autowired
   public SetActivityCalendarCommandExecutor(
       final DlmsHelper dlmsHelper,
       final SetActivityCalendarCommandActivationExecutor
           setActivityCalendarCommandActivationExecutor,
-      final ConfigurationMapper configurationMapper) {
+      final ConfigurationMapper configurationMapper,
+      final ObjectConfigService objectConfigService) {
     super(ActivityCalendarDataDto.class);
     this.dlmsHelper = dlmsHelper;
     this.setActivityCalendarCommandActivationExecutor =
         setActivityCalendarCommandActivationExecutor;
     this.configurationMapper = configurationMapper;
+    this.objectConfigService = objectConfigService;
   }
 
   @Override
@@ -106,12 +108,24 @@ public class SetActivityCalendarCommandExecutor
     final Set<WeekProfileDto> weekProfileSet = this.getWeekProfileSet(seasonProfileList);
     final Set<DayProfileDto> dayProfileSet = this.getDayProfileSet(weekProfileSet);
 
+    final CosemObject cosemObject;
+
+    try {
+      cosemObject =
+          this.objectConfigService.getCosemObject(
+              device.getProtocolName(),
+              device.getProtocolVersion(),
+              DlmsObjectType.ACTIVITY_CALENDAR);
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
+    }
+
     final DataObjectAttrExecutors dataObjectExecutors =
         new DataObjectAttrExecutors("SetActivityCalendar")
-            .addExecutor(this.getCalendarNameExecutor(activityCalendar))
-            .addExecutor(this.getSeasonProfileExecutor(seasonProfileList))
-            .addExecutor(this.getWeekProfileTableExecutor(weekProfileSet))
-            .addExecutor(this.getDayProfileTablePassiveExecutor(dayProfileSet));
+            .addExecutor(this.getCalendarNameExecutor(cosemObject, activityCalendar))
+            .addExecutor(this.getSeasonProfileExecutor(cosemObject, seasonProfileList))
+            .addExecutor(this.getWeekProfileTableExecutor(cosemObject, weekProfileSet))
+            .addExecutor(this.getDayProfileTablePassiveExecutor(cosemObject, dayProfileSet));
 
     conn.getDlmsMessageListener()
         .setDescription(
@@ -146,24 +160,29 @@ public class SetActivityCalendarCommandExecutor
   }
 
   private DataObjectAttrExecutor getCalendarNameExecutor(
-      final ActivityCalendarDto activityCalendar) {
+      final CosemObject cosemObject, final ActivityCalendarDto activityCalendar) {
+
     final AttributeAddress calendarNamePassive =
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_CALENDAR_NAME_PASSIVE);
+        new AttributeAddress(
+            cosemObject.getClassId(), cosemObject.getObis(), ATTRIBUTE_ID_CALENDAR_NAME_PASSIVE);
     final DataObject value =
         DataObject.newOctetStringData(activityCalendar.getCalendarName().getBytes());
     return new DataObjectAttrExecutor(
         "CALENDARNAME",
         calendarNamePassive,
         value,
-        CLASS_ID,
-        OBIS_CODE,
+        cosemObject.getClassId(),
+        new ObisCode(cosemObject.getObis()),
         ATTRIBUTE_ID_CALENDAR_NAME_PASSIVE);
   }
 
   private DataObjectAttrExecutor getDayProfileTablePassiveExecutor(
-      final Set<DayProfileDto> dayProfileSet) {
+      final CosemObject cosemObject, final Set<DayProfileDto> dayProfileSet) {
     final AttributeAddress dayProfileTablePassive =
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_DAY_PROFILE_TABLE_PASSIVE);
+        new AttributeAddress(
+            cosemObject.getClassId(),
+            cosemObject.getObis(),
+            ATTRIBUTE_ID_DAY_PROFILE_TABLE_PASSIVE);
     final DataObject dayArray =
         DataObject.newArrayData(
             this.configurationMapper.mapAsList(dayProfileSet, DataObject.class));
@@ -174,8 +193,8 @@ public class SetActivityCalendarCommandExecutor
         "DAYS",
         dayProfileTablePassive,
         dayArray,
-        CLASS_ID,
-        OBIS_CODE,
+        cosemObject.getClassId(),
+        new ObisCode(cosemObject.getObis()),
         ATTRIBUTE_ID_DAY_PROFILE_TABLE_PASSIVE);
   }
 
@@ -191,10 +210,13 @@ public class SetActivityCalendarCommandExecutor
   }
 
   private DataObjectAttrExecutor getWeekProfileTableExecutor(
-      final Set<WeekProfileDto> weekProfileSet) {
+      final CosemObject cosemObject, final Set<WeekProfileDto> weekProfileSet) {
 
     final AttributeAddress weekProfileTablePassive =
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_WEEK_PROFILE_TABLE_PASSIVE);
+        new AttributeAddress(
+            cosemObject.getClassId(),
+            cosemObject.getObis(),
+            ATTRIBUTE_ID_WEEK_PROFILE_TABLE_PASSIVE);
     final DataObject weekArray =
         DataObject.newArrayData(
             this.configurationMapper.mapAsList(weekProfileSet, DataObject.class));
@@ -205,8 +227,8 @@ public class SetActivityCalendarCommandExecutor
         "WEEKS",
         weekProfileTablePassive,
         weekArray,
-        CLASS_ID,
-        OBIS_CODE,
+        cosemObject.getClassId(),
+        new ObisCode(cosemObject.getObis()),
         ATTRIBUTE_ID_WEEK_PROFILE_TABLE_PASSIVE);
   }
 
@@ -222,10 +244,11 @@ public class SetActivityCalendarCommandExecutor
   }
 
   private DataObjectAttrExecutor getSeasonProfileExecutor(
-      final List<SeasonProfileDto> seasonProfileList) {
+      final CosemObject cosemObject, final List<SeasonProfileDto> seasonProfileList) {
 
     final AttributeAddress seasonProfilePassive =
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEASON_PROFILE_PASSIVE);
+        new AttributeAddress(
+            cosemObject.getClassId(), cosemObject.getObis(), ATTRIBUTE_ID_SEASON_PROFILE_PASSIVE);
     final DataObject seasonsArray =
         DataObject.newArrayData(
             this.configurationMapper.mapAsList(seasonProfileList, DataObject.class));
@@ -236,8 +259,8 @@ public class SetActivityCalendarCommandExecutor
         "SEASONS",
         seasonProfilePassive,
         seasonsArray,
-        CLASS_ID,
-        OBIS_CODE,
+        cosemObject.getClassId(),
+        new ObisCode(cosemObject.getObis()),
         ATTRIBUTE_ID_SEASON_PROFILE_PASSIVE);
   }
 }

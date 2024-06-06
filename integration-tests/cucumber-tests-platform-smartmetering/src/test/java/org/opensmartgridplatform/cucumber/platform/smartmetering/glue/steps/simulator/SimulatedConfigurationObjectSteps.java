@@ -1,16 +1,11 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.simulator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -18,6 +13,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlag;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigurationFlags;
@@ -28,6 +24,7 @@ import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Slf4j
 public class SimulatedConfigurationObjectSteps {
 
   private static final int CLASS_ID = InterfaceClass.DATA.id();
@@ -39,8 +36,9 @@ public class SimulatedConfigurationObjectSteps {
 
   @Autowired private JsonObjectCreator jsonObjectCreator;
 
-  @Given("device simulation of {string} with configuration object")
-  public void deviceSimulationOfConfigurationObject(
+  @Given(
+      "device simulation of {string} with configuration object values in structure type value attribute")
+  public void deviceSimulationOfConfigurationObjectValuesInStructureTypeValueAttribute(
       final String deviceIdentification, final Map<String, String> settings) {
 
     this.deviceSimulatorSteps.deviceSimulationOfEquipmentIdentifier(deviceIdentification);
@@ -53,9 +51,41 @@ public class SimulatedConfigurationObjectSteps {
         CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_VALUE, attributeValue, OBJECT_DESCRIPTION);
   }
 
-  @Then("device simulation of {string} should be with configuration object")
-  public void deviceSimulationOfShouldBeWithConfigurationObject(
+  @Given(
+      "device simulation of {string} with configuration object values in bitstring type value attribute")
+  public void deviceSimulationOfConfigurationObjectValuesInBitstringTypeValueAttribute(
       final String deviceIdentification, final Map<String, String> settings) {
+
+    this.deviceSimulatorSteps.deviceSimulationOfEquipmentIdentifier(deviceIdentification);
+
+    final ConfigurationObject configurationObject =
+        ConfigurationObjectFactory.fromParameterMap(settings);
+    final ObjectNode attributeValue =
+        this.createBitstringForConfigurationObject(configurationObject, new JsonNodeFactory(false));
+    this.deviceSimulatorSteps.setDlmsAttributeValue(
+        CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_VALUE, attributeValue, OBJECT_DESCRIPTION);
+  }
+
+  @Then(
+      "device simulation should have values in a bitstring type value attribute of the configuration object")
+  public void
+      deviceSimulationShouldHaveValuesInABitstringTypeValueAttributeOfTheConfigurationObject(
+          final Map<String, String> settings) {
+
+    final ConfigurationObject expectedConfigurationObject =
+        ConfigurationObjectFactory.fromParameterMap(settings);
+    final ObjectNode expectedValue =
+        this.createBitstringForConfigurationObject(
+            expectedConfigurationObject, new JsonNodeFactory(false));
+
+    this.assertDlmsAttributeValue(expectedValue);
+  }
+
+  @Then(
+      "device simulation should have values in a structure type value attribute of the configuration object")
+  public void
+      deviceSimulationShouldHaveValuesInAStructureTypeValueAttributeOfTheConfigurationObject(
+          final Map<String, String> settings) {
 
     final ConfigurationObject expectedConfigurationObject =
         ConfigurationObjectFactory.fromParameterMap(settings);
@@ -63,6 +93,10 @@ public class SimulatedConfigurationObjectSteps {
         this.createStructureForConfigurationObject(
             expectedConfigurationObject, new JsonNodeFactory(false));
 
+    this.assertDlmsAttributeValue(expectedValue);
+  }
+
+  private void assertDlmsAttributeValue(final ObjectNode expectedValue) {
     final ObjectNode actualValue =
         this.deviceSimulatorSteps.getDlmsAttributeValue(
             CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_VALUE, OBJECT_DESCRIPTION);
@@ -75,22 +109,35 @@ public class SimulatedConfigurationObjectSteps {
 
     final ObjectNode structureForConfigurationObject = jsonNodeFactory.objectNode();
     this.jsonObjectCreator.setTypeNode(structureForConfigurationObject, "structure");
+
     final ArrayNode configurationObjectElements = jsonNodeFactory.arrayNode();
+
     configurationObjectElements.add(
         this.createGprsOperationModeForConfigurationObject(
             configurationObject.getGprsOperationMode(), jsonNodeFactory));
-    configurationObjectElements.add(
-        this.createFlagsForConfigurationObject(
-            configurationObject.getConfigurationFlags(), jsonNodeFactory));
+
+    final String flagsString = this.createFlagString(configurationObject.getConfigurationFlags());
+    final ObjectNode flagsForConfigurationObject =
+        this.jsonObjectCreator.createAttributeValue("bit-string", flagsString, jsonNodeFactory);
+    configurationObjectElements.add(flagsForConfigurationObject);
+
     structureForConfigurationObject.set("value", configurationObjectElements);
 
     return structureForConfigurationObject;
   }
 
+  private ObjectNode createBitstringForConfigurationObject(
+      final ConfigurationObject configurationObject, final JsonNodeFactory jsonNodeFactory) {
+
+    final String flagsString = this.createFlagString(configurationObject.getConfigurationFlags());
+
+    return this.jsonObjectCreator.createAttributeValue("bit-string", flagsString, jsonNodeFactory);
+  }
+
   private ObjectNode createGprsOperationModeForConfigurationObject(
       final GprsOperationModeType gprsOperationMode, final JsonNodeFactory jsonNodeFactory) {
 
-    String textValue;
+    final String textValue;
     if (gprsOperationMode == GprsOperationModeType.ALWAYS_ON) {
       textValue = "1";
     } else if (gprsOperationMode == GprsOperationModeType.TRIGGERED) {
@@ -101,9 +148,7 @@ public class SimulatedConfigurationObjectSteps {
     return this.jsonObjectCreator.createAttributeValue("enumerate", textValue, jsonNodeFactory);
   }
 
-  private JsonNode createFlagsForConfigurationObject(
-      final ConfigurationFlags configurationFlags, final JsonNodeFactory jsonNodeFactory) {
-
+  private String createFlagString(final ConfigurationFlags configurationFlags) {
     final int bitStringLength = 16;
     final char[] flags = new char[bitStringLength];
     for (int i = 0; i < bitStringLength; i++) {
@@ -118,7 +163,6 @@ public class SimulatedConfigurationObjectSteps {
         }
       }
     }
-    return this.jsonObjectCreator.createAttributeValue(
-        "bit-string", new String(flags), jsonNodeFactory);
+    return new String(flags);
   }
 }

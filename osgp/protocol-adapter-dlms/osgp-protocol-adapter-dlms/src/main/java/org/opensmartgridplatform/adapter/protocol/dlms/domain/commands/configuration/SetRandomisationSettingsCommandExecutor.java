@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration;
 
 import java.io.IOException;
@@ -19,13 +15,13 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractC
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.GetConfigurationObjectService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.ProtocolServiceLookup;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service.SetConfigurationObjectService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
@@ -46,16 +42,16 @@ public class SetRandomisationSettingsCommandExecutor
   private static final Logger LOGGER =
       LoggerFactory.getLogger(SetRandomisationSettingsCommandExecutor.class);
 
-  private final DlmsObjectConfigService dlmsObjectConfigService;
   private final ProtocolServiceLookup protocolServiceLookup;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
   @Autowired
   public SetRandomisationSettingsCommandExecutor(
-      final DlmsObjectConfigService dlmsObjectConfigService,
-      final ProtocolServiceLookup protocolServiceLookup) {
+      final ProtocolServiceLookup protocolServiceLookup,
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(SetRandomisationSettingsRequestDataDto.class);
-    this.dlmsObjectConfigService = dlmsObjectConfigService;
     this.protocolServiceLookup = protocolServiceLookup;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
@@ -113,9 +109,9 @@ public class SetRandomisationSettingsCommandExecutor
       final int multiplicationFactor,
       final int numberOfRetries)
       throws ProtocolAdapterException {
-    final AttributeAddress randomisationSettingsAddress =
-        this.dlmsObjectConfigService.getAttributeAddress(
-            device, DlmsObjectType.RANDOMISATION_SETTINGS, null);
+
+    final Protocol protocol = Protocol.forDevice(device);
+    final AttributeAddress attributeAddress = this.getAttributeAddress(protocol);
 
     final DataObject randomisationStartWindowObject =
         DataObject.newUInteger32Data(randomisationStartWindow);
@@ -126,10 +122,19 @@ public class SetRandomisationSettingsCommandExecutor
     final DataObject randomisationSettingsObject =
         DataObject.newStructureData(
             randomisationStartWindowObject, multiplicationFactorObject, numberOfRetriesObject);
-
     final SetParameter setRandomisationSettings =
-        new SetParameter(randomisationSettingsAddress, randomisationSettingsObject);
+        new SetParameter(attributeAddress, randomisationSettingsObject);
+
     this.writeAttribute(conn, setRandomisationSettings);
+  }
+
+  AttributeAddress getAttributeAddress(final Protocol protocol) throws ProtocolAdapterException {
+    return this.objectConfigServiceHelper
+        .findOptionalDefaultAttributeAddress(protocol, DlmsObjectType.RANDOMISATION_SETTINGS)
+        .orElseThrow(
+            () ->
+                new ProtocolAdapterException(
+                    "No object configuration found for RANDOMISATION_SETTINGS"));
   }
 
   private void writeDirectAttach(
@@ -140,7 +145,7 @@ public class SetRandomisationSettingsCommandExecutor
     final GetConfigurationObjectService getConfigurationObjectService =
         this.protocolServiceLookup.lookupGetService(protocol);
     final ConfigurationObjectDto configurationOnDevice =
-        getConfigurationObjectService.getConfigurationObject(conn);
+        getConfigurationObjectService.getConfigurationObject(conn, protocol, device);
     final SetConfigurationObjectService setService =
         this.protocolServiceLookup.lookupSetService(protocol);
 
@@ -148,7 +153,8 @@ public class SetRandomisationSettingsCommandExecutor
         this.createNewConfiguration(directAttach, configurationOnDevice);
 
     final AccessResultCode result =
-        setService.setConfigurationObject(conn, configurationToSet, configurationOnDevice);
+        setService.setConfigurationObject(
+            conn, configurationToSet, configurationOnDevice, protocol, device);
 
     this.checkResult(result, "directAttach");
   }

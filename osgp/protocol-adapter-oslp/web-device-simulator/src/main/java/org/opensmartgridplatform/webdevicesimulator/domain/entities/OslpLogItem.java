@@ -1,16 +1,13 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.webdevicesimulator.domain.entities;
 
 import com.google.protobuf.Message;
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.xml.bind.DatatypeConverter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
@@ -76,7 +73,7 @@ public class OslpLogItem extends AbstractEntity {
   }
 
   private static String bytesToCArray(final byte[] bytes) {
-    String s = javax.xml.bind.DatatypeConverter.printHexBinary(bytes);
+    String s = DatatypeConverter.printHexBinary(bytes);
 
     // Split every two chars with ', ' to create a C array.
     s = s.replaceAll("(.{2})", ", 0x$1");

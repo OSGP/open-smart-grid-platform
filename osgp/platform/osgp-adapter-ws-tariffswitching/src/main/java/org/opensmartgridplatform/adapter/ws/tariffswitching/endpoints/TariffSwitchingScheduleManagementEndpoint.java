@@ -1,16 +1,12 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.tariffswitching.endpoints;
 
-import javax.validation.ConstraintViolationException;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import jakarta.validation.ConstraintViolationException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -87,11 +83,14 @@ public class TariffSwitchingScheduleManagementEndpoint {
     // Get the request parameters, make sure that they are in UTC.
     // Maybe add an adapter to the service, so that all datetime are
     // converted to utc automatically.
-    final DateTime scheduleTime =
+    final ZonedDateTime scheduleTime =
         request.getScheduledTime() == null
             ? null
-            : new DateTime(request.getScheduledTime().toGregorianCalendar())
-                .toDateTime(DateTimeZone.UTC);
+            : request
+                .getScheduledTime()
+                .toGregorianCalendar()
+                .toZonedDateTime()
+                .withZoneSameInstant(ZoneId.of("UTC"));
 
     final SetScheduleAsyncResponse response = new SetScheduleAsyncResponse();
 

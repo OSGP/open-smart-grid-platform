@@ -1,12 +1,7 @@
-/*
- * Copyright 2022 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,15 +19,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -51,6 +48,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
+import org.opensmartgridplatform.dlms.services.Protocol;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
@@ -64,13 +64,15 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class SetActivityCalendarCommandExecutorTest {
 
   protected static final int CLASS_ID = 20;
 
-  private static final ObisCode OBIS_CODE = new ObisCode("0.0.13.0.0.255");
+  private static final String OBIS = "0.0.13.0.0.255";
+  private static final ObisCode OBIS_CODE = new ObisCode(OBIS);
   private static final ObisCode OBIS_CODE_SCRIPT = new ObisCode("0.0.10.0.100.255");
 
   private static final int ATTRIBUTE_ID_CALENDAR_NAME_PASSIVE = 6;
@@ -78,14 +80,14 @@ class SetActivityCalendarCommandExecutorTest {
   private static final int ATTRIBUTE_ID_WEEK_PROFILE_TABLE_PASSIVE = 8;
   private static final int ATTRIBUTE_ID_DAY_PROFILE_TABLE_PASSIVE = 9;
 
-  private final DlmsDevice DLMS_DEVICE = new DlmsDevice();
-
   private static final String CALENDAR_NAME = "Calendar";
 
   private static final CosemDateTimeDto ACTIVATE_PASSIVE_CALENDAR_TIME =
       new CosemDateTimeDto(DateTime.now());
 
   @Captor ArgumentCaptor<SetParameter> setParameterArgumentCaptor;
+
+  @Mock private DlmsDevice dlmsDevice;
 
   @Mock private DlmsConnectionManager conn;
 
@@ -97,33 +99,39 @@ class SetActivityCalendarCommandExecutorTest {
 
   @Mock private SetActivityCalendarCommandActivationExecutor activationExecutor;
 
-  private SetActivityCalendarCommandExecutor executor;
+  @InjectMocks private SetActivityCalendarCommandExecutor executor;
 
   private MockedStatic<ActivityCalendarValidator> activityCalendarValidator;
 
   @BeforeEach
-  public void setUp() {
-    this.executor =
-        new SetActivityCalendarCommandExecutor(
-            new DlmsHelper(), this.activationExecutor, new ConfigurationMapper());
+  public void setUp() throws IOException, ObjectConfigException {
+    final ObjectConfigService objectConfigService = new ObjectConfigService();
+
+    ReflectionTestUtils.setField(this.executor, "configurationMapper", new ConfigurationMapper());
+    ReflectionTestUtils.setField(this.executor, "dlmsHelper", new DlmsHelper());
+    ReflectionTestUtils.setField(this.executor, "objectConfigService", objectConfigService);
 
     this.activityCalendarValidator = mockStatic(ActivityCalendarValidator.class);
   }
 
   @AfterEach
-  public void tearDown() throws Exception {
+  public void tearDown() {
     this.activityCalendarValidator.close();
   }
 
-  @Test
-  void testSetActivityCalendarEmpty()
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  void testSetActivityCalendarEmpty(final Protocol protocol)
       throws ProtocolAdapterException, IOException, FunctionalException {
+
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocol.getName());
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocol.getVersion());
 
     // SETUP
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
-    when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
+    when(this.activationExecutor.execute(this.conn, this.dlmsDevice, null, this.messageMetadata))
         .thenReturn(MethodResultCode.SUCCESS);
 
     final ActivityCalendarDto activityCalendar =
@@ -132,7 +140,7 @@ class SetActivityCalendarCommandExecutorTest {
 
     // CALL
     final AccessResultCode resultCode =
-        this.executor.execute(this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata);
+        this.executor.execute(this.conn, this.dlmsDevice, activityCalendar, this.messageMetadata);
 
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
@@ -150,14 +158,18 @@ class SetActivityCalendarCommandExecutorTest {
         Collections.emptyList());
   }
 
-  @Test
-  void testSetActivityCalendarWithSingleSeason()
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  void testSetActivityCalendarWithSingleSeason(final Protocol protocol)
       throws ProtocolAdapterException, IOException, FunctionalException {
     // SETUP
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocol.getName());
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocol.getVersion());
+
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
-    when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
+    when(this.activationExecutor.execute(this.conn, this.dlmsDevice, null, this.messageMetadata))
         .thenReturn(MethodResultCode.SUCCESS);
 
     final List<Short> dayIds = Collections.singletonList((short) 1);
@@ -173,7 +185,7 @@ class SetActivityCalendarCommandExecutorTest {
 
     // CALL
     final AccessResultCode resultCode =
-        this.executor.execute(this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata);
+        this.executor.execute(this.conn, this.dlmsDevice, activityCalendar, this.messageMetadata);
 
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
@@ -186,14 +198,18 @@ class SetActivityCalendarCommandExecutorTest {
         setParameters, dayIds, actionStartTimes, weekNames, seasonNames, seasonStarts);
   }
 
-  @Test
-  void testSetActivityCalendarWithMultipleSeasons()
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  void testSetActivityCalendarWithMultipleSeasons(final Protocol protocol)
       throws ProtocolAdapterException, IOException, FunctionalException {
     // SETUP
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocol.getName());
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocol.getVersion());
+
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
-    when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
+    when(this.activationExecutor.execute(this.conn, this.dlmsDevice, null, this.messageMetadata))
         .thenReturn(MethodResultCode.SUCCESS);
 
     final List<Short> dayIds = Collections.singletonList((short) 1);
@@ -209,7 +225,7 @@ class SetActivityCalendarCommandExecutorTest {
 
     // CALL
     final AccessResultCode resultCode =
-        this.executor.execute(this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata);
+        this.executor.execute(this.conn, this.dlmsDevice, activityCalendar, this.messageMetadata);
 
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
@@ -222,14 +238,18 @@ class SetActivityCalendarCommandExecutorTest {
         setParameters, dayIds, actionStartTimes, weekNames, seasonNames, seasonStarts);
   }
 
-  @Test
-  void testSetActivityCalendarWithMultipleSeasonsWeeksDaysAndActions()
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  void testSetActivityCalendarWithMultipleSeasonsWeeksDaysAndActions(final Protocol protocol)
       throws ProtocolAdapterException, IOException, FunctionalException {
     // SETUP
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocol.getName());
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocol.getVersion());
+
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
-    when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
+    when(this.activationExecutor.execute(this.conn, this.dlmsDevice, null, this.messageMetadata))
         .thenReturn(MethodResultCode.SUCCESS);
 
     final List<Short> dayIds = Arrays.asList((short) 1, (short) 2, (short) 3);
@@ -248,7 +268,7 @@ class SetActivityCalendarCommandExecutorTest {
 
     // CALL
     final AccessResultCode resultCode =
-        this.executor.execute(this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata);
+        this.executor.execute(this.conn, this.dlmsDevice, activityCalendar, this.messageMetadata);
 
     // VERIFY
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
@@ -262,8 +282,9 @@ class SetActivityCalendarCommandExecutorTest {
   }
 
   @Test
-  void testSetActivityCalendarWithValidationFailure() throws IOException {
+  void testSetActivityCalendarWithValidationFailure() {
     // SETUP
+
     this.activityCalendarValidator
         .when(() -> ActivityCalendarValidator.validate(any()))
         .thenThrow(
@@ -276,15 +297,20 @@ class SetActivityCalendarCommandExecutorTest {
         catchThrowable(
             () ->
                 this.executor.execute(
-                    this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata));
+                    this.conn, this.dlmsDevice, activityCalendar, this.messageMetadata));
 
     // VERIFY
     assertThat(thrown).isInstanceOf(FunctionalException.class);
   }
 
-  @Test
-  void testSetActivityCalendarWithOneOfTheSetRequestsFailing() throws IOException {
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  void testSetActivityCalendarWithOneOfTheSetRequestsFailing(final Protocol protocol)
+      throws IOException {
     // SETUP
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocol.getName());
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocol.getVersion());
+
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class)))
@@ -300,7 +326,7 @@ class SetActivityCalendarCommandExecutorTest {
         catchThrowable(
             () ->
                 this.executor.execute(
-                    this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata));
+                    this.conn, this.dlmsDevice, activityCalendar, this.messageMetadata));
 
     // VERIFY
     assertThat(thrown)
@@ -310,14 +336,19 @@ class SetActivityCalendarCommandExecutorTest {
         () -> ActivityCalendarValidator.validate(activityCalendar), times(1));
   }
 
-  @Test
-  void testSetActivityCalendarWithActivationFailure() throws ProtocolAdapterException, IOException {
+  @ParameterizedTest
+  @EnumSource(Protocol.class)
+  void testSetActivityCalendarWithActivationFailure(final Protocol protocol)
+      throws ProtocolAdapterException, IOException {
     // SETUP
+    when(this.dlmsDevice.getProtocolName()).thenReturn(protocol.getName());
+    when(this.dlmsDevice.getProtocolVersion()).thenReturn(protocol.getVersion());
+
     final String errorMessage = "Activation failure";
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
-    when(this.activationExecutor.execute(this.conn, this.DLMS_DEVICE, null, this.messageMetadata))
+    when(this.activationExecutor.execute(this.conn, this.dlmsDevice, null, this.messageMetadata))
         .thenThrow(new ProtocolAdapterException(errorMessage));
 
     final ActivityCalendarDto activityCalendar = this.createDefaultActivityCalendar();
@@ -327,7 +358,7 @@ class SetActivityCalendarCommandExecutorTest {
         catchThrowable(
             () ->
                 this.executor.execute(
-                    this.conn, this.DLMS_DEVICE, activityCalendar, this.messageMetadata));
+                    this.conn, this.dlmsDevice, activityCalendar, this.messageMetadata));
 
     // VERIFY
     assertThat(thrown)
@@ -369,10 +400,8 @@ class SetActivityCalendarCommandExecutorTest {
     final List<DayProfileActionDto> actions =
         IntStream.range(0, actionStartTimes.size())
             .mapToObj(i -> new DayProfileActionDto(i + 1, actionStartTimes.get(i)))
-            .collect(Collectors.toList());
-    return dayIds.stream()
-        .map(id -> new DayProfileDto(id.intValue(), actions))
-        .collect(Collectors.toList());
+            .toList();
+    return dayIds.stream().map(id -> new DayProfileDto(id.intValue(), actions)).toList();
   }
 
   private List<WeekProfileDto> createWeekProfiles(
@@ -392,7 +421,7 @@ class SetActivityCalendarCommandExecutorTest {
                     .withSaturday(dayProfiles.get(this.getIndexOr0(5, size)))
                     .withSunday(dayProfiles.get(this.getIndexOr0(6, size)))
                     .build())
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private List<SeasonProfileDto> createSeasonProfiles(
@@ -410,7 +439,7 @@ class SetActivityCalendarCommandExecutorTest {
                         0,
                         new ClockStatusDto(0)),
                     weekProfiles.get(this.getIndexOr0(i, weekProfiles.size()))))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private int getIndexOr0(final int index, final int size) {

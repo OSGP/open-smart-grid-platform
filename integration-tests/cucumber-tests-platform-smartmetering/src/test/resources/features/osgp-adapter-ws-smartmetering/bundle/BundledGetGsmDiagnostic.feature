@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform @GetGsmDiagnostic
 Feature: SmartMetering Bundle - Get Gsm Diagnostic
   As a grid operator
@@ -23,7 +27,7 @@ Feature: SmartMetering Bundle - Get Gsm Diagnostic
       | cellId                      |                        77 |
       | locationId                  |                      2230 |
       | signalQuality               | MINUS_87_DBM              |
-      | bitErrorRate                | RXQUAL_6                  |
+      | bitErrorRate                |                         6 |
       | mobileCountryCode           |                        66 |
       | mobileNetworkCode           |                       204 |
       | channelNumber               |                       107 |

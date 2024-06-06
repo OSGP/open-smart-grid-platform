@@ -1,17 +1,13 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.InstallationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -42,7 +38,7 @@ public class CoupleMbusDeviceResponseMessageProcessor extends OsgpCoreResponseMe
 
   @Override
   protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-    return responseMessage.getDataObject() instanceof MbusChannelElementsResponseDto;
+    return responseMessage.getDataObject() instanceof CoupleMbusDeviceResponseDto;
   }
 
   @Override
@@ -56,6 +52,6 @@ public class CoupleMbusDeviceResponseMessageProcessor extends OsgpCoreResponseMe
         deviceMessageMetadata,
         responseMessage.getResult(),
         responseMessage.getOsgpException(),
-        (MbusChannelElementsResponseDto) responseMessage.getDataObject());
+        (CoupleMbusDeviceResponseDto) responseMessage.getDataObject());
   }
 }

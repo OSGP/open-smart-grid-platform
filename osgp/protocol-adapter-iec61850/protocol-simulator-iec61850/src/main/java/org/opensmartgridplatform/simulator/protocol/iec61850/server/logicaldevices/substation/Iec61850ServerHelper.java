@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.substation;
 
 import com.beanit.openiec61850.BasicDataAttribute;
@@ -21,6 +17,7 @@ public class Iec61850ServerHelper {
   private Iec61850ServerHelper() {
     // Only static utility methods
   }
+
   /*
      For a Substation Device we assume the Voltage for field 0 is 10kV en for field 1 it is 230V
      The current for L1 is 50A, for L2 it is 100A and for L3 it is 150A

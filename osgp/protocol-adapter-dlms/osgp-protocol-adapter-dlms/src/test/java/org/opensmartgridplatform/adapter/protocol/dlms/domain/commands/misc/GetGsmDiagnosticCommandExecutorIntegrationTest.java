@@ -1,13 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +30,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdjacentCellInfoDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.BitErrorRateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CellInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CircuitSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticRequestDto;
@@ -59,10 +52,10 @@ class GetGsmDiagnosticCommandExecutorIntegrationTest {
   @ParameterizedTest
   @CsvSource({
     "DSMR_4_2_2,CDMA,false",
-    "DSMR_4_2_2,GPRS,true",
+    "DSMR_4_2_2,GPRS,false",
     "DSMR_4_2_2,LTE,false",
     "SMR_4_3,CDMA,true",
-    "SMR_4_3,GPRS,true",
+    "SMR_4_3,GPRS,false",
     "SMR_4_3,LTE,false",
     "SMR_5_0_0,CDMA,true",
     "SMR_5_0_0,GPRS,true",
@@ -87,7 +80,7 @@ class GetGsmDiagnosticCommandExecutorIntegrationTest {
 
   @BeforeEach
   public void setUp() throws IOException, ObjectConfigException {
-    this.objectConfigService = new ObjectConfigService(null);
+    this.objectConfigService = new ObjectConfigService();
 
     final DlmsHelper dlmsHelper = new DlmsHelper();
 
@@ -176,7 +169,7 @@ class GetGsmDiagnosticCommandExecutorIntegrationTest {
     assertThat(cellInfo.getCellId()).isEqualTo(93L);
     assertThat(cellInfo.getLocationId()).isEqualTo(2232);
     assertThat(cellInfo.getSignalQuality()).isEqualTo(SignalQualityDto.MINUS_87_DBM);
-    assertThat(cellInfo.getBitErrorRate()).isEqualTo(BitErrorRateDto.RXQUAL_6);
+    assertThat(cellInfo.getBitErrorRate()).isEqualTo(6);
     assertThat(cellInfo.getMobileCountryCode()).isEqualTo(204);
     assertThat(cellInfo.getMobileNetworkCode()).isEqualTo(66);
     assertThat(cellInfo.getChannelNumber()).isEqualTo(107);

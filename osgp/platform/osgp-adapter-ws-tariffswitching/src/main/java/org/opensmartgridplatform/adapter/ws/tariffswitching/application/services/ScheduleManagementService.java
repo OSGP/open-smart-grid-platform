@@ -1,18 +1,14 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.tariffswitching.application.services;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import java.time.ZonedDateTime;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.tariffswitching.infra.jms.TariffSwitchingRequestMessage;
 import org.opensmartgridplatform.adapter.ws.tariffswitching.infra.jms.TariffSwitchingRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -53,7 +49,7 @@ public class ScheduleManagementService {
       @Identification final String organisationIdentification,
       @Identification final String deviceIdentification,
       @NotNull @Size(min = 1, max = 50) @Valid final List<ScheduleEntry> mapAsList,
-      final DateTime scheduledTime,
+      final ZonedDateTime scheduledTime,
       final int messagePriority)
       throws FunctionalException {
 
@@ -82,7 +78,8 @@ public class ScheduleManagementService {
             .withCorrelationUid(correlationUid)
             .withMessageType(MessageType.SET_TARIFF_SCHEDULE.name())
             .withMessagePriority(messagePriority)
-            .withScheduleTime(scheduledTime == null ? null : scheduledTime.getMillis())
+            .withScheduleTime(
+                scheduledTime == null ? null : scheduledTime.toInstant().toEpochMilli())
             .build();
 
     final TariffSwitchingRequestMessage message =

@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -183,7 +178,6 @@ public class DeviceChannelsHelperTest {
                 this.manufacturerIdentification,
                 this.version,
                 this.deviceType));
-    when(this.device.isWithListSupported()).thenReturn(true);
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.get(anyList())).thenReturn(resultList);
@@ -211,7 +205,6 @@ public class DeviceChannelsHelperTest {
                 this.manufacturerIdentification,
                 this.version,
                 this.deviceType));
-    when(this.device.isWithListSupported()).thenReturn(true);
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.get(anyList())).thenReturn(resultList);
@@ -243,7 +236,6 @@ public class DeviceChannelsHelperTest {
                 manufacturerIdentificationInvalid,
                 this.version,
                 this.deviceType));
-    when(this.device.isWithListSupported()).thenReturn(true);
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.get(anyList())).thenReturn(resultList);
@@ -268,7 +260,6 @@ public class DeviceChannelsHelperTest {
                 this.manufacturerIdentification,
                 this.version,
                 this.deviceType));
-    when(this.device.isWithListSupported()).thenReturn(true);
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.get(anyList())).thenReturn(resultList);

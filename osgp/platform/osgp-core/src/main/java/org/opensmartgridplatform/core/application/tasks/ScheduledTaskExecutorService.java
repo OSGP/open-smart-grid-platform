@@ -1,20 +1,22 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.core.application.tasks;
 
+import static com.google.common.util.concurrent.MoreExecutors.shutdownAndAwaitTermination;
+
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.core.application.config.ScheduledTaskExecutorJobConfig;
 import org.opensmartgridplatform.core.application.services.DeviceRequestMessageService;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -27,25 +29,34 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ScheduledTaskExecutorService {
+  private static final long AWAIT_TERMINATION_IN_SEC = 5;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ScheduledTaskExecutorService.class);
 
-  @Autowired private DeviceRequestMessageService deviceRequestMessageService;
+  private final DeviceRequestMessageService deviceRequestMessageService;
+  private final ScheduledTaskRepository scheduledTaskRepository;
+  private final DeviceRepository deviceRepository;
+  private final ScheduledTaskExecutorJobConfig scheduledTaskExecutorJobConfig;
+  private final int getMaxRetryCount;
 
-  @Autowired private ScheduledTaskRepository scheduledTaskRepository;
-
-  @Autowired private DeviceRepository deviceRepository;
-
-  @Autowired private ScheduledTaskExecutorJobConfig scheduledTaskExecutorJobConfig;
-
-  @Autowired private int getMaxRetryCount;
+  public ScheduledTaskExecutorService(
+      final DeviceRequestMessageService deviceRequestMessageService,
+      final ScheduledTaskRepository scheduledTaskRepository,
+      final DeviceRepository deviceRepository,
+      final ScheduledTaskExecutorJobConfig scheduledTaskExecutorJobConfig,
+      final int getMaxRetryCount) {
+    this.deviceRequestMessageService = deviceRequestMessageService;
+    this.scheduledTaskRepository = scheduledTaskRepository;
+    this.deviceRepository = deviceRepository;
+    this.scheduledTaskExecutorJobConfig = scheduledTaskExecutorJobConfig;
+    this.getMaxRetryCount = getMaxRetryCount;
+  }
 
   public void processScheduledTasks() {
     this.processStrandedScheduledTasks();
@@ -67,16 +78,31 @@ public class ScheduledTaskExecutorService {
         st -> st.getModificationTimeInstant().isBefore(ultimatePendingTime);
 
     final List<ScheduledTask> strandedScheduledTasks =
-        scheduledTasks.stream().filter(pendingExceeded).collect(Collectors.toList());
+        scheduledTasks.stream().filter(pendingExceeded).toList();
+
+    final List<ScheduledTask> retryScheduledTasks = new ArrayList<>();
+    final List<ScheduledTask> deleteScheduledTasks = new ArrayList<>();
+
     strandedScheduledTasks.forEach(
         strandedScheduledTask -> {
           if (this.shouldBeRetried(strandedScheduledTask)) {
             strandedScheduledTask.retryOn(new Date());
+            retryScheduledTasks.add(strandedScheduledTask);
+            LOGGER.info(
+                "Scheduled task for device {} with correlationUid {} will be retried",
+                strandedScheduledTask.getDeviceIdentification(),
+                strandedScheduledTask.getCorrelationId());
           } else {
-            strandedScheduledTask.setFailed("No response received for scheduled task");
+            LOGGER.info(
+                "Scheduled task for device {} with correlationUid {} will be removed",
+                strandedScheduledTask.getDeviceIdentification(),
+                strandedScheduledTask.getCorrelationId());
+            deleteScheduledTasks.add(strandedScheduledTask);
           }
-          this.scheduledTaskRepository.save(strandedScheduledTask);
         });
+
+    this.scheduledTaskRepository.saveAll(retryScheduledTasks);
+    this.scheduledTaskRepository.deleteAll(deleteScheduledTasks);
   }
 
   private boolean shouldBeRetried(final ScheduledTask scheduledTask) {
@@ -100,23 +126,40 @@ public class ScheduledTaskExecutorService {
     List<ScheduledTask> scheduledTasks = this.getScheduledTasks(type);
 
     while (!scheduledTasks.isEmpty()) {
-      for (ScheduledTask scheduledTask : scheduledTasks) {
-        LOGGER.info(
-            "Processing scheduled task for device [{}] to perform [{}]  ",
-            scheduledTask.getDeviceIdentification(),
-            scheduledTask.getMessageType());
-        try {
-          scheduledTask.setPending();
-          scheduledTask = this.scheduledTaskRepository.save(scheduledTask);
-          final ProtocolRequestMessage protocolRequestMessage =
-              this.createProtocolRequestMessage(scheduledTask);
-          this.deviceRequestMessageService.processMessage(protocolRequestMessage);
-        } catch (final FunctionalException e) {
-          LOGGER.error("Processing scheduled task failed.", e);
-          this.scheduledTaskRepository.delete(scheduledTask);
+      final ExecutorService executorService =
+          Executors.newFixedThreadPool(
+              this.scheduledTaskExecutorJobConfig.getScheduledTaskThreadPoolSize());
+      try {
+        final List<CompletableFuture<Void>> futures = new ArrayList<>();
+        for (final ScheduledTask scheduledTask : scheduledTasks) {
+          final CompletableFuture<Void> future =
+              CompletableFuture.runAsync(
+                  () -> this.processScheduledTask(scheduledTask), executorService);
+          futures.add(future);
         }
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+      } finally {
+        shutdownAndAwaitTermination(executorService, Duration.ofSeconds(AWAIT_TERMINATION_IN_SEC));
       }
+
       scheduledTasks = this.getScheduledTasks(type);
+    }
+  }
+
+  private void processScheduledTask(final ScheduledTask scheduledTask) {
+    LOGGER.info(
+        "Processing scheduled task for device [{}] to perform [{}]  ",
+        scheduledTask.getDeviceIdentification(),
+        scheduledTask.getMessageType());
+    try {
+      this.scheduledTaskRepository.updateStatus(
+          scheduledTask.getId(), ScheduledTaskStatusType.PENDING);
+      final ProtocolRequestMessage protocolRequestMessage =
+          this.createProtocolRequestMessage(scheduledTask);
+      this.deviceRequestMessageService.processMessage(protocolRequestMessage);
+    } catch (final FunctionalException e) {
+      LOGGER.error("Processing scheduled task failed.", e);
+      this.scheduledTaskRepository.delete(scheduledTask);
     }
   }
 
@@ -158,9 +201,10 @@ public class ScheduledTaskExecutorService {
         .withMessageType(scheduledTask.getMessageType())
         .withDomain(scheduledTask.getDomain())
         .withDomainVersion(scheduledTask.getDomainVersion())
-        .withIpAddress(getIpAddress(device))
+        .withNetworkAddress(getIpAddress(device))
         .withNetworkSegmentIds(device.getBtsId(), device.getCellId())
         .withMessagePriority(scheduledTask.getMessagePriority())
+        .withDeviceModelCode(scheduledTask.getDeviceModelCode())
         .withScheduled(true)
         .withMaxScheduleTime(
             scheduledTask.getMaxScheduleTime() == null
@@ -171,9 +215,9 @@ public class ScheduledTaskExecutorService {
   }
 
   private static String getIpAddress(final Device device) {
-    if (device.getIpAddress() == null && device.getGatewayDevice() != null) {
-      return device.getGatewayDevice().getIpAddress();
+    if (device.getNetworkAddress() == null && device.getGatewayDevice() != null) {
+      return device.getGatewayDevice().getNetworkAddress();
     }
-    return device.getIpAddress();
+    return device.getNetworkAddress();
   }
 }

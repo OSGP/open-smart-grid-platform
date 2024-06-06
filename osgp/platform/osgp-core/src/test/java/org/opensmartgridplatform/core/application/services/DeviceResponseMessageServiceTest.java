@@ -1,11 +1,7 @@
-/*
- * Copyright 2014-2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.core.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -121,6 +117,8 @@ public class DeviceResponseMessageServiceTest {
             .build();
     final ScheduledTask scheduledTask =
         new ScheduledTask(MESSAGE_METADATA, DOMAIN, DOMAIN_VERSION, DATA_OBJECT, SCHEDULED_TIME);
+    // update message priority to reflect the priority of the previous run
+    scheduledTask.setMessagePriority(scheduledTask.getMessagePriority() + 1);
 
     when(this.scheduledTaskService.findByCorrelationUid(anyString())).thenReturn(scheduledTask);
     this.deviceResponseMessageService.processMessage(message);
@@ -134,6 +132,8 @@ public class DeviceResponseMessageServiceTest {
     assertThat(scheduledTask.getScheduledTime())
         .isEqualTo(new Timestamp(scheduledRetryTime.getTime()));
     assertThat(scheduledTask.getErrorLog()).contains(expectedMessage);
+    // check that the message priority is copied to the scheduled task
+    assertThat(scheduledTask.getMessagePriority()).isEqualTo(message.getMessagePriority());
   }
 
   /**

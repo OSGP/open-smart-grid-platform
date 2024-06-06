@@ -1,67 +1,48 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import ma.glasnost.orika.MapperFacade;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SetClockConfigurationCommandExecutor
     extends AbstractCommandExecutor<SetClockConfigurationRequestDto, Void> {
 
-  private static final ObisCode LOGICAL_NAME = new ObisCode("0.0.1.0.0.255");
+  private final MapperFacade configurationMapper;
+  private final ObjectConfigService objectConfigService;
+  private final DlmsHelper dlmsHelper;
 
-  private static final AttributeAddress ATTRIBUTE_TIME_ZONE =
-      new AttributeAddress(
-          InterfaceClass.CLOCK.id(), LOGICAL_NAME, ClockAttribute.TIME_ZONE.attributeId());
-
-  private static final AttributeAddress ATTRIBUTE_DAYLIGHT_SAVINGS_BEGIN =
-      new AttributeAddress(
-          InterfaceClass.CLOCK.id(),
-          LOGICAL_NAME,
-          ClockAttribute.DAYLIGHT_SAVINGS_BEGIN.attributeId());
-
-  private static final AttributeAddress ATTRIBUTE_DAYLIGHT_SAVINGS_END =
-      new AttributeAddress(
-          InterfaceClass.CLOCK.id(),
-          LOGICAL_NAME,
-          ClockAttribute.DAYLIGHT_SAVINGS_END.attributeId());
-
-  private static final AttributeAddress ATTRIBUTE_DAYLIGHT_SAVINGS_ENABLED =
-      new AttributeAddress(
-          InterfaceClass.CLOCK.id(),
-          LOGICAL_NAME,
-          ClockAttribute.DAYLIGHT_SAVINGS_ENABLED.attributeId());
-
-  @Autowired private MapperFacade configurationMapper;
-
-  public SetClockConfigurationCommandExecutor() {
+  public SetClockConfigurationCommandExecutor(
+      final MapperFacade configurationMapper,
+      final ObjectConfigService objectConfigService,
+      final DlmsHelper dlmsHelper) {
     super(SetClockConfigurationRequestDto.class);
+    this.configurationMapper = configurationMapper;
+    this.objectConfigService = objectConfigService;
+    this.dlmsHelper = dlmsHelper;
   }
 
   @Override
@@ -82,63 +63,60 @@ public class SetClockConfigurationCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    this.dlmsLogWrite(conn, ATTRIBUTE_TIME_ZONE);
-    this.writeAttribute(
-        conn,
+    final List<SetParameter> parameters = new ArrayList<>();
+    final AttributeAddress attributeTimeZone =
+        this.getClockAttributeAddress(device, ClockAttribute.TIME_ZONE);
+    parameters.add(
         new SetParameter(
-            ATTRIBUTE_TIME_ZONE, DataObject.newInteger16Data(object.getTimeZoneOffset())),
-        "Timezone");
+            attributeTimeZone, DataObject.newInteger16Data(object.getTimeZoneOffset())));
 
+    final AttributeAddress attributeDstBegin =
+        this.getClockAttributeAddress(device, ClockAttribute.DAYLIGHT_SAVINGS_BEGIN);
     final CosemDateTime daylightSavingsBegin =
         this.configurationMapper.map(object.getDaylightSavingsBegin(), CosemDateTime.class);
-    this.dlmsLogWrite(conn, ATTRIBUTE_DAYLIGHT_SAVINGS_BEGIN);
-    this.writeAttribute(
-        conn,
+    parameters.add(
         new SetParameter(
-            ATTRIBUTE_DAYLIGHT_SAVINGS_BEGIN,
-            DataObject.newOctetStringData(daylightSavingsBegin.encode())),
-        "Daylight savings begin");
+            attributeDstBegin, DataObject.newOctetStringData(daylightSavingsBegin.encode())));
 
+    final AttributeAddress attributeDstEnd =
+        this.getClockAttributeAddress(device, ClockAttribute.DAYLIGHT_SAVINGS_END);
     final CosemDateTime daylightSavingsEnd =
         this.configurationMapper.map(object.getDaylightSavingsEnd(), CosemDateTime.class);
-    this.dlmsLogWrite(conn, ATTRIBUTE_DAYLIGHT_SAVINGS_END);
-    this.writeAttribute(
-        conn,
+    parameters.add(
         new SetParameter(
-            ATTRIBUTE_DAYLIGHT_SAVINGS_END,
-            DataObject.newOctetStringData(daylightSavingsEnd.encode())),
-        "Daylight savinds end");
+            attributeDstEnd, DataObject.newOctetStringData(daylightSavingsEnd.encode())));
 
-    this.dlmsLogWrite(conn, ATTRIBUTE_DAYLIGHT_SAVINGS_ENABLED);
-    this.writeAttribute(
-        conn,
+    final AttributeAddress attributeDstEnabled =
+        this.getClockAttributeAddress(device, ClockAttribute.DAYLIGHT_SAVINGS_ENABLED);
+    parameters.add(
         new SetParameter(
-            ATTRIBUTE_DAYLIGHT_SAVINGS_ENABLED,
-            DataObject.newBoolData(object.isDaylightSavingsEnabled())),
-        "Daylight savings enabled");
+            attributeDstEnabled, DataObject.newBoolData(object.isDaylightSavingsEnabled())));
+
+    final List<AccessResultCode> results = this.dlmsHelper.setWithList(conn, device, parameters);
+    if (!results.stream().allMatch(result -> result.equals(AccessResultCode.SUCCESS))) {
+      throw new ProtocolAdapterException(
+          String.format(
+              "Clock configuration was not set successfully for device %s. ResultCode: %s",
+              device.getDeviceIdentification(),
+              results.stream()
+                  .filter(result -> !result.equals(AccessResultCode.SUCCESS))
+                  .toList()));
+    }
+
     return null;
   }
 
-  private void writeAttribute(
-      final DlmsConnectionManager conn, final SetParameter parameter, final String attributeName)
+  private AttributeAddress getClockAttributeAddress(
+      final DlmsDevice device, final ClockAttribute clockAttribute)
       throws ProtocolAdapterException {
     try {
-      final AccessResultCode result = conn.getConnection().set(parameter);
-      if (!result.equals(AccessResultCode.SUCCESS)) {
-        throw new ProtocolAdapterException(
-            String.format(
-                "Attribute '%s' of the clock configuration was not set successfully. ResultCode: %s",
-                attributeName, result.name()));
-      }
-    } catch (final IOException e) {
-      throw new ConnectionException(e);
+      final CosemObject cosemObject =
+          this.objectConfigService.getCosemObject(
+              device.getProtocolName(), device.getProtocolVersion(), DlmsObjectType.CLOCK);
+      return new AttributeAddress(
+          cosemObject.getClassId(), cosemObject.getObis(), clockAttribute.attributeId());
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
     }
-  }
-
-  private void dlmsLogWrite(final DlmsConnectionManager conn, final AttributeAddress attribute) {
-    conn.getDlmsMessageListener()
-        .setDescription(
-            "SetClockConfiguration, preparing to write attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(attribute));
   }
 }

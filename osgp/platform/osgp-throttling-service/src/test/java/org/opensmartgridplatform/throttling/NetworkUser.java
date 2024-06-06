@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.throttling;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,6 +21,9 @@ public class NetworkUser {
   private final String throttlingIdentity;
 
   private final int initialMaxConcurrency;
+  private final int initialMaxNewConnections;
+  private final long initialMaxNewConnectionsResetTimeInMs;
+  private final long initialMaxNewConnectionsWaitTimeInMs;
   private short throttlingConfigId = -1;
   private final String clientIdentity = "client-" + clientNumber.incrementAndGet();
   private int clientId = -1;
@@ -38,12 +36,18 @@ public class NetworkUser {
   public NetworkUser(
       final String throttlingIdentity,
       final int initialMaxConcurrency,
+      final int initialMaxNewConnections,
+      final long initialMaxNewConnectionsResetTimeInMs,
+      final long initialMaxNewConnectionsWaitTimeInMs,
       final FakeConcurrencyRestrictedNetwork network,
       final RestTemplate restTemplate,
       final NetworkTaskQueue networkTaskQueue) {
 
     this.throttlingIdentity = throttlingIdentity;
     this.initialMaxConcurrency = initialMaxConcurrency;
+    this.initialMaxNewConnections = initialMaxNewConnections;
+    this.initialMaxNewConnectionsResetTimeInMs = initialMaxNewConnectionsResetTimeInMs;
+    this.initialMaxNewConnectionsWaitTimeInMs = initialMaxNewConnectionsWaitTimeInMs;
     this.network = network;
     this.restTemplate = restTemplate;
     this.networkTaskQueue = networkTaskQueue;
@@ -96,8 +100,10 @@ public class NetworkUser {
     final int baseTransceiverStationId = networkTask.baseTransceiverStationId;
     final int cellId = networkTask.cellId;
     final int clientRequestId = this.requestCounter.incrementAndGet();
+    final int priority = networkTask.priority;
 
-    final boolean granted = this.requestPermit(baseTransceiverStationId, cellId, clientRequestId);
+    final boolean granted =
+        this.requestPermit(baseTransceiverStationId, cellId, clientRequestId, priority);
 
     if (!granted) {
       actionIfPermitDenied.run();
@@ -119,10 +125,15 @@ public class NetworkUser {
     final ResponseEntity<Short> throttlingConfigResponse =
         this.restTemplate.postForEntity(
             "/throttling-configs",
-            new ThrottlingConfig(this.throttlingIdentity, this.initialMaxConcurrency),
+            new ThrottlingConfig(
+                this.throttlingIdentity,
+                this.initialMaxConcurrency,
+                this.initialMaxNewConnections,
+                this.initialMaxNewConnectionsResetTimeInMs,
+                this.initialMaxNewConnectionsWaitTimeInMs),
             Short.class);
 
-    if (throttlingConfigResponse.getStatusCode().series() != HttpStatus.Series.SUCCESSFUL
+    if (throttlingConfigResponse.getStatusCode().isError()
         || throttlingConfigResponse.getBody() == null) {
       throw new IllegalStateException(
           "Could not register throttling config " + this.throttlingIdentity);
@@ -134,7 +145,7 @@ public class NetworkUser {
     final ResponseEntity<Integer> clientRegistrationResponse =
         this.restTemplate.postForEntity("/clients", null, Integer.class);
 
-    if (clientRegistrationResponse.getStatusCode().series() != HttpStatus.Series.SUCCESSFUL
+    if (clientRegistrationResponse.getStatusCode().isError()
         || clientRegistrationResponse.getBody() == null) {
       throw new IllegalStateException("Could not register client " + this.clientIdentity);
     }
@@ -156,17 +167,21 @@ public class NetworkUser {
   }
 
   private boolean requestPermit(
-      final int baseTransceiverStationId, final int cellId, final int requestId) {
+      final int baseTransceiverStationId,
+      final int cellId,
+      final int requestId,
+      final int priority) {
 
     final ResponseEntity<Integer> permitRequestResponse =
         this.restTemplate.postForEntity(
-            "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
+            "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}?priority={priority}",
             requestId,
             Integer.class,
             this.throttlingConfigId,
             this.clientId,
             baseTransceiverStationId,
-            cellId);
+            cellId,
+            priority);
 
     return permitRequestResponse.getStatusCode().is2xxSuccessful()
         && permitRequestResponse.getBody() != null

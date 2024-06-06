@@ -1,11 +1,7 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventDetail;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventType;
@@ -105,7 +100,7 @@ public abstract class AbstractFindEventsReads {
 
       for (final Event event : findEventsResponse.getEvents()) {
         final List<String> eventDetails =
-            event.getEventDetails().stream().map(EventDetail::getName).collect(Collectors.toList());
+            event.getEventDetails().stream().map(EventDetail::getName).toList();
         assertThat(eventDetails).containsExactlyInAnyOrder(expectedEventDetails);
       }
     }

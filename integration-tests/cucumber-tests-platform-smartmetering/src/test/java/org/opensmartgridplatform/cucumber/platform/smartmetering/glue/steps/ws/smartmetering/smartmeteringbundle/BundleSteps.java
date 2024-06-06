@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.Actions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsResponse;
@@ -158,9 +155,13 @@ public class BundleSteps extends BaseBundleSteps {
     final Map<String, String> extraHeaders = new HashMap<>();
     settings.forEach(
         (localPartOfName, value) -> {
+          if (StringUtils.isEmpty(value)) {
+            return;
+          }
           if (dateTimeInMillisHeaders.contains(localPartOfName)) {
             extraHeaders.put(
-                localPartOfName, Long.toString(DateTimeHelper.getDateTime(value).getMillis()));
+                localPartOfName,
+                Long.toString(DateTimeHelper.getDateTime(value).toInstant().toEpochMilli()));
           } else {
             extraHeaders.put(localPartOfName, value);
           }
@@ -246,5 +247,14 @@ public class BundleSteps extends BaseBundleSteps {
     final FaultResponse faultResponse = (FaultResponse) response;
 
     assertThat(faultResponse.getMessage()).containsSubsequence(values.get(PlatformKeys.MESSAGE));
+  }
+
+  @Then("the bundle response should not be a FaultResponse with message containing")
+  public void theBundleResponseShouldNotBeAFaultResponseWithMessageContaining(
+      final Map<String, String> values) throws Throwable {
+    final Response response = this.getNextBundleResponse();
+
+    assertThat(response).isNotInstanceOf(FaultResponse.class);
+    assertThat(response.getResult()).isNotEqualTo(OsgpResultType.NOT_OK);
   }
 }

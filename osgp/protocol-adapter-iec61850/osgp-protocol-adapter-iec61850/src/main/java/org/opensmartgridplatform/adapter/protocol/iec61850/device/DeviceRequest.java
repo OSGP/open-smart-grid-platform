@@ -1,11 +1,7 @@
-/*
- * Copyright 2014-2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.iec61850.device;
 
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -20,7 +16,7 @@ public class DeviceRequest {
   private final String domainVersion;
   private final String messageType;
   private final int messagePriority;
-  private final String ipAddress;
+  private final String networkAddress;
   private final int retryCount;
   private final boolean isScheduled;
 
@@ -32,7 +28,7 @@ public class DeviceRequest {
     this.domainVersion = builder.domainVersion;
     this.messageType = builder.messageType;
     this.messagePriority = builder.messagePriority;
-    this.ipAddress = builder.ipAddress;
+    this.networkAddress = builder.networkAddress;
     this.retryCount = builder.retryCount;
     this.isScheduled = builder.isScheduled;
   }
@@ -45,7 +41,7 @@ public class DeviceRequest {
     private String domainVersion = null;
     private String messageType = null;
     private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
-    private String ipAddress = null;
+    private String networkAddress = null;
     private int retryCount = 0;
     private boolean isScheduled = false;
 
@@ -57,7 +53,7 @@ public class DeviceRequest {
       this.domainVersion = messageMetadata.getDomainVersion();
       this.messageType = messageMetadata.getMessageType();
       this.messagePriority = messageMetadata.getMessagePriority();
-      this.ipAddress = messageMetadata.getIpAddress();
+      this.networkAddress = messageMetadata.getNetworkAddress();
       this.retryCount = messageMetadata.getRetryCount();
       this.isScheduled = messageMetadata.isScheduled();
       return this;
@@ -98,8 +94,8 @@ public class DeviceRequest {
       return this;
     }
 
-    public Builder ipAddress(final String ipAddress) {
-      this.ipAddress = ipAddress;
+    public Builder networkAddress(final String ipAddress) {
+      this.networkAddress = ipAddress;
       return this;
     }
 
@@ -150,8 +146,8 @@ public class DeviceRequest {
     return this.messagePriority;
   }
 
-  public String getIpAddress() {
-    return this.ipAddress;
+  public String getNetworkAddress() {
+    return this.networkAddress;
   }
 
   public int getRetryCount() {

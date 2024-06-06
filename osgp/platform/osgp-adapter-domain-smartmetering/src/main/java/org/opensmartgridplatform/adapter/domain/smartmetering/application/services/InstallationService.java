@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import ma.glasnost.orika.MapperFactory;
@@ -17,13 +13,16 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmart
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceAdministrativeRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceAdministrativeResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -106,7 +105,7 @@ public class InstallationService {
       final MessageMetadata messageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
-    this.handleResponse("handleDefaultDeviceResponse", messageMetadata, deviceResult, exception);
+    this.doHandleResponse("handleDefaultDeviceResponse", messageMetadata, deviceResult, exception);
   }
 
   public void coupleMbusDevice(
@@ -123,6 +122,27 @@ public class InstallationService {
   }
 
   @Transactional(value = "transactionManager")
+  public void decoupleMbusDeviceAdministrative(
+      final MessageMetadata messageMetadata,
+      final DecoupleMbusDeviceAdministrativeRequestData requestData)
+      throws FunctionalException {
+    this.mBusGatewayService.decoupleMbusDeviceAdministrative(messageMetadata, requestData);
+
+    final DecoupleMbusDeviceAdministrativeResponse response =
+        new DecoupleMbusDeviceAdministrativeResponse(requestData.getMbusDeviceIdentification());
+
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withMessageMetadata(messageMetadata)
+            .withResult(ResponseMessageResultType.OK)
+            .withOsgpException(null)
+            .withDataObject(response)
+            .build();
+
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
+  }
+
+  @Transactional(value = "transactionManager")
   public void coupleMbusDeviceByChannel(
       final MessageMetadata messageMetadata, final CoupleMbusDeviceByChannelRequestData requestData)
       throws FunctionalException {
@@ -132,14 +152,24 @@ public class InstallationService {
   @Transactional(value = "transactionManager")
   public void handleCoupleMbusDeviceResponse(
       final MessageMetadata messageMetadata,
-      final ResponseMessageResultType result,
-      final OsgpException exception,
-      final MbusChannelElementsResponseDto dataObject)
+      final ResponseMessageResultType responseMessageResultType,
+      final OsgpException osgpException,
+      final CoupleMbusDeviceResponseDto dataObject)
       throws FunctionalException {
-    if (exception == null) {
+
+    if (osgpException == null) {
       this.mBusGatewayService.handleCoupleMbusDeviceResponse(messageMetadata, dataObject);
     }
-    this.handleResponse("coupleMbusDevice", messageMetadata, result, exception);
+
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withMessageMetadata(messageMetadata)
+            .withResult(responseMessageResultType)
+            .withOsgpException(osgpException)
+            .withDataObject(this.commonMapper.map(dataObject, CoupleMbusDeviceResponse.class))
+            .build();
+
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
   @Transactional(value = "transactionManager")
@@ -161,7 +191,7 @@ public class InstallationService {
       this.mBusGatewayService.handleDecoupleMbusDeviceResponse(
           messageMetadata, decoupleMbusDeviceResponseDto);
     }
-    this.handleResponse("decoupleMbusDevice", messageMetadata, result, exception);
+    this.doHandleResponse("decoupleMbusDevice", messageMetadata, result, exception);
   }
 
   @Transactional(value = "transactionManager")
@@ -222,6 +252,14 @@ public class InstallationService {
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
+    this.doHandleResponse(methodName, messageMetadata, deviceResult, exception);
+  }
+
+  private void doHandleResponse(
+      final String methodName,
+      final MessageMetadata messageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception) {
     LOGGER.debug("{} for MessageType: {}", methodName, messageMetadata.getMessageType());
 
     final ResponseMessage responseMessage =

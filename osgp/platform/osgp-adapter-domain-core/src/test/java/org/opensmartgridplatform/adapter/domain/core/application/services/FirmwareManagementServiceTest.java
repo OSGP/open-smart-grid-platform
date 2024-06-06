@@ -1,12 +1,7 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,13 +18,13 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -142,10 +137,16 @@ class FirmwareManagementServiceTest {
     when(this.deviceRepository.findByDeviceIdentification(anyString())).thenReturn(device);
     final DeviceFirmwareFile deviceFirmwareFile1 =
         new DeviceFirmwareFile(
-            device, this.createFirmwareFile(VERSION_1), DateUtils.addDays(new Date(), -2), "me");
+            device,
+            this.createFirmwareFile(VERSION_1),
+            Instant.now().minus(2, ChronoUnit.DAYS),
+            "me");
     final DeviceFirmwareFile deviceFirmwareFile2 =
         new DeviceFirmwareFile(
-            device, this.createFirmwareFile(VERSION_2), DateUtils.addDays(new Date(), -1), "me");
+            device,
+            this.createFirmwareFile(VERSION_2),
+            Instant.now().minus(1, ChronoUnit.DAYS),
+            "me");
     final List<DeviceFirmwareFile> deviceFirmwareFiles =
         Arrays.asList(deviceFirmwareFile1, deviceFirmwareFile2);
     when(this.deviceFirmwareFileRepository.findByDeviceOrderByInstallationDateAsc(
@@ -452,7 +453,7 @@ class FirmwareManagementServiceTest {
     final Ssld ssld = new Ssld(deviceIdentification);
     final String correlationUid = "correlation-uid-pending-firmware-update";
     final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate =
-        this.anSsldPendingFirmwareUpdate(1L, new Date(), deviceIdentification, correlationUid);
+        this.anSsldPendingFirmwareUpdate(1L, Instant.now(), deviceIdentification, correlationUid);
     final Organisation organisation =
         new Organisation(
             ssldPendingFirmwareUpdate.getOrganisationIdentification(),
@@ -493,25 +494,25 @@ class FirmwareManagementServiceTest {
     final SsldPendingFirmwareUpdate olderPendingFirmwareUpdate1 =
         this.anSsldPendingFirmwareUpdate(
             134562345L,
-            new Date(mostRecentCreationMillis - 3_000_000_000L),
+            Instant.ofEpochMilli(mostRecentCreationMillis).minus(3_000_000_000L, ChronoUnit.MILLIS),
             deviceIdentification,
             "correlation-uid-1");
     final SsldPendingFirmwareUpdate olderPendingFirmwareUpdate2 =
         this.anSsldPendingFirmwareUpdate(
             227587L,
-            new Date(mostRecentCreationMillis - 604_800_000L),
+            Instant.ofEpochMilli(mostRecentCreationMillis).minus(604_800_000L, ChronoUnit.MILLIS),
             deviceIdentification,
             "correlation-uid-2");
     final SsldPendingFirmwareUpdate olderPendingFirmwareUpdate3 =
         this.anSsldPendingFirmwareUpdate(
             308943152L,
-            new Date(mostRecentCreationMillis - 123L),
+            Instant.ofEpochMilli(mostRecentCreationMillis).minus(123L, ChronoUnit.MILLIS),
             deviceIdentification,
             "correlation-uid-3");
     final SsldPendingFirmwareUpdate mostRecentPendingFirmwareUpdate =
         this.anSsldPendingFirmwareUpdate(
             4459483L,
-            new Date(mostRecentCreationMillis),
+            Instant.ofEpochMilli(mostRecentCreationMillis),
             deviceIdentification,
             correlationUidMostRecentPendingFirmwareUpdate);
     final Organisation organisation =
@@ -592,7 +593,7 @@ class FirmwareManagementServiceTest {
 
   private SsldPendingFirmwareUpdate anSsldPendingFirmwareUpdate(
       final Long id,
-      final Date creationTime,
+      final Instant creationTime,
       final String deviceIdentification,
       final String correlationUid) {
 
@@ -607,7 +608,7 @@ class FirmwareManagementServiceTest {
             correlationUid);
     ReflectionTestUtils.setField(ssldPendingFirmwareUpdate, "id", id, Long.class);
     ReflectionTestUtils.setField(
-        ssldPendingFirmwareUpdate, "creationTime", creationTime, Date.class);
+        ssldPendingFirmwareUpdate, "creationTime", creationTime, Instant.class);
     return ssldPendingFirmwareUpdate;
   }
 
@@ -644,7 +645,7 @@ class FirmwareManagementServiceTest {
         .thenReturn(
             Collections.singletonList(
                 this.anSsldPendingFirmwareUpdate(
-                    4579L, new Date(), DEVICE_IDENTIFICATION, "some-other-correlation-uid")));
+                    4579L, Instant.now(), DEVICE_IDENTIFICATION, "some-other-correlation-uid")));
 
     final boolean hasPendingFirmwareUpdate =
         this.firmwareManagementService.checkSsldPendingFirmwareUpdate(ids, firmwareVersions);
@@ -665,15 +666,19 @@ class FirmwareManagementServiceTest {
     final List<FirmwareVersion> firmwareVersions =
         Collections.singletonList(new FirmwareVersion(FirmwareModuleType.FUNCTIONAL, VERSION_2));
     final SsldPendingFirmwareUpdate matchingPendingFirmwareUpdate =
-        this.anSsldPendingFirmwareUpdate(437L, new Date(), DEVICE_IDENTIFICATION, correlationUid);
+        this.anSsldPendingFirmwareUpdate(
+            437L, Instant.now(), DEVICE_IDENTIFICATION, correlationUid);
     when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
         .thenReturn(
             Arrays.asList(
                 this.anSsldPendingFirmwareUpdate(
-                    457198L, new Date(), DEVICE_IDENTIFICATION, "some-other-correlation-uid"),
+                    457198L, Instant.now(), DEVICE_IDENTIFICATION, "some-other-correlation-uid"),
                 matchingPendingFirmwareUpdate,
                 this.anSsldPendingFirmwareUpdate(
-                    94085089L, new Date(), DEVICE_IDENTIFICATION, "yet-another-correlation-uid")));
+                    94085089L,
+                    Instant.now(),
+                    DEVICE_IDENTIFICATION,
+                    "yet-another-correlation-uid")));
 
     final boolean hasPendingFirmwareUpdate =
         this.firmwareManagementService.checkSsldPendingFirmwareUpdate(ids, firmwareVersions);
@@ -688,7 +693,7 @@ class FirmwareManagementServiceTest {
    */
   private <T> Device getMockDevice(final Class<T> deviceClass) {
     final Device device = (Device) Mockito.mock(deviceClass);
-    when(device.getIpAddress()).thenReturn("0.0.0.0");
+    when(device.getNetworkAddress()).thenReturn("0.0.0.0");
     return device;
   }
 

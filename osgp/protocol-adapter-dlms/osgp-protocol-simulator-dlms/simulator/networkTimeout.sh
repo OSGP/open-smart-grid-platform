@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 echo run this script as root!
 
 [ $1 ] || { echo provide \"stop\" or milliseconds; exit 1; }

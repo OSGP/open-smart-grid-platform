@@ -1,35 +1,34 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
+import lombok.extern.slf4j.Slf4j;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectService {
-
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(GetConfigurationObjectServiceDsmr4.class);
 
   private static final int NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS = 2;
   private static final int INDEX_OF_GPRS_OPERATION_MODE = 0;
@@ -37,13 +36,20 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
 
   private final DlmsHelper dlmsHelper;
 
-  public GetConfigurationObjectServiceDsmr4(final DlmsHelper dlmsHelper) {
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
+
+  public GetConfigurationObjectServiceDsmr4(
+      final DlmsHelper dlmsHelper,
+      final ObjectConfigServiceHelper objectConfigServiceHelper,
+      final DlmsDeviceRepository dlmsDeviceRepository) {
+    super(dlmsDeviceRepository);
     this.dlmsHelper = dlmsHelper;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
   public boolean handles(final Protocol protocol) {
-    return protocol == Protocol.DSMR_4_2_2;
+    return protocol != null && protocol.isDsmr42();
   }
 
   @Override
@@ -54,7 +60,7 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
       final String message =
           String.format(
               "Expected ConfigurationObject ResultData as Complex, but got: %s", resultData);
-      LOGGER.warn(message);
+      log.warn(message);
       throw new ProtocolAdapterException(message);
     }
     return this.getConfigurationObject(resultData);
@@ -62,14 +68,14 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
 
   private ConfigurationObjectDto getConfigurationObject(final DataObject resultData)
       throws ProtocolAdapterException {
-    LOGGER.debug("ConfigurationObject ResultData: {}", this.dlmsHelper.getDebugInfo(resultData));
+    log.debug("ConfigurationObject ResultData: {}", this.dlmsHelper.getDebugInfo(resultData));
     final List<DataObject> elements = resultData.getValue();
     if (elements == null || elements.size() != NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS) {
       final String message =
           String.format(
               "Expected ConfigurationObject ResultData with %d elements, but got %s",
               NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS, elements == null ? "null" : elements.size());
-      LOGGER.warn(message);
+      log.warn(message);
       throw new ProtocolAdapterException(message);
     }
     return this.getConfigurationObject(elements);
@@ -92,7 +98,7 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
       final String message =
           String.format(
               "Expected ConfigurationObject gprsOperationMode as Number, but got: %s", gprsMode);
-      LOGGER.warn(message);
+      log.warn(message);
       throw new ProtocolAdapterException(message);
     }
     final Number number = gprsMode.getValue();
@@ -105,18 +111,39 @@ public class GetConfigurationObjectServiceDsmr4 extends GetConfigurationObjectSe
     if (flags == null || !flags.isBitString()) {
       final String message =
           String.format("Expected ConfigurationObject flags as BitString, but got: %s", flags);
-      LOGGER.warn(message);
+      log.warn(message);
       throw new ProtocolAdapterException(message);
     }
 
     final BitString bitString = flags.getValue();
     final byte[] flagBytes = bitString.getBitString();
     final List<ConfigurationFlagDto> configurationFlags = this.toConfigurationFlags(flagBytes);
+    this.addLowFlags(configurationFlags);
     return new ConfigurationFlagsDto(configurationFlags);
+  }
+
+  protected void addLowFlags(final List<ConfigurationFlagDto> configurationFlags) {
+    final List<ConfigurationFlagTypeDto> highFlags =
+        configurationFlags.stream().map(ConfigurationFlagDto::getConfigurationFlagType).toList();
+    final Stream<ConfigurationFlagTypeDto> missingFlags =
+        Arrays.stream(ConfigurationFlagTypeDto.values())
+            .filter(
+                configurationFlagTypeDto ->
+                    !highFlags.contains(configurationFlagTypeDto)
+                        && configurationFlagTypeDto.getBitPositionDsmr4().isPresent());
+    missingFlags.forEach(
+        missingFlag -> configurationFlags.add(new ConfigurationFlagDto(missingFlag, false)));
   }
 
   @Override
   Optional<ConfigurationFlagTypeDto> getFlagType(final int bitPosition) {
     return ConfigurationFlagTypeDto.getDsmr4FlagType(bitPosition);
+  }
+
+  @Override
+  AttributeAddress getAttributeAddress(final Protocol protocol) throws ProtocolAdapterException {
+    return this.objectConfigServiceHelper
+        .findOptionalDefaultAttributeAddress(protocol, DlmsObjectType.CONFIGURATION_OBJECT)
+        .orElseThrow();
   }
 }

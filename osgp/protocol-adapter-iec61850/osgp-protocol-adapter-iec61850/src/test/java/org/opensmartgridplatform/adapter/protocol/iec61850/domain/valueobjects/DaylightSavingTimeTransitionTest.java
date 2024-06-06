@@ -1,23 +1,18 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import org.junit.jupiter.api.Test;
 
 public class DaylightSavingTimeTransitionTest {
-  public static final DateTimeZone amsterdamDTZ = DateTimeZone.forID("Europe/Amsterdam");
+  public static final ZoneId amsterdamDTZ = ZoneId.of("Europe/Amsterdam");
 
   public static final String DST_START_MWD_AMSTERDAM = "M3.5.0/2";
   public static final String DST_END_MWD_AMSTERDAM = "M10.5.0/3";
@@ -34,21 +29,21 @@ public class DaylightSavingTimeTransitionTest {
   public static final String DST_START_J_IGNORING_FEB29_AMSTERDAM_2016 = "J86/2";
   public static final String DST_END_J_IGNORING_FEB29_AMSTERDAM_2016 = "J303/3";
 
-  public static final DateTime DST_START_DATE_TIME_AMSTERDAM_2015 =
-      DateTime.parse("2015-03-29T02:00:00.000+01:00");
-  public static final DateTime DST_END_DATE_TIME_AMSTERDAM_2015 =
-      DateTime.parse("2015-10-25T03:00:00.000+02:00");
-  public static final DateTime DST_START_DATE_TIME_AMSTERDAM_2016 =
-      DateTime.parse("2016-03-27T02:00:00.000+01:00");
-  public static final DateTime DST_END_DATE_TIME_AMSTERDAM_2016 =
-      DateTime.parse("2016-10-30T03:00:00.000+02:00");
+  public static final ZonedDateTime DST_START_DATE_TIME_AMSTERDAM_2015 =
+      ZonedDateTime.parse("2015-03-29T02:00:00.000+01:00");
+  public static final ZonedDateTime DST_END_DATE_TIME_AMSTERDAM_2015 =
+      ZonedDateTime.parse("2015-10-25T03:00:00.000+02:00");
+  public static final ZonedDateTime DST_START_DATE_TIME_AMSTERDAM_2016 =
+      ZonedDateTime.parse("2016-03-27T02:00:00.000+01:00");
+  public static final ZonedDateTime DST_END_DATE_TIME_AMSTERDAM_2016 =
+      ZonedDateTime.parse("2016-10-30T03:00:00.000+02:00");
 
   @Test
   public void testDaylightSavingTimeStartAmsterdam2015DayOfWeekOfMonth() {
     final DaylightSavingTimeTransition dstTransition =
         new DaylightSavingTimeTransition(DST_START_MWD_AMSTERDAM);
-    assertThat(dstTransition.getDateTimeForYear(2015).toDateTime(DateTimeZone.UTC))
-        .isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2015.toDateTime(DateTimeZone.UTC));
+    assertThat(dstTransition.getDateTimeForYear(2015).withZoneSameInstant(ZoneId.of("UTC")))
+        .isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2015.withZoneSameInstant(ZoneId.of("UTC")));
 
     assertThat(
             DaylightSavingTimeTransition.forDateTimeAccordingToFormat(
@@ -62,8 +57,8 @@ public class DaylightSavingTimeTransitionTest {
   public void testDaylightSavingTimeEndAmsterdam2015DayOfWeekOfMonth() {
     final DaylightSavingTimeTransition dstTransition =
         new DaylightSavingTimeTransition(DST_END_MWD_AMSTERDAM);
-    assertThat(dstTransition.getDateTimeForYear(2015).toDateTime(DateTimeZone.UTC))
-        .isEqualTo(DST_END_DATE_TIME_AMSTERDAM_2015.toDateTime(DateTimeZone.UTC));
+    assertThat(dstTransition.getDateTimeForYear(2015).withZoneSameInstant(ZoneId.of("UTC")))
+        .isEqualTo(DST_END_DATE_TIME_AMSTERDAM_2015.withZoneSameInstant(ZoneId.of("UTC")));
 
     assertThat(
             DaylightSavingTimeTransition.forDateTimeAccordingToFormat(
@@ -77,8 +72,8 @@ public class DaylightSavingTimeTransitionTest {
   public void testDaylightSavingTimeStartAmsterdam2015JulianCountingFeb29() {
     final DaylightSavingTimeTransition dstTransition =
         new DaylightSavingTimeTransition(DST_START_J_COUNTING_FEB29_AMSTERDAM_2015);
-    assertThat(dstTransition.getDateTimeForYear(2015).toDateTime(DateTimeZone.UTC))
-        .isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2015.toDateTime(DateTimeZone.UTC));
+    assertThat(dstTransition.getDateTimeForYear(2015).withZoneSameInstant(ZoneId.of("UTC")))
+        .isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2015.withZoneSameInstant(ZoneId.of("UTC")));
 
     assertThat(
             DaylightSavingTimeTransition.forDateTimeAccordingToFormat(
@@ -93,8 +88,8 @@ public class DaylightSavingTimeTransitionTest {
   public void testDaylightSavingTimeEndAmsterdam2015JulianCountingFeb29() {
     final DaylightSavingTimeTransition dstTransition =
         new DaylightSavingTimeTransition(DST_END_J_COUNTING_FEB29_AMSTERDAM_2015);
-    assertThat(dstTransition.getDateTimeForYear(2015).toDateTime(DateTimeZone.UTC))
-        .isEqualTo(DST_END_DATE_TIME_AMSTERDAM_2015.toDateTime(DateTimeZone.UTC));
+    assertThat(dstTransition.getDateTimeForYear(2015).withZoneSameInstant(ZoneId.of("UTC")))
+        .isEqualTo(DST_END_DATE_TIME_AMSTERDAM_2015.withZoneSameInstant(ZoneId.of("UTC")));
 
     assertThat(
             DaylightSavingTimeTransition.forDateTimeAccordingToFormat(
@@ -109,8 +104,8 @@ public class DaylightSavingTimeTransitionTest {
   public void testDaylightSavingTimeStartAmsterdam2015JulianIgnoringFeb29() {
     final DaylightSavingTimeTransition dstTransition =
         new DaylightSavingTimeTransition(DST_START_J_IGNORING_FEB29_AMSTERDAM_2015);
-    assertThat(dstTransition.getDateTimeForYear(2015).toDateTime(DateTimeZone.UTC))
-        .isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2015.toDateTime(DateTimeZone.UTC));
+    assertThat(dstTransition.getDateTimeForYear(2015).withZoneSameInstant(ZoneId.of("UTC")))
+        .isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2015.withZoneSameInstant(ZoneId.of("UTC")));
 
     assertThat(
             DaylightSavingTimeTransition.forDateTimeAccordingToFormat(
@@ -125,8 +120,8 @@ public class DaylightSavingTimeTransitionTest {
   public void testDaylightSavingTimeEndAmsterdam2015JulianIgnoringFeb29() {
     final DaylightSavingTimeTransition dstTransition =
         new DaylightSavingTimeTransition(DST_END_J_IGNORING_FEB29_AMSTERDAM_2015);
-    assertThat(dstTransition.getDateTimeForYear(2015).toDateTime(DateTimeZone.UTC))
-        .isEqualTo(DST_END_DATE_TIME_AMSTERDAM_2015.toDateTime(DateTimeZone.UTC));
+    assertThat(dstTransition.getDateTimeForYear(2015).withZoneSameInstant(ZoneId.of("UTC")))
+        .isEqualTo(DST_END_DATE_TIME_AMSTERDAM_2015.withZoneSameInstant(ZoneId.of("UTC")));
 
     assertThat(
             DaylightSavingTimeTransition.forDateTimeAccordingToFormat(
@@ -141,8 +136,8 @@ public class DaylightSavingTimeTransitionTest {
   public void testDaylightSavingTimeStartAmsterdam2016DayOfWeekOfMonth() {
     final DaylightSavingTimeTransition dstTransition =
         new DaylightSavingTimeTransition(DST_START_MWD_AMSTERDAM);
-    assertThat(dstTransition.getDateTimeForYear(2016).toDateTime(DateTimeZone.UTC))
-        .isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2016.toDateTime(DateTimeZone.UTC));
+    assertThat(dstTransition.getDateTimeForYear(2016).withZoneSameInstant(ZoneId.of("UTC")))
+        .isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2016.withZoneSameInstant(ZoneId.of("UTC")));
 
     assertThat(
             DaylightSavingTimeTransition.forDateTimeAccordingToFormat(
@@ -156,8 +151,8 @@ public class DaylightSavingTimeTransitionTest {
   public void testDaylightSavingTimeEndAmsterdam2016DayOfWeekOfMonth() {
     final DaylightSavingTimeTransition dstTransition =
         new DaylightSavingTimeTransition(DST_END_MWD_AMSTERDAM);
-    assertThat(dstTransition.getDateTimeForYear(2016).toDateTime(DateTimeZone.UTC))
-        .isEqualTo(DST_END_DATE_TIME_AMSTERDAM_2016.toDateTime(DateTimeZone.UTC));
+    assertThat(dstTransition.getDateTimeForYear(2016).withZoneSameInstant(ZoneId.of("UTC")))
+        .isEqualTo(DST_END_DATE_TIME_AMSTERDAM_2016.withZoneSameInstant(ZoneId.of("UTC")));
 
     assertThat(
             DaylightSavingTimeTransition.forDateTimeAccordingToFormat(
@@ -171,8 +166,8 @@ public class DaylightSavingTimeTransitionTest {
   public void testDaylightSavingTimeStartAmsterdam2016JulianCountingFeb29() {
     final DaylightSavingTimeTransition dstTransition =
         new DaylightSavingTimeTransition(DST_START_J_COUNTING_FEB29_AMSTERDAM_2016);
-    assertThat(dstTransition.getDateTimeForYear(2016).toDateTime(DateTimeZone.UTC))
-        .isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2016.toDateTime(DateTimeZone.UTC));
+    assertThat(dstTransition.getDateTimeForYear(2016).withZoneSameInstant(ZoneId.of("UTC")))
+        .isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2016.withZoneSameInstant(ZoneId.of("UTC")));
 
     assertThat(
             DaylightSavingTimeTransition.forDateTimeAccordingToFormat(
@@ -187,8 +182,8 @@ public class DaylightSavingTimeTransitionTest {
   public void testDaylightSavingTimeEndAmsterdam2016JulianCountingFeb29() {
     final DaylightSavingTimeTransition dstTransition =
         new DaylightSavingTimeTransition(DST_END_J_COUNTING_FEB29_AMSTERDAM_2016);
-    assertThat(dstTransition.getDateTimeForYear(2016).toDateTime(DateTimeZone.UTC))
-        .isEqualTo(DST_END_DATE_TIME_AMSTERDAM_2016.toDateTime(DateTimeZone.UTC));
+    assertThat(dstTransition.getDateTimeForYear(2016).withZoneSameInstant(ZoneId.of("UTC")))
+        .isEqualTo(DST_END_DATE_TIME_AMSTERDAM_2016.withZoneSameInstant(ZoneId.of("UTC")));
 
     assertThat(
             DaylightSavingTimeTransition.forDateTimeAccordingToFormat(
@@ -203,8 +198,8 @@ public class DaylightSavingTimeTransitionTest {
   public void testDaylightSavingTimeStartAmsterdam2016JulianIgnoringFeb29() {
     final DaylightSavingTimeTransition dstTransition =
         new DaylightSavingTimeTransition(DST_START_J_IGNORING_FEB29_AMSTERDAM_2016);
-    assertThat(dstTransition.getDateTimeForYear(2016).toDateTime(DateTimeZone.UTC))
-        .isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2016.toDateTime(DateTimeZone.UTC));
+    assertThat(dstTransition.getDateTimeForYear(2016).withZoneSameInstant(ZoneId.of("UTC")))
+        .isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2016.withZoneSameInstant(ZoneId.of("UTC")));
 
     assertThat(
             DaylightSavingTimeTransition.forDateTimeAccordingToFormat(
@@ -219,8 +214,8 @@ public class DaylightSavingTimeTransitionTest {
   public void testDaylightSavingTimeEndAmsterdam2016JulianIgnoringFeb29() {
     final DaylightSavingTimeTransition dstTransition =
         new DaylightSavingTimeTransition(DST_END_J_IGNORING_FEB29_AMSTERDAM_2016);
-    assertThat(dstTransition.getDateTimeForYear(2016).toDateTime(DateTimeZone.UTC))
-        .isEqualTo(DST_END_DATE_TIME_AMSTERDAM_2016.toDateTime(DateTimeZone.UTC));
+    assertThat(dstTransition.getDateTimeForYear(2016).withZoneSameInstant(ZoneId.of("UTC")))
+        .isEqualTo(DST_END_DATE_TIME_AMSTERDAM_2016.withZoneSameInstant(ZoneId.of("UTC")));
 
     assertThat(
             DaylightSavingTimeTransition.forDateTimeAccordingToFormat(
@@ -443,38 +438,38 @@ public class DaylightSavingTimeTransitionTest {
     assertThat(
             DaylightSavingTimeTransition.DstTransitionFormat.JULIAN_DAY_IGNORING_FEBRUARY_29
                 .getDateTime(amsterdamDTZ, DST_START_J_IGNORING_FEB29_AMSTERDAM_2015, 2015))
-        .isEqualByComparingTo(DST_START_DATE_TIME_AMSTERDAM_2015);
+        .isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2015);
     assertThat(
             DaylightSavingTimeTransition.DstTransitionFormat.JULIAN_DAY_COUNTING_FEBRUARY_29
                 .getDateTime(amsterdamDTZ, DST_START_J_COUNTING_FEB29_AMSTERDAM_2015, 2015))
-        .isEqualByComparingTo(DST_START_DATE_TIME_AMSTERDAM_2015);
+        .isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2015);
     assertThat(
             DaylightSavingTimeTransition.DstTransitionFormat.DAY_OF_WEEK_OF_MONTH.getDateTime(
                 amsterdamDTZ, DST_START_MWD_AMSTERDAM, 2015))
-        .isEqualByComparingTo(DST_START_DATE_TIME_AMSTERDAM_2015);
+        .isEqualTo(DST_START_DATE_TIME_AMSTERDAM_2015);
 
     assertThat(
             DaylightSavingTimeTransition.DstTransitionFormat.JULIAN_DAY_IGNORING_FEBRUARY_29
                 .getDateTime(amsterdamDTZ, "J327", 2015))
-        .isEqualByComparingTo(DateTime.parse("2015-11-23T00:00:00.000+01:00"));
+        .isEqualTo(ZonedDateTime.parse("2015-11-23T00:00:00.000+01:00"));
     assertThat(
             DaylightSavingTimeTransition.DstTransitionFormat.JULIAN_DAY_COUNTING_FEBRUARY_29
                 .getDateTime(amsterdamDTZ, "326", 2015))
-        .isEqualByComparingTo(DateTime.parse("2015-11-23T00:00:00.000+01:00"));
+        .isEqualTo(ZonedDateTime.parse("2015-11-23T00:00:00.000+01:00"));
     assertThat(
             DaylightSavingTimeTransition.DstTransitionFormat.DAY_OF_WEEK_OF_MONTH.getDateTime(
                 amsterdamDTZ, "M11.4.1", 2015))
-        .isEqualByComparingTo(DateTime.parse("2015-11-23T00:00:00.000+01:00"));
+        .isEqualTo(ZonedDateTime.parse("2015-11-23T00:00:00.000+01:00"));
 
     assertThat(
             DaylightSavingTimeTransition.DstTransitionFormat.JULIAN_DAY_IGNORING_FEBRUARY_29
                 .getDateTime(amsterdamDTZ, "J1", 2016))
-        .isEqualByComparingTo(DateTime.parse("2016-01-1T00:00:00.000+01:00"));
+        .isEqualTo(ZonedDateTime.parse("2016-01-01T00:00:00.000+01:00"));
   }
 
   @Test
   public void testGetDaylightSavingTimeTransition() {
-    final DateTime midNight = DateTime.parse("2015-01-1T00:00:00.000+01:00");
+    final ZonedDateTime midNight = ZonedDateTime.parse("2015-01-01T00:00:00.000+01:00");
     assertThat(
             DaylightSavingTimeTransition.DstTransitionFormat.JULIAN_DAY_IGNORING_FEBRUARY_29
                 .getDaylightSavingTimeTransition(midNight)
@@ -546,18 +541,20 @@ public class DaylightSavingTimeTransitionTest {
 
   @Test
   public void testGetDateTimeForNextTransition() {
-    final DateTime dateTimeBeforeDay30 = DateTime.parse("2015-01-01T00:00:00.000+01:00");
-    final DateTime dateTimeAfterDay30 = DateTime.parse("2015-06-01T00:00:00.000+01:00");
-    final DateTime dateTimeOfDay30ThisYear = DateTime.parse("2015-01-31T00:00:00.000+01:00");
-    final DateTime dateTimeOfDay30NextYear = DateTime.parse("2016-01-31T00:00:00.000+01:00");
+    final ZonedDateTime dateTimeBeforeDay30 = ZonedDateTime.parse("2015-01-01T00:00:00.000+01:00");
+    final ZonedDateTime dateTimeAfterDay30 = ZonedDateTime.parse("2015-06-01T00:00:00.000+01:00");
+    final ZonedDateTime dateTimeOfDay30ThisYear =
+        ZonedDateTime.parse("2015-01-31T00:00:00.000+01:00");
+    final ZonedDateTime dateTimeOfDay30NextYear =
+        ZonedDateTime.parse("2016-01-31T00:00:00.000+01:00");
 
     assertThat(
             (new DaylightSavingTimeTransition("30"))
                 .getDateTimeForNextTransition(dateTimeBeforeDay30))
-        .isEqualByComparingTo(dateTimeOfDay30ThisYear);
+        .isEqualTo(dateTimeOfDay30ThisYear);
     assertThat(
             (new DaylightSavingTimeTransition("30"))
                 .getDateTimeForNextTransition(dateTimeAfterDay30))
-        .isEqualByComparingTo(dateTimeOfDay30NextYear);
+        .isEqualTo(dateTimeOfDay30NextYear);
   }
 }

@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.da.application.services;
 
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
@@ -68,7 +64,7 @@ public class CommunicationRecoveryService extends BaseService {
 
     final RequestMessage message = this.createMessage(rtu);
     this.osgpCoreRequestMessageSender.send(
-        message, DeviceFunction.GET_DATA.toString(), rtu.getIpAddress());
+        message, DeviceFunction.GET_DATA.toString(), rtu.getNetworkAddress());
   }
 
   private RequestMessage createMessage(final RtuDevice rtu) {

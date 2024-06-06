@@ -1,18 +1,13 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -107,7 +102,8 @@ public class GetPeriodicMeterReadsCommandExecutor
             periodicMeterReadsQuery.getEndDate(), device.getTimezone());
 
     final AttributeAddressForProfile profileBufferAddress =
-        this.getProfileBufferAddress(queryPeriodType, from, to, device);
+        this.getProfileBufferAddress(
+            queryPeriodType, from, to, device, this.dlmsObjectConfigService, Medium.ELECTRICITY, 0);
 
     final List<AttributeAddress> scalerUnitAddresses =
         this.getScalerUnitAddresses(profileBufferAddress);
@@ -175,7 +171,7 @@ public class GetPeriodicMeterReadsCommandExecutor
             .filter(
                 meterRead ->
                     this.validateDateTime(meterRead.getLogTime(), from.toDate(), to.toDate()))
-            .collect(Collectors.toList());
+            .toList();
 
     return new PeriodicMeterReadsResponseDto(
         queryPeriodType, periodicMeterReadsWithinRequestedPeriod);
@@ -316,7 +312,8 @@ public class GetPeriodicMeterReadsCommandExecutor
       final List<GetResult> getResultList,
       final List<AttributeAddress> attributeAddresses,
       final AttributeAddressForProfile attributeAddressForProfile,
-      final DlmsObjectType objectType) {
+      final DlmsObjectType objectType)
+      throws ProtocolAdapterException {
 
     final DlmsCaptureObject captureObject = attributeAddressForProfile.getCaptureObject(objectType);
 
@@ -338,28 +335,6 @@ public class GetPeriodicMeterReadsCommandExecutor
     }
 
     return null;
-  }
-
-  private AttributeAddressForProfile getProfileBufferAddress(
-      final PeriodTypeDto periodType,
-      final DateTime beginDateTime,
-      final DateTime endDateTime,
-      final DlmsDevice device)
-      throws ProtocolAdapterException {
-
-    final DlmsObjectType type = DlmsObjectType.getTypeForPeriodType(periodType);
-
-    // Add the attribute address for the profile
-    final AttributeAddressForProfile attributeAddressProfile =
-        this.dlmsObjectConfigService
-            .findAttributeAddressForProfile(
-                device, type, 0, beginDateTime, endDateTime, Medium.ELECTRICITY)
-            .orElseThrow(() -> new ProtocolAdapterException("No address found for " + type));
-
-    LOGGER.debug(
-        "Dlms object config service returned profile buffer address {} ", attributeAddressProfile);
-
-    return attributeAddressProfile;
   }
 
   private List<AttributeAddress> getScalerUnitAddresses(

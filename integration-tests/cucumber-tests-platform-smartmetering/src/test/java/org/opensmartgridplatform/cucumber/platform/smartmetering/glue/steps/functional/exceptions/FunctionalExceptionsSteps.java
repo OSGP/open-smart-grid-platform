@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.functional.exceptions;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
@@ -14,6 +10,7 @@ import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.util.HashMap;
 import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncResponse;
@@ -241,5 +238,10 @@ public class FunctionalExceptionsSteps {
     } catch (final Exception exception) {
       ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
     }
+  }
+
+  @When("^the bundle request generating an error is received$")
+  public void theBundleRequestGeneratingAnErrorIsReceived() throws Throwable {
+    this.theBundleRequestGeneratingAnErrorIsReceivedWithHeaders(new HashMap<>());
   }
 }

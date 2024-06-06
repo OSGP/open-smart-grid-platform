@@ -1,11 +1,7 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringinstallation;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,6 +55,10 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
     this.putKeyInScenarioContext(settings, PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY);
     this.putKeyInScenarioContext(settings, PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY);
     this.putKeyInScenarioContext(settings, PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY);
+    this.putKeyInScenarioContext(settings, PlatformSmartmeteringKeys.MBUS_P0_KEY);
+    this.putKeyInScenarioContext(
+        settings, PlatformSmartmeteringKeys.MBUS_FIRMWARE_UPDATE_AUTHENTICATION_KEY);
+    this.putKeyInScenarioContext(settings, PlatformSmartmeteringKeys.MBUS_USER_KEY);
 
     final AddDeviceRequest request = AddDeviceRequestFactory.fromParameterMap(settings);
     final AddDeviceAsyncResponse asyncResponse =
@@ -166,7 +166,7 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
      * This call also sets the device to be IN_USE and activated.
      */
     device.updateRegistrationData(
-        PlatformSmartmeteringDefaults.NETWORK_ADDRESS, device.getDeviceType());
+        PlatformSmartmeteringDefaults.NETWORK_ADDRESS.getHostAddress(), device.getDeviceType());
 
     final DlmsDevice dlmsDevice =
         this.dlmsDeviceRepository.findByDeviceIdentification(device.getDeviceIdentification());

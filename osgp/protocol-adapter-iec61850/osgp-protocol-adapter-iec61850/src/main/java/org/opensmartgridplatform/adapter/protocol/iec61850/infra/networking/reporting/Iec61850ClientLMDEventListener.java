@@ -1,23 +1,20 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.reporting;
 
 import com.beanit.openiec61850.BdaBoolean;
 import com.beanit.openiec61850.FcModelNode;
 import com.beanit.openiec61850.Report;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
@@ -38,7 +35,7 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
   @Override
   public void newReport(final Report report) {
 
-    final DateTime timeOfEntry = this.getTimeOfEntry(report);
+    final ZonedDateTime timeOfEntry = this.getTimeOfEntry(report);
 
     final String reportDescription = this.getReportDescription(report, timeOfEntry);
 
@@ -111,13 +108,15 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
     return result;
   }
 
-  private DateTime getTimeOfEntry(final Report report) {
+  private ZonedDateTime getTimeOfEntry(final Report report) {
     return report.getTimeOfEntry() == null
-        ? DateTime.now(DateTimeZone.UTC)
-        : new DateTime(report.getTimeOfEntry().getTimestampValue());
+        ? ZonedDateTime.now(ZoneId.of("UTC"))
+        : ZonedDateTime.ofInstant(
+            Instant.ofEpochMilli(report.getTimeOfEntry().getTimestampValue()),
+            ZoneId.systemDefault());
   }
 
-  private String getReportDescription(final Report report, final DateTime timeOfEntry) {
+  private String getReportDescription(final Report report, final ZonedDateTime timeOfEntry) {
     return String.format(
         "reportId: %s, timeOfEntry: %s, sqNum: %s%s%s",
         report.getRptId(),
@@ -129,11 +128,11 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
 
   private EventNotificationDto getEventNotificationForReportedData(
       final FcModelNode evnRpn,
-      final DateTime timeOfEntry,
+      final ZonedDateTime timeOfEntry,
       final String reportDescription,
       final String deviceIdentification,
       final Integer index) {
-    EventTypeDto eventType;
+    final EventTypeDto eventType;
     final boolean lightSensorValue = this.determineLightSensorValue(evnRpn, reportDescription);
     /*
      * 0 -> false -> NIGHT_DAY --> LIGHT_SENSOR_REPORTS_LIGHT

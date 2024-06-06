@@ -1,11 +1,7 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.shared.utils;
 
 import java.io.BufferedOutputStream;
@@ -110,7 +106,7 @@ public class FileZipper {
       final String zipEntryName,
       final int inMemoryBufferSize)
       throws IOException {
-    try (FileInputStream fileInputStream = new FileInputStream(inputFilePath);
+    try (final FileInputStream fileInputStream = new FileInputStream(inputFilePath);
         final ZipOutputStream zipOutputStream = this.createZipOutputStream(zipFilePath)) {
       this.createZipEntry(zipEntryName, zipOutputStream);
       this.writeZipFile(fileInputStream, zipOutputStream, inMemoryBufferSize);

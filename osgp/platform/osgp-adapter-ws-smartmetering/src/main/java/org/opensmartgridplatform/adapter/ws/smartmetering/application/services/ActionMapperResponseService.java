@@ -1,18 +1,14 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
+import jakarta.annotation.PostConstruct;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsGasResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsResponse;
@@ -60,6 +56,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusE
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetThdFingerprintResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReads;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
@@ -106,6 +103,7 @@ public class ActionMapperResponseService {
     CLASS_TO_MAPPER_MAP.put(AdministrativeStatusTypeResponse.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsContainer.class, this.monitoringMapper);
     CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsContainerGas.class, this.monitoringMapper);
+    CLASS_TO_MAPPER_MAP.put(GetThdFingerprintResponse.class, this.monitoringMapper);
     CLASS_TO_MAPPER_MAP.put(GetAllAttributeValuesResponse.class, this.monitoringMapper);
     CLASS_TO_MAPPER_MAP.put(FirmwareVersionResponse.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(FirmwareVersionGasResponse.class, this.configurationMapper);
@@ -142,6 +140,10 @@ public class ActionMapperResponseService {
     CLASS_MAP.put(AdministrativeStatusTypeResponse.class, AdministrativeStatusResponse.class);
     CLASS_MAP.put(PeriodicMeterReadsContainer.class, PeriodicMeterReadsResponse.class);
     CLASS_MAP.put(PeriodicMeterReadsContainerGas.class, PeriodicMeterReadsGasResponse.class);
+    CLASS_MAP.put(
+        GetThdFingerprintResponse.class,
+        org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetThdFingerprintResponse
+            .class);
     CLASS_MAP.put(
         GetAllAttributeValuesResponse.class,
         org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle

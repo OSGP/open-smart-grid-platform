@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.basicosgpfunctions;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,6 +37,7 @@ import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddMa
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeableFirmware;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
@@ -81,7 +78,9 @@ public class AuthorizePlatformFunctionsSteps {
 
   @When("receiving a platform function request")
   public void receivingADeviceFunctionRequest(final Map<String, String> requestParameters)
-      throws OperationNotSupportedException, WebServiceSecurityException, GeneralSecurityException,
+      throws OperationNotSupportedException,
+          WebServiceSecurityException,
+          GeneralSecurityException,
           IOException {
     this.platformFunction =
         getEnum(requestParameters, PlatformKeys.KEY_PLATFORM_FUNCTION, PlatformFunction.class);
@@ -339,12 +338,11 @@ public class AuthorizePlatformFunctionsSteps {
       throws WebServiceSecurityException, GeneralSecurityException, IOException {
     final ChangeFirmwareRequest request = new ChangeFirmwareRequest();
     request.setId(PlatformCommonDefaults.FIRMWARE_ID);
-    final Firmware firmware = new Firmware();
+    final ChangeableFirmware firmware = new ChangeableFirmware();
     firmware.setDescription(PlatformCommonDefaults.FIRMWARE_DESCRIPTION);
     final DeviceModel deviceModel = new DeviceModel();
     deviceModel.setModelCode(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
     deviceModel.setManufacturer(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
-    firmware.getDeviceModels().add(deviceModel);
     firmware.setPushToNewDevices(PlatformCommonDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE);
     request.setFirmware(firmware);
     ScenarioContext.current()

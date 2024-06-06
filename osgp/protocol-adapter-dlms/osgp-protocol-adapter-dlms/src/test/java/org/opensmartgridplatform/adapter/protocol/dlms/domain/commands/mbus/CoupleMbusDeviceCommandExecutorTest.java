@@ -1,11 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,8 +23,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
@@ -84,26 +81,27 @@ public class CoupleMbusDeviceCommandExecutorTest {
             this.manufacturerIdentification,
             this.version,
             this.deviceTypeIdentification);
+    final CoupleMbusDeviceRequestDataDto requestDataDto =
+        new CoupleMbusDeviceRequestDataDto(
+            this.mbusDeviceIdentification, false, mbusChannelElementsDto);
 
     when(this.deviceChannelsHelper.findCandidateChannelsForDevice(
             eq(this.conn), eq(this.device), any(MbusChannelElementsDto.class)))
         .thenReturn(this.candidateChannelElementValues);
 
-    final MbusChannelElementsResponseDto responseDto =
-        this.commandExecutor.execute(
-            this.conn, this.device, mbusChannelElementsDto, this.messageMetadata);
+    final CoupleMbusDeviceResponseDto responseDto =
+        this.commandExecutor.execute(this.conn, this.device, requestDataDto, this.messageMetadata);
 
-    assertThat(responseDto.getChannel()).isEqualTo(this.channel);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getDeviceTypeIdentification())
+    final ChannelElementValuesDto channelElementValuesDto = responseDto.getChannelElementValues();
+    assertThat(channelElementValuesDto.getChannel()).isEqualTo(this.channel);
+    assertThat(channelElementValuesDto.getDeviceTypeIdentification())
         .isEqualTo(this.deviceTypeIdentification);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getIdentificationNumber())
+    assertThat(channelElementValuesDto.getIdentificationNumber())
         .isEqualTo(this.identificationNumber);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getManufacturerIdentification())
+    assertThat(channelElementValuesDto.getManufacturerIdentification())
         .isEqualTo(this.manufacturerIdentification);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getPrimaryAddress())
-        .isEqualTo(this.primaryAddress);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getVersion())
-        .isEqualTo(this.version);
+    assertThat(channelElementValuesDto.getPrimaryAddress()).isEqualTo(this.primaryAddress);
+    assertThat(channelElementValuesDto.getVersion()).isEqualTo(this.version);
 
     verify(this.deviceChannelsHelper, times(1))
         .findCandidateChannelsForDevice(
@@ -121,26 +119,27 @@ public class CoupleMbusDeviceCommandExecutorTest {
             this.manufacturerIdentification,
             this.version,
             this.deviceTypeIdentification);
+    final CoupleMbusDeviceRequestDataDto requestDataDto =
+        new CoupleMbusDeviceRequestDataDto(
+            this.mbusDeviceIdentification, false, mbusChannelElementsDto);
 
     when(this.deviceChannelsHelper.findCandidateChannelsForDevice(
             eq(this.conn), eq(this.device), any(MbusChannelElementsDto.class)))
         .thenReturn(this.candidateChannelElementValues);
 
-    final MbusChannelElementsResponseDto responseDto =
-        this.commandExecutor.execute(
-            this.conn, this.device, mbusChannelElementsDto, this.messageMetadata);
+    final CoupleMbusDeviceResponseDto responseDto =
+        this.commandExecutor.execute(this.conn, this.device, requestDataDto, this.messageMetadata);
 
-    assertThat(responseDto.getChannel()).isEqualTo(this.channel);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getDeviceTypeIdentification())
+    final ChannelElementValuesDto channelElementValuesDto = responseDto.getChannelElementValues();
+    assertThat(channelElementValuesDto.getChannel()).isEqualTo(this.channel);
+    assertThat(channelElementValuesDto.getDeviceTypeIdentification())
         .isEqualTo(this.deviceTypeIdentification);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getIdentificationNumber())
+    assertThat(channelElementValuesDto.getIdentificationNumber())
         .isEqualTo(this.identificationNumber);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getManufacturerIdentification())
+    assertThat(channelElementValuesDto.getManufacturerIdentification())
         .isEqualTo(this.manufacturerIdentification);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getPrimaryAddress())
-        .isEqualTo(this.primaryAddress);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getVersion())
-        .isEqualTo(this.version);
+    assertThat(channelElementValuesDto.getPrimaryAddress()).isEqualTo(this.primaryAddress);
+    assertThat(channelElementValuesDto.getVersion()).isEqualTo(this.version);
 
     verify(this.deviceChannelsHelper, times(1))
         .findCandidateChannelsForDevice(
@@ -153,26 +152,19 @@ public class CoupleMbusDeviceCommandExecutorTest {
     final MbusChannelElementsDto mbusChannelElementsDto =
         new MbusChannelElementsDto(
             (short) -1, "noMatch", "noMatch", "noMatch", (short) -1, (short) -1);
+    final CoupleMbusDeviceRequestDataDto requestDataDto =
+        new CoupleMbusDeviceRequestDataDto(
+            this.mbusDeviceIdentification, false, mbusChannelElementsDto);
 
     when(this.deviceChannelsHelper.findCandidateChannelsForDevice(
             eq(this.conn), eq(this.device), any(MbusChannelElementsDto.class)))
         .thenReturn(this.candidateChannelElementValues);
 
-    final MbusChannelElementsResponseDto responseDto =
-        this.commandExecutor.execute(
-            this.conn, this.device, mbusChannelElementsDto, this.messageMetadata);
+    final CoupleMbusDeviceResponseDto responseDto =
+        this.commandExecutor.execute(this.conn, this.device, requestDataDto, this.messageMetadata);
 
-    assertThat(responseDto.getChannel()).isNull();
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getDeviceTypeIdentification())
-        .isEqualTo(this.deviceTypeIdentification);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getIdentificationNumber())
-        .isEqualTo(this.identificationNumber);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getManufacturerIdentification())
-        .isEqualTo(this.manufacturerIdentification);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getPrimaryAddress())
-        .isEqualTo(this.primaryAddress);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getVersion())
-        .isEqualTo(this.version);
+    final ChannelElementValuesDto channelElementValuesDto = responseDto.getChannelElementValues();
+    assertThat(channelElementValuesDto).isNull();
 
     verify(this.deviceChannelsHelper, times(1))
         .findCandidateChannelsForDevice(
@@ -190,6 +182,9 @@ public class CoupleMbusDeviceCommandExecutorTest {
     final MbusChannelElementsDto mbusChannelElementsDto =
         new MbusChannelElementsDto(
             (short) -1, "noMatch", "noMatch", "noMatch", (short) -1, (short) -1);
+    final CoupleMbusDeviceRequestDataDto requestDataDto =
+        new CoupleMbusDeviceRequestDataDto(
+            this.mbusDeviceIdentification, false, mbusChannelElementsDto);
 
     when(this.deviceChannelsHelper.findCandidateChannelsForDevice(
             eq(this.conn), eq(this.device), any(MbusChannelElementsDto.class)))
@@ -210,24 +205,22 @@ public class CoupleMbusDeviceCommandExecutorTest {
                 mbusChannelElementsDto.getMbusManufacturerIdentification(),
                 mbusChannelElementsDto.getMbusVersion(),
                 mbusChannelElementsDto.getMbusDeviceTypeIdentification()));
-    when(this.deviceChannelsHelper.correctFirstChannelOffset(any(ChannelElementValuesDto.class)))
-        .thenReturn((short) (emptyChannel.getChannel() - 1));
 
-    final MbusChannelElementsResponseDto responseDto =
-        this.commandExecutor.execute(
-            this.conn, this.device, mbusChannelElementsDto, this.messageMetadata);
+    final CoupleMbusDeviceResponseDto responseDto =
+        this.commandExecutor.execute(this.conn, this.device, requestDataDto, this.messageMetadata);
 
-    assertThat(responseDto.getChannel()).isEqualTo((short) 2);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getDeviceTypeIdentification())
-        .isEqualTo(this.deviceTypeIdentification);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getIdentificationNumber())
-        .isEqualTo(this.identificationNumber);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getManufacturerIdentification())
-        .isEqualTo(this.manufacturerIdentification);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getPrimaryAddress())
-        .isEqualTo(this.primaryAddress);
-    assertThat(responseDto.getRetrievedChannelElements().get(0).getVersion())
-        .isEqualTo(this.version);
+    final ChannelElementValuesDto channelElementValuesDto = responseDto.getChannelElementValues();
+    assertThat(channelElementValuesDto.getChannel()).isEqualTo(emptyChannel.getChannel());
+    assertThat(channelElementValuesDto.getDeviceTypeIdentification())
+        .isEqualTo(requestDataDto.getMbusChannelElements().getMbusDeviceTypeIdentification());
+    assertThat(channelElementValuesDto.getIdentificationNumber())
+        .isEqualTo(requestDataDto.getMbusChannelElements().getMbusIdentificationNumber());
+    assertThat(channelElementValuesDto.getManufacturerIdentification())
+        .isEqualTo(requestDataDto.getMbusChannelElements().getMbusManufacturerIdentification());
+    assertThat(channelElementValuesDto.getPrimaryAddress())
+        .isEqualTo(requestDataDto.getMbusChannelElements().getPrimaryAddress());
+    assertThat(channelElementValuesDto.getVersion())
+        .isEqualTo(requestDataDto.getMbusChannelElements().getMbusVersion());
 
     verify(this.deviceChannelsHelper, times(1))
         .findCandidateChannelsForDevice(

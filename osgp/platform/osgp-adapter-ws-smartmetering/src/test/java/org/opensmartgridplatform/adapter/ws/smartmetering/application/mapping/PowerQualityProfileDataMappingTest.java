@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,8 +19,9 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileE
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCodeValues;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityProfileData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntry;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileType;
 
-public class PowerQualityProfileDataMappingTest {
+class PowerQualityProfileDataMappingTest {
 
   private static final String[] EXPECTED_CLASS =
       new String[] {
@@ -82,12 +79,15 @@ public class PowerQualityProfileDataMappingTest {
   private PowerQualityProfileData makeresponseVo() {
     final PowerQualityProfileData result =
         new PowerQualityProfileData(
-            this.makeObisCode(), this.makeCaptureObjectsVo(), this.makeProfileEntriesVo());
+            this.makeObisCode(),
+            this.makeCaptureObjectsVo(),
+            this.makeProfileEntriesVo(),
+            ProfileType.PUBLIC);
     return result;
   }
 
   @Test
-  public void testCaptureObject() {
+  void testCaptureObject() {
     final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObject
         captureObjectVo = this.makeCaptureObjectVo();
     final CaptureObject captureObject =
@@ -96,13 +96,14 @@ public class PowerQualityProfileDataMappingTest {
   }
 
   @Test
-  public void testProfileEntry() {
+  void testProfileEntry() {
     org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue
         profileEntryValueVo =
             new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileEntryValue(
                 "test");
     ProfileEntryValue profileEntryValue =
         this.monitoringMapper.map(profileEntryValueVo, ProfileEntryValue.class);
+
     assertThat(profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0)).isEqualTo("test");
 
     profileEntryValueVo =
@@ -133,7 +134,7 @@ public class PowerQualityProfileDataMappingTest {
   }
 
   @Test
-  public void testPowerQualityProfileDataResponse() {
+  void testPowerQualityProfileDataResponse() {
     final PowerQualityProfileData source = this.makeresponseVo();
     final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring
             .PowerQualityProfileData
@@ -146,19 +147,20 @@ public class PowerQualityProfileDataMappingTest {
     assertThat(target)
         .as("mapping GetPowerQualityProfileResponseData should not return null")
         .isNotNull();
-    Assertions.assertThat(target.getCaptureObjectList().getCaptureObjects().size()).isEqualTo(1);
+    Assertions.assertThat(target.getCaptureObjectList().getCaptureObjects()).hasSize(1);
     Assertions.assertThat(
             target.getProfileEntryList().getProfileEntries().get(0).getProfileEntryValue())
         .isNotNull();
     Assertions.assertThat(
-            target.getProfileEntryList().getProfileEntries().get(0).getProfileEntryValue().size())
-        .isEqualTo(4);
+            target.getProfileEntryList().getProfileEntries().get(0).getProfileEntryValue())
+        .hasSize(4);
+    assertThat(target.getProfileType()).hasToString(ProfileType.PUBLIC.toString());
 
     int i = 0;
     for (final ProfileEntryValue profileEntryValue :
         target.getProfileEntryList().getProfileEntries().get(0).getProfileEntryValue()) {
       assertThat(profileEntryValue.getStringValueOrDateValueOrFloatValue()).isNotNull();
-      assertThat(profileEntryValue.getStringValueOrDateValueOrFloatValue().size()).isEqualTo(1);
+      assertThat(profileEntryValue.getStringValueOrDateValueOrFloatValue()).hasSize(1);
       final Class<?> clazz =
           profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0).getClass();
 

@@ -1,16 +1,11 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.domain.core.repositories;
 
-import java.net.InetAddress;
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -48,7 +43,7 @@ public interface DeviceRepository
   Device findByDeviceIdentificationWithFirmwareModules(
       @Param("deviceIdentification") String deviceIdentification);
 
-  List<Device> findByNetworkAddress(InetAddress address);
+  List<Device> findByNetworkAddress(String address);
 
   @Query(
       "SELECT d "
@@ -84,7 +79,7 @@ public interface DeviceRepository
           + "         auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.INSTALLATION)"
           + ") AND "
           + "d.modificationTime >= ?2")
-  List<Device> findRecentDevices(Organisation organisation, Date fromDate);
+  List<Device> findRecentDevices(Organisation organisation, Instant fromDate);
 
   /*
    * We need these native queries below because these entities don't have an
@@ -99,4 +94,20 @@ public interface DeviceRepository
       String deviceType,
       boolean inMaintenance,
       DeviceLifecycleStatus deviceLifecycleStatus);
+
+  @Transactional
+  @Modifying
+  @Query(
+      value =
+          "UPDATE Device d SET d.lastSuccessfulConnectionTimestamp = CURRENT_TIMESTAMP(), d.failedConnectionCount = 0"
+              + " WHERE d.deviceIdentification = ?1")
+  int updateConnectionDetailsToSuccess(String deviceIdentification);
+
+  @Transactional
+  @Modifying
+  @Query(
+      value =
+          "UPDATE Device d SET d.lastFailedConnectionTimestamp = CURRENT_TIMESTAMP(), d.failedConnectionCount = d.failedConnectionCount+1"
+              + " WHERE d.deviceIdentification = ?1")
+  int updateConnectionDetailsToFailure(String deviceIdentification);
 }

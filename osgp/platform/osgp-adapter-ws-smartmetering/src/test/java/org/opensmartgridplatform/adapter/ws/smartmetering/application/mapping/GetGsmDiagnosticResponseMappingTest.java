@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,7 +10,6 @@ import java.util.Collections;
 import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdjacentCellInfo;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BitErrorRateType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CellInfo;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CircuitSwitchedStatusType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetGsmDiagnosticResponseData;
@@ -46,8 +40,7 @@ class GetGsmDiagnosticResponseMappingTest {
 
   private GetGsmDiagnosticResponseData newGetGsmDiagnosticResponseData() {
     final CellInfo cellInfo =
-        new CellInfo(
-            77L, 2230, SignalQualityType.MINUS_61_DBM, BitErrorRateType.RXQUAL_4, 31, 42, 1L);
+        new CellInfo(77L, 2230, SignalQualityType.MINUS_61_DBM, (short) 4, 31, 42, 1L);
 
     final AdjacentCellInfo adjacentCellInfo =
         new AdjacentCellInfo(93L, SignalQualityType.MINUS_61_DBM);

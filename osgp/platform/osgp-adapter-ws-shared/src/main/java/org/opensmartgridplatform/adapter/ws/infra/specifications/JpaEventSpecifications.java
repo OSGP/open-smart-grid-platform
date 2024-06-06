@@ -1,21 +1,17 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.infra.specifications;
 
-import java.util.Date;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import java.time.Instant;
 import java.util.List;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
@@ -32,25 +28,25 @@ public class JpaEventSpecifications implements EventSpecifications {
   private static final Specification<Event> NO_FILTER = (eventRoot, query, cb) -> cb.and();
 
   @Override
-  public Specification<Event> isCreatedAfter(final Date dateFrom) {
+  public Specification<Event> isCreatedAfter(final Instant dateFrom) {
 
     if (dateFrom == null) {
       return NO_FILTER;
     }
 
     return ((eventRoot, query, cb) ->
-        cb.greaterThanOrEqualTo(eventRoot.<Date>get("dateTime"), dateFrom));
+        cb.greaterThanOrEqualTo(eventRoot.<Instant>get("dateTime"), dateFrom));
   }
 
   @Override
-  public Specification<Event> isCreatedBefore(final Date dateUntil) {
+  public Specification<Event> isCreatedBefore(final Instant dateUntil) {
 
     if (dateUntil == null) {
       return NO_FILTER;
     }
 
     return ((eventRoot, query, cb) ->
-        cb.lessThanOrEqualTo(eventRoot.<Date>get("dateTime"), dateUntil));
+        cb.lessThanOrEqualTo(eventRoot.<Instant>get("dateTime"), dateUntil));
   }
 
   @Override

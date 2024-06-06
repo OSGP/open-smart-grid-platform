@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import java.util.function.Consumer;
@@ -113,37 +109,6 @@ public class DlmsConnectionFactory {
         SecurityLevel.forDevice(device),
         permit,
         taskForConnectionManager);
-  }
-
-  /**
-   * Creates an open connection to the device using its Public client association and passes the
-   * connection to the {@code taskForConnectionManager} to execute the tasks before closing the
-   * connection.
-   *
-   * <p>This does not use a throttling permit for network access. When such a permit is required,
-   * make sure to obtain one that is granted and call {@link
-   * #createAndHandlePublicClientConnection(MessageMetadata, DlmsDevice, DlmsMessageListener, Permit, Consumer).
-   *
-   * @param messageMetadata the metadata of the request message
-   * @param device The device to connect to. This reference can be updated when the invalid but
-   *     correctable connection credentials are detected.
-   * @param dlmsMessageListener A message listener that will be provided to the {@link
-   *     DlmsConnection} that is initialized if the given {@code device} is in {@link
-   *     DlmsDevice#isInDebugMode() debug mode}. If this is {@code null} no DLMS device
-   *     communication debug logging will be done.
-   * @param taskForConnectionManager A task for the DLMS connection manager to handle when the DLMS
-   *     connection is open
-   * @throws OsgpException in case of a TechnicalException or FunctionalException
-   */
-  public void createAndHandlePublicClientConnection(
-      final MessageMetadata messageMetadata,
-      final DlmsDevice device,
-      final DlmsMessageListener dlmsMessageListener,
-      final Consumer<DlmsConnectionManager> taskForConnectionManager)
-      throws OsgpException {
-
-    this.createAndHandlePublicClientConnection(
-        messageMetadata, device, dlmsMessageListener, null, taskForConnectionManager);
   }
 
   /**

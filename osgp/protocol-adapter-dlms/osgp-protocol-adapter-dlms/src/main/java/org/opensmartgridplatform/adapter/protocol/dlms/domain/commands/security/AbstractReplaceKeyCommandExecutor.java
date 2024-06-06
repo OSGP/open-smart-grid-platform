@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security;
 
 import java.io.IOException;
@@ -20,6 +16,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Jdl
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -43,9 +40,13 @@ public abstract class AbstractReplaceKeyCommandExecutor<T>
 
   @Autowired private SecretManagementService secretManagementService;
 
+  @Autowired private DlmsDeviceRepository dlmsDeviceRepository;
+
   @Autowired
   @Qualifier("decrypterForGxfSmartMetering")
   private RsaEncrypter decrypterForGxfSmartMetering;
+
+  private static final Long INVOCATION_COUNTER_AFTER_KEY_CHANGE = 250L;
 
   /**
    * Constructor for CommandExecutors that need to be executed in the context of bundle actions.
@@ -63,7 +64,7 @@ public abstract class AbstractReplaceKeyCommandExecutor<T>
       final SetKeysRequestDto setKeysRequestDto,
       final MessageMetadata messageMetadata)
       throws OsgpException {
-    log.info("Keys set on device :{}", device.getDeviceIdentification());
+    log.info("Keys will be set on device :{}", device.getDeviceIdentification());
 
     SetKeysRequestDto setDecryptedKeysRequestDto = setKeysRequestDto;
     if (!setKeysRequestDto.isGeneratedKeys()) {
@@ -82,6 +83,8 @@ public abstract class AbstractReplaceKeyCommandExecutor<T>
                 setDecryptedKeysRequestDto.isGeneratedKeys()),
             messageMetadata);
 
+    log.info("Authentication key successfully set on device :{}", device.getDeviceIdentification());
+
     this.storeAndSendToDevice(
         conn,
         devicePostSave,
@@ -91,6 +94,11 @@ public abstract class AbstractReplaceKeyCommandExecutor<T>
             SecurityKeyType.E_METER_ENCRYPTION,
             setDecryptedKeysRequestDto.isGeneratedKeys()),
         messageMetadata);
+
+    log.info("Encryption key successfully set on device :{}", device.getDeviceIdentification());
+
+    this.dlmsDeviceRepository.updateInvocationCounter(
+        devicePostSave.getDeviceIdentification(), INVOCATION_COUNTER_AFTER_KEY_CHANGE);
 
     return new ActionResponseDto(
         String.format(
@@ -133,11 +141,25 @@ public abstract class AbstractReplaceKeyCommandExecutor<T>
           device.getDeviceIdentification(),
           keyWrapper.getSecurityKeyType(),
           keyWrapper.getBytes());
+      log.info(
+          "Key {} stored in database for device :{}",
+          keyWrapper.getSecurityKeyType().name(),
+          device.getDeviceIdentification());
     }
 
     this.sendToDevice(conn, device.getDeviceIdentification(), keyWrapper, messageMetadata);
+    log.info(
+        "Key {} sent to device :{}",
+        keyWrapper.getSecurityKeyType().name(),
+        device.getDeviceIdentification());
+
     this.secretManagementService.activateNewKey(
         messageMetadata, device.getDeviceIdentification(), keyWrapper.getSecurityKeyType());
+    log.info(
+        "Key {} activated for device :{}",
+        keyWrapper.getSecurityKeyType().name(),
+        device.getDeviceIdentification());
+
     return device;
   }
 

@@ -1,22 +1,18 @@
-/*
- * Copyright 2014-2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
 import static org.opensmartgridplatform.shared.utils.SearchUtil.replaceAndEscapeWildcards;
 import static org.springframework.data.jpa.domain.Specification.where;
 
+import jakarta.validation.Valid;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.QueryException;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.core.application.criteria.SearchEventsCriteria;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
@@ -199,14 +195,15 @@ public class DeviceManagementService {
       specification = where(this.eventSpecifications.isAuthorized(organisation));
     }
 
-    final DateTime from = criteria.getFrom();
+    final ZonedDateTime from = criteria.getFrom();
     if (from != null) {
-      specification = specification.and(this.eventSpecifications.isCreatedAfter(from.toDate()));
+      specification = specification.and(this.eventSpecifications.isCreatedAfter(from.toInstant()));
     }
 
-    final DateTime until = criteria.getUntil();
+    final ZonedDateTime until = criteria.getUntil();
     if (until != null) {
-      specification = specification.and(this.eventSpecifications.isCreatedBefore(until.toDate()));
+      specification =
+          specification.and(this.eventSpecifications.isCreatedBefore(until.toInstant()));
     }
 
     specification =
@@ -343,8 +340,7 @@ public class DeviceManagementService {
     return devices;
   }
 
-  @Transactional(value = "transactionManager")
-  public Page<Device> applyFilter(
+  private Page<Device> applyFilter(
       final DeviceFilter deviceFilter, final Organisation organisation, final PageRequest request)
       throws ArgumentNullOrEmptyException {
     Page<Device> devices = null;

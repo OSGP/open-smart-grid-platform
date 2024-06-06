@@ -1,12 +1,6 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
 
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
@@ -34,7 +28,8 @@ public class SetCommunicationNetworkInformationSteps {
   public void receivingASetCommunicationNetworkInformationRequest(
       final Map<String, String> inputSettings) throws WebServiceSecurityException {
 
-    final SetCommunicationNetworkInformationRequest request = createRequestFromInput(inputSettings);
+    final SetCommunicationNetworkInformationRequest request =
+        this.createRequestFromInput(inputSettings);
 
     final SetCommunicationNetworkInformationResponse response =
         this.client.setCommunicationNetworkInformation(request);
@@ -54,7 +49,7 @@ public class SetCommunicationNetworkInformationSteps {
     assertThat(response.getResult().name())
         .as(PlatformKeys.KEY_RESULT)
         .isEqualTo(inputSettings.get(PlatformKeys.KEY_RESULT));
-    assertThat(response.getIpAddress()).isEqualTo(inputSettings.get(PlatformKeys.IP_ADDRESS));
+    assertThat(response.getIpAddress()).isEqualTo(inputSettings.get(PlatformKeys.NETWORK_ADDRESS));
     assertThat(response.getBtsId())
         .isEqualTo(Integer.parseInt(inputSettings.get(PlatformKeys.BTS_ID)));
     assertThat(response.getCellId())
@@ -62,12 +57,12 @@ public class SetCommunicationNetworkInformationSteps {
   }
 
   private SetCommunicationNetworkInformationRequest createRequestFromInput(
-      Map<String, String> inputSettings) {
+      final Map<String, String> inputSettings) {
     final SetCommunicationNetworkInformationRequest request =
         new SetCommunicationNetworkInformationRequest();
 
     request.setDeviceIdentification(inputSettings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
-    request.setIpAddress(inputSettings.get(PlatformKeys.IP_ADDRESS));
+    request.setIpAddress(inputSettings.get(PlatformKeys.NETWORK_ADDRESS));
 
     if (inputSettings.get(PlatformKeys.BTS_ID) != null) {
       request.setBtsId(Integer.parseInt(inputSettings.get(PlatformKeys.BTS_ID)));
@@ -84,7 +79,8 @@ public class SetCommunicationNetworkInformationSteps {
   public void receivingASetCommunicationNetworkInformationRequestWithAnInvalidIp(
       final Map<String, String> inputSettings) throws WebServiceSecurityException {
 
-    final SetCommunicationNetworkInformationRequest request = createRequestFromInput(inputSettings);
+    final SetCommunicationNetworkInformationRequest request =
+        this.createRequestFromInput(inputSettings);
 
     try {
       this.client.setCommunicationNetworkInformation(request);

@@ -1,14 +1,10 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
@@ -30,6 +26,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.Co
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMBusDeviceAdministrativeAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMBusDeviceAdministrativeRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceAdministrativeAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceAdministrativeResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelAsyncRequest;
@@ -46,6 +46,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceModel;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceAdministrativeRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
@@ -159,8 +160,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
       this.throwExceptionIfResultNotOk(responseData, "Add Device");
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-      if (responseData.getMessageData() instanceof String) {
-        response.setDescription((String) responseData.getMessageData());
+      if (responseData.getMessageData() instanceof final String messageData) {
+        response.setDescription(messageData);
       }
 
     } catch (final Exception e) {
@@ -225,18 +226,16 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
     CoupleMbusDeviceResponse response = null;
     try {
-      response = new CoupleMbusDeviceResponse();
       final ResponseData responseData =
           this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "Couple Mbus Device");
 
+      response =
+          this.installationMapper.map(
+              responseData.getMessageData(), CoupleMbusDeviceResponse.class);
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-      if (responseData.getMessageData() instanceof String) {
-        response.setDescription((String) responseData.getMessageData());
-      }
-
     } catch (final Exception e) {
       this.handleException(e);
     }
@@ -287,6 +286,42 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     return this.installationMapper.map(asyncResponse, DecoupleMbusDeviceAsyncResponse.class);
   }
 
+  @PayloadRoot(
+      localPart = "DecoupleMBusDeviceAdministrativeRequest",
+      namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+  @ResponsePayload
+  public DecoupleMBusDeviceAdministrativeAsyncResponse decoupleMbusDeviceAdministrative(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final DecoupleMBusDeviceAdministrativeRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
+
+    final DecoupleMbusDeviceAdministrativeRequestData requestData =
+        new DecoupleMbusDeviceAdministrativeRequestData(request.getMbusDeviceIdentification());
+
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getMbusDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.DECOUPLE_MBUS_DEVICE_ADMINISTRATIVE)
+            .withMessageType(MessageType.DECOUPLE_MBUS_DEVICE_ADMINISTRATIVE)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
+
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
+
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+
+    return this.installationMapper.map(
+        asyncResponse, DecoupleMBusDeviceAdministrativeAsyncResponse.class);
+  }
+
   /**
    * @param request the request message containing the correlationUid
    * @return the response message containing the OsgpResultType and optional a message
@@ -309,8 +344,41 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
       this.throwExceptionIfResultNotOk(responseData, "Decouple Mbus Device");
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-      if (responseData.getMessageData() instanceof String) {
-        response.setDescription((String) responseData.getMessageData());
+      if (responseData.getMessageData() instanceof final String messageData) {
+        response.setDescription(messageData);
+      }
+
+    } catch (final Exception e) {
+      this.handleException(e);
+    }
+    return response;
+  }
+
+  /**
+   * @param request the request message containing the correlationUid
+   * @return the response message containing the OsgpResultType and optional a message
+   * @throws OsgpException
+   */
+  @PayloadRoot(
+      localPart = "DecoupleMbusDeviceAdministrativeAsyncRequest",
+      namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+  @ResponsePayload
+  public DecoupleMbusDeviceAdministrativeResponse getDecoupleMbusDeviceAdministrativeResponse(
+      @RequestPayload final DecoupleMbusDeviceAdministrativeAsyncRequest request)
+      throws OsgpException {
+
+    DecoupleMbusDeviceAdministrativeResponse response = null;
+    try {
+      response = new DecoupleMbusDeviceAdministrativeResponse();
+      final ResponseData responseData =
+          this.responseDataService.get(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      this.throwExceptionIfResultNotOk(responseData, "Decouple Mbus Device Administrative");
+
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData.getMessageData() instanceof final String messageData) {
+        response.setDescription(messageData);
       }
 
     } catch (final Exception e) {
@@ -385,8 +453,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
       this.throwExceptionIfResultNotOk(responseData, "Couple Mbus Device By Channel");
 
-      if (responseData.getMessageData() instanceof String) {
-        response.setResultString((String) responseData.getMessageData());
+      if (responseData.getMessageData() instanceof final String messageData) {
+        response.setResultString(messageData);
       }
       response =
           this.installationMapper.map(

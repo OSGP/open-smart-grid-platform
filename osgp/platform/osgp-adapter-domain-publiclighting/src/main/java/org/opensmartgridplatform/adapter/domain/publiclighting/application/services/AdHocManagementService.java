@@ -1,16 +1,10 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.services;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +104,7 @@ public class AdHocManagementService extends AbstractService {
             lightValueMessageDataContainer),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   // === GET LIGHT SENSOR STATUS ===
@@ -227,10 +221,10 @@ public class AdHocManagementService extends AbstractService {
   private String getIpAddress(final Device device) {
     String ipAddress = null;
     if (device.getGatewayDevice() != null) {
-      ipAddress = device.getGatewayDevice().getIpAddress();
+      ipAddress = device.getGatewayDevice().getNetworkAddress();
     }
     if (ipAddress == null) {
-      ipAddress = device.getIpAddress();
+      ipAddress = device.getNetworkAddress();
     }
     return ipAddress;
   }
@@ -376,7 +370,7 @@ public class AdHocManagementService extends AbstractService {
         new RequestMessage(ids, resumeScheduleMessageDataContainerDto),
         messageType,
         messagePriority,
-        device.getIpAddress());
+        device.getNetworkAddress());
   }
 
   // === TRANSITION MESSAGE FROM LIGHT MEASUREMENT DEVICE ===
@@ -445,7 +439,7 @@ public class AdHocManagementService extends AbstractService {
     LOGGER.info(
         "Trying to update lastCommunicationTime for light measurement device: {} at DateTime: {}",
         lmd.getDeviceIdentification(),
-        Date.from(now));
+        now);
     lmd.setLastCommunicationTime(now);
 
     final Device gateway = lmd.getGatewayDevice();
@@ -548,7 +542,7 @@ public class AdHocManagementService extends AbstractService {
       boolean updated = false;
       for (final RelayStatus relayStatus : relayStatuses) {
         if (relayStatus.getIndex() == lightValue.getIndex()) {
-          relayStatus.updateLastKnownState(lightValue.isOn(), new Date());
+          relayStatus.updateLastKnownState(lightValue.isOn(), Instant.now());
           updated = true;
           break;
         }
@@ -556,7 +550,7 @@ public class AdHocManagementService extends AbstractService {
       if (!updated) {
         final RelayStatus newRelayStatus =
             new RelayStatus.Builder(device, lightValue.getIndex())
-                .withLastKnownState(lightValue.isOn(), new Date())
+                .withLastKnownState(lightValue.isOn(), Instant.now())
                 .build();
         relayStatuses.add(newRelayStatus);
       }

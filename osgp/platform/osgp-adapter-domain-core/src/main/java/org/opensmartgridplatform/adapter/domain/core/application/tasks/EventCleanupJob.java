@@ -1,21 +1,20 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.core.application.tasks;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.core.application.services.TransactionalEventService;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.shared.utils.FileZipper;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 import org.opensmartgridplatform.shared.utils.csv.CsvWriter;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -64,12 +63,13 @@ public class EventCleanupJob implements Job {
     }
 
     LOGGER.info("Quartz triggered cleanup of database - event records.");
-    final DateTime start = DateTime.now();
+    final ZonedDateTime start = ZonedDateTime.now();
 
     try {
-      final Date retention = this.calculateRetentionDate();
+      final ZonedDateTime retention = this.calculateRetentionDate();
       final List<Event> oldEvents =
-          this.transactionalEventService.getEventsBeforeDate(retention, this.eventPageSize);
+          this.transactionalEventService.getEventsBeforeDate(
+              retention.toInstant(), this.eventPageSize);
       if (!oldEvents.isEmpty()) {
         this.saveEventsToCsvFile(oldEvents);
 
@@ -80,16 +80,16 @@ public class EventCleanupJob implements Job {
       LOGGER.error("Exception during CSV file creation, compression or event deletion.", e);
     }
 
-    final DateTime end = DateTime.now();
+    final ZonedDateTime end = ZonedDateTime.now();
     LOGGER.info(
         "Start: {}, end: {}, duration: {} milliseconds.",
         start,
         end,
-        end.getMillis() - start.getMillis());
+        JavaTimeHelpers.getMillisFrom(end) - JavaTimeHelpers.getMillisFrom(start));
   }
 
-  private Date calculateRetentionDate() {
-    final Date date = DateTime.now().minusMonths(this.eventRetentionPeriodInMonths).toDate();
+  private ZonedDateTime calculateRetentionDate() {
+    final ZonedDateTime date = ZonedDateTime.now().minusMonths(this.eventRetentionPeriodInMonths);
     LOGGER.info(
         "Determined date: {} based on event retention period in months: {}.",
         date,
@@ -116,6 +116,9 @@ public class EventCleanupJob implements Job {
   private static final class EventToStringArrayConverter {
 
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    public static final DateTimeFormatter FORMATTER =
+        DateTimeFormatter.ofPattern(DATE_TIME_FORMAT).withZone(ZoneId.systemDefault());
 
     private static final int ID = 0;
     private static final int CREATION_TIME = 1;
@@ -174,8 +177,8 @@ public class EventCleanupJob implements Job {
       return array;
     }
 
-    private static String formatDate(final Date date) {
-      return new DateTime(date).toString(DATE_TIME_FORMAT);
+    private static String formatDate(final Instant date) {
+      return JavaTimeHelpers.formatDate(date, FORMATTER);
     }
   }
 }

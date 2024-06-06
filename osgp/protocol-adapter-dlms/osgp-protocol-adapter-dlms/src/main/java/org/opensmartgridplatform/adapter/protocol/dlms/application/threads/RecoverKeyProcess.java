@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.application.threads;
 
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_AUTHENTICATION;
@@ -19,11 +15,11 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.DlmsConnection;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DeviceKeyProcessingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.throttling.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
@@ -50,7 +46,7 @@ public class RecoverKeyProcess implements Runnable {
 
   private final ThrottlingService throttlingService;
 
-  private final ThrottlingClientConfig throttlingClientConfig;
+  private final ThrottlingConfig throttlingConfig;
 
   private final DlmsDeviceRepository deviceRepository;
 
@@ -61,14 +57,14 @@ public class RecoverKeyProcess implements Runnable {
       final Hls5Connector hls5Connector,
       final SecretManagementService secretManagementService,
       final ThrottlingService throttlingService,
-      final ThrottlingClientConfig throttlingClientConfig,
+      final ThrottlingConfig throttlingConfig,
       final DlmsDeviceRepository deviceRepository,
       final DeviceKeyProcessingService deviceKeyProcessingService) {
     this.domainHelperService = domainHelperService;
     this.hls5Connector = hls5Connector;
     this.secretManagementService = secretManagementService;
     this.throttlingService = throttlingService;
-    this.throttlingClientConfig = throttlingClientConfig;
+    this.throttlingConfig = throttlingConfig;
     this.deviceRepository = deviceRepository;
     this.deviceKeyProcessingService = deviceKeyProcessingService;
   }
@@ -111,7 +107,9 @@ public class RecoverKeyProcess implements Runnable {
                   RecoverKeyProcess.this.run();
                 }
               },
-              this.throttlingClientConfig.permitRejectedDelay().toMillis());
+              this.throttlingConfig
+                  .permitRejectedDelay(this.messageMetadata.getMessagePriority())
+                  .toMillis());
 
       this.deviceKeyProcessingService.stopProcessing(this.deviceIdentification);
 
@@ -133,11 +131,17 @@ public class RecoverKeyProcess implements Runnable {
       return;
     }
 
+    log.info(
+        "Connection with new keys was successful. Now activating new keys for device {}",
+        this.deviceIdentification);
+
     try {
       this.secretManagementService.activateNewKeys(
           this.messageMetadata,
           this.deviceIdentification,
           Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION));
+
+      log.info("Activated keys for device {}", this.deviceIdentification);
     } catch (final Exception e) {
       throw new RecoverKeyException(e);
     } finally {
@@ -170,7 +174,8 @@ public class RecoverKeyProcess implements Runnable {
     }
 
     final DlmsDevice device = this.findDevice();
-    if (device.isIpAddressIsStatic() && StringUtils.isBlank(this.messageMetadata.getIpAddress())) {
+    if (device.isIpAddressIsStatic()
+        && StringUtils.isBlank(this.messageMetadata.getNetworkAddress())) {
       throw new IllegalStateException(
           "IP address not set in message metadata for device \""
               + device.getDeviceIdentification()
@@ -197,17 +202,13 @@ public class RecoverKeyProcess implements Runnable {
             this.deviceIdentification);
         return false;
       }
+      log.info("New keys found in key recovery process for device {}", this.deviceIdentification);
 
-      if (this.throttlingClientConfig.clientEnabled()) {
-        permit =
-            this.throttlingClientConfig
-                .throttlingClient()
-                .requestPermitUsingNetworkSegmentIfIdsAreAvailable(
-                    this.messageMetadata.getBaseTransceiverStationId(),
-                    this.messageMetadata.getCellId());
-      } else {
-        this.throttlingService.openConnection();
-      }
+      permit =
+          this.throttlingService.requestPermit(
+              this.messageMetadata.getBaseTransceiverStationId(),
+              this.messageMetadata.getCellId(),
+              this.messageMetadata.getMessagePriority());
 
       if (device.needsInvocationCounter()) {
         dlmsMessageListener = new InvocationCountingDlmsMessageListener();
@@ -241,13 +242,7 @@ public class RecoverKeyProcess implements Runnable {
         }
       }
 
-      if (this.throttlingClientConfig.clientEnabled()) {
-        if (permit != null) {
-          this.throttlingClientConfig.throttlingClient().releasePermit(permit);
-        }
-      } else {
-        this.throttlingService.closeConnection();
-      }
+      this.throttlingService.releasePermit(permit);
 
       if (dlmsMessageListener != null) {
         final int numberOfSentMessages = dlmsMessageListener.getNumberOfSentMessages();

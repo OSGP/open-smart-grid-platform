@@ -1,20 +1,14 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceException;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceException;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.ws.admin.application.specifications.DeviceLogItemSpecifications;
 import org.opensmartgridplatform.adapter.ws.admin.application.valueobjects.WsMessageLogFilter;
@@ -372,7 +366,7 @@ public class DeviceManagementService {
     final Organisation organisation = this.findOrganisation(organisationIdentification);
     this.isAllowed(organisation, PlatformFunction.GET_MESSAGES);
 
-    PageRequest pageRequest;
+    final PageRequest pageRequest;
     if (!StringUtils.isBlank(filter.getSortDirection())
         && !StringUtils.isBlank(filter.getSortBy())) {
       pageRequest =
@@ -664,7 +658,7 @@ public class DeviceManagementService {
   public Device updateCommunicationNetworkInformation(
       final String organisationIdentification,
       final String deviceIdentification,
-      final String ipAddress,
+      final String networkAddress,
       final Integer btsId,
       final Integer cellId)
       throws FunctionalException {
@@ -674,29 +668,31 @@ public class DeviceManagementService {
 
     this.isAllowed(organisation, device, DeviceFunction.SET_COMMUNICATION_NETWORK_INFORMATION);
 
-    if (ipAddress != null) {
-      try {
-        device.setNetworkAddress(InetAddress.getByName(ipAddress));
-      } catch (final UnknownHostException e) {
-        LOGGER.error("Invalid ip address found {} for device {}", ipAddress, deviceIdentification);
-        throw new FunctionalException(
-            FunctionalExceptionType.INVALID_IP_ADDRESS, ComponentType.DOMAIN_SMART_METERING);
-      }
+    if (networkAddress != null) {
+      device.setNetworkAddress(networkAddress);
     }
 
     if (btsId != null) {
       device.setBtsId(btsId);
+    } else {
+      LOGGER.info(
+          "Bts id for device {} is not overwritten since no new value is found",
+          deviceIdentification);
     }
 
     if (cellId != null) {
       device.setCellId(cellId);
+    } else {
+      LOGGER.info(
+          "Cell id for device {} is not overwritten since no new value is found",
+          deviceIdentification);
     }
 
     final Device updatedDevice = this.deviceRepository.save(device);
     LOGGER.info(
         "CommunicationNetworkInformation for Device {} updated to : ipAddress={}, btsId={}, cellId={} ",
         deviceIdentification,
-        updatedDevice.getIpAddress(),
+        updatedDevice.getNetworkAddress(),
         updatedDevice.getBtsId(),
         updatedDevice.getCellId());
 
@@ -723,7 +719,7 @@ public class DeviceManagementService {
 
   private Organisation findOrganisation(final String organisationIdentification)
       throws FunctionalException {
-    Organisation organisation;
+    final Organisation organisation;
     try {
       organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
     } catch (final UnknownEntityException e) {

@@ -1,11 +1,8 @@
-/*
- * Copyright 2022 Alliander.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// Copyright 2022 Alliander.V.
+// SPDX-FileCopyrightText: Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import java.util.ArrayList;
@@ -21,13 +18,13 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.WindowEl
 public class PushSetupLastGaspBuilder {
 
   private CosemObisCode logicalName = new CosemObisCode(new int[] {1, 2, 3, 4, 5, 6});
-  private TransportServiceType transportServiceType = TransportServiceType.UDP;
-  private MessageType messageType = MessageType.A_XDR_ENCODED_X_DLMS_APDU;
+  private final TransportServiceType transportServiceType = TransportServiceType.UDP;
+  private final MessageType messageType = MessageType.A_XDR_ENCODED_X_DLMS_APDU;
   private SendDestinationAndMethod sendDestinationAndMethod =
       new SendDestinationAndMethod(this.transportServiceType, "destination", this.messageType);
-  private Integer randomisationStartInterval = new Integer(1);
-  private Integer numberOfRetries = new Integer(10);
-  private Integer repetitionDelay = new Integer(2);
+  private Integer randomisationStartInterval = Integer.valueOf(1);
+  private Integer numberOfRetries = Integer.valueOf(10);
+  private Integer repetitionDelay = Integer.valueOf(2);
 
   private List<CosemObjectDefinition> pushObjectList;
   private List<WindowElement> communicationWindow;

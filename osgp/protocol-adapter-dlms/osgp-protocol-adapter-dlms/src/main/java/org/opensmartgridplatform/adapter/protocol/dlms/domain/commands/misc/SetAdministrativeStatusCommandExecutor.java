@@ -1,17 +1,14 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
+
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.ADMINISTRATIVE_IN_OUT;
 
 import java.io.IOException;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
@@ -21,6 +18,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeDataDto;
@@ -28,7 +29,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeSt
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
@@ -38,14 +38,17 @@ public class SetAdministrativeStatusCommandExecutor
   private static final Logger LOGGER =
       LoggerFactory.getLogger(SetAdministrativeStatusCommandExecutor.class);
 
-  private static final int CLASS_ID = 1;
-  private static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.0.255");
-  private static final int ATTRIBUTE_ID = 2;
+  private final ConfigurationMapper configurationMapper;
 
-  @Autowired private ConfigurationMapper configurationMapper;
+  private final ObjectConfigService objectConfigService;
 
-  public SetAdministrativeStatusCommandExecutor() {
+  public SetAdministrativeStatusCommandExecutor(
+      final ObjectConfigService objectConfigService,
+      final ConfigurationMapper configurationMapper) {
     super(AdministrativeStatusTypeDataDto.class);
+
+    this.objectConfigService = objectConfigService;
+    this.configurationMapper = configurationMapper;
   }
 
   @Override
@@ -76,14 +79,26 @@ public class SetAdministrativeStatusCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
+    final CosemObject administrativeInOutObject;
+    try {
+      administrativeInOutObject =
+          this.objectConfigService.getCosemObject(
+              device.getProtocolName(), device.getProtocolVersion(), ADMINISTRATIVE_IN_OUT);
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException(AbstractCommandExecutor.ERROR_IN_OBJECT_CONFIG, e);
+    }
+
     LOGGER.debug(
-        "Set administrative status by issuing get request for class id: {}, obis code: {}, attribute id: {}",
-        CLASS_ID,
-        OBIS_CODE,
-        ATTRIBUTE_ID);
+        "Set administrative status by issuing set request for class id: {}, obis code: {}, attribute id: {}",
+        administrativeInOutObject.getClassId(),
+        administrativeInOutObject.getObis(),
+        DataAttribute.VALUE.attributeId());
 
     final AttributeAddress attributeAddress =
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+        new AttributeAddress(
+            administrativeInOutObject.getClassId(),
+            administrativeInOutObject.getObis(),
+            DataAttribute.VALUE.attributeId());
     final DataObject value =
         DataObject.newEnumerateData(
             this.configurationMapper.map(administrativeStatusType, Integer.class));

@@ -1,11 +1,7 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,6 +51,17 @@ public class SetConfigurationObject {
   @Then("^the configuration object should be set on the device$")
   public void theConfigurationObjectShouldBeSetOnTheDevice(final Map<String, String> settings)
       throws Throwable {
+    this.theConfigurationObjectShouldBeSetOrNotOnTheDevice(settings, OsgpResultType.OK);
+  }
+
+  @Then("^the configuration object should not be set on the device$")
+  public void theConfigurationObjectShouldNotBeSetOnTheDevice(final Map<String, String> settings)
+      throws Throwable {
+    this.theConfigurationObjectShouldBeSetOrNotOnTheDevice(settings, OsgpResultType.NOT_OK);
+  }
+
+  public void theConfigurationObjectShouldBeSetOrNotOnTheDevice(
+      final Map<String, String> settings, final OsgpResultType result) throws Throwable {
     final SetConfigurationObjectAsyncRequest setConfigurationObjectAsyncRequest =
         SetConfigurationObjectRequestFactory.fromScenarioContext();
     final SetConfigurationObjectResponse setConfigurationObjectResponse =
@@ -63,6 +70,6 @@ public class SetConfigurationObject {
 
     assertThat(setConfigurationObjectResponse.getResult())
         .as("Set configuration object result")
-        .isEqualTo(OsgpResultType.OK);
+        .isEqualTo(result);
   }
 }

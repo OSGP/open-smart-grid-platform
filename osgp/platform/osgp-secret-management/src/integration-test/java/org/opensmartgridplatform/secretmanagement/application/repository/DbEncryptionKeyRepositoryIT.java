@@ -1,16 +1,13 @@
-/*
- * Copyright 2020 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.secretmanagement.application.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,26 +21,26 @@ public class DbEncryptionKeyRepositoryIT extends AbstractRepositoryIT {
   @BeforeEach
   public void persistTestData() {
     DbEncryptionKeyReference encryptionKey1 = new DbEncryptionKeyReference();
-    encryptionKey1.setCreationTime(new Date());
+    encryptionKey1.setCreationTime(Instant.now());
     encryptionKey1.setReference("keyRef1");
     encryptionKey1.setEncryptionProviderType(EncryptionProviderType.HSM);
-    encryptionKey1.setValidFrom(new Date(System.currentTimeMillis() - 60000));
+    encryptionKey1.setValidFrom(Instant.now().minus(60000, ChronoUnit.MILLIS));
     encryptionKey1.setVersion(1L);
     encryptionKey1 = this.entityManager.persist(encryptionKey1);
     DbEncryptionKeyReference encryptionKey2 = new DbEncryptionKeyReference();
-    encryptionKey2.setCreationTime(new Date());
+    encryptionKey2.setCreationTime(Instant.now());
     encryptionKey2.setReference("keyRef2");
     encryptionKey2.setEncryptionProviderType(EncryptionProviderType.JRE);
-    encryptionKey2.setValidFrom(new Date(System.currentTimeMillis() - 60000));
-    encryptionKey2.setValidTo(new Date(System.currentTimeMillis() + 60000));
+    encryptionKey2.setValidFrom(Instant.now().minus(60000, ChronoUnit.MILLIS));
+    encryptionKey2.setValidTo(Instant.now().plus(60000, ChronoUnit.MILLIS));
     encryptionKey2.setVersion(1L);
     encryptionKey2 = this.entityManager.persist(encryptionKey2);
     DbEncryptionKeyReference encryptionKey3 = new DbEncryptionKeyReference();
-    encryptionKey3.setCreationTime(new Date());
+    encryptionKey3.setCreationTime(Instant.now());
     encryptionKey3.setReference("keyRef3");
     encryptionKey3.setEncryptionProviderType(EncryptionProviderType.JRE);
-    encryptionKey3.setValidFrom(new Date(System.currentTimeMillis() - 3600000));
-    encryptionKey3.setValidTo(new Date(System.currentTimeMillis() - 60000));
+    encryptionKey3.setValidFrom(Instant.now().minus(3600000, ChronoUnit.MILLIS));
+    encryptionKey3.setValidTo(Instant.now().minus(60000, ChronoUnit.MILLIS));
     encryptionKey3.setVersion(1L);
     encryptionKey3 = this.entityManager.persist(encryptionKey3);
     this.entityManager.flush();
@@ -52,7 +49,7 @@ public class DbEncryptionKeyRepositoryIT extends AbstractRepositoryIT {
   @Test
   public void findNoValidTo() {
     final List<DbEncryptionKeyReference> results =
-        this.repository.findByTypeAndValid(EncryptionProviderType.HSM, new Date());
+        this.repository.findByTypeAndValid(EncryptionProviderType.HSM, Instant.now());
     assertThat(results.size()).isEqualTo(1);
     final DbEncryptionKeyReference keyReference = results.get(0);
     assertThat(keyReference).isNotNull();
@@ -64,7 +61,7 @@ public class DbEncryptionKeyRepositoryIT extends AbstractRepositoryIT {
   @Test
   public void findValidTo() {
     final List<DbEncryptionKeyReference> results =
-        this.repository.findByTypeAndValid(EncryptionProviderType.JRE, new Date());
+        this.repository.findByTypeAndValid(EncryptionProviderType.JRE, Instant.now());
     assertThat(results.size()).isEqualTo(1);
     final DbEncryptionKeyReference keyReference = results.get(0);
     assertThat(keyReference).isNotNull();

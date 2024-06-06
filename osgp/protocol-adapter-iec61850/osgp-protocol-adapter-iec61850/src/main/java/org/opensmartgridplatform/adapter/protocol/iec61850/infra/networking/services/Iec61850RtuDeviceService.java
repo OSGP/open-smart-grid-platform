@@ -1,18 +1,14 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services;
 
 import com.beanit.openiec61850.ClientAssociation;
 import com.beanit.openiec61850.ServerModel;
+import jakarta.jms.JMSException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.jms.JMSException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponseHandler;
@@ -156,7 +152,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
 
     final DeviceConnectionParameters deviceConnectionParameters =
         DeviceConnectionParameters.newBuilder()
-            .ipAddress(deviceRequest.getIpAddress())
+            .networkAddress(deviceRequest.getNetworkAddress())
             .deviceIdentification(deviceRequest.getDeviceIdentification())
             .ied(IED.ZOWN_RTU)
             .serverName(serverName)

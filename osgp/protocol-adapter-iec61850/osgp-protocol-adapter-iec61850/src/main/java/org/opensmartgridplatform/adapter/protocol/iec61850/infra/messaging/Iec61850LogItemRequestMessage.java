@@ -1,13 +1,10 @@
-/*
- * Copyright 2014-2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging;
 
+import jakarta.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.iec61850.RegisterDeviceRequest;
 
@@ -15,19 +12,19 @@ public class Iec61850LogItemRequestMessage {
 
   private static final int MAX_MESSAGE_LENGTH = 8000;
 
-  private boolean incoming;
+  private final boolean incoming;
 
-  private String encodedMessage;
+  private final String encodedMessage;
 
-  private String decodedMessage;
+  private final String decodedMessage;
 
-  private String deviceIdentification;
+  private final String deviceIdentification;
 
-  private String organisationIdentification;
+  private final String organisationIdentification;
 
-  private boolean valid;
+  private final boolean valid;
 
-  private int payloadMessageSerializedSize;
+  private final int payloadMessageSerializedSize;
 
   public Iec61850LogItemRequestMessage(
       final String deviceIdentification,
@@ -88,7 +85,7 @@ public class Iec61850LogItemRequestMessage {
   private static String bytesToCArray(final byte[] bytes) {
     String s = "";
     if (bytes.length > 0) {
-      s = javax.xml.bind.DatatypeConverter.printHexBinary(bytes);
+      s = DatatypeConverter.printHexBinary(bytes);
       // Split every two chars with
       // ', ' to create a C array.
       s = s.replaceAll("(.{2})", ", 0x$1");

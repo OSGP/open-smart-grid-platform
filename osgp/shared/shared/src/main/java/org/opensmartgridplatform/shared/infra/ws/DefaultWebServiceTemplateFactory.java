@@ -1,12 +1,7 @@
-/*
- * Copyright 2014 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.shared.infra.ws;
 
 import java.io.IOException;
@@ -59,6 +54,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
   private String keyStoreLocation;
   private String keyStorePassword;
   private KeyStoreFactoryBean trustStoreFactory;
+  private String[] supportedTlsProtocols;
   private String applicationName;
   private int maxConnectionsPerRoute;
   private int maxConnectionsTotal;
@@ -95,6 +91,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
     private String keyStoreLocation;
     private String keyStorePassword;
     private KeyStoreFactoryBean trustStoreFactory;
+    private String[] supportedTlsProtocols = new String[] {"TLSv1.2", "TLSv1.3"};
     private int maxConnectionsPerRoute = 2;
     private int maxConnectionsTotal = 20;
     private int connectionTimeout = 120000;
@@ -153,6 +150,11 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
       return this;
     }
 
+    public Builder setSupportedTlsProtocols(final String[] supportedTlsProtocols) {
+      this.supportedTlsProtocols = supportedTlsProtocols;
+      return this;
+    }
+
     public Builder setMaxConnectionsTotal(final int maxConnectionsTotal) {
       this.maxConnectionsTotal = maxConnectionsTotal;
       return this;
@@ -196,6 +198,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
       webServiceTemplateFactory.circuitBreaker = this.circuitBreaker;
       webServiceTemplateFactory.webServiceTemplateHostnameVerificationStrategy =
           this.webServiceTemplateHostnameVerificationStrategy;
+      webServiceTemplateFactory.supportedTlsProtocols = this.supportedTlsProtocols;
       return webServiceTemplateFactory;
     }
   }
@@ -289,7 +292,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
     if (this.isSecurityEnabled) {
       try {
         clientbuilder.setSSLSocketFactory(this.getSSLConnectionSocketFactory(keystore));
-      } catch (GeneralSecurityException | IOException e) {
+      } catch (final GeneralSecurityException | IOException e) {
         LOGGER.error("Webservice exception occurred: Certificate not available", e);
         throw new WebServiceSecurityException("Certificate not available", e);
       }
@@ -335,7 +338,8 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
 
     final HostnameVerifier hostnameVerifier = this.getHostnameVerifier();
 
-    return new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
+    return new SSLConnectionSocketFactory(
+        sslContext, this.supportedTlsProtocols, null, hostnameVerifier);
   }
 
   private HostnameVerifier getHostnameVerifier() throws GeneralSecurityException {

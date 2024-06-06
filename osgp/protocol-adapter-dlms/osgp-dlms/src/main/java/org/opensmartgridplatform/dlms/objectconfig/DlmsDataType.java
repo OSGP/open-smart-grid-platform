@@ -1,13 +1,6 @@
-/*
- * Copyright 2022 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
 
 package org.opensmartgridplatform.dlms.objectconfig;
 
@@ -65,6 +58,8 @@ public enum DlmsDataType {
   TIME,
   @JsonProperty("dont-care")
   DONT_CARE,
+  @JsonProperty("script")
+  SCRIPT,
 
   // Data types for specific classes
 
@@ -79,6 +74,18 @@ public enum DlmsDataType {
   // Class-id 8: Clock
   @JsonProperty("clock_status")
   CLOCK_STATUS,
+
+  // Class-id 15: Association LN
+  @JsonProperty("object_list_type")
+  OBJECT_LIST_TYPE,
+  @JsonProperty("associated_partners_type")
+  ASSOCIATED_PARTNERS_TYPE,
+  @JsonProperty("context_name_type")
+  CONTEXT_NAME_TYPE,
+  @JsonProperty("xDLMS_context_type")
+  XDLMS_CONTEXT_TYPE,
+  @JsonProperty("mechanism_name_type")
+  MECHANISM_NAME_TYPE,
 
   // Class-id 47: GSM diagnostic
   @JsonProperty("cell_info_type")

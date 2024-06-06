@@ -1,21 +1,15 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.execution;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.stream.Collectors;
 import junit.runner.Version;
 import org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter;
-import org.joda.time.DateTimeZone;
 import org.junit.runner.Computer;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
@@ -52,7 +46,6 @@ public abstract class AppBase {
   public static int run(final AppBase app, final String[] testClasses, final String... args) {
     // Ensure the tests are executed in UTC time
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    DateTimeZone.setDefault(DateTimeZone.UTC);
 
     final CmdLineParser p = new CmdLineParser(app);
     try {
@@ -108,7 +101,7 @@ public abstract class AppBase {
     final List<Failure> failuresLinkedToTestMechanism =
         result.getFailures().stream()
             .filter(failure -> Description.TEST_MECHANISM.equals(failure.getDescription()))
-            .collect(Collectors.toList());
+            .toList();
 
     final int testMechanismRelatedFailureCount = failuresLinkedToTestMechanism.size();
     if (testMechanismRelatedFailureCount > 0) {

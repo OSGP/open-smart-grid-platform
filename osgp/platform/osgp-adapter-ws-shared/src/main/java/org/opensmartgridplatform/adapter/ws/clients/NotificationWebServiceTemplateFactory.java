@@ -1,11 +1,7 @@
-/*
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.clients;
 
 import java.io.IOException;
@@ -54,6 +50,8 @@ public class NotificationWebServiceTemplateFactory {
   private final WebServiceMessageFactory messageFactory;
   private final List<ClientInterceptor> fixedInterceptors = new ArrayList<>();
 
+  private final String[] supportedTlsProtocols;
+
   /**
    * Web service template factory that creates web service templates based on configuration from the
    * database.
@@ -66,7 +64,8 @@ public class NotificationWebServiceTemplateFactory {
   public NotificationWebServiceTemplateFactory(
       final NotificationWebServiceConfigurationRepository configRepository,
       final WebServiceMessageFactory messageFactory,
-      final List<ClientInterceptor> fixedInterceptors) {
+      final List<ClientInterceptor> fixedInterceptors,
+      final String[] supportedTlsProtocols) {
 
     this.configRepository =
         Objects.requireNonNull(configRepository, "configRepository must not be null");
@@ -74,6 +73,7 @@ public class NotificationWebServiceTemplateFactory {
     if (fixedInterceptors != null) {
       this.fixedInterceptors.addAll(fixedInterceptors);
     }
+    this.supportedTlsProtocols = supportedTlsProtocols;
   }
 
   public WebServiceTemplate getTemplate(final ApplicationDataLookupKey templateKey) {
@@ -188,7 +188,10 @@ public class NotificationWebServiceTemplateFactory {
     this.loadTrustMaterial(sslContextBuilder, config);
     try {
       return new SSLConnectionSocketFactory(
-          sslContextBuilder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+          sslContextBuilder.build(),
+          this.supportedTlsProtocols,
+          null,
+          SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
     } catch (final GeneralSecurityException e) {
       LOGGER.error("Exception creating SSL connection socket factory", e);
       throw new WebServiceSecurityException("Unable to build SSL context", e);

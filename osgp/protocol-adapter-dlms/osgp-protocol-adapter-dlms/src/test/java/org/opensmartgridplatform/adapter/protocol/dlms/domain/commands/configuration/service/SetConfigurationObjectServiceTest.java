@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,13 +19,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
+import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
@@ -46,6 +44,7 @@ class SetConfigurationObjectServiceTest {
   private SetConfigurationObjectService instance;
 
   @Mock private DlmsHelper dlmsHelper;
+  @Mock private DlmsDeviceRepository dlmsDeviceRepository;
   @Mock private DlmsConnectionManager conn;
   @Mock private DlmsMessageListener dlmsMessageListener;
   @Mock private DlmsConnection dlmsConnection;
@@ -58,7 +57,12 @@ class SetConfigurationObjectServiceTest {
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
 
     this.instance =
-        new SetConfigurationObjectService(this.dlmsHelper) {
+        new SetConfigurationObjectService(this.dlmsHelper, this.dlmsDeviceRepository) {
+
+          @Override
+          AttributeAddress getAttributeAddress(final Protocol protocol) {
+            return new AttributeAddress(-1, (ObisCode) null, -1);
+          }
 
           @Override
           public boolean handles(final Protocol protocol) {
@@ -89,7 +93,7 @@ class SetConfigurationObjectServiceTest {
         .isThrownBy(
             () -> {
               // CALL
-              this.instance.setConfigurationObject(this.conn, null, null);
+              this.instance.setConfigurationObject(this.conn, null, null, null, null);
             });
   }
 

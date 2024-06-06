@@ -1,17 +1,12 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.core.application.services;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
-import javax.persistence.OptimisticLockException;
 import org.opensmartgridplatform.core.domain.model.domain.DomainResponseService;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
@@ -60,13 +55,7 @@ public class DeviceResponseMessageService {
         "Processing protocol response message with correlation uid [{}]",
         message.getCorrelationUid());
 
-    try {
-      synchronized (this) {
-        this.deviceCommunicationInformationService.updateDeviceConnectionInformation(message);
-      }
-    } catch (final OptimisticLockException ex) {
-      LOGGER.warn("Last communication time not updated due to optimistic lock exception", ex);
-    }
+    this.deviceCommunicationInformationService.updateDeviceConnectionInformation(message);
 
     try {
       if (message.isScheduled() && !message.bypassRetry()) {
@@ -189,6 +178,7 @@ public class DeviceResponseMessageService {
 
     scheduledTask.setFailed(this.determineErrorMessage(message));
     scheduledTask.retryOn(scheduledRetryTime);
+    scheduledTask.setMessagePriority(message.getMessagePriority());
     this.scheduledTaskService.saveScheduledTask(scheduledTask);
   }
 
@@ -287,7 +277,7 @@ public class DeviceResponseMessageService {
             message
                 .messageMetadata()
                 .builder()
-                .withIpAddress(getIpAddress(device))
+                .withNetworkAddress(getNetworkAddress(device))
                 .withNetworkSegmentIds(device.getBtsId(), device.getCellId())
                 .withRetryCount(message.getRetryCount() + 1)
                 .build())
@@ -295,11 +285,11 @@ public class DeviceResponseMessageService {
         .build();
   }
 
-  private static String getIpAddress(final Device device) {
-    if (device.getIpAddress() == null && device.getGatewayDevice() != null) {
-      return device.getGatewayDevice().getIpAddress();
+  private static String getNetworkAddress(final Device device) {
+    if (device.getNetworkAddress() == null && device.getGatewayDevice() != null) {
+      return device.getGatewayDevice().getNetworkAddress();
     }
-    return device.getIpAddress();
+    return device.getNetworkAddress();
   }
 
   private ScheduledTask createScheduledRetryTask(final ProtocolResponseMessage message)
@@ -336,13 +326,27 @@ public class DeviceResponseMessageService {
       final ProtocolResponseMessage message,
       final FunctionalException maxScheduleTimeExceededException) {
 
+    final FunctionalException originalOsgpException =
+        this.getOriginalOsgpException(message, maxScheduleTimeExceededException);
+
     final ProtocolResponseMessage maxScheduleTimeExceededResponseMessage =
         ProtocolResponseMessage.newBuilder()
             .messageMetadata(message.messageMetadata())
             .result(ResponseMessageResultType.NOT_OK)
-            .osgpException(maxScheduleTimeExceededException)
+            .osgpException(originalOsgpException)
             .dataObject(message.getDataObject())
             .build();
     this.domainResponseMessageSender.send(maxScheduleTimeExceededResponseMessage);
+  }
+
+  private FunctionalException getOriginalOsgpException(
+      final ProtocolResponseMessage message, final FunctionalException functionalException) {
+    if (functionalException.getExceptionType() == FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED
+        && message.getOsgpException() != null
+        && message.getOsgpException() instanceof final FunctionalException originalException) {
+      return originalException;
+    } else {
+      return functionalException;
+    }
   }
 }

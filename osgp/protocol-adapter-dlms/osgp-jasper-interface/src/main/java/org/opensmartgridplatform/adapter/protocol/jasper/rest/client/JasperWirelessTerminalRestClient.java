@@ -1,17 +1,14 @@
-/*
- * Copyright 2022 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.jasper.rest.client;
 
 import org.opensmartgridplatform.adapter.protocol.jasper.client.JasperWirelessTerminalClient;
-import org.opensmartgridplatform.adapter.protocol.jasper.config.JasperWirelessAccess;
-import org.opensmartgridplatform.adapter.protocol.jasper.exceptions.OsgpJasperException;
 import org.opensmartgridplatform.adapter.protocol.jasper.response.GetSessionInfoResponse;
+import org.opensmartgridplatform.jasper.client.JasperWirelessRestClient;
+import org.opensmartgridplatform.jasper.config.JasperWirelessAccess;
+import org.opensmartgridplatform.jasper.exceptions.OsgpJasperException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -58,7 +55,10 @@ public class JasperWirelessTerminalRestClient extends JasperWirelessRestClient
           this.jasperwirelessRestTemplate.exchange(
               url, HttpMethod.GET, entity, GetSessionInfoResponse.class);
 
-      getSessionInfoResponse = this.checkOnSessionValidity(getSessionInfoResponseEntity);
+      if (getSessionInfoResponseEntity.getBody() != null) {
+        getSessionInfoResponse =
+            this.checkOnSessionValidity(getSessionInfoResponseEntity.getBody());
+      }
 
     } catch (final HttpClientErrorException | HttpServerErrorException e) {
       this.handleException(e);
@@ -69,7 +69,7 @@ public class JasperWirelessTerminalRestClient extends JasperWirelessRestClient
   }
 
   private GetSessionInfoResponse checkOnSessionValidity(
-      final ResponseEntity<GetSessionInfoResponse> getSessionInfoResponseEntity) {
+      final GetSessionInfoResponse getSessionInfoResponse) {
     // To simulated to same behaviour as the SOAP interface. Session info of an expired session is
     // removed form the response.
     // REST-interface returns information about the current or most recent data session for a given
@@ -77,7 +77,6 @@ public class JasperWirelessTerminalRestClient extends JasperWirelessRestClient
     // SOAP-interface returns the current session information (IP address and session start time)
     // for one or more devices. If the specified device is not in session, no information is
     // returned.
-    final GetSessionInfoResponse getSessionInfoResponse = getSessionInfoResponseEntity.getBody();
     if (this.hasCurrentSession(getSessionInfoResponse)) {
       return getSessionInfoResponse;
     } else {

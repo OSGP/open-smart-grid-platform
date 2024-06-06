@@ -1,12 +1,7 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.addSetting;
@@ -77,7 +72,7 @@ public class FindAuxillaryEventsReads extends AbstractFindEventsReads {
               EventType.MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_1,
               EventType.MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_1,
               EventType.MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_1,
-              EventType.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_1,
+              EventType.MBUS_STATUS_BIT_19_RESERVED_CHANNEL_1,
               EventType.MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_1,
               EventType.MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_1,
               EventType.MBUS_STATUS_BIT_22_MANUFACTURER_SPECIFIC_CHANNEL_1,
@@ -111,7 +106,7 @@ public class FindAuxillaryEventsReads extends AbstractFindEventsReads {
               EventType.MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_2,
               EventType.MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_2,
               EventType.MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_2,
-              EventType.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_2,
+              EventType.MBUS_STATUS_BIT_19_RESERVED_CHANNEL_2,
               EventType.MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_2,
               EventType.MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_2,
               EventType.MBUS_STATUS_BIT_22_MANUFACTURER_SPECIFIC_CHANNEL_2,
@@ -145,7 +140,7 @@ public class FindAuxillaryEventsReads extends AbstractFindEventsReads {
               EventType.MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_3,
               EventType.MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_3,
               EventType.MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_3,
-              EventType.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_3,
+              EventType.MBUS_STATUS_BIT_19_RESERVED_CHANNEL_3,
               EventType.MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_3,
               EventType.MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_3,
               EventType.MBUS_STATUS_BIT_22_MANUFACTURER_SPECIFIC_CHANNEL_3,
@@ -179,7 +174,7 @@ public class FindAuxillaryEventsReads extends AbstractFindEventsReads {
               EventType.MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_4,
               EventType.MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_4,
               EventType.MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_4,
-              EventType.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_4,
+              EventType.MBUS_STATUS_BIT_19_RESERVED_CHANNEL_4,
               EventType.MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_4,
               EventType.MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_4,
               EventType.MBUS_STATUS_BIT_22_MANUFACTURER_SPECIFIC_CHANNEL_4,

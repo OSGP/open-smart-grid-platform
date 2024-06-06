@@ -1,11 +1,7 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.domain.core.valueobjects;
 
 public enum DeviceFunction {
@@ -19,6 +15,8 @@ public enum DeviceFunction {
   COUPLE_MBUS_DEVICE,
   COUPLE_MBUS_DEVICE_BY_CHANNEL,
   DECOUPLE_MBUS_DEVICE,
+
+  DECOUPLE_MBUS_DEVICE_ADMINISTRATIVE,
   DECOUPLE_MBUS_DEVICE_BY_CHANNEL,
   DISABLE_DEBUGGING,
   ENABLE_DEBUGGING,
@@ -52,6 +50,7 @@ public enum DeviceFunction {
   GET_SPECIFIC_ATTRIBUTE_VALUE,
   GET_STATUS,
   GET_TARIFF_STATUS,
+  GET_THD_FINGERPRINT,
   HANDLE_BUNDLED_ACTIONS,
   PUSH_NOTIFICATION_ALARM,
   PUSH_NOTIFICATION_SMS,
@@ -88,10 +87,12 @@ public enum DeviceFunction {
   SET_PUSH_SETUP_ALARM,
   SET_PUSH_SETUP_LAST_GASP,
   SET_PUSH_SETUP_SMS,
+  SET_PUSH_SETUP_UDP,
   SET_RANDOMISATION_SETTINGS,
   SET_REBOOT,
   SET_SPECIAL_DAYS,
   SET_TARIFF_SCHEDULE,
+  SET_THD_CONFIGURATION,
   SET_TRANSITION,
   STOP_SELF_TEST,
   SWITCH_CONFIGURATION_BANK,

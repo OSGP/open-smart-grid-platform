@@ -1,15 +1,10 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -69,7 +64,6 @@ public class ClearMBusStatusOnAllChannelsSteps extends BaseBundleSteps {
 
     final ClearMBusStatusOnAllChannelsResponse response =
         this.managementResponseClient.getResponse(asyncRequest);
-
     assertThat(response).as("ClearMBusStatusOnAllChannelsResponse should not be null").isNotNull();
     assertThat(response.getResult()).as("Result").isEqualTo(OsgpResultType.valueOf(result));
   }

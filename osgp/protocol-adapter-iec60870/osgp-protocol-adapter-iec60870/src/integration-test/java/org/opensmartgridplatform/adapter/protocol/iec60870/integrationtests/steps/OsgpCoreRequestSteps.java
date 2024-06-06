@@ -1,11 +1,7 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.steps;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,11 +13,11 @@ import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.Test
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.mockito.ArgumentCaptor;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceRequestMessageListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.OsgpRequestMessageSender;

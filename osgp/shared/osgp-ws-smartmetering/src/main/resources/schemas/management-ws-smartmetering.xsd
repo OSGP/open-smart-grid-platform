@@ -1,6 +1,3 @@
-<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache 
-  License, Version 2.0 (the "License"); you may not use this file except in 
-  compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
             xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
@@ -352,6 +349,7 @@
       <xsd:enumeration value="POWER_QUALITY_EVENT_LOG"/>
       <xsd:enumeration value="AUXILIARY_EVENT_LOG"/>
       <xsd:enumeration value="POWER_QUALITY_EXTENDED_EVENT_LOG"/>
+      <xsd:enumeration value="POWER_QUALITY_THD_EVENT_LOG"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -430,6 +428,24 @@
       <xsd:enumeration value="MODULE_COVER_OPENED"/>
       <!-- 49 - module cover closed -  -  -  -->
       <xsd:enumeration value="MODULE_COVER_CLOSED"/>
+      <!-- 51 - THD Over-limit L1 -  -  -  -->
+      <xsd:enumeration value="THD_OVER_LIMIT_L1"/>
+      <!-- 52 - THD Over-limit L2 -  -  -  -->
+      <xsd:enumeration value="THD_OVER_LIMIT_L2"/>
+      <!-- 53 - THD Over-limit L3 -  -  -  -->
+      <xsd:enumeration value="THD_OVER_LIMIT_L3"/>
+      <!-- 54 - THD Normal L1 -  -  -  -->
+      <xsd:enumeration value="THD_NORMAL_L1"/>
+      <!-- 55 - THD Normal L2 -  -  -  -->
+      <xsd:enumeration value="THD_NORMAL_L2"/>
+      <!-- 56 - THD Normal L3 -  -  -  -->
+      <xsd:enumeration value="THD_NORMAL_L3"/>
+      <!-- 57 - THD Long Over-limit L1 -  -  -  -->
+      <xsd:enumeration value="THD_LONG_OVER_LIMIT_L1"/>
+      <!-- 58 - THD Long Over-limit L2 -  -  -  -->
+      <xsd:enumeration value="THD_LONG_OVER_LIMIT_L2"/>
+      <!-- 59 - THD Long Over-limit L3 -  -  -  -->
+      <xsd:enumeration value="THD_LONG_OVER_LIMIT_L3"/>
       <!-- 71 - metrological maintenance -  -  -  -->
       <xsd:enumeration value="METROLOGICAL_MAINTENANCE"/>
       <!-- 72 - technical maintenance -  -  -  -->
@@ -717,7 +733,7 @@
       <!-- 0x8092 - M-Bus device on channel 1, has status bit 18 set (new key rejected) -->
       <xsd:enumeration value="MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_1"/>
       <!-- 0x8093 - M-Bus device on channel 1, has status bit 19 set (reserved) -->
-      <xsd:enumeration value="MBUS_STATUS_BIT_18_RESERVED_CHANNEL_1"/>
+      <xsd:enumeration value="MBUS_STATUS_BIT_19_RESERVED_CHANNEL_1"/>
       <!-- 0x8094 - M-Bus device on channel 1, has status bit 20 set (manufacturer specific event) -->
       <xsd:enumeration value="MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_1"/>
       <!-- 0x8095 - M-Bus device on channel 1, has status bit 21 set (manufacturer specific event) -->
@@ -786,7 +802,7 @@
       <!-- 0x8192 - M-Bus device on channel 2, has status bit 18 set (new key rejected) -->
       <xsd:enumeration value="MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_2"/>
       <!-- 0x8193 - M-Bus device on channel 2, has status bit 19 set (reserved) -->
-      <xsd:enumeration value="MBUS_STATUS_BIT_18_RESERVED_CHANNEL_2"/>
+      <xsd:enumeration value="MBUS_STATUS_BIT_19_RESERVED_CHANNEL_2"/>
       <!-- 0x8194 - M-Bus device on channel 2, has status bit 20 set (manufacturer specific event) -->
       <xsd:enumeration value="MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_2"/>
       <!-- 0x8195 - M-Bus device on channel 2, has status bit 21 set (manufacturer specific event) -->
@@ -855,7 +871,7 @@
       <!-- 0x8292 - M-Bus device on channel 3, has status bit 18 set (new key rejected) -->
       <xsd:enumeration value="MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_3"/>
       <!-- 0x8293 - M-Bus device on channel 3, has status bit 19 set (reserved) -->
-      <xsd:enumeration value="MBUS_STATUS_BIT_18_RESERVED_CHANNEL_3"/>
+      <xsd:enumeration value="MBUS_STATUS_BIT_19_RESERVED_CHANNEL_3"/>
       <!-- 0x8294 - M-Bus device on channel 3, has status bit 20 set (manufacturer specific event) -->
       <xsd:enumeration value="MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_3"/>
       <!-- 0x8295 - M-Bus device on channel 3, has status bit 21 set (manufacturer specific event) -->
@@ -924,7 +940,7 @@
       <!-- 0x8392 - M-Bus device on channel 4, has status bit 18 set (new key rejected) -->
       <xsd:enumeration value="MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_4"/>
       <!-- 0x8393 - M-Bus device on channel 4, has status bit 19 set (reserved) -->
-      <xsd:enumeration value="MBUS_STATUS_BIT_18_RESERVED_CHANNEL_4"/>
+      <xsd:enumeration value="MBUS_STATUS_BIT_19_RESERVED_CHANNEL_4"/>
       <!-- 0x8394 - M-Bus device on channel 4, has status bit 20 set (manufacturer specific event) -->
       <xsd:enumeration value="MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_4"/>
       <!-- 0x8395 - M-Bus device on channel 4, has status bit 21 set (manufacturer specific event) -->
@@ -953,6 +969,8 @@
       <xsd:enumeration value="KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_4"/>
       <!-- 0x83A1 - Key is acknowledged by the M-Bus device on channel 4 -->
       <xsd:enumeration value="KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_4"/>
+      <!--        - Unknown event type -->
+      <xsd:enumeration value="UNKNOWN_EVENT_HEADEND"/>
 
     </xsd:restriction>
   </xsd:simpleType>
@@ -1001,8 +1019,7 @@
   <xsd:complexType name="SetDeviceCommunicationSettingsData">
     <xsd:sequence>
       <xsd:element type="xsd:integer" name="ChallengeLength"/>
-      <xsd:element type="xsd:boolean" name="WithListSupported"
-                   default="false"/>
+      <xsd:element type="xsd:integer" name="WithListMax"/>
       <xsd:element type="xsd:boolean" name="SelectiveAccessSupported"
                    default="false"/>
       <xsd:element type="xsd:boolean" name="IpAddressIsStatic"
@@ -1109,7 +1126,7 @@
       <xsd:element name="CellId" type="xsd:unsignedInt"/>
       <xsd:element name="LocationId" type="xsd:unsignedShort"/>
       <xsd:element name="SignalQuality" type="tns:SignalQuality"/>
-      <xsd:element name="BitErrorRate" type="tns:BitErrorRate"/>
+      <xsd:element name="BitErrorRate" type="xsd:short"/>
       <xsd:element name="MobileCountryCode" type="xsd:unsignedShort"/>
       <xsd:element name="MobileNetworkCode" type="xsd:unsignedShort"/>
       <xsd:element name="ChannelNumber" type="xsd:unsignedInt"/>
@@ -1246,21 +1263,6 @@
       <xsd:enumeration value="MINUS_53_DBM"/>
       <!-- 31 - -51 dBm or greater -->
       <xsd:enumeration value="MINUS_51_DBM_OR_GREATER"/>
-      <!-- 99 - not known or not detectable -->
-      <xsd:enumeration value="NOT_KNOWN_OR_NOT_DETECTABLE"/>
-    </xsd:restriction>
-  </xsd:simpleType>
-
-  <xsd:simpleType name="BitErrorRate">
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="RXQUAL_0"/>
-      <xsd:enumeration value="RXQUAL_1"/>
-      <xsd:enumeration value="RXQUAL_2"/>
-      <xsd:enumeration value="RXQUAL_3"/>
-      <xsd:enumeration value="RXQUAL_4"/>
-      <xsd:enumeration value="RXQUAL_5"/>
-      <xsd:enumeration value="RXQUAL_6"/>
-      <xsd:enumeration value="RXQUAL_7"/>
       <!-- 99 - not known or not detectable -->
       <xsd:enumeration value="NOT_KNOWN_OR_NOT_DETECTABLE"/>
     </xsd:restriction>

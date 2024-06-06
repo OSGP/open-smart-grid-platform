@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Contributors to the GXF project
+#
+# SPDX-License-Identifier: Apache-2.0
+
 @SmartMetering @Platform @SmartMeteringManagement
 Feature: SmartMetering Management - Set Device Communication Settings
   As a grid operator
@@ -9,7 +13,7 @@ Feature: SmartMetering Management - Set Device Communication Settings
       | DeviceIdentification     | TEST1024000000001 |
       | DeviceType               | SMART_METER_E     |
       | ChallengeLength          | 8                 |
-      | WithListSupported        | true              |
+      | WithListMax              | 32                |
       | SelectiveAccessSupported | true              |
       | IpAddressIsStatic        | true              |
       | UseSn                    | true              |
@@ -18,7 +22,7 @@ Feature: SmartMetering Management - Set Device Communication Settings
     When the set device communication settings request is received
       | DeviceIdentification     | TEST1024000000001 |
       | ChallengeLength          | 16                |
-      | WithListSupported        | false             |
+      | WithListMax              | 1                 |
       | SelectiveAccessSupported | false             |
       | IpAddressIsStatic        | false             |
       | UseSn                    | false             |
@@ -27,7 +31,7 @@ Feature: SmartMetering Management - Set Device Communication Settings
     Then the set device communication settings response should be "OK"
     And the device "TEST1024000000001" should be in the database with attributes
       | ChallengeLength          | 16    |
-      | WithListSupported        | false |
+      | WithListMax              | 1     |
       | SelectiveAccessSupported | false |
       | IpAddressIsStatic        | false |
       | UseSn                    | false |

@@ -1,27 +1,23 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.cucumber.core.ReadSettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
-import org.opensmartgridplatform.cucumber.platform.inputparsers.DateInputParser;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
+import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +42,7 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
   String alias = PlatformSmartmeteringDefaults.ALIAS;
   boolean inMaintenance = PlatformSmartmeteringDefaults.IN_MAINTENANCE;
   String gatewayDeviceIdentification = PlatformSmartmeteringDefaults.GATEWAY_DEVICE_IDENTIFICATION;
-  Date technicalInstallationDate = PlatformSmartmeteringDefaults.TECHNICAL_INSTALLATION_DATE;
+  Instant technicalInstallationDate = PlatformSmartmeteringDefaults.TECHNICAL_INSTALLATION_DATE;
   DeviceModel deviceModel = PlatformSmartmeteringDefaults.DEVICE_MODEL;
   DeviceLifecycleStatus deviceLifeCycleStatus = PlatformDefaults.DEFAULT_DEVICE_LIFECYCLE_STATUS;
 
@@ -147,7 +143,7 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
     return (T) this;
   }
 
-  public T setTechnicalInstallationDate(final Date technicalInstallationDate) {
+  public T setTechnicalInstallationDate(final Instant technicalInstallationDate) {
     this.technicalInstallationDate = technicalInstallationDate;
     return (T) this;
   }
@@ -212,8 +208,9 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
     }
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.TECHNICAL_INSTALLATION_DATE)) {
       this.setTechnicalInstallationDate(
-          DateInputParser.parse(
-              inputSettings.get(PlatformSmartmeteringKeys.TECHNICAL_INSTALLATION_DATE)));
+          JavaTimeHelpers.parseToZonedDateTime(
+                  inputSettings.get(PlatformSmartmeteringKeys.TECHNICAL_INSTALLATION_DATE))
+              .toInstant());
     }
     if (inputSettings.containsKey(PlatformKeys.KEY_DEVICE_LIFECYCLE_STATUS)) {
       this.setDeviceLifecycleStatus(

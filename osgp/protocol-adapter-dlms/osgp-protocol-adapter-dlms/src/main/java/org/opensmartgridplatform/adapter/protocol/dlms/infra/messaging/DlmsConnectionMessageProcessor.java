@@ -1,19 +1,14 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
+import jakarta.jms.JMSException;
 import java.io.Serializable;
 import java.util.function.Consumer;
-import javax.jms.JMSException;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SystemEventService;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.throttling.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -24,9 +19,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionC
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage.Builder;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.opensmartgridplatform.throttling.api.Permit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,12 +45,11 @@ public abstract class DlmsConnectionMessageProcessor {
 
   @Autowired protected DlmsDeviceRepository deviceRepository;
 
-  @Autowired(required = false)
-  protected ThrottlingService throttlingService;
-
-  @Autowired protected ThrottlingClientConfig throttlingClientConfig;
+  @Autowired protected ThrottlingService throttlingService;
 
   @Autowired private SystemEventService systemEventService;
+
+  @Autowired private MessagePriorityHandler messagePriorityHandler;
 
   public void createAndHandleConnectionForDevice(
       final DlmsDevice device,
@@ -64,16 +57,11 @@ public abstract class DlmsConnectionMessageProcessor {
       final Consumer<DlmsConnectionManager> taskForConnectionManager)
       throws OsgpException {
 
-    Permit permit = null;
-    if (this.throttlingClientConfig.clientEnabled()) {
-      permit =
-          this.throttlingClientConfig
-              .throttlingClient()
-              .requestPermitUsingNetworkSegmentIfIdsAreAvailable(
-                  messageMetadata.getBaseTransceiverStationId(), messageMetadata.getCellId());
-    } else {
-      this.throttlingService.openConnection();
-    }
+    final Permit permit =
+        this.throttlingService.requestPermit(
+            messageMetadata.getBaseTransceiverStationId(),
+            messageMetadata.getCellId(),
+            messageMetadata.getMessagePriority());
 
     final DlmsMessageListener dlmsMessageListener =
         this.createMessageListenerForDeviceConnection(device, messageMetadata);
@@ -99,11 +87,7 @@ public abstract class DlmsConnectionMessageProcessor {
        * DeviceRequestMessageProcessor.processMessageTasks(), where
        * this.doConnectionPostProcessing() is called in a finally block.
        */
-      if (this.throttlingClientConfig.clientEnabled()) {
-        this.throttlingClientConfig.throttlingClient().releasePermit(permit);
-      } else {
-        this.throttlingService.closeConnection();
-      }
+      this.throttlingService.releasePermit(permit);
       throw e;
     }
   }
@@ -140,11 +124,7 @@ public abstract class DlmsConnectionMessageProcessor {
 
     this.setClosingDlmsConnectionMessageListener(device, conn);
 
-    if (this.throttlingClientConfig.clientEnabled()) {
-      this.throttlingClientConfig.throttlingClient().releasePermit(conn.getPermit());
-    } else {
-      this.throttlingService.closeConnection();
-    }
+    this.throttlingService.releasePermit(conn.getPermit());
 
     if (device.needsInvocationCounter()) {
       this.updateInvocationCounterForDevice(device, conn);
@@ -178,10 +158,10 @@ public abstract class DlmsConnectionMessageProcessor {
     final InvocationCountingDlmsMessageListener dlmsMessageListener =
         (InvocationCountingDlmsMessageListener) conn.getDlmsMessageListener();
     final int numberOfSentMessages = dlmsMessageListener.getNumberOfSentMessages();
-    device.incrementInvocationCounter(numberOfSentMessages);
-    this.deviceRepository.updateInvocationCounter(
-        device.getDeviceIdentification(), device.getInvocationCounter());
+    this.deviceRepository.incrementInvocationCounter(
+        device.getDeviceIdentification(), (long) numberOfSentMessages);
   }
+
   /**
    * @param logger the logger from the calling subClass
    * @param exception the exception to be logged
@@ -216,28 +196,22 @@ public abstract class DlmsConnectionMessageProcessor {
       final DeviceResponseMessageSender responseMessageSender,
       final Serializable responseObject) {
 
-    OsgpException osgpException = null;
+    final Builder messageBuilder =
+        new Builder().messageMetadata(messageMetadata).result(result).dataObject(responseObject);
+
     if (exception != null) {
-      osgpException = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
+      messageBuilder.osgpException(
+          this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception));
     }
 
-    final RetryHeader retryHeader;
     if (this.shouldRetry(result, exception, responseObject)) {
-      retryHeader = this.retryHeaderFactory.createRetryHeader(messageMetadata.getRetryCount());
-    } else {
-      retryHeader = this.retryHeaderFactory.createEmptyRetryHeader();
+      messageBuilder.retryHeader(
+          this.retryHeaderFactory.createRetryHeader(messageMetadata.getRetryCount()));
+      messageBuilder.messagePriority(
+          this.messagePriorityHandler.recalculatePriority(messageMetadata));
     }
 
-    final ProtocolResponseMessage responseMessage =
-        new ProtocolResponseMessage.Builder()
-            .messageMetadata(messageMetadata)
-            .result(result)
-            .osgpException(osgpException)
-            .dataObject(responseObject)
-            .retryHeader(retryHeader)
-            .build();
-
-    responseMessageSender.send(responseMessage);
+    responseMessageSender.send(messageBuilder.build());
   }
 
   /* suppress unused parameter warning, because we need it in override method */

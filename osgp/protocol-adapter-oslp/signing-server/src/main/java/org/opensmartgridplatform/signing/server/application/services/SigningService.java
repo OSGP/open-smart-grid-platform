@@ -1,16 +1,12 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.signing.server.application.services;
 
+import jakarta.annotation.Resource;
+import jakarta.jms.Destination;
 import java.security.PrivateKey;
-import javax.annotation.Resource;
-import javax.jms.Destination;
 import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
@@ -96,7 +92,7 @@ public class SigningService {
             .withPayloadMessage(payloadMessage)
             .build();
 
-    ResponseMessage responseMessage;
+    final ResponseMessage responseMessage;
 
     if (oslpEnvelope == null) {
       LOGGER.error(

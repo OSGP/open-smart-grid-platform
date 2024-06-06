@@ -1,15 +1,10 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareModule;
@@ -73,9 +68,7 @@ public class FirmwareService {
 
     final DeviceModel deviceModel = this.determineDeviceModel(smartMeter);
     final List<String> deviceModelCodes =
-        firmware.getDeviceModels().stream()
-            .map(DeviceModel::getModelCode)
-            .collect(Collectors.toList());
+        firmware.getDeviceModels().stream().map(DeviceModel::getModelCode).toList();
     if (!deviceModelCodes.contains(deviceModel.getModelCode())) {
       throw new FunctionalException(
           FunctionalExceptionType.FIRMWARE_DOES_NOT_SUPPORT_DEVICE_MODEL,

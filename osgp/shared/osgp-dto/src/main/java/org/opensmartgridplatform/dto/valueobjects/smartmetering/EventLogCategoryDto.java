@@ -1,14 +1,11 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto.EventLogDetailsType.COUNTER;
+import static org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto.EventLogDetailsType.MAGNITUDE;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto.EventLogDetailsType.MAGNITUDE_AND_DURATION;
 import static org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto.EventLogDetailsType.NONE;
 
@@ -19,7 +16,8 @@ public enum EventLogCategoryDto {
   M_BUS_EVENT_LOG(NONE),
   POWER_QUALITY_EVENT_LOG(NONE),
   AUXILIARY_EVENT_LOG(NONE),
-  POWER_QUALITY_EXTENDED_EVENT_LOG(MAGNITUDE_AND_DURATION);
+  POWER_QUALITY_EXTENDED_EVENT_LOG(MAGNITUDE_AND_DURATION),
+  POWER_QUALITY_THD_EVENT_LOG(MAGNITUDE);
 
   private final EventLogDetailsType detailsType;
 
@@ -34,7 +32,8 @@ public enum EventLogCategoryDto {
   public enum EventLogDetailsType {
     NONE(2),
     COUNTER(3),
-    MAGNITUDE_AND_DURATION(4);
+    MAGNITUDE_AND_DURATION(4),
+    MAGNITUDE(3);
 
     private final int numberOfEventLogElements;
 

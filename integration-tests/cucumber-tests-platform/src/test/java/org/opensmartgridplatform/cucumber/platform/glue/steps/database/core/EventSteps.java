@@ -1,11 +1,7 @@
-/*
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,12 +12,12 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -42,7 +38,8 @@ public class EventSteps {
   @Given("^an event$")
   public void anEvent(final Map<String, String> data) {
     final String deviceIdentification = getString(data, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
-    final Date date = getDateTime2(getString(data, PlatformKeys.DATE), DateTime.now()).toDate();
+    final Instant date =
+        getDateTime2(getString(data, PlatformKeys.DATE), ZonedDateTime.now()).toInstant();
     final EventType eventType =
         getEnum(data, PlatformKeys.EVENT_TYPE, EventType.class, EventType.DIAG_EVENTS_GENERAL);
     final String description = getString(data, PlatformKeys.KEY_DESCRIPTION, "");

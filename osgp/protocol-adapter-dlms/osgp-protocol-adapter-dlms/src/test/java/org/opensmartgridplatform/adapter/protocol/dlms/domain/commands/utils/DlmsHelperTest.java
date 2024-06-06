@@ -1,17 +1,15 @@
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -20,13 +18,22 @@ import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
+import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
@@ -34,6 +41,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.objectconfig.AccessType;
+import org.opensmartgridplatform.dlms.objectconfig.Attribute;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsDataType;
+import org.opensmartgridplatform.dlms.objectconfig.ValueType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
@@ -65,39 +77,200 @@ public class DlmsHelperTest {
 
   public static final int DLMS_UNIT_VAR = 29;
   public static final int DLMS_UNIT_WH = 30;
+  public static final int DLMS_UNIT_UNDEFINED = 0;
+
+  public static final int CLASS_ID = 3;
+  public static final String OBIS = "1.0.32.7.0.255";
+  private final int ATTRIBUTE_ID = 3;
 
   private final DlmsHelper dlmsHelper = new DlmsHelper();
 
-  @Test
-  public void testGetWithListSupported() throws ProtocolAdapterException, IOException {
+  @ParameterizedTest
+  @CsvSource({"2", "5", "32"})
+  void testGetWithList(final int withListMax) throws ProtocolAdapterException, IOException {
     final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
     final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+    when(dlmsDevice.getWithListMax()).thenReturn(withListMax);
     when(connectionManager.getConnection()).thenReturn(dlmsConnection);
 
-    final AttributeAddress[] attrAddresses = new AttributeAddress[1];
-    attrAddresses[0] = mock(AttributeAddress.class);
-
-    when(dlmsDevice.isWithListSupported()).thenReturn(true);
+    // Add one more address to the request than the maximum
+    final AttributeAddress[] attrAddresses = new AttributeAddress[withListMax + 1];
+    for (int i = 0; i <= withListMax; i++) {
+      attrAddresses[i] = mock(AttributeAddress.class);
+    }
 
     this.dlmsHelper.getWithList(connectionManager, dlmsDevice, attrAddresses);
-    verify(dlmsConnection).get(Arrays.asList(attrAddresses));
+
+    // We expect 2 calls:
+    // - one call with all addresses up to the maximum amount
+    // - one call with the remaining address
+    verify(dlmsConnection).get(Arrays.asList(attrAddresses).subList(0, withListMax));
+    verify(dlmsConnection).get(Collections.singletonList(attrAddresses[withListMax]));
   }
 
-  @Test
-  public void testGetWithListWorkaround() throws ProtocolAdapterException, IOException {
+  @ParameterizedTest
+  @CsvSource({"2", "5", "32"})
+  void testGetWithListWithMoreThanTwiceTheMaximum(final int withListMax)
+      throws ProtocolAdapterException, IOException {
     final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
     final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+    when(dlmsDevice.getWithListMax()).thenReturn(withListMax);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+    // Add one more address to the request than twice the maximum
+    final AttributeAddress[] attrAddresses = new AttributeAddress[(withListMax * 2) + 1];
+    for (int i = 0; i <= (withListMax * 2); i++) {
+      attrAddresses[i] = mock(AttributeAddress.class);
+    }
+
+    this.dlmsHelper.getWithList(connectionManager, dlmsDevice, attrAddresses);
+
+    // We expect 3 calls:
+    // - one call with all addresses up to the maximum amount
+    // - another call with the maximum amount of addresses
+    // - one call with the remaining address
+    verify(dlmsConnection).get(Arrays.asList(attrAddresses).subList(0, withListMax));
+    verify(dlmsConnection).get(Arrays.asList(attrAddresses).subList(withListMax, withListMax * 2));
+    verify(dlmsConnection).get(Collections.singletonList(attrAddresses[withListMax * 2]));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"0", "1"})
+  void testNormalGetWithMultipleAddresses(final int getWithListMax)
+      throws ProtocolAdapterException, IOException {
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+
+    // Set the maximum to 0 or 1. When the max is 0, then it will be handled as a max of 1.
+    when(dlmsDevice.getWithListMax()).thenReturn(getWithListMax);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+    final AttributeAddress[] attrAddresses = new AttributeAddress[2];
+    attrAddresses[0] = mock(AttributeAddress.class);
+    attrAddresses[1] = mock(AttributeAddress.class);
+
+    this.dlmsHelper.getWithList(connectionManager, dlmsDevice, attrAddresses);
+
+    // When the maximum is 1, then each address is in a separate request.
+    verify(dlmsConnection).get(List.of(attrAddresses[0]));
+    verify(dlmsConnection).get(List.of(attrAddresses[1]));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"0", "1", "2"})
+  void testNormalGetWithSingleAddress(final int withListMax)
+      throws ProtocolAdapterException, IOException {
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+    when(dlmsDevice.getWithListMax()).thenReturn(withListMax);
     when(connectionManager.getConnection()).thenReturn(dlmsConnection);
 
     final AttributeAddress[] attrAddresses = new AttributeAddress[1];
     attrAddresses[0] = mock(AttributeAddress.class);
 
-    when(dlmsDevice.isWithListSupported()).thenReturn(false);
-
     this.dlmsHelper.getWithList(connectionManager, dlmsDevice, attrAddresses);
-    verify(dlmsConnection).get(attrAddresses[0]);
+
+    // When there is only 1 address to be requested, then it doesn't matter what the maximum is:
+    // always expect a single request.
+    verify(dlmsConnection).get(List.of(attrAddresses[0]));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"2", "5", "32"})
+  void testSetWithList(final int withListMax) throws ProtocolAdapterException, IOException {
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+    when(dlmsDevice.getWithListMax()).thenReturn(withListMax);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+    // Add one more setParameter to the request than the maximum
+    final List<SetParameter> setParams = new ArrayList<>();
+    for (int i = 0; i <= withListMax; i++) {
+      setParams.add(mock(SetParameter.class));
+    }
+
+    this.dlmsHelper.setWithList(connectionManager, dlmsDevice, setParams);
+
+    // We expect 2 calls:
+    // - one call with all setParameters up to the maximum amount
+    // - one call with the remaining setParameter
+    verify(dlmsConnection).set(setParams.subList(0, withListMax));
+    verify(dlmsConnection).set(setParams.subList(withListMax, withListMax + 1));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"2", "5", "32"})
+  void testSetWithListWithMoreThanTwiceTheMaximum(final int withListMax)
+      throws ProtocolAdapterException, IOException {
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+    when(dlmsDevice.getWithListMax()).thenReturn(withListMax);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+    // Add one more setParameter to the request than twice the maximum
+    final List<SetParameter> setParams = new ArrayList<>();
+    for (int i = 0; i <= (withListMax * 2); i++) {
+      setParams.add(mock(SetParameter.class));
+    }
+
+    this.dlmsHelper.setWithList(connectionManager, dlmsDevice, setParams);
+
+    // We expect 3 calls:
+    // - one call with all setParameters up to the maximum amount
+    // - another call with the maximum amount of setParameters
+    // - one call with the remaining setParameter
+    verify(dlmsConnection).set(setParams.subList(0, withListMax));
+    verify(dlmsConnection).set(setParams.subList(withListMax, withListMax * 2));
+    verify(dlmsConnection).set(setParams.subList(withListMax * 2, withListMax * 2 + 1));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"0", "1"})
+  void testNormalSetWithMultipleSetParams(final int withListMax)
+      throws ProtocolAdapterException, IOException {
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+
+    // Set the maximum to 0 or 1. When the max is 0, then it will be handled as a max of 1.
+    when(dlmsDevice.getWithListMax()).thenReturn(withListMax);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+    final List<SetParameter> setParams = new ArrayList<>();
+    setParams.add(mock(SetParameter.class));
+    setParams.add(mock(SetParameter.class));
+
+    this.dlmsHelper.setWithList(connectionManager, dlmsDevice, setParams);
+
+    // When the maximum is 1, then each setParameter is in a separate request.
+    verify(dlmsConnection).set(List.of(setParams.get(0)));
+    verify(dlmsConnection).set(List.of(setParams.get(1)));
+  }
+
+  @ParameterizedTest
+  @CsvSource({"0", "1", "2"})
+  void testNormalSetWithSingleSetParam(final int withListMax)
+      throws ProtocolAdapterException, IOException {
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+    when(dlmsDevice.getWithListMax()).thenReturn(withListMax);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+    final List<SetParameter> setParams = new ArrayList<>();
+    setParams.add(mock(SetParameter.class));
+
+    this.dlmsHelper.setWithList(connectionManager, dlmsDevice, setParams);
+
+    // When there is only 1 setParameter to be requested, then it doesn't matter what the maximum
+    // is: always expect a single request.
+    verify(dlmsConnection).set(setParams);
   }
 
   /*
@@ -237,7 +410,25 @@ public class DlmsHelperTest {
             getResultValue, getResultScalerUnit, "getScaledMeterValueTest");
 
     assertThat(meterValueDto.getValue()).isEqualTo(BigDecimal.valueOf(2.1));
-    assertThat(meterValueDto.getDlmsUnit()).isEqualTo(DlmsUnitTypeDto.KWH);
+    assertThat(meterValueDto.getDlmsUnit()).isEqualTo(DlmsUnitTypeDto.WH);
+  }
+
+  @Test
+  void testGetScaledMeterValueWithUndefinedUnit() {
+    final GetResultImpl getResultValue = new GetResultImpl(DataObject.newUInteger16Data(21));
+    final GetResultImpl getResultScalerUnit =
+        new GetResultImpl(
+            DataObject.newStructureData(
+                DataObject.newInteger8Data((byte) -1),
+                DataObject.newEnumerateData(DLMS_UNIT_UNDEFINED)));
+
+    final Exception exception =
+        assertThrows(
+            ProtocolAdapterException.class,
+            () -> {
+              this.dlmsHelper.getScaledMeterValue(
+                  getResultValue, getResultScalerUnit, "getScaledMeterValueTest");
+            });
   }
 
   @Test
@@ -267,6 +458,148 @@ public class DlmsHelperTest {
     assertThat(meterValueDto.getDlmsUnit()).isEqualTo(DlmsUnitTypeDto.VAR);
   }
 
+  @Test
+  void testGetScalerUnit() {
+    final DataObject wrongType = DataObject.newBoolData(false);
+    final DataObject structureWithOnlyOneElement =
+        DataObject.newStructureData(DataObject.newInteger8Data((byte) 2));
+    final DataObject unitUndefined =
+        DataObject.newStructureData(
+            DataObject.newInteger8Data((byte) 2), DataObject.newEnumerateData(0));
+
+    assertThrows(
+        ProtocolAdapterException.class,
+        () -> {
+          this.dlmsHelper.getScalerUnit(wrongType, "getScalerUnitTest");
+        });
+
+    assertThrows(
+        ProtocolAdapterException.class,
+        () -> {
+          this.dlmsHelper.getScalerUnit(structureWithOnlyOneElement, "getScalerUnitTest");
+        });
+
+    assertThrows(
+        ProtocolAdapterException.class,
+        () -> {
+          this.dlmsHelper.getScalerUnit(unitUndefined, "getScalerUnitTest");
+        });
+  }
+
+  void getScalerUnitValueFixedInProfile() throws ProtocolAdapterException {
+    final int scaler = 0;
+    final DlmsUnitTypeDto unit = DlmsUnitTypeDto.VOLT;
+
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+
+    final CosemObject cosemObject =
+        this.newCosemObject(ValueType.FIXED_IN_PROFILE, scaler + ", " + unit.getUnit());
+
+    final String result = this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject);
+    assertThat(result).isEqualTo(scaler + ", " + unit.getUnit());
+    verifyNoInteractions(connectionManager);
+  }
+
+  @Test
+  void getScalerUnitValue() throws ProtocolAdapterException, IOException {
+    final int scaler = -1;
+    final DlmsUnitTypeDto unit = DlmsUnitTypeDto.VOLT;
+
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DataObject dataObject =
+        DataObject.newArrayData(
+            List.of(
+                DataObject.newInteger32Data(scaler), DataObject.newInteger32Data(unit.getIndex())));
+    this.mockGetAttribute(connectionManager, dataObject);
+
+    final CosemObject cosemObject = this.newCosemObject(ValueType.DYNAMIC, "0, V");
+
+    final String result = this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject);
+    assertThat(result).isEqualTo(scaler + ", " + unit.getUnit());
+  }
+
+  @Test
+  void getScalerUnitValueWrongDataType() throws ProtocolAdapterException, IOException {
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DataObject dataObject = DataObject.newInteger32Data(666);
+    this.mockGetAttribute(connectionManager, dataObject);
+
+    final CosemObject cosemObject = this.newCosemObject(ValueType.DYNAMIC, "0, V");
+
+    final ProtocolAdapterException protocolAdapterException =
+        assertThrows(
+            ProtocolAdapterException.class,
+            () -> {
+              this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject);
+            });
+    assertThat(protocolAdapterException.getMessage())
+        .contains("complex data (structure) expected while retrieving scaler and unit.");
+  }
+
+  @Test
+  void getScalerUnitValueWrongSize() throws ProtocolAdapterException, IOException {
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DataObject dataObject =
+        DataObject.newArrayData(List.of(DataObject.newInteger32Data(666)));
+    this.mockGetAttribute(connectionManager, dataObject);
+
+    final CosemObject cosemObject = this.newCosemObject(ValueType.DYNAMIC, "0, V");
+
+    final ProtocolAdapterException protocolAdapterException =
+        assertThrows(
+            ProtocolAdapterException.class,
+            () -> {
+              this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject);
+            });
+    assertThat(protocolAdapterException.getMessage())
+        .contains("expected 2 values while retrieving scaler and unit.");
+  }
+
+  @Test
+  void getScalerUnitValueFunctionalException() throws ProtocolAdapterException, IOException {
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final GetResult getResult =
+        new GetResultImpl(DataObject.newNullData(), AccessResultCode.OTHER_REASON);
+    when(dlmsConnection.get(any(AttributeAddress.class))).thenReturn(getResult);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+    final CosemObject cosemObject = this.newCosemObject(ValueType.DYNAMIC, "0, V");
+
+    final ProtocolAdapterException protocolAdapterException =
+        assertThrows(
+            ProtocolAdapterException.class,
+            () -> {
+              this.dlmsHelper.getScalerUnitValue(connectionManager, cosemObject);
+            });
+    assertThat(protocolAdapterException.getMessage())
+        .contains("FunctionalException occurred when reading dynamic scalar unit for object");
+  }
+
+  private void mockGetAttribute(
+      final DlmsConnectionManager connectionManager, final DataObject dataObject)
+      throws IOException {
+    final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+    final GetResult getResult = new GetResultImpl(dataObject, AccessResultCode.SUCCESS);
+    when(dlmsConnection.get(any(AttributeAddress.class))).thenReturn(getResult);
+    when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+  }
+
+  private CosemObject newCosemObject(final ValueType valueType, final String value) {
+    final Attribute attribute =
+        new Attribute(
+            this.ATTRIBUTE_ID,
+            "descr",
+            null,
+            DlmsDataType.DONT_CARE,
+            valueType,
+            value,
+            null,
+            AccessType.RW);
+    return new CosemObject(
+        "TAG", "descr", CLASS_ID, 0, OBIS, "", null, List.of(), Map.of(), List.of(attribute));
+  }
+
   private void assertGetWithListException(
       final Class<? extends Exception> jdlmsExceptionClazz,
       final Class<? extends Exception> exceptionClazz)
@@ -280,7 +613,7 @@ public class DlmsHelperTest {
     final AttributeAddress[] attrAddresses = new AttributeAddress[1];
     attrAddresses[0] = mock(AttributeAddress.class);
 
-    when(dlmsDevice.isWithListSupported()).thenReturn(true);
+    when(dlmsDevice.getWithListMax()).thenReturn(32);
     when(dlmsConnection.get(Arrays.asList(attrAddresses))).thenThrow(jdlmsExceptionClazz);
 
     final Exception exception =

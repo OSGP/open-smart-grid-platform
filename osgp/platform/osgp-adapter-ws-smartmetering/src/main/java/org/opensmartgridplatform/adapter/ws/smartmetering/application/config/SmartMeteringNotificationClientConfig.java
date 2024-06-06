@@ -1,11 +1,7 @@
-/*
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.config;
 
 import java.util.Collections;
@@ -44,6 +40,9 @@ public class SmartMeteringNotificationClientConfig extends AbstractConfig {
   @Value("${web.service.notification.application.name}")
   private String webserviceNotificationApplicationName;
 
+  @Value("${web.service.notification.supported.tls.protocols:TLSv1.2,TLSv1.3}")
+  private String[] webserviceNotificationSupportedTlsProtocols;
+
   @Bean
   public String webserviceNotificationApplicationName() {
     return this.webserviceNotificationApplicationName;
@@ -81,7 +80,8 @@ public class SmartMeteringNotificationClientConfig extends AbstractConfig {
     return new NotificationWebServiceTemplateFactory(
         configRepository,
         this.messageFactory(),
-        Collections.singletonList(addOsgpHeadersInterceptor));
+        Collections.singletonList(addOsgpHeadersInterceptor),
+        this.webserviceNotificationSupportedTlsProtocols);
   }
 
   @Bean

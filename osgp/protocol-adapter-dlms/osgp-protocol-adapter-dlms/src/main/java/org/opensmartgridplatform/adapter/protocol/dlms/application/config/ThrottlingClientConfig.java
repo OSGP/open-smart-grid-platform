@@ -1,15 +1,11 @@
-/*
- * Copyright 2021 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
 import java.time.Duration;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.annotation.SharedThrottlingServiceCondition;
 import org.opensmartgridplatform.throttling.ThrottlingClient;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,13 +19,22 @@ public class ThrottlingClientConfig {
   @Value("${throttling.client.enabled:false}")
   private boolean clientEnabled;
 
-  @Value("${throttling.configuration.name:'CDMA'}")
+  @Value("${throttling.configuration.name:CDMA}")
   private String configurationName;
 
   @Value("${throttling.configuration.max.concurrency:1000}")
   private int configurationMaxConcurrency;
 
-  @Value("${throttling.service.url:http://localhost:9090}")
+  @Value("${throttling.configuration.max.new.connections:-1}")
+  private int configurationMaxNewConnections;
+
+  @Value("${throttling.configuration.max.new.connections.reset.time.in.ms:1000}")
+  private long configurationMaxNewConnectionsResetTimeInMs;
+
+  @Value("${throttling.configuration.max.new.connections.wait.time.in.ms:1000}")
+  private long configurationMaxNewConnectionsWaitTimeInMs;
+
+  @Value("${throttling.service.url}")
   private String throttlingServiceUrl;
 
   @Value("${throttling.client.max-conn-per-route:20}")
@@ -41,9 +46,6 @@ public class ThrottlingClientConfig {
   @Value("#{T(java.time.Duration).parse('${throttling.service.timeout:PT30S}')}")
   private Duration timeout;
 
-  @Value("#{T(java.time.Duration).parse('${throttling.rejected.delay:PT10S}')}")
-  private Duration permitRejectedDelay;
-
   public boolean clientEnabled() {
     return this.clientEnabled;
   }
@@ -53,22 +55,18 @@ public class ThrottlingClientConfig {
   }
 
   @Bean(destroyMethod = "unregister")
-  @Conditional(ThrottlingClientEnabledCondition.class)
+  @Conditional(SharedThrottlingServiceCondition.class)
   public ThrottlingClient throttlingClient() {
     return new ThrottlingClient(
-        new ThrottlingConfig(this.configurationName, this.configurationMaxConcurrency),
+        new ThrottlingConfig(
+            this.configurationName,
+            this.configurationMaxConcurrency,
+            this.configurationMaxNewConnections,
+            this.configurationMaxNewConnectionsResetTimeInMs,
+            this.configurationMaxNewConnectionsWaitTimeInMs),
         this.throttlingServiceUrl,
         this.timeout,
         this.maxConnPerRoute,
         this.maxConnTotal);
-  }
-
-  /**
-   * Delay to be applied before retrying some action when a requested permit was not granted.
-   *
-   * @return delay
-   */
-  public Duration permitRejectedDelay() {
-    return this.permitRejectedDelay;
   }
 }

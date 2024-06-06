@@ -1,13 +1,11 @@
-/*
- * Copyright 2023 Alliander N.V.
- */
+// SPDX-FileCopyrightText: Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
 
 package org.opensmartgridplatform.shared.application.config.kafka.oauth;
 
-import static org.apache.kafka.common.security.auth.SecurityProtocol.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.opensmartgridplatform.shared.application.config.kafka.oauth.KafkaOAuthConfig.*;
-import static org.opensmartgridplatform.shared.application.config.kafka.oauth.KafkaOAuthConfig.KAFKA_OAUTH_TOKEN_FILE_CONFIG;
+import static org.opensmartgridplatform.shared.application.config.kafka.oauth.OAuthAuthenticateCallbackHandler.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,21 +19,21 @@ import org.mockito.Mockito;
 
 class OAuthAuthenticateCallbackHandlerTest {
 
-  private Map<String, Object> correctConfiguration() {
-    Map<String, Object> configs = new HashMap<>();
-    configs.put(KAFKA_OAUTH_CLIENT_ID_CONFIG, "client-id");
-    configs.put(KAFKA_OAUTH_TOKEN_ENDPOINT_CONFIG, "https://token.server.com");
-    configs.put(KAFKA_OAUTH_TOKEN_FILE_CONFIG, "file");
-    configs.put(KAFKA_OAUTH_SCOPE_CONFIG, "scope-one,scope-two");
-    return configs;
+  private Map<String, Object> correctProperties() {
+    Map<String, Object> properties = new HashMap<>();
+    properties.put(CLIENT_ID_CONFIG, "client-id");
+    properties.put(TOKEN_ENDPOINT_CONFIG, "https://token.server.com");
+    properties.put(TOKEN_FILE_CONFIG, "file");
+    properties.put(SCOPE_CONFIG, "scope-one,scope-two");
+    return properties;
   }
 
   @Test
   void successfulConfigure() {
-    final Map<String, Object> configs = correctConfiguration();
+    final Map<String, Object> properties = correctProperties();
 
     OAuthAuthenticateCallbackHandler handler = new OAuthAuthenticateCallbackHandler();
-    handler.configure(configs, SASL_SSL.name, null);
+    handler.setFields(properties);
 
     assertEquals("client-id", handler.clientId);
     assertEquals("file", handler.tokenFilePath);
@@ -45,73 +43,73 @@ class OAuthAuthenticateCallbackHandlerTest {
 
   @Test
   void noClientIdConfigured() {
-    final Map<String, Object> configs = correctConfiguration();
-    configs.remove(KAFKA_OAUTH_CLIENT_ID_CONFIG);
+    final Map<String, Object> properties = correctProperties();
+    properties.remove(CLIENT_ID_CONFIG);
 
     OAuthAuthenticateCallbackHandler handler = new OAuthAuthenticateCallbackHandler();
     KafkaException kafkaException =
-        assertThrows(KafkaException.class, () -> handler.configure(configs, SASL_SSL.name, null));
+        assertThrows(KafkaException.class, () -> handler.setFields(properties));
 
-    assertEquals("Kafka property: oauth.client.id, not supplied", kafkaException.getMessage());
+    assertEquals("Kafka property: clientId, not supplied", kafkaException.getMessage());
   }
 
   @Test
   void noTokenEndpointConfigured() {
-    final Map<String, Object> configs = correctConfiguration();
-    configs.remove(KAFKA_OAUTH_TOKEN_ENDPOINT_CONFIG);
+    final Map<String, Object> properties = correctProperties();
+    properties.remove(TOKEN_ENDPOINT_CONFIG);
 
     OAuthAuthenticateCallbackHandler handler = new OAuthAuthenticateCallbackHandler();
 
     KafkaException kafkaException =
-        assertThrows(KafkaException.class, () -> handler.configure(configs, SASL_SSL.name, null));
-    assertEquals("Kafka property: oauth.token.endpoint, not supplied", kafkaException.getMessage());
+        assertThrows(KafkaException.class, () -> handler.setFields(properties));
+    assertEquals("Kafka property: tokenEndpoint, not supplied", kafkaException.getMessage());
   }
 
   @Test
   void noFileConfigured() {
-    final Map<String, Object> configs = correctConfiguration();
-    configs.remove(KAFKA_OAUTH_TOKEN_FILE_CONFIG);
+    final Map<String, Object> properties = correctProperties();
+    properties.remove(TOKEN_FILE_CONFIG);
 
     OAuthAuthenticateCallbackHandler handler = new OAuthAuthenticateCallbackHandler();
     KafkaException kafkaException =
-        assertThrows(KafkaException.class, () -> handler.configure(configs, SASL_SSL.name, null));
-    assertEquals("Kafka property: oauth.token.file, not supplied", kafkaException.getMessage());
+        assertThrows(KafkaException.class, () -> handler.setFields(properties));
+    assertEquals("Kafka property: tokenFile, not supplied", kafkaException.getMessage());
   }
 
   @Test
   void noScopeConfigured() {
-    final Map<String, Object> configs = correctConfiguration();
-    configs.remove(KAFKA_OAUTH_SCOPE_CONFIG);
+    final Map<String, Object> properties = correctProperties();
+    properties.remove(SCOPE_CONFIG);
 
     OAuthAuthenticateCallbackHandler handler = new OAuthAuthenticateCallbackHandler();
 
     KafkaException kafkaException =
-        assertThrows(KafkaException.class, () -> handler.configure(configs, SASL_SSL.name, null));
-    assertEquals("Kafka property: oauth.scope, not supplied", kafkaException.getMessage());
+        assertThrows(KafkaException.class, () -> handler.setFields(properties));
+    assertEquals("Kafka property: scope, not supplied", kafkaException.getMessage());
   }
 
   @Test
   void incorrectConfig() {
-    final Map<String, Object> configs = correctConfiguration();
-    configs.replace(KAFKA_OAUTH_SCOPE_CONFIG, new String[] {"one", "two"});
+    final Map<String, Object> properties = correctProperties();
+    properties.replace(SCOPE_CONFIG, new String[] {"one", "two"});
 
     OAuthAuthenticateCallbackHandler handler = new OAuthAuthenticateCallbackHandler();
 
     KafkaException kafkaException =
-        assertThrows(KafkaException.class, () -> handler.configure(configs, SASL_SSL.name, null));
-    assertEquals("Kafka property: oauth.scope, is not of type String", kafkaException.getMessage());
+        assertThrows(KafkaException.class, () -> handler.setFields(properties));
+    assertEquals("Kafka property: scope, is not of type String", kafkaException.getMessage());
   }
 
   @Test
   void nullConfig() {
-    final Map<String, Object> configs = correctConfiguration();
-    configs.replace(KAFKA_OAUTH_SCOPE_CONFIG, null);
+    final Map<String, Object> properties = correctProperties();
+    properties.replace(SCOPE_CONFIG, null);
 
     OAuthAuthenticateCallbackHandler handler = new OAuthAuthenticateCallbackHandler();
 
     KafkaException kafkaException =
-        assertThrows(KafkaException.class, () -> handler.configure(configs, SASL_SSL.name, null));
-    assertEquals("Kafka property: oauth.scope, is null", kafkaException.getMessage());
+        assertThrows(KafkaException.class, () -> handler.setFields(properties));
+    assertEquals("Kafka property: scope, is null", kafkaException.getMessage());
   }
 
   @Test
@@ -126,9 +124,9 @@ class OAuthAuthenticateCallbackHandlerTest {
                 "principal-name",
                 10000L));
 
-    final Map<String, Object> configs = correctConfiguration();
+    final Map<String, Object> properties = correctProperties();
 
-    handler.configure(configs, SASL_SSL.name, null);
+    handler.setFields(properties);
 
     try {
       OAuthBearerTokenCallback callback = new OAuthBearerTokenCallback();

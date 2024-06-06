@@ -1,15 +1,11 @@
-/*
- * Copyright 2016 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
+// SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.requests.SetDataDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.RtuDeviceRequestMessageProcessor;
@@ -37,8 +33,8 @@ public class MicrogridsSetDataRequestMessageProcessor extends RtuDeviceRequestMe
   public void processMessage(final ObjectMessage message) throws JMSException {
     LOGGER.info("Processing microgrids set data request message");
 
-    MessageMetadata messageMetadata;
-    SetDataRequestDto setDataRequest;
+    final MessageMetadata messageMetadata;
+    final SetDataRequestDto setDataRequest;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
       setDataRequest = (SetDataRequestDto) message.getObject();
