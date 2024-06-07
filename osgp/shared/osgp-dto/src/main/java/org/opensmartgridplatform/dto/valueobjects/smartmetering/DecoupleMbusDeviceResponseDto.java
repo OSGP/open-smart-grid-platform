@@ -19,6 +19,16 @@ public class DecoupleMbusDeviceResponseDto extends ActionResponseDto {
     this.channelElementValues = channelElementValues;
   }
 
+  public DecoupleMbusDeviceResponseDto(
+      final boolean success, final ChannelElementValuesDto channelElementValues) {
+    super(
+        success
+            ? "Decouple Mbus Device was successful."
+            : "Channel information could not be correctly interpreted. "
+                + "Mbus Device was successful decoupled anyway.");
+    this.channelElementValues = channelElementValues;
+  }
+
   @Override
   public String toString() {
     return "DecoupleMbusDeviceResponseDto [channel="
