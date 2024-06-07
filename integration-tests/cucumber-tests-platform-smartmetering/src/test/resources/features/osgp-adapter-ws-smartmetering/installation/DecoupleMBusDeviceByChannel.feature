@@ -30,7 +30,7 @@ Feature: SmartMetering Installation - Decouple M-Bus Device By Channel
       | MbusDeviceTypeIdentification   | 0 |
     Examples:
       | mbusid   | mbusid_in_response                     | result_string                                                                                        |
-      | 12056731 | 12056731                               | Decouple Mbus Device was successful.                                                                 |
+      | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
       | A2056731 | DOUBLE_LONG_UNSIGNED Value: 2718263089 | Channel information could not be correctly interpreted. Mbus Device was successful decoupled anyway. |
 
   Scenario: Decouple M-Bus Device By Channel on a administratively decoupled E-meter with empty channel
@@ -45,9 +45,9 @@ Feature: SmartMetering Installation - Decouple M-Bus Device By Channel
       | MbusDeviceTypeIdentification   | 0 |
     When the Decouple M-Bus Device By Channel "1" from E-meter "TEST1024000000001" request is received
     Then the Decouple M-Bus Device By Channel response is "OK" with responsedata
-      | ResultString                   | Decouple Mbus Device was successful. |
-      | MbusIdentificationNumber       | 00000000                             |
-      | MbusDeviceIdentification       |                                      |
+      | ResultString                   | Decouple Mbus Device was successful |
+      | MbusIdentificationNumber       | 00000000                            |
+      | MbusDeviceIdentification       |                                     |
     And the values for the M-Bus client for channel 1 on device simulator "TEST1024000000001" are
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
@@ -99,7 +99,7 @@ Feature: SmartMetering Installation - Decouple M-Bus Device By Channel
       | DeviceIdentification           | TESTG101205673117 |
     Examples:
       | mbusid   | mbusid_in_response                     | mbus_device       | result_string                                                                                        |
-      | 12056731 | 12056731                               | TESTG101205673117 | Decouple Mbus Device was successful.                                                                 |
+      | 12056731 | 12056731                               | TESTG101205673117 | Decouple Mbus Device was successful                                                                  |
       | A2056731 | DOUBLE_LONG_UNSIGNED Value: 2718263089 |                   | Channel information could not be correctly interpreted. Mbus Device was successful decoupled anyway. |
 
   Scenario Outline: Decouple M-Bus Device By Channel on a administratively coupled E-meter, different from one in channel
@@ -143,5 +143,5 @@ Feature: SmartMetering Installation - Decouple M-Bus Device By Channel
       | MbusPrimaryAddress             |                 9 |
     Examples:
       | mbusid   | mbusid_in_response                     | mbus_device       | result_string                                                                                        |
-      | 12056731 | 12056731                               | TESTG101205673117 | Decouple Mbus Device was successful.                                                                 |
+      | 12056731 | 12056731                               | TESTG101205673117 | Decouple Mbus Device was successful                                                                  |
       | A2056731 | DOUBLE_LONG_UNSIGNED Value: 2718263089 |                   | Channel information could not be correctly interpreted. Mbus Device was successful decoupled anyway. |
