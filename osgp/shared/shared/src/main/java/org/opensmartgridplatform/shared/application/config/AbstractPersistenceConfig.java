@@ -47,6 +47,7 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
    * The JDBC URL for the database. This can be constructed in two ways, see the class Javadoc for
    * details.
    */
+  @SuppressWarnings("squid:S6857") // Sonar doesn't git this
   @Value("${db.url:${db.protocol}${db.host}:${db.port:5432}/${db.name}}")
   private String databaseUrl;
 
