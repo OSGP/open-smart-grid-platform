@@ -12,22 +12,22 @@ public class DecoupleMbusDeviceByChannelResponse extends ActionResponse implemen
 
   private static final long serialVersionUID = -7800915379658671321L;
 
-  private final Short channel;
+  private final ChannelElementValues channelElementValues;
   private final String mbusDeviceIdentification;
 
   public DecoupleMbusDeviceByChannelResponse(
-      final String mbusDeviceIdentification, final Short channel) {
-    super(OsgpResultType.OK, null, "Decouple Mbus Device By Channel was successful");
+      final String mbusDeviceIdentification,
+      final ChannelElementValues channelElementValues,
+      final String resultString) {
+    super(OsgpResultType.OK, null, resultString);
     this.mbusDeviceIdentification = mbusDeviceIdentification;
-    this.channel = channel;
+    this.channelElementValues = channelElementValues;
   }
 
   @Override
   public String toString() {
-    return "DecoupleMbusDeviceByChannelResponse [channel="
-        + this.channel
-        + ", mbusDeviceIdentification="
-        + this.mbusDeviceIdentification
-        + "]";
+    return String.format(
+        "DecoupleMbusDeviceByChannelResponse [ mbusDeviceIdentification=%s, channelElements=%s ]",
+        this.mbusDeviceIdentification, this.channelElementValues);
   }
 }

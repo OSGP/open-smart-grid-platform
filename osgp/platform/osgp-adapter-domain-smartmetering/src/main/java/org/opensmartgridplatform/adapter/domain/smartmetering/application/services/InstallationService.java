@@ -6,6 +6,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.InstallationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
@@ -58,6 +59,8 @@ public class InstallationService {
   @Autowired private MBusGatewayService mBusGatewayService;
 
   @Autowired private CommonMapper commonMapper;
+
+  @Autowired private InstallationMapper installationMapper;
 
   public InstallationService() {
     // No-args constructor required for transactions...
@@ -207,17 +210,14 @@ public class InstallationService {
           messageMetadata, decoupleMbusDeviceResponseDto);
     }
 
-    final DecoupleMbusDeviceByChannelResponse response =
-        new DecoupleMbusDeviceByChannelResponse(
-            decoupleMbusDeviceResponseDto.getMbusDeviceIdentification(),
-            decoupleMbusDeviceResponseDto.getChannelElementValues().getChannel());
-
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
             .withMessageMetadata(messageMetadata)
             .withResult(responseMessageResultType)
             .withOsgpException(osgpException)
-            .withDataObject(response)
+            .withDataObject(
+                this.installationMapper.map(
+                    decoupleMbusDeviceResponseDto, DecoupleMbusDeviceByChannelResponse.class))
             .build();
 
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
