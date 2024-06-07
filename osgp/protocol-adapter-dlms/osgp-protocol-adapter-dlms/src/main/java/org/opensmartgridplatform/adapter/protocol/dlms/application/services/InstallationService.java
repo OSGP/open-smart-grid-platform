@@ -67,22 +67,29 @@ public class InstallationService {
   public void addMeter(
       final MessageMetadata messageMetadata, final SmartMeteringDeviceDto smartMeteringDevice)
       throws FunctionalException {
+    this.checkDeviceIdentification(smartMeteringDevice);
+    this.storeAndActivateKeys(messageMetadata, smartMeteringDevice);
+    this.saveDevice(smartMeteringDevice);
+  }
+
+  private void checkDeviceIdentification(final SmartMeteringDeviceDto smartMeteringDevice)
+      throws FunctionalException {
     if (smartMeteringDevice.getDeviceIdentification() == null) {
       throw new FunctionalException(
           FunctionalExceptionType.VALIDATION_ERROR,
           ComponentType.PROTOCOL_DLMS,
           new IllegalArgumentException("Provided device does not contain device identification"));
     }
-    // TODO overwrite??
+  }
 
-    this.storeAndActivateKeys(messageMetadata, smartMeteringDevice);
+  private void saveDevice(final SmartMeteringDeviceDto smartMeteringDevice) {
     final DlmsDevice dlmsDevice =
         this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
     if (smartMeteringDevice.isOverwrite()) {
       DlmsDevice existingDlmsDevice =
           this.dlmsDeviceRepository.findByDeviceIdentification(
               smartMeteringDevice.getDeviceIdentification());
-      if (existingDlmsDevice != null) {
+      if (existingDlmsDevice != null) { // overwrite existing device
         existingDlmsDevice = this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
         this.dlmsDeviceRepository.save(existingDlmsDevice);
       }
