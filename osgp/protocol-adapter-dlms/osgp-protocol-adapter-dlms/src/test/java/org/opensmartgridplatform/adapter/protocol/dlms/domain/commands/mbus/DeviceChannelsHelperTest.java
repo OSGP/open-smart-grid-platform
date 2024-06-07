@@ -249,7 +249,7 @@ public class DeviceChannelsHelperTest {
   }
 
   @Test
-  public void testGetChannelElementValuesIdenfiticationNumberNull() throws Exception {
+  void testGetChannelElementValuesIdenfiticationNumberNull() throws Exception {
 
     final GetResult identificationNumberNull = new GetResultImpl(null);
 
@@ -272,7 +272,7 @@ public class DeviceChannelsHelperTest {
   }
 
   @Test
-  public void testGetChannelElementValuesIdenfiticationNumberInvalid() throws Exception {
+  void testGetChannelElementValuesIdenfiticationNumberInvalid() throws Exception {
 
     final GetResult identificationNumberInvalid =
         new GetResultImpl(DataObject.newUInteger32Data(3147483648L));
@@ -301,7 +301,7 @@ public class DeviceChannelsHelperTest {
   }
 
   @Test
-  public void testFindEmptyChannelWhenNoEmptyChannel() {
+  void testFindEmptyChannelWhenNoEmptyChannel() {
 
     final ChannelElementValuesDto result1 =
         this.deviceChannelsHelper.findEmptyChannel(Collections.emptyList());
@@ -315,7 +315,7 @@ public class DeviceChannelsHelperTest {
   }
 
   @Test
-  public void testFindEmptyChannel() {
+  void testFindEmptyChannel() {
 
     final ChannelElementValuesDto emptyChannel =
         new ChannelElementValuesDto((short) 1, (short) 0, "00000000", null, (short) 0, (short) 0);
