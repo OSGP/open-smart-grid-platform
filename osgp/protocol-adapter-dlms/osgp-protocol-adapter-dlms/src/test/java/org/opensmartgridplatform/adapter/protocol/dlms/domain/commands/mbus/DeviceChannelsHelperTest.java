@@ -6,6 +6,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
@@ -268,6 +269,35 @@ public class DeviceChannelsHelperTest {
         this.deviceChannelsHelper.getChannelElementValues(this.conn, this.device, (short) 1);
 
     assertThat(values.getIdentificationNumber()).isNull();
+  }
+
+  @Test
+  public void testGetChannelElementValuesIdenfiticationNumberInvalid() throws Exception {
+
+    final GetResult identificationNumberInvalid =
+        new GetResultImpl(DataObject.newUInteger32Data(3147483648L));
+
+    final List<GetResult> resultList =
+        new ArrayList<>(
+            Arrays.asList(
+                this.primaryAddress,
+                identificationNumberInvalid,
+                this.manufacturerIdentification,
+                this.version,
+                this.deviceType));
+    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
+    when(this.dlmsConnection.get(anyList())).thenReturn(resultList);
+
+    final InvalidIdentificationNumberException exception =
+        assertThrows(
+            InvalidIdentificationNumberException.class,
+            () ->
+                this.deviceChannelsHelper.getChannelElementValues(
+                    this.conn, this.device, (short) 1));
+
+    assertThat(exception.getChannelElementValuesDto().getIdentificationNumber())
+        .isEqualTo("DOUBLE_LONG_UNSIGNED Value: 3147483648");
   }
 
   @Test
