@@ -8,7 +8,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 import org.hibernate.jpa.HibernatePersistenceProvider;
-import org.opensmartgridplatform.shared.exceptionhandling.DeprecatedPropertyException;
 import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +43,6 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
 
     @Value("${db.driver}")
     private String driverClassName;
-
-    // Accept a direct property db.url or else construct it from the individual db properties
 
     /**
      * The JDBC URL for the database. This can be constructed in two ways, see the class Javadoc for details.
@@ -95,13 +92,6 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
 
     @Value("${hibernate.format_sql}")
     private String hibernateFormatSql;
-
-    /**
-     * This is the old property of Hibernate 4.X, replaced by hibernate.physical_naming_strategy in
-     * Hibernate 5.x.
-     */
-    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DEPRECATED =
-            "hibernate.ejb.naming_strategy";
 
     private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY =
             "hibernate.physical_naming_strategy";
@@ -171,8 +161,6 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
             final String persistenceUnitName,
             final DataSource dataSource,
             final String entitymanagerPackagesToScan) {
-        this.checkForDeprecatedHibernateNamingStrategyConfiguration();
-
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean =
                 new LocalContainerEntityManagerFactoryBean();
 
@@ -195,24 +183,6 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
 
         return entityManagerFactoryBean;
-    }
-
-    private void checkForDeprecatedHibernateNamingStrategyConfiguration() {
-        final String deprecatedProperty =
-                this.environment.getProperty(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DEPRECATED);
-
-        if (deprecatedProperty != null) {
-            final String message =
-                    String.format(
-                            "Using '%s=%s' is deprecated and no longer works with Hibernate 5.X! Use '%s=%s' instead!",
-                            PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DEPRECATED,
-                            deprecatedProperty,
-                            PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY,
-                            HibernateNamingStrategy.class.getName());
-
-            LOGGER.error(message);
-            throw new DeprecatedPropertyException(message);
-        }
     }
 
     protected void destroyDataSource() {
