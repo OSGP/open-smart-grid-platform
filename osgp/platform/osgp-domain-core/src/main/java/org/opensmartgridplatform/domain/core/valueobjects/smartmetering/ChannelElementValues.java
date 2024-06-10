@@ -91,18 +91,20 @@ public class ChannelElementValues implements Serializable {
 
   @Override
   public String toString() {
-    return "ChannelElementValues[channel="
-        + this.channel
-        + ", primaryAddress="
-        + this.primaryAddress
-        + ", identificationNumber="
-        + this.identificationNumber
-        + ", manufacturerIdentification="
-        + this.manufacturerIdentification
-        + ", version="
-        + this.version
-        + ", deviceTypeIdentification="
-        + this.deviceTypeIdentification
-        + "]";
+    return String.format(
+        """
+        ChannelElementValues[
+            channel=%d,
+            primaryAddress=%d,
+            identificationNumber=%s,
+            manufacturerIdentificaton=%s,
+            version=%d,
+            deviceTypeIdentification=%d]""",
+        this.channel,
+        this.primaryAddress,
+        this.identificationNumber,
+        this.manufacturerIdentification,
+        this.version,
+        this.deviceTypeIdentification);
   }
 }

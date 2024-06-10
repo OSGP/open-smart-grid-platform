@@ -7,7 +7,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,23 +40,43 @@ public class DecoupleMBusDeviceCommandExecutorTest {
 
   @InjectMocks private DecoupleMBusDeviceCommandExecutor commandExecutor;
 
+  @Mock private ChannelElementValuesDto channelElementValuesDto;
+
+  private static final short CHANNEL = (short) 1;
+
+  private final MessageMetadata messageMetadata =
+      MessageMetadata.newBuilder().withCorrelationUid("123456").build();
+
   @Test
-  public void testHappyFlow() throws ProtocolAdapterException {
+  void testHappyFlow() throws ProtocolAdapterException {
+    this.prepareWhen();
+    when(this.deviceChannelsHelper.getChannelElementValues(this.conn, this.device, CHANNEL))
+        .thenReturn(this.channelElementValuesDto);
+    this.executeAndAssertResponse(this.messageMetadata, this.channelElementValuesDto);
+  }
 
-    final short channel = (short) 1;
-    final ChannelElementValuesDto channelElementValuesDto = mock(ChannelElementValuesDto.class);
-    final MessageMetadata messageMetadata =
-        MessageMetadata.newBuilder().withCorrelationUid("123456").build();
+  @Test
+  void testInvalidIdentificationNumber() throws ProtocolAdapterException {
+    this.prepareWhen();
+    final InvalidIdentificationNumberException exception =
+        new InvalidIdentificationNumberException("exception", this.channelElementValuesDto);
+    when(this.deviceChannelsHelper.getChannelElementValues(this.conn, this.device, CHANNEL))
+        .thenThrow(exception);
+    this.executeAndAssertResponse(this.messageMetadata, this.channelElementValuesDto);
+  }
 
-    when(this.deviceChannelsHelper.getObisCode(this.device, channel))
+  private void prepareWhen() throws ProtocolAdapterException {
+    when(this.deviceChannelsHelper.getObisCode(this.device, CHANNEL))
         .thenReturn(new ObisCode("0.1.24.1.0.255"));
-    when(this.decoupleMbusDto.getChannel()).thenReturn(channel);
+    when(this.decoupleMbusDto.getChannel()).thenReturn(CHANNEL);
     when(this.deviceChannelsHelper.deinstallSlave(
             eq(this.conn), eq(this.device), any(Short.class), any(CosemObjectAccessor.class)))
         .thenReturn(MethodResultCode.SUCCESS);
-    when(this.deviceChannelsHelper.getChannelElementValues(this.conn, this.device, channel))
-        .thenReturn(channelElementValuesDto);
+  }
 
+  private void executeAndAssertResponse(
+      final MessageMetadata messageMetadata, final ChannelElementValuesDto channelElementValuesDto)
+      throws ProtocolAdapterException {
     final DecoupleMbusDeviceResponseDto responseDto =
         this.commandExecutor.execute(this.conn, this.device, this.decoupleMbusDto, messageMetadata);
 

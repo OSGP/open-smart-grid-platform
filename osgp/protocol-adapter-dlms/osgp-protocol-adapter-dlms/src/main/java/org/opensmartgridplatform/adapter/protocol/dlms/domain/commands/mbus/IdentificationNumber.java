@@ -63,13 +63,11 @@ public class IdentificationNumber {
     return new IdentificationNumber(String.format("%08d", identificationInNumericalRepresentation));
   }
 
-  private static Long toBcdRepresentationAsLong(
-      final String identificationNumberInTextualRepresentation) {
-    if (StringUtils.isBlank(identificationNumberInTextualRepresentation)) {
+  private Long toBcdRepresentationAsLong() {
+    if (StringUtils.isBlank(this.textualRepresentation)) {
       return null;
     }
-    validateIdentificationNumber(identificationNumberInTextualRepresentation);
-    return Long.parseLong(identificationNumberInTextualRepresentation, HEX_RADIX);
+    return Long.parseLong(this.textualRepresentation, HEX_RADIX);
   }
 
   private static void validateIdentificationNumber(
@@ -95,7 +93,7 @@ public class IdentificationNumber {
   public String toString() {
     return String.format(
         "IdentificationNumber[%s(%d)]",
-        this.textualRepresentation, toBcdRepresentationAsLong(this.textualRepresentation));
+        this.textualRepresentation, this.toBcdRepresentationAsLong());
   }
 
   /**
@@ -105,7 +103,7 @@ public class IdentificationNumber {
     if (StringUtils.isBlank(this.textualRepresentation)) {
       return DataObject.newNullData();
     }
-    return DataObject.newUInteger32Data(toBcdRepresentationAsLong(this.textualRepresentation));
+    return DataObject.newUInteger32Data(this.toBcdRepresentationAsLong());
   }
 
   public DataObject asDataObject() {
@@ -116,7 +114,7 @@ public class IdentificationNumber {
   }
 
   public Long getIdentificationNumberInBcdRepresentationAsLong() {
-    return toBcdRepresentationAsLong(this.textualRepresentation);
+    return this.toBcdRepresentationAsLong();
   }
 
   public String getTextualRepresentation() {
