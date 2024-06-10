@@ -18,6 +18,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.InstallationMapper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.CoupleMBusDeviceCommandExecutor;
@@ -44,6 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service(value = "dlmsInstallationService")
 public class InstallationService {
 
@@ -85,20 +87,29 @@ public class InstallationService {
   private void saveDevice(final SmartMeteringDeviceDto smartMeteringDevice) {
     final DlmsDevice dlmsDevice =
         this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
-    if (smartMeteringDevice.isOverwrite()) {
-      DlmsDevice existingDlmsDevice =
-          this.dlmsDeviceRepository.findByDeviceIdentification(
-              smartMeteringDevice.getDeviceIdentification());
-      if (existingDlmsDevice != null) { // overwrite existing device
-        existingDlmsDevice = this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
-        this.dlmsDeviceRepository.save(existingDlmsDevice);
+    final DlmsDevice existingDlmsDevice =
+        this.dlmsDeviceRepository.findByDeviceIdentification(
+            smartMeteringDevice.getDeviceIdentification());
+
+    if (existingDlmsDevice != null) {
+      if (smartMeteringDevice.isOverwrite()) { // overwrite existing device
+        log.info(
+            "UPDATE DlmsDevice !! DlmsDevice with identification {} already exists",
+            existingDlmsDevice.getDeviceIdentification());
+        dlmsDevice.setVersion(existingDlmsDevice.getVersion());
+        dlmsDevice.setId(existingDlmsDevice.getId());
+        this.dlmsDeviceRepository.save(dlmsDevice);
+      } else {
+        log.error(
+            "ERROR: DlmsDevice with identification {} already exists and overwrite is not enabled",
+            existingDlmsDevice.getDeviceIdentification());
       }
     } else {
       this.dlmsDeviceRepository.save(dlmsDevice);
     }
   }
 
-  private void storeAndActivateKeys(
+  void storeAndActivateKeys(
       final MessageMetadata messageMetadata, final SmartMeteringDeviceDto deviceDto)
       throws FunctionalException {
     final Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);

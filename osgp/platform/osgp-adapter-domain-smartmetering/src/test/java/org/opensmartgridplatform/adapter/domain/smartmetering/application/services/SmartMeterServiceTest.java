@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,7 +55,7 @@ class SmartMeterServiceTest {
   @InjectMocks private SmartMeterService smartMeterService;
 
   @Test
-  void testNonExistingSmartMeter() {
+  void testNonExistingSmartMeterWithOverwriteIsFalse() {
 
     final String deviceIdentification = "device-1";
 
@@ -67,6 +68,23 @@ class SmartMeterServiceTest {
             () ->
                 this.smartMeterService.validateSmartMeterDoesNotExist(deviceIdentification, false));
     assertThat(exception.getExceptionType()).isEqualTo(FunctionalExceptionType.EXISTING_DEVICE);
+  }
+
+  @Test
+  void testNonExistingSmartMeterWithOverwriteIsTrue() throws FunctionalException {
+    final boolean overwrite = true;
+    final String deviceIdentification = "device-1";
+    final SmartMeter smartMeter = new SmartMeter();
+    smartMeter.setDeviceIdentification(deviceIdentification);
+
+    when(this.smartMeterRepository.findByDeviceIdentification(deviceIdentification))
+        .thenReturn(smartMeter);
+
+    final Optional<SmartMeter> returnedSmartMeter =
+        this.smartMeterService.validateSmartMeterDoesNotExist(deviceIdentification, overwrite);
+    assertThat(returnedSmartMeter.isPresent()).isTrue();
+    assertThat(returnedSmartMeter.get().getDeviceIdentification())
+        .isEqualTo(smartMeter.getDeviceIdentification());
   }
 
   @Test

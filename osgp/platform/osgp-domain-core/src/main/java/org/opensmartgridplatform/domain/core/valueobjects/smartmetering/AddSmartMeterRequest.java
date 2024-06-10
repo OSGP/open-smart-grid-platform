@@ -15,7 +15,7 @@ public class AddSmartMeterRequest implements Serializable {
 
   final DeviceModel deviceModel;
 
-  final Boolean overwrite;
+  final boolean overwrite;
 
   public AddSmartMeterRequest(
       final SmartMeteringDevice device, final DeviceModel deviceModel, final Boolean overwrite) {
@@ -38,7 +38,7 @@ public class AddSmartMeterRequest implements Serializable {
     return this.deviceModel;
   }
 
-  public Boolean getOverwrite() {
+  public boolean getOverwrite() {
     return this.overwrite;
   }
 }

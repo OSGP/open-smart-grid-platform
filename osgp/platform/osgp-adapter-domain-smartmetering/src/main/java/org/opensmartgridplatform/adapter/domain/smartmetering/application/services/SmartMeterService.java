@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service(value = "domainSmartMeteringSmartMeterService")
 @Transactional(value = "transactionManager")
 public class SmartMeterService {
@@ -59,15 +61,15 @@ public class SmartMeterService {
   }
 
   public void updateMeter(
-      final String organisationIdentification,
-      final AddSmartMeterRequest addSmartMeterRequest,
-      final SmartMeter smartMeter)
+      final AddSmartMeterRequest addSmartMeterRequest, final SmartMeter smartMeter)
       throws FunctionalException {
     final SmartMeteringDevice smartMeteringDevice = addSmartMeterRequest.getDevice();
     smartMeter.updateProtocol(this.getProtocolInfo(smartMeteringDevice));
     smartMeter.setDeviceModel(this.getDeviceModel(addSmartMeterRequest.getDeviceModel()));
-    //  smartMeter = this.smartMeterRepository.save(smartMeter);
 
+    log.info(
+        "UPDATE SmartMeter !! start updating smart meter with device identification: {}",
+        smartMeteringDevice.getDeviceIdentification());
     this.smartMeterRepository.updateSmartMeter(
         smartMeter.getId(),
         smartMeter.getSupplier(),
@@ -77,8 +79,6 @@ public class SmartMeterService {
         smartMeter.getMbusVersion(),
         smartMeter.getMbusDeviceTypeIdentification(),
         smartMeter.getMbusPrimaryAddress());
-
-    //  this.storeAuthorization(organisationIdentification, smartMeter);
   }
 
   public void removeMeter(final MessageMetadata messageMetadata) {

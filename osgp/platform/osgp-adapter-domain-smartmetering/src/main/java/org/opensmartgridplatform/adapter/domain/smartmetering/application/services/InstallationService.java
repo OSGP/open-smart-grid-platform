@@ -25,9 +25,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDevice
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
@@ -69,19 +67,8 @@ public class InstallationService {
   public void addMeter(
       final MessageMetadata messageMetadata, final AddSmartMeterRequest addSmartMeterRequest)
       throws FunctionalException {
-    this.checkDeviceIdentification(addSmartMeterRequest);
     this.storeMeter(messageMetadata, addSmartMeterRequest);
     this.sendRequestToOsgpCore(messageMetadata, addSmartMeterRequest);
-  }
-
-  private void checkDeviceIdentification(final AddSmartMeterRequest addSmartMeterRequest)
-      throws FunctionalException {
-    if (addSmartMeterRequest.getDevice().getDeviceIdentification() == null) {
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.DOMAIN_SMART_METERING,
-          new IllegalArgumentException("Provided device does not contain device identification"));
-    }
   }
 
   private void storeMeter(
@@ -101,14 +88,20 @@ public class InstallationService {
             deviceIdentification, addSmartMeterRequest.getOverwrite());
 
     final SmartMeter smartMeter = this.smartMeterService.convertSmartMeter(smartMeteringDevice);
-    if (existingSmartMeter.isPresent() && addSmartMeterRequest.getOverwrite()) {
-      LOGGER.info(
-          "Update existing smart meter with device identification: {}",
-          messageMetadata.getDeviceIdentification());
-      this.smartMeterService.updateMeter(
-          organisationId,
-          addSmartMeterRequest,
-          this.smartMeterService.convertToExistingSmartMeter(smartMeter, existingSmartMeter.get()));
+    if (existingSmartMeter.isPresent()) {
+      if (addSmartMeterRequest.getOverwrite()) { // overwrite existing device
+        LOGGER.info(
+            "UPDATE SmartMeter !! Update existing smart meter with device identification: {}",
+            messageMetadata.getDeviceIdentification());
+        this.smartMeterService.updateMeter(
+            addSmartMeterRequest,
+            this.smartMeterService.convertToExistingSmartMeter(
+                smartMeter, existingSmartMeter.get()));
+      } else {
+        LOGGER.error(
+            "ERROR: SmartMeter with device identification {} already exists and overwrite is not enabled",
+            messageMetadata.getDeviceIdentification());
+      }
     } else {
       this.smartMeterService.storeMeter(organisationId, addSmartMeterRequest, smartMeter);
     }
@@ -120,7 +113,6 @@ public class InstallationService {
         this.mapperFactory
             .getMapperFacade()
             .map(addSmartMeterRequest.getDevice(), SmartMeteringDeviceDto.class);
-    requestDto.setOverwrite(addSmartMeterRequest.getOverwrite());
     this.osgpCoreRequestMessageSender.send(requestDto, messageMetadata); // en dan??
   }
 
