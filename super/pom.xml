@@ -121,7 +121,7 @@ SPDX-License-Identifier: Apache-2.0
     <cxf.version>4.0.3</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
-    <micrometer.version>1.12.5</micrometer.version>
+    <micrometer.version>1.13.0</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
     <guava.version>32.1.2-jre</guava.version>
     <spotbugs.version>4.6.0</spotbugs.version>
