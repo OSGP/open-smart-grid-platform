@@ -17,8 +17,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.TimeZone;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -76,13 +78,17 @@ class SynchronizeTimeCommandExecutorTest {
             new DlmsHelper(), this.dlmsDeviceRepository, objectConfigServiceHelper);
   }
 
-  @Test
-  void testSynchronizeTime() throws ProtocolAdapterException, IOException {
+  @ParameterizedTest
+  @EnumSource(
+      value = Protocol.class,
+      names = {"OTHER_PROTOCOL"},
+      mode = Mode.EXCLUDE)
+  void testSynchronizeTime(final Protocol protocol) throws ProtocolAdapterException, IOException {
     final String timeZone = "Europe/Amsterdam";
     final ZonedDateTime expectedTime = ZonedDateTime.now(TimeZone.getTimeZone(timeZone).toZoneId());
     final DlmsDevice device = new DlmsDevice();
     device.setTimezone(timeZone);
-    device.setProtocol(Protocol.SMR_5_0_0);
+    device.setProtocol(protocol);
 
     // SETUP
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);

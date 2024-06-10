@@ -21,8 +21,11 @@ Feature: SmartMetering Bundle - SynchronizeTime
       | Result | OK |
     Examples:
       | deviceIdentification | protocol | version |
-      | TEST1024000000001    | DSMR     | 2.2     |
       | TEST1024000000001    | DSMR     | 4.2.2   |
+    @NightlyBuildOnly
+    Examples:
+      | deviceIdentification | protocol | version |
+      | TEST1024000000001    | DSMR     | 2.2     |
       | TEST1031000000001    | SMR      | 4.3     |
       | TEST1027000000001    | SMR      | 5.0.0   |
       | TEST1028000000001    | SMR      | 5.1     |
