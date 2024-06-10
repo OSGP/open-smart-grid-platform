@@ -65,4 +65,5 @@ public class SmartMeteringDevice implements Serializable {
   private boolean ipAddressIsStatic;
   private Integer withListMax;
   private boolean selectiveAccessSupported;
+  private boolean overwrite;
 }

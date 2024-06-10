@@ -99,7 +99,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
               request.getDeviceModel().getManufacturer(),
               request.getDeviceModel().getModelCode(),
               "");
-      // TODO overwrite
+
       final AddSmartMeterRequest addSmartMeterRequest =
           new AddSmartMeterRequest(device, deviceModel, request.isOverwrite());
 

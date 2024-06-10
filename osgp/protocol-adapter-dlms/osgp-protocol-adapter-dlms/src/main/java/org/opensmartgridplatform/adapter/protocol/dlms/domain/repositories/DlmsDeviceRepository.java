@@ -82,49 +82,4 @@ public interface DlmsDeviceRepository extends JpaRepository<DlmsDevice, Long> {
   int storeFirmwareHash(
       @Param("deviceIdentification") String deviceIdentification,
       @Param("firmwareHash") String firmwareHash);
-
-  //  @Transactional
-  //  @Modifying
-  //  @Query(
-  //      value =
-  //          "UPDATE DlmsDevice"
-  //              + " SET clientId = :clientId,"
-  //              + " logicalId = :logicalId,"
-  //              + " inDebugMode = :inDebugMode,"
-  //              + " useHdlc = :useHdlc,"
-  //              + " useSn = :useSn,"
-  //              + " polyphase = :polyphase,"
-  //              + " keyProcessingStartTime = :keyProcessingStartTime,"
-  //              + " mbusIdentificationNumber = :mbusIdentificationNumber,"
-  //              + " mbusManufacturerIdentification = :mbusManufacturerIdentification,"
-  //              + " protocolName = :protocolName,"
-  //              + " protocolVersion = :protocolVersion,"
-  //              + " ipAddress = :ipAddress,"
-  //              + " invocationCounter = :invocationCounter,"
-  //              + " hls3Active = :hls3Active,"
-  //              + " hls4Active = :hls4Active,"
-  //              + " hls5Active = :hls5Active,"
-  //              + " timezone = :timezone,"
-  //              + " firmwareHash = :firmwareHash"
-  //              + " WHERE deviceIdentification = :deviceIdentification")
-  //  int updateDlmsDevice(
-  //      @Param("deviceIdentification") String deviceIdentification,
-  //      @Param("clientId") Long clientId,
-  //      @Param("logicalId") Long logicalId,
-  //      @Param("inDebugMode") Boolean inDebugMode,
-  //      @Param("useHdlc") Boolean useHdlc,
-  //      @Param("useSn") Boolean useSn,
-  //      @Param("polyphase") Boolean polyphase,
-  //      @Param("keyProcessingStartTime") Instant keyProcessingStartTime,
-  //      @Param("mbusIdentificationNumber") String mbusIdentificationNumber,
-  //      @Param("mbusManufacturerIdentification") String mbusManufacturerIdentification,
-  //      @Param("protocolName") String protocolName,
-  //      @Param("protocolVersion") String protocolVersion,
-  //      @Param("ipAddress") String ipAddress,
-  //      @Param("invocationCounter") Long invocationCounter,
-  //      @Param("hls3Active") Boolean hls3Active,
-  //      @Param("hls4Active") Boolean hls4Active,
-  //      @Param("hls5Active") Boolean hls5Active,
-  //      @Param("timezone") String timezone,
-  //      @Param("firmwareHash") String firmwareHash);
 }
