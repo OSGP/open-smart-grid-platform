@@ -38,7 +38,7 @@ public class TimeAndEventsClassesDecoder {
     this.basicDlmsDataDecoder = basicDlmsDataDecoder;
   }
 
-  // Class-id 8: Clock
+  // Class-id 8: Clock attribute 4
   public String decodeClockStatus(final DataObject attributeData) {
     try {
       final int value = this.dlmsHelper.readInteger(attributeData, "read clock status");
@@ -56,6 +56,7 @@ public class TimeAndEventsClassesDecoder {
     }
   }
 
+  // Class-id 8: Clock attribute 9
   public String decodeClockBase(final DataObject attributeData) {
     try {
       final int value = this.dlmsHelper.readInteger(attributeData, "read clock base");
@@ -65,7 +66,7 @@ public class TimeAndEventsClassesDecoder {
     }
   }
 
-  // Class-id 11: Special days table
+  // Class-id 11: Special days table attribute 2
   public String decodeSpecialDays(final DataObject attributeData) {
     final List<String> specialDaysDecoded = new ArrayList<>();
 
@@ -101,7 +102,101 @@ public class TimeAndEventsClassesDecoder {
     }
   }
 
-  // Class-id 20: Activity calendar
+  // Class-id 20: Activity calendar attribute 3 and 7
+  public String decodeSeasonProfiles(final DataObject attributeData) {
+    final List<String> seasonProfilesDecoded = new ArrayList<>();
+
+    try {
+      if (attributeData.getType() == Type.ARRAY) {
+        final List<DataObject> seasonProfiles = attributeData.getValue();
+        for (final DataObject seasonProfile : seasonProfiles) {
+          seasonProfilesDecoded.add(this.decodeSeasonProfile(seasonProfile));
+        }
+        return String.join(System.lineSeparator(), seasonProfilesDecoded);
+      } else {
+        return ARRAY_EXPECTED_BUT_FOUND + attributeData.getType().name();
+      }
+    } catch (final Exception e) {
+      return "decoding season profiles failed: " + e.getMessage();
+    }
+  }
+
+  private String decodeSeasonProfile(final DataObject seasonProfile) {
+    try {
+      if (seasonProfile.getType() == Type.STRUCTURE) {
+        final List<DataObject> fields = seasonProfile.getValue();
+        final String name = new String((byte[]) fields.get(0).getValue());
+        final String start =
+            this.dlmsHelper
+                .readDateTime(fields.get(1), "read season start")
+                .asLocalDateTime()
+                .toString();
+        final String weekName = new String((byte[]) fields.get(2).getValue());
+
+        return name + ": " + start + ", weekName: " + weekName;
+      } else {
+        return STRUCTURE_EXPECTED_BUT_FOUND + seasonProfile.getType().name();
+      }
+    } catch (final Exception e) {
+      return "decoding season profile failed: " + e.getMessage();
+    }
+  }
+
+  // Class-id 20: Activity calendar attribute 4 and 8
+  public String decodeWeekProfiles(final DataObject attributeData) {
+    final List<String> weekProfilesDecoded = new ArrayList<>();
+
+    try {
+      if (attributeData.getType() == Type.ARRAY) {
+        final List<DataObject> weekProfiles = attributeData.getValue();
+        for (final DataObject weekProfile : weekProfiles) {
+          weekProfilesDecoded.add(this.decodeWeekProfile(weekProfile));
+        }
+        return String.join(System.lineSeparator(), weekProfilesDecoded);
+      } else {
+        return ARRAY_EXPECTED_BUT_FOUND + attributeData.getType().name();
+      }
+    } catch (final Exception e) {
+      return "decoding week profiles failed: " + e.getMessage();
+    }
+  }
+
+  private String decodeWeekProfile(final DataObject weekProfile) {
+    try {
+      if (weekProfile.getType() == Type.STRUCTURE) {
+        final List<DataObject> fields = weekProfile.getValue();
+        final String name = new String((byte[]) fields.get(0).getValue());
+        final int monday = this.dlmsHelper.readInteger(fields.get(1), "read Monday");
+        final int tuesday = this.dlmsHelper.readInteger(fields.get(2), "read Tuesday");
+        final int wednesday = this.dlmsHelper.readInteger(fields.get(3), "read Wednesday");
+        final int thursday = this.dlmsHelper.readInteger(fields.get(4), "read Thursday");
+        final int friday = this.dlmsHelper.readInteger(fields.get(5), "read Friday");
+        final int saturday = this.dlmsHelper.readInteger(fields.get(6), "read Saturday");
+        final int sunday = this.dlmsHelper.readInteger(fields.get(7), "read Sunday");
+        return name
+            + ": Monday "
+            + monday
+            + ", Tuesday "
+            + tuesday
+            + ", Wednesday "
+            + wednesday
+            + ", Thursday "
+            + thursday
+            + ", Friday "
+            + friday
+            + ", Saturday "
+            + saturday
+            + ", Sunday "
+            + sunday;
+      } else {
+        return STRUCTURE_EXPECTED_BUT_FOUND + weekProfile.getType().name();
+      }
+    } catch (final Exception e) {
+      return "decoding week profile failed: " + e.getMessage();
+    }
+  }
+
+  // Class-id 20: Activity calendar attribute 5 and 9
   public String decodeDayProfiles(final DataObject attributeData) {
     final List<String> dayProfilesDecoded = new ArrayList<>();
 
@@ -167,98 +262,6 @@ public class TimeAndEventsClassesDecoder {
       }
     } catch (final Exception e) {
       return "decoding day profile action failed: " + e.getMessage();
-    }
-  }
-
-  public String decodeWeekProfiles(final DataObject attributeData) {
-    final List<String> weekProfilesDecoded = new ArrayList<>();
-
-    try {
-      if (attributeData.getType() == Type.ARRAY) {
-        final List<DataObject> weekProfiles = attributeData.getValue();
-        for (final DataObject weekProfile : weekProfiles) {
-          weekProfilesDecoded.add(this.decodeWeekProfile(weekProfile));
-        }
-        return String.join(System.lineSeparator(), weekProfilesDecoded);
-      } else {
-        return ARRAY_EXPECTED_BUT_FOUND + attributeData.getType().name();
-      }
-    } catch (final Exception e) {
-      return "decoding week profiles failed: " + e.getMessage();
-    }
-  }
-
-  private String decodeWeekProfile(final DataObject weekProfile) {
-    try {
-      if (weekProfile.getType() == Type.STRUCTURE) {
-        final List<DataObject> fields = weekProfile.getValue();
-        final String name = new String((byte[]) fields.get(0).getValue());
-        final int monday = this.dlmsHelper.readInteger(fields.get(1), "read Monday");
-        final int tuesday = this.dlmsHelper.readInteger(fields.get(2), "read Tuesday");
-        final int wednesday = this.dlmsHelper.readInteger(fields.get(3), "read Wednesday");
-        final int thursday = this.dlmsHelper.readInteger(fields.get(4), "read Thursday");
-        final int friday = this.dlmsHelper.readInteger(fields.get(5), "read Friday");
-        final int saturday = this.dlmsHelper.readInteger(fields.get(6), "read Saturday");
-        final int sunday = this.dlmsHelper.readInteger(fields.get(7), "read Sunday");
-        return name
-            + ": Monday "
-            + monday
-            + ", Tuesday "
-            + tuesday
-            + ", Wednesday "
-            + wednesday
-            + ", Thursday "
-            + thursday
-            + ", Friday "
-            + friday
-            + ", Saturday "
-            + saturday
-            + ", Sunday "
-            + sunday;
-      } else {
-        return STRUCTURE_EXPECTED_BUT_FOUND + weekProfile.getType().name();
-      }
-    } catch (final Exception e) {
-      return "decoding week profile failed: " + e.getMessage();
-    }
-  }
-
-  public String decodeSeasonProfiles(final DataObject attributeData) {
-    final List<String> seasonProfilesDecoded = new ArrayList<>();
-
-    try {
-      if (attributeData.getType() == Type.ARRAY) {
-        final List<DataObject> seasonProfiles = attributeData.getValue();
-        for (final DataObject seasonProfile : seasonProfiles) {
-          seasonProfilesDecoded.add(this.decodeSeasonProfile(seasonProfile));
-        }
-        return String.join(System.lineSeparator(), seasonProfilesDecoded);
-      } else {
-        return ARRAY_EXPECTED_BUT_FOUND + attributeData.getType().name();
-      }
-    } catch (final Exception e) {
-      return "decoding season profiles failed: " + e.getMessage();
-    }
-  }
-
-  private String decodeSeasonProfile(final DataObject seasonProfile) {
-    try {
-      if (seasonProfile.getType() == Type.STRUCTURE) {
-        final List<DataObject> fields = seasonProfile.getValue();
-        final String name = new String((byte[]) fields.get(0).getValue());
-        final String start =
-            this.dlmsHelper
-                .readDateTime(fields.get(1), "read season start")
-                .asLocalDateTime()
-                .toString();
-        final String weekName = new String((byte[]) fields.get(2).getValue());
-
-        return name + ": " + start + ", weekName: " + weekName;
-      } else {
-        return STRUCTURE_EXPECTED_BUT_FOUND + seasonProfile.getType().name();
-      }
-    } catch (final Exception e) {
-      return "decoding season profile failed: " + e.getMessage();
     }
   }
 }
