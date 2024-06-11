@@ -6,14 +6,11 @@ package org.opensmartgridplatform.shared.infra.db;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.Objects;
 
 /** Factory class which constructs a {@link HikariDataSource} instance. */
 public class DefaultConnectionPoolFactory {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultConnectionPoolFactory.class);
-
   private String driverClassName;
   private String databaseUrl;
   private String username;
@@ -51,11 +48,7 @@ public class DefaultConnectionPoolFactory {
   /** Builder class which can construct an {@link DefaultConnectionPoolFactory} instance. */
   public static class Builder {
     private String driverClassName = "org.postgresql.Driver";
-    private String protocol = "jdbc:postgresql://";
-    private String databaseHost = "localhost";
-    private int databasePort = 5432;
     private String databaseUrl;
-    private String databaseName = "";
     private String username = "";
     private String pw = "";
     private int minPoolSize = 1;
@@ -72,28 +65,8 @@ public class DefaultConnectionPoolFactory {
       return this;
     }
 
-    public Builder withProtocol(final String protocol) {
-      this.protocol = protocol;
-      return this;
-    }
-
-    public Builder withDatabaseHost(final String databaseHost) {
-      this.databaseHost = databaseHost;
-      return this;
-    }
-
-    public Builder withDatabasePort(final int databasePort) {
-      this.databasePort = databasePort;
-      return this;
-    }
-
     public Builder withDatabaseUrl(final String databaseUrl) {
-      this.databaseUrl = databaseUrl;
-      return this;
-    }
-
-    public Builder withDatabaseName(final String databaseName) {
-      this.databaseName = databaseName;
+      this.databaseUrl = Objects.requireNonNull(databaseUrl, "Database URL should not be empty");
       return this;
     }
 
@@ -150,7 +123,7 @@ public class DefaultConnectionPoolFactory {
     public DefaultConnectionPoolFactory build() {
       final DefaultConnectionPoolFactory factory = new DefaultConnectionPoolFactory();
       factory.driverClassName = this.driverClassName;
-      factory.databaseUrl = this.getDatabaseConnectionString();
+      factory.databaseUrl = this.databaseUrl;
       factory.username = this.username;
       factory.password = this.pw;
       factory.minPoolSize = this.minPoolSize;
@@ -162,20 +135,6 @@ public class DefaultConnectionPoolFactory {
       factory.idleTimeout = this.idleTimeout;
       factory.maxLifetime = this.maxLifetime;
       return factory;
-    }
-
-    public String getDatabaseConnectionString() {
-      final String result;
-      if (StringUtils.isNotEmpty(this.databaseUrl)) {
-        result = this.databaseUrl;
-      } else {
-        result =
-            String.format(
-                "%s%s:%d/%s",
-                this.protocol, this.databaseHost, this.databasePort, this.databaseName);
-      }
-      LOGGER.debug("Using database connection string '{}'", result);
-      return result;
     }
   }
 }

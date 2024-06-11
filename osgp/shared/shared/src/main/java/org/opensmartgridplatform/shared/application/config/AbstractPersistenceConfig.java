@@ -5,8 +5,6 @@
 package org.opensmartgridplatform.shared.application.config;
 
 import com.zaxxer.hikari.HikariDataSource;
-import java.util.Properties;
-import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 import org.hibernate.jpa.HibernatePersistenceProvider;
@@ -16,19 +14,11 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 
+import javax.sql.DataSource;
+import java.util.Properties;
+
 /**
- * This class provides the basic components used for persistence. Configuring the datasource URL can
- * be done in two ways:
- *
- * <ul>
- *   <li><code>db.url</code> with the complete URL. If this property is present it will be used
- *   <li>Separate properties for <code>db.protocol</code>, <code>db.host</code>, <code>db.port
- *       </code> and <code>db.name</code>
- * </ul>
- *
- * You can also combine it when using several databases. Define a global property e.g. <code>
- * db.url=jdbc:postgres://host1:5432,host2:5432/${db.name}</code>. This way you can define <code>
- * db.host</code> per app, but have a global host config.
+ * This class provides the basic components used for persistence.
  */
 public abstract class AbstractPersistenceConfig extends AbstractConfig {
 
@@ -43,12 +33,7 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
   @Value("${db.driver}")
   private String driverClassName;
 
-  /**
-   * The JDBC URL for the database. This can be constructed in two ways, see the class Javadoc for
-   * details.
-   */
-  @SuppressWarnings("squid:S6857") // Sonar doesn't get this
-  @Value("${db.url:${db.protocol}${db.host}:${db.port:5432}/${db.name}}")
+  @Value("${db.url:#{null}}")
   private String databaseUrl;
 
   @Value("${db.min_pool_size:1}")
