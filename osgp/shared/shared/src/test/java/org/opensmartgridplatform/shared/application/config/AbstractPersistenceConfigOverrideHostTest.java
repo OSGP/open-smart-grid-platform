@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = OverrideHostPersistenceConfig.class)
@@ -28,7 +29,7 @@ class AbstractPersistenceConfigOverrideHostTest {
   @Test
   void testOverrideHost() {
     final Builder singleHostBuilder = (Builder) this.applicationContext.getBean("testBuilder");
-    final String connectionString = singleHostBuilder.getDatabaseConnectionString();
+    final String connectionString = ReflectionTestUtils.getField(singleHostBuilder.build(), "databaseUrl").toString();
     assertThat(connectionString).isEqualTo("some:protocol://test-host:5432/a_database");
   }
 }

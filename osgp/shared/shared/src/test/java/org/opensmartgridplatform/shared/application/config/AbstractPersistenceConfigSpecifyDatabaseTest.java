@@ -28,7 +28,7 @@ class AbstractPersistenceConfigSpecifyDatabaseTest {
   @Test
   void testOverrideUrl() {
     final Builder singleHostBuilder = (Builder) this.applicationContext.getBean("testBuilder");
-    final String connectionString = singleHostBuilder.getDatabaseConnectionString();
+    final String connectionString = singleHostBuilder.build().toString();
     assertThat(connectionString).isEqualTo("fixed:proctol://host1:1234,host2:5678/this-is-my-db");
   }
 }

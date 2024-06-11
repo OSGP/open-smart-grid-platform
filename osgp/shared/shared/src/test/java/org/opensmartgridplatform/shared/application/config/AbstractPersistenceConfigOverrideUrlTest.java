@@ -28,7 +28,7 @@ class AbstractPersistenceConfigOverrideUrlTest {
   @Test
   void testOverrideUrl() {
     final Builder singleHostBuilder = (Builder) this.applicationContext.getBean("testBuilder");
-    final String connectionString = singleHostBuilder.getDatabaseConnectionString();
+    final String connectionString = singleHostBuilder.build().toString();
     assertThat(connectionString).isEqualTo("a:whole://other:test/result");
   }
 }
