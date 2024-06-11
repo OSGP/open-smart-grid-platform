@@ -6,9 +6,13 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_DEVICE_IDENTIFICATION;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.RESULT_STRING;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelRequest;
@@ -39,22 +43,27 @@ public class DecoupleMbusDeviceByChannelSteps extends AbstractSmartMeteringSteps
     this.checkAndSaveCorrelationId(asyncResponse.getCorrelationUid());
   }
 
-  @Then("^the Decouple M-Bus Device By Channel response is \"([^\"]*)\" for device \"([^\"]*)\"$")
-  public void theDecoupleResponseIs(final String status, final String mbusDevice)
+  @Then("^the Decouple M-Bus Device By Channel response is \"([^\"]*)\" with responsedata$")
+  public void theDecoupleResponseIs(final String status, final Map<String, String> settings)
       throws WebServiceSecurityException {
 
     final DecoupleMbusDeviceByChannelResponse response = this.getAndCheckResponse(status);
-    assertThat(response.getMbusDeviceIdentification())
-        .as("MbusDeviceIdentification")
-        .isEqualTo(mbusDevice);
-  }
 
-  @Then("^the Decouple M-Bus Device By Channel response is \"([^\"]*)\" without M-Bus device$")
-  public void theDecoupleResponseIsWithoutMBusDevice(final String status)
-      throws WebServiceSecurityException {
-
-    final DecoupleMbusDeviceByChannelResponse response = this.getAndCheckResponse(status);
-    assertThat(response.getMbusDeviceIdentification()).as("MbusDeviceIdentification").isNull();
+    if (settings.containsKey(MBUS_DEVICE_IDENTIFICATION)) {
+      assertThat(response.getMbusDeviceIdentification())
+          .as(MBUS_DEVICE_IDENTIFICATION)
+          .isEqualTo(settings.get(MBUS_DEVICE_IDENTIFICATION));
+    }
+    if (settings.containsKey(MBUS_IDENTIFICATION_NUMBER)) {
+      assertThat(response.getChannelElementValues().getIdentificationNumber())
+          .as(MBUS_IDENTIFICATION_NUMBER)
+          .isEqualTo(settings.get(MBUS_IDENTIFICATION_NUMBER));
+    }
+    if (settings.containsKey(RESULT_STRING)) {
+      assertThat(response.getResultString())
+          .as(RESULT_STRING)
+          .isEqualTo(settings.get(RESULT_STRING));
+    }
   }
 
   private DecoupleMbusDeviceByChannelResponse getAndCheckResponse(final String status)

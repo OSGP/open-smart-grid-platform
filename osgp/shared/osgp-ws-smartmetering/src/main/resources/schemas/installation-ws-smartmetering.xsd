@@ -243,6 +243,7 @@
       <xsd:extension base="common:Response">
         <xsd:sequence minOccurs="0">
           <xsd:element name="mbusDeviceIdentification" type="common:DeviceIdentification" />
+          <xsd:element name="ChannelElementValues" type="tns:ChannelElementValues" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

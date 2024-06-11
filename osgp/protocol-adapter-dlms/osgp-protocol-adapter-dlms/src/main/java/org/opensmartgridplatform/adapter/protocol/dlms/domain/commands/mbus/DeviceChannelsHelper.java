@@ -157,22 +157,34 @@ public class DeviceChannelsHelper {
       throws ProtocolAdapterException {
     final short primaryAddress =
         this.readShort(resultList, INDEX_PRIMARY_ADDRESS, "primaryAddress");
-    final String identificationNumber =
-        this.readIdentificationNumber(
-            resultList, INDEX_IDENTIFICATION_NUMBER, clientSetupObject, "identificationNumber");
     final String manufacturerIdentification =
         this.readManufacturerIdentification(
             resultList, INDEX_MANUFACTURER_ID, "manufacturerIdentification");
     final short version = this.readShort(resultList, INDEX_VERSION, "version");
     final short deviceTypeIdentification =
         this.readShort(resultList, INDEX_DEVICE_TYPE, "deviceTypeIdentification");
-    return new ChannelElementValuesDto(
-        channel,
-        primaryAddress,
-        identificationNumber,
-        manufacturerIdentification,
-        version,
-        deviceTypeIdentification);
+    try {
+      final String identificationNumber =
+          this.readIdentificationNumber(
+              resultList, INDEX_IDENTIFICATION_NUMBER, clientSetupObject, "identificationNumber");
+      return new ChannelElementValuesDto(
+          channel,
+          primaryAddress,
+          identificationNumber,
+          manufacturerIdentification,
+          version,
+          deviceTypeIdentification);
+    } catch (final IllegalArgumentException e) {
+      throw new InvalidIdentificationNumberException(
+          String.format("Invalid Channel information in channel %d", channel),
+          new ChannelElementValuesDto(
+              channel,
+              primaryAddress,
+              resultList.get(INDEX_IDENTIFICATION_NUMBER).getResultData().toString(),
+              manufacturerIdentification,
+              version,
+              deviceTypeIdentification));
+    }
   }
 
   private String readIdentificationNumber(
