@@ -80,7 +80,7 @@ public class InstallationService {
     final String organisationId = messageMetadata.getOrganisationIdentification();
     final String deviceId = messageMetadata.getDeviceIdentification();
     LOGGER.debug(
-        "addMeter for organisationIdentification: {} for deviceIdentification: {}",
+        "store meter for organisationIdentification: {} for deviceIdentification: {}",
         organisationId,
         deviceId);
     final SmartMeteringDevice smartMeteringDevice = addSmartMeterRequest.getDevice();
@@ -92,22 +92,16 @@ public class InstallationService {
 
     final SmartMeter smartMeter = this.smartMeterService.convertSmartMeter(smartMeteringDevice);
     if (existingSmartMeter.isPresent()) {
-      if (addSmartMeterRequest.getOverwrite()) { // overwrite existing device
-        LOGGER.info(
-            "UPDATE SmartMeter !! Update existing smart meter with device identification: {}",
-            messageMetadata.getDeviceIdentification());
-        this.smartMeterService.updateMeter(
-            addSmartMeterRequest,
-            this.smartMeterService.convertToExistingSmartMeter(
-                smartMeter, existingSmartMeter.get()));
+      if (addSmartMeterRequest.getOverwrite()) {
+        smartMeter.setVersion(existingSmartMeter.get().getVersion());
+        smartMeter.setId(existingSmartMeter.get().getId());
       } else {
         LOGGER.error(
             "ERROR: SmartMeter with device identification {} already exists and overwrite is not enabled",
             messageMetadata.getDeviceIdentification());
       }
-    } else {
-      this.smartMeterService.storeMeter(organisationId, addSmartMeterRequest, smartMeter);
     }
+    this.smartMeterService.storeMeter(organisationId, addSmartMeterRequest, smartMeter);
   }
 
   private void sendRequestToOsgpCore(
@@ -116,6 +110,7 @@ public class InstallationService {
         this.mapperFactory
             .getMapperFacade()
             .map(addSmartMeterRequest.getDevice(), SmartMeteringDeviceDto.class);
+    requestDto.setOverwrite(addSmartMeterRequest.getOverwrite());
     this.osgpCoreRequestMessageSender.send(requestDto, messageMetadata); // en dan??
   }
 

@@ -6,6 +6,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,6 +35,7 @@ import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceModel;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -94,6 +96,8 @@ class InstallationServiceTest {
     when(this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
             PROTOCOL_NAME, PROTOCOL_VERSION, PROTOCOL_VARIANT))
         .thenReturn(this.protocolInfo);
+    when(this.mapperFacade.map(this.addSmartMeterRequest.getDevice(), SmartMeteringDeviceDto.class))
+        .thenReturn(new SmartMeteringDeviceDto());
 
     this.instance.addMeter(this.deviceMessageMetadata, this.addSmartMeterRequest);
 
@@ -152,11 +156,12 @@ class InstallationServiceTest {
             this.smartMeteringDevice.getProtocolVersion(),
             this.smartMeteringDevice.getProtocolVariant()))
         .thenReturn(this.protocolInfo);
+    when(this.mapperFacade.map(this.addSmartMeterRequest.getDevice(), SmartMeteringDeviceDto.class))
+        .thenReturn(new SmartMeteringDeviceDto());
 
     this.instance.addMeter(this.deviceMessageMetadata, this.addSmartMeterRequest);
 
-    verify(this.smartMeterService, times(1))
-        .updateMeter(this.addSmartMeterRequest, existingSmartMeter);
+    verify(this.smartMeteringDeviceRepository, times(1)).save(any(SmartMeter.class));
   }
 
   @Test
