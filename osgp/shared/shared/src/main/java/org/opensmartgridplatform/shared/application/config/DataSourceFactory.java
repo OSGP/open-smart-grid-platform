@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package org.opensmartgridplatform.shared.application.config;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -44,7 +50,7 @@ public class DataSourceFactory {
   }
 
   @NotNull
-  HikariConfig getConfiguration(final String dataSourceName, final URL url) {
+  protected HikariConfig getConfiguration(final String dataSourceName, final URL url) {
     final HikariConfig config = new HikariConfig(url.getFile());
     config.setPoolName(dataSourceName);
     return config;

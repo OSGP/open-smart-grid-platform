@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: Copyright Contributors to the GXF project
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package org.opensmartgridplatform.shared.application.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,7 +70,7 @@ class DataSourceFactoryTest {
 
     @Override
     @NotNull
-    HikariConfig getConfiguration(final String dataSourceName, final URL url) {
+    protected HikariConfig getConfiguration(final String dataSourceName, final URL url) {
       final HikariConfig configuration = super.getConfiguration(dataSourceName, url);
       // Replace JDBC Url with the one from the TestContainer
       this.originalJdbcUrl = configuration.getJdbcUrl();
