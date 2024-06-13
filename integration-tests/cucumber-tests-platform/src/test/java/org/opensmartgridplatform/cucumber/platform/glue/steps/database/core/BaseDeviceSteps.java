@@ -13,9 +13,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +22,6 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.config.CoreDeviceConfiguration;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
-import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.Ean;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.repositories.DeviceAuthorizationRepository;
@@ -85,13 +81,13 @@ public abstract class BaseDeviceSteps {
      * data and do a lookup by manufacturer and model code, which should
      * uniquely define the device model.
      */
-    final List<DeviceModel> deviceModels =
+    final var deviceModels =
         this.deviceModelRepository.findByModelCode(
             getString(
                 settings,
                 PlatformKeys.KEY_DEVICE_MODEL,
                 PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
-    final DeviceModel deviceModel = deviceModels.get(0);
+    final var deviceModel = deviceModels.get(0);
 
     device.setDeviceModel(deviceModel);
 
@@ -103,23 +99,15 @@ public abstract class BaseDeviceSteps {
                 PlatformKeys.KEY_PROTOCOL_VERSION,
                 PlatformDefaults.DEFAULT_PROTOCOL_VERSION)));
 
-    InetAddress inetAddress;
-    try {
-      inetAddress =
-          InetAddress.getByName(
-              getString(
-                  settings,
-                  PlatformKeys.NETWORK_ADDRESS,
-                  this.configuration.getDeviceNetworkAddress()));
-    } catch (final UnknownHostException e) {
-      inetAddress = InetAddress.getLoopbackAddress();
-    }
+    final var inetAddress =
+        getString(
+            settings, PlatformKeys.NETWORK_ADDRESS, this.configuration.getDeviceNetworkAddress());
 
     device.setBtsId(getInteger(settings, PlatformKeys.BTS_ID, null));
     device.setCellId(getInteger(settings, PlatformKeys.CELL_ID, null));
 
     device.updateRegistrationData(
-        inetAddress.getHostAddress(),
+        inetAddress,
         getString(settings, PlatformKeys.KEY_DEVICE_TYPE, PlatformDefaults.DEFAULT_DEVICE_TYPE));
 
     device.updateInMaintenance(
@@ -171,7 +159,7 @@ public abstract class BaseDeviceSteps {
 
     device.setActivated(
         getBoolean(settings, PlatformKeys.KEY_ACTIVATED, PlatformDefaults.DEFAULT_ACTIVATED));
-    final String integrationType =
+    final var integrationType =
         getString(
                 settings,
                 PlatformKeys.KEY_INTEGRATION_TYPE,
@@ -183,18 +171,18 @@ public abstract class BaseDeviceSteps {
     device = this.updateWithAuthorization(device, settings);
     this.addEanToDevice(device, settings);
 
-    final String mastSegment =
+    final var mastSegment =
         getString(
             settings,
             PlatformKeys.KEY_CDMA_MAST_SEGMENT,
             PlatformDefaults.DEFAULT_CDMA_MAST_SEGMENT);
-    final Short batchNumber =
+    final var batchNumber =
         getShort(
             settings,
             PlatformKeys.KEY_CDMA_BATCH_NUMBER,
             PlatformDefaults.DEFAULT_CDMA_BATCH_NUMBER);
 
-    final CdmaSettings cdmaSettings =
+    final var cdmaSettings =
         mastSegment == null && batchNumber == null
             ? null
             : new CdmaSettings(mastSegment, batchNumber);
@@ -204,24 +192,24 @@ public abstract class BaseDeviceSteps {
   }
 
   private Device updateWithAuthorization(final Device device, final Map<String, String> settings) {
-    final String organizationIdentification =
+    final var organizationIdentification =
         getString(
             settings,
             PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
             PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
-    final Organisation organization = this.findOrganization(organizationIdentification);
+    final var organization = this.findOrganization(organizationIdentification);
     if (organization == null) {
       return device;
     }
-    final DeviceFunctionGroup functionGroup =
+    final var functionGroup =
         getEnum(
             settings,
             PlatformKeys.KEY_DEVICE_FUNCTION_GROUP,
             DeviceFunctionGroup.class,
             DeviceFunctionGroup.OWNER);
-    final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
+    final var authorization = device.addAuthorization(organization, functionGroup);
     this.deviceAuthorizationRepository.save(authorization);
-    final Device savedDevice = this.deviceRepository.save(device);
+    final var savedDevice = this.deviceRepository.save(device);
     ScenarioContext.current()
         .put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, savedDevice.getDeviceIdentification());
     return savedDevice;
@@ -236,12 +224,12 @@ public abstract class BaseDeviceSteps {
 
   private void addEanToDevice(final Device device, final Map<String, String> settings) {
 
-    final Long eanCode = getLong(settings, PlatformKeys.EAN_CODE);
+    final var eanCode = getLong(settings, PlatformKeys.EAN_CODE);
     if (eanCode != null) {
-      final String eanDescription =
+      final var eanDescription =
           getString(
               settings, PlatformKeys.EAN_DESCRIPTION, PlatformDefaults.DEFAULT_EAN_DESCRIPTION);
-      final Ean ean = new Ean(device, eanCode, eanDescription);
+      final var ean = new Ean(device, eanCode, eanDescription);
       this.eanRepository.save(ean);
     }
   }
@@ -255,7 +243,7 @@ public abstract class BaseDeviceSteps {
    */
   public Device updateDevice(
       final String deviceIdentification, final Map<String, String> settings) {
-    final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+    final var device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
     return this.updateDevice(device, settings);
   }
 
@@ -269,12 +257,12 @@ public abstract class BaseDeviceSteps {
 
     device.addOrganisation(organizationIdentification);
 
-    final Organisation organization =
+    final var organization =
         this.organizationRepository.findByOrganisationIdentification(organizationIdentification);
 
     device = this.deviceRepository.save(device);
 
-    final DeviceAuthorization deviceAuthorization =
+    final var deviceAuthorization =
         device.addAuthorization(organization, DeviceFunctionGroup.OWNER);
 
     return this.deviceAuthorizationRepository.save(deviceAuthorization);
