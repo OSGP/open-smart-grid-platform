@@ -12,7 +12,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>super-osgp</artifactId>
-  <version>6.2.0-SNAPSHOT</version>
+  <version>6.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
   <!-- Description, Organization, Licences, URL and Distribution Management
@@ -44,11 +44,11 @@ SPDX-License-Identifier: Apache-2.0
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>6.2.0-SNAPSHOT</osgp.version>
-    <osgp.dlms.version>6.2.0-SNAPSHOT</osgp.dlms.version>
-    <osgp.shared.version>6.2.0-SNAPSHOT</osgp.shared.version>
-    <osgp.jasper-interface.version>6.2.0-SNAPSHOT</osgp.jasper-interface.version>
-    <spring.version>6.1.7</spring.version>
+    <osgp.version>6.3.0-SNAPSHOT</osgp.version>
+    <osgp.dlms.version>6.3.0-SNAPSHOT</osgp.dlms.version>
+    <osgp.shared.version>6.3.0-SNAPSHOT</osgp.shared.version>
+    <osgp.jasper-interface.version>6.3.0-SNAPSHOT</osgp.jasper-interface.version>
+    <spring.version>6.1.8</spring.version>
     <spring.data.version>3.2.5</spring.data.version>
     <spring.data.commons.version>3.2.5</spring.data.commons.version>
     <spring.security.version>6.2.3</spring.security.version>
@@ -80,7 +80,7 @@ SPDX-License-Identifier: Apache-2.0
     <apache.httpcomponents.httpcore.version>4.4.16</apache.httpcomponents.httpcore.version>
     <commons.codec.version>1.17.0</commons.codec.version>
     <orika.version>1.5.4</orika.version>
-    <msal.version>1.15.0</msal.version>
+    <msal.version>1.15.1</msal.version>
     <jxr.version>3.3.2</jxr.version>
     <maven.project.info.reports.plugin.version>3.5.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.12.1</maven.site.plugin>
@@ -99,7 +99,7 @@ SPDX-License-Identifier: Apache-2.0
     <jaxb.api.version>4.0.1</jaxb.api.version>
     <jaxb.core.version>4.0.4</jaxb.core.version>
     <spotbugs.maven.plugin.version>4.6.0.0</spotbugs.maven.plugin.version>
-    <pmd.maven.plugin.version>3.21.2</pmd.maven.plugin.version>
+    <pmd.maven.plugin.version>3.23.0</pmd.maven.plugin.version>
     <checkstyle.maven.plugin.version>3.3.1</checkstyle.maven.plugin.version>
     <dependency-check.maven.plugin.version>7.0.2</dependency-check.maven.plugin.version>
     <versions.maven.plugin.version>2.10.0</versions.maven.plugin.version>
