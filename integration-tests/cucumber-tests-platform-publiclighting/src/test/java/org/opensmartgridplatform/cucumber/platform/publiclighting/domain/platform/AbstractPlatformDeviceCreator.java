@@ -39,6 +39,7 @@ public abstract class AbstractPlatformDeviceCreator<T extends Device>
 
   @Autowired private DomainInfoRepository domainInfoRepository;
 
+  // Allows for optional override of the default network address
   @Value("${device.networkaddress}")
   private String deviceNetworkAddress;
 
