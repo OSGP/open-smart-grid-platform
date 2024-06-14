@@ -87,19 +87,13 @@ public class InstallationService {
 
     final String deviceIdentification = messageMetadata.getDeviceIdentification();
     final Optional<SmartMeter> existingSmartMeter =
-        this.smartMeterService.validateSmartMeterDoesNotExist(
+        this.smartMeterService.checkIfSmartMeterExistsAndOverwriteAllowed(
             deviceIdentification, addSmartMeterRequest.getOverwrite());
 
     final SmartMeter smartMeter = this.smartMeterService.convertSmartMeter(smartMeteringDevice);
     if (existingSmartMeter.isPresent()) {
-      if (addSmartMeterRequest.getOverwrite()) {
-        smartMeter.setVersion(existingSmartMeter.get().getVersion());
-        smartMeter.setId(existingSmartMeter.get().getId());
-      } else {
-        LOGGER.error(
-            "ERROR: SmartMeter with device identification {} already exists and overwrite is not enabled",
-            messageMetadata.getDeviceIdentification());
-      }
+      smartMeter.setVersion(existingSmartMeter.get().getVersion());
+      smartMeter.setId(existingSmartMeter.get().getId());
     }
     this.smartMeterService.storeMeter(organisationId, addSmartMeterRequest, smartMeter);
   }
@@ -111,7 +105,7 @@ public class InstallationService {
             .getMapperFacade()
             .map(addSmartMeterRequest.getDevice(), SmartMeteringDeviceDto.class);
     requestDto.setOverwrite(addSmartMeterRequest.getOverwrite());
-    this.osgpCoreRequestMessageSender.send(requestDto, messageMetadata); // en dan??
+    this.osgpCoreRequestMessageSender.send(requestDto, messageMetadata);
   }
 
   /**

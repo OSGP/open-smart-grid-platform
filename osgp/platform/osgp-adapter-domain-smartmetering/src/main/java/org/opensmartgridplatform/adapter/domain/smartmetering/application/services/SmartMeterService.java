@@ -72,7 +72,7 @@ public class SmartMeterService {
     this.smartMeterRepository.delete(device);
   }
 
-  public Optional<SmartMeter> validateSmartMeterDoesNotExist(
+  public Optional<SmartMeter> checkIfSmartMeterExistsAndOverwriteAllowed(
       final String deviceIdentification, final boolean overwrite) throws FunctionalException {
     final Optional<SmartMeter> existingSmartMeter =
         Optional.ofNullable(

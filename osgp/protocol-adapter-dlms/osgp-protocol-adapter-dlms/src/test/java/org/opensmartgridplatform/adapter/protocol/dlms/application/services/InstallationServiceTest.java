@@ -18,6 +18,8 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -150,9 +152,11 @@ class InstallationServiceTest {
         .isThrownBy(() -> this.installationService.addMeter(this.messageMetadata, deviceDto));
   }
 
-  @Test
-  void testAddMeterWithNoExistingDeviceIsNullAndOverwriteIsTrue() throws FunctionalException {
-    final SmartMeteringDeviceDto deviceDto = getSmartMeteringDeviceDto(true);
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void testAddMeterWithNoExistingDeviceIsNullAndOverwriteIsTrueOrFalse(final boolean overwrite)
+      throws FunctionalException {
+    final SmartMeteringDeviceDto deviceDto = getSmartMeteringDeviceDto(overwrite);
     final DlmsDevice dlmsDevice = new DlmsDevice();
 
     when(this.installationMapper.map(deviceDto, DlmsDevice.class)).thenReturn(dlmsDevice);
@@ -171,62 +175,39 @@ class InstallationServiceTest {
     verify(this.dlmsDeviceRepository, times(1)).save(dlmsDevice);
   }
 
-  @Test
-  void testAddMeterWithNoExistingDeviceIsNullAndOverwriteIsFalse() throws FunctionalException {
-    final SmartMeteringDeviceDto deviceDto = getSmartMeteringDeviceDto(false);
-    final DlmsDevice dlmsDevice = new DlmsDevice();
-
-    when(this.installationMapper.map(deviceDto, DlmsDevice.class)).thenReturn(dlmsDevice);
-    when(this.dlmsDeviceRepository.findByDeviceIdentification(deviceDto.getDeviceIdentification()))
-        .thenReturn(null);
-
-    final InstallationService installationServiceSpy = Mockito.spy(this.installationService);
-
-    doNothing()
-        .when(installationServiceSpy)
-        .storeAndActivateKeys(any(MessageMetadata.class), any(SmartMeteringDeviceDto.class));
-
-    installationServiceSpy.addMeter(
-        MessageMetadata.newBuilder().withCorrelationUid("123456").build(), deviceDto);
-
-    verify(this.dlmsDeviceRepository, times(1)).save(dlmsDevice);
-  }
-
-  @Test
-  void testAddMeterWithExistingDeviceAndOverwriteIsTrue() throws FunctionalException {
-    final SmartMeteringDeviceDto deviceDto = getSmartMeteringDeviceDto(true);
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void testAddMeterWithExistingDeviceAndOverwriteIsTrueOrFalse(final boolean overwrite)
+      throws FunctionalException {
+    final SmartMeteringDeviceDto deviceDto = getSmartMeteringDeviceDto(overwrite);
     final DlmsDevice dlmsDevice = new DlmsDevice();
     final DlmsDevice existingDlmsDevice = new DlmsDevice();
 
-    when(this.installationMapper.map(deviceDto, DlmsDevice.class)).thenReturn(dlmsDevice);
-    when(this.dlmsDeviceRepository.findByDeviceIdentification(deviceDto.getDeviceIdentification()))
-        .thenReturn(existingDlmsDevice);
+    if (overwrite) {
+      when(this.installationMapper.map(deviceDto, DlmsDevice.class)).thenReturn(dlmsDevice);
+      when(this.dlmsDeviceRepository.findByDeviceIdentification(
+              deviceDto.getDeviceIdentification()))
+          .thenReturn(existingDlmsDevice);
 
-    final InstallationService installationServiceSpy = Mockito.spy(this.installationService);
+      final InstallationService installationServiceSpy = Mockito.spy(this.installationService);
 
-    doNothing()
-        .when(installationServiceSpy)
-        .storeAndActivateKeys(any(MessageMetadata.class), any(SmartMeteringDeviceDto.class));
+      doNothing()
+          .when(installationServiceSpy)
+          .storeAndActivateKeys(any(MessageMetadata.class), any(SmartMeteringDeviceDto.class));
 
-    installationServiceSpy.addMeter(
-        MessageMetadata.newBuilder().withCorrelationUid("123456").build(), deviceDto);
+      installationServiceSpy.addMeter(
+          MessageMetadata.newBuilder().withCorrelationUid("123456").build(), deviceDto);
 
-    verify(this.dlmsDeviceRepository, times(1)).save(dlmsDevice);
-  }
+      verify(this.dlmsDeviceRepository, times(1)).save(dlmsDevice);
+    } else {
+      assertThrows(
+          FunctionalException.class,
+          () ->
+              this.installationService.addMeter(
+                  MessageMetadata.newBuilder().withCorrelationUid("123456").build(), deviceDto));
 
-  @Test
-  void addMeter_existingDeviceIsNotNull_overwriteIsFalse() {
-    final SmartMeteringDeviceDto deviceDto = getSmartMeteringDeviceDto(false);
-
-    final DlmsDevice dlmsDevice = new DlmsDevice();
-
-    assertThrows(
-        FunctionalException.class,
-        () ->
-            this.installationService.addMeter(
-                MessageMetadata.newBuilder().withCorrelationUid("123456").build(), deviceDto));
-
-    verify(this.dlmsDeviceRepository, times(0)).save(dlmsDevice);
+      verify(this.dlmsDeviceRepository, times(0)).save(dlmsDevice);
+    }
   }
 
   private static SmartMeteringDeviceDto getSmartMeteringDeviceDto(final boolean overwrite) {

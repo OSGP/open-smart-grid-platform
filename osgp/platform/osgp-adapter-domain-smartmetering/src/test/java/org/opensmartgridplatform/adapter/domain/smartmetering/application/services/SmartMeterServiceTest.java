@@ -15,6 +15,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -54,25 +56,10 @@ class SmartMeterServiceTest {
 
   @InjectMocks private SmartMeterService smartMeterService;
 
-  @Test
-  void testNonExistingSmartMeterWithOverwriteIsFalse() {
-
-    final String deviceIdentification = "device-1";
-
-    when(this.smartMeterRepository.findByDeviceIdentification(deviceIdentification))
-        .thenReturn(new SmartMeter());
-
-    final FunctionalException exception =
-        Assertions.assertThrows(
-            FunctionalException.class,
-            () ->
-                this.smartMeterService.validateSmartMeterDoesNotExist(deviceIdentification, false));
-    assertThat(exception.getExceptionType()).isEqualTo(FunctionalExceptionType.EXISTING_DEVICE);
-  }
-
-  @Test
-  void testNonExistingSmartMeterWithOverwriteIsTrue() throws FunctionalException {
-    final boolean overwrite = true;
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void testExistingSmartMeterWithOrWithoutOverwrite(final boolean overwrite)
+      throws FunctionalException {
     final String deviceIdentification = "device-1";
     final SmartMeter smartMeter = new SmartMeter();
     smartMeter.setDeviceIdentification(deviceIdentification);
@@ -80,11 +67,40 @@ class SmartMeterServiceTest {
     when(this.smartMeterRepository.findByDeviceIdentification(deviceIdentification))
         .thenReturn(smartMeter);
 
+    if (overwrite) {
+      final Optional<SmartMeter> returnedSmartMeter =
+          this.smartMeterService.checkIfSmartMeterExistsAndOverwriteAllowed(
+              deviceIdentification, overwrite);
+
+      assertThat(returnedSmartMeter).isPresent();
+      assertThat(returnedSmartMeter.get().getDeviceIdentification())
+          .isEqualTo(smartMeter.getDeviceIdentification());
+    } else {
+      final FunctionalException exception =
+          Assertions.assertThrows(
+              FunctionalException.class,
+              () ->
+                  this.smartMeterService.checkIfSmartMeterExistsAndOverwriteAllowed(
+                      deviceIdentification, overwrite));
+
+      assertThat(exception.getExceptionType()).isEqualTo(FunctionalExceptionType.EXISTING_DEVICE);
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void testNonExistingSmartMeterWithOrWithoutOverwrite(final boolean overwrite)
+      throws FunctionalException {
+    final String deviceIdentification = "device-1";
+
+    when(this.smartMeterRepository.findByDeviceIdentification(deviceIdentification))
+        .thenReturn(null);
+
     final Optional<SmartMeter> returnedSmartMeter =
-        this.smartMeterService.validateSmartMeterDoesNotExist(deviceIdentification, overwrite);
-    assertThat(returnedSmartMeter.isPresent()).isTrue();
-    assertThat(returnedSmartMeter.get().getDeviceIdentification())
-        .isEqualTo(smartMeter.getDeviceIdentification());
+        this.smartMeterService.checkIfSmartMeterExistsAndOverwriteAllowed(
+            deviceIdentification, overwrite);
+
+    assertThat(returnedSmartMeter).isNotPresent();
   }
 
   @Test

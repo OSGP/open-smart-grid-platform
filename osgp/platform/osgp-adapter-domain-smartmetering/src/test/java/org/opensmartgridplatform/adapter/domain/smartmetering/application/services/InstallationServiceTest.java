@@ -17,6 +17,8 @@ import ma.glasnost.orika.MapperFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -137,42 +139,17 @@ class InstallationServiceTest {
     }
   }
 
-  @Test
-  void testUpdateSmartMeter() throws FunctionalException {
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void testUpdateSmartMeterWithOrWithoutOverwrite(final boolean overwrite)
+      throws FunctionalException {
     final SmartMeter existingSmartMeter = new SmartMeter();
     existingSmartMeter.setId(1L);
     existingSmartMeter.setVersion(2L);
 
     when(this.smartMeteringDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
         .thenReturn(existingSmartMeter);
-    when(this.addSmartMeterRequest.getOverwrite()).thenReturn(true);
-
-    doReturn(existingSmartMeter)
-        .when(this.smartMeterService)
-        .convertSmartMeter(this.smartMeteringDevice);
-
-    when(this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
-            this.smartMeteringDevice.getProtocolName(),
-            this.smartMeteringDevice.getProtocolVersion(),
-            this.smartMeteringDevice.getProtocolVariant()))
-        .thenReturn(this.protocolInfo);
-    when(this.mapperFacade.map(this.addSmartMeterRequest.getDevice(), SmartMeteringDeviceDto.class))
-        .thenReturn(new SmartMeteringDeviceDto());
-
-    this.instance.addMeter(this.deviceMessageMetadata, this.addSmartMeterRequest);
-
-    verify(this.smartMeteringDeviceRepository, times(1)).save(any(SmartMeter.class));
-  }
-
-  @Test
-  void testNoUpdateOnExistingMeterWhenOverwriteIsFalse() {
-    final SmartMeter existingSmartMeter = new SmartMeter();
-    existingSmartMeter.setId(1L);
-    existingSmartMeter.setVersion(2L);
-
-    when(this.smartMeteringDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
-        .thenReturn(existingSmartMeter);
-    when(this.addSmartMeterRequest.getOverwrite()).thenReturn(false);
+    when(this.addSmartMeterRequest.getOverwrite()).thenReturn(overwrite);
 
     doReturn(existingSmartMeter)
         .when(this.smartMeterService)
@@ -184,10 +161,22 @@ class InstallationServiceTest {
             this.smartMeteringDevice.getProtocolVariant()))
         .thenReturn(this.protocolInfo);
 
-    assertThatExceptionOfType(FunctionalException.class)
-        .isThrownBy(
-            () -> {
-              this.instance.addMeter(this.deviceMessageMetadata, this.addSmartMeterRequest);
-            });
+    if (overwrite) {
+      when(this.mapperFacade.map(
+              this.addSmartMeterRequest.getDevice(), SmartMeteringDeviceDto.class))
+          .thenReturn(new SmartMeteringDeviceDto());
+
+      this.instance.addMeter(this.deviceMessageMetadata, this.addSmartMeterRequest);
+
+      verify(this.smartMeteringDeviceRepository, times(1)).save(any(SmartMeter.class));
+    } else {
+      assertThatExceptionOfType(FunctionalException.class)
+          .isThrownBy(
+              () -> {
+                this.instance.addMeter(this.deviceMessageMetadata, this.addSmartMeterRequest);
+              });
+
+      verify(this.smartMeteringDeviceRepository, times(0)).save(any(SmartMeter.class));
+    }
   }
 }
