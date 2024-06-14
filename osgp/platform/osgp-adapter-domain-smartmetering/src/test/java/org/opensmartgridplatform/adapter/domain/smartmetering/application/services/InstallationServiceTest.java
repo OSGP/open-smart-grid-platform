@@ -160,6 +160,7 @@ class InstallationServiceTest {
             this.smartMeteringDevice.getProtocolVersion(),
             this.smartMeteringDevice.getProtocolVariant()))
         .thenReturn(this.protocolInfo);
+    when(this.smartMeteringDeviceRepository.save(any())).thenReturn(this.smartMeter);
 
     if (overwrite) {
       when(this.mapperFacade.map(

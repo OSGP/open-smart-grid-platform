@@ -182,6 +182,7 @@ class InstallationServiceTest {
     final SmartMeteringDeviceDto deviceDto = getSmartMeteringDeviceDto(overwrite);
     final DlmsDevice dlmsDevice = new DlmsDevice();
     final DlmsDevice existingDlmsDevice = new DlmsDevice();
+    existingDlmsDevice.setId(1);
 
     if (overwrite) {
       when(this.installationMapper.map(deviceDto, DlmsDevice.class)).thenReturn(dlmsDevice);
