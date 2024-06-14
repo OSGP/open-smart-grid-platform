@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
+import java.util.List;
 import java.util.Optional;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
@@ -146,6 +147,23 @@ public class ObjectConfigServiceHelper {
       return attributeOpt.map(
           value ->
               new AttributeAddress(classId, obisCode, value.getId(), selectiveAccessDescription));
+    }
+  }
+
+  public List<AttributeAddress> findDefaultAttributeAddressesIgnoringMissingTypes(
+      final Protocol protocol, final List<DlmsObjectType> dlmsObjectTypes) {
+    try {
+      final List<CosemObject> cosemObjects =
+          this.objectConfigService.getCosemObjectsIgnoringMissingTypes(
+              protocol.getName(), protocol.getVersion(), dlmsObjectTypes);
+
+      return cosemObjects.stream()
+          .map(
+              object ->
+                  new AttributeAddress(object.getClassId(), object.getObis(), DEFAULT_ATTRIBUTE_ID))
+          .toList();
+    } catch (final ObjectConfigException e) {
+      return List.of();
     }
   }
 

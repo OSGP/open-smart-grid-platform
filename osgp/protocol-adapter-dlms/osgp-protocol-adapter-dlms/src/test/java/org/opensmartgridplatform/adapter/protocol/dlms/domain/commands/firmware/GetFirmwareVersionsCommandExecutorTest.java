@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,16 +23,19 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-public class GetFirmwareVersionsCommandExecutorTest {
+class GetFirmwareVersionsCommandExecutorTest {
   private static final int CLASS_ID = 1;
   private static final int ATTRIBUTE_ID = 2;
 
@@ -54,15 +58,21 @@ public class GetFirmwareVersionsCommandExecutorTest {
   private MessageMetadata messageMetadata;
 
   @BeforeEach
-  public void setUp() {
-    this.executor = new GetFirmwareVersionsCommandExecutor(this.helperService);
+  public void setUp() throws IOException, ObjectConfigException {
+    final ObjectConfigService objectConfigService = new ObjectConfigService();
+    final ObjectConfigServiceHelper objectConfigServiceHelper =
+        new ObjectConfigServiceHelper(objectConfigService);
+
+    this.executor =
+        new GetFirmwareVersionsCommandExecutor(this.helperService, objectConfigServiceHelper);
     this.connectionHolder = new DlmsConnectionManager(null, null, null, this.listener, null);
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
   }
 
   @Test
-  public void returns3FirmwareVersionsForDsmr422Device() throws Exception {
+  void returns3FirmwareVersionsForDsmr422Device() throws Exception {
     final DlmsDevice device = new DlmsDevice();
+    device.setProtocol(Protocol.DSMR_4_2_2);
 
     final GetResult getResult1 = new GetResultBuilder().build();
     final GetResult getResult2 = new GetResultBuilder().build();
@@ -104,7 +114,7 @@ public class GetFirmwareVersionsCommandExecutorTest {
   }
 
   @Test
-  public void returns4FirmwareVersionsForSmr51Device() throws Exception {
+  void returns4FirmwareVersionsForSmr51Device() throws Exception {
     final DlmsDevice device = new DlmsDevice();
     device.setProtocol(Protocol.SMR_5_1);
 
