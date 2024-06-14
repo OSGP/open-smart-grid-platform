@@ -42,13 +42,14 @@ Feature: SmartMetering Configuration - Firmware
     Examples:
       | deviceidentification | protocol | version | comm0 | ma0   | func0 | mbda0 | comm1           | ma1                    | func1    | mbda1    |
       | TEST1024000000001    | DSMR     | 4.2.2   | V 1.1 | V 1.2 | V 1.3 |       | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 |          |
-      | TEST1024000000001    | SMR      | 5.0.0   | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
+      | TEST1027000000001    | SMR      | 5.0.0   | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
     @NightlyBuildOnly
     Examples:
       | deviceidentification | protocol | version | comm0 | ma0   | func0 | mbda0 | comm1           | ma1                    | func1    | mbda1    |
-      | TEST1027000000001    | SMR      | 5.1     | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
-      | TEST1027000000001    | SMR      | 5.2     | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
-      | TEST1027000000001    | SMR      | 5.5     | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
+      | TEST1024000000001    | DSMR     | 2.2     | V 1.1 | V 1.2 | V 1.3 |       | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 |          |
+      | TEST1028000000001    | SMR      | 5.1     | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
+      | TEST1029000000001    | SMR      | 5.2     | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
+      | TEST1030000000001    | SMR      | 5.5     | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
 
 
   @GetFirmwareVersion @GetFirmwareGas
