@@ -57,9 +57,7 @@ public class SmartMeterService {
     smartMeter.updateProtocol(this.getProtocolInfo(smartMeteringDevice));
     smartMeter.setDeviceModel(this.getDeviceModel(addSmartMeterRequest.getDeviceModel()));
     smartMeter = this.smartMeterRepository.save(smartMeter);
-    if (!addSmartMeterRequest.getOverwrite()) {
-      this.storeAuthorization(organisationIdentification, smartMeter);
-    }
+    this.storeAuthorization(organisationIdentification, smartMeter);
   }
 
   public void removeMeter(final MessageMetadata messageMetadata) {

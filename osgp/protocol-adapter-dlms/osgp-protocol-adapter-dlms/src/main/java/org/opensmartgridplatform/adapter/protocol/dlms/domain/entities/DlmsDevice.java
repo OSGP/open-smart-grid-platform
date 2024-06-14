@@ -6,7 +6,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
 import java.time.Instant;
 import java.util.Objects;
@@ -19,10 +18,6 @@ public class DlmsDevice extends AbstractEntity {
   private static final long serialVersionUID = 3899692163578950343L;
 
   private static final int KEMA_CODE_LENGTH = 5;
-
-  @Id
-  @Column(name = "id")
-  private long id;
 
   @Column(unique = true, nullable = false, length = 40)
   private String deviceIdentification;
