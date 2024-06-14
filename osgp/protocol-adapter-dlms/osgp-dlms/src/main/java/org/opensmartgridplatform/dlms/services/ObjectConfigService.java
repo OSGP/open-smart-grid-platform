@@ -119,6 +119,26 @@ public class ObjectConfigService {
     return objects;
   }
 
+  public List<CosemObject> getCosemObjectsIgnoringMissingTypes(
+      final String protocolName,
+      final String protocolVersion,
+      final List<DlmsObjectType> dlmsObjectTypes)
+      throws IllegalArgumentException, ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.getCosemObjects(protocolName, protocolVersion);
+
+    final List<CosemObject> objects = new ArrayList<>();
+
+    dlmsObjectTypes.forEach(
+        objectType -> {
+          if (cosemObjects.containsKey(objectType)) {
+            objects.add(cosemObjects.get(objectType));
+          }
+        });
+
+    return objects;
+  }
+
   public List<CosemObject> getCosemObjectsWithProperties(
       final String protocolName,
       final String protocolVersion,

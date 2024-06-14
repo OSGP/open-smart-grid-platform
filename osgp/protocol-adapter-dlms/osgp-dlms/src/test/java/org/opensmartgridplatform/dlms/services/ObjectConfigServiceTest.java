@@ -8,6 +8,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.ACTIVE_FIRMWARE_IDENTIFIER;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_DRIVER_ACTIVE_FIRMWARE_IDENTIFIER;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MODULE_ACTIVE_FIRMWARE_IDENTIFIER;
 import static org.opensmartgridplatform.dlms.services.ObjectConfigService.getAttributeIdFromCaptureObjectDefinition;
 import static org.opensmartgridplatform.dlms.services.ObjectConfigService.getCaptureObjectDefinitions;
 import static org.opensmartgridplatform.dlms.services.ObjectConfigService.getCosemObjectTypeFromCaptureObjectDefinition;
@@ -141,6 +144,22 @@ class ObjectConfigServiceTest {
     if (!dlmsProfiles.isEmpty()) {
       this.assertAllPqPeriodicObjectsInProfiles(protocol, dlmsProfiles);
     }
+  }
+
+  @Test
+  void getCosemObjectsIgnoringMissingTypes() throws ObjectConfigException {
+    final List<CosemObject> objects =
+        this.objectConfigService.getCosemObjectsIgnoringMissingTypes(
+            "DSMR",
+            "2.2",
+            List.of(
+                ACTIVE_FIRMWARE_IDENTIFIER,
+                MODULE_ACTIVE_FIRMWARE_IDENTIFIER,
+                MBUS_DRIVER_ACTIVE_FIRMWARE_IDENTIFIER));
+
+    assertThat(objects).hasSize(2);
+    assertThat(objects.get(0).getTag()).isEqualTo(ACTIVE_FIRMWARE_IDENTIFIER.name());
+    assertThat(objects.get(1).getTag()).isEqualTo(MODULE_ACTIVE_FIRMWARE_IDENTIFIER.name());
   }
 
   private List<CosemObject> getCosemObjectsWithProperties(

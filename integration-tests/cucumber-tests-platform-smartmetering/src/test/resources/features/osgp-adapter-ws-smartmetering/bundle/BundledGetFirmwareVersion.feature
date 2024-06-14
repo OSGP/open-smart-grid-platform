@@ -7,24 +7,43 @@ Feature: SmartMetering Bundle - GetFirmwareVersion
   As a grid operator
   I want to retrieve the firmware versions from a meter via a bundle request
 
-  Scenario: Retrieve the firmware version of a device in a bundle request
+  Scenario Outline: Retrieve the firmware version of a <protocol> <version> device in a bundle request
     Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
+      | DeviceIdentification      | <deviceidentification> |
+      | DeviceType                | SMART_METER_E          |
+      | Protocol                  | <protocol>             |
+      | ProtocolVersion           | <version>              |
+      | FirmwareModuleVersionComm | <comm0>                |
+      | FirmwareModuleVersionMa   | <ma0>                  |
+      | FirmwareModuleVersionFunc | <func0>                |
+      | FirmwareModuleVersionMbda | <mbda0>                |
     And a bundle request
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | <deviceidentification> |
     And the bundle request contains a get firmware version action
     When the bundle request is received
     Then the bundle response should contain a get firmware version response
-      | FirmwareModuleVersionComm | Telit 10.00.154        |
-      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836               |
+      | FirmwareModuleVersionComm | <comm1>                |
+      | FirmwareModuleVersionMa   | <ma1>                  |
+      | FirmwareModuleVersionFunc | <func1>                |
+      | FirmwareModuleVersionMbda | <mbda1>                |
     And the database should be updated with the device firmware version
-      | DeviceIdentification      | TEST1024000000001      |
-      | FirmwareModuleVersionComm | Telit 10.00.154        |
-      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836               |
+      | DeviceIdentification      | <deviceidentification> |
+      | FirmwareModuleVersionComm | <comm1>                |
+      | FirmwareModuleVersionMa   | <ma1>                  |
+      | FirmwareModuleVersionFunc | <func1>                |
+      | FirmwareModuleVersionMbda | <mbda1>                |
       | FirmwareIsForSmartMeters  | true                   |
+    Examples:
+      | deviceidentification | protocol | version | comm0 | ma0   | func0 | mbda0 | comm1           | ma1                    | func1    | mbda1    |
+      | TEST1024000000001    | DSMR     | 4.2.2   | V 1.1 | V 1.2 | V 1.3 |       | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 |          |
+      | TEST1027000000001    | SMR      | 5.0.0   | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
+    @NightlyBuildOnly
+    Examples:
+      | deviceidentification | protocol | version | comm0 | ma0   | func0 | mbda0 | comm1           | ma1                    | func1    | mbda1    |
+      | TEST1024000000001    | DSMR     | 2.2     | V 1.1 | V 1.2 | V 1.3 |       | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 |          |
+      | TEST1028000000001    | SMR      | 5.1     | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
+      | TEST1029000000001    | SMR      | 5.2     | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
+      | TEST1030000000001    | SMR      | 5.5     | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
 
   Scenario: Retrieve an updated firmware version of a device in a bundle request, when a device already has a firmware
     Given a dlms device

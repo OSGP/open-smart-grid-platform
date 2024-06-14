@@ -7,7 +7,10 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_CLIENT_SETUP;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_DIAGNOSTIC;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,11 +24,13 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
-import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 
 @ExtendWith(MockitoExtension.class)
 class ObjectConfigServiceHelperTest {
+
+  private static final String OBIS = "0.1.24.1.0.255";
+  private static final String OBIS2 = "0.1.24.2.0.255";
 
   @Mock private ObjectConfigService objectConfigService;
   @Mock private DlmsDevice dlmsDevice;
@@ -33,6 +38,7 @@ class ObjectConfigServiceHelperTest {
   @Mock private Attribute attribute;
 
   @Mock CosemObject cosemObject;
+  @Mock CosemObject cosemObject2;
 
   @InjectMocks private ObjectConfigServiceHelper objectConfigServiceHelper;
 
@@ -41,20 +47,18 @@ class ObjectConfigServiceHelperTest {
       throws ProtocolAdapterException, ObjectConfigException {
 
     when(this.attribute.getId()).thenReturn(2);
-    when(this.cosemObject.getObis()).thenReturn("0.1.24.1.0.255");
+    when(this.cosemObject.getObis()).thenReturn(OBIS);
     when(this.cosemObject.getAttribute(2)).thenReturn(this.attribute);
 
     when(this.objectConfigService.getOptionalCosemObject(
-            Protocol.SMR_5_1.getName(),
-            Protocol.SMR_5_1.getVersion(),
-            org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_CLIENT_SETUP))
+            Protocol.SMR_5_1.getName(), Protocol.SMR_5_1.getVersion(), MBUS_CLIENT_SETUP))
         .thenReturn(Optional.of(this.cosemObject));
 
     final AttributeAddress attributeAddress =
         this.objectConfigServiceHelper.findDefaultAttributeAddress(
-            this.dlmsDevice, Protocol.SMR_5_1, DlmsObjectType.MBUS_CLIENT_SETUP, 1);
+            this.dlmsDevice, Protocol.SMR_5_1, MBUS_CLIENT_SETUP, 1);
 
-    assertAttributeAddress(attributeAddress);
+    assertAttributeAddress(attributeAddress, OBIS);
   }
 
   @Test
@@ -62,31 +66,27 @@ class ObjectConfigServiceHelperTest {
       throws ProtocolAdapterException, ObjectConfigException {
 
     when(this.attribute.getId()).thenReturn(2);
-    when(this.cosemObject.getObis()).thenReturn("0.1.24.1.0.255");
+    when(this.cosemObject.getObis()).thenReturn(OBIS);
     when(this.cosemObject.getAttribute(2)).thenReturn(this.attribute);
 
     when(this.objectConfigService.getOptionalCosemObject(
-            Protocol.SMR_5_1.getName(),
-            Protocol.SMR_5_1.getVersion(),
-            org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_CLIENT_SETUP))
+            Protocol.SMR_5_1.getName(), Protocol.SMR_5_1.getVersion(), MBUS_CLIENT_SETUP))
         .thenReturn(Optional.of(this.cosemObject));
 
     final AttributeAddress attributeAddress =
         this.objectConfigServiceHelper.findAttributeAddress(
-            this.dlmsDevice, Protocol.SMR_5_1, DlmsObjectType.MBUS_CLIENT_SETUP, 1, 2);
+            this.dlmsDevice, Protocol.SMR_5_1, MBUS_CLIENT_SETUP, 1, 2);
 
-    assertAttributeAddress(attributeAddress);
+    assertAttributeAddress(attributeAddress, OBIS);
   }
 
   @Test
   void findDefaultAttributeAddressShouldThrowException() throws ObjectConfigException {
-    when(this.cosemObject.getObis()).thenReturn("0.1.24.1.0.255");
+    when(this.cosemObject.getObis()).thenReturn(OBIS);
     when(this.dlmsDevice.getDeviceId()).thenReturn(Long.valueOf("28001"));
 
     when(this.objectConfigService.getOptionalCosemObject(
-            Protocol.SMR_5_1.getName(),
-            Protocol.SMR_5_1.getVersion(),
-            org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_CLIENT_SETUP))
+            Protocol.SMR_5_1.getName(), Protocol.SMR_5_1.getVersion(), MBUS_CLIENT_SETUP))
         .thenReturn(Optional.of(this.cosemObject));
 
     final ProtocolAdapterException protocolAdapterException =
@@ -94,7 +94,7 @@ class ObjectConfigServiceHelperTest {
             ProtocolAdapterException.class,
             () ->
                 this.objectConfigServiceHelper.findDefaultAttributeAddress(
-                    this.dlmsDevice, Protocol.SMR_5_1, DlmsObjectType.MBUS_CLIENT_SETUP, 1));
+                    this.dlmsDevice, Protocol.SMR_5_1, MBUS_CLIENT_SETUP, 1));
 
     assertThat(protocolAdapterException).isNotNull();
     assertThat(protocolAdapterException.getMessage())
@@ -103,13 +103,11 @@ class ObjectConfigServiceHelperTest {
 
   @Test
   void findAttributeAddressShouldThrowException() throws ObjectConfigException {
-    when(this.cosemObject.getObis()).thenReturn("0.1.24.1.0.255");
+    when(this.cosemObject.getObis()).thenReturn(OBIS);
     when(this.dlmsDevice.getDeviceId()).thenReturn(Long.valueOf("28001"));
 
     when(this.objectConfigService.getOptionalCosemObject(
-            Protocol.SMR_5_1.getName(),
-            Protocol.SMR_5_1.getVersion(),
-            org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_CLIENT_SETUP))
+            Protocol.SMR_5_1.getName(), Protocol.SMR_5_1.getVersion(), MBUS_CLIENT_SETUP))
         .thenReturn(Optional.of(this.cosemObject));
 
     final ProtocolAdapterException protocolAdapterException =
@@ -117,7 +115,7 @@ class ObjectConfigServiceHelperTest {
             ProtocolAdapterException.class,
             () ->
                 this.objectConfigServiceHelper.findAttributeAddress(
-                    this.dlmsDevice, Protocol.SMR_5_1, DlmsObjectType.MBUS_CLIENT_SETUP, 1, 2));
+                    this.dlmsDevice, Protocol.SMR_5_1, MBUS_CLIENT_SETUP, 1, 2));
 
     assertThat(protocolAdapterException).isNotNull();
     assertThat(protocolAdapterException.getMessage())
@@ -129,42 +127,38 @@ class ObjectConfigServiceHelperTest {
       throws ObjectConfigException {
 
     when(this.attribute.getId()).thenReturn(2);
-    when(this.cosemObject.getObis()).thenReturn("0.1.24.1.0.255");
+    when(this.cosemObject.getObis()).thenReturn(OBIS);
     when(this.cosemObject.getAttribute(2)).thenReturn(this.attribute);
 
     when(this.objectConfigService.getOptionalCosemObject(
-            Protocol.SMR_5_1.getName(),
-            Protocol.SMR_5_1.getVersion(),
-            org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_CLIENT_SETUP))
+            Protocol.SMR_5_1.getName(), Protocol.SMR_5_1.getVersion(), MBUS_CLIENT_SETUP))
         .thenReturn(Optional.of(this.cosemObject));
 
     final Optional<AttributeAddress> attributeAddressOpt =
         this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
-            Protocol.SMR_5_1, DlmsObjectType.MBUS_CLIENT_SETUP, 1);
+            Protocol.SMR_5_1, MBUS_CLIENT_SETUP, 1);
 
     assertThat(attributeAddressOpt).isPresent();
-    assertAttributeAddress(attributeAddressOpt.get());
+    assertAttributeAddress(attributeAddressOpt.get(), OBIS);
   }
 
   @Test
   void findOptionalAttributeAddressShouldReturnAnAttributeAddress() throws ObjectConfigException {
 
     when(this.attribute.getId()).thenReturn(2);
-    when(this.cosemObject.getObis()).thenReturn("0.1.24.1.0.255");
+    when(this.cosemObject.getObis()).thenReturn(OBIS);
     when(this.cosemObject.getAttribute(2)).thenReturn(this.attribute);
 
     when(this.objectConfigService.getOptionalCosemObject(
-            Protocol.SMR_5_1.getName(),
-            Protocol.SMR_5_1.getVersion(),
-            org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_CLIENT_SETUP))
+            Protocol.SMR_5_1.getName(), Protocol.SMR_5_1.getVersion(), MBUS_CLIENT_SETUP))
         .thenReturn(Optional.of(this.cosemObject));
 
     final Optional<AttributeAddress> attributeAddressOpt =
         this.objectConfigServiceHelper.findOptionalAttributeAddress(
-            Protocol.SMR_5_1, DlmsObjectType.MBUS_CLIENT_SETUP, 1, 2);
+            Protocol.SMR_5_1, MBUS_CLIENT_SETUP, 1, 2);
 
     assertThat(attributeAddressOpt).isPresent();
-    assertAttributeAddress(attributeAddressOpt.get());
+    assertAttributeAddress(attributeAddressOpt.get(), OBIS);
   }
 
   @Test
@@ -172,14 +166,12 @@ class ObjectConfigServiceHelperTest {
       throws ObjectConfigException {
 
     when(this.objectConfigService.getOptionalCosemObject(
-            Protocol.SMR_5_1.getName(),
-            Protocol.SMR_5_1.getVersion(),
-            org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_CLIENT_SETUP))
+            Protocol.SMR_5_1.getName(), Protocol.SMR_5_1.getVersion(), MBUS_CLIENT_SETUP))
         .thenReturn(Optional.empty());
 
     final Optional<AttributeAddress> attributeAddressOpt =
         this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
-            Protocol.SMR_5_1, DlmsObjectType.MBUS_CLIENT_SETUP, 1);
+            Protocol.SMR_5_1, MBUS_CLIENT_SETUP, 1);
 
     assertThat(attributeAddressOpt).isEmpty();
   }
@@ -188,22 +180,43 @@ class ObjectConfigServiceHelperTest {
   void findOptionalAttributeAddressShouldReturnAEmptyOptional() throws ObjectConfigException {
 
     when(this.objectConfigService.getOptionalCosemObject(
-            Protocol.SMR_5_1.getName(),
-            Protocol.SMR_5_1.getVersion(),
-            org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_CLIENT_SETUP))
+            Protocol.SMR_5_1.getName(), Protocol.SMR_5_1.getVersion(), MBUS_CLIENT_SETUP))
         .thenReturn(Optional.empty());
 
     final Optional<AttributeAddress> attributeAddressOpt =
         this.objectConfigServiceHelper.findOptionalAttributeAddress(
-            Protocol.SMR_5_1, DlmsObjectType.MBUS_CLIENT_SETUP, 1, 2);
+            Protocol.SMR_5_1, MBUS_CLIENT_SETUP, 1, 2);
 
     assertThat(attributeAddressOpt).isEmpty();
   }
 
-  private static void assertAttributeAddress(final AttributeAddress attributeAddress) {
+  @Test
+  void findDefaultAttributeAddressesIgnoringMissingTypesShouldReturnObjects()
+      throws ObjectConfigException {
+
+    when(this.cosemObject.getObis()).thenReturn(OBIS);
+    when(this.cosemObject2.getObis()).thenReturn(OBIS2);
+
+    when(this.objectConfigService.getCosemObjectsIgnoringMissingTypes(
+            Protocol.SMR_5_1.getName(),
+            Protocol.SMR_5_1.getVersion(),
+            List.of(MBUS_CLIENT_SETUP, MBUS_DIAGNOSTIC)))
+        .thenReturn(List.of(this.cosemObject, this.cosemObject2));
+
+    final List<AttributeAddress> attributeAddresses =
+        this.objectConfigServiceHelper.findDefaultAttributeAddressesIgnoringMissingTypes(
+            Protocol.SMR_5_1, List.of(MBUS_CLIENT_SETUP, MBUS_DIAGNOSTIC));
+
+    assertThat(attributeAddresses).hasSize(2);
+    assertAttributeAddress(attributeAddresses.get(0), OBIS);
+    assertAttributeAddress(attributeAddresses.get(1), OBIS2);
+  }
+
+  private static void assertAttributeAddress(
+      final AttributeAddress attributeAddress, final String expectedObis) {
     assertThat(attributeAddress).isNotNull();
     assertThat(attributeAddress.getClassId()).as("classId").isZero();
     assertThat(attributeAddress.getId()).as("id").isEqualTo(2);
-    assertThat(attributeAddress.getInstanceId()).as("instanceId").hasToString("0.1.24.1.0.255");
+    assertThat(attributeAddress.getInstanceId()).as("instanceId").hasToString(expectedObis);
   }
 }

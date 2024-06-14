@@ -178,6 +178,72 @@
       ]
     },
     {
+      "tag": "ACTIVE_FIRMWARE_IDENTIFIER",
+      "description": "Active firmware identifier",
+      "note": "DSMR2.2 specification doesn't contain firmware identifiers, but meters do contain this object",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.0.0.2.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MODULE_ACTIVE_FIRMWARE_IDENTIFIER",
+      "description": "Module Active firmware identifier",
+      "note": "DSMR2.2 specification doesn't contain firmware identifiers, but meters do contain this object",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.1.0.2.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "COMMUNICATION_MODULE_ACTIVE_FIRMWARE_IDENTIFIER",
+      "description": "Communication Module Active firmware identifier",
+      "note": "DSMR2.2 specification doesn't contain firmware identifiers, but meters do contain this object",
+      "class-id": 1,
+      "version": 0,
+      "obis": "1.2.0.2.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "octet-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
       "tag": "ACTIVE_ENERGY_IMPORT",
       "description": "Active energy import (+A)",
       "note": null,
