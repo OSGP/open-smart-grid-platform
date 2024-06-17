@@ -4,6 +4,8 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -28,12 +30,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service(value = "domainSmartMeteringSmartMeterService")
 @Transactional(value = "transactionManager")
 public class SmartMeterService {
 
   @Autowired private SmartMeterRepository smartMeterRepository;
-
   @Autowired private ManufacturerRepository manufacturerRepository;
 
   @Autowired private DeviceModelRepository deviceModelRepository;
@@ -68,12 +70,16 @@ public class SmartMeterService {
     this.smartMeterRepository.delete(device);
   }
 
-  public void validateSmartMeterDoesNotExist(final String deviceIdentification)
-      throws FunctionalException {
-    if (this.smartMeterRepository.findByDeviceIdentification(deviceIdentification) != null) {
+  public Optional<SmartMeter> checkIfSmartMeterExistsAndOverwriteAllowed(
+      final String deviceIdentification, final boolean overwrite) throws FunctionalException {
+    final Optional<SmartMeter> existingSmartMeter =
+        Optional.ofNullable(
+            this.smartMeterRepository.findByDeviceIdentification(deviceIdentification));
+    if (existingSmartMeter.isPresent() && !overwrite) {
       throw new FunctionalException(
           FunctionalExceptionType.EXISTING_DEVICE, ComponentType.DOMAIN_SMART_METERING);
     }
+    return existingSmartMeter;
   }
 
   public SmartMeter convertSmartMeter(final SmartMeteringDevice smartMeteringDevice) {

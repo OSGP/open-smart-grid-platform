@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -21,15 +22,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMBusDeviceAdministrativeRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceAdministrativeAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceAdministrativeResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.Device;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeviceModel;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseUrlService;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.RequestService;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceAdministrativeRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
@@ -109,5 +116,76 @@ class SmartMeteringInstallationEndpointTest {
 
     Assertions.assertThat(response.getResult()).isEqualTo(OsgpResultType.OK);
     Assertions.assertThat(response.getDescription()).isNull();
+  }
+
+  @Test
+  void testAddDevice() throws OsgpException {
+    final String organisationIdentification = "test-org";
+    final AddDeviceRequest request = new AddDeviceRequest();
+    final Device device = new Device();
+    device.setDeviceIdentification("TestDevice");
+    request.setDevice(device);
+    request.setDeviceModel(new DeviceModel());
+    request.setOverwrite(true);
+    final String messagePriority = "5";
+    final String scheduleTime = "123456789";
+    final String responseUrl = "https://localhost/response-url";
+    final String bypassRetry = "true";
+
+    final SmartMeteringDevice smartMeteringDevice = new SmartMeteringDevice();
+    smartMeteringDevice.setDeviceIdentification(device.getDeviceIdentification());
+    when(this.installationMapper.map(device, SmartMeteringDevice.class))
+        .thenReturn(smartMeteringDevice);
+
+    final AsyncResponse asyncResponse = new AsyncResponse();
+    asyncResponse.setCorrelationUid("TestCorrelationUid");
+    asyncResponse.setDeviceIdentification(device.getDeviceIdentification());
+
+    when(this.requestService.enqueueAndSendRequest(any(), any())).thenReturn(asyncResponse);
+
+    this.smartMeteringInstallationEndpoint.addDevice(
+        organisationIdentification,
+        request,
+        messagePriority,
+        scheduleTime,
+        responseUrl,
+        bypassRetry);
+
+    verify(this.requestService).enqueueAndSendRequest(any(), any(AddSmartMeterRequest.class));
+  }
+
+  @Test
+  void testAddDeviceThrowsFunctionalException() throws OsgpException {
+    final String organisationIdentification = "test-org";
+    final AddDeviceRequest request = new AddDeviceRequest();
+    final Device device = new Device();
+    device.setDeviceIdentification("TestDevice");
+    request.setDevice(device);
+    request.setDeviceModel(new DeviceModel());
+    request.setOverwrite(true);
+    final String messagePriority = "5";
+    final String scheduleTime = "123456789";
+    final String responseUrl = "https://localhost/response-url";
+    final String bypassRetry = "true";
+
+    final SmartMeteringDevice smartMeteringDevice = new SmartMeteringDevice();
+    smartMeteringDevice.setDeviceIdentification(device.getDeviceIdentification());
+    when(this.installationMapper.map(device, SmartMeteringDevice.class))
+        .thenReturn(smartMeteringDevice);
+
+    when(this.requestService.enqueueAndSendRequest(any(), any()))
+        .thenThrow(FunctionalException.class);
+
+    assertThrows(
+        FunctionalException.class,
+        () -> {
+          this.smartMeteringInstallationEndpoint.addDevice(
+              organisationIdentification,
+              request,
+              messagePriority,
+              scheduleTime,
+              responseUrl,
+              bypassRetry);
+        });
   }
 }

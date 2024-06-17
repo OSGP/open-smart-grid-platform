@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import java.util.Optional;
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.InstallationMapper;
@@ -69,22 +70,41 @@ public class InstallationService {
   public void addMeter(
       final MessageMetadata messageMetadata, final AddSmartMeterRequest addSmartMeterRequest)
       throws FunctionalException {
+    this.storeMeter(messageMetadata, addSmartMeterRequest);
+    this.sendRequestToOsgpCore(messageMetadata, addSmartMeterRequest);
+  }
+
+  private void storeMeter(
+      final MessageMetadata messageMetadata, final AddSmartMeterRequest addSmartMeterRequest)
+      throws FunctionalException {
     final String organisationId = messageMetadata.getOrganisationIdentification();
     final String deviceId = messageMetadata.getDeviceIdentification();
     LOGGER.debug(
-        "addMeter for organisationIdentification: {} for deviceIdentification: {}",
+        "store meter for organisationIdentification: {} for deviceIdentification: {}",
         organisationId,
         deviceId);
     final SmartMeteringDevice smartMeteringDevice = addSmartMeterRequest.getDevice();
 
     final String deviceIdentification = messageMetadata.getDeviceIdentification();
-
-    this.smartMeterService.validateSmartMeterDoesNotExist(deviceIdentification);
+    final Optional<SmartMeter> existingSmartMeter =
+        this.smartMeterService.checkIfSmartMeterExistsAndOverwriteAllowed(
+            deviceIdentification, addSmartMeterRequest.getOverwrite());
 
     final SmartMeter smartMeter = this.smartMeterService.convertSmartMeter(smartMeteringDevice);
+    if (existingSmartMeter.isPresent()) {
+      smartMeter.setVersion(existingSmartMeter.get().getVersion());
+      smartMeter.setId(existingSmartMeter.get().getId());
+    }
     this.smartMeterService.storeMeter(organisationId, addSmartMeterRequest, smartMeter);
+  }
+
+  private void sendRequestToOsgpCore(
+      final MessageMetadata messageMetadata, final AddSmartMeterRequest addSmartMeterRequest) {
     final SmartMeteringDeviceDto requestDto =
-        this.mapperFactory.getMapperFacade().map(smartMeteringDevice, SmartMeteringDeviceDto.class);
+        this.mapperFactory
+            .getMapperFacade()
+            .map(addSmartMeterRequest.getDevice(), SmartMeteringDeviceDto.class);
+    requestDto.setOverwrite(addSmartMeterRequest.getOverwrite());
     this.osgpCoreRequestMessageSender.send(requestDto, messageMetadata);
   }
 

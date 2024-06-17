@@ -5,8 +5,10 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,9 +18,12 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.InstallationMapper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -36,7 +41,7 @@ class InstallationServiceTest {
       MessageMetadata.newBuilder().withCorrelationUid("123456").build();
   private final String deviceIdentification = "Test";
 
-  @InjectMocks InstallationService testService;
+  @InjectMocks InstallationService installationService;
   @Mock SecretManagementService secretManagementService;
   @Mock DlmsDeviceRepository dlmsDeviceRepository;
   @Mock InstallationMapper installationMapper;
@@ -56,7 +61,7 @@ class InstallationServiceTest {
     when(this.dlmsDeviceRepository.save(dlmsDevice)).thenReturn(dlmsDevice);
     when(this.rsaEncrypter.decrypt(any())).thenReturn(new byte[16]);
     // WHEN
-    this.testService.addMeter(this.messageMetadata, deviceDto);
+    this.installationService.addMeter(this.messageMetadata, deviceDto);
     // THEN
     verify(this.secretManagementService, times(1))
         .storeNewKeys(eq(this.messageMetadata), eq(this.deviceIdentification), any());
@@ -86,7 +91,7 @@ class InstallationServiceTest {
     when(this.dlmsDeviceRepository.save(dlmsDevice)).thenReturn(dlmsDevice);
     when(this.rsaEncrypter.decrypt(any())).thenReturn(new byte[16]);
 
-    this.testService.addMeter(this.messageMetadata, deviceDto);
+    this.installationService.addMeter(this.messageMetadata, deviceDto);
 
     verify(this.secretManagementService, times(1))
         .storeNewKeys(
@@ -120,7 +125,7 @@ class InstallationServiceTest {
     deviceDto.setDeviceIdentification(this.deviceIdentification);
     // WHEN
     Assertions.assertThatExceptionOfType(FunctionalException.class)
-        .isThrownBy(() -> this.testService.addMeter(this.messageMetadata, deviceDto));
+        .isThrownBy(() -> this.installationService.addMeter(this.messageMetadata, deviceDto));
   }
 
   @Test
@@ -134,7 +139,7 @@ class InstallationServiceTest {
     deviceDto.setMbusDefaultKey(new byte[16]);
     // WHEN
     Assertions.assertThatExceptionOfType(FunctionalException.class)
-        .isThrownBy(() -> this.testService.addMeter(this.messageMetadata, deviceDto));
+        .isThrownBy(() -> this.installationService.addMeter(this.messageMetadata, deviceDto));
   }
 
   @Test
@@ -144,6 +149,72 @@ class InstallationServiceTest {
     deviceDto.setMbusDefaultKey(new byte[16]);
     // WHEN
     Assertions.assertThatExceptionOfType(FunctionalException.class)
-        .isThrownBy(() -> this.testService.addMeter(this.messageMetadata, deviceDto));
+        .isThrownBy(() -> this.installationService.addMeter(this.messageMetadata, deviceDto));
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void testAddMeterWithNoExistingDeviceIsNullAndOverwriteIsTrueOrFalse(final boolean overwrite)
+      throws FunctionalException {
+    final SmartMeteringDeviceDto deviceDto = getSmartMeteringDeviceDto(overwrite);
+    final DlmsDevice dlmsDevice = new DlmsDevice();
+
+    when(this.installationMapper.map(deviceDto, DlmsDevice.class)).thenReturn(dlmsDevice);
+    when(this.dlmsDeviceRepository.findByDeviceIdentification(deviceDto.getDeviceIdentification()))
+        .thenReturn(null);
+
+    final InstallationService installationServiceSpy = Mockito.spy(this.installationService);
+
+    doNothing()
+        .when(installationServiceSpy)
+        .storeAndActivateKeys(any(MessageMetadata.class), any(SmartMeteringDeviceDto.class));
+
+    installationServiceSpy.addMeter(
+        MessageMetadata.newBuilder().withCorrelationUid("123456").build(), deviceDto);
+
+    verify(this.dlmsDeviceRepository, times(1)).save(dlmsDevice);
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void testAddMeterWithExistingDeviceAndOverwriteIsTrueOrFalse(final boolean overwrite)
+      throws FunctionalException {
+    final SmartMeteringDeviceDto deviceDto = getSmartMeteringDeviceDto(overwrite);
+    final DlmsDevice dlmsDevice = new DlmsDevice();
+    final DlmsDevice existingDlmsDevice = new DlmsDevice();
+    existingDlmsDevice.setId(1);
+
+    if (overwrite) {
+      when(this.installationMapper.map(deviceDto, DlmsDevice.class)).thenReturn(dlmsDevice);
+      when(this.dlmsDeviceRepository.findByDeviceIdentification(
+              deviceDto.getDeviceIdentification()))
+          .thenReturn(existingDlmsDevice);
+
+      final InstallationService installationServiceSpy = Mockito.spy(this.installationService);
+
+      doNothing()
+          .when(installationServiceSpy)
+          .storeAndActivateKeys(any(MessageMetadata.class), any(SmartMeteringDeviceDto.class));
+
+      installationServiceSpy.addMeter(
+          MessageMetadata.newBuilder().withCorrelationUid("123456").build(), deviceDto);
+
+      verify(this.dlmsDeviceRepository, times(1)).save(dlmsDevice);
+    } else {
+      assertThrows(
+          FunctionalException.class,
+          () ->
+              this.installationService.addMeter(
+                  MessageMetadata.newBuilder().withCorrelationUid("123456").build(), deviceDto));
+
+      verify(this.dlmsDeviceRepository, times(0)).save(dlmsDevice);
+    }
+  }
+
+  private static SmartMeteringDeviceDto getSmartMeteringDeviceDto(final boolean overwrite) {
+    final SmartMeteringDeviceDto deviceDto = new SmartMeteringDeviceDto();
+    deviceDto.setDeviceIdentification("Test");
+    deviceDto.setOverwrite(overwrite);
+    return deviceDto;
   }
 }

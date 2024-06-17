@@ -66,4 +66,9 @@ public class SmartMeteringDeviceDto implements Serializable {
   private boolean ipAddressIsStatic;
   private Integer withListMax;
   private boolean selectiveAccessSupported;
+  private boolean overwrite;
+
+  public boolean isOverwrite() {
+    return this.overwrite;
+  }
 }

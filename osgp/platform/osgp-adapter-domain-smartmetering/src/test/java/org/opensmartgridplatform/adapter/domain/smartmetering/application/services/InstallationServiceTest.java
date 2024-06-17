@@ -5,6 +5,10 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -13,8 +17,11 @@ import ma.glasnost.orika.MapperFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -30,6 +37,7 @@ import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceModel;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -38,14 +46,14 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class InstallationServiceTest {
+class InstallationServiceTest {
 
   private static final String DEVICE_IDENTIFICATION = "test-device-identification";
   private static final String PROTOCOL_NAME = "test-protocol-name";
   private static final String PROTOCOL_VERSION = "test-protocol-version";
   private static final String PROTOCOL_VARIANT = "test-protocol-variant";
 
-  @InjectMocks private SmartMeterService smartMeterService;
+  @Spy @InjectMocks private SmartMeterService smartMeterService;
   @InjectMocks private InstallationService instance;
 
   @Mock private SmartMeterRepository smartMeteringDeviceRepository;
@@ -70,6 +78,9 @@ public class InstallationServiceTest {
     when(this.addSmartMeterRequest.getDevice()).thenReturn(this.smartMeteringDevice);
     when(this.deviceMessageMetadata.getDeviceIdentification()).thenReturn(DEVICE_IDENTIFICATION);
     when(this.addSmartMeterRequest.getDeviceModel()).thenReturn(this.deviceModel);
+    when(this.addSmartMeterRequest.getDevice().getProtocolName()).thenReturn(PROTOCOL_NAME);
+    when(this.addSmartMeterRequest.getDevice().getProtocolVersion()).thenReturn(PROTOCOL_VERSION);
+    when(this.addSmartMeterRequest.getDevice().getProtocolVariant()).thenReturn(PROTOCOL_VARIANT);
     when(this.mapperFactory.getMapperFacade()).thenReturn(this.mapperFacade);
     when(this.mapperFacade.map(this.smartMeteringDevice, SmartMeter.class))
         .thenReturn(this.smartMeter);
@@ -78,9 +89,7 @@ public class InstallationServiceTest {
   }
 
   @Test
-  public void addMeterProtocolInfoSaved() throws FunctionalException {
-
-    // SETUP
+  void addMeterProtocolInfoSaved() throws FunctionalException {
     when(this.smartMeteringDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
         .thenReturn(null);
     when(this.smartMeteringDevice.getProtocolName()).thenReturn(PROTOCOL_NAME);
@@ -89,19 +98,17 @@ public class InstallationServiceTest {
     when(this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
             PROTOCOL_NAME, PROTOCOL_VERSION, PROTOCOL_VARIANT))
         .thenReturn(this.protocolInfo);
+    when(this.mapperFacade.map(this.addSmartMeterRequest.getDevice(), SmartMeteringDeviceDto.class))
+        .thenReturn(new SmartMeteringDeviceDto());
 
-    // CALL
     this.instance.addMeter(this.deviceMessageMetadata, this.addSmartMeterRequest);
 
-    // VERIFY
     verify(this.smartMeter).updateProtocol(this.protocolInfo);
     verify(this.smartMeteringDeviceRepository).save(this.smartMeter);
   }
 
   @Test
-  public void addMeterProtocolInfoNotFound() {
-
-    // SETUP
+  void addMeterProtocolInfoNotFound() {
     when(this.smartMeteringDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
         .thenReturn(null);
     when(this.smartMeteringDevice.getProtocolName()).thenReturn(PROTOCOL_NAME);
@@ -110,7 +117,6 @@ public class InstallationServiceTest {
             PROTOCOL_NAME, PROTOCOL_VERSION))
         .thenReturn(null);
 
-    // CALL
     try {
       this.instance.addMeter(this.deviceMessageMetadata, this.addSmartMeterRequest);
     } catch (final FunctionalException e) {
@@ -121,18 +127,57 @@ public class InstallationServiceTest {
   }
 
   @Test
-  public void addMeterDeviceExists() {
-
-    // SETUP
+  void addMeterDeviceExists() {
     when(this.smartMeteringDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
         .thenReturn(this.smartMeter);
 
-    // CALL
     try {
       this.instance.addMeter(this.deviceMessageMetadata, this.addSmartMeterRequest);
     } catch (final FunctionalException e) {
       assertThat(e.getExceptionType()).isEqualTo(FunctionalExceptionType.EXISTING_DEVICE);
       assertThat(e.getComponentType()).isEqualTo(ComponentType.DOMAIN_SMART_METERING);
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void testUpdateSmartMeterWithOrWithoutOverwrite(final boolean overwrite)
+      throws FunctionalException {
+    final SmartMeter existingSmartMeter = new SmartMeter();
+    existingSmartMeter.setId(1L);
+    existingSmartMeter.setVersion(2L);
+
+    when(this.smartMeteringDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
+        .thenReturn(existingSmartMeter);
+    when(this.addSmartMeterRequest.getOverwrite()).thenReturn(overwrite);
+
+    doReturn(existingSmartMeter)
+        .when(this.smartMeterService)
+        .convertSmartMeter(this.smartMeteringDevice);
+
+    when(this.protocolInfoRepository.findByProtocolAndProtocolVersionAndProtocolVariant(
+            this.smartMeteringDevice.getProtocolName(),
+            this.smartMeteringDevice.getProtocolVersion(),
+            this.smartMeteringDevice.getProtocolVariant()))
+        .thenReturn(this.protocolInfo);
+    when(this.smartMeteringDeviceRepository.save(any())).thenReturn(this.smartMeter);
+
+    if (overwrite) {
+      when(this.mapperFacade.map(
+              this.addSmartMeterRequest.getDevice(), SmartMeteringDeviceDto.class))
+          .thenReturn(new SmartMeteringDeviceDto());
+
+      this.instance.addMeter(this.deviceMessageMetadata, this.addSmartMeterRequest);
+
+      verify(this.smartMeteringDeviceRepository, times(1)).save(any(SmartMeter.class));
+    } else {
+      assertThatExceptionOfType(FunctionalException.class)
+          .isThrownBy(
+              () -> {
+                this.instance.addMeter(this.deviceMessageMetadata, this.addSmartMeterRequest);
+              });
+
+      verify(this.smartMeteringDeviceRepository, times(0)).save(any(SmartMeter.class));
     }
   }
 }

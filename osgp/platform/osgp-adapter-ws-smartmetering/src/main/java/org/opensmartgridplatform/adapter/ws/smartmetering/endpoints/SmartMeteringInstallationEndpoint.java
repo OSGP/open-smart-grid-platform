@@ -99,8 +99,9 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
               request.getDeviceModel().getManufacturer(),
               request.getDeviceModel().getModelCode(),
               "");
+
       final AddSmartMeterRequest addSmartMeterRequest =
-          new AddSmartMeterRequest(device, deviceModel);
+          new AddSmartMeterRequest(device, deviceModel, request.isOverwrite());
 
       final RequestMessageMetadata requestMessageMetadata =
           RequestMessageMetadata.newBuilder()

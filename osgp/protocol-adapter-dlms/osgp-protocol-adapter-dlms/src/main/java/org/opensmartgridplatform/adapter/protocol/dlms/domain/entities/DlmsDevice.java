@@ -425,4 +425,13 @@ public class DlmsDevice extends AbstractEntity {
   public void setFirmwareHash(final String firmwareHash) {
     this.firmwareHash = firmwareHash;
   }
+
+  public void setId(final long id) {
+    this.id = id;
+  }
+
+  @Override
+  public Long getId() {
+    return this.id;
+  }
 }
