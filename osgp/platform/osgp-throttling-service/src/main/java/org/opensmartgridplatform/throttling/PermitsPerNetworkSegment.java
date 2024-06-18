@@ -4,12 +4,22 @@
 
 package org.opensmartgridplatform.throttling;
 
+import io.github.bucket4j.BandwidthBuilder;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.BucketConfiguration;
+import io.github.bucket4j.ConsumptionProbe;
+import io.github.bucket4j.distributed.proxy.ProxyManager;
+import java.nio.charset.StandardCharsets;
+import java.security.Security;
+import java.time.Duration;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.opensmartgridplatform.throttling.model.ThrottlingSettings;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
@@ -25,21 +35,27 @@ public class PermitsPerNetworkSegment {
 
   private final ConcurrentMap<Integer, ConcurrentMap<Integer, AtomicInteger>> permitsPerSegment =
       new ConcurrentHashMap<>();
-  private final ConcurrentMap<Integer, ConcurrentMap<Integer, NewConnectionRequestThrottler>>
-      newConnectionRequestThrottlerPerSegment = new ConcurrentHashMap<>();
+  private final ConcurrentMap<Integer, ConcurrentMap<Integer, Bucket>> bucketPerSegment =
+      new ConcurrentHashMap<>();
 
   private final PermitRepository permitRepository;
   private final PermitReleasedNotifier permitReleasedNotifier;
+  private final Supplier<BucketConfiguration> bucketConfiguration;
+  private final ProxyManager<byte[]> proxyManager;
   private final boolean highPrioPoolEnabled;
   private final int maxWaitForHighPrioInMs;
 
   public PermitsPerNetworkSegment(
       final PermitRepository permitRepository,
       final PermitReleasedNotifier permitReleasedNotifier,
+      Supplier<BucketConfiguration> bucketConfiguration,
+      ProxyManager<byte[]> proxyManager,
       final boolean highPrioPoolEnabled,
       final int maxWaitForHighPrioInMs) {
     this.permitRepository = permitRepository;
     this.permitReleasedNotifier = permitReleasedNotifier;
+    this.bucketConfiguration = bucketConfiguration;
+    this.proxyManager = proxyManager;
     this.highPrioPoolEnabled = highPrioPoolEnabled;
     this.maxWaitForHighPrioInMs = maxWaitForHighPrioInMs;
   }
@@ -103,11 +119,6 @@ public class PermitsPerNetworkSegment {
                 TreeMap::new));
   }
 
-  ConcurrentMap<Integer, ConcurrentMap<Integer, NewConnectionRequestThrottler>>
-      newConnectionRequestThrottlerPerSegment() {
-    return this.newConnectionRequestThrottlerPerSegment;
-  }
-
   public boolean requestPermit(
       final short throttlingConfigId,
       final int clientId,
@@ -116,8 +127,7 @@ public class PermitsPerNetworkSegment {
       final int requestId,
       final int priority,
       final ThrottlingSettings throttlingSettings) {
-    if (!this.isNewConnectionRequestAllowed(
-        baseTransceiverStationId, cellId, priority, throttlingSettings)) {
+    if (!this.isNewConnectionRequestAllowed(baseTransceiverStationId, cellId, throttlingSettings)) {
       return false;
     }
 
@@ -133,25 +143,21 @@ public class PermitsPerNetworkSegment {
   private boolean isNewConnectionRequestAllowed(
       final int baseTransceiverStationId,
       final int cellId,
-      final int priority,
       final ThrottlingSettings throttlingSettings) {
     if (throttlingSettings.getMaxNewConnections() < 0) {
       return true;
     } else if (throttlingSettings.getMaxNewConnections() == 0) {
       return false;
     }
-    final NewConnectionRequestThrottler newConnectionRequestThrottler =
-        this.newConnectionRequestThrottlerPerSegment
-            .computeIfAbsent(baseTransceiverStationId, key -> new ConcurrentHashMap<>())
-            .computeIfAbsent(
-                cellId,
-                key ->
-                    new NewConnectionRequestThrottler(
-                        throttlingSettings.getMaxNewConnections(),
-                        throttlingSettings.getMaxNewConnectionsResetTimeInMs(),
-                        throttlingSettings.getMaxNewConnectionsWaitTimeInMs()));
 
-    return newConnectionRequestThrottler.isNewConnectionRequestAllowed(priority);
+    Security.addProvider(new BouncyCastleProvider());
+    final byte[] bucketKey =
+        String.format("%s_%s", baseTransceiverStationId, cellId).getBytes(StandardCharsets.UTF_8);
+    final Bucket bucket =
+        this.proxyManager.builder().build(bucketKey, this.bucketConfiguration(throttlingSettings));
+
+    final ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
+    return probe.isConsumed();
   }
 
   public boolean releasePermit(
@@ -233,6 +239,20 @@ public class PermitsPerNetworkSegment {
       }
     }
     return false;
+  }
+
+  private Supplier<BucketConfiguration> bucketConfiguration(
+      final ThrottlingSettings throttlingSettings) {
+    return () ->
+        BucketConfiguration.builder()
+            .addLimit(
+                BandwidthBuilder.builder()
+                    .capacity(throttlingSettings.getMaxNewConnections())
+                    .refillGreedy(
+                        throttlingSettings.getMaxNewConnections(),
+                        Duration.ofMillis(throttlingSettings.getMaxNewConnectionsResetTimeInMs()))
+                    .build())
+            .build();
   }
 
   private AtomicInteger getPermitCounter(final int baseTransceiverStationId, final int cellId) {

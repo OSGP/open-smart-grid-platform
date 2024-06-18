@@ -4,12 +4,15 @@
 
 package org.opensmartgridplatform.throttling;
 
+import io.github.bucket4j.BucketConfiguration;
+import io.github.bucket4j.distributed.proxy.ProxyManager;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Supplier;
 import org.opensmartgridplatform.throttling.entities.ThrottlingConfig;
 import org.opensmartgridplatform.throttling.model.ThrottlingSettings;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
@@ -31,6 +34,8 @@ public class PermitsByThrottlingConfig {
   private final ThrottlingConfigRepository throttlingConfigRepository;
   private final PermitRepository permitRepository;
   private final PermitReleasedNotifier permitReleasedNotifier;
+  private final Supplier<BucketConfiguration> bucketConfiguration;
+  private final ProxyManager<byte[]> proxyManager;
   private final boolean highPrioPoolEnabled;
   private final int maxWaitForHighPrioInMs;
 
@@ -38,12 +43,16 @@ public class PermitsByThrottlingConfig {
       final ThrottlingConfigRepository throttlingConfigRepository,
       final PermitRepository permitRepository,
       final PermitReleasedNotifier permitReleasedNotifier,
+      final Supplier<BucketConfiguration> bucketConfiguration,
+      final ProxyManager<byte[]> proxyManager,
       @Value("${wait.for.high.prio.enabled:true}") final boolean highPrioPoolEnabled,
       @Value("${wait.for.high.prio.max.in.ms:10000}") final int maxWaitForHighPrioInMs) {
 
     this.throttlingConfigRepository = throttlingConfigRepository;
     this.permitRepository = permitRepository;
     this.permitReleasedNotifier = permitReleasedNotifier;
+    this.bucketConfiguration = bucketConfiguration;
+    this.proxyManager = proxyManager;
     this.highPrioPoolEnabled = highPrioPoolEnabled;
     this.maxWaitForHighPrioInMs = maxWaitForHighPrioInMs;
   }
@@ -65,6 +74,8 @@ public class PermitsByThrottlingConfig {
                 new PermitsPerNetworkSegment(
                     this.permitRepository,
                     this.permitReleasedNotifier,
+                    this.bucketConfiguration,
+                    this.proxyManager,
                     this.highPrioPoolEnabled,
                     this.maxWaitForHighPrioInMs)));
 
@@ -115,6 +126,8 @@ public class PermitsByThrottlingConfig {
         new PermitsPerNetworkSegment(
             this.permitRepository,
             this.permitReleasedNotifier,
+            this.bucketConfiguration,
+            this.proxyManager,
             this.highPrioPoolEnabled,
             this.maxWaitForHighPrioInMs);
     permitsPerNetworkSegment.initialize(throttlingConfigId);
@@ -132,6 +145,8 @@ public class PermitsByThrottlingConfig {
         new PermitsPerNetworkSegment(
             this.permitRepository,
             this.permitReleasedNotifier,
+            this.bucketConfiguration,
+            this.proxyManager,
             this.highPrioPoolEnabled,
             this.maxWaitForHighPrioInMs));
   }

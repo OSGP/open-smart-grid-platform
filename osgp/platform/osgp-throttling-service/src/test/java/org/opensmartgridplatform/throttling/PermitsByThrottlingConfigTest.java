@@ -9,8 +9,11 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import io.github.bucket4j.BucketConfiguration;
+import io.github.bucket4j.distributed.proxy.ProxyManager;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +33,8 @@ class PermitsByThrottlingConfigTest {
   @Mock private ThrottlingConfigRepository throttlingConfigRepository;
   @Mock private PermitRepository permitRepository;
   @Mock private PermitReleasedNotifier permitReleasedNotifier;
+  @Mock private Supplier<BucketConfiguration> bucketConfiguration;
+  @Mock private ProxyManager<byte[]> proxyManager;
   private PermitsByThrottlingConfig permitsByThrottlingConfig;
 
   @BeforeEach
@@ -39,6 +44,8 @@ class PermitsByThrottlingConfigTest {
             this.throttlingConfigRepository,
             this.permitRepository,
             this.permitReleasedNotifier,
+            this.bucketConfiguration,
+            this.proxyManager,
             WAIT_FOR_HIGH_PRIO_ENABLED,
             this.MAX_WAIT_FOR_HIGH_PRIO);
   }

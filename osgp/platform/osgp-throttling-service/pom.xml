@@ -122,6 +122,22 @@ SPDX-License-Identifier: Apache-2.0
       </exclusions>
     </dependency>
     <dependency>
+        <groupId>com.bucket4j</groupId>
+        <artifactId>bucket4j-core</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.bucket4j</groupId>
+        <artifactId>bucket4j-redis</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>redis.clients</groupId>
+        <artifactId>jedis</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk18on</artifactId>
+    </dependency>       
+    <dependency>
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-registry-prometheus</artifactId>
       <scope>runtime</scope>
