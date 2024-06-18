@@ -48,7 +48,7 @@ SPDX-License-Identifier: Apache-2.0
     <osgp.dlms.version>6.3.0-SNAPSHOT</osgp.dlms.version>
     <osgp.shared.version>6.3.0-SNAPSHOT</osgp.shared.version>
     <osgp.jasper-interface.version>6.3.0-SNAPSHOT</osgp.jasper-interface.version>
-    <spring.version>6.1.8</spring.version>
+    <spring.version>6.1.9</spring.version>
     <spring.data.version>3.2.5</spring.data.version>
     <spring.data.commons.version>3.2.5</spring.data.commons.version>
     <spring.security.version>6.2.3</spring.security.version>
