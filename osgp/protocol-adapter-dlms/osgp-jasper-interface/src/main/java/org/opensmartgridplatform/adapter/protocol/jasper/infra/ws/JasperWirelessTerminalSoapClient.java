@@ -91,6 +91,9 @@ public class JasperWirelessTerminalSoapClient implements JasperWirelessTerminalC
         sessionInfoType.getDateSessionEnded().toGregorianCalendar().getTime());
   }
 
+  // Sonar marks 'setSecurementPasswordType(WSConstants.PW_TEXT)' as exposing a password.
+  // This is wrong, it just sets the password *type*
+  @SuppressWarnings("java:S6437")
   private static void setUsernameToken(
       final Wss4jSecurityInterceptor interceptor, final String user, final String pass) {
     interceptor.setSecurementUsername(user);
