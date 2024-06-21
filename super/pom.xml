@@ -125,7 +125,7 @@ SPDX-License-Identifier: Apache-2.0
     <protobuf.version>2.4.1</protobuf.version>
     <guava.version>32.1.2-jre</guava.version>
     <spotbugs.version>4.6.0</spotbugs.version>
-    <jacoco.version>0.8.8</jacoco.version>
+    <jacoco.version>0.8.12</jacoco.version>
     <selenium.java.version>4.21.0</selenium.java.version>
     <SunriseSunsetCalculator.version>1.2</SunriseSunsetCalculator.version>
     <ant.junit.version>1.10.14</ant.junit.version>
