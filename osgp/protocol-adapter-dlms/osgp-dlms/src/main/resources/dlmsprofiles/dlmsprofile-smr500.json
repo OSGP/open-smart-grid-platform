@@ -3758,6 +3758,64 @@
           "access": "RW"
         }
       ]
+    },
+    {
+      "tag": "IMAGE_TRANSFER",
+      "description": "Allows transfer of Firmware Image(s) to COSEM servers",
+      "note": null,
+      "class-id": 18,
+      "version": 0,
+      "obis": "0.0.44.0.0.255",
+      "group": "ABSTRACT",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "image_block_size",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_METER",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "image_transferred_blocks_status",
+          "datatype": "bit-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "image_first_not_transferred_block_number",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "transfer_enabled",
+          "datatype": "boolean",
+          "valuetype": "SET_BY_CLIENT",
+          "value": "0",
+          "access": "RW"
+        },
+        {
+          "id": 6,
+          "description": "image_transfer_status",
+          "datatype": "enum",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "image_to_activate_info",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
     }
 
   ]

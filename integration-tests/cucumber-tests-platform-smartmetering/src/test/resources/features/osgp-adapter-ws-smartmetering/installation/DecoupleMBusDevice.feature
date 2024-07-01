@@ -2,11 +2,12 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @NightlyBuildOnly
+@SmartMetering @Platform @NightlyBuildOnly @MBusDevice @DecoupleMBusDevice
 Feature: SmartMetering Installation - Decouple M-Bus Device
   As a grid operator
   I want to be able to decouple an M-Bus device from a smart meter
 
+  @HBM
   Scenario: Decouple G-meter from E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -56,6 +57,7 @@ Feature: SmartMetering Installation - Decouple M-Bus Device
       | Code    |             207 |
       | Message | INACTIVE_DEVICE |
 
+    @HBM
   Scenario: Decouple coupled G-meter "TESTG101205673117" from E-meter "TEST1024000000001"
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |

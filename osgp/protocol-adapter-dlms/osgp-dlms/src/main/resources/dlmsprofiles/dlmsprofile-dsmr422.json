@@ -3048,7 +3048,177 @@
           "access": "RW"
         }
       ]
+    },
+    {
+      "tag": "IMAGE_TRANSFER",
+      "description": "Allows transfer of Firmware Image(s) to COSEM servers",
+      "note": null,
+      "class-id": 18,
+      "version": 0,
+      "obis": "0.0.44.0.0.255",
+      "group": "ABSTRACT",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "image_block_size",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_METER",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "image_transferred_blocks_status",
+          "datatype": "bit-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "image_first_not_transferred_block_number",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "transfer_enabled",
+          "datatype": "boolean",
+          "valuetype": "SET_BY_CLIENT",
+          "value": "0",
+          "access": "RW"
+        },
+        {
+          "id": 6,
+          "description": "image_transfer_status",
+          "datatype": "enum",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "image_to_activate_info",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_CLIENT_SETUP",
+      "description": "M-Bus client setup",
+      "note": null,
+      "class-id": 72,
+      "version": 0,
+      "obis": "0.x.24.1.0.255",
+      "group": "GAS",
+      "meterTypes": ["SP","PP"],
+      "properties": {},
+      "attributes": [
+        {
+          "id": 2,
+          "description": "mbus port reference",
+          "datatype": "octet-string",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0.0.24.6.0.255",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture definition",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "capture period",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0",
+          "access": "RW"
+        },
+        {
+          "id": 5,
+          "description": "primary address",
+          "datatype": "unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0",
+          "access": "RW"
+        },
+        {
+          "id": 6,
+          "description": "identification number",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_METER",
+          "value": "IDENTIFICATION_NUMBER",
+          "access": "RW"
+        },
+        {
+          "id": 7,
+          "description": "manufacturer id",
+          "datatype": "long-unsigned",
+          "valuetype": "FIXED_IN_METER",
+          "value": "MANUFACTURER_ID",
+          "access": "RW"
+        },
+        {
+          "id": 8,
+          "description": "version",
+          "datatype": "unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "50",
+          "access": "RW"
+        },
+        {
+          "id": 9,
+          "description": "device type",
+          "datatype": "unsigned",
+          "valuetype": "FIXED_IN_METER",
+          "value": "3",
+          "access": "RW"
+        },
+        {
+          "id": 10,
+          "description": "access number",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 11,
+          "description": "status",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 12,
+          "description": "alarm",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 13,
+          "description": "configuration",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0x0063",
+          "access": "R"
+        },
+        {
+          "id": 14,
+          "description": "encryption key status",
+          "datatype": "enum",
+          "valuetype": "DYNAMIC",
+          "value": "1",
+          "access": "R"
+        }
+      ]
     }
-
   ]
 }

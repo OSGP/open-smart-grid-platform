@@ -167,7 +167,7 @@ public class ObjectConfigServiceHelper {
     }
   }
 
-  private Optional<CosemObject> getOptionalCosemObject(
+  public Optional<CosemObject> getOptionalCosemObject(
       final String protocol, final String protocolVersion, final DlmsObjectType objectType) {
 
     try {

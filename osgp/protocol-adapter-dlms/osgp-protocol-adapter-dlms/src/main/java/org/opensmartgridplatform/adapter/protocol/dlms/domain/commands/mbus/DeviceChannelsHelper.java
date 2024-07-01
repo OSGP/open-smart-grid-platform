@@ -5,28 +5,31 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.MethodResultCode;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsClassVersion;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DataObjectAttrExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DataObjectAttrExecutors;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.FindMatchingChannelHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.MbusClientAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,13 +54,13 @@ public class DeviceChannelsHelper {
   private static final short NR_OF_CHANNELS = 4;
 
   private final DlmsHelper dlmsHelper;
-  private final DlmsObjectConfigService dlmsObjectConfigService;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
   @Autowired
   public DeviceChannelsHelper(
-      final DlmsHelper dlmsHelper, final DlmsObjectConfigService dlmsObjectConfigService) {
+      final DlmsHelper dlmsHelper, final ObjectConfigServiceHelper objectConfigServiceHelper) {
     this.dlmsHelper = dlmsHelper;
-    this.dlmsObjectConfigService = dlmsObjectConfigService;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   public List<ChannelElementValuesDto> findCandidateChannelsForDevice(
@@ -110,28 +113,23 @@ public class DeviceChannelsHelper {
       final String executorName)
       throws ProtocolAdapterException {
 
-    final DlmsObject mbusClientSetupObject =
-        this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.MBUS_CLIENT_SETUP);
-    final ObisCode obiscode = mbusClientSetupObject.getObisCodeWithChannel(channel);
-    final int classId = mbusClientSetupObject.getClassId();
-
     final DataObjectAttrExecutors dataObjectExecutors =
         new DataObjectAttrExecutors(executorName)
             .addExecutor(
                 this.getMbusAttributeExecutor(
-                    MbusClientAttribute.IDENTIFICATION_NUMBER, UINT_32_ZERO, obiscode, classId))
+                    MbusClientAttribute.IDENTIFICATION_NUMBER, UINT_32_ZERO, device, channel))
             .addExecutor(
                 this.getMbusAttributeExecutor(
-                    MbusClientAttribute.MANUFACTURER_ID, UINT_16_ZERO, obiscode, classId))
+                    MbusClientAttribute.MANUFACTURER_ID, UINT_16_ZERO, device, channel))
             .addExecutor(
                 this.getMbusAttributeExecutor(
-                    MbusClientAttribute.VERSION, UINT_8_ZERO, obiscode, classId))
+                    MbusClientAttribute.VERSION, UINT_8_ZERO, device, channel))
             .addExecutor(
                 this.getMbusAttributeExecutor(
-                    MbusClientAttribute.DEVICE_TYPE, UINT_8_ZERO, obiscode, classId))
+                    MbusClientAttribute.DEVICE_TYPE, UINT_8_ZERO, device, channel))
             .addExecutor(
                 this.getMbusAttributeExecutor(
-                    MbusClientAttribute.PRIMARY_ADDRESS, UINT_8_ZERO, obiscode, classId));
+                    MbusClientAttribute.PRIMARY_ADDRESS, UINT_8_ZERO, device, channel));
 
     conn.getDlmsMessageListener()
         .setDescription(String.format("Reset MBus attributes to channel %d", channel));
@@ -142,18 +140,17 @@ public class DeviceChannelsHelper {
   protected ChannelElementValuesDto getChannelElementValues(
       final DlmsConnectionManager conn, final DlmsDevice device, final short channel)
       throws ProtocolAdapterException {
-    final DlmsObject clientSetupObject =
-        this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.MBUS_CLIENT_SETUP);
-    final AttributeAddress[] attrAddresses =
-        this.makeAttributeAddresses(clientSetupObject, channel);
+    final AttributeAddress[] attrAddresses = this.makeAttributeAddresses(device, channel);
     final List<GetResult> resultList =
         this.getMBusClientAttributeValues(conn, device, attrAddresses);
 
-    return this.makeChannelElementValues(channel, resultList, clientSetupObject);
+    final CosemObject cosemObject =
+        this.getCosemObject(DlmsObjectType.MBUS_CLIENT_SETUP, Protocol.forDevice(device));
+    return this.makeChannelElementValues(channel, resultList, cosemObject);
   }
 
   private ChannelElementValuesDto makeChannelElementValues(
-      final short channel, final List<GetResult> resultList, final DlmsObject clientSetupObject)
+      final short channel, final List<GetResult> resultList, final CosemObject mbusClientSetup)
       throws ProtocolAdapterException {
     final short primaryAddress =
         this.readShort(resultList, INDEX_PRIMARY_ADDRESS, "primaryAddress");
@@ -166,7 +163,7 @@ public class DeviceChannelsHelper {
     try {
       final String identificationNumber =
           this.readIdentificationNumber(
-              resultList, INDEX_IDENTIFICATION_NUMBER, clientSetupObject, "identificationNumber");
+              resultList, INDEX_IDENTIFICATION_NUMBER, mbusClientSetup, "identificationNumber");
       return new ChannelElementValuesDto(
           channel,
           primaryAddress,
@@ -190,7 +187,7 @@ public class DeviceChannelsHelper {
   private String readIdentificationNumber(
       final List<GetResult> resultList,
       final int index,
-      final DlmsObject clientSetupObject,
+      final CosemObject mbusClientSetup,
       final String description)
       throws ProtocolAdapterException {
 
@@ -202,7 +199,7 @@ public class DeviceChannelsHelper {
     } else {
       final Long identification = this.dlmsHelper.readLong(resultData, description);
       final IdentificationNumber identificationNumber;
-      if (this.identificationNumberStoredAsBcdOnDevice(clientSetupObject)) {
+      if (this.identificationNumberStoredAsBcdOnDevice(mbusClientSetup)) {
         identificationNumber = IdentificationNumber.fromBcdRepresentationAsLong(identification);
       } else {
         identificationNumber = IdentificationNumber.fromNumericalRepresentation(identification);
@@ -211,8 +208,8 @@ public class DeviceChannelsHelper {
     }
   }
 
-  private boolean identificationNumberStoredAsBcdOnDevice(final DlmsObject mbusClientSetupObject) {
-    return mbusClientSetupObject.getVersion().equals(DlmsClassVersion.VERSION_0);
+  private boolean identificationNumberStoredAsBcdOnDevice(final CosemObject mbusClientSetup) {
+    return mbusClientSetup.getVersion() == 0;
   }
 
   private String readManufacturerIdentification(
@@ -236,30 +233,27 @@ public class DeviceChannelsHelper {
     return value == null ? 0 : value;
   }
 
-  private AttributeAddress[] makeAttributeAddresses(
-      final DlmsObject mbusClientSetupObject, final int channel) {
-    final AttributeAddress[] attrAddresses = new AttributeAddress[NUMBER_OF_ATTRIBUTES_MBUS_CLIENT];
-    final ObisCode obiscode = mbusClientSetupObject.getObisCodeWithChannel(channel);
-    final int classId = mbusClientSetupObject.getClassId();
-    attrAddresses[INDEX_PRIMARY_ADDRESS] =
-        new AttributeAddress(classId, obiscode, MbusClientAttribute.PRIMARY_ADDRESS.attributeId());
-    attrAddresses[INDEX_IDENTIFICATION_NUMBER] =
-        new AttributeAddress(
-            classId, obiscode, MbusClientAttribute.IDENTIFICATION_NUMBER.attributeId());
-    attrAddresses[INDEX_MANUFACTURER_ID] =
-        new AttributeAddress(classId, obiscode, MbusClientAttribute.MANUFACTURER_ID.attributeId());
-    attrAddresses[INDEX_VERSION] =
-        new AttributeAddress(classId, obiscode, MbusClientAttribute.VERSION.attributeId());
-    attrAddresses[INDEX_DEVICE_TYPE] =
-        new AttributeAddress(classId, obiscode, MbusClientAttribute.DEVICE_TYPE.attributeId());
-    return attrAddresses;
-  }
-
-  protected ObisCode getObisCode(final DlmsDevice device, final int channel)
+  private AttributeAddress[] makeAttributeAddresses(final DlmsDevice device, final int channel)
       throws ProtocolAdapterException {
-    final DlmsObject mbusClientSetupObject =
-        this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.MBUS_CLIENT_SETUP);
-    return mbusClientSetupObject.getObisCodeWithChannel(channel);
+    final EnumMap<MbusClientAttribute, Integer> map = new EnumMap<>(MbusClientAttribute.class);
+    map.put(MbusClientAttribute.PRIMARY_ADDRESS, INDEX_PRIMARY_ADDRESS);
+    map.put(MbusClientAttribute.IDENTIFICATION_NUMBER, INDEX_IDENTIFICATION_NUMBER);
+    map.put(MbusClientAttribute.MANUFACTURER_ID, INDEX_MANUFACTURER_ID);
+    map.put(MbusClientAttribute.VERSION, INDEX_VERSION);
+    map.put(MbusClientAttribute.DEVICE_TYPE, INDEX_DEVICE_TYPE);
+
+    final AttributeAddress[] attrAddresses = new AttributeAddress[NUMBER_OF_ATTRIBUTES_MBUS_CLIENT];
+
+    for (final Entry<MbusClientAttribute, Integer> entry : map.entrySet()) {
+      attrAddresses[entry.getValue()] =
+          this.objectConfigServiceHelper.findAttributeAddress(
+              device,
+              Protocol.forDevice(device),
+              DlmsObjectType.MBUS_CLIENT_SETUP,
+              channel,
+              entry.getKey().attributeId());
+    }
+    return attrAddresses;
   }
 
   protected MethodResultCode deinstallSlave(
@@ -296,10 +290,9 @@ public class DeviceChannelsHelper {
       final String executorName)
       throws ProtocolAdapterException {
 
-    final DlmsObject mbusClientSetupObject =
-        this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.MBUS_CLIENT_SETUP);
-    final ObisCode obiscode = mbusClientSetupObject.getObisCodeWithChannel(channel);
-    final int classId = mbusClientSetupObject.getClassId();
+    final Protocol protocol = Protocol.forDevice(device);
+    final CosemObject mbusClientSetupObject =
+        this.getCosemObject(DlmsObjectType.MBUS_CLIENT_SETUP, protocol);
 
     final DataObject identificationNumberDataObject;
 
@@ -319,36 +312,36 @@ public class DeviceChannelsHelper {
                 this.getMbusAttributeExecutor(
                     MbusClientAttribute.IDENTIFICATION_NUMBER,
                     identificationNumberDataObject,
-                    obiscode,
-                    classId))
+                    device,
+                    channel))
             .addExecutor(
                 this.getMbusAttributeExecutor(
                     MbusClientAttribute.MANUFACTURER_ID,
                     ManufacturerId.fromIdentification(
                             requestDto.getMbusManufacturerIdentification())
                         .asDataObject(),
-                    obiscode,
-                    classId))
+                    device,
+                    channel))
             .addExecutor(
                 this.getMbusAttributeExecutor(
                     MbusClientAttribute.VERSION,
                     DataObject.newUInteger8Data(requestDto.getMbusVersion()),
-                    obiscode,
-                    classId))
+                    device,
+                    channel))
             .addExecutor(
                 this.getMbusAttributeExecutor(
                     MbusClientAttribute.DEVICE_TYPE,
                     DataObject.newUInteger8Data(requestDto.getMbusDeviceTypeIdentification()),
-                    obiscode,
-                    classId));
+                    device,
+                    channel));
 
     if (requestDto.getPrimaryAddress() != null) {
       dataObjectExecutors.addExecutor(
           this.getMbusAttributeExecutor(
               MbusClientAttribute.PRIMARY_ADDRESS,
               DataObject.newUInteger8Data(requestDto.getPrimaryAddress()),
-              obiscode,
-              classId));
+              device,
+              channel));
     }
     conn.getDlmsMessageListener()
         .setDescription(
@@ -369,20 +362,40 @@ public class DeviceChannelsHelper {
         requestDto.getMbusDeviceTypeIdentification());
   }
 
+  private CosemObject getCosemObject(final DlmsObjectType dlmsObjectType, final Protocol protocol)
+      throws NotSupportedByProtocolException {
+    final Optional<CosemObject> mbusClientSetup =
+        this.objectConfigServiceHelper.getOptionalCosemObject(
+            protocol.getName(), protocol.getVersion(), dlmsObjectType);
+    if (mbusClientSetup.isEmpty()) {
+      throw new NotSupportedByProtocolException(
+          String.format(
+              "%s object not supported for protocol %s %s",
+              dlmsObjectType.name(), protocol.getName(), protocol.getVersion()));
+    }
+    return mbusClientSetup.get();
+  }
+
   private DataObjectAttrExecutor getMbusAttributeExecutor(
       final MbusClientAttribute attribute,
       final DataObject value,
-      final ObisCode obiscode,
-      final int classId) {
+      final DlmsDevice device,
+      final int channel)
+      throws ProtocolAdapterException {
     final AttributeAddress attributeAddress =
-        new AttributeAddress(classId, obiscode, attribute.attributeId());
+        this.objectConfigServiceHelper.findAttributeAddress(
+            device,
+            Protocol.forDevice(device),
+            DlmsObjectType.MBUS_CLIENT_SETUP,
+            channel,
+            attribute.attributeId());
 
     return new DataObjectAttrExecutor(
         attribute.attributeName(),
         attributeAddress,
         value,
-        classId,
-        obiscode,
+        attributeAddress.getClassId(),
+        attributeAddress.getInstanceId(),
         attribute.attributeId());
   }
 
