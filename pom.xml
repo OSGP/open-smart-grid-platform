@@ -51,14 +51,6 @@ SPDX-License-Identifier: Apache-2.0
       <id>sm</id>
     </profile>
 
-    <profile>
-      <!-- Distribution Automation -->
-      <id>da</id>
-    </profile>
-
-    <profile>
-      <id>mg</id>
-    </profile>
   </profiles>
 
   <distributionManagement>
