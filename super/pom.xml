@@ -63,7 +63,7 @@ SPDX-License-Identifier: Apache-2.0
     <servlet.jstl.version>3.0.0</servlet.jstl.version>
     <hibernate.version>6.3.1.Final</hibernate.version>
     <hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
-    <jakarta.persistence.api.version>3.1.0</jakarta.persistence.api.version>
+    <jakarta.persistence.api.version>3.2.0</jakarta.persistence.api.version>
     <jakarta.validation.api.version>3.0.2</jakarta.validation.api.version>
     <jakarta.jms.api.version>3.1.0</jakarta.jms.api.version>
     <artemis.jakarta.client.version>2.33.0</artemis.jakarta.client.version>
