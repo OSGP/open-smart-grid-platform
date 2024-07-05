@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -12,6 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.Collections;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.bouncycastle.util.encoders.Hex;
@@ -20,6 +22,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AttributeAddress;
@@ -31,13 +35,18 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacG
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.ImageTransfer.ImageTransferProperties;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareImageIdentifierCachingRepository;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ImageTransferAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.method.ImageTransferMethod;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -72,7 +81,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
               + "5fa821c678e71c05c47e1c69c4bfffe1fd");
 
   @BeforeEach
-  void setUp() {
+  void setUp() throws IOException, ObjectConfigException {
 
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
@@ -83,13 +92,18 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     imageTransferProperties.setInitiationStatusCheckInterval(3);
     imageTransferProperties.setInitiationStatusCheckTimeout(4);
 
+    final ObjectConfigService objectConfigService = new ObjectConfigService();
+    final ObjectConfigServiceHelper objectConfigServiceHelper =
+        new ObjectConfigServiceHelper(objectConfigService);
+
     this.commandExecutor =
         new UpdateFirmwareCommandExecutor(
             this.dlmsDeviceRepository,
             this.firmwareFileCachingRepository,
             this.firmwareImageIdentifierCachingRepository,
             this.macGenerationService,
-            imageTransferProperties);
+            imageTransferProperties,
+            objectConfigServiceHelper);
   }
 
   private void initConnectionStubForTransfer(
@@ -154,6 +168,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
       throws Exception {
 
     final DlmsDevice device = new DlmsDevice();
+    device.setProtocol(Protocol.SMR_5_0_0);
     final String firmwareIdentification = RandomStringUtils.randomAlphabetic(10);
     final String deviceIdentification = RandomStringUtils.randomAlphabetic(10);
 
@@ -192,8 +207,34 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
   }
 
   @Test
+  void testExecuteFirmwareNonSupported() {
+
+    final DlmsDevice device = new DlmsDevice();
+    device.setProtocol(Protocol.DSMR_2_2);
+
+    when(this.firmwareFileCachingRepository.retrieve(any(String.class)))
+        .thenReturn(this.firmwareFileNotMbus);
+    when(this.firmwareImageIdentifierCachingRepository.retrieve(any(String.class)))
+        .thenReturn("image-identifier-1".getBytes());
+
+    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
+        new UpdateFirmwareRequestDto(
+            "device-1", new UpdateFirmwareRequestDataDto("firmware-1", null, null));
+    assertThatExceptionOfType(NotSupportedByProtocolException.class)
+        .isThrownBy(
+            () -> {
+              this.commandExecutor.execute(
+                  this.connectionManagerStub,
+                  device,
+                  updateFirmwareRequestDto,
+                  this.messageMetadata);
+            });
+  }
+
+  @Test
   void testExecuteResumeOnBlocks() throws Exception {
     final DlmsDevice device = new DlmsDevice();
+    device.setProtocol(Protocol.SMR_5_0_0);
     final String firmwareIdentification = RandomStringUtils.randomAlphabetic(10);
     final String deviceIdentification = RandomStringUtils.randomAlphabetic(10);
 
@@ -226,9 +267,14 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     this.assertImageTransferRelatedInteractionWithConnection(0, 7, 1);
   }
 
-  @Test
-  void testExecuteMbusFirmware() throws Exception {
+  @ParameterizedTest
+  @EnumSource(
+      value = Protocol.class,
+      mode = Mode.EXCLUDE,
+      names = {"DSMR_2_2", "OTHER_PROTOCOL"})
+  void testExecuteMbusFirmware(final Protocol protocol) throws Exception {
     final DlmsDevice device = new DlmsDevice();
+    device.setProtocol(protocol);
     device.setMbusIdentificationNumber("00000001");
     final String firmwareIdentification = RandomStringUtils.randomAlphabetic(10);
     final String deviceIdentification = RandomStringUtils.randomAlphabetic(10);
@@ -264,6 +310,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
   @Test
   void testExecuteMbusFirmwareResumeOnBlocks() throws Exception {
     final DlmsDevice device = new DlmsDevice();
+    device.setProtocol(Protocol.SMR_5_0_0);
     device.setMbusIdentificationNumber("00000001");
     final String firmwareIdentification = RandomStringUtils.randomAlphabetic(10);
     final String deviceIdentification = RandomStringUtils.randomAlphabetic(10);

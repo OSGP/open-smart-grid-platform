@@ -5,20 +5,24 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
 import java.io.IOException;
+import java.util.Optional;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
 import org.opensmartgridplatform.dlms.interfaceclass.method.MethodClass;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 
 public class CosemObjectAccessor {
 
@@ -32,14 +36,56 @@ public class CosemObjectAccessor {
       "No GetResult received while retrieving attribute %s, " + "classId %s, obisCode %s.";
 
   private final DlmsConnectionManager connector;
-  private final ObisCode obisCode;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
+  private final Protocol protocol;
+  private final DlmsObjectType dlmsObjectType;
+
+  private final String obisCode;
   private final int classId;
 
   public CosemObjectAccessor(
-      final DlmsConnectionManager connector, final ObisCode obisCode, final int classId) {
+      final DlmsConnectionManager connector,
+      final ObjectConfigServiceHelper objectConfigServiceHelper,
+      final DlmsObjectType dlmsObjectType,
+      final Protocol protocol)
+      throws NotSupportedByProtocolException {
+    this(connector, objectConfigServiceHelper, dlmsObjectType, protocol, null);
+  }
+
+  public CosemObjectAccessor(
+      final DlmsConnectionManager connector,
+      final ObjectConfigServiceHelper objectConfigServiceHelper,
+      final DlmsObjectType dlmsObjectType,
+      final Protocol protocol,
+      final Short channel)
+      throws NotSupportedByProtocolException {
+
     this.connector = connector;
-    this.obisCode = obisCode;
-    this.classId = classId;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
+    this.dlmsObjectType = dlmsObjectType;
+    this.protocol = protocol;
+
+    final Optional<CosemObject> optionalCosemObject =
+        this.objectConfigServiceHelper.getOptionalCosemObject(
+            this.protocol.getName(), this.protocol.getVersion(), this.dlmsObjectType);
+    if (optionalCosemObject.isEmpty()) {
+      throw new NotSupportedByProtocolException(
+          String.format(
+              "No address found for %s in protocol %s %s",
+              dlmsObjectType.name(), protocol.getName(), protocol.getVersion()));
+    }
+    CosemObject cosemObject = optionalCosemObject.get();
+    cosemObject = setChannel(cosemObject, channel);
+    this.obisCode = cosemObject.getObis();
+    this.classId = cosemObject.getClassId();
+  }
+
+  private static CosemObject setChannel(CosemObject cosemObject, final Short channel) {
+    if (channel != null) {
+      cosemObject =
+          cosemObject.copyWithNewObis(cosemObject.getObis().replace("x", channel.toString()));
+    }
+    return cosemObject;
   }
 
   public DataObject readAttribute(final AttributeClass attributeClass)
@@ -98,7 +144,10 @@ public class CosemObjectAccessor {
   }
 
   public AttributeAddress createAttributeAddress(final AttributeClass attributeClass) {
-    return new AttributeAddress(this.classId, this.obisCode, attributeClass.attributeId());
+    final Optional<AttributeAddress> optionalAttributeAddress =
+        this.objectConfigServiceHelper.findOptionalAttributeAddress(
+            this.protocol, this.dlmsObjectType, 1, attributeClass.attributeId());
+    return optionalAttributeAddress.orElseThrow();
   }
 
   public MethodParameter createMethodParameter(

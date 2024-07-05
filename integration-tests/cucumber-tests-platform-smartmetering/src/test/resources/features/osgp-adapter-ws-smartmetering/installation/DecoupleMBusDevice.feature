@@ -2,24 +2,38 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @NightlyBuildOnly
+@SmartMetering @Platform @NightlyBuildOnly @MBusDevice @DecoupleMBusDevice
 Feature: SmartMetering Installation - Decouple M-Bus Device
   As a grid operator
   I want to be able to decouple an M-Bus device from a smart meter
 
-  Scenario: Decouple G-meter from E-meter
+  Scenario Outline: Decouple G-meter from <protocol> <version> E-meter
     Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
+      | DeviceIdentification | <deviceIdentification> |
+      | DeviceType           | SMART_METER_E          |
+      | protocolName         | <protocol>             |
+      | protocolVersion      | <version>              |
     And a dlms device
-      | DeviceIdentification        | TESTG102400000001 |
-      | DeviceType                  | SMART_METER_G     |
-      | GatewayDeviceIdentification | TEST1024000000001 |
-      | Channel                     |                 1 |
-    When the Decouple G-meter "TESTG102400000001" from E-meter "TEST1024000000001" request is received
+      | DeviceIdentification        | TESTG102400000001      |
+      | DeviceType                  | SMART_METER_G          |
+      | GatewayDeviceIdentification | <deviceIdentification> |
+      | Channel                     |                      1 |
+    When the Decouple G-meter "TESTG102400000001" from E-meter "<deviceIdentification>" request is received
     Then the Decouple response is "OK"
-    And the G-meter "TESTG102400000001" is Decoupled from device "TEST1024000000001"
+    And the G-meter "TESTG102400000001" is Decoupled from device "<deviceIdentification>"
     And the channel of device "TESTG102400000001" is cleared
+    Examples:
+      | deviceIdentification | protocol | version |
+      | TEST1024000000001    | DSMR     | 4.2.2   |
+    @NightlyBuildOnly
+    Examples:
+      | deviceIdentification | protocol | version |
+      | TEST1024000000001    | DSMR     | 2.2     |
+      | TEST1031000000001    | SMR      | 4.3     |
+      | TEST1027000000001    | SMR      | 5.0.0   |
+      | TEST1028000000001    | SMR      | 5.1     |
+      | TEST1029000000001    | SMR      | 5.2     |
+      | TEST1030000000001    | SMR      | 5.5     |
 
   Scenario: Decouple unknown G-meter from E-meter
     Given a dlms device

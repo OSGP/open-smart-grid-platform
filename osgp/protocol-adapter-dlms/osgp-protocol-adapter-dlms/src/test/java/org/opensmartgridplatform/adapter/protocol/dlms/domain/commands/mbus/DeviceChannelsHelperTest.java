@@ -14,6 +14,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,24 +27,23 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.MethodResultCode;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigConfiguration;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 
 @ExtendWith(MockitoExtension.class)
 public class DeviceChannelsHelperTest {
 
-  private static final String OBIS_CODE_MBUS_CHANNEL_ONE = "0.1.24.1.0.255";
   private static final short PRIMARY_ADDRESS = 1;
   private static final long IDENTIFICATION_NUMBER_IN_BCD_AS_LONG = 287454020L;
   private static final String IDENTIFICATION_NUMBER_AS_STRING = "11223344";
@@ -74,29 +74,17 @@ public class DeviceChannelsHelperTest {
 
   @Mock CosemObjectAccessor mBusSetup;
 
-  private DlmsObjectConfigConfiguration dlmsObjectConfigConfiguration;
-
-  private DlmsObjectConfigService dlmsObjectConfigService;
-
   private DeviceChannelsHelper deviceChannelsHelper;
 
   @Mock private DlmsMessageListener dlmsMessageListener;
 
   @BeforeEach
-  void setup() {
-    this.dlmsObjectConfigConfiguration = new DlmsObjectConfigConfiguration();
-    this.dlmsObjectConfigService =
-        new DlmsObjectConfigService(
-            this.dlmsHelper, this.dlmsObjectConfigConfiguration.getDlmsObjectConfigs());
+  void setup() throws IOException, ObjectConfigException {
+    final ObjectConfigService objectConfigService = new ObjectConfigService();
+    final ObjectConfigServiceHelper objectConfigServiceHelper =
+        new ObjectConfigServiceHelper(objectConfigService);
     this.deviceChannelsHelper =
-        new DeviceChannelsHelper(this.dlmsHelper, this.dlmsObjectConfigService);
-  }
-
-  @Test
-  void testGetObisCode() throws ProtocolAdapterException {
-    final int channel = 1;
-    final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(this.device, channel);
-    assertThat(obisCode.asDecimalString()).isEqualTo(OBIS_CODE_MBUS_CHANNEL_ONE);
+        new DeviceChannelsHelper(this.dlmsHelper, objectConfigServiceHelper);
   }
 
   @Test
@@ -240,6 +228,8 @@ public class DeviceChannelsHelperTest {
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.get(anyList())).thenReturn(resultList);
+    when(this.device.getProtocolName()).thenReturn("SMR");
+    when(this.device.getProtocolVersion()).thenReturn("5.0.0");
 
     assertThatExceptionOfType(IllegalArgumentException.class)
         .isThrownBy(
@@ -264,6 +254,8 @@ public class DeviceChannelsHelperTest {
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.get(anyList())).thenReturn(resultList);
+    when(this.device.getProtocolName()).thenReturn("SMR");
+    when(this.device.getProtocolVersion()).thenReturn("5.0.0");
 
     final ChannelElementValuesDto values =
         this.deviceChannelsHelper.getChannelElementValues(this.conn, this.device, (short) 1);
@@ -288,6 +280,8 @@ public class DeviceChannelsHelperTest {
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.get(anyList())).thenReturn(resultList);
+    when(this.device.getProtocolName()).thenReturn("SMR");
+    when(this.device.getProtocolVersion()).thenReturn("5.0.0");
 
     final InvalidIdentificationNumberException exception =
         assertThrows(

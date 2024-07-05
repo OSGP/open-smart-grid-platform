@@ -14,7 +14,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacG
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.IdentificationNumber;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
@@ -52,19 +54,22 @@ public class UpdateFirmwareCommandExecutor
   private final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
   private final MacGenerationService macGenerationService;
   private final ImageTransfer.ImageTransferProperties imageTransferProperties;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
   public UpdateFirmwareCommandExecutor(
       final DlmsDeviceRepository dlmsDeviceRepository,
       final FirmwareFileCachingRepository firmwareFileCachingRepository,
       final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository,
       final MacGenerationService macGenerationService,
-      final ImageTransfer.ImageTransferProperties imageTransferProperties) {
+      final ImageTransfer.ImageTransferProperties imageTransferProperties,
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(UpdateFirmwareRequestDto.class);
     this.dlmsDeviceRepository = dlmsDeviceRepository;
     this.firmwareFileCachingRepository = firmwareFileCachingRepository;
     this.firmwareImageIdentifierCachingRepository = firmwareImageIdentifierCachingRepository;
     this.macGenerationService = macGenerationService;
     this.imageTransferProperties = imageTransferProperties;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
@@ -84,7 +89,9 @@ public class UpdateFirmwareCommandExecutor
             conn,
             this.imageTransferProperties,
             this.getImageIdentifier(firmwareIdentification, firmwareFile),
-            firmwareFile.getByteArray());
+            firmwareFile.getByteArray(),
+            this.objectConfigServiceHelper,
+            Protocol.forDevice(device));
 
     // Calculate the hash of the FW file
     // for mbus device get a part of the image file because we add a mac to it

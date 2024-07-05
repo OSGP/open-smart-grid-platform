@@ -1626,6 +1626,100 @@
           "access": "R"
         }
       ]
+    },
+    {
+      "tag": "MBUS_CLIENT_SETUP",
+      "description": "M-Bus client setup",
+      "class-id": 72,
+      "version": 0,
+      "obis": "0.x.24.1.0.255",
+      "group": "GAS",
+      "meterTypes": ["SP","PP"],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "mbus port reference",
+          "datatype": "octet-string",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0.0.24.6.0.255",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture definition",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "capture period",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0",
+          "access": "RW"
+        },
+        {
+          "id": 5,
+          "description": "primary address",
+          "datatype": "unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0",
+          "access": "RW"
+        },
+        {
+          "id": 6,
+          "description": "identification number",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_METER",
+          "access": "RW"
+        },
+        {
+          "id": 7,
+          "description": "manufacturer id",
+          "datatype": "long-unsigned",
+          "valuetype": "FIXED_IN_METER",
+          "access": "RW"
+        },
+        {
+          "id": 8,
+          "description": "version",
+          "datatype": "unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "50",
+          "access": "RW"
+        },
+        {
+          "id": 9,
+          "description": "device type",
+          "datatype": "unsigned",
+          "valuetype": "FIXED_IN_METER",
+          "value": "3",
+          "access": "RW"
+        },
+        {
+          "id": 10,
+          "description": "access number",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 11,
+          "description": "status",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 12,
+          "description": "alarm",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
     }
+
   ]
 }

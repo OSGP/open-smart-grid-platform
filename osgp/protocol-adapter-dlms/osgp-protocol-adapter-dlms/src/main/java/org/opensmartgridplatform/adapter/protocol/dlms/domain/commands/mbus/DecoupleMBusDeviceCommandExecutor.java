@@ -5,19 +5,19 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import lombok.extern.slf4j.Slf4j;
-import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -25,10 +25,15 @@ import org.springframework.stereotype.Component;
 public class DecoupleMBusDeviceCommandExecutor
     extends AbstractCommandExecutor<DecoupleMbusDeviceDto, DecoupleMbusDeviceResponseDto> {
 
-  @Autowired private DeviceChannelsHelper deviceChannelsHelper;
+  private final DeviceChannelsHelper deviceChannelsHelper;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  public DecoupleMBusDeviceCommandExecutor() {
+  public DecoupleMBusDeviceCommandExecutor(
+      final DeviceChannelsHelper deviceChannelsHelper,
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(DecoupleMbusDeviceDto.class);
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
+    this.deviceChannelsHelper = deviceChannelsHelper;
   }
 
   @Override
@@ -49,8 +54,6 @@ public class DecoupleMBusDeviceCommandExecutor
     log.debug(
         "Decouple channel {} on gateway device {}", channel, device.getDeviceIdentification());
 
-    final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(device, channel);
-
     // Get the current channel element values before resetting the channel
     ChannelElementValuesDto channelElementValues;
     boolean readChannelElementSuccessfully = true;
@@ -64,7 +67,12 @@ public class DecoupleMBusDeviceCommandExecutor
 
     // Deinstall and reset channel
     final CosemObjectAccessor mBusSetup =
-        new CosemObjectAccessor(conn, obisCode, InterfaceClass.MBUS_CLIENT.id());
+        new CosemObjectAccessor(
+            conn,
+            this.objectConfigServiceHelper,
+            DlmsObjectType.MBUS_CLIENT_SETUP,
+            Protocol.forDevice(device),
+            channel);
 
     this.deviceChannelsHelper.deinstallSlave(conn, device, channel, mBusSetup);
 

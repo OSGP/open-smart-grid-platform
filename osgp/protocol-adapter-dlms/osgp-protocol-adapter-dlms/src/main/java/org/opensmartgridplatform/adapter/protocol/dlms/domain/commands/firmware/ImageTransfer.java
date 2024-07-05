@@ -20,16 +20,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.MethodResultCode;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ImageTransferException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ImageTransferAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.method.ImageTransferMethod;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
 @Slf4j
@@ -59,9 +62,6 @@ public class ImageTransfer {
   private static final String EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK =
       "Properties of image to activate are not as expected.";
 
-  private static final int CLASS_ID = 18;
-  private static final ObisCode OBIS_CODE = new ObisCode("0.0.44.0.0.255");
-
   private final ImageTransferProperties properties;
   private final byte[] imageIdentifier;
   private final byte[] imageData;
@@ -74,13 +74,18 @@ public class ImageTransfer {
       final DlmsConnectionManager connector,
       final ImageTransferProperties properties,
       final byte[] imageIdentifier,
-      final byte[] imageData) {
+      final byte[] imageData,
+      final ObjectConfigServiceHelper objectConfigServiceHelper,
+      final Protocol protocol)
+      throws NotSupportedByProtocolException {
     this.properties = properties;
     this.imageIdentifier = imageIdentifier;
     this.imageData = imageData;
     this.imageBlockSizeReadFlag = false;
     this.connector = connector;
-    this.imageTransferCosem = new CosemObjectAccessor(connector, OBIS_CODE, CLASS_ID);
+    this.imageTransferCosem =
+        new CosemObjectAccessor(
+            connector, objectConfigServiceHelper, DlmsObjectType.IMAGE_TRANSFER, protocol);
   }
 
   public boolean shouldTransferImage() throws OsgpException {
