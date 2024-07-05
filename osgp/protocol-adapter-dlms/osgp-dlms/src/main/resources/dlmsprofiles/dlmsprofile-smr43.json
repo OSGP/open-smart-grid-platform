@@ -78,7 +78,7 @@
           "id": 5,
           "description": "sort method",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         },
@@ -87,7 +87,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -110,7 +109,6 @@
     {
       "tag": "CDMA_DIAGNOSTIC",
       "description": "CDMA Diagnostic",
-      "note": null,
       "class-id": 47,
       "version": 0,
       "obis": "0.1.25.6.0.255",
