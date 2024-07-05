@@ -10,7 +10,6 @@
   "objects": [{
     "tag": "PUSH_SETUP_UDP",
     "description": "Push Setup UDP",
-    "note": null,
     "class-id": 40,
     "version": 0,
     "obis": "0.3.25.9.0.255",
@@ -71,7 +70,6 @@
       "obis": "0.0.97.98.2.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -94,7 +92,6 @@
         "SP",
         "PP"
       ],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -114,7 +111,6 @@
       "obis": "0.0.15.2.4.255",
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,

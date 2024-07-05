@@ -11,13 +11,11 @@
     {
       "tag": "CLEAR_MBUS_STATUS",
       "description": "Clear MBus Status",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.x.94.31.10.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -31,13 +29,11 @@
     {
       "tag": "PHASE_OUTAGE_TEST",
       "description": "Phase outage test scheduler",
-      "note": null,
       "class-id": 22,
       "version": 0,
       "obis": "0.0.15.1.4.255",
       "group": "ELECTRICITY",
       "meterTypes": ["PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -66,13 +62,11 @@
     {
       "tag": "AUXILIARY_EVENT_LOG",
       "description": "Extra event log containing auxiliary events",
-      "note": null,
       "class-id": 7,
       "version": 1,
       "obis": "0.0.99.98.6.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -110,7 +104,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -139,7 +132,6 @@
       "obis": "0.0.96.11.6.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,

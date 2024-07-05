@@ -7,7 +7,6 @@
     {
       "tag": "ASSOCIATION_LN",
       "description": "Association LN",
-      "note": null,
       "class-id": 15,
       "version": 0,
       "obis": "0.0.40.0.0.255",
@@ -68,7 +67,6 @@
     {
       "tag": "DEVICE_ID_1",
       "description": "E-meter serial number",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.1.0.255",
@@ -87,7 +85,6 @@
     {
       "tag": "DEVICE_ID_2",
       "description": "E-meter equipment identifier",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.1.1.255",
@@ -107,7 +104,6 @@
     {
       "tag": "CLOCK",
       "description": "Clock",
-      "note": null,
       "class-id": 8,
       "version": 0,
       "obis": "0.0.1.0.0.255",
@@ -171,7 +167,7 @@
           "id": 9,
           "description": "clock_base",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         }
@@ -246,7 +242,6 @@
     {
       "tag": "ACTIVE_ENERGY_IMPORT",
       "description": "Active energy import (+A)",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.1.8.0.255",
@@ -276,7 +271,6 @@
     {
       "tag": "ACTIVE_ENERGY_IMPORT_RATE_1",
       "description": "Active energy import (+A) rate 1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.1.8.1.255",
@@ -306,7 +300,6 @@
     {
       "tag": "ACTIVE_ENERGY_IMPORT_RATE_2",
       "description": "Active energy import (+A) rate 2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.1.8.2.255",
@@ -336,7 +329,6 @@
     {
       "tag": "ACTIVE_ENERGY_EXPORT",
       "description": "Active energy export (-A)",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.2.8.0.255",
@@ -366,7 +358,6 @@
     {
       "tag": "ACTIVE_ENERGY_EXPORT_RATE_1",
       "description": "Active energy export (-A) rate 1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.2.8.1.255",
@@ -396,7 +387,6 @@
     {
       "tag": "ACTIVE_ENERGY_EXPORT_RATE_2",
       "description": "Active energy export (-A) rate 2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.2.8.2.255",
@@ -426,7 +416,6 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
       "description": "Number of voltage swells in phase L1",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.32.36.0.255",
@@ -449,7 +438,6 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L2",
       "description": "Number of voltage swells in phase L2",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.52.36.0.255",
@@ -472,7 +460,6 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L3",
       "description": "Number of voltage swells in phase L3",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.72.36.0.255",
@@ -495,7 +482,6 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
       "description": "Number of voltage sags in phase L1",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.32.32.0.255",
@@ -518,7 +504,6 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L2",
       "description": "Number of voltage sags in phase L2",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.52.32.0.255",
@@ -541,7 +526,6 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L3",
       "description": "Number of voltage sags in phase L3",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.72.32.0.255",
@@ -564,7 +548,6 @@
     {
       "tag": "NUMBER_OF_LONG_POWER_FAILURES",
       "description": "Number of long power failures in any phases",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.7.9.255",
@@ -587,7 +570,6 @@
     {
       "tag": "NUMBER_OF_POWER_FAILURES",
       "description": "Number of power failures in any phases",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.7.21.255",
@@ -610,7 +592,6 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L1",
       "description": "Instantaneous voltage L1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.32.7.0.255",
@@ -641,7 +622,6 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L2",
       "description": "Instantaneous voltage L2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.52.7.0.255",
@@ -672,7 +652,6 @@
     {
       "tag": "INSTANTANEOUS_VOLTAGE_L3",
       "description": "Instantaneous voltage L3",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.72.7.0.255",
@@ -703,7 +682,6 @@
     {
       "tag": "AVERAGE_VOLTAGE_L1",
       "description": "Average voltage L1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.32.24.0.255",
@@ -734,7 +712,6 @@
     {
       "tag": "AVERAGE_VOLTAGE_L2",
       "description": "Average voltage L2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.52.24.0.255",
@@ -765,7 +742,6 @@
     {
       "tag": "AVERAGE_VOLTAGE_L3",
       "description": "Average voltage L3",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.72.24.0.255",
@@ -796,7 +772,6 @@
     {
       "tag": "INSTANTANEOUS_CURRENT_L1",
       "description": "Instantaneous current L1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.31.7.0.255",
@@ -827,7 +802,6 @@
     {
       "tag": "INSTANTANEOUS_CURRENT_L2",
       "description": "Instantaneous current L2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.51.7.0.255",
@@ -858,7 +832,6 @@
     {
       "tag": "INSTANTANEOUS_CURRENT_L3",
       "description": "Instantaneous current L3",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.71.7.0.255",
@@ -889,7 +862,6 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES",
       "description": "Instantaneous current total",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.90.7.0.255",
@@ -920,13 +892,11 @@
     {
       "tag": "ALARM_REGISTER_1",
       "description": "Alarm register 1",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.97.98.0.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -940,7 +910,6 @@
     {
       "tag": "ALARM_FILTER_1",
       "description": "Alarm filter 1",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.97.98.10.255",
@@ -949,7 +918,6 @@
         "SP",
         "PP"
       ],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -968,7 +936,6 @@
       "obis": "0.x.24.3.0.255",
       "group": "GAS",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -997,7 +964,7 @@
           "id": 5,
           "description": "sort method",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         },
@@ -1006,7 +973,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -1036,7 +1002,6 @@
       "obis": "1.0.99.2.0.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -1065,7 +1030,7 @@
           "id": 5,
           "description": "sort method",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         },
@@ -1074,7 +1039,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -1103,7 +1067,6 @@
       "obis": "0.0.98.1.0.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -1132,7 +1095,7 @@
           "id": 5,
           "description": "sort method",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         },
@@ -1141,7 +1104,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -1169,7 +1131,6 @@
       "obis": "0.x.96.10.3.255",
       "group": "GAS",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -1188,7 +1149,6 @@
       "obis": "0.0.96.10.2.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -1202,7 +1162,6 @@
     {
       "tag": "MBUS_DEVICE_ID_1",
       "description": "M-Bus Equipment identifier ",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.x.96.1.1.255",
@@ -1222,13 +1181,11 @@
     {
       "tag": "MBUS_MASTER_VALUE",
       "description": "M-Bus volume hourly",
-      "note": null,
       "class-id": 4,
       "version": 0,
       "obis": "0.x.24.2.1.255",
       "group": "GAS",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -1276,7 +1233,6 @@
     {
       "tag": "ACTIVITY_CALENDAR",
       "description": "Activity calendar",
-      "note": null,
       "class-id": 20,
       "version": 0,
       "obis": "0.0.13.0.0.255",
@@ -1369,13 +1325,11 @@
     {
       "tag": "STANDARD_EVENT_LOG",
       "description": "Standard event log containing errors and alarms",
-      "note": null,
       "class-id": 7,
       "version": 0,
       "obis": "0.0.99.98.0.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -1413,7 +1367,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -1437,13 +1390,11 @@
     {
       "tag": "FRAUD_DETECTION_EVENT_LOG",
       "description": "Event log containing all fraud detection events",
-      "note": null,
       "class-id": 7,
       "version": 0,
       "obis": "0.0.99.98.1.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -1481,7 +1432,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -1505,13 +1455,11 @@
     {
       "tag": "MBUS_EVENT_LOG",
       "description": "M-Bus event log containing errors and alarms",
-      "note": null,
       "class-id": 7,
       "version": 0,
       "obis": "0.0.99.98.3.255",
       "group": "GAS",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -1549,7 +1497,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -1578,7 +1525,6 @@
       "obis": "0.0.96.11.0.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -1597,7 +1543,6 @@
       "obis": "0.0.96.11.1.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -1616,7 +1561,6 @@
       "obis": "0.0.96.11.3.255",
       "group": "GAS",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -1694,7 +1638,6 @@
           "description": "device type",
           "datatype": "unsigned",
           "valuetype": "FIXED_IN_METER",
-          "value": "3",
           "access": "RW"
         },
         {
