@@ -2213,7 +2213,6 @@
           "description": "identification number",
           "datatype": "double-long-unsigned",
           "valuetype": "FIXED_IN_METER",
-          "value": "IDENTIFICATION_NUMBER",
           "access": "RW"
         },
         {
@@ -2221,7 +2220,6 @@
           "description": "manufacturer id",
           "datatype": "long-unsigned",
           "valuetype": "FIXED_IN_METER",
-          "value": "MANUFACTURER_ID",
           "access": "RW"
         },
         {
@@ -3762,7 +3760,6 @@
     {
       "tag": "IMAGE_TRANSFER",
       "description": "Allows transfer of Firmware Image(s) to COSEM servers",
-      "note": null,
       "class-id": 18,
       "version": 0,
       "obis": "0.0.44.0.0.255",
