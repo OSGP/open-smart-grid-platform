@@ -144,10 +144,7 @@ public class CosemObjectAccessor {
   }
 
   public AttributeAddress createAttributeAddress(final AttributeClass attributeClass) {
-    final Optional<AttributeAddress> optionalAttributeAddress =
-        this.objectConfigServiceHelper.findOptionalAttributeAddress(
-            this.protocol, this.dlmsObjectType, 1, attributeClass.attributeId());
-    return optionalAttributeAddress.orElseThrow();
+    return new AttributeAddress(this.classId, this.obisCode, attributeClass.attributeId());
   }
 
   public MethodParameter createMethodParameter(
