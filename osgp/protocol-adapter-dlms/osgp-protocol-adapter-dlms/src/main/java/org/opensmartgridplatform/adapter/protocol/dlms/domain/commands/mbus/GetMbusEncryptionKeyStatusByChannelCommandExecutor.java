@@ -14,7 +14,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptio
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -23,13 +22,15 @@ public class GetMbusEncryptionKeyStatusByChannelCommandExecutor
         GetMbusEncryptionKeyStatusByChannelRequestDataDto,
         GetMbusEncryptionKeyStatusByChannelResponseDto> {
 
-  @Autowired
-  private GetMbusEncryptionKeyStatusCommandExecutor getMbusEncryptionKeyStatusCommandExecutor;
+  private final GetMbusEncryptionKeyStatusCommandExecutor getMbusEncryptionKeyStatusCommandExecutor;
+  private final GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor;
 
-  @Autowired private GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor;
-
-  public GetMbusEncryptionKeyStatusByChannelCommandExecutor() {
+  public GetMbusEncryptionKeyStatusByChannelCommandExecutor(
+      final GetMbusEncryptionKeyStatusCommandExecutor getMbusEncryptionKeyStatusCommandExecutor,
+      final GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor) {
     super(GetMbusEncryptionKeyStatusByChannelRequestDataDto.class);
+    this.getMbusEncryptionKeyStatusCommandExecutor = getMbusEncryptionKeyStatusCommandExecutor;
+    this.getMBusDeviceOnChannelCommandExecutor = getMBusDeviceOnChannelCommandExecutor;
   }
 
   @Override
@@ -58,7 +59,7 @@ public class GetMbusEncryptionKeyStatusByChannelCommandExecutor
 
     final EncryptionKeyStatusTypeDto encryptionKeyStatusType =
         this.getMbusEncryptionKeyStatusCommandExecutor.getEncryptionKeyStatusTypeDto(
-            request.getChannel(), conn);
+            request.getChannel(), conn, device);
     return new GetMbusEncryptionKeyStatusByChannelResponseDto(
         device.getDeviceIdentification(), encryptionKeyStatusType, request.getChannel());
   }

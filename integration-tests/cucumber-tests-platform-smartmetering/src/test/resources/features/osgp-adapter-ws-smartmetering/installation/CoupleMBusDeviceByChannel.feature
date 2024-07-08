@@ -7,43 +7,55 @@ Feature: SmartMetering Installation - Couple M-Bus Device by Channel
   As a grid operator
   I want to be able to couple an M-Bus device to a smart meter on a specific channel
 
-  @NightlyBuildOnly
-  Scenario Outline: Couple a connected and bound G-meter "TESTG101205673117" to E-meter "TEST1024000000001" on channel 1
+  Scenario Outline: Couple a connected and bound G-meter "TESTG101205673117" to a <protocol> <version> E-meter on channel 1
     Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
+      | DeviceIdentification | <deviceIdentification> |
+      | DeviceType           | SMART_METER_E          |
+      | Protocol             | <protocol>             |
+      | ProtocolVersion      | <version>              |
+    And device simulation of "<deviceIdentification>" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             |        3 |
-      | MbusIdentificationNumber       | 12056731 |
+      | MbusIdentificationNumber       | <mbusid> |
       | MbusManufacturerIdentification | LGB      |
       | MbusVersion                    |       66 |
       | MbusDeviceTypeIdentification   |        3 |
     And a dlms device
       | DeviceIdentification           | TESTG101205673117       |
       | DeviceType                     | SMART_METER_G           |
+      | Protocol                       | DSMR                    |
+      | ProtocolVersion                | 4.2.2                   |
       | DeviceLifecycleStatus          | <DeviceLifeCycleStatus> |
-      | MbusIdentificationNumber       |                12056731 |
+      | MbusIdentificationNumber       |                <mbusid> |
       | MbusPrimaryAddress             |                       9 |
       | MbusManufacturerIdentification | LGB                     |
       | MbusVersion                    |                      66 |
       | MbusDeviceTypeIdentification   |                       3 |
     When the Couple M-Bus Device By Channel request is received
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | <deviceIdentification> |
       | Channel              |                 1 |
     Then the Couple M-Bus Device By Channel response is "OK"
-    And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
+    And the M-Bus device "TESTG101205673117" is coupled to device "<deviceIdentification>" on M-Bus channel "1" with PrimaryAddress "3"
 
     Examples:
-      | DeviceLifeCycleStatus      |
-      | NEW_IN_INVENTORY           |
-      | READY_FOR_USE              |
-      | REGISTERED                 |
-      | REGISTERED_BUILD_IN_FAILED |
-      | REGISTERED_INSTALL_FAILED  |
-      | REGISTERED_UPDATE_FAILED   |
-      | RETURNED_TO_INVENTORY      |
-      | UNDER_TEST                 |
-      | DESTROYED                  |
+      | DeviceLifeCycleStatus      | deviceIdentification | protocol | version | mbusid   |
+      | REGISTERED                 | TEST1024000000001    | DSMR     | 4.2.2   | 12056731 |
+    @NightlyBuildOnly
+    Examples:
+      | DeviceLifeCycleStatus      | deviceIdentification | protocol | version | mbusid   |
+      | NEW_IN_INVENTORY           | TEST1024000000001    | DSMR     | 4.2.2   | 12056731 |
+      | READY_FOR_USE              | TEST1024000000001    | DSMR     | 4.2.2   | 12056731 |
+      | REGISTERED_BUILD_IN_FAILED | TEST1024000000001    | DSMR     | 4.2.2   | 12056731 |
+      | REGISTERED_INSTALL_FAILED  | TEST1024000000001    | DSMR     | 4.2.2   | 12056731 |
+      | REGISTERED_UPDATE_FAILED   | TEST1024000000001    | DSMR     | 4.2.2   | 12056731 |
+      | RETURNED_TO_INVENTORY      | TEST1024000000001    | DSMR     | 4.2.2   | 12056731 |
+      | UNDER_TEST                 | TEST1024000000001    | DSMR     | 4.2.2   | 12056731 |
+      | DESTROYED                  | TEST1024000000001    | DSMR     | 4.2.2   | 12056731 |
+      | REGISTERED                 | TEST1024000000001    | DSMR     | 2.2     | 12056731 |
+      | REGISTERED                 | TEST1031000000001    | SMR      | 4.3     | 12056731 |
+      | REGISTERED                 | TEST1027000000001    | SMR      | 5.0.0   | 00000001 |
+      | REGISTERED                 | TEST1028000000001    | SMR      | 5.1     | 00000001 |
+      | REGISTERED                 | TEST1029000000001    | SMR      | 5.2     | 00000001 |
+      | REGISTERED                 | TEST1030000000001    | SMR      | 5.5     | 00000001 |
 
   @NightlyBuildOnly
   Scenario: Couple a connected and bound G-meter "TESTG101205673117" to E-meter "TEST1024000000001" on channel 1, device is in use

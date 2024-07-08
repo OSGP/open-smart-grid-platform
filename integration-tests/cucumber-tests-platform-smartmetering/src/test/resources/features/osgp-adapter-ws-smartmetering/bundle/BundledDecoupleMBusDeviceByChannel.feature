@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform
+@SmartMetering @Platform @MBusDevice
 Feature: SmartMetering Bundle - Decouple M-Bus Device By Channel
   As a grid operator
   I want to be able to decouple an M-Bus device by channel to a smart meter
