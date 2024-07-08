@@ -12,7 +12,6 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.spec.AlgorithmParameterSpec;
@@ -34,8 +33,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider {
   private static final String ALGORITHM = "AES/CBC/NoPadding";
   private static final String PROVIDER = "nCipherKM";
   private static final String TYPE = "ncipher.sworld";
-
-  private final SecureRandom random = new SecureRandom();
+  private static final byte[] IV = new byte[KEY_LENGTH];
 
   private final KeyStore keyStore;
 
@@ -113,10 +111,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider {
 
   @Override
   protected AlgorithmParameterSpec getAlgorithmParameterSpec() {
-    final byte[] bytesIV = new byte[KEY_LENGTH];
-    this.random.nextBytes(bytesIV);
-
-    return new IvParameterSpec(bytesIV);
+    return new IvParameterSpec(IV);
   }
 
   @Override
