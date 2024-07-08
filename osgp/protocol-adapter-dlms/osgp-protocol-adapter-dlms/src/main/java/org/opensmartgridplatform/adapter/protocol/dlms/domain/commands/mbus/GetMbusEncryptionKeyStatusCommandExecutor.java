@@ -32,9 +32,6 @@ public class GetMbusEncryptionKeyStatusCommandExecutor
     extends AbstractCommandExecutor<
         GetMbusEncryptionKeyStatusRequestDto, GetMbusEncryptionKeyStatusResponseDto> {
 
-  //  private static final MbusClientAttribute ATTRIBUTE_ID =
-  // MbusClientAttribute.ENCRYPTION_KEY_STATUS;
-
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
   public GetMbusEncryptionKeyStatusCommandExecutor(
