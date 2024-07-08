@@ -55,6 +55,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider {
 
   @Override
   public byte[] decrypt(final EncryptedSecret secret, final String keyReference) {
+    log.info("DECRYPTING WITH HSM");
     final byte[] decryptedSecret = super.decrypt(secret, keyReference);
     if (decryptedSecret.length > KEY_LENGTH) {
       // This provider uses NoPadding, but since decrypted byte size is bigger than key byte size,
