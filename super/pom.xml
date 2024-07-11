@@ -156,16 +156,6 @@ SPDX-License-Identifier: Apache-2.0
 
     <!-- Command-line option to pass arguments for surefire -->
     <surefireArgLine/>
-
-    <!-- Sonar issues to ignore -->
-    <sonar.issue.ignore.multicriteria>gxf</sonar.issue.ignore.multicriteria>
-    <!--
-      Rule: Correct this malformed property placeholder.
-      Cause: @PropertySource(value = "file:${osgp/Global/config}")
-      Reason: This notation is for a JNDI environment, it works fine
-    -->
-    <sonar.issue.ignore.multicriteria.gxf.ruleKey>java:S6857</sonar.issue.ignore.multicriteria.gxf.ruleKey>
-    <sonar.issue.ignore.multicriteria.gxf.resourceKey>**/*.java</sonar.issue.ignore.multicriteria.gxf.resourceKey>
   </properties>
 
   <dependencies>
