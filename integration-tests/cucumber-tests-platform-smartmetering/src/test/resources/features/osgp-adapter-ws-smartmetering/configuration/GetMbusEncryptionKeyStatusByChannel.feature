@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringConfiguration @MBusDevice @NightlyBuildOnly @HBM
+@SmartMetering @Platform @SmartMeteringConfiguration @MBusDevice @NightlyBuildOnly
 Feature: SmartMetering Configuration - M-Bus encryption key status by channel
   As a product owner
   I want to be able to retrieve the encryption key status from an M-Bus device using the gateway device identification and a channel
