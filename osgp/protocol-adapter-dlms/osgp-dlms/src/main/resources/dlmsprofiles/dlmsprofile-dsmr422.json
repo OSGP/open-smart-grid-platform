@@ -7,7 +7,6 @@
     {
       "tag": "ASSOCIATION_LN",
       "description": "Association LN",
-      "note": null,
       "class-id": 15,
       "version": 1,
       "obis": "0.0.40.0.0.255",
@@ -76,7 +75,6 @@
     {
       "tag": "DEVICE_ID_1",
       "description": "E-meter serial number",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.1.0.255",
@@ -95,7 +93,6 @@
     {
       "tag": "DEVICE_ID_2",
       "description": "E-meter equipment identifier",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.1.1.255",
@@ -115,7 +112,6 @@
     {
       "tag": "CLOCK",
       "description": "Clock",
-      "note": null,
       "class-id": 8,
       "version": 0,
       "obis": "0.0.1.0.0.255",
@@ -183,7 +179,7 @@
           "id": 9,
           "description": "clock_base",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         }
@@ -342,7 +338,6 @@
     {
       "tag": "ACTIVE_ENERGY_IMPORT",
       "description": "Active energy import (+A)",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.1.8.0.255",
@@ -372,7 +367,6 @@
     {
       "tag": "ACTIVE_ENERGY_IMPORT_RATE_1",
       "description": "Active energy import (+A) rate 1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.1.8.1.255",
@@ -402,7 +396,6 @@
     {
       "tag": "ACTIVE_ENERGY_IMPORT_RATE_2",
       "description": "Active energy import (+A) rate 2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.1.8.2.255",
@@ -432,7 +425,6 @@
     {
       "tag": "ACTIVE_ENERGY_EXPORT",
       "description": "Active energy export (-A)",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.2.8.0.255",
@@ -462,7 +454,6 @@
     {
       "tag": "ACTIVE_ENERGY_EXPORT_RATE_1",
       "description": "Active energy export (-A) rate 1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.2.8.1.255",
@@ -492,7 +483,6 @@
     {
       "tag": "ACTIVE_ENERGY_EXPORT_RATE_2",
       "description": "Active energy export (-A) rate 2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.2.8.2.255",
@@ -588,7 +578,7 @@
           "id": 5,
           "description": "sort method",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         },
@@ -597,7 +587,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -620,7 +609,6 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
       "description": "Number of voltage swells in phase L1",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.32.36.0.255",
@@ -650,7 +638,6 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L2",
       "description": "Number of voltage swells in phase L2",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.52.36.0.255",
@@ -677,7 +664,6 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L3",
       "description": "Number of voltage swells in phase L3",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.72.36.0.255",
@@ -704,7 +690,6 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
       "description": "Number of voltage sags in phase L1",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.32.32.0.255",
@@ -734,7 +719,6 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L2",
       "description": "Number of voltage sags in phase L2",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.52.32.0.255",
@@ -761,7 +745,6 @@
     {
       "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L3",
       "description": "Number of voltage sags in phase L3",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "1.0.72.32.0.255",
@@ -788,7 +771,6 @@
     {
       "tag": "NUMBER_OF_LONG_POWER_FAILURES",
       "description": "Number of long power failures in any phases",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.7.9.255",
@@ -817,7 +799,6 @@
     {
       "tag": "NUMBER_OF_POWER_FAILURES",
       "description": "Number of power failures in any phases",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.96.7.21.255",
@@ -961,7 +942,6 @@
     {
       "tag": "AVERAGE_VOLTAGE_L1",
       "description": "Average voltage L1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.32.24.0.255",
@@ -1000,7 +980,6 @@
     {
       "tag": "AVERAGE_VOLTAGE_L2",
       "description": "Average voltage L2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.52.24.0.255",
@@ -1036,7 +1015,6 @@
     {
       "tag": "AVERAGE_VOLTAGE_L3",
       "description": "Average voltage L3",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.72.24.0.255",
@@ -1072,7 +1050,6 @@
     {
       "tag": "INSTANTANEOUS_CURRENT_L1",
       "description": "Instantaneous current L1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.31.7.0.255",
@@ -1110,7 +1087,6 @@
     {
       "tag": "INSTANTANEOUS_CURRENT_L2",
       "description": "Instantaneous current L2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.51.7.0.255",
@@ -1145,7 +1121,6 @@
     {
       "tag": "INSTANTANEOUS_CURRENT_L3",
       "description": "Instantaneous current L3",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.71.7.0.255",
@@ -1180,7 +1155,6 @@
     {
       "tag": "AVERAGE_CURRENT_L1",
       "description": "Average current L1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.31.24.0.255",
@@ -1218,7 +1192,6 @@
     {
       "tag": "AVERAGE_CURRENT_L2",
       "description": "Average current L2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.51.24.0.255",
@@ -1253,7 +1226,6 @@
     {
       "tag": "AVERAGE_CURRENT_L3",
       "description": "Average current L3",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.71.24.0.255",
@@ -1288,7 +1260,6 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES",
       "description": "Instantaneous current total",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.90.7.0.255",
@@ -1326,7 +1297,6 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT",
       "description": "Instantaneous active power (+P)",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.1.7.0.255",
@@ -1363,7 +1333,6 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_EXPORT",
       "description": "Instantaneous active power (-P)",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.2.7.0.255",
@@ -1400,7 +1369,6 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1",
       "description": "Instantaneous active power L1 (+P)",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.21.7.0.255",
@@ -1437,7 +1405,6 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2",
       "description": "Instantaneous active power L2 (+P)",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.41.7.0.255",
@@ -1472,7 +1439,6 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3",
       "description": "Instantaneous active power L3 (+P)",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.61.7.0.255",
@@ -1507,7 +1473,6 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1",
       "description": "Instantaneous active power L1 (-P)",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.22.7.0.255",
@@ -1544,7 +1509,6 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2",
       "description": "Instantaneous active power L2 (-P)",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.42.7.0.255",
@@ -1579,7 +1543,6 @@
     {
       "tag": "INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3",
       "description": "Instantaneous active power L3 (-P)",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.62.7.0.255",
@@ -1614,7 +1577,6 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_IMPORT_L1",
       "description": "Average active power (+P) L1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.21.24.0.255",
@@ -1653,7 +1615,6 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_IMPORT_L2",
       "description": "Average active power (+P) L2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.41.24.0.255",
@@ -1689,7 +1650,6 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_IMPORT_L3",
       "description": "Average active power (+P) L3",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.61.24.0.255",
@@ -1725,7 +1685,6 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_EXPORT_L1",
       "description": "Average active power (-P) L1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.22.24.0.255",
@@ -1764,7 +1723,6 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_EXPORT_L2",
       "description": "Average active power (-P) L2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.42.24.0.255",
@@ -1800,7 +1758,6 @@
     {
       "tag": "AVERAGE_ACTIVE_POWER_EXPORT_L3",
       "description": "Average active power (-P) L3",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.62.24.0.255",
@@ -1836,7 +1793,6 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_IMPORT_L1",
       "description": "Average reactive power (+Q) L1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.23.24.0.255",
@@ -1875,7 +1831,6 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_IMPORT_L2",
       "description": "Average reactive power (+Q) L2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.43.24.0.255",
@@ -1911,7 +1866,6 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_IMPORT_L3",
       "description": "Average reactive power (+Q) L3",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.63.24.0.255",
@@ -1947,7 +1901,6 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_EXPORT_L1",
       "description": "Average reactive power (-Q) L1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.24.24.0.255",
@@ -1986,7 +1939,6 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_EXPORT_L2",
       "description": "Average reactive power (-Q) L2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.44.24.0.255",
@@ -2022,7 +1974,6 @@
     {
       "tag": "AVERAGE_REACTIVE_POWER_EXPORT_L3",
       "description": "Average reactive power (-Q) L3",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.64.24.0.255",
@@ -2058,7 +2009,6 @@
     {
       "tag": "ALARM_REGISTER_1",
       "description": "Alarm register 1",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.97.98.0.255",
@@ -2067,7 +2017,6 @@
         "SP",
         "PP"
       ],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2081,7 +2030,6 @@
     {
       "tag": "ALARM_FILTER_1",
       "description": "Alarm filter 1",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.0.97.98.10.255",
@@ -2090,7 +2038,6 @@
         "SP",
         "PP"
       ],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2109,7 +2056,6 @@
       "obis": "0.x.24.3.0.255",
       "group": "GAS",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2138,7 +2084,7 @@
           "id": 5,
           "description": "sort method",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         },
@@ -2147,7 +2093,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -2176,7 +2121,6 @@
       "obis": "1.0.99.2.0.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2205,7 +2149,7 @@
           "id": 5,
           "description": "sort method",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         },
@@ -2214,7 +2158,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -2243,7 +2186,6 @@
       "obis": "0.0.98.1.0.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2272,7 +2214,7 @@
           "id": 5,
           "description": "sort method",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         },
@@ -2281,7 +2223,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -2309,7 +2250,6 @@
       "obis": "0.x.96.10.3.255",
       "group": "GAS",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2328,7 +2268,6 @@
       "obis": "0.0.96.10.2.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2342,7 +2281,6 @@
     {
       "tag": "MBUS_DEVICE_ID_1",
       "description": "M-Bus Equipment identifier ",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.x.96.1.1.255",
@@ -2362,13 +2300,11 @@
     {
       "tag": "MBUS_MASTER_VALUE",
       "description": "M-Bus volume hourly",
-      "note": null,
       "class-id": 4,
       "version": 0,
       "obis": "0.x.24.2.1.255",
       "group": "GAS",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2416,7 +2352,6 @@
     {
       "tag": "ACTIVITY_CALENDAR",
       "description": "Activity calendar",
-      "note": null,
       "class-id": 20,
       "version": 0,
       "obis": "0.0.13.0.0.255",
@@ -2509,13 +2444,11 @@
     {
       "tag": "ADMINISTRATIVE_IN_OUT",
       "description": "Administrative in/out",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.1.94.31.0.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2529,13 +2462,11 @@
     {
       "tag": "CONFIGURATION_OBJECT",
       "description": "Configuration object",
-      "note": null,
       "class-id": 1,
       "version": 0,
       "obis": "0.1.94.31.3.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2555,7 +2486,6 @@
       "obis": "0.1.94.31.12.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2569,13 +2499,11 @@
     {
       "tag": "STANDARD_EVENT_LOG",
       "description": "Standard event log containing errors and alarms",
-      "note": null,
       "class-id": 7,
       "version": 1,
       "obis": "0.0.99.98.0.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2613,7 +2541,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -2637,13 +2564,11 @@
     {
       "tag": "FRAUD_DETECTION_EVENT_LOG",
       "description": "Event log containing all fraud detection events",
-      "note": null,
       "class-id": 7,
       "version": 1,
       "obis": "0.0.99.98.1.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2681,7 +2606,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -2705,13 +2629,11 @@
     {
       "tag": "MBUS_EVENT_LOG",
       "description": "M-Bus event log containing errors and alarms",
-      "note": null,
       "class-id": 7,
       "version": 1,
       "obis": "0.0.99.98.3.255",
       "group": "GAS",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2749,7 +2671,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -2773,13 +2694,11 @@
     {
       "tag": "COMMUNICATION_SESSION_EVENT_LOG",
       "description": "Event log containing all communication session events",
-      "note": null,
       "class-id": 7,
       "version": 1,
       "obis": "0.0.99.98.4.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2817,7 +2736,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -2846,7 +2764,6 @@
       "obis": "0.0.96.11.0.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2865,7 +2782,6 @@
       "obis": "0.0.96.11.1.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2884,7 +2800,6 @@
       "obis": "0.0.96.11.3.255",
       "group": "GAS",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2903,7 +2818,6 @@
       "obis": "0.0.96.11.4.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2922,7 +2836,6 @@
       "obis": "0.0.96.15.4.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -2936,7 +2849,6 @@
     {
       "tag": "PUSH_SETUP_ALARM",
       "description": "Push Setup Alarm",
-      "note": null,
       "class-id": 40,
       "version": 0,
       "obis": "0.1.25.9.0.255",
@@ -2994,7 +2906,6 @@
     {
       "tag": "PUSH_SETUP_SMS",
       "description": "Push Setup Alarm",
-      "note": null,
       "class-id": 40,
       "version": 0,
       "obis": "0.2.25.9.0.255",
@@ -3048,7 +2959,171 @@
           "access": "RW"
         }
       ]
+    },
+    {
+      "tag": "IMAGE_TRANSFER",
+      "description": "Allows transfer of Firmware Image(s) to COSEM servers",
+      "class-id": 18,
+      "version": 0,
+      "obis": "0.0.44.0.0.255",
+      "group": "ABSTRACT",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "image_block_size",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_METER",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "image_transferred_blocks_status",
+          "datatype": "bit-string",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "image_first_not_transferred_block_number",
+          "datatype": "double-long-unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 5,
+          "description": "transfer_enabled",
+          "datatype": "boolean",
+          "valuetype": "SET_BY_CLIENT",
+          "value": "0",
+          "access": "RW"
+        },
+        {
+          "id": 6,
+          "description": "image_transfer_status",
+          "datatype": "enum",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 7,
+          "description": "image_to_activate_info",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "MBUS_CLIENT_SETUP",
+      "description": "M-Bus client setup",
+      "class-id": 72,
+      "version": 0,
+      "obis": "0.x.24.1.0.255",
+      "group": "GAS",
+      "meterTypes": ["SP","PP"],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "mbus port reference",
+          "datatype": "octet-string",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0.0.24.6.0.255",
+          "access": "R"
+        },
+        {
+          "id": 3,
+          "description": "capture definition",
+          "datatype": "array",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 4,
+          "description": "capture period",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0",
+          "access": "RW"
+        },
+        {
+          "id": 5,
+          "description": "primary address",
+          "datatype": "unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0",
+          "access": "RW"
+        },
+        {
+          "id": 6,
+          "description": "identification number",
+          "datatype": "double-long-unsigned",
+          "valuetype": "FIXED_IN_METER",
+          "access": "RW"
+        },
+        {
+          "id": 7,
+          "description": "manufacturer id",
+          "datatype": "long-unsigned",
+          "valuetype": "FIXED_IN_METER",
+          "access": "RW"
+        },
+        {
+          "id": 8,
+          "description": "version",
+          "datatype": "unsigned",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "50",
+          "access": "RW"
+        },
+        {
+          "id": 9,
+          "description": "device type",
+          "datatype": "unsigned",
+          "valuetype": "FIXED_IN_METER",
+          "access": "RW"
+        },
+        {
+          "id": 10,
+          "description": "access number",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 11,
+          "description": "status",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 12,
+          "description": "alarm",
+          "datatype": "unsigned",
+          "valuetype": "DYNAMIC",
+          "access": "R"
+        },
+        {
+          "id": 13,
+          "description": "configuration",
+          "datatype": "long-unsigned",
+          "valuetype": "DYNAMIC",
+          "value": "0x0063",
+          "access": "R"
+        },
+        {
+          "id": 14,
+          "description": "encryption key status",
+          "datatype": "enum",
+          "valuetype": "DYNAMIC",
+          "value": "1",
+          "access": "R"
+        }
+      ]
     }
-
   ]
 }

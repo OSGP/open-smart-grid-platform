@@ -66,7 +66,7 @@
           "id": 5,
           "description": "sort method",
           "datatype": "enum",
-          "valuetype": "FIXED_IN_METER",
+          "valuetype": "FIXED_IN_PROFILE",
           "value": "1",
           "access": "R"
         },
@@ -75,7 +75,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -98,7 +97,6 @@
     {
       "tag": "LTE_DIAGNOSTIC",
       "description": "LTE Diagnostic",
-      "note": null,
       "class-id": 47,
       "version": 0,
       "obis": "0.2.25.6.0.255",
@@ -178,7 +176,6 @@
         "SP",
         "PP"
       ],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -201,7 +198,6 @@
         "SP",
         "PP"
       ],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -215,13 +211,11 @@
     {
       "tag": "POWER_QUALITY_EXTENDED_EVENT_LOG",
       "description": "Extended event log containing Power Quality events",
-      "note": null,
       "class-id": 7,
       "version": 1,
       "obis": "0.0.99.98.7.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -259,7 +253,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -288,7 +281,6 @@
       "obis": "0.0.96.11.7.255",
       "group": "ABSTRACT",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -358,13 +350,11 @@
     {
       "tag": "POWER_QUALITY_THD_EVENT_LOG",
       "description": "Event log containing Power Quality events",
-      "note": null,
       "class-id": 7,
       "version": 1,
       "obis": "0.0.99.98.8.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -402,7 +392,6 @@
           "description": "sort object",
           "datatype": "object_definition",
           "valuetype": "FIXED_IN_METER",
-          "value": "NONE",
           "access": "R"
         },
         {
@@ -431,7 +420,6 @@
       "obis": "0.0.96.11.8.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -475,13 +463,11 @@
     {
       "tag": "MAGNITUDE_OF_LAST_VOLTAGE_SAG_IN_PHASE_L1",
       "description": "Magnitude of last voltage sag in phase L1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.32.34.0.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -503,13 +489,11 @@
     {
       "tag": "MAGNITUDE_OF_LAST_VOLTAGE_SAG_IN_PHASE_L2",
       "description": "Magnitude of last voltage sag in phase L2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.52.34.0.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -531,13 +515,11 @@
     {
       "tag": "MAGNITUDE_OF_LAST_VOLTAGE_SAG_IN_PHASE_L3",
       "description": "Magnitude of last voltage sag in phase L3",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.72.34.0.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -559,13 +541,11 @@
     {
       "tag": "MAGNITUDE_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L1",
       "description": "Magnitude of last voltage swell in phase L1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.32.38.0.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -587,13 +567,11 @@
     {
       "tag": "MAGNITUDE_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L2",
       "description": "Magnitude of last voltage swell in phase L2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.52.38.0.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -615,13 +593,11 @@
     {
       "tag": "MAGNITUDE_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L3",
       "description": "Magnitude of last voltage swell in phase L3",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.72.38.0.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -643,13 +619,11 @@
     {
       "tag": "DURATION_OF_LAST_VOLTAGE_SAG_IN_PHASE_L1",
       "description": "Duration of last voltage sag in phase L1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.32.33.0.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -671,13 +645,11 @@
     {
       "tag": "DURATION_OF_LAST_VOLTAGE_SAG_IN_PHASE_L2",
       "description": "Duration of last voltage sag in phase L2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.52.33.0.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -699,13 +671,11 @@
     {
       "tag": "DURATION_OF_LAST_VOLTAGE_SAG_IN_PHASE_L3",
       "description": "Duration of last voltage sag in phase L3",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.72.33.0.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -727,13 +697,11 @@
     {
       "tag": "DURATION_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L1",
       "description": "Duration of last voltage swell in phase L1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.32.37.0.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -755,13 +723,11 @@
     {
       "tag": "DURATION_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L2",
       "description": "Duration of last voltage swell in phase L2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.52.37.0.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -783,13 +749,11 @@
     {
       "tag": "DURATION_OF_LAST_VOLTAGE_SWELL_IN_PHASE_L3",
       "description": "Duration of last voltage swell in phase L3",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.72.37.0.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -811,13 +775,11 @@
     {
       "tag": "MAGNITUDE_OF_LAST_CURRENT_OVER_LIMIT_THD_IN_PHASE_L1",
       "description": "Magnitude of last current over-limit THD in phase L1",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.31.38.124.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -839,13 +801,11 @@
     {
       "tag": "MAGNITUDE_OF_LAST_CURRENT_OVER_LIMIT_THD_IN_PHASE_L2",
       "description": "Magnitude of last current over-limit THD in phase L2",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.51.38.124.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,
@@ -867,13 +827,11 @@
     {
       "tag": "MAGNITUDE_OF_LAST_CURRENT_OVER_LIMIT_THD_IN_PHASE_L3",
       "description": "Magnitude of last current over-limit THD in phase L3",
-      "note": null,
       "class-id": 3,
       "version": 0,
       "obis": "1.0.71.38.124.255",
       "group": "ELECTRICITY",
       "meterTypes": ["SP","PP"],
-      "properties": {},
       "attributes": [
         {
           "id": 2,

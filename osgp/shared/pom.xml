@@ -124,29 +124,5 @@ SPDX-License-Identifier: Apache-2.0
         <module>osgp-ws-secret-management</module>
       </modules>
     </profile>
-
-    <profile>
-      <!-- Distribution Automation -->
-      <id>da</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>osgp-kafka-logger</module>
-        <module>osgp-kafka-config</module>
-        <module>osgp-ws-distributionautomation</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <!-- MicroGrids -->
-      <id>mg</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>osgp-ws-microgrids</module>
-      </modules>
-    </profile>
   </profiles>
 </project>

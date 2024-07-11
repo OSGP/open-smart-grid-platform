@@ -76,7 +76,7 @@ Feature: SmartMetering Configuration - Firmware
       | SimpleVersionInfo    |          00400011 |
 
   @NightlyBuildOnly @UpdateFirmware
-  Scenario: successful update of firmware
+  Scenario Outline: successful update of firmware on <protocol> <version> device
     Given a manufacturer
       | ManufacturerCode | KAI  |
       | ManufacturerName | Kaif |
@@ -84,10 +84,12 @@ Feature: SmartMetering Configuration - Firmware
       | ManufacturerName | Kaif  |
       | ModelCode        | MA105 |
     And a dlms device
-      | DeviceIdentification | TEST1024000000002 |
-      | DeviceType           | SMART_METER_E     |
-      | ManufacturerCode     | KAI               |
-      | DeviceModelCode      | MA105             |
+      | DeviceIdentification | <deviceIdentification> |
+      | DeviceType           | SMART_METER_E          |
+      | ManufacturerCode     | KAI                    |
+      | DeviceModelCode      | MA105                  |
+      | protocolName         | <protocol>             |
+      | protocolVersion      | <version>              |
     And receiving an add or change firmware request
       | FirmwareFileIdentification  | TEST_FW_FILE_0003      |
       | FirmwareFile                | 0000000000230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4ffbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d5fa821c678e71c05c47e1c69c4bfffe1fd |
@@ -101,15 +103,27 @@ Feature: SmartMetering Configuration - Firmware
     And the add or change firmware response contains
       | Result | OK |
     When the request for a firmware upgrade is received
-      | DeviceIdentification        | TEST1024000000002 |
-      | FirmwareFileIdentification  | TEST_FW_FILE_0003 |
+      | DeviceIdentification        | <deviceIdentification> |
+      | FirmwareFileIdentification  | TEST_FW_FILE_0003      |
     Then the update firmware result should be returned
-      | DeviceIdentification        | TEST1024000000002 |
+      | DeviceIdentification        | <deviceIdentification> |
     And the database should not be updated with the new device firmware
-      | DeviceIdentification        | TEST1024000000002 |
-      | FirmwareModuleVersionComm   |                   |
-      | FirmwareModuleVersionMa     |                   |
-      | FirmwareModuleVersionFunc   |                   |
+      | DeviceIdentification        | <deviceIdentification> |
+      | FirmwareModuleVersionComm   |                        |
+      | FirmwareModuleVersionMa     |                        |
+      | FirmwareModuleVersionFunc   |                        |
+    Examples:
+      | deviceIdentification | protocol | version |
+      | TEST1024000000001    | DSMR     | 4.2.2   |
+  @NightlyBuildOnly
+    Examples:
+      | deviceIdentification | protocol | version |
+      | TEST1024000000001    | DSMR     | 2.2     |
+      | TEST1031000000001    | SMR      | 4.3     |
+      | TEST1027000000001    | SMR      | 5.0.0   |
+      | TEST1028000000001    | SMR      | 5.1     |
+      | TEST1029000000001    | SMR      | 5.2     |
+      | TEST1030000000001    | SMR      | 5.5     |
 
   @NightlyBuildOnly @UpdateFirmware
   Scenario: update of firmware, no firmware file found with firmwareFileIdentification
