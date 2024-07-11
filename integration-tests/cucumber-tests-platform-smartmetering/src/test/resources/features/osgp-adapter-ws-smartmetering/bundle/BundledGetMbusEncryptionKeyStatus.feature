@@ -14,10 +14,10 @@ Feature: SmartMetering Bundle - GetMbusEncryptionKeyStatus
       | Protocol             | <protocol>             |
       | ProtocolVersion      | <version>              |
     And a dlms device
-      | DeviceIdentification        | TESTG102400000001 |
-      | DeviceType                  | SMART_METER_G     |
+      | DeviceIdentification        | TESTG102400000001      |
+      | DeviceType                  | SMART_METER_G          |
       | GatewayDeviceIdentification | <deviceIdentification> |
-      | Channel                     |                 1 |
+      | Channel                     |                      1 |
     And a bundle request
       | DeviceIdentification | <deviceIdentification> |
     And the bundle request contains a get M-Bus encryption key status action with parameters

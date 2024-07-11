@@ -23,25 +23,25 @@ Feature: SmartMetering Scan M-Bus Channels
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
-    And device simulation of "<deviceIdentification>" with M-Bus client version 0 values for channel 1
+    And device simulation of "<deviceIdentification>" with M-Bus client version <mbusversion> values for channel 1
       | MbusPrimaryAddress             | 9        |
-      | MbusIdentificationNumber       | <mbusid> |
+      | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |
       | MbusVersion                    | 66       |
       | MbusDeviceTypeIdentification   | 3        |
-    And device simulation of "<deviceIdentification>" with M-Bus client version 0 values for channel 2
+    And device simulation of "<deviceIdentification>" with M-Bus client version <mbusversion> values for channel 2
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
       | MbusManufacturerIdentification | 0 |
       | MbusVersion                    | 0 |
       | MbusDeviceTypeIdentification   | 0 |
-    And device simulation of "<deviceIdentification>" with M-Bus client version 0 values for channel 3
+    And device simulation of "<deviceIdentification>" with M-Bus client version <mbusversion> values for channel 3
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
       | MbusManufacturerIdentification | 0 |
       | MbusVersion                    | 0 |
       | MbusDeviceTypeIdentification   | 0 |
-    And device simulation of "<deviceIdentification>" with M-Bus client version 0 values for channel 4
+    And device simulation of "<deviceIdentification>" with M-Bus client version <mbusversion> values for channel 4
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
       | MbusManufacturerIdentification | 0 |
@@ -50,37 +50,37 @@ Feature: SmartMetering Scan M-Bus Channels
     When the scan M-Bus channels request is received
       | DeviceIdentification | <deviceIdentification> |
     Then the found M-bus devices are in the response
-      | Result                                 | OK                |
+      | Result                                 | OK                     |
       | DeviceIdentification                   | <deviceIdentification> |
-      | Channel1MbusIdentificationNumber       |   <mbusid_in_response> |
-      | Channel1MbusManufacturerIdentification | LGB               |
-      | Channel1MbusVersion                    |                66 |
-      | Channel1MbusDeviceTypeIdentification   |                 3 |
-      | Channel2MbusIdentificationNumber       |          00000000 |
-      | Channel2MbusManufacturerIdentification |                   |
-      | Channel2MbusVersion                    |                 0 |
-      | Channel2MbusDeviceTypeIdentification   |                 0 |
-      | Channel3MbusIdentificationNumber       |          00000000 |
-      | Channel3MbusManufacturerIdentification |                   |
-      | Channel3MbusVersion                    |                 0 |
-      | Channel3MbusDeviceTypeIdentification   |                 0 |
-      | Channel4MbusIdentificationNumber       |          00000000 |
-      | Channel4MbusManufacturerIdentification |                   |
-      | Channel4MbusVersion                    |                 0 |
-      | Channel4MbusDeviceTypeIdentification   |                 0 |
+      | Channel1MbusIdentificationNumber       |               12056731 |
+      | Channel1MbusManufacturerIdentification | LGB                    |
+      | Channel1MbusVersion                    |                     66 |
+      | Channel1MbusDeviceTypeIdentification   |                      3 |
+      | Channel2MbusIdentificationNumber       |               00000000 |
+      | Channel2MbusManufacturerIdentification |                        |
+      | Channel2MbusVersion                    |                      0 |
+      | Channel2MbusDeviceTypeIdentification   |                      0 |
+      | Channel3MbusIdentificationNumber       |               00000000 |
+      | Channel3MbusManufacturerIdentification |                        |
+      | Channel3MbusVersion                    |                      0 |
+      | Channel3MbusDeviceTypeIdentification   |                      0 |
+      | Channel4MbusIdentificationNumber       |               00000000 |
+      | Channel4MbusManufacturerIdentification |                        |
+      | Channel4MbusVersion                    |                      0 |
+      | Channel4MbusDeviceTypeIdentification   |                      0 |
 
   Examples:
-      | deviceIdentification | protocol | version | mbusid   | mbusid_in_response |
-      | TEST1024000000001    | DSMR     | 4.2.2   | 12056731 |           12056731 |
+      | deviceIdentification | protocol | version | mbusversion |
+      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |
   @NightlyBuildOnly
   Examples:
-      | deviceIdentification | protocol | version | mbusid   | mbusid_in_response |
-      | TEST1024000000001    | DSMR     | 2.2     | 12056731 |           12056731 |
-      | TEST1031000000001    | SMR      | 4.3     | 12056731 |           12056731 |
-      | TEST1027000000001    | SMR      | 5.0.0   |        1 |           00000001 |
-      | TEST1028000000001    | SMR      | 5.1     |        1 |           00000001 |
-      | TEST1029000000001    | SMR      | 5.2     |        1 |           00000001 |
-      | TEST1030000000001    | SMR      | 5.5     |        1 |           00000001 |
+      | deviceIdentification | protocol | version | mbusversion |
+      | TEST1024000000001    | DSMR     | 2.2     |           0 |
+      | TEST1031000000001    | SMR      | 4.3     |           0 |
+      | TEST1027000000001    | SMR      | 5.0.0   |           1 |
+      | TEST1028000000001    | SMR      | 5.1     |           1 |
+      | TEST1029000000001    | SMR      | 5.2     |           1 |
+      | TEST1030000000001    | SMR      | 5.5     |           1 |
 
   Scenario: Scan the four m-bus channels of an SMR5 gateway device
     Given a dlms device

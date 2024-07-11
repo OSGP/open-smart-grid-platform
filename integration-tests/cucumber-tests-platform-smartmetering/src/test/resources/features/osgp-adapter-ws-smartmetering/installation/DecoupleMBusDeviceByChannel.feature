@@ -7,42 +7,45 @@ Feature: SmartMetering Installation - Decouple M-Bus Device By Channel
   As a grid operator
   I want to be able to decouple an M-Bus device by channel to a smart meter
 
-  Scenario Outline: Decouple M-Bus Device By Channel on a administratively decoupled E-meter (<protocol> <version>)
+  Scenario Outline: Decouple M-Bus Device By Channel (<ch>) on a administratively decoupled E-meter (<protocol> <version>)
     Given a dlms device
       | DeviceIdentification | <deviceIdentification> |
       | DeviceType           | SMART_METER_E          |
       | Protocol             | <protocol>             |
       | ProtocolVersion      | <version>              |
-    And device simulation of "<deviceIdentification>" with M-Bus client version 0 values for channel 1
+    And device simulation of "<deviceIdentification>" with M-Bus client version <mbusversion> values for channel <ch>
       | MbusPrimaryAddress             | 9        |
       | MbusIdentificationNumber       | <mbusid> |
       | MbusManufacturerIdentification | LGB      |
       | MbusVersion                    | 66       |
       | MbusDeviceTypeIdentification   | 3        |
-    When the Decouple M-Bus Device By Channel "1" from E-meter "<deviceIdentification>" request is received
+    When the Decouple M-Bus Device By Channel "<ch>" from E-meter "<deviceIdentification>" request is received
     Then the Decouple M-Bus Device By Channel response is "OK" with responsedata
       | ResultString                   | <result_string>      |
       | MbusIdentificationNumber       | <mbusid_in_response> |
       | MbusDeviceIdentification       |                      |
-    And the values for the M-Bus client for channel 1 on device simulator "<deviceIdentification>" are
+    And the values for the M-Bus client for channel <ch> on device simulator "<deviceIdentification>" are
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
       | MbusManufacturerIdentification | 0 |
       | MbusVersion                    | 0 |
       | MbusDeviceTypeIdentification   | 0 |
     Examples:
-      | deviceIdentification | protocol | version | mbusid   | mbusid_in_response                     | result_string                                                                                        |
-      | TEST1024000000001    | DSMR     | 4.2.2   | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | deviceIdentification | protocol | version | mbusversion | ch | mbusid   | mbusid_in_response                     | result_string                                                                                        |
+      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |  1 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
     @NightlyBuildOnly
     Examples:
-      | deviceIdentification | protocol | version | mbusid   | mbusid_in_response                     | result_string                                                                                        |
-      | TEST1024000000001    | DSMR     | 2.2     | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
-      | TEST1031000000001    | SMR      | 4.3     | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
-      | TEST1027000000001    | SMR      | 5.0.0   |        1 | 00000001                               | Decouple Mbus Device was successful                                                                  |
-      | TEST1028000000001    | SMR      | 5.1     |        1 | 00000001                               | Decouple Mbus Device was successful                                                                  |
-      | TEST1029000000001    | SMR      | 5.2     |        1 | 00000001                               | Decouple Mbus Device was successful                                                                  |
-      | TEST1030000000001    | SMR      | 5.5     |        1 | 00000001                               | Decouple Mbus Device was successful                                                                  |
-      | TEST1024000000001    | DSMR     | 4.2.2   | A2056731 | DOUBLE_LONG_UNSIGNED Value: 2718263089 | Channel information could not be correctly interpreted. Mbus Device was successful decoupled anyway. |
+      | deviceIdentification | protocol | version | mbusversion | ch | mbusid   | mbusid_in_response                     | result_string                                                                                        |
+      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |  2 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |  3 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |  4 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1024000000001    | DSMR     | 2.2     |           0 |  1 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1031000000001    | SMR      | 4.3     |           0 |  1 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1027000000001    | SMR      | 5.0.0   |           1 |  1 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1028000000001    | SMR      | 5.1     |           1 |  1 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1029000000001    | SMR      | 5.2     |           1 |  1 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1030000000001    | SMR      | 5.5     |           1 |  1 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |  1 | A2056731 | DOUBLE_LONG_UNSIGNED Value: 2718263089 | Channel information could not be correctly interpreted. Mbus Device was successful decoupled anyway. |
 
   Scenario: Decouple M-Bus Device By Channel on a administratively decoupled E-meter with empty channel
     Given a dlms device
