@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @NightlyBuildOnly @SmartMeteringInstallation @MBusDevice
+@SmartMetering @Platform @SmartMeteringInstallation @MBusDevice @NightlyBuildOnly
 Feature: SmartMetering Installation - Administrative Decouple M-Bus Device
   As a grid operator
   I want to be able to administratively decouple an M-Bus device

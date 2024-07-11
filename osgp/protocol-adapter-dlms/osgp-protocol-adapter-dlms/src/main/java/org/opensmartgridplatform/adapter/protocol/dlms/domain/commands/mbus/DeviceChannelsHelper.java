@@ -376,7 +376,8 @@ public class DeviceChannelsHelper {
   private DataObjectAttrExecutor getMbusAttributeExecutor(
       final CosemObjectAccessor cosemObjectAccessor,
       final MbusClientAttribute attribute,
-      final DataObject value) {
+      final DataObject value)
+      throws NotSupportedByProtocolException {
 
     final AttributeAddress attributeAddress = cosemObjectAccessor.createAttributeAddress(attribute);
 

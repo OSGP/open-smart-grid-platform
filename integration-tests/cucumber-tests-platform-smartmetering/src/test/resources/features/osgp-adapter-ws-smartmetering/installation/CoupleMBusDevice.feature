@@ -7,10 +7,12 @@ Feature: SmartMetering Installation - Couple M-Bus Device
   As a grid operator
   I want to be able to couple an M-Bus device to a smart meter
 
-  Scenario Outline: Couple G-meter "TESTG101205673117" to E-meter "TEST1024000000001" on first channel
+  Scenario Outline: Couple G-meter "TESTG101205673117" to a <protocol> <version> E-meter on first channel
     Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
+      | DeviceIdentification | <deviceIdentification> |
+      | DeviceType           | SMART_METER_E          |
+      | Protocol             | <protocol>             |
+      | ProtocolVersion      | <version>              |
     And a dlms device
       | DeviceIdentification           | TESTG101205673117       |
       | DeviceType                     | SMART_METER_G           |
@@ -19,30 +21,39 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusManufacturerIdentification | LGB                     |
       | MbusVersion                    |                      66 |
       | MbusDeviceTypeIdentification   |                       3 |
-    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
+    And device simulation of "<deviceIdentification>" with M-Bus client version <mbusversion> values for channel 1
       | MbusPrimaryAddress             |        9 |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |
       | MbusVersion                    |       66 |
       | MbusDeviceTypeIdentification   |        3 |
-    When the Couple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
+    When the Couple G-meter "TESTG101205673117" request is received for E-meter "<deviceIdentification>"
     Then the Couple response has the following values
       | MbusDeviceIdentification | TESTG101205673117 |
       | Channel                  |                 1 |
       | PrimaryAddress           |                 9 |
-    And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "9"
+    And the M-Bus device "TESTG101205673117" is coupled to device "<deviceIdentification>" on M-Bus channel "1" with PrimaryAddress "9"
 
     Examples:
-      | DeviceLifeCycleStatus      |
-      | NEW_IN_INVENTORY           |
-      | READY_FOR_USE              |
-      | REGISTERED                 |
-      | REGISTERED_BUILD_IN_FAILED |
-      | REGISTERED_INSTALL_FAILED  |
-      | REGISTERED_UPDATE_FAILED   |
-      | RETURNED_TO_INVENTORY      |
-      | UNDER_TEST                 |
-      | DESTROYED                  |
+      | DeviceLifeCycleStatus      | deviceIdentification | protocol | version | mbusversion |
+      | REGISTERED                 | TEST1024000000001    | DSMR     | 4.2.2   |           0 |
+    @NightlyBuildOnly
+    Examples:
+      | DeviceLifeCycleStatus      | deviceIdentification | protocol | version | mbusversion |
+      | NEW_IN_INVENTORY           | TEST1024000000001    | DSMR     | 4.2.2   |           0 |
+      | READY_FOR_USE              | TEST1024000000001    | DSMR     | 4.2.2   |           0 |
+      | REGISTERED_BUILD_IN_FAILED | TEST1024000000001    | DSMR     | 4.2.2   |           0 |
+      | REGISTERED_INSTALL_FAILED  | TEST1024000000001    | DSMR     | 4.2.2   |           0 |
+      | REGISTERED_UPDATE_FAILED   | TEST1024000000001    | DSMR     | 4.2.2   |           0 |
+      | RETURNED_TO_INVENTORY      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |
+      | UNDER_TEST                 | TEST1024000000001    | DSMR     | 4.2.2   |           0 |
+      | DESTROYED                  | TEST1024000000001    | DSMR     | 4.2.2   |           0 |
+      | REGISTERED                 | TEST1024000000001    | DSMR     | 2.2     |           0 |
+      | REGISTERED                 | TEST1031000000001    | SMR      | 4.3     |           0 |
+      | REGISTERED                 | TEST1027000000001    | SMR      | 5.0.0   |           1 |
+      | REGISTERED                 | TEST1028000000001    | SMR      | 5.1     |           1 |
+      | REGISTERED                 | TEST1029000000001    | SMR      | 5.2     |           1 |
+      | REGISTERED                 | TEST1030000000001    | SMR      | 5.5     |           1 |
 
   @NightlyBuildOnly
   Scenario: Couple G-meter "TESTG101205673117" with missing attributes to E-meter "TEST1024000000001" on first channel
