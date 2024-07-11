@@ -122,6 +122,10 @@ SPDX-License-Identifier: Apache-2.0
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.redisson</groupId>
+      <artifactId>redisson-spring-boot-starter</artifactId>
+    </dependency>
+    <dependency>
         <groupId>com.bucket4j</groupId>
         <artifactId>bucket4j-core</artifactId>
     </dependency>

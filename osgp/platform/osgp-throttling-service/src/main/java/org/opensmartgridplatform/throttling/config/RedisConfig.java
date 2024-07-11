@@ -11,10 +11,10 @@ import io.github.bucket4j.distributed.proxy.ClientSideConfig;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
 import io.github.bucket4j.redis.jedis.cas.JedisBasedProxyManager;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
-import java.security.UnrecoverableKeyException;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,10 +22,15 @@ import java.util.function.Supplier;
 import javax.net.ssl.SSLSocketFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.ResourceUtils;
 import redis.clients.jedis.*;
 import redis.clients.jedis.DefaultJedisClientConfig.Builder;
 
@@ -59,6 +64,31 @@ public class RedisConfig {
 
   @Value("${redis.password}")
   private String password;
+
+  @Value("${spring.redis.redisson.file:classpath:redisson-config.yaml}")
+  private String redissonConfigFile;
+
+  @Value("${redisson.tmp.keystore.location:temp/keystore.jks}")
+  private String redissonTmpKeystoreLocation;
+
+  @Value("${redisson.tmp.truststore.location:temp/truststore.jks}")
+  private String redissonTmpTruststoreLocation;
+
+  @Bean
+  @ConditionalOnProperty(value = "redis.enabled", havingValue = "true")
+  public RedissonClient redissonClient() throws IOException, GeneralSecurityException {
+    this.installJCAProvider();
+
+    final KeyStore keyStore = this.loadKeyStore();
+    this.writeToFile(keyStore, this.redissonTmpKeystoreLocation);
+
+    final File caFile = new File(this.caLocation);
+    final KeyStore trustStore = KeystoreBuilder.loadTrustStore(caFile);
+    this.writeToFile(trustStore, this.redissonTmpTruststoreLocation);
+
+    final Config config = Config.fromYAML(ResourceUtils.getFile(this.redissonConfigFile));
+    return Redisson.create(config);
+  }
 
   @Bean
   @ConditionalOnProperty(value = "redis.enabled", havingValue = "true")
@@ -137,6 +167,25 @@ public class RedisConfig {
       final KeyStore keyStore = KeyStore.getInstance("JKS");
       keyStore.load(null, null);
       return keyStore;
+    }
+  }
+
+  private void installJCAProvider() {
+    final BouncyCastleProvider bouncyCastleProvider = new BouncyCastleProvider();
+
+    log.info("About to add Bouncy Castle Provider: {}", bouncyCastleProvider.getInfo());
+    Security.addProvider(bouncyCastleProvider);
+
+    for (final Provider provider : Security.getProviders()) {
+      log.info("Installed security provider: {}", provider.getInfo());
+    }
+  }
+
+  private void writeToFile(final KeyStore keyStore, final String keystoreLocation)
+      throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException {
+    log.info("Write keystore to file: {}", new File(keystoreLocation).getAbsolutePath());
+    try (final FileOutputStream fos = new FileOutputStream(keystoreLocation)) {
+      keyStore.store(fos, "".toCharArray());
     }
   }
 }

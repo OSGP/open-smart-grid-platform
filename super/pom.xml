@@ -146,7 +146,8 @@ SPDX-License-Identifier: Apache-2.0
     <apache.commons.io.version>2.16.1</apache.commons.io.version>
     <apache.commons.compress.version>1.26.1</apache.commons.compress.version>
     <bucket4j.version>8.10.1</bucket4j.version>
-    <jedis.version>5.1.2</jedis.version>
+    <jedis.version>5.1.3</jedis.version>
+    <redisson.version>3.31.0</redisson.version>
     <bouncycastle.bcprov-jdk18on.version>1.78.1</bouncycastle.bcprov-jdk18on.version>
     <!-- Default always skip integration tests, to ensure all developer data
       is retained -->
@@ -699,6 +700,11 @@ SPDX-License-Identifier: Apache-2.0
         <version>${jackson.version}</version>
       </dependency>
 
+        <dependency>
+           <groupId>org.redisson</groupId>
+           <artifactId>redisson-spring-boot-starter</artifactId>
+           <version>${redisson.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.bucket4j</groupId>
             <artifactId>bucket4j-core</artifactId>
