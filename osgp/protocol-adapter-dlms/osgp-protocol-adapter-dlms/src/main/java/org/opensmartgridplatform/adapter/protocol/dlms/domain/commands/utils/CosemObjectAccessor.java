@@ -19,6 +19,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
 import org.opensmartgridplatform.dlms.interfaceclass.method.MethodClass;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
@@ -130,16 +131,17 @@ public class CosemObjectAccessor {
     }
   }
 
-  public MethodResultCode callMethod(final MethodClass methodClass)
+  public MethodResultCode callMethod(final String callingClass, final MethodClass methodClass)
       throws ProtocolAdapterException {
     final MethodParameter methodParameter = this.createMethodParameter(methodClass);
-    return this.handleMethod(methodParameter);
+    return this.handleMethod(callingClass, methodClass, methodParameter);
   }
 
-  public MethodResultCode callMethod(final MethodClass methodClass, final DataObject dataObject)
+  public MethodResultCode callMethod(
+      final String callingClass, final MethodClass methodClass, final DataObject dataObject)
       throws ProtocolAdapterException {
     final MethodParameter methodParameter = this.createMethodParameter(methodClass, dataObject);
-    return this.handleMethod(methodParameter);
+    return this.handleMethod(callingClass, methodClass, methodParameter);
   }
 
   public AttributeAddress createAttributeAddress(final AttributeClass attributeClass)
@@ -178,23 +180,64 @@ public class CosemObjectAccessor {
         this.cosemObject.getClassId(), this.cosemObject.getObis(), methodClass.getMethodId());
   }
 
-  private MethodResultCode handleMethod(final MethodParameter methodParameter)
+  private MethodResultCode handleMethod(
+      final String callingClass,
+      final MethodClass methodClass,
+      final MethodParameter methodParameter)
       throws ProtocolAdapterException {
-    final MethodResult result;
+
+    this.connector
+        .getDlmsMessageListener()
+        .setDescription(this.describeMethod(callingClass, methodClass, methodParameter));
+    final MethodResultCode methodResultCode;
     try {
-      result = this.connector.getConnection().action(methodParameter);
+      final MethodResult methodResult = this.connector.getConnection().action(methodParameter);
+      methodResultCode = methodResult.getResultCode();
     } catch (final IOException e) {
       throw new ConnectionException(e);
     }
 
-    if (result == null) {
+    if (methodResultCode == null) {
       throw new ProtocolAdapterException(EXCEPTION_MSG_NO_METHOD_RESULT);
     }
 
-    return result.getResultCode();
+    return methodResultCode;
+  }
+
+  private String describeMethod(
+      final String callingClass, final MethodClass methodClass, final MethodParameter parameter)
+      throws ProtocolAdapterException {
+    return callingClass
+        + " for channel "
+        + this.getChannel()
+        + ", call "
+        + this.cosemObject.getTag()
+        + methodClass.getMethodName()
+        + ": "
+        + JdlmsObjectToStringUtil.describeMethod(parameter);
   }
 
   public int getVersion() {
     return this.cosemObject.getVersion();
+  }
+
+  public String getObisCode() {
+    return this.cosemObject.getObis();
+  }
+
+  public int getClassId() {
+    return this.cosemObject.getClassId();
+  }
+
+  public Integer getChannel() throws ProtocolAdapterException {
+    try {
+      if (this.cosemObject.hasWildcardChannel()) {
+        return this.cosemObject.getChannel();
+      } else {
+        return null;
+      }
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException("Unable to define channel", e);
+    }
   }
 }

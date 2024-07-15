@@ -157,7 +157,10 @@ public class ImageTransfer {
     this.setDescriptionForMethodCall(ImageTransferMethod.IMAGE_TRANSFER_INITIATE, parameter);
 
     final MethodResultCode resultCode =
-        this.imageTransferCosem.callMethod(ImageTransferMethod.IMAGE_TRANSFER_INITIATE, parameter);
+        this.imageTransferCosem.callMethod(
+            this.getClass().getSimpleName(),
+            ImageTransferMethod.IMAGE_TRANSFER_INITIATE,
+            parameter);
 
     if (resultCode != MethodResultCode.SUCCESS) {
       log.warn("Method IMAGE_TRANSFER_INITIATE gave result {}", resultCode);
@@ -204,7 +207,8 @@ public class ImageTransfer {
     this.setDescriptionForMethodCall(ImageTransferMethod.IMAGE_VERIFY, parameter);
 
     final MethodResultCode verified =
-        this.imageTransferCosem.callMethod(ImageTransferMethod.IMAGE_VERIFY, parameter);
+        this.imageTransferCosem.callMethod(
+            this.getClass().getSimpleName(), ImageTransferMethod.IMAGE_VERIFY, parameter);
     if (verified == null) {
       throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_VERIFY_NOT_CALLED);
     }
@@ -313,7 +317,8 @@ public class ImageTransfer {
     this.setDescriptionForMethodCall(ImageTransferMethod.IMAGE_ACTIVATE, parameter);
 
     final MethodResultCode imageActivate =
-        this.imageTransferCosem.callMethod(ImageTransferMethod.IMAGE_ACTIVATE, parameter);
+        this.imageTransferCosem.callMethod(
+            this.getClass().getSimpleName(), ImageTransferMethod.IMAGE_ACTIVATE, parameter);
     if (imageActivate == null) {
       throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_ACTIVATE_NOT_CALLED);
     }
@@ -476,7 +481,8 @@ public class ImageTransfer {
     this.setDescriptionForMethodCall(ImageTransferMethod.IMAGE_BLOCK_TRANSFER, parameter);
 
     final MethodResultCode resultCode =
-        this.imageTransferCosem.callMethod(ImageTransferMethod.IMAGE_BLOCK_TRANSFER, parameter);
+        this.imageTransferCosem.callMethod(
+            this.getClass().getSimpleName(), ImageTransferMethod.IMAGE_BLOCK_TRANSFER, parameter);
 
     if (resultCode != MethodResultCode.SUCCESS) {
       log.info("Method IMAGE_BLOCK_TRANSFER gave result {} for block {}", resultCode, blockNumber);

@@ -17,6 +17,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 
 import java.io.IOException;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,7 +25,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.DlmsConnection;
@@ -35,12 +35,15 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -80,9 +83,19 @@ class SetKeyOnGMeterCommandExecutorTest {
 
   @Mock private DlmsDeviceRepository dlmsDeviceRepository;
 
-  @InjectMocks private SetKeyOnGMeterCommandExecutor executor;
+  private SetKeyOnGMeterCommandExecutor executor;
 
   @Captor ArgumentCaptor<MethodParameter> methodParameterArgumentCaptor;
+
+  @BeforeEach
+  public void init() throws IOException, ObjectConfigException {
+    final ObjectConfigService objectConfigService = new ObjectConfigService();
+    final ObjectConfigServiceHelper objectConfigServiceHelper =
+        new ObjectConfigServiceHelper(objectConfigService);
+    this.executor =
+        new SetKeyOnGMeterCommandExecutor(
+            this.secretManagementService, this.dlmsDeviceRepository, objectConfigServiceHelper);
+  }
 
   @ParameterizedTest
   @ValueSource(ints = {1, 2, 3, 4})

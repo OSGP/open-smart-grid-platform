@@ -2,28 +2,43 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly
+@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly @Keys
 Feature: SmartMetering Configuration - Recover Keys
   As a grid operator
   I want to be able to recover the keys on a device
   So I can ensure secure device communication according to requirements
 
   @RecoverKeys
-  Scenario: Recover keys after a (simulated) failed key change
+  Scenario Outline: Recover keys after a (simulated) failed key change
     #Try to connect using incorrect A-key and then try to recover the correct new key
     Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | <identification> |
       | DeviceType           | SMART_METER_E     |
-    And simulate failure of change from previous key of device "TEST1024000000001"
+      | Protocol             | <protocol>        |
+      | ProtocolVersion      | <version>         |
+    And simulate failure of change from previous key of device "<identification>"
       | Authentication_key   | SECURITY_KEY_1    |
     When the get actual meter reads request is received
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | <identification> |
     Then after 15 seconds, the new E_METER_ENCRYPTION_KEY_UNICAST key is recovered
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | <identification> |
       | Authentication_key   | SECURITY_KEY_A    |
-    And after 30 seconds, the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
+    And after 30 seconds, the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "<identification>"
       | SECURITY_KEY_1 | EXPIRED |
-    And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"
+    And the keyprocessing lock should be removed from off dlms device with identification "<identification>"
+
+    Examples:
+      | identification    | protocol | version |
+      | TEST1024000000001 | DSMR     | 4.2.2   |
+    @NightlyBuildOnly
+    Examples:
+      | identification    | protocol | version |
+      | TEST1024000000001 | DSMR     | 2.2     |
+      | TEST1031000000001 | SMR      | 4.3     |
+      | TEST1027000000001 | SMR      | 5.0.0   |
+      | TEST1028000000001 | SMR      | 5.1     |
+      | TEST1029000000001 | SMR      | 5.2     |
+      | TEST1030000000001 | SMR      | 5.5     |
 
   @RecoverKeys @ResetKeysOnDevice
   Scenario: Replace keys triggers a recover keys and replaces keys on the retry

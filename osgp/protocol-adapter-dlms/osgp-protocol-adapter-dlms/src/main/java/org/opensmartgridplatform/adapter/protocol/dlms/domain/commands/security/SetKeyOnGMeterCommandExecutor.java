@@ -12,17 +12,14 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.openmuc.jdlms.MethodParameter;
-import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -31,6 +28,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsD
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
+import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
@@ -38,7 +36,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.ws.schema.core.secret.management.SecretType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
@@ -46,14 +43,6 @@ public class SetKeyOnGMeterCommandExecutor
     extends AbstractCommandExecutor<SetKeyOnGMeterRequestDto, MethodResultCode> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SetKeyOnGMeterCommandExecutor.class);
-
-  private static final int CLASS_ID = 72;
-  private static final ObisCode OBIS_CODE_INTERVAL_MBUS_1 = new ObisCode("0.1.24.1.0.255");
-  private static final ObisCode OBIS_CODE_INTERVAL_MBUS_2 = new ObisCode("0.2.24.1.0.255");
-  private static final ObisCode OBIS_CODE_INTERVAL_MBUS_3 = new ObisCode("0.3.24.1.0.255");
-  private static final ObisCode OBIS_CODE_INTERVAL_MBUS_4 = new ObisCode("0.4.24.1.0.255");
-
-  private static final Map<Integer, ObisCode> OBIS_HASHMAP = new HashMap<>();
 
   private static final List<SecurityKeyType> validKeyTypes =
       Arrays.asList(
@@ -64,19 +53,18 @@ public class SetKeyOnGMeterCommandExecutor
   private final SetKeyOnGMeterKeyEncryptionAndMacGeneration keyEncryptionAndMacGeneration =
       new SetKeyOnGMeterKeyEncryptionAndMacGeneration();
 
-  static {
-    OBIS_HASHMAP.put(1, OBIS_CODE_INTERVAL_MBUS_1);
-    OBIS_HASHMAP.put(2, OBIS_CODE_INTERVAL_MBUS_2);
-    OBIS_HASHMAP.put(3, OBIS_CODE_INTERVAL_MBUS_3);
-    OBIS_HASHMAP.put(4, OBIS_CODE_INTERVAL_MBUS_4);
-  }
+  private final SecretManagementService secretManagementService;
+  private final DlmsDeviceRepository dlmsDeviceRepository;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  @Autowired private SecretManagementService secretManagementService;
-
-  @Autowired private DlmsDeviceRepository dlmsDeviceRepository;
-
-  public SetKeyOnGMeterCommandExecutor() {
+  public SetKeyOnGMeterCommandExecutor(
+      final SecretManagementService secretManagementService,
+      final DlmsDeviceRepository dlmsDeviceRepository,
+      final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(SetKeyOnGMeterRequestDto.class);
+    this.secretManagementService = secretManagementService;
+    this.dlmsDeviceRepository = dlmsDeviceRepository;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
@@ -94,6 +82,14 @@ public class SetKeyOnGMeterCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
     LOGGER.debug("SetKeyOnGMeterCommandExecutor.execute called");
+
+    final CosemObjectAccessor cosemObjectAccessor =
+        new CosemObjectAccessor(
+            conn,
+            this.objectConfigServiceHelper,
+            DlmsObjectType.MBUS_CLIENT_SETUP,
+            Protocol.forDevice(device),
+            (short) setEncryptionKeyRequest.getChannel());
 
     final SecurityKeyType keyType =
         SecurityKeyType.fromSecretType(
@@ -113,15 +109,13 @@ public class SetKeyOnGMeterCommandExecutor
         this.encryptKey(
             messageMetadata, mbusDeviceIdentification, device, mBusDevice, keyType, newKey);
 
-    final int channel = setEncryptionKeyRequest.getChannel();
-
     try {
       if (keyType == G_METER_OPTICAL_PORT_KEY
           || keyType == G_METER_FIRMWARE_UPDATE_AUTHENTICATION) {
-        this.sendKeyUsingDataSend(conn, channel, encryptedKey);
+        this.sendKeyUsingDataSend(cosemObjectAccessor, encryptedKey);
       } else if (keyType == G_METER_ENCRYPTION) {
         this.sendEncryptionKeyUsingTransferKeyAndSetEncryptionKey(
-            conn, channel, newKey, encryptedKey);
+            cosemObjectAccessor, newKey, encryptedKey);
       }
 
       this.secretManagementService.activateNewKey(
@@ -138,23 +132,29 @@ public class SetKeyOnGMeterCommandExecutor
   }
 
   private void sendKeyUsingDataSend(
-      final DlmsConnectionManager conn, final int channel, final byte[] encryptedKey)
-      throws ProtocolAdapterException, IOException {
-    final MethodResult methodResultCode = this.dataSend(conn, channel, encryptedKey);
-    this.checkMethodResultCode(methodResultCode, "M-Bus Setup data_send", channel);
+      final CosemObjectAccessor cosemObjectAccessor, final byte[] encryptedKey)
+      throws ProtocolAdapterException {
+    final MethodParameter methodDataSend =
+        this.getDataSendMethodParameter(cosemObjectAccessor, encryptedKey);
+    final MethodResultCode methodResultCode =
+        cosemObjectAccessor.callMethod(
+            this.getClass().getSimpleName(),
+            MBusClientMethod.DATA_SEND,
+            methodDataSend.getParameter());
+    this.checkMethodResultCode(methodResultCode, MBusClientMethod.DATA_SEND, cosemObjectAccessor);
   }
 
-  private MethodResult dataSend(
-      final DlmsConnectionManager conn, final int channel, final byte[] encryptedKey)
-      throws IOException {
-    final MethodParameter methodDataSend = this.getDataSendMethodParameter(channel, encryptedKey);
-    conn.getDlmsMessageListener()
-        .setDescription(this.describeMethod(channel, "data_send", methodDataSend));
-
-    return conn.getConnection().action(methodDataSend);
+  private MethodResultCode dataSend(
+      final CosemObjectAccessor cosemObjectAccessor, final byte[] encryptedKey)
+      throws ProtocolAdapterException {
+    final MethodParameter methodDataSend =
+        this.getDataSendMethodParameter(cosemObjectAccessor, encryptedKey);
+    return cosemObjectAccessor.callMethod(
+        this.getClass().getSimpleName(), MBusClientMethod.DATA_SEND, methodDataSend.getParameter());
   }
 
-  private MethodParameter getDataSendMethodParameter(final int channel, final byte[] encryptedKey) {
+  private MethodParameter getDataSendMethodParameter(
+      final CosemObjectAccessor cosemObjectAccessor, final byte[] encryptedKey) {
     // The parameter for the data_send method is an array with 1 element, consisting of:
     // - data_information_block: value 0x0D meaning variable length data
     // - value_information_block: value 0xFD19 meaning key exchange
@@ -168,83 +168,67 @@ public class SetKeyOnGMeterCommandExecutor
     final DataObject array =
         DataObject.newArrayData(Collections.singletonList(dataDefinitionElement));
     final MBusClientMethod method = MBusClientMethod.DATA_SEND;
-    return new MethodParameter(
-        method.getInterfaceClass().id(), OBIS_HASHMAP.get(channel), method.getMethodId(), array);
+    return cosemObjectAccessor.createMethodParameter(method, array);
   }
 
   private void sendEncryptionKeyUsingTransferKeyAndSetEncryptionKey(
-      final DlmsConnectionManager conn,
-      final int channel,
-      final byte[] newKey,
-      final byte[] encryptedKey)
+      final CosemObjectAccessor cosemObjectAccessor, final byte[] newKey, final byte[] encryptedKey)
       throws ProtocolAdapterException, IOException {
 
     // Transfer key to g-meter
-    MethodResult methodResultCode = this.transferKey(conn, channel, encryptedKey);
-    this.checkMethodResultCode(methodResultCode, "M-Bus Setup transfer_key", channel);
+    MethodResultCode methodResultCode =
+        this.callKeyMethod(cosemObjectAccessor, MBusClientMethod.TRANSFER_KEY, encryptedKey);
+    this.checkMethodResultCode(
+        methodResultCode, MBusClientMethod.TRANSFER_KEY, cosemObjectAccessor);
 
     // Set encryption key in e-meter
-    methodResultCode = this.setEncryptionKey(conn, channel, newKey);
-    this.checkMethodResultCode(methodResultCode, "M-Bus Setup set_encryption_key", channel);
+    methodResultCode =
+        this.callKeyMethod(cosemObjectAccessor, MBusClientMethod.SET_ENCRYPTION_KEY, newKey);
+    this.checkMethodResultCode(
+        methodResultCode, MBusClientMethod.SET_ENCRYPTION_KEY, cosemObjectAccessor);
   }
 
-  private MethodResult setEncryptionKey(
-      final DlmsConnectionManager conn, final int channel, final byte[] encryptedKey)
-      throws IOException {
-    final MethodParameter methodSetEncryptionKey =
-        this.getSetEncryptionKeyMethodParameter(OBIS_HASHMAP.get(channel), encryptedKey);
-    conn.getDlmsMessageListener()
-        .setDescription(this.describeMethod(channel, "set_encryption_key", methodSetEncryptionKey));
-    return conn.getConnection().action(methodSetEncryptionKey);
-  }
-
-  private MethodResult transferKey(
-      final DlmsConnectionManager conn, final int channel, final byte[] encryptedKey)
-      throws IOException {
+  private MethodResultCode callKeyMethod(
+      final CosemObjectAccessor cosemObjectAccessor,
+      final MBusClientMethod mBusClientMethod,
+      final byte[] encryptedKey)
+      throws ProtocolAdapterException {
     final MethodParameter methodTransferKey =
-        this.getTransferKeyMethodParameter(channel, encryptedKey);
-    conn.getDlmsMessageListener()
-        .setDescription(this.describeMethod(channel, "transfer_key", methodTransferKey));
-
-    return conn.getConnection().action(methodTransferKey);
+        this.getMethodParameter(cosemObjectAccessor, mBusClientMethod, encryptedKey);
+    return cosemObjectAccessor.callMethod(
+        this.getClass().getSimpleName(), mBusClientMethod, methodTransferKey.getParameter());
   }
 
-  private MethodParameter getTransferKeyMethodParameter(
-      final int channel, final byte[] encryptedKey) {
+  private MethodParameter getMethodParameter(
+      final CosemObjectAccessor cosemObjectAccessor,
+      final MBusClientMethod method,
+      final byte[] encryptedKey) {
     final DataObject methodParameter = DataObject.newOctetStringData(encryptedKey);
-    final MBusClientMethod method = MBusClientMethod.TRANSFER_KEY;
     return new MethodParameter(
         method.getInterfaceClass().id(),
-        OBIS_HASHMAP.get(channel),
+        cosemObjectAccessor.getObisCode(),
         method.getMethodId(),
         methodParameter);
   }
 
   private void checkMethodResultCode(
-      final MethodResult methodResultCode, final String methodParameterName, final int channel)
+      final MethodResultCode methodResultCode,
+      final MBusClientMethod method,
+      final CosemObjectAccessor cosemObjectAccessor)
       throws ProtocolAdapterException {
-    if (methodResultCode == null
-        || !MethodResultCode.SUCCESS.equals(methodResultCode.getResultCode())) {
-      String message = "Error while executing " + methodParameterName + ".";
+    if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
+      String message = "Error while executing " + method.getMethodName() + ".";
       if (methodResultCode != null) {
-        message += " Reason = " + methodResultCode.getResultCode();
+        message += " Reason = " + methodResultCode;
       }
       throw new ProtocolAdapterException(message);
     } else {
       LOGGER.debug(
           "Successfully invoked '{}' method: class_id {} obis_code {}",
-          methodParameterName,
-          CLASS_ID,
-          OBIS_HASHMAP.get(channel));
+          method.getMethodName(),
+          cosemObjectAccessor.getClassId(),
+          cosemObjectAccessor.getObisCode());
     }
-  }
-
-  private MethodParameter getSetEncryptionKeyMethodParameter(
-      final ObisCode obisCode, final byte[] encryptedKey) {
-    final DataObject methodParameter = DataObject.newOctetStringData(encryptedKey);
-    final MBusClientMethod method = MBusClientMethod.SET_ENCRYPTION_KEY;
-    return new MethodParameter(
-        method.getInterfaceClass().id(), obisCode, method.getMethodId(), methodParameter);
   }
 
   private DlmsDevice getAndValidateDevice(final String mbusDeviceIdentification)
@@ -309,15 +293,5 @@ public class SetKeyOnGMeterCommandExecutor
               "Unsupported combination of protocol %s %s and key type %s in request to set key on g-meter",
               protocol.getName(), protocol.getVersion(), keyType.name()));
     }
-  }
-
-  private String describeMethod(
-      final int channel, final String method, final MethodParameter parameter) {
-    return "SetKeyOnGMeter for channel "
-        + channel
-        + ", call M-Bus Setup "
-        + method
-        + ": "
-        + JdlmsObjectToStringUtil.describeMethod(parameter);
   }
 }

@@ -2,20 +2,20 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform
+@SmartMetering @Platform @SmartMeteringInstallation @Keys
 Feature: SmartMetering Installation - Add smart meter
   As a grid operator
   I want to be able to add a smart meter
 
   Scenario Outline: Add a new device
     When receiving a smartmetering add device request
-      | DeviceIdentification  | TEST1024000000001 |
+      | DeviceIdentification  | <identification>  |
       | DeviceType            | SMART_METER_E     |
       | CommunicationMethod   | GPRS              |
       | CommunicationProvider | KPN               |
       | ICC_id                | 1234              |
-      | protocolName          | DSMR              |
-      | protocolVersion       | 4.2.2             |
+      | protocolName          | <protocol>        |
+      | protocolVersion       | <version>         |
       | Supplier              | Kaifa             |
       | LLS1_active           | false             |
       | HLS3_active           | false             |
@@ -28,21 +28,29 @@ Feature: SmartMetering Installation - Add smart meter
       | ModelCode             | Test              |
       | Timezone              | <Timezone>        |
     Then the add device response should be returned
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | <identification> |
       | Result               | OK                |
-    And the dlms device with identification "TEST1024000000001" exists with device model
+    And the dlms device with identification "<identification>" exists with device model
       | ManufacturerCode | Test |
       | ModelCode        | Test |
-    And the dlms device with identification "TEST1024000000001" exists with properties
+    And the dlms device with identification "<identification>" exists with properties
       | DlmsDeviceTimezone | <Timezone> |
       | Lls1active         | false      |
     And a request to the device can be performed after activation
     And the new keys are stored in the database in another encryption then the encryption of the keys received in the SOAP request
 
     Examples:
-      | Timezone         |
-      | Europe/Amsterdam |
-      |                  |
+      | Timezone         | identification | protocol | version |
+      | Europe/Amsterdam | TEST1024000000001    | DSMR     | 4.2.2   |
+      |                  | TEST1024000000001    | DSMR     | 4.2.2   |
+    @NightlyBuildOnly
+    Examples:
+      | Timezone         | identification | protocol | version |
+      | Europe/Amsterdam | TEST1031000000001    | SMR      | 4.3     |
+      | Europe/Amsterdam | TEST1027000000001    | SMR      | 5.0.0   |
+      | Europe/Amsterdam | TEST1028000000001    | SMR      | 5.1     |
+      | Europe/Amsterdam | TEST1029000000001    | SMR      | 5.2     |
+      | Europe/Amsterdam | TEST1030000000001    | SMR      | 5.5     |
 
   @NightlyBuildOnly @Skip
   Scenario: Add a new device with incorrectly encrypted keys
