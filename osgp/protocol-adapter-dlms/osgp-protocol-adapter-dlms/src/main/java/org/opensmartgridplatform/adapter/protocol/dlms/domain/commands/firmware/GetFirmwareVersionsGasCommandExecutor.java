@@ -4,20 +4,21 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_DEVICE_CONFIG_SIMPLE_VERSION_INFO;
+
 import java.util.List;
+import java.util.Optional;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionGasDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -34,16 +35,15 @@ import org.springframework.stereotype.Component;
 public class GetFirmwareVersionsGasCommandExecutor
     extends AbstractCommandExecutor<GetFirmwareVersionQueryDto, FirmwareVersionGasDto> {
 
-  private static final int CLASS_ID = InterfaceClass.EXTENDED_REGISTER.id();
-  private static final int ATTRIBUTE_ID = ExtendedRegisterAttribute.VALUE.attributeId();
-  public static final String OBIS_CODE_TEMPLATE = "0.%d.24.2.11.255";
-
   private final DlmsHelper dlmsHelper;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
   @Autowired
-  public GetFirmwareVersionsGasCommandExecutor(final DlmsHelper dlmsHelper) {
+  public GetFirmwareVersionsGasCommandExecutor(
+      final DlmsHelper dlmsHelper, final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(GetFirmwareVersionGasRequestDto.class);
     this.dlmsHelper = dlmsHelper;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
   @Override
@@ -78,18 +78,18 @@ public class GetFirmwareVersionsGasCommandExecutor
           "GetFirmwareVersion called without query object for Gas meter.");
     }
 
-    if (!Protocol.forDevice(device).isSmr5()) {
+    final Optional<AttributeAddress> optionalAttributeAddress =
+        this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
+            Protocol.forDevice(device),
+            MBUS_DEVICE_CONFIG_SIMPLE_VERSION_INFO,
+            queryDto.getChannel().getChannelNumber());
+
+    if (optionalAttributeAddress.isEmpty()) {
       throw new NotSupportedByProtocolException("Simple Version Info not supported by protocol");
     }
 
-    final AttributeAddress attributeAddress =
-        new AttributeAddress(
-            CLASS_ID,
-            new ObisCode(
-                String.format(OBIS_CODE_TEMPLATE, queryDto.getChannel().getChannelNumber())),
-            ATTRIBUTE_ID);
     final String versionAsHexString =
-        this.getSimpleVersionInfoAsHexString(conn, device, attributeAddress);
+        this.getSimpleVersionInfoAsHexString(conn, device, optionalAttributeAddress.get());
     return new FirmwareVersionGasDto(
         FirmwareModuleType.SIMPLE_VERSION_INFO,
         versionAsHexString,
