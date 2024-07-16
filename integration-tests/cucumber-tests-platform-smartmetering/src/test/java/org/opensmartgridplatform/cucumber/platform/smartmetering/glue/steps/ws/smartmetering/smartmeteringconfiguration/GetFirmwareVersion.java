@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getNullOrNonEmptyString;
 
 import io.cucumber.java.en.Then;
@@ -36,6 +37,7 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.opensmartgridplatform.domain.core.entities.FirmwareModule;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareModuleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 @Slf4j
 public class GetFirmwareVersion {
@@ -126,6 +128,25 @@ public class GetFirmwareVersion {
     final FirmwareVersionGas firmwareVersion = gasResponse.getFirmwareVersion();
 
     this.checkFirmwareVersionGasResult(settings, firmwareVersion);
+  }
+
+  @Then("^the firmware version gas result should not be returned$")
+  public void theFirmwareVersionGasResultShouldNotBeReturned(final Map<String, String> settings)
+      throws Throwable {
+    final GetFirmwareVersionGasAsyncRequest gasAsyncRequest =
+        new GetFirmwareVersionGasAsyncRequest();
+    gasAsyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
+    gasAsyncRequest.setDeviceIdentification(
+        settings.get(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION));
+
+    try {
+      final GetFirmwareVersionGasResponse gasResponse =
+          this.smartMeteringConfigurationClient.retrieveGetFirmwareVersionGasResponse(
+              gasAsyncRequest);
+      fail("Expected exception, but got a response");
+    } catch (final SoapFaultClientException exception) {
+      assertThat(exception.getMessage()).contains("TechnicalException");
+    }
   }
 
   public void checkFirmwareVersionResult(
