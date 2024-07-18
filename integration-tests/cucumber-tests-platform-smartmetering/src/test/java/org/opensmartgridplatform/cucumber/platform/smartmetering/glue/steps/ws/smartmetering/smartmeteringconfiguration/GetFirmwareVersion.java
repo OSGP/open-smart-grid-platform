@@ -140,9 +140,7 @@ public class GetFirmwareVersion {
         settings.get(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION));
 
     try {
-      final GetFirmwareVersionGasResponse gasResponse =
-          this.smartMeteringConfigurationClient.retrieveGetFirmwareVersionGasResponse(
-              gasAsyncRequest);
+      this.smartMeteringConfigurationClient.retrieveGetFirmwareVersionGasResponse(gasAsyncRequest);
       fail("Expected exception, but got a response");
     } catch (final SoapFaultClientException exception) {
       assertThat(exception.getMessage()).contains("TechnicalException");
