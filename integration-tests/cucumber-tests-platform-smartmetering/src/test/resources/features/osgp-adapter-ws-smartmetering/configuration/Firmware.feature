@@ -121,8 +121,8 @@ Feature: SmartMetering Configuration - Firmware
       | DeviceType           | SMART_METER_E          |
       | ManufacturerCode     | KAI                    |
       | DeviceModelCode      | MA105                  |
-      | protocolName         | <protocol>             |
-      | protocolVersion      | <version>              |
+      | Protocol             | <protocol>             |
+      | ProtocolVersion      | <version>              |
     And receiving an add or change firmware request
       | FirmwareFileIdentification  | TEST_FW_FILE_0003      |
       | FirmwareFile                | 0000000000230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4ffbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d5fa821c678e71c05c47e1c69c4bfffe1fd |
@@ -151,7 +151,6 @@ Feature: SmartMetering Configuration - Firmware
   @NightlyBuildOnly
     Examples:
       | deviceIdentification | protocol | version |
-      | TEST1024000000001    | DSMR     | 2.2     |
       | TEST1031000000001    | SMR      | 4.3     |
       | TEST1027000000001    | SMR      | 5.0.0   |
       | TEST1028000000001    | SMR      | 5.1     |

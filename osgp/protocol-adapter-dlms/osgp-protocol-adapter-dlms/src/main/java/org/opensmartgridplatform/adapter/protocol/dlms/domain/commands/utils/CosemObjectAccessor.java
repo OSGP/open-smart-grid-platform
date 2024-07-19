@@ -36,12 +36,9 @@ public class CosemObjectAccessor {
       "No GetResult received while retrieving attribute %s, " + "classId %s, obisCode %s.";
 
   private final DlmsConnectionManager connector;
-  private final ObjectConfigServiceHelper objectConfigServiceHelper;
-  private final Protocol protocol;
-  private final DlmsObjectType dlmsObjectType;
 
-  private final String obisCode;
-  private final int classId;
+  private final CosemObject cosemObject;
+  private final Protocol protocol;
 
   public CosemObjectAccessor(
       final DlmsConnectionManager connector,
@@ -61,23 +58,18 @@ public class CosemObjectAccessor {
       throws NotSupportedByProtocolException {
 
     this.connector = connector;
-    this.objectConfigServiceHelper = objectConfigServiceHelper;
-    this.dlmsObjectType = dlmsObjectType;
-    this.protocol = protocol;
 
     final Optional<CosemObject> optionalCosemObject =
-        this.objectConfigServiceHelper.getOptionalCosemObject(
-            this.protocol.getName(), this.protocol.getVersion(), this.dlmsObjectType);
+        objectConfigServiceHelper.getOptionalCosemObject(
+            protocol.getName(), protocol.getVersion(), dlmsObjectType);
     if (optionalCosemObject.isEmpty()) {
       throw new NotSupportedByProtocolException(
           String.format(
               "No address found for %s in protocol %s %s",
               dlmsObjectType.name(), protocol.getName(), protocol.getVersion()));
     }
-    CosemObject cosemObject = optionalCosemObject.get();
-    cosemObject = setChannel(cosemObject, channel);
-    this.obisCode = cosemObject.getObis();
-    this.classId = cosemObject.getClassId();
+    this.cosemObject = setChannel(optionalCosemObject.get(), channel);
+    this.protocol = protocol;
   }
 
   private static CosemObject setChannel(CosemObject cosemObject, final Short channel) {
@@ -99,7 +91,11 @@ public class CosemObjectAccessor {
 
     if (getResult == null) {
       throw new ProtocolAdapterException(
-          String.format(EXCEPTION_MSG_NO_GET_RESULT, attributeClass, this.classId, this.obisCode));
+          String.format(
+              EXCEPTION_MSG_NO_GET_RESULT,
+              attributeClass,
+              this.cosemObject.getClassId(),
+              this.cosemObject.getObis()));
     }
 
     return getResult.getResultData();
@@ -116,7 +112,10 @@ public class CosemObjectAccessor {
     } catch (final IOException e) {
       throw new ProtocolAdapterException(
           String.format(
-              EXCEPTION_MSG_WRITING_ATTRIBUTE, attributeClass, this.classId, this.obisCode),
+              EXCEPTION_MSG_WRITING_ATTRIBUTE,
+              attributeClass,
+              this.cosemObject.getClassId(),
+              this.cosemObject.getObis()),
           e);
     }
 
@@ -126,8 +125,8 @@ public class CosemObjectAccessor {
               EXCEPTION_MSG_ACCESS_RESULT_NOT_SUCCESS,
               accessResultCode.name(),
               attributeClass,
-              this.classId,
-              this.obisCode));
+              this.cosemObject.getClassId(),
+              this.cosemObject.getObis()));
     }
   }
 
@@ -143,20 +142,40 @@ public class CosemObjectAccessor {
     return this.handleMethod(methodParameter);
   }
 
-  public AttributeAddress createAttributeAddress(final AttributeClass attributeClass) {
-    final Optional<AttributeAddress> optionalAttributeAddress =
-        this.objectConfigServiceHelper.findOptionalAttributeAddress(
-            this.protocol, this.dlmsObjectType, 1, attributeClass.attributeId());
-    return optionalAttributeAddress.orElseThrow();
+  public AttributeAddress createAttributeAddress(final AttributeClass attributeClass)
+      throws NotSupportedByProtocolException {
+    this.checkAttribute(attributeClass);
+    return new AttributeAddress(
+        this.cosemObject.getClassId(), this.cosemObject.getObis(), attributeClass.attributeId());
+  }
+
+  private void checkAttribute(final AttributeClass attributeClass)
+      throws NotSupportedByProtocolException {
+    try {
+      this.cosemObject.getAttribute(attributeClass.attributeId());
+    } catch (final IllegalArgumentException e) {
+      throw new NotSupportedByProtocolException(
+          String.format(
+              "Attribute with id %s is not found for %s in protocol %s %s",
+              attributeClass.attributeId(),
+              this.cosemObject.getTag(),
+              this.protocol.getName(),
+              this.protocol.getVersion()));
+    }
   }
 
   public MethodParameter createMethodParameter(
       final MethodClass methodClass, final DataObject dataObject) {
-    return new MethodParameter(this.classId, this.obisCode, methodClass.getMethodId(), dataObject);
+    return new MethodParameter(
+        this.cosemObject.getClassId(),
+        this.cosemObject.getObis(),
+        methodClass.getMethodId(),
+        dataObject);
   }
 
   public MethodParameter createMethodParameter(final MethodClass methodClass) {
-    return new MethodParameter(this.classId, this.obisCode, methodClass.getMethodId());
+    return new MethodParameter(
+        this.cosemObject.getClassId(), this.cosemObject.getObis(), methodClass.getMethodId());
   }
 
   private MethodResultCode handleMethod(final MethodParameter methodParameter)
@@ -173,5 +192,9 @@ public class CosemObjectAccessor {
     }
 
     return result.getResultCode();
+  }
+
+  public int getVersion() {
+    return this.cosemObject.getVersion();
   }
 }

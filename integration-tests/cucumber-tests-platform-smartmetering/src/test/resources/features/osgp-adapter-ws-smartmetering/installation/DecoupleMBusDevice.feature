@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @NightlyBuildOnly @MBusDevice @DecoupleMBusDevice
+@SmartMetering @Platform @SmartMeteringInstallation @MBusDevice @DecoupleMBusDevice @NightlyBuildOnly
 Feature: SmartMetering Installation - Decouple M-Bus Device
   As a grid operator
   I want to be able to decouple an M-Bus device from a smart meter
@@ -11,8 +11,8 @@ Feature: SmartMetering Installation - Decouple M-Bus Device
     Given a dlms device
       | DeviceIdentification | <deviceIdentification> |
       | DeviceType           | SMART_METER_E          |
-      | protocolName         | <protocol>             |
-      | protocolVersion      | <version>              |
+      | Protocol             | <protocol>             |
+      | ProtocolVersion      | <version>              |
     And a dlms device
       | DeviceIdentification        | TESTG102400000001      |
       | DeviceType                  | SMART_METER_G          |

@@ -4,22 +4,22 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.MBUS_CLIENT_SETUP;
+
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsClassVersion;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.MbusClientAttribute;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelShortEquipmentIdentifierDto;
@@ -28,77 +28,49 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannels
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannelsResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class ScanMbusChannelsCommandExecutor
     extends AbstractCommandExecutor<Void, ScanMbusChannelsResponseDto> {
 
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(ScanMbusChannelsCommandExecutor.class);
-
-  private static final int CLASS_ID = InterfaceClass.MBUS_CLIENT.id();
-
-  /**
-   * IDs of the attributes of the M-Bus Client Setup that make up the Short ID.
-   *
-   * <p>The order of the IDs should match the way attributes are used in {@link
-   * #makeAttributeAddressesShortIds()} and {@link #channelShortIdsFromGetResults(List, Protocol)}.
-   */
-  private static final int[] ATTRIBUTE_IDS_SHORT_ID =
-      new int[] {
-        MbusClientAttribute.IDENTIFICATION_NUMBER.attributeId(),
-            MbusClientAttribute.MANUFACTURER_ID.attributeId(),
-        MbusClientAttribute.VERSION.attributeId(), MbusClientAttribute.DEVICE_TYPE.attributeId()
+  /** IDs of the attributes of the M-Bus Client Setup that make up the Short ID. */
+  private static final MbusClientAttribute[] ATTRIBUTE_IDS_SHORT_ID =
+      new MbusClientAttribute[] {
+        MbusClientAttribute.IDENTIFICATION_NUMBER,
+        MbusClientAttribute.MANUFACTURER_ID,
+        MbusClientAttribute.VERSION,
+        MbusClientAttribute.DEVICE_TYPE
       };
-
-  private static final int OBIS_BYTE_A_MBUS_CLIENT_SETUP = 0;
-  private static final int OBIS_BYTE_C_MBUS_CLIENT_SETUP = 24;
-  private static final int OBIS_BYTE_D_MBUS_CLIENT_SETUP = 1;
-  private static final int OBIS_BYTE_E_MBUS_CLIENT_SETUP = 0;
-  private static final int OBIS_BYTE_F_MBUS_CLIENT_SETUP = 255;
 
   private static final int NUMBER_OF_CHANNELS = 4;
   private static final int NUMBER_OF_SHORT_ID_ATTRIBUTES_PER_CHANNEL =
       ATTRIBUTE_IDS_SHORT_ID.length;
 
-  private static final AttributeAddress[] SHORT_ID_ATTRIBUTE_ADDRESSES =
-      makeAttributeAddressesShortIds();
+  private final DlmsHelper dlmsHelper;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  @Autowired private DlmsHelper dlmsHelper;
-
-  @Autowired private DlmsObjectConfigService dlmsObjectConfigService;
-
-  public ScanMbusChannelsCommandExecutor() {
+  public ScanMbusChannelsCommandExecutor(
+      final DlmsHelper dlmsHelper, final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(ScanMbusChannelsRequestDataDto.class);
+    this.dlmsHelper = dlmsHelper;
+    this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
-  private static ObisCode getObisCodeMbusClientSetup(final int channel) {
-    return new ObisCode(
-        OBIS_BYTE_A_MBUS_CLIENT_SETUP,
-        channel,
-        OBIS_BYTE_C_MBUS_CLIENT_SETUP,
-        OBIS_BYTE_D_MBUS_CLIENT_SETUP,
-        OBIS_BYTE_E_MBUS_CLIENT_SETUP,
-        OBIS_BYTE_F_MBUS_CLIENT_SETUP);
-  }
-
-  /**
-   * @see #ATTRIBUTE_IDS_SHORT_ID
-   * @see #channelShortIdsFromGetResults(List, Protocol)
-   */
-  private static AttributeAddress[] makeAttributeAddressesShortIds() {
+  private AttributeAddress[] makeAttributeAddressesShortIds(
+      final DlmsConnectionManager conn, final DlmsDevice device) throws ProtocolAdapterException {
     final AttributeAddress[] shortIdAddresses =
         new AttributeAddress[NUMBER_OF_CHANNELS * NUMBER_OF_SHORT_ID_ATTRIBUTES_PER_CHANNEL];
     int index = 0;
     for (int channel = 1; channel <= NUMBER_OF_CHANNELS; channel++) {
-      final ObisCode obisCode = getObisCodeMbusClientSetup(channel);
+
+      final CosemObjectAccessor cosemObjectAccessor =
+          this.createCosemObjectAccessor(conn, device, (short) channel);
+
       for (int i = 0; i < NUMBER_OF_SHORT_ID_ATTRIBUTES_PER_CHANNEL; i++) {
         shortIdAddresses[index++] =
-            new AttributeAddress(CLASS_ID, obisCode, ATTRIBUTE_IDS_SHORT_ID[i]);
+            cosemObjectAccessor.createAttributeAddress(ATTRIBUTE_IDS_SHORT_ID[i]);
       }
     }
     return shortIdAddresses;
@@ -108,8 +80,8 @@ public class ScanMbusChannelsCommandExecutor
   public Void fromBundleRequestInput(final ActionRequestDto bundleInput)
       throws ProtocolAdapterException {
     /*
-     * ScanMbusChannelsRequestDto does not contain any values to pass on,
-     * and the ScanMbusChannelsCommandExecutor takes a Void as input that is
+     * ScanMBusChannelsRequestDto does not contain any values to pass on,
+     * and the ScanMBusChannelsCommandExecutor takes a Void as input that is
      * ignored.
      */
     return null;
@@ -119,25 +91,26 @@ public class ScanMbusChannelsCommandExecutor
   public ScanMbusChannelsResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final Void mbusAttributesDto,
+      final Void mBusAttributesDto,
       final MessageMetadata messageMetadata)
       throws OsgpException {
 
-    LOGGER.debug("retrieving mbus info on e-meter");
-    final List<GetResult> mbusShortIdResults =
+    log.debug("retrieving M-Bus info on e-meter");
+    final List<GetResult> mBusShortIdResults =
         this.dlmsHelper.getAndCheck(
-            conn, device, "Retrieve M-Bus Short ID attributes", SHORT_ID_ATTRIBUTE_ADDRESSES);
+            conn,
+            device,
+            "Retrieve M-Bus Short ID attributes",
+            this.makeAttributeAddressesShortIds(conn, device));
+
+    final int mBusClientSetupVersion = this.getmBusClientSetupVersion(conn, device);
     final List<MbusChannelShortEquipmentIdentifierDto> channelShortIds =
-        this.channelShortIdsFromGetResults(mbusShortIdResults, device);
+        this.channelShortIdsFromGetResults(mBusShortIdResults, mBusClientSetupVersion);
     return new ScanMbusChannelsResponseDto(channelShortIds);
   }
 
-  /**
-   * @see #ATTRIBUTE_IDS_SHORT_ID
-   * @see #makeAttributeAddressesShortIds()
-   */
   private List<MbusChannelShortEquipmentIdentifierDto> channelShortIdsFromGetResults(
-      final List<GetResult> mbusShortIdResults, final DlmsDevice device)
+      final List<GetResult> mBusShortIdResults, final int mBusClientSetupVersion)
       throws ProtocolAdapterException {
 
     /*
@@ -148,13 +121,14 @@ public class ScanMbusChannelsCommandExecutor
     int index = 0;
     for (short channel = 1; channel <= NUMBER_OF_CHANNELS; channel++) {
       final String identificationNumber =
-          this.determineIdentificationNumber(mbusShortIdResults.get(index++), channel, device);
+          this.determineIdentificationNumber(
+              mBusShortIdResults.get(index++), channel, mBusClientSetupVersion);
       final String manufacturerIdentification =
-          this.determineManufacturerIdentification(mbusShortIdResults.get(index++), channel);
+          this.determineManufacturerIdentification(mBusShortIdResults.get(index++), channel);
       final Short versionIdentification =
-          this.determineVersionIdentification(mbusShortIdResults.get(index++), channel);
+          this.determineVersionIdentification(mBusShortIdResults.get(index++), channel);
       final Short deviceTypeIdentification =
-          this.determineDeviceTypeIdentification(mbusShortIdResults.get(index++), channel);
+          this.determineDeviceTypeIdentification(mBusShortIdResults.get(index++), channel);
       final MbusShortEquipmentIdentifierDto shortId =
           new MbusShortEquipmentIdentifierDto(
               identificationNumber,
@@ -167,7 +141,7 @@ public class ScanMbusChannelsCommandExecutor
   }
 
   private String determineIdentificationNumber(
-      final GetResult getResult, final short channel, final DlmsDevice device)
+      final GetResult getResult, final short channel, final int mBusClientSetupVersion)
       throws ProtocolAdapterException {
 
     final Long identification =
@@ -175,10 +149,7 @@ public class ScanMbusChannelsCommandExecutor
 
     final IdentificationNumber identificationNumber;
 
-    final DlmsObject mbusClientSetupObject =
-        this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.MBUS_CLIENT_SETUP);
-
-    if (this.identificationNumberStoredAsBcdOnDevice(mbusClientSetupObject)) {
+    if (this.identificationNumberStoredAsBcdOnDevice(mBusClientSetupVersion)) {
       identificationNumber = IdentificationNumber.fromBcdRepresentationAsLong(identification);
     } else {
       identificationNumber = IdentificationNumber.fromNumericalRepresentation(identification);
@@ -187,8 +158,8 @@ public class ScanMbusChannelsCommandExecutor
     return identificationNumber.getTextualRepresentation();
   }
 
-  private boolean identificationNumberStoredAsBcdOnDevice(final DlmsObject mbusClientSetupObject) {
-    return mbusClientSetupObject.getVersion().equals(DlmsClassVersion.VERSION_0);
+  private boolean identificationNumberStoredAsBcdOnDevice(final int mBusClientSetupVersion) {
+    return mBusClientSetupVersion == 0;
   }
 
   private String determineManufacturerIdentification(final GetResult getResult, final short channel)
@@ -212,5 +183,24 @@ public class ScanMbusChannelsCommandExecutor
       throws ProtocolAdapterException {
 
     return this.dlmsHelper.readShort(getResult, "Device type identification on channel " + channel);
+  }
+
+  private CosemObjectAccessor createCosemObjectAccessor(
+      final DlmsConnectionManager conn, final DlmsDevice device, final short channel)
+      throws NotSupportedByProtocolException {
+    return new CosemObjectAccessor(
+        conn,
+        this.objectConfigServiceHelper,
+        MBUS_CLIENT_SETUP,
+        Protocol.forDevice(device),
+        channel);
+  }
+
+  private int getmBusClientSetupVersion(final DlmsConnectionManager conn, final DlmsDevice device)
+      throws NotSupportedByProtocolException {
+    // version is equal for all channels since it comes from the same configuration
+    final CosemObjectAccessor cosemObjectAccessor =
+        this.createCosemObjectAccessor(conn, device, (short) 1);
+    return cosemObjectAccessor.getVersion();
   }
 }
