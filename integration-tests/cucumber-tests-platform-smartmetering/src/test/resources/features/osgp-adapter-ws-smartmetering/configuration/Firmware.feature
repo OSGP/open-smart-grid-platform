@@ -51,29 +51,62 @@ Feature: SmartMetering Configuration - Firmware
       | TEST1029000000001    | SMR      | 5.2     | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
       | TEST1030000000001    | SMR      | 5.5     | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
 
+  @GetFirmwareVersion @GetFirmwareGas
+  Scenario Outline: Get the firmware version from <protocol> <version> gas meter
+    Given a dlms device
+      | DeviceIdentification | <e-meter>     |
+      | DeviceType           | SMART_METER_E |
+      | Protocol             | <protocol>    |
+      | ProtocolVersion      | <version>     |
+    And a dlms device
+      | DeviceIdentification        | <g-meter>     |
+      | DeviceType                  | SMART_METER_G |
+      | GatewayDeviceIdentification | <e-meter>     |
+      | Channel                     |             3 |
+      | FirmwareModuleVersionSimple |      19180706 |
+    When the get firmware version gas request is received
+      | DeviceIdentification | <g-meter> |
+    Then the firmware version gas result should be returned
+      | DeviceIdentification | <g-meter> |
+      | SimpleVersionInfo    |  00400011 |
+    And the database should be updated with the device firmware version
+      | DeviceIdentification | <g-meter> |
+      | SimpleVersionInfo    |  00400011 |
+
+    Examples:
+      | e-meter           | g-meter           | protocol | version |
+      | TEST1027000000001 | TESTG102700000001 | SMR      | 5.0.0   |
+    @NightlyBuildOnly
+    Examples:
+      | e-meter           | g-meter           | protocol | version |
+      | TEST1028000000001 | TESTG102800000001 | SMR      | 5.1     |
+      | TEST1029000000001 | TESTG102900000001 | SMR      | 5.2     |
+      | TEST1030000000001 | TESTG103000000001 | SMR      | 5.5     |
 
   @GetFirmwareVersion @GetFirmwareGas
-  Scenario: Get the firmware version from SMR 5.1 gas meter
+  Scenario Outline: Get the firmware version from a gas meter with none supporting protocol <protocol> <version>
     Given a dlms device
-      | DeviceIdentification | TEST1027000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | Protocol             | SMR               |
-      | ProtocolVersion      |               5.1 |
-      | Port                 |              1027 |
+      | DeviceIdentification | <e-meter>     |
+      | DeviceType           | SMART_METER_E |
+      | Protocol             | <protocol>    |
+      | ProtocolVersion      | <version>     |
     And a dlms device
-      | DeviceIdentification        | TEST1027000000002 |
-      | DeviceType                  | SMART_METER_G     |
-      | GatewayDeviceIdentification | TEST1027000000001 |
-      | Channel                     |                 3 |
-      | FirmwareModuleVersionSimple |          19180706 |
+      | DeviceIdentification        | <g-meter>     |
+      | DeviceType                  | SMART_METER_G |
+      | GatewayDeviceIdentification | <e-meter>     |
+      | Channel                     |             3 |
     When the get firmware version gas request is received
-      | DeviceIdentification | TEST1027000000002 |
-    Then the firmware version gas result should be returned
-      | DeviceIdentification | TEST1027000000002 |
-      | SimpleVersionInfo    |          00400011 |
-    And the database should be updated with the device firmware version
-      | DeviceIdentification | TEST1027000000002 |
-      | SimpleVersionInfo    |          00400011 |
+      | DeviceIdentification | <g-meter> |
+    Then the firmware version gas result should not be returned
+      | DeviceIdentification | <g-meter> |
+
+    Examples:
+      | e-meter           | g-meter           | protocol | version |
+      | TEST1024000000001 | TESTG102400000001 | DSMR     | 4.2.2   |
+    @NightlyBuildOnly
+    Examples:
+      | e-meter           | g-meter           | protocol | version |
+      | TEST1024000000001 | TESTG102400000001 | DSMR     | 2.2     |
 
   @NightlyBuildOnly @UpdateFirmware
   Scenario Outline: successful update of firmware on <protocol> <version> device

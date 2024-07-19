@@ -70,29 +70,38 @@ Feature: SmartMetering Bundle - GetFirmwareVersion
       | FirmwareModuleVersionFunc | M57 4836               |
       | FirmwareIsForSmartMeters  | true                   |
 
-  Scenario: Retrieve the firmware version of a mbus device in a bundle request
+  Scenario Outline: Retrieve the firmware version of a <protocol> <version> mbus device in a bundle request
     Given a dlms device
-      | DeviceIdentification | TEST1027000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | Protocol             | SMR               |
-      | ProtocolVersion      |               5.1 |
-      | Port                 |              1027 |
+      | DeviceIdentification | <e-meter>     |
+      | DeviceType           | SMART_METER_E |
+      | Protocol             | <protocol>    |
+      | ProtocolVersion      |     <version> |
     And a dlms device
-      | DeviceIdentification        | TEST1027000000002 |
-      | DeviceType                  | SMART_METER_G     |
-      | GatewayDeviceIdentification | TEST1027000000001 |
-      | Channel                     |                 2 |
-      | MbusPrimaryAddress          |                 2 |
+      | DeviceIdentification        | <g-meter>     |
+      | DeviceType                  | SMART_METER_G |
+      | GatewayDeviceIdentification | <e-meter>     |
+      | Channel                     |             2 |
+      | MbusPrimaryAddress          |             2 |
     And a bundle request
-      | DeviceIdentification | TEST1027000000001 |
+      | DeviceIdentification | <e-meter> |
     And the bundle request contains a get firmware version gas action
-      | DeviceIdentification | TEST1027000000002 |
+      | DeviceIdentification | <g-meter> |
     When the bundle request is received
     Then the bundle response should contain a get firmware version gas response
       | SimpleVersionInfo | 19180706 |
     And the database should be updated with the device firmware version
-      | DeviceIdentification | TEST1027000000002 |
-      | SimpleVersionInfo    |          19180706 |
+      | DeviceIdentification | <g-meter> |
+      | SimpleVersionInfo    |  19180706 |
+
+    Examples:
+      | e-meter           | g-meter           | protocol | version |
+      | TEST1027000000001 | TESTG102700000001 | SMR      | 5.0.0   |
+    @NightlyBuildOnly
+    Examples:
+      | e-meter           | g-meter           | protocol | version |
+      | TEST1028000000001 | TESTG102800000001 | SMR      | 5.1     |
+      | TEST1029000000001 | TESTG102900000001 | SMR      | 5.2     |
+      | TEST1030000000001 | TESTG103000000001 | SMR      | 5.5     |
 
   Scenario: Retrieve an updated firmware version of a mbus device in a bundle request, when a device already has a firmware
     Given a dlms device
@@ -121,23 +130,30 @@ Feature: SmartMetering Bundle - GetFirmwareVersion
       | DeviceIdentification | TEST1027000000002 |
       | SimpleVersionInfo    |          19180706 |
 
-  Scenario: Retrieve the firmware version of a mbus device with a none supporting protocol in a bundle request
+  Scenario Outline: Retrieve the firmware version of a mbus device with a none supporting protocol <protocol> <version> in a bundle request
     Given a dlms device
-      | DeviceIdentification | TEST1027000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | Protocol             | DSMR              |
-      | ProtocolVersion      |             4.2.2 |
-      | Port                 |              1027 |
+      | DeviceIdentification | <e-meter>     |
+      | DeviceType           | SMART_METER_E |
+      | Protocol             | <protocol>    |
+      | ProtocolVersion      | <version>     |
     And a dlms device
-      | DeviceIdentification        | TEST1027000000002 |
-      | DeviceType                  | SMART_METER_G     |
-      | GatewayDeviceIdentification | TEST1027000000001 |
-      | Channel                     |                 2 |
-      | MbusPrimaryAddress          |                 2 |
+      | DeviceIdentification        | <g-meter>     |
+      | DeviceType                  | SMART_METER_G |
+      | GatewayDeviceIdentification | <e-meter>     |
+      | Channel                     |             2 |
+      | MbusPrimaryAddress          |             2 |
     And a bundle request
-      | DeviceIdentification | TEST1027000000001 |
+      | DeviceIdentification | <e-meter> |
     And the bundle request contains a get firmware version gas action
-      | DeviceIdentification | TEST1027000000002 |
+      | DeviceIdentification | <g-meter> |
     When the bundle request is received
     Then the bundle response should be a FaultResponse with message containing
       | Message | Simple Version Info not supported by protocol |
+
+    Examples:
+      | e-meter           | g-meter           | protocol | version |
+      | TEST1024000000001 | TESTG102400000001 | DSMR     | 4.2.2   |
+    @NightlyBuildOnly
+    Examples:
+      | e-meter           | g-meter           | protocol | version |
+      | TEST1024000000001 | TESTG102400000001 | DSMR     | 2.2     |
