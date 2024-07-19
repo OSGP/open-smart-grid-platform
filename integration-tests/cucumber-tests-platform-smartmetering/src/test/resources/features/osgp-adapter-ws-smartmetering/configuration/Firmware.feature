@@ -70,18 +70,18 @@ Feature: SmartMetering Configuration - Firmware
       | DeviceIdentification | <g-meter> |
       | SimpleVersionInfo    |  00400011 |
     And the database should be updated with the device firmware version
-      | DeviceIdentification | <g-meter>         |
-      | SimpleVersionInfo    | <expectedVersion> |
+      | DeviceIdentification | <g-meter> |
+      | SimpleVersionInfo    |  00400011 |
 
     Examples:
-      | e-meter           | g-meter           | protocol | version | expectedVersion |
-      | TEST1027000000001 | TESTG102700000001 | SMR      | 5.0.0   | 00400011        |
+      | e-meter           | g-meter           | protocol | version |
+      | TEST1027000000001 | TESTG102700000001 | SMR      | 5.0.0   |
     @NightlyBuildOnly
     Examples:
-      | e-meter           | g-meter           | protocol | version | expectedVersion |
-      | TEST1028000000001 | TESTG102800000001 | SMR      | 5.1     | 00400011        |
-      | TEST1029000000001 | TESTG102900000001 | SMR      | 5.2     | 00400011        |
-      | TEST1030000000001 | TESTG103000000001 | SMR      | 5.5     | 00400011        |
+      | e-meter           | g-meter           | protocol | version |
+      | TEST1028000000001 | TESTG102800000001 | SMR      | 5.1     |
+      | TEST1029000000001 | TESTG102900000001 | SMR      | 5.2     |
+      | TEST1030000000001 | TESTG103000000001 | SMR      | 5.5     |
 
   @GetFirmwareVersion @GetFirmwareGas
   Scenario Outline: Get the firmware version from a gas meter with none supporting protocol <protocol> <version>
@@ -101,12 +101,12 @@ Feature: SmartMetering Configuration - Firmware
       | DeviceIdentification | <g-meter> |
 
     Examples:
-      | e-meter           | g-meter           | protocol | version | expectedVersion |
-      | TEST1024000000001 | TESTG102400000001 | DSMR     | 4.2.2   | 19180706        |
+      | e-meter           | g-meter           | protocol | version |
+      | TEST1024000000001 | TESTG102400000001 | DSMR     | 4.2.2   |
     @NightlyBuildOnly
     Examples:
-      | e-meter           | g-meter           | protocol | version | expectedVersion |
-      | TEST1024000000001 | TESTG102400000001 | DSMR     | 2.2     | 19180706        |
+      | e-meter           | g-meter           | protocol | version |
+      | TEST1024000000001 | TESTG102400000001 | DSMR     | 2.2     |
 
   @NightlyBuildOnly @UpdateFirmware
   Scenario Outline: successful update of firmware on <protocol> <version> device
