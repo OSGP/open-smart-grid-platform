@@ -9,7 +9,6 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_MASTER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_OPTICAL_PORT_KEY;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +24,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
@@ -121,8 +119,6 @@ public class SetKeyOnGMeterCommandExecutor
       this.secretManagementService.activateNewKey(
           messageMetadata, mbusDeviceIdentification, keyType);
 
-    } catch (final IOException e) {
-      throw new ConnectionException(e);
     } catch (final EncrypterException e) {
       throw new ProtocolAdapterException(
           "Unexpected exception during encryption of security keys, reason = " + e.getMessage(), e);
@@ -142,15 +138,6 @@ public class SetKeyOnGMeterCommandExecutor
             MBusClientMethod.DATA_SEND,
             methodDataSend.getParameter());
     this.checkMethodResultCode(methodResultCode, MBusClientMethod.DATA_SEND, cosemObjectAccessor);
-  }
-
-  private MethodResultCode dataSend(
-      final CosemObjectAccessor cosemObjectAccessor, final byte[] encryptedKey)
-      throws ProtocolAdapterException {
-    final MethodParameter methodDataSend =
-        this.getDataSendMethodParameter(cosemObjectAccessor, encryptedKey);
-    return cosemObjectAccessor.callMethod(
-        this.getClass().getSimpleName(), MBusClientMethod.DATA_SEND, methodDataSend.getParameter());
   }
 
   private MethodParameter getDataSendMethodParameter(
@@ -173,7 +160,7 @@ public class SetKeyOnGMeterCommandExecutor
 
   private void sendEncryptionKeyUsingTransferKeyAndSetEncryptionKey(
       final CosemObjectAccessor cosemObjectAccessor, final byte[] newKey, final byte[] encryptedKey)
-      throws ProtocolAdapterException, IOException {
+      throws ProtocolAdapterException {
 
     // Transfer key to g-meter
     MethodResultCode methodResultCode =
