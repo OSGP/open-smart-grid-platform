@@ -2,14 +2,14 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly @Keys
+@SmartMetering @Platform @SmartMeteringConfiguration @Keys @NightlyBuildOnly
 Feature: SmartMetering Configuration - Replace Keys
   As a grid operator
   I want to be able to replace the keys on a device
   So I can ensure secure device communication according to requirements
 
   @ResetKeysOnDevice
-  Scenario Outline: Replace keys on a device
+  Scenario Outline: Replace keys on a <protocol> <version> device
     Given a dlms device
       | DeviceIdentification | <identification>  |
       | DeviceType           | SMART_METER_E     |
@@ -35,20 +35,20 @@ Feature: SmartMetering Configuration - Replace Keys
       | SECURITY_KEY_E | EXPIRED |
       | SECURITY_KEY_1 | ACTIVE  |
     And the keyprocessing lock should be removed from off dlms device with identification "<identification>"
-    And the dlms device with identification "<identification>" has invocationcounter with value "250"
+    And the dlms device with identification "<identification>" has invocationcounter with value "<ic>"
 
   Examples:
-      | identification    | protocol | version |
-      | TEST1024000000001 | DSMR     | 4.2.2   |
+      | identification    | protocol | version | ic  |
+      | TEST1024000000001 | DSMR     | 4.2.2   | 250 |
   @NightlyBuildOnly
     Examples:
-      | identification    | protocol | version |
-      | TEST1024000000001 | DSMR     | 2.2     |
-      | TEST1031000000001 | SMR      | 4.3     |
-      | TEST1027000000001 | SMR      | 5.0.0   |
-      | TEST1028000000001 | SMR      | 5.1     |
-      | TEST1029000000001 | SMR      | 5.2     |
-      | TEST1030000000001 | SMR      | 5.5     |
+      | identification    | protocol | version | ic  |
+      | TEST1026000000001 | DSMR     | 2.2     | 250 |
+      | TEST1031000000001 | SMR      | 4.3     | 254 |
+      | TEST1027000000001 | SMR      | 5.0.0   | 254 |
+      | TEST1028000000001 | SMR      | 5.1     | 254 |
+      | TEST1029000000001 | SMR      | 5.2     | 254 |
+      | TEST1030000000001 | SMR      | 5.5     | 254 |
 
   @ResetKeysOnDevice
   Scenario: Replace keys on a device while NEW key already present in SecretManagement

@@ -4,13 +4,18 @@
 
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.hooks;
 
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.EXPECTED_RESULT_OK;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_DEVICE_IDENTIFICATION;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_RESULT;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY;
+
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import java.util.HashMap;
 import java.util.Map;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
-import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
-import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.SecurityKey;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.database.DlmsDatabase;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.database.WsSmartMeteringNotificationDatabase;
@@ -68,7 +73,9 @@ public class ScenarioHooks {
     ScenarioContext.context = null;
   }
 
-  @After("@ResetKeysOnDevice")
+  // The platform project contains an @After hook with order 99.999 that clears the context
+  // So if you need the ScenarioContext in your @After hook the order should be 100.000 or higher.
+  @After(order = 100000, value = "@ResetKeysOnDevice")
   public void resetKeysScenario() throws Throwable {
     final Map<String, String> settings = this.initSettings();
     final Map<String, String> responseParameters = this.initResponseParameters();
@@ -85,20 +92,21 @@ public class ScenarioHooks {
 
   private Map<String, String> initSettings() {
     final Map<String, String> map = new HashMap<>();
-    map.put(
-        PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-        PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
-    map.put(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY, SecurityKey.SECURITY_KEY_A.name());
-    map.put(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY, SecurityKey.SECURITY_KEY_E.name());
+    putSettings(map, KEY_DEVICE_IDENTIFICATION, DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
+    map.put(KEY_DEVICE_AUTHENTICATIONKEY, SecurityKey.SECURITY_KEY_A.name());
+    map.put(KEY_DEVICE_ENCRYPTIONKEY, SecurityKey.SECURITY_KEY_E.name());
     return map;
   }
 
   private Map<String, String> initResponseParameters() {
     final Map<String, String> map = new HashMap<>();
-    map.put(
-        PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-        PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
-    map.put(PlatformKeys.KEY_RESULT, PlatformDefaults.EXPECTED_RESULT_OK);
+    putSettings(map, KEY_DEVICE_IDENTIFICATION, DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
+    putSettings(map, KEY_RESULT, EXPECTED_RESULT_OK);
     return map;
+  }
+
+  private static void putSettings(
+      final Map<String, String> map, final String key, final String defaultValue) {
+    map.put(key, (String) ScenarioContext.current().get(key, defaultValue));
   }
 }

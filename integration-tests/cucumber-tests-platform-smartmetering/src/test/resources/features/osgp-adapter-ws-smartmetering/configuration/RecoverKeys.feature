@@ -2,26 +2,26 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly @Keys
+@SmartMetering @Platform @SmartMeteringConfiguration @Keys @NightlyBuildOnly
 Feature: SmartMetering Configuration - Recover Keys
   As a grid operator
   I want to be able to recover the keys on a device
   So I can ensure secure device communication according to requirements
 
   @RecoverKeys
-  Scenario Outline: Recover keys after a (simulated) failed key change
+  Scenario Outline: Recover keys after a (simulated) failed key change on <protocol> <version> device
     #Try to connect using incorrect A-key and then try to recover the correct new key
     Given a dlms device
-      | DeviceIdentification | <identification> |
+      | DeviceIdentification | <identification>  |
       | DeviceType           | SMART_METER_E     |
       | Protocol             | <protocol>        |
       | ProtocolVersion      | <version>         |
     And simulate failure of change from previous key of device "<identification>"
       | Authentication_key   | SECURITY_KEY_1    |
     When the get actual meter reads request is received
-      | DeviceIdentification | <identification> |
+      | DeviceIdentification | <identification>  |
     Then after 15 seconds, the new E_METER_ENCRYPTION_KEY_UNICAST key is recovered
-      | DeviceIdentification | <identification> |
+      | DeviceIdentification | <identification>  |
       | Authentication_key   | SECURITY_KEY_A    |
     And after 30 seconds, the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "<identification>"
       | SECURITY_KEY_1 | EXPIRED |

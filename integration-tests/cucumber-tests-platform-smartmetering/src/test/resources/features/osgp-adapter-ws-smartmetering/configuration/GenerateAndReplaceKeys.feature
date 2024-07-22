@@ -2,14 +2,14 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly @Keys
+@SmartMetering @Platform @SmartMeteringConfiguration @Keys @NightlyBuildOnly
 Feature: SmartMetering Configuration - Generate And Replace Keys
   As a grid operator
   I want to be able to generate and replace the keys on a device
   So I can ensure secure device communication according to requirements
 
   @ResetKeysOnDevice
-  Scenario Outline: Generate and Replace keys on a <protocol> device with hls5Active <hls5active>
+  Scenario Outline: Generate and Replace keys on a <protocol> <version> device with hls5Active <hls5active>
     Given a dlms device
       | DeviceIdentification | <identification>   |
       | DeviceType           | SMART_METER_E      |

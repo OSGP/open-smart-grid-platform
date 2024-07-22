@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly
+@SmartMetering @Platform @SmartMeteringConfiguration @MBusDevice @Keys @NightlyBuildOnly
 Feature: SmartMetering Configuration - Exchange User Key on M-Bus Device
   As a grid operator
   I want to be able to exchange the user key on an M-Bus device coupled on a device
