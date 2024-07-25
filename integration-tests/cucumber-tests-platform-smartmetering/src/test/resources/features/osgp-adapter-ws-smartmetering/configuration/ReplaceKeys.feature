@@ -2,38 +2,53 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly
+@SmartMetering @Platform @SmartMeteringConfiguration @Keys @NightlyBuildOnly
 Feature: SmartMetering Configuration - Replace Keys
   As a grid operator
   I want to be able to replace the keys on a device
   So I can ensure secure device communication according to requirements
 
   @ResetKeysOnDevice
-  Scenario: Replace keys on a device
+  Scenario Outline: Replace keys on a <protocol> <version> device
     Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | <identification>  |
       | DeviceType           | SMART_METER_E     |
+      | Protocol             | <protocol>        |
+      | ProtocolVersion      | <version>         |
       | Master_key           | SECURITY_KEY_M    |
       | Encryption_key       | SECURITY_KEY_E    |
       | Authentication_key   | SECURITY_KEY_A    |
       | InvocationCounter    | 7500              |
     When the replace keys request is received
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | <identification> |
       | Encryption_key       | SECURITY_KEY_1    |
       | Authentication_key   | SECURITY_KEY_2    |
     Then the replace keys response should be returned
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | <identification> |
       | Result               | OK                |
     And the newly received keys are stored in the secret management database encrypted_secret table
     And the new keys are stored in the database in another encryption then the encryption of the keys received in the SOAP request
-    And the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
+    And the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "<identification>"
       | SECURITY_KEY_A | EXPIRED |
       | SECURITY_KEY_2 | ACTIVE  |
-    And the encrypted_secret table in the secret management database should contain "Encryption_key" keys for device "TEST1024000000001"
+    And the encrypted_secret table in the secret management database should contain "Encryption_key" keys for device "<identification>"
       | SECURITY_KEY_E | EXPIRED |
       | SECURITY_KEY_1 | ACTIVE  |
-    And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"
-    And the dlms device with identification "TEST1024000000001" has invocationcounter with value "250"
+    And the keyprocessing lock should be removed from off dlms device with identification "<identification>"
+    And the dlms device with identification "<identification>" has invocationcounter with value "<ic>"
+
+  Examples:
+      | identification    | protocol | version | ic  |
+      | TEST1024000000001 | DSMR     | 4.2.2   | 250 |
+  @NightlyBuildOnly
+    Examples:
+      | identification    | protocol | version | ic  |
+      | TEST1026000000001 | DSMR     | 2.2     | 250 |
+      | TEST1031000000001 | SMR      | 4.3     | 254 |
+      | TEST1027000000001 | SMR      | 5.0.0   | 254 |
+      | TEST1028000000001 | SMR      | 5.1     | 254 |
+      | TEST1029000000001 | SMR      | 5.2     | 254 |
+      | TEST1030000000001 | SMR      | 5.5     | 254 |
 
   @ResetKeysOnDevice
   Scenario: Replace keys on a device while NEW key already present in SecretManagement

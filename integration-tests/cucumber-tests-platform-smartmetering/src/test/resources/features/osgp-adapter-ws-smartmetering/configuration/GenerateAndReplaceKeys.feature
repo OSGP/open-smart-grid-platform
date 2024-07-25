@@ -2,40 +2,45 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly
+@SmartMetering @Platform @SmartMeteringConfiguration @Keys @NightlyBuildOnly
 Feature: SmartMetering Configuration - Generate And Replace Keys
   As a grid operator
   I want to be able to generate and replace the keys on a device
   So I can ensure secure device communication according to requirements
 
   @ResetKeysOnDevice
-  Scenario Outline: Generate and Replace keys on a <protocol> device with hls5Active <hls5active>
+  Scenario Outline: Generate and Replace keys on a <protocol> <version> device with hls5Active <hls5active>
     Given a dlms device
-      | DeviceIdentification | TEST1024000000001  |
+      | DeviceIdentification | <identification>   |
       | DeviceType           | SMART_METER_E      |
-      | InvocationCounter    | 7500               |
       | Protocol             | <protocol>         |
       | ProtocolVersion      | <version>          |
+      | InvocationCounter    | 7500               |
       | Hls5active           | <hls5active>       |
       | Lls1active           | <lls1active>       |
       | Port                 | <port>             |
     When the generate and replace keys request is received
-      | DeviceIdentification | TEST1024000000001  |
+      | DeviceIdentification | <identification>  |
     Then the generate and replace keys response should be returned
-      | DeviceIdentification | TEST1024000000001  |
+      | DeviceIdentification | <identification>  |
       | Result               | OK                 |
     And the newly generated keys are stored in the secret management database encrypted_secret table
-    And the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "TEST1024000000001"
+    And the encrypted_secret table in the secret management database should contain "Authentication_key" keys for device "<identification>"
       | SECURITY_KEY_A | EXPIRED |
-    And the encrypted_secret table in the secret management database should contain "Encryption_key" keys for device "TEST1024000000001"
+    And the encrypted_secret table in the secret management database should contain "Encryption_key" keys for device "<identification>"
       | SECURITY_KEY_E | EXPIRED |
-    And the keyprocessing lock should be removed from off dlms device with identification "TEST1024000000001"
-    And the dlms device with identification "TEST1024000000001" has invocationcounter with value "<newInvocationCounter>"
+    And the keyprocessing lock should be removed from off dlms device with identification "<identification>"
+    And the dlms device with identification "<identification>" has invocationcounter with value "<newInvocationCounter>"
 
     Examples:
-      | protocol | version | lls1active | hls5active | port | newInvocationCounter |
-      | DSMR     | 2.2     | true       | false      | 1026 | 250                  |
-      | SMR      | 5.1     | false      | true       |      | 254                  |
+      | identification    | protocol | version | lls1active | hls5active | port | newInvocationCounter |
+      | TEST1024000000001 | DSMR     | 2.2     | true       | false      | 1026 | 250                  |
+      | TEST1024000000001 | DSMR     | 4.2.2   | false      | true       |      | 250                  |
+      | TEST1031000000001 | SMR      | 4.3     | false      | true       |      | 254                  |
+      | TEST1027000000001 | SMR      | 5.0.0   | false      | true       |      | 254                  |
+      | TEST1028000000001 | SMR      | 5.1     | false      | true       |      | 254                  |
+      | TEST1029000000001 | SMR      | 5.2     | false      | true       |      | 254                  |
+      | TEST1030000000001 | SMR      | 5.5     | false      | true       |      | 254                  |
 
   @ResetKeysOnDevice
   Scenario: Generate and Replace keys on a device while NEW key already present in SecretManagement
