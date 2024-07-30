@@ -15,28 +15,40 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.opensmartgridplatform.throttling.PermitsByThrottlingConfig;
 import org.opensmartgridplatform.throttling.ThrottlingServiceApplication;
 import org.opensmartgridplatform.throttling.entities.ThrottlingConfig;
+import org.opensmartgridplatform.throttling.services.Bucket4JRateLimitService;
+import org.opensmartgridplatform.throttling.services.RedisPermitService;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.PostgreSQLContainer;
+import redis.clients.jedis.UnifiedJedis;
 
 @Slf4j
 @SpringBootTest(
     classes = ThrottlingServiceApplication.class,
     webEnvironment = WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(initializers = ThrottlingConfigRepositoryIT.Initializer.class)
+// mock these unconfigured REDIS dependent beans
+@MockBean(PermitsByThrottlingConfig.class)
+@MockBean(Bucket4JRateLimitService.class)
+@MockBean(RedisPermitService.class)
+@MockBean(RedissonClient.class)
+@MockBean(UnifiedJedis.class)
 class ThrottlingConfigRepositoryIT {
 
   private static final int MAX_WAIT_FOR_HIGH_PRIO = 1000;
 
   @ClassRule
-  private static final PostgreSQLContainer<?> postgreSQLContainer =
+  public static final PostgreSQLContainer<?> postgreSQLContainer =
       new PostgreSQLContainer<>("postgres:12.4")
           .withDatabaseName("throttling_integration_test_db")
           .withUsername("osp_admin")
@@ -58,6 +70,8 @@ class ThrottlingConfigRepositoryIT {
               "spring.jpa.show-sql=false",
               "max.wait.for.high.prio.in.ms=" + MAX_WAIT_FOR_HIGH_PRIO)
           .applyTo(configurableApplicationContext.getEnvironment());
+
+      System.out.println("DB @ " + postgreSQLContainer.getJdbcUrl());
     }
   }
 
@@ -76,12 +90,15 @@ class ThrottlingConfigRepositoryIT {
   @ParameterizedTest
   @ValueSource(strings = {NULL, "name", ""})
   void testValidationName(final String name) {
-    final ThrottlingConfig throttlingConfig = this.newThrottlingConfig(name);
+
+    final ThrottlingConfig throttlingConfig;
 
     if (NULL.equals(name)) {
+      throttlingConfig = this.newThrottlingConfig(null);
       assertThatThrownBy(() -> this.throttlingConfigRepository.save(throttlingConfig))
           .isInstanceOf(ConstraintViolationException.class);
     } else {
+      throttlingConfig = this.newThrottlingConfig(name);
       final ThrottlingConfig saved = this.throttlingConfigRepository.save(throttlingConfig);
       assertThat(saved.getId()).isNotNull();
     }

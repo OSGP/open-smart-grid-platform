@@ -21,5 +21,5 @@ singleServerConfig:
   dnsMonitoringInterval: 5000
 threads: 16
 nettyThreads: 32
-codec: !<org.redisson.codec.Kryo5Codec> {}
+codec: !<org.redisson.codec.Kryo5Codec> { }
 transportMode: "NIO"

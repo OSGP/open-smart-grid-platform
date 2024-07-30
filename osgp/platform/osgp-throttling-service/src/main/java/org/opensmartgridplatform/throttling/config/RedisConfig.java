@@ -27,7 +27,6 @@ import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ResourceUtils;
@@ -75,7 +74,6 @@ public class RedisConfig {
   private String redissonTmpTruststoreLocation;
 
   @Bean
-  @ConditionalOnProperty(value = "redis.enabled", havingValue = "true")
   public RedissonClient redissonClient() throws IOException, GeneralSecurityException {
     this.installJCAProvider();
 
@@ -91,7 +89,6 @@ public class RedisConfig {
   }
 
   @Bean
-  @ConditionalOnProperty(value = "redis.enabled", havingValue = "true")
   public UnifiedJedis jedisConnection() {
 
     final HostAndPort hostAndPort = new HostAndPort(this.host, this.port);
@@ -135,7 +132,7 @@ public class RedisConfig {
   }
 
   @Bean
-  public ProxyManager<byte[]> jedisBasedProxyManager(UnifiedJedis jedisConnection) {
+  public ProxyManager<byte[]> jedisBasedProxyManager(final UnifiedJedis jedisConnection) {
     return JedisBasedProxyManager.builderFor(jedisConnection)
         .withClientSideConfig(
             ClientSideConfig.getDefault()

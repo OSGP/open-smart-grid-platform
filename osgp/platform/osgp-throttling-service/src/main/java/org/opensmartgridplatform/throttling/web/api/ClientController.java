@@ -5,7 +5,7 @@
 package org.opensmartgridplatform.throttling.web.api;
 
 import org.opensmartgridplatform.throttling.repositories.ClientRepository;
-import org.opensmartgridplatform.throttling.repositories.PermitRepository;
+import org.opensmartgridplatform.throttling.services.PermitService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +23,10 @@ public class ClientController {
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientController.class);
 
   private final ClientRepository clientRepository;
-  private final PermitRepository permitRepository;
+  private final PermitService permitRepository;
 
   public ClientController(
-      final ClientRepository clientRegistrationRepository,
-      final PermitRepository permitRepository) {
+      final ClientRepository clientRegistrationRepository, final PermitService permitRepository) {
     this.clientRepository = clientRegistrationRepository;
     this.permitRepository = permitRepository;
   }
