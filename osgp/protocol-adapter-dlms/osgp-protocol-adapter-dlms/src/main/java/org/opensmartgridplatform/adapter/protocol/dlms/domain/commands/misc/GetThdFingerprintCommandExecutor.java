@@ -4,6 +4,16 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.THD_CURRENT_OVER_LIMIT_COUNTER_L1;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.THD_CURRENT_OVER_LIMIT_COUNTER_L2;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.THD_CURRENT_OVER_LIMIT_COUNTER_L3;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L1;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L2;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L3;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.THD_INSTANTANEOUS_CURRENT_L1;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.THD_INSTANTANEOUS_CURRENT_L2;
+import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.THD_INSTANTANEOUS_CURRENT_L3;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.openmuc.jdlms.AccessResultCode;
@@ -75,81 +85,55 @@ public class GetThdFingerprintCommandExecutor
 
     final Protocol protocol = Protocol.forDevice(device);
 
-    final AttributeAddress addressCurrentL1 =
-        this.getAttributeAddress(DlmsObjectType.THD_INSTANTANEOUS_CURRENT_L1, protocol);
-    final AttributeAddress addressCurrentL2 =
-        this.getAttributeAddress(DlmsObjectType.THD_INSTANTANEOUS_CURRENT_L2, protocol);
-    final AttributeAddress addressCurrentL3 =
-        this.getAttributeAddress(DlmsObjectType.THD_INSTANTANEOUS_CURRENT_L3, protocol);
-    final AttributeAddress addressCurrentFingerprintL1 =
-        this.getAttributeAddress(DlmsObjectType.THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L1, protocol);
-    final AttributeAddress addressCurrentFingerprintL2 =
-        this.getAttributeAddress(DlmsObjectType.THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L2, protocol);
-    final AttributeAddress addressCurrentFingerprintL3 =
-        this.getAttributeAddress(DlmsObjectType.THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L3, protocol);
-    final AttributeAddress addressOverLimitCounterL1 =
-        this.getAttributeAddress(DlmsObjectType.THD_CURRENT_OVER_LIMIT_COUNTER_L1, protocol);
-    final AttributeAddress addressOverLimitCounterL2 =
-        this.getAttributeAddress(DlmsObjectType.THD_CURRENT_OVER_LIMIT_COUNTER_L2, protocol);
-    final AttributeAddress addressOverLimitCounterL3 =
-        this.getAttributeAddress(DlmsObjectType.THD_CURRENT_OVER_LIMIT_COUNTER_L3, protocol);
+    final AttributeAddress[] attributeAddresses;
+    if (device.isPolyphase()) {
+      attributeAddresses =
+          new AttributeAddress[] {
+            this.getAttributeAddress(THD_INSTANTANEOUS_CURRENT_L1, protocol),
+            this.getAttributeAddress(THD_INSTANTANEOUS_CURRENT_L2, protocol),
+            this.getAttributeAddress(THD_INSTANTANEOUS_CURRENT_L3, protocol),
+            this.getAttributeAddress(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L1, protocol),
+            this.getAttributeAddress(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L2, protocol),
+            this.getAttributeAddress(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L3, protocol),
+            this.getAttributeAddress(THD_CURRENT_OVER_LIMIT_COUNTER_L1, protocol),
+            this.getAttributeAddress(THD_CURRENT_OVER_LIMIT_COUNTER_L2, protocol),
+            this.getAttributeAddress(THD_CURRENT_OVER_LIMIT_COUNTER_L3, protocol)
+          };
+    } else {
+      attributeAddresses =
+          new AttributeAddress[] {
+            this.getAttributeAddress(THD_INSTANTANEOUS_CURRENT_L1, protocol),
+            this.getAttributeAddress(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L1, protocol),
+            this.getAttributeAddress(THD_CURRENT_OVER_LIMIT_COUNTER_L1, protocol)
+          };
+    }
 
     conn.getDlmsMessageListener()
         .setDescription(
             "GetAdministrativeStatus, retrieve attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(
-                    addressCurrentL1,
-                    addressCurrentL2,
-                    addressCurrentL3,
-                    addressCurrentFingerprintL1,
-                    addressCurrentFingerprintL2,
-                    addressCurrentFingerprintL3,
-                    addressOverLimitCounterL1,
-                    addressOverLimitCounterL2,
-                    addressOverLimitCounterL3));
+                + JdlmsObjectToStringUtil.describeAttributes(attributeAddresses));
 
     LOGGER.debug("Retrieving THD fingerprint");
 
-    final List<GetResult> results =
-        this.dlmsHelper.getWithList(
-            conn,
-            device,
-            addressCurrentL1,
-            addressCurrentL2,
-            addressCurrentL3,
-            addressCurrentFingerprintL1,
-            addressCurrentFingerprintL2,
-            addressCurrentFingerprintL3,
-            addressOverLimitCounterL1,
-            addressOverLimitCounterL2,
-            addressOverLimitCounterL3);
+    final List<GetResult> results = this.dlmsHelper.getWithList(conn, device, attributeAddresses);
 
-    final int currentL1 = this.dlmsHelper.readInteger(results.get(0), "Read current THD L1");
-    final int currentL2 = this.dlmsHelper.readInteger(results.get(1), "Read current THD L2");
-    final int currentL3 = this.dlmsHelper.readInteger(results.get(2), "Read current THD L3");
-    final List<Integer> fingerprintL1 =
-        this.getFingerprintValues(results.get(3), "Read fingerprint value L1");
-    final List<Integer> fingerprintL2 =
-        this.getFingerprintValues(results.get(4), "Read fingerprint value L2");
-    final List<Integer> fingerprintL3 =
-        this.getFingerprintValues(results.get(5), "Read fingerprint value L3");
-    final int overLimitCounterL1 =
-        this.dlmsHelper.readInteger(results.get(6), "Read THD over limit counter L1");
-    final int overLimitCounterL2 =
-        this.dlmsHelper.readInteger(results.get(7), "Read THD over limit counter L2");
-    final int overLimitCounterL3 =
-        this.dlmsHelper.readInteger(results.get(8), "Read THD over limit counter L3");
-
-    return new GetThdFingerprintResponseDto(
-        currentL1,
-        currentL2,
-        currentL3,
-        fingerprintL1,
-        fingerprintL2,
-        fingerprintL3,
-        overLimitCounterL1,
-        overLimitCounterL2,
-        overLimitCounterL3);
+    if (device.isPolyphase()) {
+      return new GetThdFingerprintResponseDto(
+          this.dlmsHelper.readInteger(results.get(0), "Read current THD L1"),
+          this.dlmsHelper.readInteger(results.get(1), "Read current THD L2"),
+          this.dlmsHelper.readInteger(results.get(2), "Read current THD L3"),
+          this.getFingerprintValues(results.get(3), "Read fingerprint value L1"),
+          this.getFingerprintValues(results.get(4), "Read fingerprint value L2"),
+          this.getFingerprintValues(results.get(5), "Read fingerprint value L3"),
+          this.dlmsHelper.readInteger(results.get(6), "Read THD over limit counter L1"),
+          this.dlmsHelper.readInteger(results.get(7), "Read THD over limit counter L2"),
+          this.dlmsHelper.readInteger(results.get(8), "Read THD over limit counter L3"));
+    } else {
+      return new GetThdFingerprintResponseDto(
+          this.dlmsHelper.readInteger(results.get(0), "Read current THD L1"),
+          this.getFingerprintValues(results.get(1), "Read fingerprint value L1"),
+          this.dlmsHelper.readInteger(results.get(2), "Read THD over limit counter L1"));
+    }
   }
 
   private List<Integer> getFingerprintValues(final GetResult getResult, final String description)

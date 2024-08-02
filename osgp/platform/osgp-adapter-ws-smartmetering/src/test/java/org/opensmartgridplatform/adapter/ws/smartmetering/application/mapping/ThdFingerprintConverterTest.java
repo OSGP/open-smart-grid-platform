@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetThdFingerprintResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ThdFingerprint;
 
@@ -75,8 +77,9 @@ class ThdFingerprintConverterTest {
     assertThat(response.getThdFingerprint()).isNull();
   }
 
-  @Test
-  void convertSingle() {
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void convertSingle(final boolean polyphase) {
 
     final GetThdFingerprintResponse source = this.createResponse();
 
