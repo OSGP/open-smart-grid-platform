@@ -4,6 +4,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
+import static org.openmuc.jdlms.datatypes.DataObject.Type.ARRAY;
+import static org.openmuc.jdlms.datatypes.DataObject.Type.LONG_UNSIGNED;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.THD_CURRENT_OVER_LIMIT_COUNTER_L1;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.THD_CURRENT_OVER_LIMIT_COUNTER_L2;
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.THD_CURRENT_OVER_LIMIT_COUNTER_L3;
@@ -110,37 +112,56 @@ public class GetThdFingerprintCommandExecutor
 
     final List<GetResult> results = this.dlmsHelper.getWithList(conn, device, attributeAddresses);
 
-    final Map<DlmsObjectType, Object> resultMap = new EnumMap<>(DlmsObjectType.class);
+    final Map<DlmsObjectType, DataObject> resultMap = new EnumMap<>(DlmsObjectType.class);
     for (int i = 0; i < cosemObjects.size(); i++) {
       resultMap.put(
-          DlmsObjectType.valueOf(cosemObjects.get(i).getTag()), this.readResult(results, i));
+          DlmsObjectType.valueOf(cosemObjects.get(i).getTag()), this.getResultData(results, i));
     }
     return new GetThdFingerprintResponseDto(
-        resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_L1, null),
-        resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_L2, null),
-        resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_L3, null),
-        resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L1, null),
-        resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L2, null),
-        resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L3, null),
-        resultMap.getOrDefault(THD_CURRENT_OVER_LIMIT_COUNTER_L1, null),
-        resultMap.getOrDefault(THD_CURRENT_OVER_LIMIT_COUNTER_L2, null),
-        resultMap.getOrDefault(THD_CURRENT_OVER_LIMIT_COUNTER_L3, null));
+        this.readInt(resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_L1, null)),
+        this.readInt(resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_L2, null)),
+        this.readInt(resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_L3, null)),
+        this.readList(resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L1, null)),
+        this.readList(resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L2, null)),
+        this.readList(resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L3, null)),
+        this.readInt(resultMap.getOrDefault(THD_CURRENT_OVER_LIMIT_COUNTER_L1, null)),
+        this.readInt(resultMap.getOrDefault(THD_CURRENT_OVER_LIMIT_COUNTER_L2, null)),
+        this.readInt(resultMap.getOrDefault(THD_CURRENT_OVER_LIMIT_COUNTER_L3, null)));
   }
 
-  private Object readResult(final List<GetResult> results, final int idx)
+  private DataObject getResultData(final List<GetResult> results, final int i)
       throws ProtocolAdapterException {
-    final Type type = results.get(idx).getResultData().getType();
-    final String description = results.get(idx).getResultData().toString();
-    switch (type) {
-      case LONG_UNSIGNED -> {
-        return this.dlmsHelper.readInteger(results.get(idx), description);
-      }
-      case ARRAY -> {
-        return this.getFingerprintValues(results.get(idx), description);
-      }
-      default ->
-          throw new ProtocolAdapterException("Unexpected data type from Thd Fingerprint: " + type);
+    final AccessResultCode resultCode = results.get(i).getResultCode();
+    if (resultCode != AccessResultCode.SUCCESS) {
+      throw new ProtocolAdapterException(
+          String.format(
+              "No success retrieving %s: AccessResultCode = %s",
+              this.dlmsObjectTypes.get(i).name(), resultCode.toString()));
     }
+    return results.get(i).getResultData();
+  }
+
+  private Integer readInt(final DataObject dataObject) throws ProtocolAdapterException {
+    if (dataObject == null) {
+      return null;
+    }
+    final Type type = dataObject.getType();
+    final String description = dataObject.toString();
+    if (type != LONG_UNSIGNED) {
+      throw new ProtocolAdapterException("Unexpected data type from Thd Fingerprint: " + type);
+    }
+    return this.dlmsHelper.readInteger(dataObject, description);
+  }
+
+  private List<Integer> readList(final DataObject dataObject) throws ProtocolAdapterException {
+    if (dataObject == null) {
+      return null;
+    }
+    final Type type = dataObject.getType();
+    if (type != ARRAY) {
+      throw new ProtocolAdapterException("Unexpected data type from Thd Fingerprint: " + type);
+    }
+    return this.getFingerprintValues(dataObject);
   }
 
   private List<CosemObject> getCosemObjectsForPhase(final DlmsDevice device)
@@ -167,24 +188,17 @@ public class GetThdFingerprintCommandExecutor
     return cosemObjectsForPhase;
   }
 
-  private List<Integer> getFingerprintValues(final GetResult getResult, final String description)
+  private List<Integer> getFingerprintValues(final DataObject dataObject)
       throws ProtocolAdapterException {
-    final AccessResultCode resultCode = getResult.getResultCode();
-    if (resultCode != AccessResultCode.SUCCESS) {
-      throw new ProtocolAdapterException(
-          "No success retrieving " + description + ": AccessResultCode = " + resultCode);
-    }
-
-    final DataObject resultData = getResult.getResultData();
-    if (!resultData.getType().equals(Type.ARRAY)) {
+    if (!dataObject.getType().equals(ARRAY)) {
       throw new ProtocolAdapterException("Expected array for fingerprint values");
     }
-    final List<DataObject> dataObjects = resultData.getValue();
+    final List<DataObject> dataObjects = dataObject.getValue();
 
     final List<Integer> fingerprint = new ArrayList<>();
 
-    for (final DataObject dataObject : dataObjects) {
-      fingerprint.add(this.dlmsHelper.readInteger(dataObject, "Read THD fingerprint value"));
+    for (final DataObject dataObject1 : dataObjects) {
+      fingerprint.add(this.dlmsHelper.readInteger(dataObject1, "Read THD fingerprint value"));
     }
 
     return fingerprint;

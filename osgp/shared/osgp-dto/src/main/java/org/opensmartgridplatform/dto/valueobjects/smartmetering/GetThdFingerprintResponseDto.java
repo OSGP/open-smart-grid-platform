@@ -30,27 +30,24 @@ public class GetThdFingerprintResponseDto extends ActionResponseDto {
   private final Integer thdCurrentOverLimitCounterL3;
 
   public GetThdFingerprintResponseDto(
-      final Object thdInstantaneousCurrentL1,
-      final Object thdInstantaneousCurrentL2,
-      final Object thdInstantaneousCurrentL3,
-      final Object thdInstantaneousCurrentFingerprintL1,
-      final Object thdInstantaneousCurrentFingerprintL2,
-      final Object thdInstantaneousCurrentFingerprintL3,
-      final Object thdCurrentOverLimitCounterL1,
-      final Object thdCurrentOverLimitCounterL2,
-      final Object thdCurrentOverLimitCounterL3) {
-    this.thdInstantaneousCurrentL1 = (Integer) thdInstantaneousCurrentL1;
-    this.thdInstantaneousCurrentL2 = (Integer) thdInstantaneousCurrentL2;
-    this.thdInstantaneousCurrentL3 = (Integer) thdInstantaneousCurrentL3;
-    this.thdInstantaneousCurrentFingerprintL1 =
-        (List<Integer>) thdInstantaneousCurrentFingerprintL1;
-    this.thdInstantaneousCurrentFingerprintL2 =
-        (List<Integer>) thdInstantaneousCurrentFingerprintL2;
-    this.thdInstantaneousCurrentFingerprintL3 =
-        (List<Integer>) thdInstantaneousCurrentFingerprintL3;
-    this.thdCurrentOverLimitCounterL1 = (Integer) thdCurrentOverLimitCounterL1;
-    this.thdCurrentOverLimitCounterL2 = (Integer) thdCurrentOverLimitCounterL2;
-    this.thdCurrentOverLimitCounterL3 = (Integer) thdCurrentOverLimitCounterL3;
+      final Integer thdInstantaneousCurrentL1,
+      final Integer thdInstantaneousCurrentL2,
+      final Integer thdInstantaneousCurrentL3,
+      final List<Integer> thdInstantaneousCurrentFingerprintL1,
+      final List<Integer> thdInstantaneousCurrentFingerprintL2,
+      final List<Integer> thdInstantaneousCurrentFingerprintL3,
+      final Integer thdCurrentOverLimitCounterL1,
+      final Integer thdCurrentOverLimitCounterL2,
+      final Integer thdCurrentOverLimitCounterL3) {
+    this.thdInstantaneousCurrentL1 = thdInstantaneousCurrentL1;
+    this.thdInstantaneousCurrentL2 = thdInstantaneousCurrentL2;
+    this.thdInstantaneousCurrentL3 = thdInstantaneousCurrentL3;
+    this.thdInstantaneousCurrentFingerprintL1 = thdInstantaneousCurrentFingerprintL1;
+    this.thdInstantaneousCurrentFingerprintL2 = thdInstantaneousCurrentFingerprintL2;
+    this.thdInstantaneousCurrentFingerprintL3 = thdInstantaneousCurrentFingerprintL3;
+    this.thdCurrentOverLimitCounterL1 = thdCurrentOverLimitCounterL1;
+    this.thdCurrentOverLimitCounterL2 = thdCurrentOverLimitCounterL2;
+    this.thdCurrentOverLimitCounterL3 = thdCurrentOverLimitCounterL3;
   }
 
   public Integer getThdInstantaneousCurrentL1() {
