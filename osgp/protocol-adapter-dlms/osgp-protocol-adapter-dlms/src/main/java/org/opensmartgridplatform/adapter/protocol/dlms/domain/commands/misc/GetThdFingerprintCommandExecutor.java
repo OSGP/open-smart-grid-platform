@@ -15,7 +15,10 @@ import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.THD_INS
 import static org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.THD_INSTANTANEOUS_CURRENT_L3;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -24,38 +27,50 @@ import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
+import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
+import org.opensmartgridplatform.dlms.objectconfig.MeterType;
+import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetThdFingerprintRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetThdFingerprintResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component()
 public class GetThdFingerprintCommandExecutor
     extends AbstractCommandExecutor<Void, GetThdFingerprintResponseDto> {
 
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(GetThdFingerprintCommandExecutor.class);
+  private static final int VALUE_ATTRIBUTE_ID = 2;
 
-  private final ObjectConfigServiceHelper objectConfigServiceHelper;
+  private final List<DlmsObjectType> dlmsObjectTypes =
+      List.of(
+          THD_INSTANTANEOUS_CURRENT_L1,
+          THD_INSTANTANEOUS_CURRENT_L2,
+          THD_INSTANTANEOUS_CURRENT_L3,
+          THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L1,
+          THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L2,
+          THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L3,
+          THD_CURRENT_OVER_LIMIT_COUNTER_L1,
+          THD_CURRENT_OVER_LIMIT_COUNTER_L2,
+          THD_CURRENT_OVER_LIMIT_COUNTER_L3);
+
+  private final ObjectConfigService objectConfigService;
 
   private final DlmsHelper dlmsHelper;
 
   public GetThdFingerprintCommandExecutor(
-      final ObjectConfigServiceHelper objectConfigServiceHelper, final DlmsHelper dlmsHelper) {
+      final ObjectConfigService objectConfigService, final DlmsHelper dlmsHelper) {
     super(GetThdFingerprintRequestDataDto.class);
 
-    this.objectConfigServiceHelper = objectConfigServiceHelper;
+    this.objectConfigService = objectConfigService;
     this.dlmsHelper = dlmsHelper;
   }
 
@@ -83,57 +98,73 @@ public class GetThdFingerprintCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    final Protocol protocol = Protocol.forDevice(device);
+    final List<CosemObject> cosemObjects = this.getCosemObjectsForPhase(device);
 
-    final AttributeAddress[] attributeAddresses;
-    if (device.isPolyphase()) {
-      attributeAddresses =
-          new AttributeAddress[] {
-            this.getAttributeAddress(THD_INSTANTANEOUS_CURRENT_L1, protocol),
-            this.getAttributeAddress(THD_INSTANTANEOUS_CURRENT_L2, protocol),
-            this.getAttributeAddress(THD_INSTANTANEOUS_CURRENT_L3, protocol),
-            this.getAttributeAddress(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L1, protocol),
-            this.getAttributeAddress(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L2, protocol),
-            this.getAttributeAddress(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L3, protocol),
-            this.getAttributeAddress(THD_CURRENT_OVER_LIMIT_COUNTER_L1, protocol),
-            this.getAttributeAddress(THD_CURRENT_OVER_LIMIT_COUNTER_L2, protocol),
-            this.getAttributeAddress(THD_CURRENT_OVER_LIMIT_COUNTER_L3, protocol)
-          };
-    } else {
-      attributeAddresses =
-          new AttributeAddress[] {
-            this.getAttributeAddress(THD_INSTANTANEOUS_CURRENT_L1, protocol),
-            this.getAttributeAddress(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L1, protocol),
-            this.getAttributeAddress(THD_CURRENT_OVER_LIMIT_COUNTER_L1, protocol)
-          };
-    }
+    final AttributeAddress[] attributeAddresses =
+        cosemObjects.stream().map(this::getAttributeAddress).toArray(AttributeAddress[]::new);
 
     conn.getDlmsMessageListener()
         .setDescription(
-            "GetAdministrativeStatus, retrieve attribute: "
+            "GetThdFingerprint, retrieve attributes: "
                 + JdlmsObjectToStringUtil.describeAttributes(attributeAddresses));
-
-    LOGGER.debug("Retrieving THD fingerprint");
 
     final List<GetResult> results = this.dlmsHelper.getWithList(conn, device, attributeAddresses);
 
-    if (device.isPolyphase()) {
-      return new GetThdFingerprintResponseDto(
-          this.dlmsHelper.readInteger(results.get(0), "Read current THD L1"),
-          this.dlmsHelper.readInteger(results.get(1), "Read current THD L2"),
-          this.dlmsHelper.readInteger(results.get(2), "Read current THD L3"),
-          this.getFingerprintValues(results.get(3), "Read fingerprint value L1"),
-          this.getFingerprintValues(results.get(4), "Read fingerprint value L2"),
-          this.getFingerprintValues(results.get(5), "Read fingerprint value L3"),
-          this.dlmsHelper.readInteger(results.get(6), "Read THD over limit counter L1"),
-          this.dlmsHelper.readInteger(results.get(7), "Read THD over limit counter L2"),
-          this.dlmsHelper.readInteger(results.get(8), "Read THD over limit counter L3"));
-    } else {
-      return new GetThdFingerprintResponseDto(
-          this.dlmsHelper.readInteger(results.get(0), "Read current THD L1"),
-          this.getFingerprintValues(results.get(1), "Read fingerprint value L1"),
-          this.dlmsHelper.readInteger(results.get(2), "Read THD over limit counter L1"));
+    final Map<DlmsObjectType, Object> resultMap = new EnumMap<>(DlmsObjectType.class);
+    for (int i = 0; i < cosemObjects.size(); i++) {
+      resultMap.put(
+          DlmsObjectType.valueOf(cosemObjects.get(i).getTag()), this.readResult(results, i));
     }
+    return new GetThdFingerprintResponseDto(
+        resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_L1, null),
+        resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_L2, null),
+        resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_L3, null),
+        resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L1, null),
+        resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L2, null),
+        resultMap.getOrDefault(THD_INSTANTANEOUS_CURRENT_FINGERPRINT_L3, null),
+        resultMap.getOrDefault(THD_CURRENT_OVER_LIMIT_COUNTER_L1, null),
+        resultMap.getOrDefault(THD_CURRENT_OVER_LIMIT_COUNTER_L2, null),
+        resultMap.getOrDefault(THD_CURRENT_OVER_LIMIT_COUNTER_L3, null));
+  }
+
+  private Object readResult(final List<GetResult> results, final int idx)
+      throws ProtocolAdapterException {
+    final Type type = results.get(idx).getResultData().getType();
+    final String description = results.get(idx).getResultData().toString();
+    switch (type) {
+      case LONG_UNSIGNED -> {
+        return this.dlmsHelper.readInteger(results.get(idx), description);
+      }
+      case ARRAY -> {
+        return this.getFingerprintValues(results.get(idx), description);
+      }
+      default ->
+          throw new ProtocolAdapterException("Unexpected data type from Thd Fingerprint: " + type);
+    }
+  }
+
+  private List<CosemObject> getCosemObjectsForPhase(final DlmsDevice device)
+      throws ProtocolAdapterException {
+
+    final Predicate<CosemObject> forPhase =
+        cosemObject ->
+            cosemObject
+                .getMeterTypes()
+                .contains(device.isPolyphase() ? MeterType.PP : MeterType.SP);
+
+    final List<CosemObject> cosemObjects;
+    try {
+      cosemObjects =
+          this.objectConfigService.getCosemObjectsIgnoringMissingTypes(
+              device.getProtocolName(), device.getProtocolVersion(), this.dlmsObjectTypes);
+    } catch (final ObjectConfigException e) {
+      throw new ProtocolAdapterException("Error reading object configuration", e);
+    }
+    final List<CosemObject> cosemObjectsForPhase = cosemObjects.stream().filter(forPhase).toList();
+    if (cosemObjectsForPhase.isEmpty()) {
+      this.handleNoAttributeAddresses(device);
+    }
+    return cosemObjectsForPhase;
   }
 
   private List<Integer> getFingerprintValues(final GetResult getResult, final String description)
@@ -159,16 +190,17 @@ public class GetThdFingerprintCommandExecutor
     return fingerprint;
   }
 
-  private AttributeAddress getAttributeAddress(
-      final DlmsObjectType dlmsObjectType, final Protocol protocol)
+  private AttributeAddress getAttributeAddress(final CosemObject cosemObject) {
+    return new AttributeAddress(
+        cosemObject.getClassId(), cosemObject.getObis(), VALUE_ATTRIBUTE_ID);
+  }
+
+  private void handleNoAttributeAddresses(final DlmsDevice device)
       throws NotSupportedByProtocolException {
-    return this.objectConfigServiceHelper
-        .findOptionalDefaultAttributeAddress(protocol, dlmsObjectType)
-        .orElseThrow(
-            () ->
-                new NotSupportedByProtocolException(
-                    String.format(
-                        "No address found for %s in protocol %s %s",
-                        dlmsObjectType.name(), protocol.getName(), protocol.getVersion())));
+    final Protocol protocol = Protocol.forDevice(device);
+    throw new NotSupportedByProtocolException(
+        String.format(
+            "No address found for protocol %s %s in list of optional types %s",
+            protocol.getName(), protocol.getVersion(), this.dlmsObjectTypes));
   }
 }

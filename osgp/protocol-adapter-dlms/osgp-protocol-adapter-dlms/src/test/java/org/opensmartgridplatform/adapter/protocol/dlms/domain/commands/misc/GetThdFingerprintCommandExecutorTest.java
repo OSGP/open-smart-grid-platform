@@ -33,7 +33,6 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -59,10 +58,8 @@ class GetThdFingerprintCommandExecutorTest {
   @BeforeEach
   public void setUp() throws IOException, ObjectConfigException {
     final ObjectConfigService objectConfigService = new ObjectConfigService();
-    final ObjectConfigServiceHelper objectConfigServiceHelper =
-        new ObjectConfigServiceHelper(objectConfigService);
     final DlmsHelper dlmsHelper = new DlmsHelper();
-    this.executor = new GetThdFingerprintCommandExecutor(objectConfigServiceHelper, dlmsHelper);
+    this.executor = new GetThdFingerprintCommandExecutor(objectConfigService, dlmsHelper);
   }
 
   @ParameterizedTest
