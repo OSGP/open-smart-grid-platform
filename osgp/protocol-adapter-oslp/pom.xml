@@ -12,7 +12,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <artifactId>protocol-adapter-oslp</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>6.2.0-SNAPSHOT</version>
+  <version>6.2.1-SNAPSHOT-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
