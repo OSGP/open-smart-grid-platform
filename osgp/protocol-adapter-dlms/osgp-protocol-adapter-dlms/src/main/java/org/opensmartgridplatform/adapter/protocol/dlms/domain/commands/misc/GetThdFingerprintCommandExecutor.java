@@ -153,8 +153,11 @@ public class GetThdFingerprintCommandExecutor
     return this.dlmsHelper.readInteger(dataObject, description);
   }
 
+  @SuppressWarnings("java:S1168")
   private List<Integer> readList(final DataObject dataObject) throws ProtocolAdapterException {
     if (dataObject == null) {
+      // we explicitly want to set the attribute in GetThdFingerprintResponseDto
+      // to null and not empty list
       return null;
     }
     final Type type = dataObject.getType();
