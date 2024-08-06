@@ -1,10 +1,11 @@
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetThdFingerprintResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ThdFingerprint;
 
@@ -24,10 +25,11 @@ class ThdFingerprintConverterTest {
   final int counterL2 = 102;
   final int counterL3 = 103;
 
-  @Test
-  void convertBundle() {
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void convertBundle(final boolean polyphase) {
 
-    final GetThdFingerprintResponse source = this.createResponse();
+    final GetThdFingerprintResponse source = this.createResponse(polyphase);
 
     final org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetThdFingerprintResponse
         response =
@@ -41,7 +43,7 @@ class ThdFingerprintConverterTest {
     final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ThdFingerprint
         thdFingerprint = response.getThdFingerprint();
 
-    this.assertFingerprint(thdFingerprint);
+    this.assertFingerprint(thdFingerprint, polyphase);
   }
 
   @Test
@@ -75,10 +77,11 @@ class ThdFingerprintConverterTest {
     assertThat(response.getThdFingerprint()).isNull();
   }
 
-  @Test
-  void convertSingle() {
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void convertSingle(final boolean polyphase) {
 
-    final GetThdFingerprintResponse source = this.createResponse();
+    final GetThdFingerprintResponse source = this.createResponse(polyphase);
 
     final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring
             .GetThdFingerprintResponse
@@ -93,7 +96,7 @@ class ThdFingerprintConverterTest {
     final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ThdFingerprint
         thdFingerprint = response.getThdFingerprint();
 
-    this.assertFingerprint(thdFingerprint);
+    this.assertFingerprint(thdFingerprint, polyphase);
   }
 
   @Test
@@ -129,19 +132,19 @@ class ThdFingerprintConverterTest {
     assertThat(response.getThdFingerprint()).isNull();
   }
 
-  private GetThdFingerprintResponse createResponse() {
+  private GetThdFingerprintResponse createResponse(final boolean polyphase) {
     final GetThdFingerprintResponse source =
         new GetThdFingerprintResponse(
             new ThdFingerprint(
                 this.currentL1,
-                this.currentL2,
-                this.currentL3,
+                polyphase ? this.currentL2 : null,
+                polyphase ? this.currentL3 : null,
                 this.fingerprintL1,
-                this.fingerprintL2,
-                this.fingerprintL3,
+                polyphase ? this.fingerprintL2 : null,
+                polyphase ? this.fingerprintL3 : null,
                 this.counterL1,
-                this.counterL2,
-                this.counterL3));
+                polyphase ? this.counterL2 : null,
+                polyphase ? this.counterL3 : null));
     return source;
   }
 
@@ -152,18 +155,28 @@ class ThdFingerprintConverterTest {
 
   private void assertFingerprint(
       final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ThdFingerprint
-          thdFingerprint) {
+          thdFingerprint,
+      final boolean polyphase) {
     assertThat(thdFingerprint.getThdInstantaneousCurrentL1()).isEqualTo(this.currentL1);
-    assertThat(thdFingerprint.getThdInstantaneousCurrentL2()).isEqualTo(this.currentL2);
-    assertThat(thdFingerprint.getThdInstantaneousCurrentL3()).isEqualTo(this.currentL3);
     assertThat(thdFingerprint.getThdInstantaneousCurrentFingerprintL1().getFingerprintValue())
         .isEqualTo(this.fingerprintL1);
-    assertThat(thdFingerprint.getThdInstantaneousCurrentFingerprintL2().getFingerprintValue())
-        .isEqualTo(this.fingerprintL2);
-    assertThat(thdFingerprint.getThdInstantaneousCurrentFingerprintL3().getFingerprintValue())
-        .isEqualTo(this.fingerprintL3);
     assertThat(thdFingerprint.getThdCurrentOverLimitCounterL1()).isEqualTo(this.counterL1);
-    assertThat(thdFingerprint.getThdCurrentOverLimitCounterL2()).isEqualTo(this.counterL2);
-    assertThat(thdFingerprint.getThdCurrentOverLimitCounterL3()).isEqualTo(this.counterL3);
+    if (polyphase) {
+      assertThat(thdFingerprint.getThdInstantaneousCurrentL2()).isEqualTo(this.currentL2);
+      assertThat(thdFingerprint.getThdInstantaneousCurrentL3()).isEqualTo(this.currentL3);
+      assertThat(thdFingerprint.getThdInstantaneousCurrentFingerprintL2().getFingerprintValue())
+          .isEqualTo(this.fingerprintL2);
+      assertThat(thdFingerprint.getThdInstantaneousCurrentFingerprintL3().getFingerprintValue())
+          .isEqualTo(this.fingerprintL3);
+      assertThat(thdFingerprint.getThdCurrentOverLimitCounterL2()).isEqualTo(this.counterL2);
+      assertThat(thdFingerprint.getThdCurrentOverLimitCounterL3()).isEqualTo(this.counterL3);
+    } else {
+      assertThat(thdFingerprint.getThdInstantaneousCurrentL2()).isNull();
+      assertThat(thdFingerprint.getThdInstantaneousCurrentL3()).isNull();
+      assertThat(thdFingerprint.getThdInstantaneousCurrentFingerprintL2()).isNull();
+      assertThat(thdFingerprint.getThdInstantaneousCurrentFingerprintL3()).isNull();
+      assertThat(thdFingerprint.getThdCurrentOverLimitCounterL2()).isNull();
+      assertThat(thdFingerprint.getThdCurrentOverLimitCounterL3()).isNull();
+    }
   }
 }
