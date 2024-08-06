@@ -11,7 +11,7 @@ SPDX-License-Identifier: Apache-2.0
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>integration-tests</artifactId>
-  <version>6.2.1-SNAPSHOT-SNAPSHOT</version>
+  <version>6.2.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -20,7 +20,7 @@ SPDX-License-Identifier: Apache-2.0
     <maven.site.plugin>3.12.1</maven.site.plugin>
   </properties>
 
-  <!-- Description, Organization, Licences, URL and Distribution Management 
+  <!-- Description, Organization, Licences, URL and Distribution Management
     elements are needed for the maven-jxr-plugin to generate a maven site -->
   <description>Integration tests for OSGP components.</description>
   <organization>

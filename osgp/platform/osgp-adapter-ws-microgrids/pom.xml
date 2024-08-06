@@ -11,7 +11,7 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>6.2.1-SNAPSHOT-SNAPSHOT</version>
+    <version>6.2.1-SNAPSHOT</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
@@ -19,7 +19,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <packaging>war</packaging>
   <name>osgp-adapter-ws-microgrids</name>
-  <!-- Description element is needed for the maven-jxr-plugin to generate 
+  <!-- Description element is needed for the maven-jxr-plugin to generate
     a maven site -->
   <description>Web service module for microgrids domain.</description>
 

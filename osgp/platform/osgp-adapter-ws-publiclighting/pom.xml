@@ -11,14 +11,14 @@ SPDX-License-Identifier: Apache-2.0
   <artifactId>osgp-adapter-ws-publiclighting</artifactId>
   <name>osgp-adapter-ws-publiclighting</name>
   <packaging>war</packaging>
-  <!-- Description element is needed for the maven-jxr-plugin to generate 
+  <!-- Description element is needed for the maven-jxr-plugin to generate
     a maven site -->
   <description>Web service module for public lighting.</description>
 
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>6.2.1-SNAPSHOT-SNAPSHOT</version>
+    <version>6.2.1-SNAPSHOT</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
@@ -234,6 +234,6 @@ SPDX-License-Identifier: Apache-2.0
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
     </dependency>
-    
+
   </dependencies>
 </project>

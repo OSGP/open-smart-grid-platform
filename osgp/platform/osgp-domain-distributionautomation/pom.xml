@@ -14,14 +14,14 @@ SPDX-License-Identifier: Apache-2.0
   <artifactId>osgp-domain-distributionautomation</artifactId>
   <name>osgp-domain-distributionautomation</name>
   <packaging>jar</packaging>
-  <!-- Description element is needed for the maven-jxr-plugin to generate a maven 
+  <!-- Description element is needed for the maven-jxr-plugin to generate a maven
     site -->
   <description>Domain entities module for Distribution Automation domain.</description>
 
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>6.2.1-SNAPSHOT-SNAPSHOT</version>
+    <version>6.2.1-SNAPSHOT</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
