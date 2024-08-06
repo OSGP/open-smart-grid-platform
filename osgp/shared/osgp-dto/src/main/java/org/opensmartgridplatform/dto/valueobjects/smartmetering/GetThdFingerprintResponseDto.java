@@ -11,11 +11,11 @@ public class GetThdFingerprintResponseDto extends ActionResponseDto {
 
   @Serial private static final long serialVersionUID = -2437923107190171721L;
 
-  private final int thdInstantaneousCurrentL1;
+  private final Integer thdInstantaneousCurrentL1;
 
-  private final int thdInstantaneousCurrentL2;
+  private final Integer thdInstantaneousCurrentL2;
 
-  private final int thdInstantaneousCurrentL3;
+  private final Integer thdInstantaneousCurrentL3;
 
   private final List<Integer> thdInstantaneousCurrentFingerprintL1;
 
@@ -23,22 +23,22 @@ public class GetThdFingerprintResponseDto extends ActionResponseDto {
 
   private final List<Integer> thdInstantaneousCurrentFingerprintL3;
 
-  private final int thdCurrentOverLimitCounterL1;
+  private final Integer thdCurrentOverLimitCounterL1;
 
-  private final int thdCurrentOverLimitCounterL2;
+  private final Integer thdCurrentOverLimitCounterL2;
 
-  private final int thdCurrentOverLimitCounterL3;
+  private final Integer thdCurrentOverLimitCounterL3;
 
   public GetThdFingerprintResponseDto(
-      final int thdInstantaneousCurrentL1,
-      final int thdInstantaneousCurrentL2,
-      final int thdInstantaneousCurrentL3,
+      final Integer thdInstantaneousCurrentL1,
+      final Integer thdInstantaneousCurrentL2,
+      final Integer thdInstantaneousCurrentL3,
       final List<Integer> thdInstantaneousCurrentFingerprintL1,
       final List<Integer> thdInstantaneousCurrentFingerprintL2,
       final List<Integer> thdInstantaneousCurrentFingerprintL3,
-      final int thdCurrentOverLimitCounterL1,
-      final int thdCurrentOverLimitCounterL2,
-      final int thdCurrentOverLimitCounterL3) {
+      final Integer thdCurrentOverLimitCounterL1,
+      final Integer thdCurrentOverLimitCounterL2,
+      final Integer thdCurrentOverLimitCounterL3) {
     this.thdInstantaneousCurrentL1 = thdInstantaneousCurrentL1;
     this.thdInstantaneousCurrentL2 = thdInstantaneousCurrentL2;
     this.thdInstantaneousCurrentL3 = thdInstantaneousCurrentL3;
@@ -50,15 +50,15 @@ public class GetThdFingerprintResponseDto extends ActionResponseDto {
     this.thdCurrentOverLimitCounterL3 = thdCurrentOverLimitCounterL3;
   }
 
-  public int getThdInstantaneousCurrentL1() {
+  public Integer getThdInstantaneousCurrentL1() {
     return this.thdInstantaneousCurrentL1;
   }
 
-  public int getThdInstantaneousCurrentL2() {
+  public Integer getThdInstantaneousCurrentL2() {
     return this.thdInstantaneousCurrentL2;
   }
 
-  public int getThdInstantaneousCurrentL3() {
+  public Integer getThdInstantaneousCurrentL3() {
     return this.thdInstantaneousCurrentL3;
   }
 
@@ -74,15 +74,15 @@ public class GetThdFingerprintResponseDto extends ActionResponseDto {
     return this.thdInstantaneousCurrentFingerprintL3;
   }
 
-  public int getThdCurrentOverLimitCounterL1() {
+  public Integer getThdCurrentOverLimitCounterL1() {
     return this.thdCurrentOverLimitCounterL1;
   }
 
-  public int getThdCurrentOverLimitCounterL2() {
+  public Integer getThdCurrentOverLimitCounterL2() {
     return this.thdCurrentOverLimitCounterL2;
   }
 
-  public int getThdCurrentOverLimitCounterL3() {
+  public Integer getThdCurrentOverLimitCounterL3() {
     return this.thdCurrentOverLimitCounterL3;
   }
 }
