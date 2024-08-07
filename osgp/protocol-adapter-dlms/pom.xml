@@ -10,16 +10,16 @@ SPDX-License-Identifier: Apache-2.0
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>protocol-adapter-dlms</artifactId>
-  <version>6.2.1-SNAPSHOT-SNAPSHOT</version>
+  <version>6.2.1-SNAPSHOT</version>
   <packaging>pom</packaging>
-  
+
   <properties>
     <jxr.version>3.3.2</jxr.version>
     <maven.project.info.reports.plugin.version>3.5.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.12.1</maven.site.plugin>
   </properties>
 
-  <!-- Description, Organization, Licenses, URL and Distribution Management 
+  <!-- Description, Organization, Licenses, URL and Distribution Management
     elements are needed for the maven-jxr-plugin to generate a maven site -->
   <description>Protocol Adapter for DLMS smart devices.</description>
   <organization>

@@ -12,10 +12,10 @@ SPDX-License-Identifier: Apache-2.0
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>public-lighting-demo-app</artifactId>
-  <version>6.2.1-SNAPSHOT-SNAPSHOT</version>
+  <version>6.2.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin 
+  <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin
     to generate a maven site -->
   <description>Open Source Webapps for the OSGP Platform.</description>
   <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
@@ -40,7 +40,7 @@ SPDX-License-Identifier: Apache-2.0
     <site>
       <id>os-webapps</id>
       <name>os-webapps</name>
-      <!-- <url>Use this example URL to generate maven site locally and have 
+      <!-- <url>Use this example URL to generate maven site locally and have
         it deployed to a folder using: mvn site site:deploy or mvn site site:stage -->
       <!-- <url>file:///C:/Users/Kevin/Desktop/shared-components</url> -->
       <!-- URL is passed in as a maven argument: -Dmaven.site.distributionManagement.site.url=file:////the/path/to/deploy/the/site/to -->

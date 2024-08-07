@@ -13,7 +13,7 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>super-osgp</artifactId>
-    <version>6.2.1-SNAPSHOT-SNAPSHOT</version>
+    <version>6.2.1-SNAPSHOT</version>
     <relativePath>../../super/pom.xml</relativePath>
   </parent>
   <artifactId>parent-os-webapps</artifactId>
@@ -24,7 +24,7 @@ SPDX-License-Identifier: Apache-2.0
     <site>
       <id>os-webapps</id>
       <name>os-webapps</name>
-      <!-- <url>Use this example URL to generate maven site locally and have 
+      <!-- <url>Use this example URL to generate maven site locally and have
         it deployed to a folder using: mvn site site:deploy or mvn site site:stage -->
       <!-- <url>file:///C:/Users/Kevin/Desktop/shared-components</url> -->
       <!-- URL is passed in as a maven argument: -Dmaven.site.distributionManagement.site.url=file:////the/path/to/deploy/the/site/to -->

@@ -11,14 +11,14 @@ SPDX-License-Identifier: Apache-2.0
   <artifactId>osgp-core-db-api-iec61850</artifactId>
   <name>osgp-core-db-api-iec61850</name>
   <packaging>jar</packaging>
-  <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin 
+  <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin
     to generate a maven site -->
   <description>Database API for core database.</description>
 
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-iec61850</artifactId>
-    <version>6.2.1-SNAPSHOT-SNAPSHOT</version>
+    <version>6.2.1-SNAPSHOT</version>
     <relativePath>../parent-pa-iec61850/pom.xml</relativePath>
   </parent>
 
