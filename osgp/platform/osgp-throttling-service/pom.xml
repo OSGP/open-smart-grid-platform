@@ -41,11 +41,6 @@ SPDX-License-Identifier: Apache-2.0
           <attachClasses>true</attachClasses>
         </configuration>
       </plugin>
-
-      <plugin>
-        <groupId>org.cyclonedx</groupId>
-        <artifactId>cyclonedx-maven-plugin</artifactId>
-      </plugin>
     </plugins>
   </build>
 
