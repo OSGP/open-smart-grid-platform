@@ -11,4 +11,4 @@ then
   exit 1
 fi
 
-./runTestsAtRemoteServer.sh $1 $2 $3 $4 "$5" "-Ddynamic.properties.base.url=https://$1/osgp-simulator-dlms-triggered/wakeup $6" "$7"
+./runTestsAtRemoteServer.sh $1 $2 $3 $4 "$5" "-Dhttps.protocols.ignore=true -Ddynamic.properties.base.url=https://$1/osgp-simulator-dlms-triggered/wakeup $6" "$7"
