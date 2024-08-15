@@ -55,8 +55,7 @@ public class SimulatorTriggerClient extends AbstractClient {
       truststore.load(stream, truststorePassword.toCharArray());
 
       // Create TrustManagerFactory and initialize it using the KeyStore.
-      final var tmf =
-          TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+      final var tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
       tmf.init(truststore);
 
       // Create Apache CXF WebClient with JSON provider.
