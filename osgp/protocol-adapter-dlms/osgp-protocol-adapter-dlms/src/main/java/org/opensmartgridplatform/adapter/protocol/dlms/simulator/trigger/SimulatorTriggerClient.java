@@ -19,9 +19,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
-import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.transport.http.HTTPConduit;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.shared.usermanagement.AbstractClient;
@@ -52,12 +50,12 @@ public class SimulatorTriggerClient extends AbstractClient {
 
     try (final InputStream stream = new FileInputStream(truststoreLocation)) {
       // Create the KeyStore.
-      final KeyStore truststore = KeyStore.getInstance(truststoreType.toUpperCase());
+      final var truststore = KeyStore.getInstance(truststoreType.toUpperCase());
 
       truststore.load(stream, truststorePassword.toCharArray());
 
       // Create TrustManagerFactory and initialize it using the KeyStore.
-      final TrustManagerFactory tmf =
+      final var tmf =
           TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
       tmf.init(truststore);
 
@@ -71,8 +69,8 @@ public class SimulatorTriggerClient extends AbstractClient {
       }
 
       // Set up the HTTP Conduit to use the TrustManagers.
-      final ClientConfiguration config = WebClient.getConfig(this.webClient);
-      final HTTPConduit conduit = config.getHttpConduit();
+      final var config = WebClient.getConfig(this.webClient);
+      final var conduit = config.getHttpConduit();
 
       conduit.setTlsClientParameters(new TLSClientParameters());
       conduit.getTlsClientParameters().setTrustManagers(tmf.getTrustManagers());
@@ -89,56 +87,57 @@ public class SimulatorTriggerClient extends AbstractClient {
     this.webClient = this.configureInsecureWebClient(baseAddress);
   }
 
+  /*
+   * Client for simulator in use with test code only! For now don't check
+   * or verify any certificates here.
+   */
   private WebClient configureInsecureWebClient(final String baseAddress) {
 
     final List<Object> providers = new ArrayList<>();
     providers.add(new JacksonJsonProvider());
 
-    final WebClient client = WebClient.create(baseAddress, providers);
+    final var client = WebClient.create(baseAddress, providers);
 
-    final ClientConfiguration config = WebClient.getConfig(client);
-    final HTTPConduit conduit = config.getHttpConduit();
+    final var config = WebClient.getConfig(client);
+    final var conduit = config.getHttpConduit();
 
-    conduit.setTlsClientParameters(new TLSClientParameters());
-    /*
-     * Client for simulator in use with test code only! For now don't check
-     * or verify any certificates here.
-     */
-    conduit
-        .getTlsClientParameters()
-        .setTrustManagers(
-            new TrustManager[] {
-              new X509TrustManager() {
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                  return new X509Certificate[0];
-                }
+    final var tlsClientParameters = new TLSClientParameters();
+    tlsClientParameters.setTrustManagers(
+        new TrustManager[] {
+          new X509TrustManager() {
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+              return new X509Certificate[0];
+            }
 
-                @SuppressWarnings(
-                    "squid:S4830") // no server certification validation specifically for testing
-                // purposes
-                @Override
-                public void checkServerTrusted(final X509Certificate[] chain, final String authType)
-                    throws CertificateException {
-                  /*
-                   * Implicitly trust the certificate chain by not throwing a
-                   * CertificateException.
-                   */
-                }
+            @SuppressWarnings(
+                "squid:S4830") // no server certification validation specifically for testing
+            // purposes
+            @Override
+            public void checkServerTrusted(final X509Certificate[] chain, final String authType)
+                throws CertificateException {
+              /*
+               * Implicitly trust the certificate chain by not throwing a
+               * CertificateException.
+               */
+            }
 
-                @SuppressWarnings(
-                    "squid:S4830") // no server certification validation specifically for testing
-                // purposes
-                @Override
-                public void checkClientTrusted(final X509Certificate[] chain, final String authType)
-                    throws CertificateException {
-                  /*
-                   * Implicitly trust the certificate chain by not throwing a
-                   * CertificateException.
-                   */
-                }
-              }
-            });
+            @SuppressWarnings(
+                "squid:S4830") // no server certification validation specifically for testing
+            // purposes
+            @Override
+            public void checkClientTrusted(final X509Certificate[] chain, final String authType)
+                throws CertificateException {
+              /*
+               * Implicitly trust the certificate chain by not throwing a
+               * CertificateException.
+               */
+            }
+          }
+        });
+    tlsClientParameters.setDisableCNCheck(true);
+
+    conduit.setTlsClientParameters(tlsClientParameters);
 
     return client;
   }
@@ -195,7 +194,7 @@ public class SimulatorTriggerClient extends AbstractClient {
   public ObjectNode getDlmsAttributeValues(final int classId, final ObisCode obisCode)
       throws SimulatorTriggerClientException {
 
-    final Response response =
+    final var response =
         this.getWebClientInstance()
             .path(DYNAMIC_ATTRIBUTES_PATH)
             .path(classId)
@@ -213,7 +212,7 @@ public class SimulatorTriggerClient extends AbstractClient {
       final int classId, final ObisCode obisCode, final int attributeId)
       throws SimulatorTriggerClientException {
 
-    final Response response =
+    final var response =
         this.getWebClientInstance()
             .path(DYNAMIC_ATTRIBUTES_PATH)
             .path(classId)
