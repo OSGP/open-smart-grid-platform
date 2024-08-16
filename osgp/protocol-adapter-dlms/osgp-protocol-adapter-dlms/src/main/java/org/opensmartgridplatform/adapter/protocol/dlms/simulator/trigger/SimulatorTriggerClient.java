@@ -20,10 +20,6 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.message.Message;
-import org.apache.cxf.transport.http.MessageTrustDecider;
-import org.apache.cxf.transport.http.URLConnectionInfo;
-import org.apache.cxf.transport.http.UntrustedURLConnectionIOException;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.shared.usermanagement.AbstractClient;
@@ -145,19 +141,12 @@ public class SimulatorTriggerClient extends AbstractClient {
           }
         });
     tlsClientParameters.setDisableCNCheck(true);
+    tlsClientParameters.setSSLSocketFactory(null);
+    tlsClientParameters.setUseHttpsURLConnectionDefaultHostnameVerifier(false);
+    tlsClientParameters.setUseHttpsURLConnectionDefaultSslSocketFactory(false);
 
     LOGGER.info("Setting Tls Client Parameters.");
     conduit.setTlsClientParameters(tlsClientParameters);
-    conduit.setTrustDecider(
-        new MessageTrustDecider() {
-
-          @Override
-          public void establishTrust(
-              String conduitName, URLConnectionInfo connectionInfo, Message message)
-              throws UntrustedURLConnectionIOException {
-            // Do Nothing
-          }
-        });
 
     return client;
   }
