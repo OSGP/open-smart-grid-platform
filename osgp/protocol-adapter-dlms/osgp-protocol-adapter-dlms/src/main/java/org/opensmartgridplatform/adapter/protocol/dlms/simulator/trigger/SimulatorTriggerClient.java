@@ -20,12 +20,20 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.message.Message;
+import org.apache.cxf.transport.http.MessageTrustDecider;
+import org.apache.cxf.transport.http.URLConnectionInfo;
+import org.apache.cxf.transport.http.UntrustedURLConnectionIOException;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.shared.usermanagement.AbstractClient;
 import org.opensmartgridplatform.shared.usermanagement.ResponseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimulatorTriggerClient extends AbstractClient {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(SimulatorTriggerClient.class);
 
   private static final String CONSTRUCTION_FAILED = "SimulatorTriggerClient construction failed";
   private static final String TRIGGERPATH = "trigger";
@@ -83,6 +91,8 @@ public class SimulatorTriggerClient extends AbstractClient {
    * communicates with over HTTPS.
    */
   public SimulatorTriggerClient(final String baseAddress) {
+    LOGGER.warn("Configuring insecure web client. This should not be used in production!");
+
     this.webClient = this.configureInsecureWebClient(baseAddress);
   }
 
@@ -136,7 +146,18 @@ public class SimulatorTriggerClient extends AbstractClient {
         });
     tlsClientParameters.setDisableCNCheck(true);
 
+    LOGGER.info("Setting Tls Client Parameters.");
     conduit.setTlsClientParameters(tlsClientParameters);
+    conduit.setTrustDecider(
+        new MessageTrustDecider() {
+
+          @Override
+          public void establishTrust(
+              String conduitName, URLConnectionInfo connectionInfo, Message message)
+              throws UntrustedURLConnectionIOException {
+            // Do Nothing
+          }
+        });
 
     return client;
   }
