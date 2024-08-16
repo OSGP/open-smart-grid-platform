@@ -10,11 +10,13 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
@@ -89,14 +91,19 @@ public class SimulatorTriggerClient extends AbstractClient {
   public SimulatorTriggerClient(final String baseAddress) {
     LOGGER.warn("Configuring insecure web client. This should not be used in production!");
 
-    this.webClient = this.configureInsecureWebClient(baseAddress);
+    try {
+      this.webClient = this.configureInsecureWebClient(baseAddress);
+    } catch (final GeneralSecurityException e) {
+      LOGGER.error("Unable to configure insecure web client");
+    }
   }
 
   /*
    * Client for simulator in use with test code only! For now don't check
    * or verify any certificates here.
    */
-  private WebClient configureInsecureWebClient(final String baseAddress) {
+  private WebClient configureInsecureWebClient(final String baseAddress)
+      throws GeneralSecurityException {
 
     final List<Object> providers = new ArrayList<>();
     providers.add(new JacksonJsonProvider());
@@ -107,7 +114,8 @@ public class SimulatorTriggerClient extends AbstractClient {
     final var conduit = config.getHttpConduit();
 
     final var tlsClientParameters = new TLSClientParameters();
-    tlsClientParameters.setTrustManagers(
+
+    final var trustManagers =
         new TrustManager[] {
           new X509TrustManager() {
             @Override
@@ -139,11 +147,12 @@ public class SimulatorTriggerClient extends AbstractClient {
                */
             }
           }
-        });
-    tlsClientParameters.setDisableCNCheck(true);
-    tlsClientParameters.setSSLSocketFactory(null);
-    tlsClientParameters.setUseHttpsURLConnectionDefaultHostnameVerifier(false);
-    tlsClientParameters.setUseHttpsURLConnectionDefaultSslSocketFactory(false);
+        };
+
+    final var context = SSLContext.getInstance("TLS");
+    context.init(null, trustManagers, null);
+    final var socketFactory = context.getSocketFactory();
+    tlsClientParameters.setSSLSocketFactory(socketFactory);
 
     LOGGER.info("Setting Tls Client Parameters.");
     conduit.setTlsClientParameters(tlsClientParameters);
