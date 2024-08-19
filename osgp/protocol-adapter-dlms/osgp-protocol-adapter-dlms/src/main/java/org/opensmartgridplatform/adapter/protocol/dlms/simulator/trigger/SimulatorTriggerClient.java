@@ -15,8 +15,8 @@ import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
@@ -120,12 +120,12 @@ public class SimulatorTriggerClient extends AbstractClient {
           new X509TrustManager() {
             @Override
             public X509Certificate[] getAcceptedIssuers() {
+              LOGGER.warn("=== Get Accepted Issuers ===");
               return new X509Certificate[0];
             }
 
-            @SuppressWarnings(
-                "squid:S4830") // no server certification validation specifically for testing
-            // purposes
+            @SuppressWarnings("squid:S4830")
+            // no server certification validation specifically for testing purposes
             @Override
             public void checkServerTrusted(final X509Certificate[] chain, final String authType)
                 throws CertificateException {
@@ -133,11 +133,11 @@ public class SimulatorTriggerClient extends AbstractClient {
                * Implicitly trust the certificate chain by not throwing a
                * CertificateException.
                */
+              LOGGER.warn("=== Check Server Trusted ===");
             }
 
-            @SuppressWarnings(
-                "squid:S4830") // no server certification validation specifically for testing
-            // purposes
+            @SuppressWarnings("squid:S4830")
+            // no server certification validation specifically for testing purposes
             @Override
             public void checkClientTrusted(final X509Certificate[] chain, final String authType)
                 throws CertificateException {
@@ -145,16 +145,27 @@ public class SimulatorTriggerClient extends AbstractClient {
                * Implicitly trust the certificate chain by not throwing a
                * CertificateException.
                */
+              LOGGER.warn("=== Check Client Trusted ===");
             }
           }
         };
 
-    final var context = SSLContext.getInstance("TLS");
-    context.init(null, trustManagers, null);
-    final var socketFactory = context.getSocketFactory();
-    tlsClientParameters.setSSLSocketFactory(socketFactory);
+    //    final var context = SSLContext.getInstance("TLS");
+    //    context.init(null, trustManagers, null);
+    //    final var socketFactory = context.getSocketFactory();
+    //    tlsClientParameters.setSSLSocketFactory(socketFactory);
 
-    LOGGER.info("Setting Tls Client Parameters.");
+    LOGGER.info("Setting Tls Client Parameters: ");
+    LOGGER.info("   Cert Alias                : {}", tlsClientParameters.getCertAlias());
+    LOGGER.info("   JSSE Provider             : {}", tlsClientParameters.getJsseProvider());
+    LOGGER.info("   Secure Socket Protocol    : {}", tlsClientParameters.getSecureSocketProtocol());
+    LOGGER.info("   Cipher Suites             : {}", tlsClientParameters.getCipherSuites());
+    LOGGER.info("   Host Name Verifier        : {}", tlsClientParameters.getHostnameVerifier());
+    LOGGER.info(
+        "   Preferred Client Protocols: {}",
+        Arrays.asList(TLSClientParameters.getPreferredClientProtocols()));
+
+    tlsClientParameters.setTrustManagers(trustManagers);
     conduit.setTlsClientParameters(tlsClientParameters);
 
     return client;
