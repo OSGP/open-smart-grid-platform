@@ -119,7 +119,8 @@ public class GetFirmwareVersionsCommandExecutor
       final FirmwareModuleType firmwareModuleType = FIRMWARE_MODULE_TYPES.get(i);
       final String description = firmwareModuleType.getDescription();
       final String version =
-          this.dlmsHelper.readString(results.get(i).getResultData(), description);
+          this.dlmsHelper.readStringAndFilterUnreadableCharacters(
+              results.get(i).getResultData(), description);
       firmwareVersionDtos.add(new FirmwareVersionDto(firmwareModuleType, version));
     }
     return firmwareVersionDtos;
