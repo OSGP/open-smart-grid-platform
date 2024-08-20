@@ -483,6 +483,12 @@ public class DlmsHelper {
     return getResult.getResultData();
   }
 
+  public String readStringAndFilterUnreadableCharacters(
+      final DataObject resultData, final String description) throws ProtocolAdapterException {
+    final String string = this.readString(resultData, description);
+    return string.replaceAll("[\\x00-\\x1F]", "");
+  }
+
   public String readString(final DataObject resultData, final String description)
       throws ProtocolAdapterException {
     final byte[] bytes = this.readByteArray(resultData, description, "String");

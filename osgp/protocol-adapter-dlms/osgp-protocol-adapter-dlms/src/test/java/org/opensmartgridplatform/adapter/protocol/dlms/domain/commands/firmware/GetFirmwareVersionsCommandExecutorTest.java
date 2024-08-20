@@ -92,13 +92,13 @@ class GetFirmwareVersionsCommandExecutorTest {
                     OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION,
                     ATTRIBUTE_ID))))
         .thenReturn(asList(getResult1, getResult2, getResult3));
-    when(this.helperService.readString(
+    when(this.helperService.readStringAndFilterUnreadableCharacters(
             getResult1.getResultData(), FirmwareModuleType.ACTIVE_FIRMWARE.getDescription()))
         .thenReturn("string1");
-    when(this.helperService.readString(
+    when(this.helperService.readStringAndFilterUnreadableCharacters(
             getResult2.getResultData(), FirmwareModuleType.MODULE_ACTIVE.getDescription()))
         .thenReturn("string2");
-    when(this.helperService.readString(
+    when(this.helperService.readStringAndFilterUnreadableCharacters(
             getResult3.getResultData(), FirmwareModuleType.COMMUNICATION.getDescription()))
         .thenReturn("string3");
 
@@ -140,16 +140,16 @@ class GetFirmwareVersionsCommandExecutorTest {
                 new AttributeAddress(
                     CLASS_ID, OBIS_CODE_MBUS_DRIVER_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID))))
         .thenReturn(asList(getResult1, getResult2, getResult3, getResult4));
-    when(this.helperService.readString(
+    when(this.helperService.readStringAndFilterUnreadableCharacters(
             getResult1.getResultData(), FirmwareModuleType.ACTIVE_FIRMWARE.getDescription()))
         .thenReturn("string1");
-    when(this.helperService.readString(
+    when(this.helperService.readStringAndFilterUnreadableCharacters(
             getResult2.getResultData(), FirmwareModuleType.MODULE_ACTIVE.getDescription()))
         .thenReturn("string2");
-    when(this.helperService.readString(
+    when(this.helperService.readStringAndFilterUnreadableCharacters(
             getResult3.getResultData(), FirmwareModuleType.COMMUNICATION.getDescription()))
         .thenReturn("string3");
-    when(this.helperService.readString(
+    when(this.helperService.readStringAndFilterUnreadableCharacters(
             getResult4.getResultData(), FirmwareModuleType.M_BUS_DRIVER_ACTIVE.getDescription()))
         .thenReturn("string4");
 
