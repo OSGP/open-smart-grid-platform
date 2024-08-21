@@ -10,6 +10,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.Socket;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
@@ -17,9 +18,11 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.X509ExtendedTrustManager;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.openmuc.jdlms.ObisCode;
@@ -117,43 +120,60 @@ public class SimulatorTriggerClient extends AbstractClient {
 
     final var trustManagers =
         new TrustManager[] {
-          new X509TrustManager() {
+          new X509ExtendedTrustManager() {
+
             @Override
             public X509Certificate[] getAcceptedIssuers() {
-              LOGGER.warn("=== Get Accepted Issuers ===");
-              return new X509Certificate[0];
+              return null;
             }
 
-            @SuppressWarnings("squid:S4830")
-            // no server certification validation specifically for testing purposes
             @Override
-            public void checkServerTrusted(final X509Certificate[] chain, final String authType)
+            public void checkServerTrusted(X509Certificate[] chain, String authType)
                 throws CertificateException {
-              /*
-               * Implicitly trust the certificate chain by not throwing a
-               * CertificateException.
-               */
-              LOGGER.warn("=== Check Server Trusted ===");
+              // Implicitly trust the certificate chain by not throwing a CertificateException.
             }
 
-            @SuppressWarnings("squid:S4830")
-            // no server certification validation specifically for testing purposes
             @Override
-            public void checkClientTrusted(final X509Certificate[] chain, final String authType)
+            public void checkClientTrusted(X509Certificate[] chain, String authType)
                 throws CertificateException {
-              /*
-               * Implicitly trust the certificate chain by not throwing a
-               * CertificateException.
-               */
-              LOGGER.warn("=== Check Client Trusted ===");
+              // Implicitly trust the certificate chain by not throwing a CertificateException.
+            }
+
+            @Override
+            public void checkServerTrusted(
+                X509Certificate[] chain, String authType, SSLEngine engine)
+                throws CertificateException {
+              // Implicitly trust the certificate chain by not throwing a CertificateException.
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket)
+                throws CertificateException {
+              // Implicitly trust the certificate chain by not throwing a CertificateException.
+            }
+
+            @Override
+            public void checkClientTrusted(
+                X509Certificate[] chain, String authType, SSLEngine engine)
+                throws CertificateException {
+              // Implicitly trust the certificate chain by not throwing a CertificateException.
+            }
+
+            @Override
+            public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket)
+                throws CertificateException {
+              // Implicitly trust the certificate chain by not throwing a CertificateException.
             }
           }
         };
 
-    //    final var context = SSLContext.getInstance("TLS");
-    //    context.init(null, trustManagers, null);
-    //    final var socketFactory = context.getSocketFactory();
-    //    tlsClientParameters.setSSLSocketFactory(socketFactory);
+    tlsClientParameters.setHostnameVerifier((hostname, session) -> true);
+
+    final var context = SSLContext.getInstance("TLSv1.2");
+    context.init(null, trustManagers, null);
+    final var socketFactory = context.getSocketFactory();
+    tlsClientParameters.setSSLSocketFactory(socketFactory);
+    tlsClientParameters.setSslContext(context);
 
     LOGGER.info("Setting Tls Client Parameters: ");
     LOGGER.info("   Cert Alias                : {}", tlsClientParameters.getCertAlias());
