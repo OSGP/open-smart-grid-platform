@@ -279,14 +279,14 @@ public class DlmsHelperTest {
    * NonFatalJDlmsException and JDlmsException).
    */
   @Test
-  public void testGetWithListException() throws IOException {
+  void testGetWithListException() throws IOException {
     this.assertGetWithListException(IOException.class, ConnectionException.class);
     this.assertGetWithListException(NullPointerException.class, ConnectionException.class);
     this.assertGetWithListException(RuntimeException.class, ProtocolAdapterException.class);
   }
 
   @Test
-  public void testDateTimeSummerTime() {
+  void testDateTimeSummerTime() {
     final DataObject dateInSummerTimeDataObject =
         this.dlmsHelper.asDataObject(this.dateTimeSummerTime());
 
@@ -299,7 +299,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testDateTimeSummerTimeWithZonedTime() {
+  void testDateTimeSummerTimeWithZonedTime() {
     final DataObject dateInSummerTimeDataObject =
         this.dlmsHelper.asDataObject(this.convertToZonedDateTime(this.dateTimeSummerTime()));
 
@@ -312,7 +312,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testDateTimeWinterTime() {
+  void testDateTimeWinterTime() {
     final DataObject dateInWinterTimeDataObject =
         this.dlmsHelper.asDataObject(this.dateTimeWinterTime());
 
@@ -325,7 +325,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testDateTimeWinterTimeWithZonedTime() {
+  void testDateTimeWinterTimeWithZonedTime() {
     final DateTime dateTime = this.dateTimeWinterTime();
     final ZonedDateTime zonedDateTime = this.convertToZonedDateTime(dateTime);
 
@@ -340,7 +340,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testFromByteArraySummerTime() {
+  void testFromByteArraySummerTime() {
     final CosemDateTimeDto cosemDateTime =
         this.dlmsHelper.fromDateTimeValue(this.byteArraySummerTime());
 
@@ -353,7 +353,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testFromByteArrayWinterTime() {
+  void testFromByteArrayWinterTime() {
     final CosemDateTimeDto cosemDateTime =
         this.dlmsHelper.fromDateTimeValue(this.byteArrayWinterTime());
 
@@ -366,7 +366,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testFromByteArrayUnspecifiedTime() {
+  void testFromByteArrayUnspecifiedTime() {
     final CosemDateTimeDto cosemDateTime =
         this.dlmsHelper.fromDateTimeValue(this.byteArrayUnspecifiedTime());
 
@@ -380,7 +380,7 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testCorrectLogMessageForBitStringObject() {
+  void testCorrectLogMessageForBitStringObject() {
     final String expected = "number of bytes=2, value=37440, bits=10010010 01000000 ";
     final String logMessage = this.dlmsHelper.getDebugInfoBitStringBytes(new byte[] {-110, 64});
 
@@ -388,7 +388,17 @@ public class DlmsHelperTest {
   }
 
   @Test
-  public void testByteArrayToHexString() throws ProtocolAdapterException {
+  void testReadStringAndFilterUnreadableCharacters() throws ProtocolAdapterException {
+    final byte[] bytes = new byte[] {65, 66, 67, 0, 1, 17, 31, 49, 50, 51};
+    final DataObject dataObject = DataObject.newOctetStringData(bytes);
+    final String readableString =
+        this.dlmsHelper.readStringAndFilterUnreadableCharacters(dataObject, "reading a String");
+
+    assertThat(readableString).isEqualTo("ABC123");
+  }
+
+  @Test
+  void testByteArrayToHexString() throws ProtocolAdapterException {
     final byte[] bytes = new byte[] {25, 24, 7, 118};
     final DataObject dataObject = DataObject.newOctetStringData(bytes);
     final String hexString =
