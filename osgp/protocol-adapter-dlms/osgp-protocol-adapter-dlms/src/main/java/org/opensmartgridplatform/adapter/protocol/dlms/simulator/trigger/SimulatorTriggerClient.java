@@ -10,21 +10,16 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.net.Socket;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509ExtendedTrustManager;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.transport.https.InsecureTrustManager;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.shared.usermanagement.AbstractClient;
@@ -56,6 +51,8 @@ public class SimulatorTriggerClient extends AbstractClient {
       final String truststoreType,
       final String baseAddress)
       throws SimulatorTriggerClientException {
+
+    LOGGER.warn("Configuring web client.");
 
     try (final InputStream stream = new FileInputStream(truststoreLocation)) {
       // Create the KeyStore.
@@ -112,67 +109,17 @@ public class SimulatorTriggerClient extends AbstractClient {
     providers.add(new JacksonJsonProvider());
 
     final var client = WebClient.create(baseAddress, providers);
-
     final var config = WebClient.getConfig(client);
     final var conduit = config.getHttpConduit();
 
     final var tlsClientParameters = new TLSClientParameters();
 
-    final var trustManagers =
-        new TrustManager[] {
-          new X509ExtendedTrustManager() {
-
-            @Override
-            public X509Certificate[] getAcceptedIssuers() {
-              return null;
-            }
-
-            @Override
-            public void checkServerTrusted(X509Certificate[] chain, String authType)
-                throws CertificateException {
-              // Implicitly trust the certificate chain by not throwing a CertificateException.
-            }
-
-            @Override
-            public void checkClientTrusted(X509Certificate[] chain, String authType)
-                throws CertificateException {
-              // Implicitly trust the certificate chain by not throwing a CertificateException.
-            }
-
-            @Override
-            public void checkServerTrusted(
-                X509Certificate[] chain, String authType, SSLEngine engine)
-                throws CertificateException {
-              // Implicitly trust the certificate chain by not throwing a CertificateException.
-            }
-
-            @Override
-            public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket)
-                throws CertificateException {
-              // Implicitly trust the certificate chain by not throwing a CertificateException.
-            }
-
-            @Override
-            public void checkClientTrusted(
-                X509Certificate[] chain, String authType, SSLEngine engine)
-                throws CertificateException {
-              // Implicitly trust the certificate chain by not throwing a CertificateException.
-            }
-
-            @Override
-            public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket)
-                throws CertificateException {
-              // Implicitly trust the certificate chain by not throwing a CertificateException.
-            }
-          }
-        };
+    final var trustManagers = InsecureTrustManager.getNoOpX509TrustManagers();
 
     tlsClientParameters.setHostnameVerifier((hostname, session) -> true);
 
     final var context = SSLContext.getInstance("TLSv1.2");
     context.init(null, trustManagers, null);
-    final var socketFactory = context.getSocketFactory();
-    tlsClientParameters.setSSLSocketFactory(socketFactory);
     tlsClientParameters.setSslContext(context);
 
     LOGGER.info("Setting Tls Client Parameters: ");
@@ -205,9 +152,27 @@ public class SimulatorTriggerClient extends AbstractClient {
 
   public void clearDlmsAttributeValues() throws SimulatorTriggerClientException {
 
-    this.checkResponse(
-        this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).delete(),
-        "clearDlmsAttributeValues");
+    LOGGER.warn("Clearing DLMS attribute values.");
+
+    final var client = this.getWebClientInstance();
+
+    logClientInfo(client);
+
+    final var response = client.path(DYNAMIC_ATTRIBUTES_PATH).delete();
+
+    this.checkResponse(response, "clearDlmsAttributeValues");
+  }
+
+  private static void logClientInfo(WebClient client) {
+    final var clientConfig = WebClient.getConfig(client);
+    final var conduit = clientConfig.getHttpConduit();
+    final var clientParameters = conduit.getTlsClientParameters();
+    final var clientTrustDecider = conduit.getTrustDecider();
+    LOGGER.info("=== Client Config ===");
+    LOGGER.info("   Cipher suites : {}", clientParameters.getCipherSuites());
+    LOGGER.info("   Protocol      : {}", clientParameters.getSecureSocketProtocol());
+    LOGGER.info("   Trust Managers: {}", Arrays.asList(clientParameters.getTrustManagers()));
+    LOGGER.info("   Trust Decider : {}", clientTrustDecider);
   }
 
   public void setDlmsAttributeValues(
