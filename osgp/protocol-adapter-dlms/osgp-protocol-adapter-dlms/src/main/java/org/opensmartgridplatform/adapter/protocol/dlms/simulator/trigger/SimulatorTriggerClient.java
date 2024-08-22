@@ -168,10 +168,15 @@ public class SimulatorTriggerClient extends AbstractClient {
     final var conduit = clientConfig.getHttpConduit();
     final var clientParameters = conduit.getTlsClientParameters();
     final var clientTrustDecider = conduit.getTrustDecider();
+
     LOGGER.info("=== Client Config ===");
-    LOGGER.info("   Cipher suites : {}", clientParameters.getCipherSuites());
-    LOGGER.info("   Protocol      : {}", clientParameters.getSecureSocketProtocol());
-    LOGGER.info("   Trust Managers: {}", Arrays.asList(clientParameters.getTrustManagers()));
+    if (clientParameters == null) {
+      LOGGER.warn("Client parameters is null.");
+    } else {
+      LOGGER.info("   Cipher suites : {}", clientParameters.getCipherSuites());
+      LOGGER.info("   Protocol      : {}", clientParameters.getSecureSocketProtocol());
+      LOGGER.info("   Trust Managers: {}", Arrays.asList(clientParameters.getTrustManagers()));
+    }
     LOGGER.info("   Trust Decider : {}", clientTrustDecider);
   }
 
