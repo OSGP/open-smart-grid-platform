@@ -60,7 +60,6 @@ SPDX-License-Identifier: Apache-2.0
       <modules>
         <module>protocol-adapter-iec60870</module>
         <module>protocol-adapter-iec61850</module>
-        <module>protocol-adapter-mqtt</module>
       </modules>
     </profile>
 
