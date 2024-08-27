@@ -68,7 +68,7 @@ public class BaseTask {
   /** Try to find a manufacturer by name (case sensitive). */
   protected Manufacturer findManufacturer(final String name) {
     LOGGER.info("Trying to find manufacturer for name: {}", name);
-    final Manufacturer manufacturer = this.manufacturerRepository.findByName(name);
+    final var manufacturer = this.manufacturerRepository.findByName(name);
     if (manufacturer == null) {
       LOGGER.warn("No manufacturer found for name: {}", name);
     } else {
@@ -80,8 +80,7 @@ public class BaseTask {
   /** Try to find all device models for a manufacturer. */
   protected List<DeviceModel> findDeviceModels(final Manufacturer manufacturer) {
     LOGGER.info("Trying to find device models for manufacturer: {}", manufacturer.getName());
-    final List<DeviceModel> deviceModels =
-        this.deviceModelRepository.findByManufacturer(manufacturer);
+    final var deviceModels = this.deviceModelRepository.findByManufacturer(manufacturer);
     if (deviceModels == null) {
       LOGGER.warn(
           "No device models found for manufacturer with name: {}, deviceModels == null",
@@ -109,11 +108,11 @@ public class BaseTask {
     final List<Device> devices = new ArrayList<>();
     for (final DeviceModel deviceModel : deviceModels) {
 
-      final List<Device> devsInUse =
+      final var devsInUse =
           this.deviceRepository
               .findByDeviceModelAndDeviceTypeAndInMaintenanceAndDeviceLifecycleStatus(
                   deviceModel, deviceType, false, DeviceLifecycleStatus.IN_USE);
-      final List<Device> devsRegistered =
+      final var devsRegistered =
           this.deviceRepository
               .findByDeviceModelAndDeviceTypeAndInMaintenanceAndDeviceLifecycleStatus(
                   deviceModel, deviceType, false, DeviceLifecycleStatus.REGISTERED);
@@ -139,14 +138,14 @@ public class BaseTask {
       final String protocol) {
     LOGGER.info("Trying to find connectable light measurement devices for protocol {}", protocol);
 
-    final List<LightMeasurementDevice> lightMeasurementDevices =
+    final var lightMeasurementDevices =
         this.lightMeasurementDeviceRepository.findByProtocolInfoProtocolAndDeviceLifecycleStatus(
             protocol, DeviceLifecycleStatus.IN_USE);
 
     if (lightMeasurementDevices.isEmpty()) {
       LOGGER.warn("No connectable light measurement devices found for protocol {}", protocol);
     } else {
-      final String identifications = this.deviceIdentifications(lightMeasurementDevices);
+      final var identifications = this.deviceIdentifications(lightMeasurementDevices);
       LOGGER.info(
           "{} connectable light measurement device(s) found for protocol {}: {}",
           lightMeasurementDevices.size(),
@@ -167,7 +166,7 @@ public class BaseTask {
   }
 
   private boolean isFirstRun() {
-    final boolean result = this.firstRun;
+    final var result = this.firstRun;
     this.firstRun = false;
     return result;
   }
@@ -184,29 +183,27 @@ public class BaseTask {
       return devices;
     }
 
-    final List<Object> listOfObjectArrays =
-        this.eventRepository.findLatestEventForEveryDevice(devices);
+    final var listOfObjectArrays = this.eventRepository.findLatestEventForEveryDevice(devices);
     LOGGER.info("devicesWithEventsList.size(): {}", listOfObjectArrays.size());
 
-    final Date maxAge =
-        Date.from(ZonedDateTime.now(ZoneId.of("UTC")).minusHours(maximumAllowedAge).toInstant());
+    final var maxAge =
+        ZonedDateTime.now(ZoneId.of("UTC")).minusHours(maximumAllowedAge).toInstant();
     LOGGER.info("maxAge: {}", maxAge);
 
-    final Map<Long, Date> map = new HashMap<>();
+    final Map<Long, Instant> map = new HashMap<>();
     for (final Object objectArray : listOfObjectArrays) {
-      final Object[] array = (Object[]) objectArray;
-      final Long eventDeviceId = (Long) array[0];
-      final Date timestamp = (Date) array[1];
+      final var array = (Object[]) objectArray;
+      final var eventDeviceId = (Long) array[0];
+      final var timestamp = (Instant) array[1];
       LOGGER.info("eventDeviceId: {}, timestamp: {}", eventDeviceId, timestamp);
       if (this.isEventOlderThanMaxInterval(maxAge, timestamp, maximumAllowedAge)) {
         map.put(eventDeviceId, timestamp);
       }
     }
 
-    final List<Device> devicesToContact = this.deviceRepository.findByIdIn(map.keySet());
+    final var devicesToContact = this.deviceRepository.findByIdIn(map.keySet());
     LOGGER.info("devicesToContact.size(): {}", devicesToContact.size());
-    devicesToContact.sort(
-        (a, b) -> a.getDeviceIdentification().compareTo(b.getDeviceIdentification()));
+    devicesToContact.sort(Comparator.comparing(Device::getDeviceIdentification));
 
     for (final Device device : devicesToContact) {
       LOGGER.info("device: {}, id: {}", device.getDeviceIdentification(), device.getId());
@@ -216,13 +213,13 @@ public class BaseTask {
 
   /** Determine if an event is older than X hours as indicated by maxAge. */
   protected boolean isEventOlderThanMaxInterval(
-      final Date maxAge, final Date event, final int maximumAllowedAge) {
+      final Instant maxAge, final Instant event, final int maximumAllowedAge) {
     if (event == null) {
       // In case the event instance is null, try to contact the device.
       LOGGER.info("Event instance is null");
       return true;
     }
-    final boolean result = event.before(maxAge);
+    final var result = event.isBefore(maxAge);
     LOGGER.info(
         "event date time: {}, current date time minus {} hours: {}, is event before? : {}",
         event,
@@ -241,17 +238,17 @@ public class BaseTask {
 
   protected void sendRequestMessageToDevice(
       final Device device, final DeviceFunction deviceFunction) {
-    final String deviceIdentification = device.getDeviceIdentification();
+    final var deviceIdentification = device.getDeviceIdentification();
     // Try to use the identification of the owner organization.
-    final String organisation =
+    final var organisation =
         device.getOwner() == null ? "" : device.getOwner().getOrganisationIdentification();
     // Creating message with OSGP System CorrelationUID. This way the
     // responses for scheduled tasks can be filtered out.
-    final String correlationUid = OsgpSystemCorrelationUid.CORRELATION_UID;
-    final String deviceFunctionString = deviceFunction.name();
-    final DomainTypeDto domain = DomainTypeDto.PUBLIC_LIGHTING;
+    final var correlationUid = OsgpSystemCorrelationUid.CORRELATION_UID;
+    final var deviceFunctionString = deviceFunction.name();
+    final var domain = DomainTypeDto.PUBLIC_LIGHTING;
 
-    final String networkAddress = device.getNetworkAddress();
+    final var networkAddress = device.getNetworkAddress();
     if (networkAddress == null) {
       // In case the device does not have a known IP address, don't send
       // a request message.
@@ -261,7 +258,7 @@ public class BaseTask {
       return;
     }
 
-    final RequestMessage requestMessage =
+    final var requestMessage =
         new RequestMessage(correlationUid, organisation, deviceIdentification, domain);
 
     this.osgpCoreRequestMessageSender.send(
@@ -291,9 +288,9 @@ public class BaseTask {
       return lightMeasurementDevices;
     }
 
-    final Instant maxAge = Instant.now().minus(maximumAllowedAge, ChronoUnit.HOURS);
-    final long valueForMissingTime = 0;
-    final long boundaryTime = getTime(maxAge, valueForMissingTime);
+    final var maxAge = Instant.now().minus(maximumAllowedAge, ChronoUnit.HOURS);
+    final var valueForMissingTime = 0L;
+    final var boundaryTime = getTime(maxAge, valueForMissingTime);
 
     final Predicate<LightMeasurementDevice> deviceFilter;
     if (boundaryTime < valueForMissingTime) {
@@ -354,13 +351,13 @@ public class BaseTask {
   private long getLastCommunicationTime(
       final LightMeasurementDevice lightMeasurementDevice, final long valueForMissingTime) {
 
-    final long lastCommunicationTimeLightMeasurementDevice =
+    final var lastCommunicationTimeLightMeasurementDevice =
         Long.max(
             getTime(lightMeasurementDevice.getLastCommunicationTime(), valueForMissingTime),
             getTime(
                 lightMeasurementDevice.getLastSuccessfulConnectionTimestamp(),
                 valueForMissingTime));
-    final long lastCommunicationTimeGateway =
+    final var lastCommunicationTimeGateway =
         this.getGatewayLastCommunicationTime(lightMeasurementDevice, valueForMissingTime);
     return Long.max(lastCommunicationTimeLightMeasurementDevice, lastCommunicationTimeGateway);
   }
@@ -368,12 +365,12 @@ public class BaseTask {
   private long getGatewayLastCommunicationTime(
       final LightMeasurementDevice lightMeasurementDevice, final long valueForMissingTime) {
 
-    final Device gatewayDevice = lightMeasurementDevice.getGatewayDevice();
+    final var gatewayDevice = lightMeasurementDevice.getGatewayDevice();
     if (gatewayDevice == null) {
       return valueForMissingTime;
     }
 
-    final long lastSuccessFullConnectionTimestampGateway =
+    final var lastSuccessFullConnectionTimestampGateway =
         getTime(gatewayDevice.getLastSuccessfulConnectionTimestamp(), valueForMissingTime);
     final long lastCommunicationTimeRtuGateway =
         this.rtuDeviceRepository
@@ -390,7 +387,7 @@ public class BaseTask {
       return;
     }
 
-    final String deviceIdentifications = this.deviceIdentifications(devicesToConnect);
+    final var deviceIdentifications = this.deviceIdentifications(devicesToConnect);
     LOGGER.info(
         "Sending requests to ensure active connections with the following light measurement devices: {}",
         deviceIdentifications);
@@ -398,7 +395,7 @@ public class BaseTask {
     final Set<Long> connectedToGatewayIds = new HashSet<>();
     for (final LightMeasurementDevice device : devicesToConnect) {
       if (this.aDeviceWithTheSameGatewayHasNotBeenConnected(device, connectedToGatewayIds)) {
-        final String withGateway =
+        final var withGateway =
             device.getGatewayDevice() == null
                 ? ""
                 : String.format(
@@ -423,15 +420,15 @@ public class BaseTask {
   }
 
   protected void sendConnectRequestToDevice(final LightMeasurementDevice lightMeasurementDevice) {
-    final String deviceIdentification = getDeviceIdentification(lightMeasurementDevice);
-    final String organisation = getOwnerOrganisation(lightMeasurementDevice);
+    final var deviceIdentification = getDeviceIdentification(lightMeasurementDevice);
+    final var organisation = getOwnerOrganisation(lightMeasurementDevice);
     // Creating message with OSGP System CorrelationUID. This way the
     // responses for scheduled tasks can be filtered out.
-    final String correlationUid = OsgpSystemCorrelationUid.CORRELATION_UID;
-    final String messageType = DeviceFunction.CONNECT.name();
-    final DomainTypeDto domain = DomainTypeDto.PUBLIC_LIGHTING;
+    final var correlationUid = OsgpSystemCorrelationUid.CORRELATION_UID;
+    final var messageType = DeviceFunction.CONNECT.name();
+    final var domain = DomainTypeDto.PUBLIC_LIGHTING;
 
-    final String networkAddress = getNetworkAddress(lightMeasurementDevice);
+    final var networkAddress = getNetworkAddress(lightMeasurementDevice);
     if (networkAddress == null) {
       LOGGER.warn(
           "Unable to create connect request because no network address is known for device: {}",
@@ -439,7 +436,7 @@ public class BaseTask {
       return;
     }
 
-    final RequestMessage requestMessage =
+    final var requestMessage =
         new RequestMessage(correlationUid, organisation, deviceIdentification, domain);
     this.osgpCoreRequestMessageSender.send(
         requestMessage, messageType, MessagePriorityEnum.LOW.getPriority(), networkAddress);
@@ -448,21 +445,19 @@ public class BaseTask {
   private static String getDeviceIdentification(final LightMeasurementDevice device) {
     if (device.getGatewayDevice() != null) {
       return device.getGatewayDevice().getDeviceIdentification();
-    } else {
-      return device.getDeviceIdentification();
     }
+    return device.getDeviceIdentification();
   }
 
   private static String getOwnerOrganisation(final LightMeasurementDevice device) {
     if (device.getOwner() == null) {
       return "";
-    } else {
-      return device.getOwner().getOrganisationIdentification();
     }
+    return device.getOwner().getOrganisationIdentification();
   }
 
   private static String getNetworkAddress(final Device lightMeasurementDevice) {
-    final String gatewayNetworkAddress = getGatewayNetworkAddress(lightMeasurementDevice);
+    final var gatewayNetworkAddress = getGatewayNetworkAddress(lightMeasurementDevice);
     if (gatewayNetworkAddress != null) {
       return gatewayNetworkAddress;
     }
