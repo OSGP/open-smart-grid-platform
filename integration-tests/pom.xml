@@ -107,20 +107,9 @@ SPDX-License-Identifier: Apache-2.0
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-        <module>cucumber-tests-platform-distributionautomation</module>
         <module>cucumber-tests-protocol-iec60870</module>
       </modules>
     </profile>
 
-    <profile>
-      <!-- MicroGrids -->
-      <id>mg</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>cucumber-tests-platform-microgrids</module>
-      </modules>
-    </profile>
   </profiles>
 </project>

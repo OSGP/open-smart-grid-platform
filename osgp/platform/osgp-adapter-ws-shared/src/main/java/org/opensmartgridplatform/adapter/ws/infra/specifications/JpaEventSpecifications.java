@@ -22,9 +22,15 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class JpaEventSpecifications implements EventSpecifications {
 
+  private static final String DATE_TIME = "dateTime";
+  private static final String DESCRIPTION = "description";
   private static final String DEVICE = "device";
   private static final String DEVICE_IDENTIFICATION = "deviceIdentification";
-  private static final String DESCRIPTION = "description";
+  private static final String EVENT_TYPE = "eventType";
+  private static final String FUNCTION_GROUP = "functionGroup";
+  private static final String ID = "id";
+  private static final String ORGANISATION = "organisation";
+
   private static final Specification<Event> NO_FILTER = (eventRoot, query, cb) -> cb.and();
 
   @Override
@@ -35,7 +41,7 @@ public class JpaEventSpecifications implements EventSpecifications {
     }
 
     return ((eventRoot, query, cb) ->
-        cb.greaterThanOrEqualTo(eventRoot.<Instant>get("dateTime"), dateFrom));
+        cb.greaterThanOrEqualTo(eventRoot.<Instant>get(DATE_TIME), dateFrom));
   }
 
   @Override
@@ -46,7 +52,7 @@ public class JpaEventSpecifications implements EventSpecifications {
     }
 
     return ((eventRoot, query, cb) ->
-        cb.lessThanOrEqualTo(eventRoot.<Instant>get("dateTime"), dateUntil));
+        cb.lessThanOrEqualTo(eventRoot.<Instant>get(DATE_TIME), dateUntil));
   }
 
   @Override
@@ -84,13 +90,13 @@ public class JpaEventSpecifications implements EventSpecifications {
         deviceAuthorizationRoot.get(DEVICE).get(DEVICE_IDENTIFICATION).as(String.class));
     subquery.where(
         cb.and(
-            cb.equal(deviceAuthorizationRoot.get("organisation"), organisation.getId()),
+            cb.equal(deviceAuthorizationRoot.get(ORGANISATION).get(ID), organisation.getId()),
             cb.or(
                 cb.equal(
-                    deviceAuthorizationRoot.get("functionGroup"),
+                    deviceAuthorizationRoot.get(FUNCTION_GROUP),
                     DeviceFunctionGroup.OWNER.ordinal()),
                 cb.equal(
-                    deviceAuthorizationRoot.get("functionGroup"),
+                    deviceAuthorizationRoot.get(FUNCTION_GROUP),
                     DeviceFunctionGroup.MANAGEMENT.ordinal()))));
 
     return cb.in(eventRoot.get(DEVICE_IDENTIFICATION)).value(subquery);
@@ -108,7 +114,7 @@ public class JpaEventSpecifications implements EventSpecifications {
   private Predicate createPredicateForHasEventTypes(
       final Root<Event> eventRoot, final List<EventType> eventTypes) {
 
-    final Path<Event> eventType = eventRoot.<Event>get("eventType");
+    final Path<Event> eventType = eventRoot.<Event>get(EVENT_TYPE);
 
     return eventType.in(eventTypes);
   }

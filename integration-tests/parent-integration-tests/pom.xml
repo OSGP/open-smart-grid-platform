@@ -50,24 +50,6 @@ SPDX-License-Identifier: Apache-2.0
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
-        <artifactId>osgp-adapter-ws-distributionautomation</artifactId>
-        <version>${osgp.version}</version>
-        <classifier>classes</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.opensmartgridplatform</groupId>
-        <artifactId>osgp-adapter-kafka-distributionautomation</artifactId>
-        <version>${osgp.version}</version>
-        <classifier>classes</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.opensmartgridplatform</groupId>
-        <artifactId>osgp-adapter-ws-microgrids</artifactId>
-        <version>${osgp.version}</version>
-        <classifier>classes</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-ws-publiclighting</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
@@ -86,12 +68,6 @@ SPDX-License-Identifier: Apache-2.0
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
-        <artifactId>osgp-adapter-domain-distributionautomation</artifactId>
-        <version>${osgp.version}</version>
-        <classifier>classes</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-iec60870</artifactId>
         <version>${osgp.version}</version>
       </dependency>
@@ -104,24 +80,6 @@ SPDX-License-Identifier: Apache-2.0
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-protocol-simulator-iec60870</artifactId>
-        <version>${osgp.version}</version>
-        <classifier>classes</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.opensmartgridplatform</groupId>
-        <artifactId>osgp-protocol-adapter-mqtt</artifactId>
-        <version>${osgp.version}</version>
-        <classifier>classes</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.opensmartgridplatform</groupId>
-        <artifactId>osgp-protocol-simulator-mqtt</artifactId>
-        <version>${osgp.version}</version>
-        <classifier>classes</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.opensmartgridplatform</groupId>
-        <artifactId>osgp-adapter-domain-microgrids</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
