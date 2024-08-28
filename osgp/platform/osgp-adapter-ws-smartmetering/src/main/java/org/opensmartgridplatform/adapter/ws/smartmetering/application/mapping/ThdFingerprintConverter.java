@@ -30,16 +30,20 @@ public class ThdFingerprintConverter {
         .getFingerprintValue()
         .addAll(sourceThdFingerprint.getThdInstantaneousCurrentFingerprintL1());
     dest.setThdInstantaneousCurrentFingerprintL1(fingerprintValuesL1);
-    final FingerprintValues fingerprintValuesL2 = new FingerprintValues();
-    fingerprintValuesL2
-        .getFingerprintValue()
-        .addAll(sourceThdFingerprint.getThdInstantaneousCurrentFingerprintL2());
-    dest.setThdInstantaneousCurrentFingerprintL2(fingerprintValuesL2);
-    final FingerprintValues fingerprintValuesL3 = new FingerprintValues();
-    fingerprintValuesL3
-        .getFingerprintValue()
-        .addAll(sourceThdFingerprint.getThdInstantaneousCurrentFingerprintL3());
-    dest.setThdInstantaneousCurrentFingerprintL3(fingerprintValuesL3);
+    if (sourceThdFingerprint.getThdInstantaneousCurrentFingerprintL2() != null) {
+      final FingerprintValues fingerprintValuesL2 = new FingerprintValues();
+      fingerprintValuesL2
+          .getFingerprintValue()
+          .addAll(sourceThdFingerprint.getThdInstantaneousCurrentFingerprintL2());
+      dest.setThdInstantaneousCurrentFingerprintL2(fingerprintValuesL2);
+    }
+    if (sourceThdFingerprint.getThdInstantaneousCurrentFingerprintL3() != null) {
+      final FingerprintValues fingerprintValuesL3 = new FingerprintValues();
+      fingerprintValuesL3
+          .getFingerprintValue()
+          .addAll(sourceThdFingerprint.getThdInstantaneousCurrentFingerprintL3());
+      dest.setThdInstantaneousCurrentFingerprintL3(fingerprintValuesL3);
+    }
     dest.setThdCurrentOverLimitCounterL1(sourceThdFingerprint.getThdCurrentOverLimitCounterL1());
     dest.setThdCurrentOverLimitCounterL2(sourceThdFingerprint.getThdCurrentOverLimitCounterL2());
     dest.setThdCurrentOverLimitCounterL3(sourceThdFingerprint.getThdCurrentOverLimitCounterL3());

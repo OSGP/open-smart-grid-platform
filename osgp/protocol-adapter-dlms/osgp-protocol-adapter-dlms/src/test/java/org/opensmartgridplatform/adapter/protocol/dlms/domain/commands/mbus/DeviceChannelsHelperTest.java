@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod.SLAVE_DEINSTALL;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.exceptions.ObjectConfigException;
-import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 
@@ -52,6 +52,7 @@ public class DeviceChannelsHelperTest {
   private static final String MANUFACTURER_IDENTIFICATION_AS_TEXT = "AAA";
   private static final short VERSION = 2;
   private static final short DEVICE_TYPE = 3;
+  private static final String CALLING = DeviceChannelsHelper.class.getSimpleName();
 
   private final GetResult primaryAddress =
       new GetResultImpl(DataObject.newUInteger8Data(PRIMARY_ADDRESS));
@@ -92,7 +93,7 @@ public class DeviceChannelsHelperTest {
 
     // successful deinstall with signed integer parameter
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
-    when(this.mBusSetup.callMethod(eq(MBusClientMethod.SLAVE_DEINSTALL), any()))
+    when(this.mBusSetup.callMethod(eq(CALLING), eq(SLAVE_DEINSTALL), any()))
         .thenReturn(MethodResultCode.SUCCESS);
 
     final MethodResultCode methodResultCode =
@@ -100,7 +101,7 @@ public class DeviceChannelsHelperTest {
 
     assertThat(methodResultCode).isEqualTo(MethodResultCode.SUCCESS);
 
-    verify(this.mBusSetup, times(1)).callMethod(eq(MBusClientMethod.SLAVE_DEINSTALL), any());
+    verify(this.mBusSetup, times(1)).callMethod(eq(CALLING), eq(SLAVE_DEINSTALL), any());
   }
 
   @Test
@@ -110,7 +111,7 @@ public class DeviceChannelsHelperTest {
     // unsuccessful
     // attempt with signed integer (TYPE_UNMATCHED)
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
-    when(this.mBusSetup.callMethod(eq(MBusClientMethod.SLAVE_DEINSTALL), any(DataObject.class)))
+    when(this.mBusSetup.callMethod(eq(CALLING), eq(SLAVE_DEINSTALL), any(DataObject.class)))
         .thenReturn(MethodResultCode.TYPE_UNMATCHED)
         .thenReturn(MethodResultCode.SUCCESS);
 
@@ -119,7 +120,7 @@ public class DeviceChannelsHelperTest {
 
     assertThat(methodResultCode).isEqualTo(MethodResultCode.SUCCESS);
 
-    verify(this.mBusSetup, times(2)).callMethod(eq(MBusClientMethod.SLAVE_DEINSTALL), any());
+    verify(this.mBusSetup, times(2)).callMethod(eq(CALLING), eq(SLAVE_DEINSTALL), any());
   }
 
   @Test
@@ -127,7 +128,7 @@ public class DeviceChannelsHelperTest {
 
     // unsuccessful deinstall with signed integer parameter
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
-    when(this.mBusSetup.callMethod(eq(MBusClientMethod.SLAVE_DEINSTALL), any(DataObject.class)))
+    when(this.mBusSetup.callMethod(eq(CALLING), eq(SLAVE_DEINSTALL), any(DataObject.class)))
         .thenReturn(MethodResultCode.SCOPE_OF_ACCESS_VIOLATION);
 
     final MethodResultCode methodResultCode =
@@ -135,7 +136,7 @@ public class DeviceChannelsHelperTest {
 
     assertThat(methodResultCode).isEqualTo(MethodResultCode.SCOPE_OF_ACCESS_VIOLATION);
 
-    verify(this.mBusSetup, times(1)).callMethod(eq(MBusClientMethod.SLAVE_DEINSTALL), any());
+    verify(this.mBusSetup, times(1)).callMethod(eq(CALLING), eq(SLAVE_DEINSTALL), any());
   }
 
   @Test
@@ -145,7 +146,7 @@ public class DeviceChannelsHelperTest {
     // attempt)
 
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
-    when(this.mBusSetup.callMethod(eq(MBusClientMethod.SLAVE_DEINSTALL), any(DataObject.class)))
+    when(this.mBusSetup.callMethod(eq(CALLING), eq(SLAVE_DEINSTALL), any(DataObject.class)))
         .thenReturn(MethodResultCode.TYPE_UNMATCHED)
         .thenReturn(MethodResultCode.SCOPE_OF_ACCESS_VIOLATION);
 
@@ -154,7 +155,7 @@ public class DeviceChannelsHelperTest {
 
     assertThat(methodResultCode).isEqualTo(MethodResultCode.SCOPE_OF_ACCESS_VIOLATION);
 
-    verify(this.mBusSetup, times(2)).callMethod(eq(MBusClientMethod.SLAVE_DEINSTALL), any());
+    verify(this.mBusSetup, times(2)).callMethod(eq(CALLING), eq(SLAVE_DEINSTALL), any());
   }
 
   @Test

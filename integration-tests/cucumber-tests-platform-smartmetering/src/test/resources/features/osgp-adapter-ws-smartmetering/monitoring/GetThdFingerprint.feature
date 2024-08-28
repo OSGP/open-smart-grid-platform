@@ -7,12 +7,13 @@ Feature: SmartMetering Monitoring - Get Thd Fingerprint
   As a grid operator
   I want to be able to get the THD fingerprint and counters from a device
 
-  Scenario Outline: Get the THD fingerprint from a <Protocol> <ProtocolVersion> E-meter
+  Scenario Outline: Get the THD fingerprint from a polyphase <Protocol> <ProtocolVersion> E-meter
     Given a dlms device
       | DeviceIdentification     | <DeviceId>        |
       | DeviceType               | SMART_METER_E     |
       | Protocol                 | <Protocol>        |
       | ProtocolVersion          | <ProtocolVersion> |
+      | Polyphase                | true              |
     When the get THD fingerprint request is received
       | DeviceIdentification | <DeviceId>   |
     Then the THD fingerprint result should be returned
@@ -31,6 +32,24 @@ Feature: SmartMetering Monitoring - Get Thd Fingerprint
       | TEST1029000000001    | SMR      | 5.2             |
       | TEST1030000000001    | SMR      | 5.5             |
 
+  Scenario Outline: Get the THD fingerprint from a single phase <Protocol> <ProtocolVersion> E-meter
+    Given a dlms device
+      | DeviceIdentification     | <DeviceId>        |
+      | DeviceType               | SMART_METER_E     |
+      | Protocol                 | <Protocol>        |
+      | ProtocolVersion          | <ProtocolVersion> |
+      | Polyphase                | false             |
+    When the get THD fingerprint request is received
+      | DeviceIdentification | <DeviceId>   |
+    Then the THD fingerprint result should be returned
+      | THD_CURRENT_L1     |  317 |
+      | THD_FINGERPRINT_L1 |   15 |
+      | THD_COUNTER_L1     | 3136 |
+
+    Examples:
+      | DeviceId             | Protocol | ProtocolVersion |
+      | TEST1029000000001    | SMR      | 5.2             |
+      | TEST1030000000001    | SMR      | 5.5             |
 
   Scenario Outline: Get THD fingerprint is not supported on a <Protocol> <ProtocolVersion> E-meter
     Given a dlms device

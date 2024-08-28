@@ -805,7 +805,7 @@
       "version": 0,
       "obis": "1.0.51.38.124.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": ["PP"],
       "attributes": [
         {
           "id": 2,
@@ -831,7 +831,7 @@
       "version": 0,
       "obis": "1.0.71.38.124.255",
       "group": "ELECTRICITY",
-      "meterTypes": ["SP","PP"],
+      "meterTypes": ["PP"],
       "attributes": [
         {
           "id": 2,
@@ -1002,10 +1002,7 @@
       "version": 0,
       "obis": "1.0.31.7.124.255",
       "group": "ELECTRICITY",
-      "meterTypes": [
-        "SP",
-        "PP"
-      ],
+      "meterTypes": ["SP", "PP"],
       "attributes": [
         {
           "id": 2,
@@ -1031,10 +1028,7 @@
       "version": 0,
       "obis": "1.0.51.7.124.255",
       "group": "ELECTRICITY",
-      "meterTypes": [
-        "SP",
-        "PP"
-      ],
+      "meterTypes": ["PP"],
       "attributes": [
         {
           "id": 2,
@@ -1060,10 +1054,7 @@
       "version": 0,
       "obis": "1.0.71.7.124.255",
       "group": "ELECTRICITY",
-      "meterTypes": [
-        "SP",
-        "PP"
-      ],
+      "meterTypes": ["PP"],
       "attributes": [
         {
           "id": 2,
@@ -1089,10 +1080,7 @@
       "version": 0,
       "obis": "0.1.94.31.24.255",
       "group": "ELECTRICITY",
-      "meterTypes": [
-        "SP",
-        "PP"
-      ],
+      "meterTypes": ["SP", "PP"],
       "attributes": [
         {
           "id": 2,
@@ -1110,10 +1098,7 @@
       "version": 0,
       "obis": "0.1.94.31.25.255",
       "group": "ELECTRICITY",
-      "meterTypes": [
-        "SP",
-        "PP"
-      ],
+      "meterTypes": ["PP"],
       "attributes": [
         {
           "id": 2,
@@ -1131,10 +1116,7 @@
       "version": 0,
       "obis": "0.1.94.31.26.255",
       "group": "ELECTRICITY",
-      "meterTypes": [
-        "SP",
-        "PP"
-      ],
+      "meterTypes": ["PP"],
       "attributes": [
         {
           "id": 2,
@@ -1152,10 +1134,7 @@
       "version": 0,
       "obis": "1.0.31.36.124.255",
       "group": "ELECTRICITY",
-      "meterTypes": [
-        "SP",
-        "PP"
-      ],
+      "meterTypes": ["SP", "PP"],
       "attributes": [
         {
           "id": 2,
@@ -1181,10 +1160,7 @@
       "version": 0,
       "obis": "1.0.51.36.124.255",
       "group": "ELECTRICITY",
-      "meterTypes": [
-        "SP",
-        "PP"
-      ],
+      "meterTypes": ["PP"],
       "attributes": [
         {
           "id": 2,
@@ -1210,10 +1186,7 @@
       "version": 0,
       "obis": "1.0.71.36.124.255",
       "group": "ELECTRICITY",
-      "meterTypes": [
-        "SP",
-        "PP"
-      ],
+      "meterTypes": ["PP"],
       "attributes": [
         {
           "id": 2,

@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform
+@SmartMetering @Platform @MBusDevice
 Feature: SmartMetering Bundle - Clear M-Bus alarm status on all channels of a E meter
   As a grid operator
   I want to be able to clear the M-Bus alarm status on all channels of a E meter
@@ -22,6 +22,9 @@ Feature: SmartMetering Bundle - Clear M-Bus alarm status on all channels of a E 
     Examples:
       | deviceIdentification  | protocol | version |
       | TEST1028000000001     | SMR      | 5.1     |
+    @NightlyBuildOnly
+    Examples:
+      | deviceIdentification  | protocol | version |
       | TEST1029000000001     | SMR      | 5.2     |
       | TEST1030000000001     | SMR      | 5.5     |
 
@@ -40,7 +43,10 @@ Feature: SmartMetering Bundle - Clear M-Bus alarm status on all channels of a E 
 
     Examples:
       | deviceIdentification  | protocol | version | message |
-      | TEST1024000000001     | DSMR     | 2.2     | Did not find READ_MBUS_STATUS object for device 24000000001 for channel 1 |
       | TEST1024000000001     | DSMR     | 4.2.2   | Did not find READ_MBUS_STATUS object for device 24000000001 for channel 1 |
+    @NightlyBuildOnly
+    Examples:
+      | deviceIdentification  | protocol | version | message |
+      | TEST1024000000001     | DSMR     | 2.2     | Did not find READ_MBUS_STATUS object for device 24000000001 for channel 1 |
       | TEST1031000000001     | SMR      | 4.3     | Did not find READ_MBUS_STATUS object for device 31000000001 for channel 1 |
       | TEST1027000000001     | SMR      | 5.0.0   | Did not find CLEAR_MBUS_STATUS object for device 27000000001 for channel 1 |

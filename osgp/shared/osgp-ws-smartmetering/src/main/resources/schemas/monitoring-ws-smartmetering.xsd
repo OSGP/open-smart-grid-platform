@@ -689,14 +689,14 @@
   <xsd:complexType name="ThdFingerprint">
     <xsd:sequence>
       <xsd:element name="ThdInstantaneousCurrentL1" type="xsd:int" />
-      <xsd:element name="ThdInstantaneousCurrentL2" type="xsd:int" />
-      <xsd:element name="ThdInstantaneousCurrentL3" type="xsd:int" />
-      <xsd:element name="ThdInstantaneousCurrentFingerprintL1" type="tns:FingerprintValues"/>
-      <xsd:element name="ThdInstantaneousCurrentFingerprintL2" type="tns:FingerprintValues"/>
-      <xsd:element name="ThdInstantaneousCurrentFingerprintL3" type="tns:FingerprintValues"/>
+      <xsd:element name="ThdInstantaneousCurrentL2" type="xsd:int" minOccurs="0" />
+      <xsd:element name="ThdInstantaneousCurrentL3" type="xsd:int" minOccurs="0" />
+      <xsd:element name="ThdInstantaneousCurrentFingerprintL1" type="tns:FingerprintValues" />
+      <xsd:element name="ThdInstantaneousCurrentFingerprintL2" type="tns:FingerprintValues" minOccurs="0"/>
+      <xsd:element name="ThdInstantaneousCurrentFingerprintL3" type="tns:FingerprintValues" minOccurs="0"/>
       <xsd:element name="ThdCurrentOverLimitCounterL1" type="xsd:int" />
-      <xsd:element name="ThdCurrentOverLimitCounterL2" type="xsd:int" />
-      <xsd:element name="ThdCurrentOverLimitCounterL3" type="xsd:int" />
+      <xsd:element name="ThdCurrentOverLimitCounterL2" type="xsd:int" minOccurs="0" />
+      <xsd:element name="ThdCurrentOverLimitCounterL3" type="xsd:int" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 

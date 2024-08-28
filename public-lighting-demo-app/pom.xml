@@ -12,7 +12,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>public-lighting-demo-app</artifactId>
-  <version>6.3.0-SNAPSHOT</version>
+  <version>6.6.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin 

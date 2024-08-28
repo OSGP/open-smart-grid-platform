@@ -51,29 +51,62 @@ Feature: SmartMetering Configuration - Firmware
       | TEST1029000000001    | SMR      | 5.2     | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
       | TEST1030000000001    | SMR      | 5.5     | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
 
+  @GetFirmwareVersion @GetFirmwareGas
+  Scenario Outline: Get the firmware version from <protocol> <version> gas meter
+    Given a dlms device
+      | DeviceIdentification | <e-meter>     |
+      | DeviceType           | SMART_METER_E |
+      | Protocol             | <protocol>    |
+      | ProtocolVersion      | <version>     |
+    And a dlms device
+      | DeviceIdentification        | <g-meter>     |
+      | DeviceType                  | SMART_METER_G |
+      | GatewayDeviceIdentification | <e-meter>     |
+      | Channel                     |             3 |
+      | FirmwareModuleVersionSimple |      19180706 |
+    When the get firmware version gas request is received
+      | DeviceIdentification | <g-meter> |
+    Then the firmware version gas result should be returned
+      | DeviceIdentification | <g-meter> |
+      | SimpleVersionInfo    |  00400011 |
+    And the database should be updated with the device firmware version
+      | DeviceIdentification | <g-meter> |
+      | SimpleVersionInfo    |  00400011 |
+
+    Examples:
+      | e-meter           | g-meter           | protocol | version |
+      | TEST1027000000001 | TESTG102700000001 | SMR      | 5.0.0   |
+    @NightlyBuildOnly
+    Examples:
+      | e-meter           | g-meter           | protocol | version |
+      | TEST1028000000001 | TESTG102800000001 | SMR      | 5.1     |
+      | TEST1029000000001 | TESTG102900000001 | SMR      | 5.2     |
+      | TEST1030000000001 | TESTG103000000001 | SMR      | 5.5     |
 
   @GetFirmwareVersion @GetFirmwareGas
-  Scenario: Get the firmware version from SMR 5.1 gas meter
+  Scenario Outline: Get the firmware version from a gas meter with none supporting protocol <protocol> <version>
     Given a dlms device
-      | DeviceIdentification | TEST1027000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | Protocol             | SMR               |
-      | ProtocolVersion      |               5.1 |
-      | Port                 |              1027 |
+      | DeviceIdentification | <e-meter>     |
+      | DeviceType           | SMART_METER_E |
+      | Protocol             | <protocol>    |
+      | ProtocolVersion      | <version>     |
     And a dlms device
-      | DeviceIdentification        | TEST1027000000002 |
-      | DeviceType                  | SMART_METER_G     |
-      | GatewayDeviceIdentification | TEST1027000000001 |
-      | Channel                     |                 3 |
-      | FirmwareModuleVersionSimple |          19180706 |
+      | DeviceIdentification        | <g-meter>     |
+      | DeviceType                  | SMART_METER_G |
+      | GatewayDeviceIdentification | <e-meter>     |
+      | Channel                     |             3 |
     When the get firmware version gas request is received
-      | DeviceIdentification | TEST1027000000002 |
-    Then the firmware version gas result should be returned
-      | DeviceIdentification | TEST1027000000002 |
-      | SimpleVersionInfo    |          00400011 |
-    And the database should be updated with the device firmware version
-      | DeviceIdentification | TEST1027000000002 |
-      | SimpleVersionInfo    |          00400011 |
+      | DeviceIdentification | <g-meter> |
+    Then the firmware version gas result should not be returned
+      | DeviceIdentification | <g-meter> |
+
+    Examples:
+      | e-meter           | g-meter           | protocol | version |
+      | TEST1024000000001 | TESTG102400000001 | DSMR     | 4.2.2   |
+    @NightlyBuildOnly
+    Examples:
+      | e-meter           | g-meter           | protocol | version |
+      | TEST1024000000001 | TESTG102400000001 | DSMR     | 2.2     |
 
   @NightlyBuildOnly @UpdateFirmware
   Scenario Outline: successful update of firmware on <protocol> <version> device
@@ -88,8 +121,8 @@ Feature: SmartMetering Configuration - Firmware
       | DeviceType           | SMART_METER_E          |
       | ManufacturerCode     | KAI                    |
       | DeviceModelCode      | MA105                  |
-      | protocolName         | <protocol>             |
-      | protocolVersion      | <version>              |
+      | Protocol             | <protocol>             |
+      | ProtocolVersion      | <version>              |
     And receiving an add or change firmware request
       | FirmwareFileIdentification  | TEST_FW_FILE_0003      |
       | FirmwareFile                | 0000000000230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4ffbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d5fa821c678e71c05c47e1c69c4bfffe1fd |
@@ -118,7 +151,6 @@ Feature: SmartMetering Configuration - Firmware
   @NightlyBuildOnly
     Examples:
       | deviceIdentification | protocol | version |
-      | TEST1024000000001    | DSMR     | 2.2     |
       | TEST1031000000001    | SMR      | 4.3     |
       | TEST1027000000001    | SMR      | 5.0.0   |
       | TEST1028000000001    | SMR      | 5.1     |
