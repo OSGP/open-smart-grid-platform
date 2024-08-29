@@ -9,7 +9,6 @@ import io.github.bucket4j.Bucket;
 import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.ConsumptionProbe;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.function.Supplier;
 import org.opensmartgridplatform.throttling.model.ThrottlingSettings;
@@ -20,9 +19,9 @@ public class Bucket4JRateLimitService implements RateLimitService {
 
   private static final String BUCKET_KEY_FORMAT = "%s_%s";
 
-  private final ProxyManager<byte[]> proxyManager;
+  private final ProxyManager<String> proxyManager;
 
-  public Bucket4JRateLimitService(final ProxyManager<byte[]> proxyManager) {
+  public Bucket4JRateLimitService(final ProxyManager<String> proxyManager) {
     this.proxyManager = proxyManager;
   }
 
@@ -45,8 +44,7 @@ public class Bucket4JRateLimitService implements RateLimitService {
 
   private Bucket resolveBucket(
       final int btsId, final int cellId, final ThrottlingSettings throttlingSettings) {
-    final byte[] bucketKey =
-        String.format(BUCKET_KEY_FORMAT, btsId, cellId).getBytes(StandardCharsets.UTF_8);
+    final String bucketKey = String.format(BUCKET_KEY_FORMAT, btsId, cellId);
     return this.proxyManager
         .builder()
         .build(bucketKey, this.bucketConfiguration(throttlingSettings));

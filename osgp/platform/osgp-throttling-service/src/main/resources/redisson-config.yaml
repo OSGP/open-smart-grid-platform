@@ -1,10 +1,6 @@
 singleServerConfig:
   address: "rediss://localhost:6379"
   sslEnableEndpointIdentification: false
-  sslKeystore: "file:temp/keystore.jks" # Generated in application, based on property: redisson.tmp.keystore.location
-  sslKeystorePassword: "" # Generated in application, leave empty
-  sslTruststore: "file:temp/truststore.jks" # Generated in application, based on property: redisson.tmp.truststore.location
-  sslTruststorePassword: "" # Generated in application, leave empty
   idleConnectionTimeout: 10000
   connectTimeout: 10000
   timeout: 3000
