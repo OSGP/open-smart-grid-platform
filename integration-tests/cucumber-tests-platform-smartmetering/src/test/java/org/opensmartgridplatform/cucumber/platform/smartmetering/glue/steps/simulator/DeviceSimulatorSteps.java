@@ -36,8 +36,8 @@ public class DeviceSimulatorSteps {
 
   public void clearDlmsAttributeValues() {
     try {
-      this.simulatorTriggerClient.clearDlmsAttributeValues();
       this.simulatorTriggerClient.resetWebClient();
+      this.simulatorTriggerClient.clearDlmsAttributeValues();
     } catch (final SimulatorTriggerClientException stce) {
       LOGGER.error("Error calling simulatorTriggerClient.clearDlmsAttributeValues()", stce);
       Assertions.fail("Error clearing DLMS attribute values for simulator");
