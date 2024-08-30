@@ -32,6 +32,7 @@ public class SimulatorTriggerClient extends AbstractClient {
   private static final String CONSTRUCTION_FAILED = "SimulatorTriggerClient construction failed";
   private static final String TRIGGERPATH = "trigger";
   private static final String DYNAMIC_ATTRIBUTES_PATH = "dynamic";
+  private String baseAddress;
 
   /**
    * Construct a SimulatorTriggerClient instance.
@@ -87,6 +88,11 @@ public class SimulatorTriggerClient extends AbstractClient {
    */
   public SimulatorTriggerClient(final String baseAddress) {
     this.webClient = this.configureInsecureWebClient(baseAddress);
+    this.baseAddress = baseAddress;
+  }
+
+  public void resetWebClient() {
+    this.webClient = this.configureInsecureWebClient(this.baseAddress);
   }
 
   private WebClient configureInsecureWebClient(final String baseAddress) {
