@@ -4,28 +4,10 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
-import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.AUTHENTICATION_ERROR;
-import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.AUTHENTICATION_REQUIRED;
-import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.CONNECTION_ERROR;
-import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.CONNECTION_ESTABLISH_ERROR;
-import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.CONNECTION_REFUSED;
-import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.CONNECTION_RESET;
-import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.CONNECTION_TIMED_OUT;
-import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.ILLEGAL_RESPONSE;
-import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.RESPONSE_TIMEOUT;
-import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.SOCKET_CLOSED_BY_REMOTE;
-import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.UNABLE_TO_DECYPHER;
-import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.UNKNOWN_ASSOCIATION_RESULT;
-import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.WRAPPER_HEADER_INVALID;
-
-import java.util.Map.Entry;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -37,23 +19,6 @@ import org.slf4j.LoggerFactory;
 
 public abstract class DlmsConnector {
   private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConnector.class);
-
-  private static final SortedMap<String, FunctionalExceptionType> errorMap = new TreeMap<>();
-
-  static {
-    errorMap.put("AUTHENTICATION_ERROR", AUTHENTICATION_ERROR);
-    errorMap.put("AUTHENTICATION_REQUIRED", AUTHENTICATION_REQUIRED);
-    errorMap.put("Connection refused", CONNECTION_REFUSED);
-    errorMap.put("Connection reset", CONNECTION_RESET);
-    errorMap.put("Connection timed out", CONNECTION_TIMED_OUT);
-    errorMap.put("CONNECTION_ESTABLISH_ERROR", CONNECTION_ESTABLISH_ERROR);
-    errorMap.put("Socket was closed by remote host.", SOCKET_CLOSED_BY_REMOTE);
-    errorMap.put("Unable to decypher/decrypt xDLMS pdu", UNABLE_TO_DECYPHER);
-    errorMap.put("WRAPPER_HEADER_INVALID", WRAPPER_HEADER_INVALID);
-    errorMap.put("ILLEGAL_RESPONSE", ILLEGAL_RESPONSE);
-    errorMap.put("RESPONSE_TIMEOUT", RESPONSE_TIMEOUT);
-    errorMap.put("UNKNOWN_ASSOCIATION_RESULT", UNKNOWN_ASSOCIATION_RESULT);
-  }
 
   public abstract DlmsConnection connect(
       final MessageMetadata messageMetadata,
@@ -106,34 +71,5 @@ public abstract class DlmsConnector {
       throw new FunctionalException(
           FunctionalExceptionType.CHALLENGE_LENGTH_OUT_OF_RANGE, ComponentType.PROTOCOL_DLMS, e);
     }
-  }
-
-  protected static ConnectionException getExceptionWithExceptionType(
-      final DlmsDevice device, final Exception e) {
-    final String errorMessage = e.getMessage();
-
-    FunctionalExceptionType exceptionType = CONNECTION_ERROR;
-
-    if (errorMessage != null) {
-      exceptionType =
-          errorMap.entrySet().stream()
-              .filter(entry -> errorMessage.contains(entry.getKey()))
-              .findFirst()
-              .map(Entry::getValue)
-              .orElse(CONNECTION_ERROR);
-    }
-
-    final String msg =
-        String.format(
-            "Connection error for device %s with Ip address:%s Port:%d UseHdlc:%b ExceptionType:%s Message:%s",
-            device.getDeviceIdentification(),
-            device.getIpAddress(),
-            device.getPort(),
-            device.isUseHdlc(),
-            exceptionType.name(),
-            e.getMessage());
-    LOGGER.error(msg);
-
-    return new ConnectionException(msg, e, exceptionType);
   }
 }

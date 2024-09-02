@@ -21,6 +21,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.metrics.Proto
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
@@ -70,7 +71,7 @@ public class Lls1Connector extends SecureDlmsConnector {
       throw new TechnicalException(
           ComponentType.PROTOCOL_DLMS, "The IP address is not found: " + device.getIpAddress());
     } catch (final IOException e) {
-      throw getExceptionWithExceptionType(device, e);
+      throw new ConnectionException(e);
     } catch (final EncrypterException e) {
       LOGGER.error(
           "decryption of security keys failed for device: {}", device.getDeviceIdentification(), e);

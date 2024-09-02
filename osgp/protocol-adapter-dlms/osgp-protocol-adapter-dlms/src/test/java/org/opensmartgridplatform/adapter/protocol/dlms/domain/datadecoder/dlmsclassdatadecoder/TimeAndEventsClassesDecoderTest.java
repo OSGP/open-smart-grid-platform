@@ -49,7 +49,7 @@ class TimeAndEventsClassesDecoderTest {
     final String result = this.decoder.decodeSpecialDays(specialDays);
 
     assertThat(result)
-        .isEqualToIgnoringNewLines(
+        .isEqualTo(
             "1. (id 1): Monday, 2024-5-23\n"
                 + "2222. (id 22): Day of week not specified, Year not specified-12-31");
   }
@@ -85,7 +85,7 @@ class TimeAndEventsClassesDecoderTest {
     final String result = this.decoder.decodeDayProfiles(dayProfiles);
 
     assertThat(result)
-        .isEqualToIgnoringNewLines(
+        .isEqualTo(
             "1: 11:00:00.000 1-1:1.1.1.255 selector 1, 12:00:00.000 2-2:2.2.2.255 selector 2\n"
                 + "2: 13:00:00.000 3-3:3.3.3.255 selector 3");
   }
@@ -113,7 +113,7 @@ class TimeAndEventsClassesDecoderTest {
     final String result = this.decoder.decodeWeekProfiles(weekProfiles);
 
     assertThat(result)
-        .isEqualToIgnoringNewLines(
+        .isEqualTo(
             "NameA: Monday 1, Tuesday 2, Wednesday 3, Thursday 4, Friday 5, Saturday 6, Sunday 7\n"
                 + "NameB: Monday 7, Tuesday 6, Wednesday 5, Thursday 4, Friday 3, Saturday 2, Sunday 1");
   }
@@ -138,7 +138,7 @@ class TimeAndEventsClassesDecoderTest {
     final String result = this.decoder.decodeSeasonProfiles(seasonProfiles);
 
     assertThat(result)
-        .isEqualToIgnoringNewLines(
+        .isEqualTo(
             "Name1: 2024-05-24T08:51:01.000, weekName: WeekName1\n"
                 + "Name2: 2024-05-24T08:52:02.000, weekName: WeekName2");
   }
