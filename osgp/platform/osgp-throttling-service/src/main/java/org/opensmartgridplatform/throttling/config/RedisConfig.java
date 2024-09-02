@@ -46,9 +46,6 @@ public class RedisConfig {
   @Value("${redis.password}")
   private String password;
 
-  @Value("${spring.redis.redisson.file:classpath:redisson-config.yaml}")
-  private String redissonConfigFile;
-
   @Value("${redis.ssl.keystore.location}")
   private String redisKeystoreLocation;
 
