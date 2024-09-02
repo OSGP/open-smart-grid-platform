@@ -11,4 +11,4 @@ then
   exit 1
 fi
 
-./runTestsAtRemoteServer.sh $1 $2 $3 $4 "$5" "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2 -Dhttps.protocols.ignore=false -Ddynamic.properties.base.url=http://localhost:8080/osgp-simulator-dlms-triggered/wakeup $6" "$7"
+./runTestsAtRemoteServer.sh $1 $2 $3 $4 "$5" "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2 -Dhttps.protocols.ignore=false -Ddynamic.properties.base.url=https://$1/osgp-simulator-dlms-triggered/wakeup $6" "$7"
