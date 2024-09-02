@@ -26,7 +26,6 @@ import org.redisson.liveobject.core.RedissonObjectBuilder.ReferenceType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.ResourceUtils;
 
 @Slf4j
 @Configuration
@@ -69,15 +68,22 @@ public class RedisConfig {
   }
 
   @Bean
-  Config redissonConfig() throws IOException {
-    final Config config = Config.fromYAML(ResourceUtils.getFile(this.redissonConfigFile));
+  public Config redissonConfig() throws IOException {
+    final Config config = new Config();
+    final SingleServerConfig singleServerConfig = config.useSingleServer();
+
+    singleServerConfig.setPassword(this.password.isEmpty() ? null : this.password);
+    singleServerConfig.setSslEnableEndpointIdentification(false);
 
     if (this.useSsl) {
-      final SingleServerConfig singleServerConfig = config.useSingleServer();
+      singleServerConfig.setAddress(String.format("rediss://%s:%d", this.host, this.port));
+      singleServerConfig.setSslProtocols(this.protocol.split(","));
       singleServerConfig.setSslKeystore(new File(this.redisKeystoreLocation).toURI().toURL());
       singleServerConfig.setSslKeystorePassword(this.redisKeystorePassword);
       singleServerConfig.setSslTruststore(new File(this.redisTruststoreLocation).toURI().toURL());
       singleServerConfig.setSslTruststorePassword(this.redisTruststorePassword);
+    } else {
+      singleServerConfig.setAddress(String.format("redis://%s:%d", this.host, this.port));
     }
 
     return config;
