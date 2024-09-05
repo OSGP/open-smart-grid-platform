@@ -6,6 +6,7 @@ package org.opensmartgridplatform.throttling;
 
 import java.util.Optional;
 import org.opensmartgridplatform.throttling.entities.ThrottlingConfig;
+import org.opensmartgridplatform.throttling.model.NetworkSegment;
 import org.opensmartgridplatform.throttling.model.ThrottlingSettings;
 import org.springframework.stereotype.Component;
 
@@ -27,33 +28,24 @@ public class SegmentedNetworkThrottler {
   }
 
   public boolean requestPermit(
-      final short throttlingConfigId,
+      final NetworkSegment networkSegment,
       final int clientId,
-      final int baseTransceiverStationId,
-      final int cellId,
       final int requestId,
       final int priority) {
 
-    final ThrottlingSettings throttlingSettings =
-        this.getThrottlingSettings(throttlingConfigId, baseTransceiverStationId, cellId);
+    final ThrottlingSettings throttlingSettings = this.getThrottlingSettings(networkSegment);
 
     return this.permitsByThrottlingConfig.requestPermit(
-        throttlingConfigId,
-        clientId,
-        baseTransceiverStationId,
-        cellId,
-        requestId,
-        priority,
-        throttlingSettings);
+        networkSegment, clientId, requestId, priority, throttlingSettings);
   }
 
-  private ThrottlingSettings getThrottlingSettings(
-      final short throttlingConfigId, final int baseTransceiverStationId, final int cellId) {
+  private ThrottlingSettings getThrottlingSettings(final NetworkSegment networkSegment) {
     final ThrottlingConfig throttlingConfig =
-        this.throttlingConfigCache.getThrottlingConfig(throttlingConfigId);
+        this.throttlingConfigCache.getThrottlingConfig(networkSegment.throttlingConfigId());
 
     final Optional<Integer> maxConcurrencyBtsCell =
-        this.maxConcurrencyByBtsCellConfig.getMaxConcurrency(baseTransceiverStationId, cellId);
+        this.maxConcurrencyByBtsCellConfig.getMaxConcurrency(
+            networkSegment.baseTransceiverStationId(), networkSegment.cellId());
     final int maxConcurrency = maxConcurrencyBtsCell.orElse(throttlingConfig.getMaxConcurrency());
 
     final int maxNewConnections = throttlingConfig.getMaxNewConnections();
@@ -85,14 +77,9 @@ public class SegmentedNetworkThrottler {
   }
 
   public boolean releasePermit(
-      final short throttlingConfigId,
-      final int clientId,
-      final int baseTransceiverStationId,
-      final int cellId,
-      final int requestId) {
+      final NetworkSegment networkSegment, final int clientId, final int requestId) {
 
-    return this.permitsByThrottlingConfig.releasePermit(
-        throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
+    return this.permitsByThrottlingConfig.releasePermit(networkSegment, clientId, requestId);
   }
 
   public boolean discardPermit(final int clientId, final int requestId) {

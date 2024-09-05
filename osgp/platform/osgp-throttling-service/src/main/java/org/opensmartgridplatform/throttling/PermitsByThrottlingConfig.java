@@ -11,10 +11,11 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.opensmartgridplatform.throttling.entities.ThrottlingConfig;
+import org.opensmartgridplatform.throttling.model.NetworkSegment;
 import org.opensmartgridplatform.throttling.model.ThrottlingSettings;
-import org.opensmartgridplatform.throttling.repositories.PermitRepository;
 import org.opensmartgridplatform.throttling.repositories.ThrottlingConfigRepository;
-import org.opensmartgridplatform.throttling.service.PermitReleasedNotifier;
+import org.opensmartgridplatform.throttling.services.PermitService;
+import org.opensmartgridplatform.throttling.services.RateLimitService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,21 +30,21 @@ public class PermitsByThrottlingConfig {
       new ConcurrentHashMap<>();
 
   private final ThrottlingConfigRepository throttlingConfigRepository;
-  private final PermitRepository permitRepository;
-  private final PermitReleasedNotifier permitReleasedNotifier;
+  private final PermitService permitService;
+  private final RateLimitService rateLimitService;
   private final boolean highPrioPoolEnabled;
   private final int maxWaitForHighPrioInMs;
 
   public PermitsByThrottlingConfig(
       final ThrottlingConfigRepository throttlingConfigRepository,
-      final PermitRepository permitRepository,
-      final PermitReleasedNotifier permitReleasedNotifier,
+      final PermitService permitService,
+      final RateLimitService rateLimitService,
       @Value("${wait.for.high.prio.enabled:true}") final boolean highPrioPoolEnabled,
       @Value("${wait.for.high.prio.max.in.ms:10000}") final int maxWaitForHighPrioInMs) {
 
     this.throttlingConfigRepository = throttlingConfigRepository;
-    this.permitRepository = permitRepository;
-    this.permitReleasedNotifier = permitReleasedNotifier;
+    this.permitService = permitService;
+    this.rateLimitService = rateLimitService;
     this.highPrioPoolEnabled = highPrioPoolEnabled;
     this.maxWaitForHighPrioInMs = maxWaitForHighPrioInMs;
   }
@@ -63,14 +64,10 @@ public class PermitsByThrottlingConfig {
             this.permitsPerSegmentByConfig.putIfAbsent(
                 throttlingConfigId,
                 new PermitsPerNetworkSegment(
-                    this.permitRepository,
-                    this.permitReleasedNotifier,
+                    this.permitService,
+                    this.rateLimitService,
                     this.highPrioPoolEnabled,
                     this.maxWaitForHighPrioInMs)));
-
-    /* Update config */
-    this.permitsPerSegmentByConfig.entrySet().parallelStream()
-        .forEach(entry -> entry.getValue().initialize(entry.getKey()));
 
     /* Remove config not in database */
     final List<Short> throttlingConfigIdsToBeRemoved =
@@ -88,37 +85,26 @@ public class PermitsByThrottlingConfig {
   }
 
   public boolean requestPermit(
-      final short throttlingConfigId,
+      final NetworkSegment networkSegment,
       final int clientId,
-      final int baseTransceiverStationId,
-      final int cellId,
       final int requestId,
       final int priority,
       final ThrottlingSettings throttlingSettings) {
 
     final PermitsPerNetworkSegment permitsPerNetworkSegment =
         this.permitsPerSegmentByConfig.computeIfAbsent(
-            throttlingConfigId, this::createAndInitialize);
+            networkSegment.throttlingConfigId(), this::createAndInitialize);
 
     return permitsPerNetworkSegment.requestPermit(
-        throttlingConfigId,
-        clientId,
-        baseTransceiverStationId,
-        cellId,
-        requestId,
-        priority,
-        throttlingSettings);
+        networkSegment, clientId, requestId, priority, throttlingSettings);
   }
 
   private PermitsPerNetworkSegment createAndInitialize(final short throttlingConfigId) {
-    final PermitsPerNetworkSegment permitsPerNetworkSegment =
-        new PermitsPerNetworkSegment(
-            this.permitRepository,
-            this.permitReleasedNotifier,
-            this.highPrioPoolEnabled,
-            this.maxWaitForHighPrioInMs);
-    permitsPerNetworkSegment.initialize(throttlingConfigId);
-    return permitsPerNetworkSegment;
+    return new PermitsPerNetworkSegment(
+        this.permitService,
+        this.rateLimitService,
+        this.highPrioPoolEnabled,
+        this.maxWaitForHighPrioInMs);
   }
 
   public void newThrottlingConfigCreated(final short throttlingConfigId) {
@@ -130,37 +116,27 @@ public class PermitsByThrottlingConfig {
     this.permitsPerSegmentByConfig.putIfAbsent(
         throttlingConfigId,
         new PermitsPerNetworkSegment(
-            this.permitRepository,
-            this.permitReleasedNotifier,
+            this.permitService,
+            this.rateLimitService,
             this.highPrioPoolEnabled,
             this.maxWaitForHighPrioInMs));
   }
 
   public boolean releasePermit(
-      final short throttlingConfigId,
-      final int clientId,
-      final int baseTransceiverStationId,
-      final int cellId,
-      final int requestId) {
+      final NetworkSegment networkSegment, final int clientId, final int requestId) {
 
     final PermitsPerNetworkSegment permitsPerNetworkSegment =
-        this.permitsPerSegmentByConfig.get(throttlingConfigId);
+        this.permitsPerSegmentByConfig.get(networkSegment.throttlingConfigId());
     return permitsPerNetworkSegment != null
-        && permitsPerNetworkSegment.releasePermit(
-            throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
+        && permitsPerNetworkSegment.releasePermit(networkSegment, clientId, requestId);
   }
 
   public boolean discardPermit(final int clientId, final int requestId) {
-    return this.permitRepository
+    return this.permitService
         .findByClientIdAndRequestId(clientId, requestId)
         .map(
             permit ->
-                this.releasePermit(
-                    permit.getThrottlingConfigId(),
-                    permit.getClientId(),
-                    permit.getBaseTransceiverStationId(),
-                    permit.getCellId(),
-                    permit.getRequestId()))
+                this.releasePermit(permit.networkSegment(), permit.clientId(), permit.requestId()))
         .orElse(false);
   }
 }

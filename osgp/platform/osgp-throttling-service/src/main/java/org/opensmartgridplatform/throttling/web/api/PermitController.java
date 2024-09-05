@@ -7,6 +7,7 @@ package org.opensmartgridplatform.throttling.web.api;
 import java.util.Optional;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.opensmartgridplatform.throttling.SegmentedNetworkThrottler;
+import org.opensmartgridplatform.throttling.model.NetworkSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -74,14 +75,12 @@ public class PermitController {
     final int actualRequestId = requestId.orElse(NO_ID_PROVIDED);
     final int actualPriority = priority.orElse(NO_PRIORITY_PROVIDED);
 
+    final NetworkSegment networkSegment =
+        new NetworkSegment(throttlingConfigId, actualBaseTransceiverStationId, actualCellId);
+
     final boolean granted =
         this.segmentedNetworkThrottler.requestPermit(
-            throttlingConfigId,
-            clientId,
-            actualBaseTransceiverStationId,
-            actualCellId,
-            actualRequestId,
-            actualPriority);
+            networkSegment, clientId, actualRequestId, actualPriority);
 
     LOGGER.debug(
         "Requesting permit for network segment ({}, {}) using requestId {} with priority {} for clientId {} and throttlingConfigId {}, granted: {}",
@@ -102,6 +101,7 @@ public class PermitController {
       numberOfPermitsGranted = 0;
       status = HttpStatus.CONFLICT;
     }
+
     return ResponseEntity.status(status).body(numberOfPermitsGranted);
   }
 
@@ -140,13 +140,11 @@ public class PermitController {
     final int actualCellId = cellId.orElse(NO_ID_PROVIDED);
     final int actualRequestId = requestId.orElse(NO_ID_PROVIDED);
 
+    final NetworkSegment networkSegment =
+        new NetworkSegment(throttlingConfigId, actualBaseTransceiverStationId, actualCellId);
+
     final boolean released =
-        this.segmentedNetworkThrottler.releasePermit(
-            throttlingConfigId,
-            clientId,
-            actualBaseTransceiverStationId,
-            actualCellId,
-            actualRequestId);
+        this.segmentedNetworkThrottler.releasePermit(networkSegment, clientId, actualRequestId);
 
     LOGGER.debug(
         "Releasing permit for network segment ({}, {}) using requestId {} for clientId {} and throttlingConfigId {}, released: {}",

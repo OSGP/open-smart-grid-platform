@@ -11,7 +11,8 @@ SPDX-License-Identifier: Apache-2.0
 
   <artifactId>osgp-throttling-service</artifactId>
   <name>osgp-throttling-service</name>
-  <description>Network throttling service for ensuring a maximum number of concurrent connections.</description>
+  <description>Network throttling service for ensuring a maximum number of concurrent connections.
+  </description>
   <packaging>war</packaging>
 
   <parent>
@@ -122,6 +123,26 @@ SPDX-License-Identifier: Apache-2.0
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.redisson</groupId>
+      <artifactId>redisson-spring-boot-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.bucket4j</groupId>
+      <artifactId>bucket4j-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.bucket4j</groupId>
+      <artifactId>bucket4j-redis</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>redis.clients</groupId>
+      <artifactId>jedis</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk18on</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-registry-prometheus</artifactId>
       <scope>runtime</scope>
@@ -145,7 +166,6 @@ SPDX-License-Identifier: Apache-2.0
       <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers</artifactId>
@@ -161,7 +181,6 @@ SPDX-License-Identifier: Apache-2.0
       <artifactId>postgresql</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
 </project>

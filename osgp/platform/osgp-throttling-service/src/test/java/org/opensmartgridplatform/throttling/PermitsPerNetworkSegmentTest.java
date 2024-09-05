@@ -5,501 +5,260 @@
 package org.opensmartgridplatform.throttling;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import org.assertj.core.util.Lists;
-import org.junit.jupiter.api.BeforeEach;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
+import org.opensmartgridplatform.throttling.model.NetworkSegment;
 import org.opensmartgridplatform.throttling.model.ThrottlingSettings;
-import org.opensmartgridplatform.throttling.repositories.PermitRepository;
-import org.opensmartgridplatform.throttling.repositories.PermitRepository.PermitCountByNetworkSegment;
-import org.opensmartgridplatform.throttling.service.PermitReleasedNotifier;
+import org.opensmartgridplatform.throttling.services.PermitService;
+import org.opensmartgridplatform.throttling.services.RateLimitService;
 
 @ExtendWith(MockitoExtension.class)
 class PermitsPerNetworkSegmentTest {
-  private static final boolean WAIT_FOR_HIGH_PRIO_ENABLED = true;
-  private static final int MAX_WAIT_FOR_HIGH_PRIO = 1000;
-  private static final int MAX_WAIT_FOR_NEW_CONNECTIONS = 1200;
 
-  @Mock private PermitRepository permitRepository;
-  @Mock private PermitReleasedNotifier permitReleasedNotifier;
+  private static final int MAX_WAIT_FOR_HIGH_PRIO = 1000;
+
+  private static final int BASE_TRANSCEIVER_STATION_ID = 5;
+  private static final int CELL_ID = 2;
+  private static final NetworkSegment NETWORK_SEGMENT =
+      new NetworkSegment((short) 1, BASE_TRANSCEIVER_STATION_ID, CELL_ID);
+  private static final int CLIENT_ID = 1;
+  private static final int REQUEST_ID = 1;
+
+  private static final int DEFAULT_PRIORITY = 4;
+  private static final int HIGH_PRIORITY = 5;
+
+  private static final int HIGH_PRIORITY_PERMIT_CREATION_WAIT_TIME = 100;
+
+  @Mock private PermitService permitRepository;
+  @Mock private RateLimitService rateLimitService;
   private PermitsPerNetworkSegment permitsPerNetworkSegment;
 
-  @BeforeEach
-  void setUp() {
+  private void createSubject(final boolean waitForHighPrioEnabled) {
     this.permitsPerNetworkSegment =
         new PermitsPerNetworkSegment(
             this.permitRepository,
-            this.permitReleasedNotifier,
-            WAIT_FOR_HIGH_PRIO_ENABLED,
+            this.rateLimitService,
+            waitForHighPrioEnabled,
             MAX_WAIT_FOR_HIGH_PRIO);
   }
 
   @Test
-  void testInitializeEmpty() {
-    final short throttlingConfigId = Short.parseShort("1");
+  void testRequestPermitForDefaultPriority() {
+    this.mockRateLimiter(true);
+    this.mockPermitCreation(true);
 
-    when(this.permitRepository.permitsByNetworkSegment(throttlingConfigId))
-        .thenReturn(Lists.emptyList());
+    this.createSubject(true);
 
-    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
-
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).isEmpty();
-  }
-
-  @Test
-  void testInitialize() {
-    final int btsId = 1;
-    final int cellId = 2;
-    final int numberOfPermits = 3;
-
-    final short throttlingConfigId = Short.parseShort("1");
-
-    final PermitCountByNetworkSegment permitCountByNetworkSegment =
-        this.newPermitCountByNetworkSegment(btsId, cellId, numberOfPermits);
-    when(this.permitRepository.permitsByNetworkSegment(throttlingConfigId))
-        .thenReturn(List.of(permitCountByNetworkSegment));
-
-    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
-
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).hasSize(1);
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment().get(btsId).get(cellId))
-        .isEqualTo(numberOfPermits);
-  }
-
-  @Test
-  void testInitializeUpdate() {
-    final int btsId = 1;
-    final int cellId = 2;
-    final int numberOfPermits = 3;
-    final short throttlingConfigId = Integer.valueOf(1).shortValue();
-
-    this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
-
-    // Update number of permits in database
-    final int newNumberOfPermits = 4;
-
-    final PermitCountByNetworkSegment permitCountByNetworkSegmentUpdate =
-        this.newPermitCountByNetworkSegment(btsId, cellId, newNumberOfPermits);
-    when(this.permitRepository.permitsByNetworkSegment(throttlingConfigId))
-        .thenReturn(List.of(permitCountByNetworkSegmentUpdate));
-
-    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
-
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).hasSize(1);
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment().get(btsId).get(cellId))
-        .isEqualTo(newNumberOfPermits);
-  }
-
-  @Test
-  void testInitializeAdd() {
-    final int btsId = 1;
-    final int cellId = 2;
-    final int numberOfPermits = 3;
-    final short throttlingConfigId = Integer.valueOf(1).shortValue();
-
-    this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
-
-    // Update number of permits in database
-    final int newBtsId = 4;
-
-    final PermitCountByNetworkSegment permitCountByNetworkSegmentUpdate =
-        this.newPermitCountByNetworkSegment(newBtsId, cellId, numberOfPermits);
-    when(this.permitRepository.permitsByNetworkSegment(throttlingConfigId))
-        .thenReturn(List.of(permitCountByNetworkSegmentUpdate));
-
-    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
-
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).hasSize(1);
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment().containsKey(btsId))
-        .isFalse();
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment().get(newBtsId).get(cellId))
-        .isEqualTo(numberOfPermits);
-  }
-
-  @Test
-  void testInitializeDelete() {
-    final int btsId = 1;
-    final int cellId = 2;
-    final int numberOfPermits = 3;
-    final short throttlingConfigId = Integer.valueOf(1).shortValue();
-
-    this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
-
-    // No permits in database
-    when(this.permitRepository.permitsByNetworkSegment(throttlingConfigId))
-        .thenReturn(Lists.emptyList());
-
-    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
-
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).isEmpty();
-  }
-
-  @ParameterizedTest
-  @ValueSource(ints = {0, 2000})
-  void testHighPrioPoolTime(final int maxWaitForHighPrio) {
-    this.permitsPerNetworkSegment =
-        new PermitsPerNetworkSegment(
-            this.permitRepository,
-            this.permitReleasedNotifier,
-            WAIT_FOR_HIGH_PRIO_ENABLED,
-            maxWaitForHighPrio);
-
-    final int btsId = 1;
-    final int cellId = 2;
-    final int numberOfPermits = 3;
-    final short throttlingConfigId = Integer.valueOf(1).shortValue();
-    final int clientId = 4;
-    final int requestId = 5;
-    final int priority = 6;
-    final int maxConcurrency = numberOfPermits;
-    final ThrottlingSettings throttlingSettings =
-        this.newThrottlingSettings(maxConcurrency, 1000, 1000, 1000);
-    this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
-
-    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
-
-    final long start = System.currentTimeMillis();
-    final boolean permitGranted =
+    final boolean result =
         this.permitsPerNetworkSegment.requestPermit(
-            throttlingConfigId, clientId, btsId, cellId, requestId, priority, throttlingSettings);
-    assertThat(permitGranted).isFalse();
-    assertThat(System.currentTimeMillis() - start).isGreaterThanOrEqualTo(maxWaitForHighPrio);
+            NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, DEFAULT_PRIORITY, this.throttlingSettings(1));
+
+    assertThat(result).isTrue();
 
     verify(this.permitRepository, never())
-        .grantPermit(throttlingConfigId, clientId, btsId, cellId, requestId);
+        .createPermitWithHighPriority(any(NetworkSegment.class), anyInt(), anyInt(), anyInt());
   }
 
   @Test
-  void testHighPrioPool() {
-    final int maxWaitForHighPrio = 10000;
-    final int waitBeforeRelease = 1000;
-    this.permitsPerNetworkSegment =
-        new PermitsPerNetworkSegment(
-            this.permitRepository,
-            this.permitReleasedNotifier,
-            WAIT_FOR_HIGH_PRIO_ENABLED,
-            maxWaitForHighPrio);
+  void testRequestPermitWhenMaxConcurrencyDisabled() {
+    this.mockRateLimiter(true);
 
-    final int btsId = 1;
-    final int cellId = 2;
-    final int otherCellId = cellId + 1;
-    final int numberOfPermits = 3;
-    final short throttlingConfigId = Integer.valueOf(1).shortValue();
-    final int clientId = 4;
-    final int requestId = 5;
-    final int priority = 6;
-    final int maxConcurrency = numberOfPermits;
-    final ThrottlingSettings throttlingSettings =
-        this.newThrottlingSettings(maxConcurrency, 1000, 1000, 1000);
+    this.createSubject(true);
 
-    this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
-
-    when(this.permitRepository.grantPermit(throttlingConfigId, clientId, btsId, cellId, requestId))
-        .thenReturn(true);
-    when(this.permitRepository.grantPermit(
-            throttlingConfigId, clientId, btsId, otherCellId, requestId))
-        .thenReturn(true);
-
-    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
-
-    final long start = System.currentTimeMillis();
-
-    final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(2);
-    executor.schedule(
-        () -> {
-          when(this.permitReleasedNotifier.waitForAvailablePermit(btsId, cellId, 1000))
-              .thenReturn(false)
-              .thenReturn(true);
-          this.permitsPerNetworkSegment.releasePermit(
-              throttlingConfigId, clientId, btsId, cellId, requestId);
-
-          verify(this.permitReleasedNotifier, times(1)).notifyPermitReleased(btsId, cellId);
-        },
-        waitBeforeRelease,
-        TimeUnit.MILLISECONDS);
-
-    final boolean permitGrantedOtherCell =
+    final boolean result =
         this.permitsPerNetworkSegment.requestPermit(
-            throttlingConfigId,
-            clientId,
-            btsId,
-            otherCellId,
-            requestId,
-            priority,
-            throttlingSettings);
-    assertThat(permitGrantedOtherCell).isTrue();
-    assertThat((int) (System.currentTimeMillis() - start)).isBetween(0, waitBeforeRelease);
+            NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, DEFAULT_PRIORITY, this.throttlingSettings(0));
 
-    final boolean permitGranted =
+    assertThat(result).isFalse();
+
+    verify(this.permitRepository, never())
+        .createPermitWithHighPriority(any(NetworkSegment.class), anyInt(), anyInt(), anyInt());
+  }
+
+  @Test
+  void testRequestPermitForDefaultPriorityNotGranted() {
+    this.mockRateLimiter(true);
+    this.mockPermitCreation(false);
+
+    this.createSubject(true);
+
+    final boolean result =
         this.permitsPerNetworkSegment.requestPermit(
-            throttlingConfigId, clientId, btsId, cellId, requestId, priority, throttlingSettings);
-    assertThat(permitGranted).isTrue();
-    assertThat((int) (System.currentTimeMillis() - start))
-        .isBetween(waitBeforeRelease, maxWaitForHighPrio);
+            NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, DEFAULT_PRIORITY, this.throttlingSettings(1));
+
+    assertThat(result).isFalse();
+
+    verify(this.permitRepository, never())
+        .createPermitWithHighPriority(any(NetworkSegment.class), anyInt(), anyInt(), anyInt());
   }
 
   @Test
-  void testHighPrioPoolDisabled() {
-    this.permitsPerNetworkSegment =
-        new PermitsPerNetworkSegment(
-            this.permitRepository, this.permitReleasedNotifier, false, MAX_WAIT_FOR_HIGH_PRIO);
+  void testRequestPermitWithRateLimitReached() {
+    this.mockRateLimiter(false);
 
-    final int btsId = 1;
-    final int cellId = 2;
-    final int numberOfPermits = 1;
-    final short throttlingConfigId = Integer.valueOf(1).shortValue();
-    final int clientId = 4;
-    final int requestId = 5;
-    final int priority = 6;
-    final int maxConcurrency = 1;
-    final ThrottlingSettings throttlingSettings =
-        this.newThrottlingSettings(maxConcurrency, 1000, 1000, 1000);
+    this.createSubject(true);
 
-    this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
-
-    final boolean permitGranted =
+    final boolean resultForDefaultPriority =
         this.permitsPerNetworkSegment.requestPermit(
-            throttlingConfigId, clientId, btsId, cellId, requestId, priority, throttlingSettings);
-    assertThat(permitGranted).isFalse();
-  }
+            NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, DEFAULT_PRIORITY, this.throttlingSettings(1));
 
-  @Test
-  void testLowPrioPool() {
-    this.permitsPerNetworkSegment =
-        new PermitsPerNetworkSegment(
-            this.permitRepository,
-            this.permitReleasedNotifier,
-            WAIT_FOR_HIGH_PRIO_ENABLED,
-            MAX_WAIT_FOR_HIGH_PRIO);
+    assertThat(resultForDefaultPriority).isFalse();
 
-    final int btsId = 1;
-    final int cellId = 2;
-    final int numberOfPermits = 1;
-    final short throttlingConfigId = Integer.valueOf(1).shortValue();
-    final int clientId = 4;
-    final int requestId = 5;
-    final int priority = 1;
-    final int maxConcurrency = 1;
-    final ThrottlingSettings throttlingSettings =
-        this.newThrottlingSettings(maxConcurrency, 1000, 1000, 1000);
-
-    this.preparePermits(btsId, cellId, numberOfPermits, throttlingConfigId);
-
-    final boolean permitGranted =
+    final boolean resultForHighPriority =
         this.permitsPerNetworkSegment.requestPermit(
-            throttlingConfigId, clientId, btsId, cellId, requestId, priority, throttlingSettings);
-    assertThat(permitGranted).isFalse();
+            NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, HIGH_PRIORITY, this.throttlingSettings(1));
+
+    assertThat(resultForHighPriority).isFalse();
+
+    verify(this.permitRepository, never())
+        .createPermit(any(NetworkSegment.class), anyInt(), anyInt(), anyInt());
   }
 
   @Test
-  void testMaxNewRequestsClearedInTime() {
-    final long start = System.currentTimeMillis();
+  void testRequestPermitForHighPriorityWithoutUsingHighPriorityPathWay() {
+    this.mockRateLimiter(true);
+    this.mockPermitCreation(true);
 
-    this.assertMaxNewRequests(MAX_WAIT_FOR_NEW_CONNECTIONS - 200, true);
+    this.createSubject(true);
 
-    assertThat((int) (System.currentTimeMillis() - start))
-        .isBetween(0, MAX_WAIT_FOR_NEW_CONNECTIONS);
-  }
-
-  @Test
-  void testMaxNewRequestsReached() {
-    final long start = System.currentTimeMillis();
-
-    this.assertMaxNewRequests(MAX_WAIT_FOR_NEW_CONNECTIONS + 200, false);
-
-    assertThat((int) (System.currentTimeMillis() - start))
-        .isGreaterThanOrEqualTo(MAX_WAIT_FOR_NEW_CONNECTIONS);
-  }
-
-  @Test
-  void tesMaxNewRequestsDisabled() {
-    this.assertDisabledFunctions(10000, -1, true);
-
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).isNotEmpty();
-    assertThat(this.permitsPerNetworkSegment.newConnectionRequestThrottlerPerSegment()).isEmpty();
-  }
-
-  @Test
-  void tesMaxConcurrencyDisabled() {
-    this.assertDisabledFunctions(-1, 10000, true);
-
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).isEmpty();
-    assertThat(this.permitsPerNetworkSegment.newConnectionRequestThrottlerPerSegment())
-        .isNotEmpty();
-  }
-
-  @Test
-  void tesMaxNewRequestsZero() {
-    this.assertDisabledFunctions(10000, 0, false);
-
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).isEmpty();
-    assertThat(this.permitsPerNetworkSegment.newConnectionRequestThrottlerPerSegment()).isEmpty();
-  }
-
-  @Test
-  void tesMaxConcurrencyZero() {
-    this.assertDisabledFunctions(0, 10000, false);
-
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).isEmpty();
-  }
-
-  @Test
-  void testToString() {
-    this.permitsPerNetworkSegment =
-        new PermitsPerNetworkSegment(
-            this.permitRepository,
-            this.permitReleasedNotifier,
-            WAIT_FOR_HIGH_PRIO_ENABLED,
-            MAX_WAIT_FOR_HIGH_PRIO);
-    assertThat(this.permitsPerNetworkSegment.toString()).isNotNull();
-  }
-
-  void assertDisabledFunctions(
-      final int maxConcurrency, final int maxNewConnections, final boolean expectGranted) {
-    final int numberOfPermits = 2000;
-
-    this.permitsPerNetworkSegment =
-        new PermitsPerNetworkSegment(
-            this.permitRepository,
-            this.permitReleasedNotifier,
-            WAIT_FOR_HIGH_PRIO_ENABLED,
-            MAX_WAIT_FOR_HIGH_PRIO);
-
-    final int btsId = 1;
-    final int cellId = 2;
-    final short throttlingConfigId = Integer.valueOf(1).shortValue();
-    final int clientId = 4;
-    final int requestId = 5;
-    final int priority = 6;
-    final long maxNewConnectionsResetTimeInMs = 100;
-
-    final ThrottlingSettings throttlingSettings =
-        this.newThrottlingSettings(
-            maxConcurrency,
-            maxNewConnections,
-            maxNewConnectionsResetTimeInMs,
-            MAX_WAIT_FOR_NEW_CONNECTIONS);
-
-    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
-
-    for (int i = 0; i < numberOfPermits; i++) {
-      final int newRequestId = requestId + i;
-      if (expectGranted) {
-        when(this.permitRepository.grantPermit(
-                throttlingConfigId, clientId, btsId, cellId, newRequestId))
-            .thenReturn(true);
-      } else {
-        verify(this.permitRepository, never())
-            .grantPermit(throttlingConfigId, clientId, btsId, cellId, newRequestId);
-      }
-      final boolean permitGranted =
-          this.permitsPerNetworkSegment.requestPermit(
-              throttlingConfigId,
-              clientId,
-              btsId,
-              cellId,
-              newRequestId,
-              priority,
-              throttlingSettings);
-      assertThat(permitGranted).isEqualTo(expectGranted);
-    }
-  }
-
-  private void assertMaxNewRequests(
-      final int maxNewConnectionsResetTimeInMs, final boolean expectPermitGranted) {
-    this.permitsPerNetworkSegment =
-        new PermitsPerNetworkSegment(
-            this.permitRepository,
-            this.permitReleasedNotifier,
-            WAIT_FOR_HIGH_PRIO_ENABLED,
-            MAX_WAIT_FOR_HIGH_PRIO);
-
-    final int btsId = 1;
-    final int cellId = 2;
-    final int numberOfPermits = 3;
-    final short throttlingConfigId = Integer.valueOf(1).shortValue();
-    final int clientId = 4;
-    final int requestId = 5;
-    final int priority = 6;
-    final int maxConcurrency = 99;
-    final int maxNewConnections = numberOfPermits;
-    final ThrottlingSettings throttlingSettings =
-        this.newThrottlingSettings(
-            maxConcurrency,
-            maxNewConnections,
-            maxNewConnectionsResetTimeInMs,
-            MAX_WAIT_FOR_NEW_CONNECTIONS);
-
-    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
-
-    for (int i = 0; i < numberOfPermits; i++) {
-      final int newRequestId = requestId + i;
-      when(this.permitRepository.grantPermit(
-              throttlingConfigId, clientId, btsId, cellId, newRequestId))
-          .thenReturn(true);
-      final boolean permitGranted =
-          this.permitsPerNetworkSegment.requestPermit(
-              throttlingConfigId,
-              clientId,
-              btsId,
-              cellId,
-              newRequestId,
-              priority,
-              throttlingSettings);
-      assertThat(permitGranted).isTrue();
-    }
-
-    final boolean permitGranted =
+    final boolean result =
         this.permitsPerNetworkSegment.requestPermit(
-            throttlingConfigId, clientId, btsId, cellId, requestId, priority, throttlingSettings);
-    assertThat(permitGranted).isEqualTo(expectPermitGranted);
+            NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, HIGH_PRIORITY, this.throttlingSettings(1));
+
+    assertThat(result).isTrue();
+
+    verify(this.permitRepository, never())
+        .createPermitWithHighPriority(any(NetworkSegment.class), anyInt(), anyInt(), anyInt());
   }
 
-  private void preparePermits(
-      final int btsId,
-      final int cellId,
-      final int numberOfPermits,
-      final short throttlingConfigId) {
-    final PermitCountByNetworkSegment permitCountByNetworkSegment =
-        this.newPermitCountByNetworkSegment(btsId, cellId, numberOfPermits);
-    when(this.permitRepository.permitsByNetworkSegment(throttlingConfigId))
-        .thenReturn(List.of(permitCountByNetworkSegment));
+  @Test
+  void testRequestPermitForHighPriority() {
+    this.mockRateLimiter(true);
+    this.mockPermitCreation(false);
+    this.mockHighPriorityPermitCreation(1);
 
-    this.permitsPerNetworkSegment.initialize(throttlingConfigId);
+    this.createSubject(true);
 
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment()).hasSize(1);
-    assertThat(this.permitsPerNetworkSegment.permitsPerNetworkSegment().get(btsId).get(cellId))
-        .isEqualTo(numberOfPermits);
+    final boolean result =
+        this.permitsPerNetworkSegment.requestPermit(
+            NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, HIGH_PRIORITY, this.throttlingSettings(1));
+
+    assertThat(result).isTrue();
+
+    verify(this.permitRepository, times(1))
+        .createPermitWithHighPriority(any(NetworkSegment.class), anyInt(), anyInt(), anyInt());
   }
 
-  private PermitCountByNetworkSegment newPermitCountByNetworkSegment(
-      final int btsId, final int cellId, final int numberOfPermits) {
-    final PermitCountByNetworkSegment permitCountByNetworkSegment =
-        mock(PermitCountByNetworkSegment.class);
-    when(permitCountByNetworkSegment.getBaseTransceiverStationId()).thenReturn(btsId);
-    when(permitCountByNetworkSegment.getCellId()).thenReturn(cellId);
-    when(permitCountByNetworkSegment.getNumberOfPermits()).thenReturn(numberOfPermits);
-    return permitCountByNetworkSegment;
+  @Test
+  void testRequestPermitForHighPriorityWhenDisabled() {
+    this.mockRateLimiter(true);
+    this.mockPermitCreation(false);
+
+    this.createSubject(false);
+
+    final boolean result =
+        this.permitsPerNetworkSegment.requestPermit(
+            NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, HIGH_PRIORITY, this.throttlingSettings(1));
+
+    assertThat(result).isFalse();
+
+    verify(this.permitRepository, never())
+        .createPermitWithHighPriority(any(NetworkSegment.class), anyInt(), anyInt(), anyInt());
   }
 
-  private ThrottlingSettings newThrottlingSettings(
-      final int maxConcurrency,
-      final int maxNewConnections,
-      final long maxNewConnectionsResetTimeInMs,
-      final long maxNewConnectionsWaitTimeInMs) {
+  @Test
+  void testRequestPermitForHighPriorityWithWait() {
+    this.mockRateLimiter(true);
+    this.mockPermitCreation(false);
+    this.mockHighPriorityPermitCreation(2);
+
+    this.createSubject(true);
+
+    final boolean result =
+        this.permitsPerNetworkSegment.requestPermit(
+            NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, HIGH_PRIORITY, this.throttlingSettings(1));
+
+    assertThat(result).isTrue();
+
+    verify(this.permitRepository, times(2))
+        .createPermitWithHighPriority(any(NetworkSegment.class), anyInt(), anyInt(), anyInt());
+  }
+
+  @Test
+  void testRequestPermitForHighPriorityNotGranted() {
+    this.mockRateLimiter(true);
+    this.mockPermitCreation(false);
+    this.mockHighPriorityPermitCreation(Integer.MAX_VALUE);
+
+    this.createSubject(true);
+
+    final boolean result =
+        this.permitsPerNetworkSegment.requestPermit(
+            NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, HIGH_PRIORITY, this.throttlingSettings(1));
+
+    assertThat(result).isFalse();
+
+    verify(this.permitRepository, atLeast(1))
+        .createPermitWithHighPriority(any(NetworkSegment.class), anyInt(), anyInt(), anyInt());
+  }
+
+  @Test
+  void testReleasePermit() {
+    this.createSubject(true);
+
+    this.permitsPerNetworkSegment.releasePermit(NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID);
+
+    verify(this.permitRepository, times(1)).removePermit(NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID);
+  }
+
+  private void mockRateLimiter(final boolean isAllowed) {
+    when(this.rateLimitService.isNewConnectionRequestAllowed(
+            eq(BASE_TRANSCEIVER_STATION_ID), eq(CELL_ID), any(ThrottlingSettings.class)))
+        .thenReturn(isAllowed);
+  }
+
+  private void mockPermitCreation(final boolean isCreated) {
+    when(this.permitRepository.createPermit(
+            eq(NETWORK_SEGMENT), eq(CLIENT_ID), eq(REQUEST_ID), anyInt()))
+        .thenReturn(isCreated);
+  }
+
+  @SuppressWarnings("squid:S2925")
+  private void mockHighPriorityPermitCreation(final int countWhenSuccessful) {
+    when(this.permitRepository.createPermitWithHighPriority(
+            eq(NETWORK_SEGMENT), eq(CLIENT_ID), eq(REQUEST_ID), anyInt()))
+        .thenAnswer(
+            new Answer<Boolean>() {
+              private int count = 1;
+
+              @SneakyThrows
+              @Override
+              public Boolean answer(final InvocationOnMock invocation) {
+                Thread.sleep(HIGH_PRIORITY_PERMIT_CREATION_WAIT_TIME);
+                return this.count++ == countWhenSuccessful;
+              }
+            });
+  }
+
+  private ThrottlingSettings throttlingSettings(final int maxConcurrency) {
+    return this.createThrottlingSettings(maxConcurrency);
+  }
+
+  private ThrottlingSettings createThrottlingSettings(final int maxConcurrency) {
     return new ThrottlingSettings() {
       @Override
       public int getMaxConcurrency() {
@@ -508,17 +267,17 @@ class PermitsPerNetworkSegmentTest {
 
       @Override
       public int getMaxNewConnections() {
-        return maxNewConnections;
+        return 1;
       }
 
       @Override
       public long getMaxNewConnectionsResetTimeInMs() {
-        return maxNewConnectionsResetTimeInMs;
+        return 1L;
       }
 
       @Override
       public long getMaxNewConnectionsWaitTimeInMs() {
-        return maxNewConnectionsWaitTimeInMs;
+        return 1L;
       }
     };
   }

@@ -5,7 +5,6 @@
 package org.opensmartgridplatform.throttling;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -18,9 +17,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.throttling.entities.ThrottlingConfig;
-import org.opensmartgridplatform.throttling.repositories.PermitRepository;
 import org.opensmartgridplatform.throttling.repositories.ThrottlingConfigRepository;
-import org.opensmartgridplatform.throttling.service.PermitReleasedNotifier;
+import org.opensmartgridplatform.throttling.services.PermitService;
+import org.opensmartgridplatform.throttling.services.RateLimitService;
 
 @ExtendWith(MockitoExtension.class)
 class PermitsByThrottlingConfigTest {
@@ -28,8 +27,9 @@ class PermitsByThrottlingConfigTest {
   private static final int MAX_WAIT_FOR_HIGH_PRIO = 1000;
 
   @Mock private ThrottlingConfigRepository throttlingConfigRepository;
-  @Mock private PermitRepository permitRepository;
-  @Mock private PermitReleasedNotifier permitReleasedNotifier;
+  @Mock private PermitService permitService;
+  @Mock private RateLimitService rateLimitService;
+
   private PermitsByThrottlingConfig permitsByThrottlingConfig;
 
   @BeforeEach
@@ -37,10 +37,10 @@ class PermitsByThrottlingConfigTest {
     this.permitsByThrottlingConfig =
         new PermitsByThrottlingConfig(
             this.throttlingConfigRepository,
-            this.permitRepository,
-            this.permitReleasedNotifier,
+            this.permitService,
+            this.rateLimitService,
             WAIT_FOR_HIGH_PRIO_ENABLED,
-            this.MAX_WAIT_FOR_HIGH_PRIO);
+            MAX_WAIT_FOR_HIGH_PRIO);
   }
 
   @Test
@@ -73,14 +73,12 @@ class PermitsByThrottlingConfigTest {
                 maxNewConnectionsResetTimeInMs,
                 maxNewConnectionsWaitTimeInMs));
     when(this.throttlingConfigRepository.findAll()).thenReturn(throttlingConfigs);
-    when(this.permitRepository.permitsByNetworkSegment(configId)).thenReturn(Lists.emptyList());
 
     this.permitsByThrottlingConfig.initialize();
 
     final Map<Short, PermitsPerNetworkSegment> permitsPerNetworkSegmentByConfig =
         this.permitsByThrottlingConfig.permitsPerNetworkSegmentByConfig();
-    assertThat(permitsPerNetworkSegmentByConfig).hasSize(1);
-    assertThat(permitsPerNetworkSegmentByConfig).containsKey(configId);
+    assertThat(permitsPerNetworkSegmentByConfig).hasSize(1).containsKey(configId);
   }
 
   @Test
@@ -112,7 +110,6 @@ class PermitsByThrottlingConfigTest {
                 maxNewConnectionsResetTimeInMs,
                 maxNewConnectionsWaitTimeInMs));
     when(this.throttlingConfigRepository.findAll()).thenReturn(throttlingConfigs);
-    when(this.permitRepository.permitsByNetworkSegment(newConfigId)).thenReturn(Lists.emptyList());
 
     this.permitsByThrottlingConfig.initialize();
 
@@ -149,7 +146,6 @@ class PermitsByThrottlingConfigTest {
                 maxNewConnectionsResetTimeInMs,
                 maxNewConnectionsWaitTimeInMs));
     when(this.throttlingConfigRepository.findAll()).thenReturn(throttlingConfigs);
-    when(this.permitRepository.permitsByNetworkSegment(configId)).thenReturn(Lists.emptyList());
 
     this.permitsByThrottlingConfig.initialize();
 
@@ -175,10 +171,9 @@ class PermitsByThrottlingConfigTest {
         maxNewConnections,
         maxNewConnectionsResetTimeInMs,
         maxNewConnectionsWaitTimeInMs);
-    reset(this.permitRepository);
 
     when(this.throttlingConfigRepository.findAll()).thenReturn(Lists.emptyList());
-    verifyNoInteractions(this.permitRepository);
+    verifyNoInteractions(this.permitService);
 
     this.permitsByThrottlingConfig.initialize();
 
@@ -204,7 +199,6 @@ class PermitsByThrottlingConfigTest {
                 maxNewConnectionsResetTimeInMs,
                 maxNewConnectionsWaitTimeInMs));
     when(this.throttlingConfigRepository.findAll()).thenReturn(throttlingConfigs);
-    when(this.permitRepository.permitsByNetworkSegment(configId)).thenReturn(Lists.emptyList());
 
     this.permitsByThrottlingConfig.initialize();
 

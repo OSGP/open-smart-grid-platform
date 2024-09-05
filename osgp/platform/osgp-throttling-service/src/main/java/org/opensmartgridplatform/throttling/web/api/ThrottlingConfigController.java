@@ -115,7 +115,7 @@ public class ThrottlingConfigController {
         if (throttlingConfig.getId() != null
             && !throttlingConfig.getId().equals(throttlingConfigEntity.getId())) {
           LOGGER.warn(
-              "Updating exisiting throttling configuration with ID {}, ignoring ID from API request: {}",
+              "Updating existing throttling configuration with ID {}, ignoring ID from API request: {}",
               throttlingConfigEntity.getId(),
               throttlingConfig.getId());
         }

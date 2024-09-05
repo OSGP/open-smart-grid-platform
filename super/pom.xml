@@ -6,7 +6,8 @@ SPDX-FileCopyrightText: Copyright Contributors to the GXF project
 SPDX-License-Identifier: Apache-2.0
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -145,6 +146,10 @@ SPDX-License-Identifier: Apache-2.0
     <hivemq-mqtt-client.version>1.3.3</hivemq-mqtt-client.version>
     <apache.commons.io.version>2.16.1</apache.commons.io.version>
     <apache.commons.compress.version>1.26.1</apache.commons.compress.version>
+    <bucket4j.version>8.10.1</bucket4j.version>
+    <jedis.version>5.1.3</jedis.version>
+    <redisson.version>3.31.0</redisson.version>
+    <bouncycastle.bcprov-jdk18on.version>1.78.1</bouncycastle.bcprov-jdk18on.version>
     <!-- Default always skip integration tests, to ensure all developer data
       is retained -->
     <skipITs>true</skipITs>
@@ -155,7 +160,7 @@ SPDX-License-Identifier: Apache-2.0
     <skipTestJarWithDependenciesAssembly>true</skipTestJarWithDependenciesAssembly>
 
     <!-- Command-line option to pass arguments for surefire -->
-    <surefireArgLine/>
+    <surefireArgLine />
   </properties>
 
   <dependencies>
@@ -696,6 +701,32 @@ SPDX-License-Identifier: Apache-2.0
         <version>${jackson.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.redisson</groupId>
+        <artifactId>redisson-spring-boot-starter</artifactId>
+        <version>${redisson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.bucket4j</groupId>
+        <artifactId>bucket4j-core</artifactId>
+        <version>${bucket4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.bucket4j</groupId>
+        <artifactId>bucket4j-redis</artifactId>
+        <version>${bucket4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>redis.clients</groupId>
+        <artifactId>jedis</artifactId>
+        <version>${jedis.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk18on</artifactId>
+        <version>${bouncycastle.bcprov-jdk18on.version}</version>
+      </dependency>
+
       <!-- PostgreSQL -->
       <dependency>
         <groupId>org.postgresql</groupId>
@@ -717,9 +748,9 @@ SPDX-License-Identifier: Apache-2.0
         <version>${hibernate.version}</version>
       </dependency>
       <dependency>
-          <groupId>jakarta.persistence</groupId>
-          <artifactId>jakarta.persistence-api</artifactId>
-          <version>${jakarta.persistence.api.version}</version>
+        <groupId>jakarta.persistence</groupId>
+        <artifactId>jakarta.persistence-api</artifactId>
+        <version>${jakarta.persistence.api.version}</version>
       </dependency>
 
       <!-- Hibernate validator -->
@@ -777,7 +808,7 @@ SPDX-License-Identifier: Apache-2.0
         <version>${apache.httpcomponents.httpcore.version}</version>
       </dependency>
 
-     <!-- Kafka, Avro -->
+      <!-- Kafka, Avro -->
       <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka-clients</artifactId>
@@ -878,11 +909,11 @@ SPDX-License-Identifier: Apache-2.0
         <scope>import</scope>
       </dependency>
 
-    <dependency>
-      <groupId>com.hivemq</groupId>
-      <artifactId>hivemq-mqtt-client</artifactId>
-      <version>${hivemq-mqtt-client.version}</version>
-    </dependency>
+      <dependency>
+        <groupId>com.hivemq</groupId>
+        <artifactId>hivemq-mqtt-client</artifactId>
+        <version>${hivemq-mqtt-client.version}</version>
+      </dependency>
 
       <!-- MSAL Azure AD -->
       <dependency>
