@@ -12,12 +12,16 @@ import io.github.bucket4j.distributed.proxy.ProxyManager;
 import java.time.Duration;
 import java.util.function.Supplier;
 import org.opensmartgridplatform.throttling.model.ThrottlingSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class Bucket4JRateLimitService implements RateLimitService {
 
   private static final String BUCKET_KEY_FORMAT = "%s_%s";
+
+  private static final Logger log = LoggerFactory.getLogger(Bucket4JRateLimitService.class);
 
   private final ProxyManager<String> proxyManager;
 
@@ -34,6 +38,7 @@ public class Bucket4JRateLimitService implements RateLimitService {
     if (throttlingSettings.getMaxNewConnections() < 0) {
       return true;
     } else if (throttlingSettings.getMaxNewConnections() == 0) {
+      log.warn("ThrottlingSettings.getMaxNewConnections is set to 0.");
       return false;
     }
 

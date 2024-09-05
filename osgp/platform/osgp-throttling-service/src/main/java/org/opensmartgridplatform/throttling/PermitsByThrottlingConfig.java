@@ -30,20 +30,20 @@ public class PermitsByThrottlingConfig {
       new ConcurrentHashMap<>();
 
   private final ThrottlingConfigRepository throttlingConfigRepository;
-  private final PermitService permitRepository;
+  private final PermitService permitService;
   private final RateLimitService rateLimitService;
   private final boolean highPrioPoolEnabled;
   private final int maxWaitForHighPrioInMs;
 
   public PermitsByThrottlingConfig(
       final ThrottlingConfigRepository throttlingConfigRepository,
-      final PermitService permitRepository,
+      final PermitService permitService,
       final RateLimitService rateLimitService,
       @Value("${wait.for.high.prio.enabled:true}") final boolean highPrioPoolEnabled,
       @Value("${wait.for.high.prio.max.in.ms:10000}") final int maxWaitForHighPrioInMs) {
 
     this.throttlingConfigRepository = throttlingConfigRepository;
-    this.permitRepository = permitRepository;
+    this.permitService = permitService;
     this.rateLimitService = rateLimitService;
     this.highPrioPoolEnabled = highPrioPoolEnabled;
     this.maxWaitForHighPrioInMs = maxWaitForHighPrioInMs;
@@ -64,7 +64,7 @@ public class PermitsByThrottlingConfig {
             this.permitsPerSegmentByConfig.putIfAbsent(
                 throttlingConfigId,
                 new PermitsPerNetworkSegment(
-                    this.permitRepository,
+                    this.permitService,
                     this.rateLimitService,
                     this.highPrioPoolEnabled,
                     this.maxWaitForHighPrioInMs)));
@@ -101,7 +101,7 @@ public class PermitsByThrottlingConfig {
 
   private PermitsPerNetworkSegment createAndInitialize(final short throttlingConfigId) {
     return new PermitsPerNetworkSegment(
-        this.permitRepository,
+        this.permitService,
         this.rateLimitService,
         this.highPrioPoolEnabled,
         this.maxWaitForHighPrioInMs);
@@ -116,7 +116,7 @@ public class PermitsByThrottlingConfig {
     this.permitsPerSegmentByConfig.putIfAbsent(
         throttlingConfigId,
         new PermitsPerNetworkSegment(
-            this.permitRepository,
+            this.permitService,
             this.rateLimitService,
             this.highPrioPoolEnabled,
             this.maxWaitForHighPrioInMs));
@@ -132,7 +132,7 @@ public class PermitsByThrottlingConfig {
   }
 
   public boolean discardPermit(final int clientId, final int requestId) {
-    return this.permitRepository
+    return this.permitService
         .findByClientIdAndRequestId(clientId, requestId)
         .map(
             permit ->

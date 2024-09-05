@@ -23,12 +23,12 @@ public class ClientController {
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientController.class);
 
   private final ClientRepository clientRepository;
-  private final PermitService permitRepository;
+  private final PermitService permitService;
 
   public ClientController(
-      final ClientRepository clientRegistrationRepository, final PermitService permitRepository) {
+      final ClientRepository clientRegistrationRepository, final PermitService permitService) {
     this.clientRepository = clientRegistrationRepository;
-    this.permitRepository = permitRepository;
+    this.permitService = permitService;
   }
 
   /**
@@ -66,7 +66,7 @@ public class ClientController {
   @DeleteMapping(path = "/{clientId}")
   public ResponseEntity<Void> unregisterClient(@PathVariable final int clientId) {
     LOGGER.debug("Unregistering client with clientId {}", clientId);
-    final long numberOfPermits = this.permitRepository.countByClientId(clientId);
+    final long numberOfPermits = this.permitService.countByClientId(clientId);
     if (numberOfPermits > 0) {
       LOGGER.warn("Client {} unregistered with {} remaining permits.", clientId, numberOfPermits);
     }

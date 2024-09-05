@@ -61,6 +61,7 @@ public class PermitsPerNetworkSegment {
       final int maxConcurrency) {
 
     if (maxConcurrency == 0) {
+      log.warn("ThrottlingSettings.getMaxConcurrency is set to 0.");
       return false;
     }
 
@@ -73,7 +74,7 @@ public class PermitsPerNetworkSegment {
     } else {
 
       if (this.highPrioPoolEnabled && priority > MessagePriorityEnum.DEFAULT.getPriority()) {
-        log.info("***** High priority request detected. Waiting for permit release.");
+        log.trace("High priority request detected. Waiting for permit release.");
 
         return this.waitUntilPermitIsAvailable(
             networkSegment, clientId, requestId, maxConcurrency, this.maxWaitForHighPrioInMs);
@@ -99,7 +100,7 @@ public class PermitsPerNetworkSegment {
               networkSegment, clientId, requestId, maxConcurrency);
 
       if (!granted) {
-        log.info("***** Permit not available yet. Try again ...");
+        log.info("Waiting until permit is available...");
         continue;
       }
 

@@ -70,9 +70,7 @@ public class RedisPermitService implements PermitService {
       lock.unlock();
     }
 
-    if (log.isTraceEnabled()) {
-      log.trace("Permit for request {} {} granted", requestId, granted ? "is" : " is not");
-    }
+    log.trace("Permit for request {} {} granted", requestId, granted ? "is" : " is not");
 
     return granted;
   }
@@ -125,9 +123,7 @@ public class RedisPermitService implements PermitService {
             .map(permits::remove)
             .orElse(false);
 
-    if (log.isTraceEnabled()) {
-      log.trace("Permit for request {} {} removed", requestId, released ? "is" : " is not");
-    }
+    log.trace("Permit for request {} {} removed", requestId, released ? "is" : " is not");
 
     this.removeExpiredPermits(permitKey);
     return released;
