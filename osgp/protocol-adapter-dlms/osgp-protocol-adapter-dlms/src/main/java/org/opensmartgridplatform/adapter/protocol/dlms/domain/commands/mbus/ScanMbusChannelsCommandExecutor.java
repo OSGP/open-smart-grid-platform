@@ -147,15 +147,19 @@ public class ScanMbusChannelsCommandExecutor
     final Long identification =
         this.dlmsHelper.readLong(getResult, "Identification number on channel " + channel);
 
-    final IdentificationNumber identificationNumber;
+    try {
+      final IdentificationNumber identificationNumber;
 
-    if (this.identificationNumberStoredAsBcdOnDevice(mBusClientSetupVersion)) {
-      identificationNumber = IdentificationNumber.fromBcdRepresentationAsLong(identification);
-    } else {
-      identificationNumber = IdentificationNumber.fromNumericalRepresentation(identification);
+      if (this.identificationNumberStoredAsBcdOnDevice(mBusClientSetupVersion)) {
+        identificationNumber = IdentificationNumber.fromBcdRepresentationAsLong(identification);
+      } else {
+        identificationNumber = IdentificationNumber.fromNumericalRepresentation(identification);
+      }
+
+      return identificationNumber.getTextualRepresentation();
+    } catch (final IllegalArgumentException e) {
+      return getResult.getResultData().toString() + " (Cannot not be correctly interpreted)";
     }
-
-    return identificationNumber.getTextualRepresentation();
   }
 
   private boolean identificationNumberStoredAsBcdOnDevice(final int mBusClientSetupVersion) {
