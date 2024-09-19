@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringAdHoc @MBusDevice
+@SmartMetering @Platform @SmartMeteringAdHoc @MBusDevice @ScanMBus
 Feature: SmartMetering Scan M-Bus Channels
   As a grid operator
   I want to be able to scan the M-Bus channels 
@@ -19,13 +19,13 @@ Feature: SmartMetering Scan M-Bus Channels
       | DeviceType                     | SMART_METER_G     |
       | GatewayDeviceIdentification    | <deviceIdentification> |
       | Channel                        |                 1 |
-      | MbusIdentificationNumber       |          12056731 |
+      | MbusIdentificationNumber       |          <mbusid> |
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     And device simulation of "<deviceIdentification>" with M-Bus client version <mbusversion> values for channel 1
       | MbusPrimaryAddress             | 9        |
-      | MbusIdentificationNumber       | 12056731 |
+      | MbusIdentificationNumber       | <mbusid> |
       | MbusManufacturerIdentification | LGB      |
       | MbusVersion                    | 66       |
       | MbusDeviceTypeIdentification   | 3        |
@@ -52,7 +52,7 @@ Feature: SmartMetering Scan M-Bus Channels
     Then the found M-bus devices are in the response
       | Result                                 | OK                     |
       | DeviceIdentification                   | <deviceIdentification> |
-      | Channel1MbusIdentificationNumber       |               12056731 |
+      | Channel1MbusIdentificationNumber       |   <mbusid_in_response> |
       | Channel1MbusManufacturerIdentification | LGB                    |
       | Channel1MbusVersion                    |                     66 |
       | Channel1MbusDeviceTypeIdentification   |                      3 |
@@ -70,17 +70,18 @@ Feature: SmartMetering Scan M-Bus Channels
       | Channel4MbusDeviceTypeIdentification   |                      0 |
 
   Examples:
-      | deviceIdentification | protocol | version | mbusversion |
-      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |
+      | deviceIdentification | protocol | version | mbusversion | mbusid   | mbusid_in_response                                                           |
+      | TEST1024000000001    | DSMR     | 4.2.2   |           0 | 12056731 |                                                                     12056731 |
   @NightlyBuildOnly
   Examples:
-      | deviceIdentification | protocol | version | mbusversion |
-      | TEST1024000000001    | DSMR     | 2.2     |           0 |
-      | TEST1031000000001    | SMR      | 4.3     |           0 |
-      | TEST1027000000001    | SMR      | 5.0.0   |           1 |
-      | TEST1028000000001    | SMR      | 5.1     |           1 |
-      | TEST1029000000001    | SMR      | 5.2     |           1 |
-      | TEST1030000000001    | SMR      | 5.5     |           1 |
+      | deviceIdentification | protocol | version | mbusversion | mbusid   | mbusid_in_response                                                           |
+      | TEST1024000000001    | DSMR     | 2.2     |           0 | 12056731 |                                                                     12056731 |
+      | TEST1031000000001    | SMR      | 4.3     |           0 | 12056731 |                                                                     12056731 |
+      | TEST1027000000001    | SMR      | 5.0.0   |           1 | 12056731 |                                                                     12056731 |
+      | TEST1028000000001    | SMR      | 5.1     |           1 | 12056731 |                                                                     12056731 |
+      | TEST1029000000001    | SMR      | 5.2     |           1 | 12056731 |                                                                     12056731 |
+      | TEST1030000000001    | SMR      | 5.5     |           1 | 12056731 |                                                                     12056731 |
+      | TEST1024000000001    | DSMR     | 4.2.2   |           0 | A2056731 | DOUBLE_LONG_UNSIGNED Value: 2718263089 (Cannot not be correctly interpreted) |
 
   Scenario: Scan the four m-bus channels of an SMR5 gateway device
     Given a dlms device
