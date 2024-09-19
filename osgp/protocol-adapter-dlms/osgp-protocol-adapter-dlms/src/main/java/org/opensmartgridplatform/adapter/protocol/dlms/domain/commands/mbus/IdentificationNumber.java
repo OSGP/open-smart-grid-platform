@@ -54,8 +54,8 @@ public class IdentificationNumber {
   }
 
   public static IdentificationNumber fromTextualRepresentation(
-      final String identificationInTextualRepresentaion) {
-    return new IdentificationNumber(identificationInTextualRepresentaion);
+      final String identificationInTextualRepresentation) {
+    return new IdentificationNumber(identificationInTextualRepresentation);
   }
 
   public static IdentificationNumber fromNumericalRepresentation(

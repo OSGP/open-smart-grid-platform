@@ -158,6 +158,9 @@ public class ScanMbusChannelsCommandExecutor
 
       return identificationNumber.getTextualRepresentation();
     } catch (final IllegalArgumentException e) {
+      if (getResult.getResultData() == null) {
+        return null;
+      }
       return getResult.getResultData().toString() + " (Cannot not be correctly interpreted)";
     }
   }
