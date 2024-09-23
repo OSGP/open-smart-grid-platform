@@ -119,8 +119,7 @@ SPDX-License-Identifier: Apache-2.0
     <jakarta.annotation.version>3.0.0</jakarta.annotation.version>
     <license.maven.plugin>3.0</license.maven.plugin>
     <jackson.version>2.15.3</jackson.version>
-    <!-- should be updated to cxf 4.0.5 -->
-    <cxf.version>4.0.3</cxf.version>
+    <cxf.version>4.0.5</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
     <micrometer.version>1.13.1</micrometer.version>
