@@ -29,7 +29,7 @@ SPDX-License-Identifier: Apache-2.0
     <skipITs>true</skipITs>
     <openmuc.jdlms.version>1.8.0</openmuc.jdlms.version>
     <!-- override version in super pom -->
-    <gxf.version>4.0.3</gxf.version>
+    <cxf.version>4.0.3</cxf.version>
   </properties>
 
   <build>
@@ -292,17 +292,17 @@ SPDX-License-Identifier: Apache-2.0
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-core</artifactId>
-      <version>${gxf.version}</version>
+      <version>${cxf.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http</artifactId>
-      <version>${gxf.version}</version>
+      <version>${cxf.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-rs-client</artifactId>
-      <version>${gxf.version}</version>
+      <version>${cxf.version}</version>
     </dependency>
 
     <!-- Spring JMS -->
