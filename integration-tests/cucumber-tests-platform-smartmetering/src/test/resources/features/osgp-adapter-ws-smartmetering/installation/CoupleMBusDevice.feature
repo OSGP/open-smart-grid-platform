@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringInstallation @MBusDevice
+@SmartMetering @Platform @SmartMeteringInstallation @MBusDevice @Hydrogen
 Feature: SmartMetering Installation - Couple M-Bus Device
   As a grid operator
   I want to be able to couple an M-Bus device to a smart meter

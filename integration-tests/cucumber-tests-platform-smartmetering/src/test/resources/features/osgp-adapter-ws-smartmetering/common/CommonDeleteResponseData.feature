@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform
+@SmartMetering @Platform @Hydrogen
 Feature: SmartMetering Common - Delete Response Data
   As a grid operator
   I want to be able to delete the response data in the platform

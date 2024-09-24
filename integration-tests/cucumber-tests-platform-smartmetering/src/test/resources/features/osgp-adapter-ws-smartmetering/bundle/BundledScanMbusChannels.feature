@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @MBusDevice
+@SmartMetering @Platform @MBusDevice @Hydrogen
 Feature: SmartMetering Bundle - ScanMbusChannels
   As a grid operator 
   I want to be able to scan the M-Bus channels via a bundle request

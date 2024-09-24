@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringInstallation @MBusDevice @DecoupleMBusDevice @NightlyBuildOnly
+@SmartMetering @Platform @SmartMeteringInstallation @MBusDevice @DecoupleMBusDevice @NightlyBuildOnly @Hydrogen
 Feature: SmartMetering Installation - Decouple M-Bus Device
   As a grid operator
   I want to be able to decouple an M-Bus device from a smart meter

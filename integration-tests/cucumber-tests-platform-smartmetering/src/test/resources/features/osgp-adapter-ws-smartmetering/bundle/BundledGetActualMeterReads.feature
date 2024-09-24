@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform
+@SmartMetering @Platform @Hydrogen
 Feature: SmartMetering Bundle - GetActualMeterReads
   As a grid operator 
   I want to be able to get actual meter reads from a meter via a bundle request

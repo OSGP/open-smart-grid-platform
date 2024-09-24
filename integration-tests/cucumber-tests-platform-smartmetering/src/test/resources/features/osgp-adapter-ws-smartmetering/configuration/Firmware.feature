@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringConfiguration @SmartMeteringFirmware
+@SmartMetering @Platform @SmartMeteringConfiguration @SmartMeteringFirmware @Hydrogen
 Feature: SmartMetering Configuration - Firmware
   As a grid operator
   I want to be able to perform SmartMeteringFirmware operations on a device

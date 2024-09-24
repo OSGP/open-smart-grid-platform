@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringAdHoc @MBusDevice @ScanMBus
+@SmartMetering @Platform @SmartMeteringAdHoc @MBusDevice @ScanMBus @Hydrogen
 Feature: SmartMetering Scan M-Bus Channels
   As a grid operator
   I want to be able to scan the M-Bus channels 

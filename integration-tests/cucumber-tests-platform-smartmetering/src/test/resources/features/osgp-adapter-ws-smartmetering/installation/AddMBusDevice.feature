@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringInstallation @MBusDevice
+@SmartMetering @Platform @SmartMeteringInstallation @MBusDevice @Hydrogen
 Feature: SmartMetering Installation - Add M-Bus device
   As a grid operator
   I want to be able to add a new M-Bus device

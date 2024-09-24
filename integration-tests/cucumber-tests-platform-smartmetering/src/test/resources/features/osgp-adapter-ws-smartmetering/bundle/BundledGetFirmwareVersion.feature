@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringBundle @SmartMeteringFirmware
+@SmartMetering @Platform @SmartMeteringBundle @SmartMeteringFirmware @Hydrogen
 Feature: SmartMetering Bundle - GetFirmwareVersion
   As a grid operator
   I want to retrieve the firmware versions from a meter via a bundle request

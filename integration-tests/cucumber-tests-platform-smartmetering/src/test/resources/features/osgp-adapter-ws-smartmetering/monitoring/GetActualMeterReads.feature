@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringMonitoring
+@SmartMetering @Platform @SmartMeteringMonitoring @Hydrogen
 Feature: SmartMetering Monitoring - Get Actual Meter Reads
   As a grid operator
   I want to be able to get the actual meter reads from a device

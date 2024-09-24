@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @MBusDevice
+@SmartMetering @Platform @MBusDevice @Hydrogen
 Feature: SmartMetering Bundle - GetMbusEncryptionKeyStatus
   As a grid operator 
   I want to retrieve the encryption key status for an M-Bus device from a meter via a bundle request
