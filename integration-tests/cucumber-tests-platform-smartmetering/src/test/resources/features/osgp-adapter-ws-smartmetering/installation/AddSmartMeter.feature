@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringInstallation @Keys @Hydrogen
+@SmartMetering @Platform @SmartMeteringInstallation @Keys
 Feature: SmartMetering Installation - Add smart meter
   As a grid operator
   I want to be able to add a smart meter

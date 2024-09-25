@@ -14,6 +14,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_E;
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_G;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_W;
 import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.DLMS_DEVICE_TIMEZONE;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.HLS3ACTIVE;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.HLS4ACTIVE;
@@ -768,7 +769,7 @@ public class DlmsDeviceSteps {
               PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY, inputSettings));
       secretBuilders.add(
           this.getAppropriateSecretBuilder(KEY_DEVICE_AUTHENTICATIONKEY, inputSettings));
-    } else if (this.isGasSmartMeter(deviceType)) {
+    } else if (this.isMbusSmartMeter(deviceType)) {
       secretBuilders.add(this.getAppropriateSecretBuilder(MBUS_DEFAULT_KEY, inputSettings));
       /*
        * Don't insert a default value for the M-Bus User key. So only
@@ -842,15 +843,23 @@ public class DlmsDeviceSteps {
 
   private boolean isSmartMeter(final Map<String, String> settings) {
     final String deviceType = settings.get(PlatformSmartmeteringKeys.DEVICE_TYPE);
-    return this.isGasSmartMeter(deviceType) || this.isESmartMeter(deviceType);
+    return this.isESmartMeter(deviceType) || this.isMbusSmartMeter(deviceType);
   }
 
   private boolean isGasSmartMeter(final String deviceType) {
     return SMART_METER_G.equals(deviceType);
   }
 
+  private boolean isHydrogenSmartMeter(final String deviceType) {
+    return SMART_METER_W.equals(deviceType);
+  }
+
   private boolean isESmartMeter(final String deviceType) {
     return SMART_METER_E.equals(deviceType);
+  }
+
+  private boolean isMbusSmartMeter(final String deviceType) {
+    return this.isHydrogenSmartMeter(deviceType) || this.isGasSmartMeter(deviceType);
   }
 
   /**

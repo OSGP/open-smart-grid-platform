@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringMonitoring @Hydrogen
+@SmartMetering @Platform @SmartMeteringMonitoring
 Feature: SmartMetering Monitoring - Get Actual Meter Reads
   As a grid operator
   I want to be able to get the actual meter reads from a device
@@ -30,7 +30,7 @@ Feature: SmartMetering Monitoring - Get Actual Meter Reads
       | TEST1029000000001    | SMR      | 5.2             |
       | TEST1030000000001    | SMR      | 5.5             |
 
-  Scenario Outline: Get the actual meter reads from a gas device (<protocol> <protocolversion>)
+  Scenario Outline: Get the actual meter reads from a <type> device (<protocol> <protocolversion>)
     Given a dlms device
       | DeviceIdentification | <deviceIdentificationGateway> |
       | DeviceType           | SMART_METER_E                 |
@@ -38,7 +38,7 @@ Feature: SmartMetering Monitoring - Get Actual Meter Reads
       | ProtocolVersion      | <protocolversion>             |
     And a dlms device
       | DeviceIdentification        | <deviceIdentification>        |
-      | DeviceType                  | SMART_METER_G                 |
+      | DeviceType                  | SMART_METER_<type>            |
       | GatewayDeviceIdentification | <deviceIdentificationGateway> |
       | Channel                     | 1                             |
     When the get actual meter reads gas request is received
@@ -47,14 +47,18 @@ Feature: SmartMetering Monitoring - Get Actual Meter Reads
       | DeviceIdentification | <deviceIdentification>  |
 
     Examples:
-      | deviceIdentificationGateway | deviceIdentification | protocol | protocolversion |
-      | TEST102600000001            | 2TEST102600000001    | DSMR     | 2.2             |
-      | TEST1024000000001           | TESTG102400000001    | DSMR     | 4.2.2           |
-      | TEST1031000000001           | TESTG103100000001    | SMR      | 4.3             |
-      | TEST1027000000001           | TESTG102700000001    | SMR      | 5.0.0           |
-      | TEST1028000000001           | TESTG102800000001    | SMR      | 5.1             |
-      | TEST1029000000001           | TESTG102900000001    | SMR      | 5.2             |
-      | TEST1030000000001           | TESTG103000000001    | SMR      | 5.5             |
+      | deviceIdentificationGateway | deviceIdentification | type | protocol | protocolversion |
+      | TEST102600000001            | 2TEST102600000001    | G    | DSMR     | 2.2             |
+      | TEST1024000000001           | TESTG102400000001    | G    | DSMR     | 4.2.2           |
+      | TEST1031000000001           | TESTG103100000001    | G    | SMR      | 4.3             |
+      | TEST1027000000001           | TESTG102700000001    | G    | SMR      | 5.0.0           |
+      | TEST1028000000001           | TESTG102800000001    | G    | SMR      | 5.1             |
+      | TEST1029000000001           | TESTG102900000001    | G    | SMR      | 5.2             |
+      | TEST1030000000001           | TESTG103000000001    | G    | SMR      | 5.5             |
+    @Hydrogen
+    Examples:
+      | deviceIdentificationGateway | deviceIdentification | type | protocol | protocolversion |
+      | TEST1030000000001           | TESTW103000000001    | W    | SMR      | 5.5             |
 
   @NightlyBuildOnly
   Scenario: Do not refuse an operation with an inactive device
