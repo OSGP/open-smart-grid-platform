@@ -36,20 +36,20 @@ Feature: SmartMetering Installation - Decouple M-Bus Device By Channel
     @NightlyBuildOnly
     Examples:
       | deviceIdentification | protocol | version | mbusversion | ch | mbusid   | mbustype | mbusid_in_response                     | result_string                                                                                        |
-      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |  2 |        3 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
-      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |  3 |        3 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
-      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |  4 |        3 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
-      | TEST1024000000001    | DSMR     | 2.2     |           0 |  1 |        3 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
-      | TEST1031000000001    | SMR      | 4.3     |           0 |  1 |        3 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
-      | TEST1027000000001    | SMR      | 5.0.0   |           1 |  1 |        3 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
-      | TEST1028000000001    | SMR      | 5.1     |           1 |  1 |        3 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
-      | TEST1029000000001    | SMR      | 5.2     |           1 |  1 |        3 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
-      | TEST1030000000001    | SMR      | 5.5     |           1 |  1 |        3 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
-      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |  1 |        3 | A2056731 | DOUBLE_LONG_UNSIGNED Value: 2718263089 | Channel information could not be correctly interpreted. Mbus Device was successful decoupled anyway. |
-    @Hydrogen2
+      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |  2 | 12056731 |        3 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |  3 | 12056731 |        3 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |  4 | 12056731 |        3 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1024000000001    | DSMR     | 2.2     |           0 |  1 | 12056731 |        3 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1031000000001    | SMR      | 4.3     |           0 |  1 | 12056731 |        3 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1027000000001    | SMR      | 5.0.0   |           1 |  1 | 12056731 |        3 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1028000000001    | SMR      | 5.1     |           1 |  1 | 12056731 |        3 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1029000000001    | SMR      | 5.2     |           1 |  1 | 12056731 |        3 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1030000000001    | SMR      | 5.5     |           1 |  1 | 12056731 |        3 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |  1 | A2056731 |        3 | DOUBLE_LONG_UNSIGNED Value: 2718263089 | Channel information could not be correctly interpreted. Mbus Device was successful decoupled anyway. |
+    @Hydrogen
     Examples:
       | deviceIdentification | protocol | version | mbusversion | ch | mbusid   | mbustype | mbusid_in_response                     | result_string                                                                                        |
-      | TEST1030000000001    | SMR      | 5.5     |           1 |  1 |        7 | 12056731 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1030000000001    | SMR      | 5.5     |           1 |  1 | 12056731 |        7 | 12056731                               | Decouple Mbus Device was successful                                                                  |
 
   Scenario: Decouple M-Bus Device By Channel on a administratively decoupled E-meter with empty channel
     Given a dlms device
