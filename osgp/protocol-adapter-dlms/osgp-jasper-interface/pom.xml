@@ -126,7 +126,6 @@ SPDX-License-Identifier: Apache-2.0
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpasyncclient</artifactId>
-      <version>4.1.5</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
