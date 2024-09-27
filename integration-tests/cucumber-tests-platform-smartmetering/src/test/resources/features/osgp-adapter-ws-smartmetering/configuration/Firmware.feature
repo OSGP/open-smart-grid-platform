@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringConfiguration @SmartMeteringFirmware @Hydrogen
+@SmartMetering @Platform @SmartMeteringConfiguration @SmartMeteringFirmware
 Feature: SmartMetering Configuration - Firmware
   As a grid operator
   I want to be able to perform SmartMeteringFirmware operations on a device
@@ -52,36 +52,40 @@ Feature: SmartMetering Configuration - Firmware
       | TEST1030000000001    | SMR      | 5.5     | V 1.1 | V 1.2 | V 1.3 | V 1.4 | Telit 10.00.154 | BL_012 XMX_N42_GprsV09 | M57 4836 | M00 0000 |
 
   @GetFirmwareVersion @GetFirmwareGas
-  Scenario Outline: Get the firmware version from <protocol> <version> gas meter
+  Scenario Outline: Get the firmware version from <protocol> <version> <type>-meter
     Given a dlms device
       | DeviceIdentification | <e-meter>     |
       | DeviceType           | SMART_METER_E |
       | Protocol             | <protocol>    |
       | ProtocolVersion      | <version>     |
     And a dlms device
-      | DeviceIdentification        | <g-meter>     |
-      | DeviceType                  | SMART_METER_G |
-      | GatewayDeviceIdentification | <e-meter>     |
-      | Channel                     |             3 |
-      | FirmwareModuleVersionSimple |      19180706 |
+      | DeviceIdentification        | <mbus-meter>       |
+      | DeviceType                  | SMART_METER_<type> |
+      | GatewayDeviceIdentification | <e-meter>          |
+      | Channel                     |                  3 |
+      | FirmwareModuleVersionSimple |           19180706 |
     When the get firmware version gas request is received
-      | DeviceIdentification | <g-meter> |
+      | DeviceIdentification | <mbus-meter> |
     Then the firmware version gas result should be returned
-      | DeviceIdentification | <g-meter> |
-      | SimpleVersionInfo    |  00400011 |
+      | DeviceIdentification | <mbus-meter> |
+      | SimpleVersionInfo    |     00400011 |
     And the database should be updated with the device firmware version
-      | DeviceIdentification | <g-meter> |
-      | SimpleVersionInfo    |  00400011 |
+      | DeviceIdentification | <mbus-meter> |
+      | SimpleVersionInfo    |     00400011 |
 
     Examples:
-      | e-meter           | g-meter           | protocol | version |
-      | TEST1027000000001 | TESTG102700000001 | SMR      | 5.0.0   |
+      | e-meter           | mbus-meter        | type | protocol | version |
+      | TEST1027000000001 | TESTG102700000001 | G    | SMR      | 5.0.0   |
     @NightlyBuildOnly
     Examples:
-      | e-meter           | g-meter           | protocol | version |
-      | TEST1028000000001 | TESTG102800000001 | SMR      | 5.1     |
-      | TEST1029000000001 | TESTG102900000001 | SMR      | 5.2     |
-      | TEST1030000000001 | TESTG103000000001 | SMR      | 5.5     |
+      | e-meter           | mbus-meter        | type | protocol | version |
+      | TEST1028000000001 | TESTG102800000001 | G    | SMR      | 5.1     |
+      | TEST1029000000001 | TESTG102900000001 | G    | SMR      | 5.2     |
+      | TEST1030000000001 | TESTG103000000001 | G    | SMR      | 5.5     |
+    @Hydrogen @NightlyBuildOnly
+    Examples:
+      | e-meter           | mbus-meter        | type | protocol | version |
+      | TEST1030000000001 | TESTW103000000002 | W    | SMR      | 5.5     |
 
   @GetFirmwareVersion @GetFirmwareGas
   Scenario Outline: Get the firmware version from a gas meter with none supporting protocol <protocol> <version>
@@ -280,7 +284,7 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionFunc   | M57 4836               |
 
   @NightlyBuildOnly @UpdateFirmware @UpdateFirmwareGas
-  Scenario: successful update of firmware on G-meter. Firmware file has valid mbus firmware file header
+  Scenario Outline: successful update of firmware on <type>-meter. Firmware file has valid mbus firmware file header
     Given a manufacturer
       | ManufacturerCode | GMAN          |
       | ManufacturerName | G-meter Man 1 |
@@ -299,27 +303,35 @@ Feature: SmartMetering Configuration - Firmware
       | ManufacturerCode         | EMAN              |
       | DeviceModelCode          | E_METER_MODEL_1   |
     And a dlms device
-      | DeviceIdentification        | GTEST102400000002 |
-      | DeviceType                  | SMART_METER_G     |
-      | ManufacturerCode            | GMAN              |
-      | DeviceModelCode             | G_METER_MODEL_1   |
-      | GatewayDeviceIdentification | ETEST102400000002 |
-      | MbusIdentificationNumber    | 00000000          |
-      | FirmwareUpdateKey           | SECURITY_KEY_2    |
+      | DeviceIdentification        | <type>TEST102400000002 |
+      | DeviceType                  | SMART_METER_<type>     |
+      | ManufacturerCode            | GMAN                   |
+      | DeviceModelCode             | G_METER_MODEL_1        |
+      | GatewayDeviceIdentification | ETEST102400000002      |
+      | MbusIdentificationNumber    | 00000000               |
+      | FirmwareUpdateKey           | SECURITY_KEY_2         |
     And a firmware
-      | FirmwareFileIdentification  | TEST_FW_FILE_GAS_0002          |
-      | FirmwareFilename            | theFirmwareFile.bin            |
-      | ModelCode                   | G_METER_MODEL_1                |
-      | FirmwareIsForSmartMeters    | true                           |
-      | FirmwareFileExists          | false                          |
+      | FirmwareFileIdentification  | TEST_FW_FILE_GAS_0002 |
+      | FirmwareFilename            | theFirmwareFile.bin   |
+      | ModelCode                   | G_METER_MODEL_1       |
+      | FirmwareIsForSmartMeters    | true                  |
+      | FirmwareFileExists          | false                 |
     And a firmware file and image identifier in a firmware file store and corresponding hash in database
       | FirmwareFileIdentification  | TEST_FW_FILE_GAS_0002          |
       | FirmwareFile                | 534d523500230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4ffbfd057035a8a7896a4abe7afa36687fbc48944bcee0343eed3a75aab882ec1cf57820adfd4394e262d5fa821c678e71c05c47e1c69c4bfffe1fd |
       | FirmwareHashType            | SHA256                         |
     When the request for a firmware upgrade is received
-      | DeviceIdentification        | GTEST102400000002     |
-      | FirmwareFileIdentification  | TEST_FW_FILE_GAS_0002 |
+      | DeviceIdentification        | <type>TEST102400000002 |
+      | FirmwareFileIdentification  | TEST_FW_FILE_GAS_0002  |
     Then the update firmware result should be returned
-      | DeviceIdentification        | GTEST102400000002 |
+      | DeviceIdentification        | <type>TEST102400000002 |
     And the database should not be updated with the new device firmware
-      | DeviceIdentification        | GTEST102400000002 |
+      | DeviceIdentification        | <type>TEST102400000002 |
+
+    Examples:
+      | type |
+      | G    |
+    @Hydrogen
+    Examples:
+      | type |
+      | W    |

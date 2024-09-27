@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringAdHoc @MBusDevice @ScanMBus @Hydrogen
+@SmartMetering @Platform @SmartMeteringAdHoc @MBusDevice @ScanMBus
 Feature: SmartMetering Scan M-Bus Channels
   As a grid operator
   I want to be able to scan the M-Bus channels 
@@ -82,4 +82,7 @@ Feature: SmartMetering Scan M-Bus Channels
       | TEST1029000000001    | SMR      | 5.2     | G    | 3              |           1 | 12056731 |                                                                     12056731 |
       | TEST1030000000001    | SMR      | 5.5     | G    | 3              |           1 | 12056731 |                                                                     12056731 |
       | TEST1024000000001    | DSMR     | 4.2.2   | G    | 3              |           0 | A2056731 | DOUBLE_LONG_UNSIGNED Value: 2718263089 (Cannot not be correctly interpreted) |
+    @Hydrogen @NightlyBuildOnly
+    Examples:
+      | deviceIdentification | protocol | version | type | mbusDeviceType | mbusversion | mbusid   | mbusid_in_response                                                           |
       | TEST1030000000001    | SMR      | 5.5     | W    | 10             |           1 | 12056731 |                                                                     12056731 |
