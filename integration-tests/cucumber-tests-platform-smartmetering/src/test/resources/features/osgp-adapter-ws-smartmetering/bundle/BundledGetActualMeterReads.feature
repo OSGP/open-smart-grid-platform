@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @Hydrogen
+@SmartMetering @Platform
 Feature: SmartMetering Bundle - GetActualMeterReads
   As a grid operator 
   I want to be able to get actual meter reads from a meter via a bundle request
@@ -32,7 +32,7 @@ Feature: SmartMetering Bundle - GetActualMeterReads
       | TEST1030000000001    | SMR      | 5.5             |
 
   @DSMR22
-  Scenario Outline: Get actual meter reads gas of a device (<protocol> <protocolversion>) in a bundle request
+  Scenario Outline: Get actual meter reads gas of a device (<protocol> <protocolversion> <type>) in a bundle request
     Given a dlms device
       | DeviceIdentification | <deviceIdentificationGateway> |
       | DeviceType           | SMART_METER_E                 |
@@ -40,7 +40,7 @@ Feature: SmartMetering Bundle - GetActualMeterReads
       | ProtocolVersion      | <protocolversion>             |
     And a dlms device
       | DeviceIdentification        | <deviceIdentification>        |
-      | DeviceType                  | SMART_METER_G                 |
+      | DeviceType                  | SMART_METER_<type>            |
       | GatewayDeviceIdentification | <deviceIdentificationGateway> |
       | Channel                     | 1                             |
     And a bundle request
@@ -51,15 +51,19 @@ Feature: SmartMetering Bundle - GetActualMeterReads
     Then the bundle response should contain a get actual meter reads gas response
 
     Examples:
-      | deviceIdentificationGateway | deviceIdentification | protocol | protocolversion |
+      | deviceIdentificationGateway | deviceIdentification | protocol | protocolversion | type |
       # identification for device with protocol DSMR 2.2 has only 16 positions (E-meter) or start with a number (G-meter)
-      | TEST102600000001            | 2TEST102600000001    | DSMR     | 2.2             |
-      | TEST1024000000001           | TESTG102400000001    | DSMR     | 4.2.2           |
-      | TEST1031000000001           | TESTG103100000001    | SMR      | 4.3             |
-      | TEST1027000000001           | TESTG102700000001    | SMR      | 5.0.0           |
-      | TEST1028000000001           | TESTG102800000001    | SMR      | 5.1             |
-      | TEST1029000000001           | TESTG102900000001    | SMR      | 5.2             |
-      | TEST1030000000001           | TESTG103000000001    | SMR      | 5.5             |
+      | TEST102600000001            | 2TEST102600000001    | DSMR     | 2.2             | G    |
+      | TEST1024000000001           | TESTG102400000001    | DSMR     | 4.2.2           | G    |
+      | TEST1031000000001           | TESTG103100000001    | SMR      | 4.3             | G    |
+      | TEST1027000000001           | TESTG102700000001    | SMR      | 5.0.0           | G    |
+      | TEST1028000000001           | TESTG102800000001    | SMR      | 5.1             | G    |
+      | TEST1029000000001           | TESTG102900000001    | SMR      | 5.2             | G    |
+      | TEST1030000000001           | TESTG103000000001    | SMR      | 5.5             | G    |
+    @Hydrogen
+    Examples:
+      | deviceIdentificationGateway | deviceIdentification | protocol | protocolversion | type |
+      | TEST1030000000001           | TESTW103000000001    | SMR      | 5.5             | W    |
 
   Scenario: Get actual meter reads of E and G of a device in a bundle request
     Given a dlms device
