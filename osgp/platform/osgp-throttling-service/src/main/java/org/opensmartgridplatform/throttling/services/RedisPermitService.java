@@ -60,8 +60,16 @@ public class RedisPermitService implements PermitService {
       lock.lock();
 
       final RScoredSortedSet<Permit> permits = this.redisson.getScoredSortedSet(permitKey.key());
+      final int numberOfRegisteredPermits = permits.size();
 
-      if (maxConcurrentRequests < 0 || permits.size() < maxConcurrentRequests) {
+      log.debug(
+          "Trying to register a permit for request[{}] with permit key {}. (max-concurrent-requests: {}, number-of-registered-permits: {})",
+          requestId,
+          permitKey.key(),
+          maxConcurrentRequests,
+          numberOfRegisteredPermits);
+
+      if (maxConcurrentRequests < 0 || numberOfRegisteredPermits < maxConcurrentRequests) {
         granted =
             permits.add(
                 Instant.now().toEpochMilli(), new Permit(networkSegment, clientId, requestId));
@@ -69,8 +77,6 @@ public class RedisPermitService implements PermitService {
     } finally {
       lock.unlock();
     }
-
-    log.trace("Permit for request {} {} granted", requestId, granted ? "is" : " is not");
 
     return granted;
   }
@@ -92,7 +98,6 @@ public class RedisPermitService implements PermitService {
 
       if (lock.tryLock(TRY_LOCK_TIME_MS, TimeUnit.MILLISECONDS)) {
         this.sleeper.sleep(WAIT_TIME_MS);
-        log.trace("High priority request {} is waiting for lock", requestId);
         granted = this.createPermit(networkSegment, clientId, requestId, maxConcurrentRequests);
       }
     } catch (final InterruptedException e) {
@@ -123,7 +128,7 @@ public class RedisPermitService implements PermitService {
             .map(permits::remove)
             .orElse(false);
 
-    log.trace("Permit for request {} {} removed", requestId, released ? "is" : " is not");
+    log.debug("Permit for request [{}] {} removed", requestId, released ? "is" : " is not");
 
     this.removeExpiredPermits(permitKey);
     return released;
@@ -134,7 +139,9 @@ public class RedisPermitService implements PermitService {
     final Instant endTime = Instant.now().minusSeconds(this.timeToLive.getSeconds());
     final int removed =
         permits.removeRangeByScore(Double.NEGATIVE_INFINITY, true, endTime.toEpochMilli(), true);
-    log.trace("Removed {} expired permits", removed);
+    if (log.isDebugEnabled() && removed > 0) {
+      log.debug("Removed {} expired permits", removed);
+    }
   }
 
   @Override
