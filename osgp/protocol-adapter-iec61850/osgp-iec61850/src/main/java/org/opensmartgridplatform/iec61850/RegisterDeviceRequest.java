@@ -6,7 +6,7 @@ package org.opensmartgridplatform.iec61850;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import org.apache.cxf.common.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class RegisterDeviceRequest implements Serializable {
 
@@ -22,7 +22,7 @@ public class RegisterDeviceRequest implements Serializable {
   private final String ipAddress;
 
   public RegisterDeviceRequest(final byte[] bytes) {
-    final int splitIndex = this.getSeparatorPos(bytes);
+    final var splitIndex = this.getSeparatorPos(bytes);
     this.serialNumber = new String(bytes, 0, splitIndex, StandardCharsets.US_ASCII);
     this.ipAddress =
         new String(bytes, splitIndex + 1, bytes.length - splitIndex - 1, StandardCharsets.US_ASCII);
@@ -34,8 +34,8 @@ public class RegisterDeviceRequest implements Serializable {
   }
 
   private int getSeparatorPos(final byte[] bytes) {
-    int index = -1;
-    for (int i = 0; i < bytes.length; i++) {
+    var index = -1;
+    for (var i = 0; i < bytes.length; i++) {
       if (SEPARATOR == bytes[i]) {
         index = i;
         break;

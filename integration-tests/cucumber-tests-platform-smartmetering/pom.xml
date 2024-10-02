@@ -17,6 +17,11 @@ SPDX-License-Identifier: Apache-2.0
     <relativePath>../parent-integration-tests/pom.xml</relativePath>
   </parent>
 
+  <properties>
+    <!-- override version in super pom -->
+    <cxf.version>4.0.3</cxf.version>
+  </properties>
+
   <artifactId>cucumber-tests-platform-smartmetering</artifactId>
   <packaging>jar</packaging>
   <name>cucumber-tests-platform-smartmetering</name>
@@ -191,6 +196,11 @@ SPDX-License-Identifier: Apache-2.0
       <artifactId>commons-io</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-rs-client</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

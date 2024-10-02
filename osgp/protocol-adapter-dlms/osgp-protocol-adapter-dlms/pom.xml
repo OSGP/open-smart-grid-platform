@@ -28,6 +28,8 @@ SPDX-License-Identifier: Apache-2.0
     <osgp-ws-secret-management-version>${project.version}</osgp-ws-secret-management-version>
     <skipITs>true</skipITs>
     <openmuc.jdlms.version>1.8.0</openmuc.jdlms.version>
+    <!-- override version in super pom -->
+    <cxf.version>4.0.3</cxf.version>
   </properties>
 
   <build>
@@ -284,6 +286,23 @@ SPDX-License-Identifier: Apache-2.0
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-spring</artifactId>
+    </dependency>
+
+    <!-- Apache CXF RESTfull WS WebClient -->
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-core</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-rs-client</artifactId>
+      <version>${cxf.version}</version>
     </dependency>
 
     <!-- Spring JMS -->

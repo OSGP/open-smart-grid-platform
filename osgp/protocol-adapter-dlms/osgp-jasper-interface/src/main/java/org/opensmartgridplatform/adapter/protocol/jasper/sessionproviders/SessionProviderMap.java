@@ -7,7 +7,7 @@ package org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.cxf.common.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,7 +21,7 @@ public class SessionProviderMap {
       return null;
     }
     try {
-      final SessionProviderEnum sessionProviderEnum = SessionProviderEnum.valueOf(provider);
+      final var sessionProviderEnum = SessionProviderEnum.valueOf(provider);
       return this.map.get(sessionProviderEnum);
     } catch (final IllegalArgumentException e) {
       log.error("Could not find SessionProvider for unknown provider: {}", provider);
