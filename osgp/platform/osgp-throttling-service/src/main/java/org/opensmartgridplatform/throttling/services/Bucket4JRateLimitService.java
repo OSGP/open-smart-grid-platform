@@ -36,6 +36,7 @@ public class Bucket4JRateLimitService implements RateLimitService {
       final ThrottlingSettings throttlingSettings) {
 
     if (throttlingSettings.getMaxNewConnections() < 0) {
+      log.debug("Rate-limiter is disabled, new connections are always allowed");
       return true;
     } else if (throttlingSettings.getMaxNewConnections() == 0) {
       log.warn("ThrottlingSettings.getMaxNewConnections is set to 0.");
