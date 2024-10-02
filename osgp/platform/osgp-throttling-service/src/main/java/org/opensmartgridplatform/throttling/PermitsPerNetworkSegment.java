@@ -40,11 +40,18 @@ public class PermitsPerNetworkSegment {
         this.rateLimitService.isNewConnectionRequestAllowed(
             networkSegment.baseTransceiverStationId(), networkSegment.cellId(), throttlingSettings);
 
+    log.debug(
+        "Request [{}] for permit is {} by rate-limiter",
+        requestId,
+        newConnectionRequestAllowed ? "allowed" : "NOT allowed");
+
     if (newConnectionRequestAllowed) {
+      log.debug("Request [{}] for permit is allowed by rate-limiter", requestId);
       return this.tryAcquiringPermit(
           networkSegment, clientId, requestId, priority, throttlingSettings.getMaxConcurrency());
     }
 
+    log.debug("Request [{}] for permit is NOT allowed by rate-limiter", requestId);
     return false;
   }
 
@@ -69,12 +76,16 @@ public class PermitsPerNetworkSegment {
         this.permitService.createPermit(networkSegment, clientId, requestId, maxConcurrency);
 
     if (granted) {
+      log.debug("Request [{}] is granted a permit.", requestId);
       return true;
 
     } else {
+      log.debug("Request [{}], is NOT granted a permit.", requestId);
 
       if (this.highPrioPoolEnabled && priority > MessagePriorityEnum.DEFAULT.getPriority()) {
-        log.trace("High priority request detected. Waiting for permit release.");
+        log.debug(
+            "Request [{}] is a high priority request and high priority pool is enabled -> we will wait for a permit release...",
+            requestId);
 
         return this.waitUntilPermitIsAvailable(
             networkSegment, clientId, requestId, maxConcurrency, this.maxWaitForHighPrioInMs);
@@ -93,6 +104,8 @@ public class PermitsPerNetworkSegment {
 
     final long startTime = System.currentTimeMillis();
 
+    log.debug("High priority request [{}] is waiting until permit is available.", requestId);
+
     while (System.currentTimeMillis() - startTime < maxWaitForHighPrioInMs) {
 
       final boolean granted =
@@ -100,10 +113,10 @@ public class PermitsPerNetworkSegment {
               networkSegment, clientId, requestId, maxConcurrency);
 
       if (!granted) {
-        log.info("Waiting until permit is available...");
         continue;
       }
 
+      log.debug("High priority request [{}] is granted a permit.", requestId);
       return true;
     }
 
