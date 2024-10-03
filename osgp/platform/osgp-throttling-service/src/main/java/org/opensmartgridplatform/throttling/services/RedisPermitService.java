@@ -54,6 +54,8 @@ public class RedisPermitService implements PermitService {
     boolean granted = false;
 
     final PermitKey permitKey = PermitKey.builder().networkSegment(networkSegment).build();
+    this.removeExpiredPermits(permitKey);
+
     final RLock lock = this.redisson.getLock(permitKey.lockId());
 
     try {
@@ -130,7 +132,6 @@ public class RedisPermitService implements PermitService {
 
     log.debug("Permit for request [{}] {} removed", requestId, released ? "is" : " is not");
 
-    this.removeExpiredPermits(permitKey);
     return released;
   }
 
