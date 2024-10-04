@@ -57,7 +57,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     @Hydrogen
     Examples:
       | DeviceLifeCycleStatus      | deviceIdentification | protocol | version | mbusversion | type | deviceType |
-      | REGISTERED                 | TEST1030000000001    | SMR      | 5.5     |           1 | W    |          7 |
+      | REGISTERED                 | TEST1030000000001    | SMR      | 5.5     |           1 | W    |          3 |
 
   @NightlyBuildOnly
   Scenario: Couple M-Bus device "TESTG101205673117" with missing attributes to E-meter "TEST1024000000001" on first channel

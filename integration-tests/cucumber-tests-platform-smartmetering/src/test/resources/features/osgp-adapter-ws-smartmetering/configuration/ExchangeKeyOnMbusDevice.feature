@@ -75,4 +75,4 @@ Feature: SmartMetering Configuration - Exchange User Key on M-Bus Device
     @Hydrogen
     Examples:
       | type | mbusType |
-      | W    | 10       |
+      | W    | 3        |

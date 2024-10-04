@@ -23,8 +23,8 @@ Feature: SmartMetering Installation - Decouple M-Bus Device
     And the M-Bus device "TEST<type>102400000001" is Decoupled from device "<deviceIdentification>"
     And the channel of device "TEST<type>102400000001" is cleared
     Examples:
-      | deviceIdentification | protocol | version |
-      | TEST1024000000001    | DSMR     | 4.2.2   |
+      | deviceIdentification | protocol | version | type |
+      | TEST1024000000001    | DSMR     | 4.2.2   | G    |
     @NightlyBuildOnly
     Examples:
       | deviceIdentification | protocol | version | type |

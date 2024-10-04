@@ -49,7 +49,7 @@ Feature: SmartMetering Installation - Decouple M-Bus Device By Channel
     @Hydrogen
     Examples:
       | deviceIdentification | protocol | version | mbusversion | ch | mbusid   | mbustype | mbusid_in_response                     | result_string                                                                                        |
-      | TEST1030000000001    | SMR      | 5.5     |           1 |  1 | 12056731 |        7 | 12056731                               | Decouple Mbus Device was successful                                                                  |
+      | TEST1030000000001    | SMR      | 5.5     |           1 |  1 | 12056731 |        3 | 12056731                               | Decouple Mbus Device was successful                                                                  |
 
   Scenario: Decouple M-Bus Device By Channel on a administratively decoupled E-meter with empty channel
     Given a dlms device

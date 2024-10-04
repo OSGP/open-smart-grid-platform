@@ -85,4 +85,4 @@ Feature: SmartMetering Scan M-Bus Channels
     @Hydrogen @NightlyBuildOnly
     Examples:
       | deviceIdentification | protocol | version | type | mbusDeviceType | mbusversion | mbusid   | mbusid_in_response                                                           |
-      | TEST1030000000001    | SMR      | 5.5     | W    | 10             |           1 | 12056731 |                                                                     12056731 |
+      | TEST1030000000001    | SMR      | 5.5     | W    | 3              |           1 | 12056731 |                                                                     12056731 |

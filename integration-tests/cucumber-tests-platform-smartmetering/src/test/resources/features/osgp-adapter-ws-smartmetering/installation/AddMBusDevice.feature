@@ -52,4 +52,4 @@ Feature: SmartMetering Installation - Add M-Bus device
     @Hydrogen
     Examples:
       | type | mbusDeviceType |
-      | W    |              7 |
+      | W    |              3 |

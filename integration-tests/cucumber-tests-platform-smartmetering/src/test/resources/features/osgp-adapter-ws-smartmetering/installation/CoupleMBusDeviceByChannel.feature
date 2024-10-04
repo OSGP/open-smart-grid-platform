@@ -62,7 +62,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device by Channel
     @Hydrogen
     Examples:
       | DeviceLifeCycleStatus      | deviceIdentification | protocol | version | mbusversion | ch | type | mbustypeid |
-      | REGISTERED                 | TEST1030000000001    | SMR      | 5.5     |           1 |  1 | W    |          7 |
+      | REGISTERED                 | TEST1030000000001    | SMR      | 5.5     |           1 |  1 | W    |          3 |
 
   @NightlyBuildOnly
   Scenario: Couple a connected and bound M-Bus device "TESTG101205673117" to E-meter "TEST1024000000001" on channel 1, device is in use
