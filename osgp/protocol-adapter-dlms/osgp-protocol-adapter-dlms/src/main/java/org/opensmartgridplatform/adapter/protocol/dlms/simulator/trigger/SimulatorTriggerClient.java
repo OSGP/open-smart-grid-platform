@@ -99,46 +99,32 @@ public class SimulatorTriggerClient extends AbstractClient {
     final ClientConfiguration config = WebClient.getConfig(client);
     final HTTPConduit conduit = config.getHttpConduit();
 
-    conduit.setTlsClientParameters(new TLSClientParameters());
-    /*
-     * Client for simulator in use with test code only! For now don't check
-     * or verify any certificates here.
-     */
-    conduit
-        .getTlsClientParameters()
-        .setTrustManagers(
-            new TrustManager[] {
-              new X509TrustManager() {
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                  return new X509Certificate[0];
-                }
+    final TLSClientParameters tlsParams = new TLSClientParameters();
+    tlsParams.setTrustManagers(
+        new TrustManager[] {
+          new X509TrustManager() {
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+              return new X509Certificate[0];
+            }
 
-                @SuppressWarnings(
-                    "squid:S4830") // no server certification validation specifically for testing
-                // purposes
-                @Override
-                public void checkServerTrusted(final X509Certificate[] chain, final String authType)
-                    throws CertificateException {
-                  /*
-                   * Implicitly trust the certificate chain by not throwing a
-                   * CertificateException.
-                   */
-                }
+            @Override
+            public void checkServerTrusted(final X509Certificate[] chain, final String authType)
+                throws CertificateException {
+              // Implicitly trust the certificate chain by not throwing a CertificateException.
+            }
 
-                @SuppressWarnings(
-                    "squid:S4830") // no server certification validation specifically for testing
-                // purposes
-                @Override
-                public void checkClientTrusted(final X509Certificate[] chain, final String authType)
-                    throws CertificateException {
-                  /*
-                   * Implicitly trust the certificate chain by not throwing a
-                   * CertificateException.
-                   */
-                }
-              }
-            });
+            @Override
+            public void checkClientTrusted(final X509Certificate[] chain, final String authType)
+                throws CertificateException {
+              // Implicitly trust the certificate chain by not throwing a CertificateException.
+            }
+          }
+        });
+
+    tlsParams.setSecureSocketProtocol("TLSv1.2");
+
+    conduit.setTlsClientParameters(tlsParams);
 
     return client;
   }
