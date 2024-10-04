@@ -66,21 +66,20 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
   public void theCoupleMBusDeviceToEMeterRequestOnChannelIsReceivedForAnUnknownGateway(
       final String mBusDeviceIdentification, final String eMeter)
       throws WebServiceSecurityException {
-
-    final CoupleMbusDeviceRequest request =
-        CoupleMbusDeviceRequestFactory.forGatewayMbusDevice(eMeter, mBusDeviceIdentification);
-
-    try {
-      this.smartMeteringInstallationClient.coupleMbusDevice(request);
-      Assertions.fail("A SoapFaultClientException should be thrown");
-    } catch (final SoapFaultClientException e) {
-      ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
-    }
+    this.theCoupleMBusDeviceRequestOnChannelIsReceivedForAnInactiveOrUnknownDevice(
+        mBusDeviceIdentification, eMeter);
   }
 
   @When(
       "^the Couple M-Bus device \"([^\"]*)\" to E-meter \"([^\"]*)\" request is received for an inactive device$")
   public void theCoupleMBusDeviceRequestOnChannelIsReceivedForAnInactiveDevice(
+      final String mBusDeviceIdentification, final String eMeter)
+      throws WebServiceSecurityException {
+    this.theCoupleMBusDeviceRequestOnChannelIsReceivedForAnInactiveOrUnknownDevice(
+        mBusDeviceIdentification, eMeter);
+  }
+
+  private void theCoupleMBusDeviceRequestOnChannelIsReceivedForAnInactiveOrUnknownDevice(
       final String mBusDeviceIdentification, final String eMeter)
       throws WebServiceSecurityException {
 

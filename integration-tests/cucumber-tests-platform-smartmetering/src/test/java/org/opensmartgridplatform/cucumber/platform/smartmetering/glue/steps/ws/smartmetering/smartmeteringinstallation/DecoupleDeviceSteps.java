@@ -37,21 +37,20 @@ public class DecoupleDeviceSteps extends AbstractSmartMeteringSteps {
   public void theDecoupleMBusDeviceFromEMeterRequestIsReceivedForAnUnknownDevice(
       final String mBusDeviceIdentification, final String eMeter)
       throws WebServiceSecurityException {
-
-    final DecoupleMbusDeviceRequest request =
-        DecoupleMbusDeviceRequestFactory.forGatewayAndMbusDevice(eMeter, mBusDeviceIdentification);
-
-    try {
-      this.smartMeteringInstallationClient.decoupleMbusDevice(request);
-      Assertions.fail("A SoapFaultClientException should be thrown");
-    } catch (final SoapFaultClientException e) {
-      ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
-    }
+    this.theDecoupleMBusDeviceFromEMeterRequestIsReceivedForAnInactiveOrUnknownDevice(
+        mBusDeviceIdentification, eMeter);
   }
 
   @When(
       "^the Decouple M-Bus device \"([^\"]*)\" from E-meter \"([^\"]*)\" request is received for an inactive gateway$")
   public void theDecoupleMBusDeviceFromEMeterRequestIsReceivedForAnInactiveDevice(
+      final String mBusDeviceIdentification, final String eMeter)
+      throws WebServiceSecurityException {
+    this.theDecoupleMBusDeviceFromEMeterRequestIsReceivedForAnInactiveOrUnknownDevice(
+        mBusDeviceIdentification, eMeter);
+  }
+
+  private void theDecoupleMBusDeviceFromEMeterRequestIsReceivedForAnInactiveOrUnknownDevice(
       final String mBusDeviceIdentification, final String eMeter)
       throws WebServiceSecurityException {
 
