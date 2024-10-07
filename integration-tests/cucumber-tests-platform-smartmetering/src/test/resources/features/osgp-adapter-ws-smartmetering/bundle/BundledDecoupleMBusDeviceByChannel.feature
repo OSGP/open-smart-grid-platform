@@ -103,7 +103,7 @@ Feature: SmartMetering Bundle - Decouple M-Bus Device By Channel
     @Hydrogen
     Examples:
       | type |
-      | G    |
+      | W    |
 
   Scenario Outline: Decouple <type> M-Bus Device By Channel on a administratively coupled E-meter, different from one in channel
     Given a bundle request
@@ -152,4 +152,4 @@ Feature: SmartMetering Bundle - Decouple M-Bus Device By Channel
     @Hydrogen
     Examples:
       | type |
-      | G    |
+      | W    |

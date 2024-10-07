@@ -35,11 +35,12 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
 
   @When("^the Couple M-Bus device \"([^\"]*)\" request is received for E-meter \"([^\"]*)\"$")
   public void theCoupleMBusDeviceRequestIsReceivedForEMeter(
-      final String mBusDeviceIdentification, final String eMeter)
+      final String mBusDeviceIdentification, final String eMeterDeviceIdentification)
       throws WebServiceSecurityException {
 
     final CoupleMbusDeviceRequest request =
-        CoupleMbusDeviceRequestFactory.forGatewayMbusDevice(eMeter, mBusDeviceIdentification);
+        CoupleMbusDeviceRequestFactory.forGatewayMbusDevice(
+            eMeterDeviceIdentification, mBusDeviceIdentification);
     final CoupleMbusDeviceAsyncResponse asyncResponse =
         this.smartMeteringInstallationClient.coupleMbusDevice(request);
 
@@ -49,12 +50,12 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
   @When(
       "^the Couple M-Bus device \"([^\"]*)\" request is received for E-meter \"([^\"]*)\" with force$")
   public void theCoupleMBusDeviceRequestIsReceivedForEMeterWithForce(
-      final String mBusDeviceIdentification, final String eMeter)
+      final String mBusDeviceIdentification, final String eMeterDeviceIdentification)
       throws WebServiceSecurityException {
 
     final CoupleMbusDeviceRequest request =
         CoupleMbusDeviceRequestFactory.forGatewayMbusDeviceWithForce(
-            eMeter, mBusDeviceIdentification);
+            eMeterDeviceIdentification, mBusDeviceIdentification);
     final CoupleMbusDeviceAsyncResponse asyncResponse =
         this.smartMeteringInstallationClient.coupleMbusDevice(request);
 
@@ -64,27 +65,28 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
   @When(
       "^the Couple M-Bus device \"([^\"]*)\" to E-meter \"([^\"]*)\" request is received for an unknown gateway$")
   public void theCoupleMBusDeviceToEMeterRequestOnChannelIsReceivedForAnUnknownGateway(
-      final String mBusDeviceIdentification, final String eMeter)
+      final String mBusDeviceIdentification, final String eMeterDeviceIdentification)
       throws WebServiceSecurityException {
     this.theCoupleMBusDeviceRequestOnChannelIsReceivedForAnInactiveOrUnknownDevice(
-        mBusDeviceIdentification, eMeter);
+        mBusDeviceIdentification, eMeterDeviceIdentification);
   }
 
   @When(
       "^the Couple M-Bus device \"([^\"]*)\" to E-meter \"([^\"]*)\" request is received for an inactive device$")
   public void theCoupleMBusDeviceRequestOnChannelIsReceivedForAnInactiveDevice(
-      final String mBusDeviceIdentification, final String eMeter)
+      final String mBusDeviceIdentification, final String eMeterDeviceIdentification)
       throws WebServiceSecurityException {
     this.theCoupleMBusDeviceRequestOnChannelIsReceivedForAnInactiveOrUnknownDevice(
-        mBusDeviceIdentification, eMeter);
+        mBusDeviceIdentification, eMeterDeviceIdentification);
   }
 
   private void theCoupleMBusDeviceRequestOnChannelIsReceivedForAnInactiveOrUnknownDevice(
-      final String mBusDeviceIdentification, final String eMeter)
+      final String mBusDeviceIdentification, final String eMeterDeviceIdentification)
       throws WebServiceSecurityException {
 
     final CoupleMbusDeviceRequest request =
-        CoupleMbusDeviceRequestFactory.forGatewayMbusDevice(eMeter, mBusDeviceIdentification);
+        CoupleMbusDeviceRequestFactory.forGatewayMbusDevice(
+            eMeterDeviceIdentification, mBusDeviceIdentification);
 
     try {
       this.smartMeteringInstallationClient.coupleMbusDevice(request);
