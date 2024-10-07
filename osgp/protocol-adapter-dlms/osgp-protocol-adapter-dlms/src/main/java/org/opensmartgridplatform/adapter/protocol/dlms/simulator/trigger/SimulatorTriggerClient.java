@@ -108,12 +108,18 @@ public class SimulatorTriggerClient extends AbstractClient {
               return new X509Certificate[0];
             }
 
+            @SuppressWarnings(
+                "squid:S4830") // no server certification validation specifically for testing
+            // purposes
             @Override
             public void checkServerTrusted(final X509Certificate[] chain, final String authType)
                 throws CertificateException {
               // Implicitly trust the certificate chain by not throwing a CertificateException.
             }
 
+            @SuppressWarnings(
+                "squid:S4830") // no server certification validation specifically for testing
+            // purposes
             @Override
             public void checkClientTrusted(final X509Certificate[] chain, final String authType)
                 throws CertificateException {
