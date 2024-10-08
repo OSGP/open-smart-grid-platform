@@ -34,18 +34,26 @@ Feature: SmartMetering Common - Delete Response Data
     Then the bundle response should contain a get actual meter reads response
     And the response data record should not be deleted
 
-  Scenario: Single requests should not delete response data
+  Scenario Outline: Single requests should not delete response data for <type>-meter
     Given a dlms device
       | DeviceIdentification     | TEST1024000000001 |
       | DeviceType               | SMART_METER_E     |
       | SelectiveAccessSupported | true              |
     And a dlms device
-      | DeviceIdentification        | TESTG102400000001 |
-      | DeviceType                  | SMART_METER_G     |
-      | GatewayDeviceIdentification | TEST1024000000001 |
-      | Channel                     |                 1 |
+      | DeviceIdentification        | TEST<type>102400000001 |
+      | DeviceType                  | SMART_METER_<type>     |
+      | GatewayDeviceIdentification | TEST1024000000001      |
+      | Channel                     |                      1 |
     When the get actual meter reads gas request is received
-      | DeviceIdentification | TESTG102400000001 |
+      | DeviceIdentification | TEST<type>102400000001 |
     Then the actual meter reads gas result should be returned
-      | DeviceIdentification | TESTG102400000001 |
+      | DeviceIdentification | TEST<type>102400000001 |
     And the response data record should not be deleted
+
+    Examples:
+      | type |
+      | G    |
+    @Hydrogen
+    Examples:
+      | type |
+      | W    |

@@ -14,8 +14,8 @@ Feature: SmartMetering Bundle - ScanMbusChannels
       | Protocol             | <protocol>             |
       | ProtocolVersion      | <version>              |
     And a dlms device
-      | DeviceIdentification           | TESTG101205673101      |
-      | DeviceType                     | SMART_METER_G          |
+      | DeviceIdentification           | TEST<type>101205673101 |
+      | DeviceType                     | SMART_METER_<type>     |
       | GatewayDeviceIdentification    | <deviceIdentification> |
       | Channel                        |                      1 |
       | MbusIdentificationNumber       |               12056731 |
@@ -69,16 +69,19 @@ Feature: SmartMetering Bundle - ScanMbusChannels
       | Channel4MbusVersion                    |                      0 |
       | Channel4MbusDeviceTypeIdentification   |                      0 |
 
-
     Examples:
-      | deviceIdentification | protocol | version | mbusversion |
-      | TEST1024000000001    | DSMR     | 4.2.2   |           0 |
+      | deviceIdentification | protocol | version | mbusversion | type |
+      | TEST1024000000001    | DSMR     | 4.2.2   |           0 | G    |
     @NightlyBuildOnly
     Examples:
-      | deviceIdentification | protocol | version | mbusversion |
-      | TEST1024000000001    | DSMR     | 2.2     |           0 |
-      | TEST1031000000001    | SMR      | 4.3     |           0 |
-      | TEST1027000000001    | SMR      | 5.0.0   |           1 |
-      | TEST1028000000001    | SMR      | 5.1     |           1 |
-      | TEST1029000000001    | SMR      | 5.2     |           1 |
-      | TEST1030000000001    | SMR      | 5.5     |           1 |
+      | deviceIdentification | protocol | version | mbusversion | type |
+      | TEST1024000000001    | DSMR     | 2.2     |           0 | G    |
+      | TEST1031000000001    | SMR      | 4.3     |           0 | G    |
+      | TEST1027000000001    | SMR      | 5.0.0   |           1 | G    |
+      | TEST1028000000001    | SMR      | 5.1     |           1 | G    |
+      | TEST1029000000001    | SMR      | 5.2     |           1 | G    |
+      | TEST1030000000001    | SMR      | 5.5     |           1 | G    |
+    @Hydrogen @NightlyBuildOnly
+    Examples:
+      | deviceIdentification | protocol | version | mbusversion | type |
+      | TEST1030000000001    | SMR      | 5.5     |           1 | W    |

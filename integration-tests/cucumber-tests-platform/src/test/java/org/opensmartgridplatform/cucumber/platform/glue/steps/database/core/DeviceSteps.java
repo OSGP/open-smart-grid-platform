@@ -230,12 +230,13 @@ public class DeviceSteps extends BaseDeviceSteps {
         });
   }
 
-  @Then("^the G-meter \"([^\"]*)\" is Decoupled from device \"([^\"]*)\"$")
-  public void theGMeterIsDecoupledFromDevice(final String gMeter, final String eMeter) {
+  @Then("^the M-Bus device \"([^\"]*)\" is Decoupled from device \"([^\"]*)\"$")
+  public void theMBusDeviceIsDecoupledFromDevice(
+      final String mbusDeviceIdentification, final String eMeter) {
     Wait.until(
         () -> {
           final SmartMeter mbusDevice =
-              this.smartMeterRepository.findByDeviceIdentification(gMeter);
+              this.smartMeterRepository.findByDeviceIdentification(mbusDeviceIdentification);
           final Device gatewayDevice = this.deviceRepository.findByDeviceIdentification(eMeter);
 
           assertThat(gatewayDevice).as("No GatewayDevice found").isNotNull();
