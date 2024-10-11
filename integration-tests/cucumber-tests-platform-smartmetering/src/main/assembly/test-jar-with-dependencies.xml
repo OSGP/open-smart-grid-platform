@@ -17,21 +17,21 @@ SPDX-License-Identifier: Apache-2.0
     <dependencySet>
       <outputDirectory>/</outputDirectory>
       <useProjectArtifact>true</useProjectArtifact>
-<!--      <unpackOptions>-->
-<!--        <excludes>-->
-<!--          <exclude>META-INF/cxf/bus-extensions.txt</exclude>-->
-<!--        </excludes>-->
-<!--      </unpackOptions>-->
+      <unpackOptions>
+        <excludes>
+          <exclude>META-INF/cxf/bus-extensions.txt</exclude>
+        </excludes>
+      </unpackOptions>
       <!-- we're creating the test-jar as an attachement -->
       <useProjectAttachments>true</useProjectAttachments>
       <unpack>true</unpack>
       <scope>test</scope>
     </dependencySet>
   </dependencySets>
-<!--  <files>-->
-<!--    <file>-->
-<!--      <source>${project.basedir}/src/main/resources/cxf/bus-extensions.txt</source>-->
-<!--      <outputDirectory>META-INF/cxf</outputDirectory>-->
-<!--    </file>-->
-<!--  </files>-->
+  <files>
+    <file>
+      <source>${project.basedir}/src/main/resources/cxf/bus-extensions.txt</source>
+      <outputDirectory>META-INF/cxf</outputDirectory>
+    </file>
+  </files>
 </assembly>
