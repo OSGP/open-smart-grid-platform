@@ -62,7 +62,7 @@ Feature: SmartMetering Bundle - Decouple M-Bus Device By Channel
       | Code    |            201 |
       | Message | UNKNOWN_DEVICE |
 
-  Scenario: Decouple M-Bus Device By Channel on a administratively coupled E-meter, same G-meter as in channel
+  Scenario Outline: Decouple M-Bus Device By Channel on a administratively coupled E-meter, same <type>-meter as in channel
     Given a bundle request
       | DeviceIdentification | TEST1024000000001 |
     And the bundle request contains a Decouple M-Bus Device By Channel action
@@ -77,17 +77,17 @@ Feature: SmartMetering Bundle - Decouple M-Bus Device By Channel
       | MbusVersion                    | 66       |
       | MbusDeviceTypeIdentification   | 3        |
     And a dlms device
-      | DeviceIdentification           | TESTG101205673117 |
-      | DeviceType                     | SMART_METER_G     |
-      | GatewayDeviceIdentification    | TEST1024000000001 |
-      | Channel                        |                 1 |
-      | MbusPrimaryAddress             |                 9 |
-      | MbusIdentificationNumber       |          12056731 |
-      | MbusManufacturerIdentification | LGB               |
-      | MbusVersion                    |                66 |
-      | MbusDeviceTypeIdentification   |                 3 |
+      | DeviceIdentification           | TEST<type>101205673117 |
+      | DeviceType                     | SMART_METER_<type>     |
+      | GatewayDeviceIdentification    | TEST1024000000001      |
+      | Channel                        |                      1 |
+      | MbusPrimaryAddress             |                      9 |
+      | MbusIdentificationNumber       |               12056731 |
+      | MbusManufacturerIdentification | LGB                    |
+      | MbusVersion                    |                     66 |
+      | MbusDeviceTypeIdentification   |                      3 |
     When the bundle request is received
-    Then the Decouple M-Bus Device By Channel bundle response is "OK" with Mbus Device "TESTG101205673117"
+    Then the Decouple M-Bus Device By Channel bundle response is "OK" with Mbus Device "TEST<type>101205673117"
     And the values for the M-Bus client for channel 1 on device simulator "TEST1024000000001" are
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
@@ -95,9 +95,17 @@ Feature: SmartMetering Bundle - Decouple M-Bus Device By Channel
       | MbusVersion                    | 0 |
       | MbusDeviceTypeIdentification   | 0 |
     And the smart meter is decoupled from gateway device in the core database
-      | DeviceIdentification           | TESTG101205673117 |
+      | DeviceIdentification           | TEST<type>101205673117 |
 
-  Scenario: Decouple M-Bus Device By Channel on a administratively coupled E-meter, different from one in channel
+    Examples:
+      | type |
+      | G    |
+    @Hydrogen
+    Examples:
+      | type |
+      | W    |
+
+  Scenario Outline: Decouple <type> M-Bus Device By Channel on a administratively coupled E-meter, different from one in channel
     Given a bundle request
       | DeviceIdentification | TEST1024000000001 |
     And the bundle request contains a Decouple M-Bus Device By Channel action
@@ -115,17 +123,17 @@ Feature: SmartMetering Bundle - Decouple M-Bus Device By Channel
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
     And a dlms device
-      | DeviceIdentification           | TESTG101205673117 |
-      | DeviceType                     | SMART_METER_G     |
-      | GatewayDeviceIdentification    | TEST1024000000002 |
-      | Channel                        |                 1 |
-      | MbusPrimaryAddress             |                 9 |
-      | MbusIdentificationNumber       |          12056731 |
-      | MbusManufacturerIdentification | LGB               |
-      | MbusVersion                    |                66 |
-      | MbusDeviceTypeIdentification   |                 3 |
+      | DeviceIdentification           | TEST<type>101205673117 |
+      | DeviceType                     | SMART_METER_<type>     |
+      | GatewayDeviceIdentification    | TEST1024000000002      |
+      | Channel                        |                      1 |
+      | MbusPrimaryAddress             |                      9 |
+      | MbusIdentificationNumber       |               12056731 |
+      | MbusManufacturerIdentification | LGB                    |
+      | MbusVersion                    |                     66 |
+      | MbusDeviceTypeIdentification   |                      3 |
     When the bundle request is received
-    Then the Decouple M-Bus Device By Channel bundle response is "OK" with Mbus Device "TESTG101205673117"
+    Then the Decouple M-Bus Device By Channel bundle response is "OK" with Mbus Device "TEST<type>101205673117"
     And the values for the M-Bus client for channel 1 on device simulator "TEST1024000000001" are
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
@@ -133,7 +141,15 @@ Feature: SmartMetering Bundle - Decouple M-Bus Device By Channel
       | MbusVersion                    | 0 |
       | MbusDeviceTypeIdentification   | 0 |
     And the smart meter is not decoupled from gateway device in the core database
-      | DeviceIdentification           | TESTG101205673117 |
-      | GatewayDeviceIdentification    | TEST1024000000002 |
-      | Channel                        |                 1 |
-      | MbusPrimaryAddress             |                 9 |
+      | DeviceIdentification           | TEST<type>101205673117 |
+      | GatewayDeviceIdentification    | TEST1024000000002      |
+      | Channel                        |                      1 |
+      | MbusPrimaryAddress             |                      9 |
+
+    Examples:
+      | type |
+      | G    |
+    @Hydrogen
+    Examples:
+      | type |
+      | W    |

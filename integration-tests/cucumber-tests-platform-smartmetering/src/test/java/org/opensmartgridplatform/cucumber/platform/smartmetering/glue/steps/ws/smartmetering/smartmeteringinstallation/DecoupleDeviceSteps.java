@@ -33,28 +33,29 @@ public class DecoupleDeviceSteps extends AbstractSmartMeteringSteps {
   @Autowired private SmartMeteringInstallationClient smartMeteringInstallationClient;
 
   @When(
-      "^the Decouple G-meter \"([^\"]*)\" from E-meter \"([^\"]*)\" request is received for an unknown gateway$")
-  public void theDecoupleGMeterFromEMeterRequestIsReceivedForAnUnknownDevice(
-      final String gasMeter, final String eMeter) throws WebServiceSecurityException {
-
-    final DecoupleMbusDeviceRequest request =
-        DecoupleMbusDeviceRequestFactory.forGatewayAndMbusDevice(eMeter, gasMeter);
-
-    try {
-      this.smartMeteringInstallationClient.decoupleMbusDevice(request);
-      Assertions.fail("A SoapFaultClientException should be thrown");
-    } catch (final SoapFaultClientException e) {
-      ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
-    }
+      "^the Decouple M-Bus device \"([^\"]*)\" from E-meter \"([^\"]*)\" request is received for an unknown gateway$")
+  public void theDecoupleMBusDeviceFromEMeterRequestIsReceivedForAnUnknownDevice(
+      final String mBusDeviceIdentification, final String eMeter)
+      throws WebServiceSecurityException {
+    this.theDecoupleMBusDeviceFromEMeterRequestIsReceivedForAnInactiveOrUnknownDevice(
+        mBusDeviceIdentification, eMeter);
   }
 
   @When(
-      "^the Decouple G-meter \"([^\"]*)\" from E-meter \"([^\"]*)\" request is received for an inactive gateway$")
-  public void theDecoupleGMeterFromEMeterRequestIsReceivedForAnInactiveDevice(
-      final String gasMeter, final String eMeter) throws WebServiceSecurityException {
+      "^the Decouple M-Bus device \"([^\"]*)\" from E-meter \"([^\"]*)\" request is received for an inactive gateway$")
+  public void theDecoupleMBusDeviceFromEMeterRequestIsReceivedForAnInactiveDevice(
+      final String mBusDeviceIdentification, final String eMeter)
+      throws WebServiceSecurityException {
+    this.theDecoupleMBusDeviceFromEMeterRequestIsReceivedForAnInactiveOrUnknownDevice(
+        mBusDeviceIdentification, eMeter);
+  }
+
+  private void theDecoupleMBusDeviceFromEMeterRequestIsReceivedForAnInactiveOrUnknownDevice(
+      final String mBusDeviceIdentification, final String eMeter)
+      throws WebServiceSecurityException {
 
     final DecoupleMbusDeviceRequest request =
-        DecoupleMbusDeviceRequestFactory.forGatewayAndMbusDevice(eMeter, gasMeter);
+        DecoupleMbusDeviceRequestFactory.forGatewayAndMbusDevice(eMeter, mBusDeviceIdentification);
 
     try {
       this.smartMeteringInstallationClient.decoupleMbusDevice(request);
@@ -64,24 +65,25 @@ public class DecoupleDeviceSteps extends AbstractSmartMeteringSteps {
     }
   }
 
-  @When("^the Administrative Decouple G-meter \"([^\"]*)\" request is received$")
-  public void theAdministrativeDecoupleGMeterRequestIsReceived(final String gasMeter)
-      throws WebServiceSecurityException {
+  @When("^the Administrative Decouple M-Bus device \"([^\"]*)\" request is received$")
+  public void theAdministrativeDecoupleMBusDeviceRequestIsReceived(
+      final String mBusDeviceIdentification) throws WebServiceSecurityException {
 
     final DecoupleMBusDeviceAdministrativeRequest request =
-        DecoupleMBusDeviceAdministrativeRequestFactory.forMbusDevice(gasMeter);
+        DecoupleMBusDeviceAdministrativeRequestFactory.forMbusDevice(mBusDeviceIdentification);
     final DecoupleMBusDeviceAdministrativeAsyncResponse asyncResponse =
         this.smartMeteringInstallationClient.decoupleMbusDeviceAdministrative(request);
 
     this.checkAndSaveCorrelationId(asyncResponse.getCorrelationUid());
   }
 
-  @When("^the Decouple G-meter \"([^\"]*)\" from E-meter \"([^\"]*)\" request is received$")
-  public void theDecoupleGMeterRequestIsReceived(final String gasMeter, final String eMeter)
+  @When("^the Decouple M-Bus device \"([^\"]*)\" from E-meter \"([^\"]*)\" request is received$")
+  public void theDecoupleMBusDeviceRequestIsReceived(
+      final String mBusDeviceIdentification, final String eMeter)
       throws WebServiceSecurityException {
 
     final DecoupleMbusDeviceRequest request =
-        DecoupleMbusDeviceRequestFactory.forGatewayAndMbusDevice(eMeter, gasMeter);
+        DecoupleMbusDeviceRequestFactory.forGatewayAndMbusDevice(eMeter, mBusDeviceIdentification);
     final DecoupleMbusDeviceAsyncResponse asyncResponse =
         this.smartMeteringInstallationClient.decoupleMbusDevice(request);
 

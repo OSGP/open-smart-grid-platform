@@ -159,6 +159,7 @@ public class PlatformDefaults {
           org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.OWNER;
   public static final String SMART_METER_E = "SMART_METER_E";
   public static final String SMART_METER_G = "SMART_METER_G";
+  public static final String SMART_METER_W = "SMART_METER_W";
 
   public static final boolean FIRMWARE_ACTIVE = true;
   public static final String FIRMWARE_IDENTIFICATION = "F01";
