@@ -140,7 +140,7 @@ SPDX-License-Identifier: Apache-2.0
     <!-- to avoid conflicts with spring-kafka-test the older kafka version 2.4.1 is used-->
     <kafka.version>3.6.1</kafka.version>
     <avro.version>1.11.3</avro.version>
-    <spring.kafka.version>3.1.4</spring.kafka.version>
+    <spring.kafka.version>3.2.1</spring.kafka.version>
     <!-- spring-kafka-test needs a 2.12 version of the scala libraries -->
     <scala.lang.version>2.13.12</scala.lang.version>
     <lombok.version>1.18.32</lombok.version>
