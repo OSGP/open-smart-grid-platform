@@ -20,7 +20,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <properties>
     <!-- override version in super pom -->
-    <cxf.version>4.0.3</cxf.version>
+    <cxf.version>4.0.5</cxf.version>
   </properties>
 
   <artifactId>cucumber-tests-platform-smartmetering</artifactId>
