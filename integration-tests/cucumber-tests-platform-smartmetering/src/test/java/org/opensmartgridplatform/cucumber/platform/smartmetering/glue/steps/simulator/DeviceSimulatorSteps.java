@@ -22,7 +22,6 @@ import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 public class DeviceSimulatorSteps {
 
@@ -35,12 +34,8 @@ public class DeviceSimulatorSteps {
 
   @Autowired private JsonObjectCreator jsonObjectCreator;
 
-  @Value("${dynamic.properties.base.url}")
-  private String dynamicPropertiesBaseUrl;
-
   public void clearDlmsAttributeValues() {
     try {
-      this.simulatorTriggerClient = new SimulatorTriggerClient(this.dynamicPropertiesBaseUrl);
       this.simulatorTriggerClient.clearDlmsAttributeValues();
     } catch (final SimulatorTriggerClientException stce) {
       LOGGER.error("Error calling simulatorTriggerClient.clearDlmsAttributeValues()", stce);
