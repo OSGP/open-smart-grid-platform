@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,7 +106,13 @@ public class SimulatorTriggerClient extends AbstractClient {
           new X509TrustManager() {
             @Override
             public X509Certificate[] getAcceptedIssuers() {
-              return new X509Certificate[0];
+              try {
+                return new X509Certificate[] {
+                  (X509Certificate) CertificateFactory.getInstance("X509").generateCertificate(null)
+                };
+              } catch (final CertificateException e) {
+                throw new RuntimeException(e);
+              }
             }
 
             @SuppressWarnings(
