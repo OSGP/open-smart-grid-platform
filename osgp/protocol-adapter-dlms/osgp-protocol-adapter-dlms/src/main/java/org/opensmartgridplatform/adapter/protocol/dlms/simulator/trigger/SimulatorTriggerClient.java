@@ -129,7 +129,7 @@ public class SimulatorTriggerClient extends AbstractClient {
         });
 
     tlsParams.setSecureSocketProtocol("TLSv1.2");
-
+    tlsParams.setDisableCNCheck(true);
     conduit.setTlsClientParameters(tlsParams);
 
     return client;
