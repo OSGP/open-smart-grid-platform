@@ -25,7 +25,7 @@ SPDX-License-Identifier: Apache-2.0
     <commons.collections.version>4.4</commons.collections.version>
     <spring.boot.version>3.2.5</spring.boot.version>
     <!-- override version in super pom -->
-    <cxf.version>4.0.3</cxf.version>
+    <cxf.version>4.0.5</cxf.version>
 
     <skipITs>true</skipITs>
   </properties>
