@@ -12,10 +12,10 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
@@ -106,13 +106,7 @@ public class SimulatorTriggerClient extends AbstractClient {
           new X509TrustManager() {
             @Override
             public X509Certificate[] getAcceptedIssuers() {
-              try {
-                return new X509Certificate[] {
-                  (X509Certificate) CertificateFactory.getInstance("X509").generateCertificate(null)
-                };
-              } catch (final CertificateException e) {
-                throw new RuntimeException(e);
-              }
+              return new X509Certificate[0];
             }
 
             @SuppressWarnings(
@@ -136,6 +130,14 @@ public class SimulatorTriggerClient extends AbstractClient {
         });
 
     tlsParams.setSecureSocketProtocol("TLSv1.2");
+
+    try {
+      final SSLContext sc = SSLContext.getDefault();
+      tlsParams.setUseHttpsURLConnectionDefaultSslSocketFactory(false);
+      tlsParams.setSSLSocketFactory(sc.getSocketFactory());
+    } catch (final Exception e) {
+      throw new RuntimeException(e);
+    }
 
     conduit.setTlsClientParameters(tlsParams);
 
