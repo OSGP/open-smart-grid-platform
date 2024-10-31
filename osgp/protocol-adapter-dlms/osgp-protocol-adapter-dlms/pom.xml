@@ -29,8 +29,6 @@ SPDX-License-Identifier: Apache-2.0
     <osgp-ws-secret-management-version>${project.version}</osgp-ws-secret-management-version>
     <skipITs>true</skipITs>
     <openmuc.jdlms.version>1.8.0</openmuc.jdlms.version>
-    <!-- override version in super pom -->
-    <cxf.version>4.0.5</cxf.version>
   </properties>
 
   <build>
