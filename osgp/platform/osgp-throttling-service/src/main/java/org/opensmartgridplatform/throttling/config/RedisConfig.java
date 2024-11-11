@@ -58,6 +58,9 @@ public class RedisConfig {
   @Value("${redis.ssl.truststore.password}")
   private String redisTruststorePassword;
 
+  @Value("${redis.connection.pool-size:64}")
+  private int redisConnectionPoolSize;
+
   @Bean
   public RedissonClient redissonClient(final Config redissonConfig) {
     this.installJCAProvider();
@@ -71,6 +74,7 @@ public class RedisConfig {
 
     singleServerConfig.setPassword(this.password.isEmpty() ? null : this.password);
     singleServerConfig.setSslEnableEndpointIdentification(false);
+    singleServerConfig.setConnectionPoolSize(this.redisConnectionPoolSize);
 
     if (this.useSsl) {
       singleServerConfig.setAddress(String.format("rediss://%s:%d", this.host, this.port));
