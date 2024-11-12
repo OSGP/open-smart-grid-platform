@@ -16,12 +16,6 @@ public interface PermitService {
       final int requestId,
       final int maxConcurrentRequests);
 
-  boolean createPermitWithHighPriority(
-      final NetworkSegment networkSegment,
-      final int clientId,
-      final int requestId,
-      final int maxConcurrentRequests);
-
   boolean removePermit(
       final NetworkSegment networkSegment, final int clientId, final int requestId);
 

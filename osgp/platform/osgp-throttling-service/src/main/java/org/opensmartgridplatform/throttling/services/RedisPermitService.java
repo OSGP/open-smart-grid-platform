@@ -27,21 +27,18 @@ public class RedisPermitService implements PermitService {
 
   private static final Logger log = LoggerFactory.getLogger(RedisPermitService.class);
 
-  private static final int TRY_LOCK_TIME_MS = 100;
-  private static final int WAIT_TIME_MS = 1000;
-
   private final RedissonClient redisson;
-  private final Sleeper sleeper;
   private final Duration timeToLive;
+  private final int tryLockTimeMs;
 
   public RedisPermitService(
       final RedissonClient redisson,
-      final Sleeper sleeper,
       @Value("#{T(java.time.Duration).parse('${cleanup.permits.time-to-live:PT1H}')}")
-          final Duration timeToLive) {
+          final Duration timeToLive,
+      @Value("${permit.lock.try.max.in.ms:100}") final int tryLockTimeMs) {
     this.redisson = redisson;
-    this.sleeper = sleeper;
     this.timeToLive = timeToLive;
+    this.tryLockTimeMs = tryLockTimeMs;
   }
 
   @Override
@@ -59,53 +56,27 @@ public class RedisPermitService implements PermitService {
     final RLock lock = this.redisson.getLock(permitKey.lockId());
 
     try {
-      lock.lock();
+      if (lock.tryLock(this.tryLockTimeMs, TimeUnit.MILLISECONDS)) {
 
-      final RScoredSortedSet<Permit> permits = this.redisson.getScoredSortedSet(permitKey.key());
-      final int numberOfRegisteredPermits = permits.size();
+        final RScoredSortedSet<Permit> permits = this.redisson.getScoredSortedSet(permitKey.key());
+        final int numberOfRegisteredPermits = permits.size();
 
-      log.debug(
-          "Trying to register a permit for request[{}] with permit key {}. (max-concurrent-requests: {}, number-of-registered-permits: {})",
-          requestId,
-          permitKey.key(),
-          maxConcurrentRequests,
-          numberOfRegisteredPermits);
+        log.debug(
+            "Trying to register a permit for request[{}] with permit key {}. (max-concurrent-requests: {}, number-of-registered-permits: {})",
+            requestId,
+            permitKey.key(),
+            maxConcurrentRequests,
+            numberOfRegisteredPermits);
 
-      if (maxConcurrentRequests < 0 || numberOfRegisteredPermits < maxConcurrentRequests) {
-        granted =
-            permits.add(
-                Instant.now().toEpochMilli(), new Permit(networkSegment, clientId, requestId));
-      }
-    } finally {
-      lock.unlock();
-    }
-
-    return granted;
-  }
-
-  @SuppressWarnings("squid:S2222")
-  @Override
-  public boolean createPermitWithHighPriority(
-      final NetworkSegment networkSegment,
-      final int clientId,
-      final int requestId,
-      final int maxConcurrentRequests) {
-
-    final PermitKey permitKey = PermitKey.builder().networkSegment(networkSegment).build();
-    final RLock lock = this.redisson.getLock(permitKey.lockId());
-
-    boolean granted = false;
-
-    try {
-
-      if (lock.tryLock(TRY_LOCK_TIME_MS, TimeUnit.MILLISECONDS)) {
-        this.sleeper.sleep(WAIT_TIME_MS);
-        granted = this.createPermit(networkSegment, clientId, requestId, maxConcurrentRequests);
+        if (maxConcurrentRequests < 0 || numberOfRegisteredPermits < maxConcurrentRequests) {
+          granted =
+              permits.add(
+                  Instant.now().toEpochMilli(), new Permit(networkSegment, clientId, requestId));
+        }
       }
     } catch (final InterruptedException e) {
       log.error("Interrupted request {} while waiting for lock", requestId);
       Thread.currentThread().interrupt();
-      return false;
     } finally {
       if (lock.isHeldByCurrentThread()) {
         lock.unlock();

@@ -25,6 +25,7 @@ import org.opensmartgridplatform.throttling.services.RateLimitService;
 class PermitsByThrottlingConfigTest {
   private static final boolean WAIT_FOR_HIGH_PRIO_ENABLED = true;
   private static final int MAX_WAIT_FOR_HIGH_PRIO = 1000;
+  private static final int MAX_PAUSE_FOR_HIGH_PRIO = 200;
 
   @Mock private ThrottlingConfigRepository throttlingConfigRepository;
   @Mock private PermitService permitService;
@@ -40,7 +41,8 @@ class PermitsByThrottlingConfigTest {
             this.permitService,
             this.rateLimitService,
             WAIT_FOR_HIGH_PRIO_ENABLED,
-            MAX_WAIT_FOR_HIGH_PRIO);
+            MAX_WAIT_FOR_HIGH_PRIO,
+            MAX_PAUSE_FOR_HIGH_PRIO);
   }
 
   @Test

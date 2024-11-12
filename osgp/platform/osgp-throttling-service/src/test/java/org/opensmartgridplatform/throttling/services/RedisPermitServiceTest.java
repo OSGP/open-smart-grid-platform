@@ -3,7 +3,6 @@ package org.opensmartgridplatform.throttling.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,7 +37,6 @@ class RedisPermitServiceTest {
   private static final int REQUEST_ID = 42;
 
   @Mock private RedissonClient redissonClient;
-  @Mock private Sleeper sleeper;
   @Mock private RLock lock;
   @Mock private RScoredSortedSet<Permit> permits;
   @Mock private RKeys keys;
@@ -47,7 +45,7 @@ class RedisPermitServiceTest {
 
   @BeforeEach
   void setup() {
-    this.service = new RedisPermitService(this.redissonClient, this.sleeper, Duration.ZERO);
+    this.service = new RedisPermitService(this.redissonClient, Duration.ZERO, 100);
   }
 
   @Test
@@ -95,84 +93,12 @@ class RedisPermitServiceTest {
     verify(this.lock, times(1)).unlock();
   }
 
-  @SneakyThrows
-  @Test
-  void testCreateHighPriorityPermit() {
-    final int maxConcurrentRequests = 30;
-
-    final PermitKey permitKey = this.createPermitKey();
-    this.prepareLock(permitKey);
-    this.preparePrioLock();
-    this.prepareScoredSetForGranted(permitKey, maxConcurrentRequests - 5);
-
-    final boolean created =
-        this.service.createPermitWithHighPriority(
-            NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, maxConcurrentRequests);
-
-    assertThat(created).isTrue();
-    verify(this.lock, times(2)).unlock();
-    verify(this.sleeper, times(1)).sleep(1000L);
-  }
-
-  @SneakyThrows
-  @Test
-  void testCreateHighPriorityPermitMaxConcurrencyReached() {
-    final int maxConcurrentRequests = 30;
-
-    final PermitKey permitKey = this.createPermitKey();
-    this.prepareLock(permitKey);
-    this.preparePrioLock();
-    this.prepareScoredSetForNotGranted(permitKey, maxConcurrentRequests);
-
-    final boolean created =
-        this.service.createPermitWithHighPriority(
-            NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, maxConcurrentRequests);
-
-    assertThat(created).isFalse();
-    verify(this.lock, times(2)).unlock();
-    verify(this.sleeper, times(1)).sleep(1000L);
-  }
-
-  @SneakyThrows
-  @Test
-  void testCreateHighPriorityPermitWithInterruption() {
-    final int maxConcurrentRequests = 30;
-
-    final PermitKey permitKey = this.createPermitKey();
-    this.prepareLock(permitKey);
-    this.preparePrioLockForInterruption();
-
-    final boolean created =
-        this.service.createPermitWithHighPriority(
-            NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, maxConcurrentRequests);
-
-    assertThat(created).isFalse();
-    verify(this.lock, times(1)).unlock();
-  }
-
-  @SneakyThrows
-  @Test
-  void testCreateHighPriorityPermitUnableToLock() {
-    final int maxConcurrentRequests = 30;
-
-    final PermitKey permitKey = this.createPermitKey();
-    this.prepareLock(permitKey);
-    this.preparePrioLockForFailure();
-
-    final boolean created =
-        this.service.createPermitWithHighPriority(
-            NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, maxConcurrentRequests);
-
-    assertThat(created).isFalse();
-    verify(this.lock, never()).unlock();
-  }
-
   @Test
   void testRemovePermit() {
     final PermitKey permitKey = this.createPermitKey();
     when(this.redissonClient.getScoredSortedSet(permitKey.key()))
         .thenAnswer(invocation -> this.permits);
-    when(this.permits.stream()).thenReturn(List.of(this.createPermit()).stream());
+    when(this.permits.stream()).thenReturn(Stream.of(this.createPermit()));
     when(this.permits.remove(this.createPermit())).thenReturn(true);
 
     final boolean removed = this.service.removePermit(NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID);
@@ -233,26 +159,11 @@ class RedisPermitServiceTest {
     assertThat(count).isEqualTo(1);
   }
 
+  @SneakyThrows
   private void prepareLock(final PermitKey permitKey) {
     when(this.redissonClient.getLock(permitKey.lockId())).thenReturn(this.lock);
-  }
-
-  @SneakyThrows
-  private void preparePrioLock() {
     when(this.lock.tryLock(100, TimeUnit.MILLISECONDS)).thenReturn(true);
     when(this.lock.isHeldByCurrentThread()).thenReturn(true);
-  }
-
-  @SneakyThrows
-  private void preparePrioLockForInterruption() {
-    when(this.lock.tryLock(100, TimeUnit.MILLISECONDS)).thenThrow(new InterruptedException());
-    when(this.lock.isHeldByCurrentThread()).thenReturn(true);
-  }
-
-  @SneakyThrows
-  private void preparePrioLockForFailure() {
-    when(this.lock.tryLock(100, TimeUnit.MILLISECONDS)).thenReturn(false);
-    when(this.lock.isHeldByCurrentThread()).thenReturn(false);
   }
 
   private void prepareScoredSetForGranted(final PermitKey permitKey, final int size) {

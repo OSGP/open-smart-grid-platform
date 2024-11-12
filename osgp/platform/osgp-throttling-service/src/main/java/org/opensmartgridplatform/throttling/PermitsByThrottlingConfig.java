@@ -34,19 +34,21 @@ public class PermitsByThrottlingConfig {
   private final RateLimitService rateLimitService;
   private final boolean highPrioPoolEnabled;
   private final int maxWaitForHighPrioInMs;
+  private final int pauseWaitForHighPrioInMs;
 
   public PermitsByThrottlingConfig(
       final ThrottlingConfigRepository throttlingConfigRepository,
       final PermitService permitService,
       final RateLimitService rateLimitService,
       @Value("${wait.for.high.prio.enabled:true}") final boolean highPrioPoolEnabled,
-      @Value("${wait.for.high.prio.max.in.ms:10000}") final int maxWaitForHighPrioInMs) {
-
+      @Value("${wait.for.high.prio.max.in.ms:10000}") final int maxWaitForHighPrioInMs,
+      @Value("${wait.for.high.prio.pause.in.ms:200}") final int pauseWaitForHighPrioInMs) {
     this.throttlingConfigRepository = throttlingConfigRepository;
     this.permitService = permitService;
     this.rateLimitService = rateLimitService;
     this.highPrioPoolEnabled = highPrioPoolEnabled;
     this.maxWaitForHighPrioInMs = maxWaitForHighPrioInMs;
+    this.pauseWaitForHighPrioInMs = pauseWaitForHighPrioInMs;
   }
 
   /** Clears all cached permit counts and initializes the cached information from the database. */
@@ -67,7 +69,8 @@ public class PermitsByThrottlingConfig {
                     this.permitService,
                     this.rateLimitService,
                     this.highPrioPoolEnabled,
-                    this.maxWaitForHighPrioInMs)));
+                    this.maxWaitForHighPrioInMs,
+                    this.pauseWaitForHighPrioInMs)));
 
     /* Remove config not in database */
     final List<Short> throttlingConfigIdsToBeRemoved =
@@ -104,7 +107,8 @@ public class PermitsByThrottlingConfig {
         this.permitService,
         this.rateLimitService,
         this.highPrioPoolEnabled,
-        this.maxWaitForHighPrioInMs);
+        this.maxWaitForHighPrioInMs,
+        this.pauseWaitForHighPrioInMs);
   }
 
   public void newThrottlingConfigCreated(final short throttlingConfigId) {
@@ -119,7 +123,8 @@ public class PermitsByThrottlingConfig {
             this.permitService,
             this.rateLimitService,
             this.highPrioPoolEnabled,
-            this.maxWaitForHighPrioInMs));
+            this.maxWaitForHighPrioInMs,
+            this.pauseWaitForHighPrioInMs));
   }
 
   public boolean releasePermit(
