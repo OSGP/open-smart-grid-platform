@@ -58,29 +58,30 @@ public class RedisPermitService implements PermitService {
     try {
       if (lock.tryLock(this.tryLockTimeMs, TimeUnit.MILLISECONDS)) {
 
-        final RScoredSortedSet<Permit> permits = this.redisson.getScoredSortedSet(permitKey.key());
-        final int numberOfRegisteredPermits = permits.size();
+        try {
+          final RScoredSortedSet<Permit> permits =
+              this.redisson.getScoredSortedSet(permitKey.key());
+          final int numberOfRegisteredPermits = permits.size();
 
-        log.debug(
-            "Trying to register a permit for request[{}] with permit key {}. (max-concurrent-requests: {}, number-of-registered-permits: {})",
-            requestId,
-            permitKey.key(),
-            maxConcurrentRequests,
-            numberOfRegisteredPermits);
+          log.debug(
+              "Trying to register a permit for request[{}] with permit key {}. (max-concurrent-requests: {}, number-of-registered-permits: {})",
+              requestId,
+              permitKey.key(),
+              maxConcurrentRequests,
+              numberOfRegisteredPermits);
 
-        if (maxConcurrentRequests < 0 || numberOfRegisteredPermits < maxConcurrentRequests) {
-          granted =
-              permits.add(
-                  Instant.now().toEpochMilli(), new Permit(networkSegment, clientId, requestId));
+          if (maxConcurrentRequests < 0 || numberOfRegisteredPermits < maxConcurrentRequests) {
+            granted =
+                permits.add(
+                    Instant.now().toEpochMilli(), new Permit(networkSegment, clientId, requestId));
+          }
+        } finally {
+          lock.unlock();
         }
       }
     } catch (final InterruptedException e) {
       log.error("Interrupted request {} while waiting for lock", requestId);
       Thread.currentThread().interrupt();
-    } finally {
-      if (lock.isHeldByCurrentThread()) {
-        lock.unlock();
-      }
     }
 
     return granted;

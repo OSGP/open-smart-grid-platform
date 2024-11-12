@@ -163,7 +163,6 @@ class RedisPermitServiceTest {
   private void prepareLock(final PermitKey permitKey) {
     when(this.redissonClient.getLock(permitKey.lockId())).thenReturn(this.lock);
     when(this.lock.tryLock(100, TimeUnit.MILLISECONDS)).thenReturn(true);
-    when(this.lock.isHeldByCurrentThread()).thenReturn(true);
   }
 
   private void prepareScoredSetForGranted(final PermitKey permitKey, final int size) {

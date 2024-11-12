@@ -45,11 +45,6 @@ public class PermitsPerNetworkSegment {
         this.rateLimitService.isNewConnectionRequestAllowed(
             networkSegment.baseTransceiverStationId(), networkSegment.cellId(), throttlingSettings);
 
-    log.debug(
-        "Request [{}] for permit is {} by rate-limiter",
-        requestId,
-        newConnectionRequestAllowed ? "allowed" : "NOT allowed");
-
     if (newConnectionRequestAllowed) {
       log.debug("Request [{}] for permit is allowed by rate-limiter", requestId);
       return this.tryAcquiringPermit(
