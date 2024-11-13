@@ -3,6 +3,7 @@ package org.opensmartgridplatform.throttling.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.throttling.model.NetworkSegment;
 import org.opensmartgridplatform.throttling.model.Permit;
 import org.opensmartgridplatform.throttling.model.PermitKey;
+import org.opensmartgridplatform.throttling.model.PermitRequest;
 import org.redisson.api.RKeys;
 import org.redisson.api.RLock;
 import org.redisson.api.RScoredSortedSet;
@@ -35,44 +37,99 @@ class RedisPermitServiceTest {
       new NetworkSegment((short) 7, BASE_TRANSCEIVER_STATION_ID, CELL_ID);
   private static final int CLIENT_ID = 9;
   private static final int REQUEST_ID = 42;
+  private static final PermitRequest PERMIT_REQUEST = new PermitRequest(CLIENT_ID, REQUEST_ID);
 
   @Mock private RedissonClient redissonClient;
   @Mock private RLock lock;
   @Mock private RScoredSortedSet<Permit> permits;
+  @Mock private RScoredSortedSet<PermitRequest> lobby;
   @Mock private RKeys keys;
 
   private RedisPermitService service;
 
   @BeforeEach
   void setup() {
-    this.service = new RedisPermitService(this.redissonClient, Duration.ZERO, 100);
+    this.service = new RedisPermitService(this.redissonClient, Duration.ZERO, 100, 10_000);
   }
 
   @Test
   void testCreatePermit() {
-    final int maxConcurrentRequests = 30;
+    final int maxConcurrentRequests = 1;
 
     final PermitKey permitKey = this.createPermitKey();
     this.prepareLock(permitKey);
-    this.prepareScoredSetForGranted(permitKey, maxConcurrentRequests - 5);
+    this.preparePermitsSet(permitKey, 0, true);
+    this.prepareLobby(permitKey);
 
     final boolean created =
-        this.service.createPermit(NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, maxConcurrentRequests);
+        this.service.createPermit(NETWORK_SEGMENT, PERMIT_REQUEST, maxConcurrentRequests, false);
 
     assertThat(created).isTrue();
     verify(this.lock, times(1)).unlock();
   }
 
   @Test
-  void testCreatePermitMaxConcurrencyReached() {
-    final int maxConcurrentRequests = 30;
+  void testCreateHighPrioPermit() {
+    final int maxConcurrentRequests = 1;
 
     final PermitKey permitKey = this.createPermitKey();
     this.prepareLock(permitKey);
-    this.prepareScoredSetForNotGranted(permitKey, maxConcurrentRequests);
+    this.preparePermitsSet(permitKey, 0, true);
+    this.prepareLobby(permitKey);
 
     final boolean created =
-        this.service.createPermit(NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, maxConcurrentRequests);
+        this.service.createPermit(NETWORK_SEGMENT, PERMIT_REQUEST, maxConcurrentRequests, true);
+
+    assertThat(created).isTrue();
+    //    verify(this.lobby, times(1)).addIfAbsent(anyDouble(), eq(PERMIT_REQUEST));
+    verify(this.lobby, times(1)).remove(PERMIT_REQUEST);
+    verify(this.lock, times(1)).unlock();
+  }
+
+  @Test
+  void testCreateHighPrioPermitWithMaxConcurrencyReached() {
+    final int maxConcurrentRequests = 1;
+
+    final PermitKey permitKey = this.createPermitKey();
+    this.prepareLock(permitKey);
+    this.preparePermitsSet(permitKey, 1, false);
+    this.prepareLobby(permitKey);
+
+    final boolean created =
+        this.service.createPermit(NETWORK_SEGMENT, PERMIT_REQUEST, maxConcurrentRequests, true);
+
+    assertThat(created).isFalse();
+    verify(this.lobby, times(1)).addIfAbsent(anyDouble(), eq(PERMIT_REQUEST));
+    verify(this.lock, times(1)).unlock();
+  }
+
+  @Test
+  void testCreatePermitWhileHighPrioIsInLobby() {
+    final int maxConcurrentRequests = 2;
+
+    final PermitKey permitKey = this.createPermitKey();
+    this.prepareLock(permitKey);
+    this.preparePermitsSet(permitKey, 0, false);
+    this.prepareLobby(permitKey, true);
+
+    final boolean created =
+        this.service.createPermit(NETWORK_SEGMENT, PERMIT_REQUEST, maxConcurrentRequests, false);
+
+    assertThat(created).isFalse();
+    verify(this.lock, times(1)).unlock();
+  }
+
+  @Test
+  void testCreatePermitMaxConcurrencyReached() {
+    final int maxConcurrentRequests = 1;
+
+    final PermitKey permitKey = this.createPermitKey();
+    this.prepareLock(permitKey);
+    this.preparePermitsSet(permitKey, 1, false);
+    this.prepareLobby(permitKey);
+
+    final boolean created =
+        this.service.createPermit(NETWORK_SEGMENT, PERMIT_REQUEST, maxConcurrentRequests, false);
 
     assertThat(created).isFalse();
     verify(this.lock, times(1)).unlock();
@@ -84,10 +141,11 @@ class RedisPermitServiceTest {
 
     final PermitKey permitKey = this.createPermitKey();
     this.prepareLock(permitKey);
-    this.prepareScoredSetForUnlimitedConcurrency(permitKey);
+    this.preparePermitsSet(permitKey, 0, true);
+    this.prepareLobby(permitKey);
 
     final boolean created =
-        this.service.createPermit(NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID, maxConcurrentRequests);
+        this.service.createPermit(NETWORK_SEGMENT, PERMIT_REQUEST, maxConcurrentRequests, false);
 
     assertThat(created).isTrue();
     verify(this.lock, times(1)).unlock();
@@ -101,7 +159,7 @@ class RedisPermitServiceTest {
     when(this.permits.stream()).thenReturn(Stream.of(this.createPermit()));
     when(this.permits.remove(this.createPermit())).thenReturn(true);
 
-    final boolean removed = this.service.removePermit(NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID);
+    final boolean removed = this.service.removePermit(NETWORK_SEGMENT, PERMIT_REQUEST);
 
     assertThat(removed).isTrue();
   }
@@ -121,8 +179,8 @@ class RedisPermitServiceTest {
         this.service.findByClientIdAndRequestId(CLIENT_ID, REQUEST_ID);
 
     assertThat(optionalPermit).isPresent();
-    assertThat(optionalPermit.get().clientId()).isEqualTo(CLIENT_ID);
-    assertThat(optionalPermit.get().requestId()).isEqualTo(REQUEST_ID);
+    assertThat(optionalPermit.get().permitRequest().getClientId()).isEqualTo(CLIENT_ID);
+    assertThat(optionalPermit.get().permitRequest().getRequestId()).isEqualTo(REQUEST_ID);
   }
 
   @Test
@@ -165,28 +223,24 @@ class RedisPermitServiceTest {
     when(this.lock.tryLock(100, TimeUnit.MILLISECONDS)).thenReturn(true);
   }
 
-  private void prepareScoredSetForGranted(final PermitKey permitKey, final int size) {
-    this.prepareScoredSet(permitKey, size, true, true);
-  }
-
-  private void prepareScoredSetForNotGranted(final PermitKey permitKey, final int size) {
-    this.prepareScoredSet(permitKey, size, true, false);
-  }
-
-  private void prepareScoredSetForUnlimitedConcurrency(final PermitKey permitKey) {
-    this.prepareScoredSet(permitKey, 42, false, true);
-  }
-
-  private void prepareScoredSet(
-      final PermitKey permitKey, final int size, final boolean stubSize, final boolean stubAdd) {
+  private void preparePermitsSet(final PermitKey permitKey, final int size, final boolean stubAdd) {
     when(this.redissonClient.getScoredSortedSet(permitKey.key()))
         .thenAnswer(invocation -> this.permits);
-    if (stubSize) {
-      when(this.permits.size()).thenReturn(size);
-    }
+    when(this.permits.size()).thenReturn(size);
+
     if (stubAdd) {
       when(this.permits.add(anyDouble(), any(Permit.class))).thenReturn(true);
     }
+  }
+
+  private void prepareLobby(final PermitKey permitKey) {
+    this.prepareLobby(permitKey, false);
+  }
+
+  private void prepareLobby(final PermitKey permitKey, final boolean isOccupied) {
+    when(this.redissonClient.getScoredSortedSet(permitKey.lobby()))
+        .thenAnswer(invocation -> this.lobby);
+    when(this.lobby.isEmpty()).thenReturn(!isOccupied);
   }
 
   private PermitKey createPermitKey() {
@@ -194,6 +248,6 @@ class RedisPermitServiceTest {
   }
 
   private Permit createPermit() {
-    return new Permit(NETWORK_SEGMENT, CLIENT_ID, REQUEST_ID);
+    return new Permit(NETWORK_SEGMENT, PERMIT_REQUEST);
   }
 }

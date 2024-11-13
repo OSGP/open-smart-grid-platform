@@ -17,6 +17,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.opensmartgridplatform.throttling.PermitsByThrottlingConfig;
 import org.opensmartgridplatform.throttling.ThrottlingServiceApplication;
+import org.opensmartgridplatform.throttling.config.RedisConfig;
 import org.opensmartgridplatform.throttling.entities.ThrottlingConfig;
 import org.opensmartgridplatform.throttling.services.Bucket4JRateLimitService;
 import org.opensmartgridplatform.throttling.services.RedisPermitService;
@@ -43,6 +44,7 @@ import redis.clients.jedis.UnifiedJedis;
 @MockBean(RedisPermitService.class)
 @MockBean(RedissonClient.class)
 @MockBean(UnifiedJedis.class)
+@MockBean(RedisConfig.class)
 class ThrottlingConfigRepositoryIT {
 
   private static final int MAX_WAIT_FOR_HIGH_PRIO = 1000;

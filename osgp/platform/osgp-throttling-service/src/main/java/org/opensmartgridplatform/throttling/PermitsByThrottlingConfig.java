@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.opensmartgridplatform.throttling.entities.ThrottlingConfig;
 import org.opensmartgridplatform.throttling.model.NetworkSegment;
+import org.opensmartgridplatform.throttling.model.PermitRequest;
 import org.opensmartgridplatform.throttling.model.ThrottlingSettings;
 import org.opensmartgridplatform.throttling.repositories.ThrottlingConfigRepository;
 import org.opensmartgridplatform.throttling.services.PermitService;
@@ -99,7 +100,7 @@ public class PermitsByThrottlingConfig {
             networkSegment.throttlingConfigId(), this::createAndInitialize);
 
     return permitsPerNetworkSegment.requestPermit(
-        networkSegment, clientId, requestId, priority, throttlingSettings);
+        networkSegment, new PermitRequest(clientId, requestId), priority, throttlingSettings);
   }
 
   private PermitsPerNetworkSegment createAndInitialize(final short throttlingConfigId) {
@@ -133,7 +134,8 @@ public class PermitsByThrottlingConfig {
     final PermitsPerNetworkSegment permitsPerNetworkSegment =
         this.permitsPerSegmentByConfig.get(networkSegment.throttlingConfigId());
     return permitsPerNetworkSegment != null
-        && permitsPerNetworkSegment.releasePermit(networkSegment, clientId, requestId);
+        && permitsPerNetworkSegment.releasePermit(
+            networkSegment, new PermitRequest(clientId, requestId));
   }
 
   public boolean discardPermit(final int clientId, final int requestId) {
@@ -141,7 +143,10 @@ public class PermitsByThrottlingConfig {
         .findByClientIdAndRequestId(clientId, requestId)
         .map(
             permit ->
-                this.releasePermit(permit.networkSegment(), permit.clientId(), permit.requestId()))
+                this.releasePermit(
+                    permit.networkSegment(),
+                    permit.permitRequest().getClientId(),
+                    permit.permitRequest().getRequestId()))
         .orElse(false);
   }
 }
