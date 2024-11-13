@@ -61,7 +61,7 @@ public class RedisConfig {
   @Value("${redis.connection.pool-size:64}")
   private int redisConnectionPoolSize;
 
-  @Bean
+  @Bean(destroyMethod = "shutdown")
   public RedissonClient redissonClient(final Config redissonConfig) {
     this.installJCAProvider();
     return Redisson.create(redissonConfig);
