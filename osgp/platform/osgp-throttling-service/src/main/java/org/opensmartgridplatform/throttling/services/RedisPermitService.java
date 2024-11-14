@@ -62,42 +62,10 @@ public class RedisPermitService implements PermitService {
 
     try {
       if (lock.tryLock(this.tryLockTimeMs, TimeUnit.MILLISECONDS)) {
-
         try {
-          final RScoredSortedSet<Permit> permits =
-              this.redisson.getScoredSortedSet(permitKey.key());
-          final int numberOfRegisteredPermits = permits.size();
-
-          log.debug(
-              "Trying to register a permit for request[{}] with permit key {}. (max-concurrent-requests: {}, number-of-registered-permits: {})",
-              permitRequest.getRequestId(),
-              permitKey.key(),
-              maxConcurrentRequests,
-              numberOfRegisteredPermits);
-
-          // get waiting room for key
-          final RScoredSortedSet<PermitRequest> lobby =
-              this.redisson.getScoredSortedSet(permitKey.lobby());
-
-          // if prio = default and waiting room size > 0 => EXIT (granted = false)
-          if (highPrio || lobby.isEmpty()) {
-
-            if (maxConcurrentRequests < 0 || numberOfRegisteredPermits < maxConcurrentRequests) {
-              granted =
-                  permits.add(
-                      Instant.now().toEpochMilli(), new Permit(networkSegment, permitRequest));
-            }
-
-            if (highPrio) {
-              if (granted) {
-                // if granted = true and prio = high and in waiting room => remove from waiting room
-                lobby.remove(permitRequest);
-              } else {
-                // if granted = false and prio = high and not in waiting room => add to waiting room
-                lobby.addIfAbsent(Instant.now().toEpochMilli(), permitRequest);
-              }
-            }
-          }
+          granted =
+              this.tryRegisterPermit(
+                  networkSegment, permitRequest, maxConcurrentRequests, highPrio, permitKey);
         } finally {
           lock.unlock();
         }
@@ -108,6 +76,56 @@ public class RedisPermitService implements PermitService {
     }
 
     return granted;
+  }
+
+  private boolean tryRegisterPermit(
+      final NetworkSegment networkSegment,
+      final PermitRequest permitRequest,
+      final int maxConcurrentRequests,
+      final boolean highPrio,
+      final PermitKey permitKey) {
+    boolean granted = false;
+
+    final RScoredSortedSet<PermitRequest> lobby =
+        this.redisson.getScoredSortedSet(permitKey.lobby());
+
+    if (highPrio || lobby.isEmpty()) {
+      final RScoredSortedSet<Permit> permits = this.redisson.getScoredSortedSet(permitKey.key());
+      final int numberOfRegisteredPermits = permits.size();
+
+      log.debug(
+          "Trying to register a permit for request[{}] (max-concurrent-requests: {}, number-of-registered-permits: {})",
+          permitRequest.getRequestId(),
+          maxConcurrentRequests,
+          numberOfRegisteredPermits);
+
+      if (this.permitsAvailable(maxConcurrentRequests, numberOfRegisteredPermits)) {
+        granted =
+            permits.add(Instant.now().toEpochMilli(), new Permit(networkSegment, permitRequest));
+      }
+
+      if (highPrio) {
+        this.updateLobby(permitRequest, granted, lobby);
+      }
+    }
+
+    return granted;
+  }
+
+  private boolean permitsAvailable(
+      final int maxConcurrentRequests, final int numberOfRegisteredPermits) {
+    return maxConcurrentRequests < 0 || numberOfRegisteredPermits < maxConcurrentRequests;
+  }
+
+  private void updateLobby(
+      final PermitRequest permitRequest,
+      final boolean granted,
+      final RScoredSortedSet<PermitRequest> lobby) {
+    if (granted) {
+      lobby.remove(permitRequest);
+    } else {
+      lobby.addIfAbsent(Instant.now().toEpochMilli(), permitRequest);
+    }
   }
 
   @Override

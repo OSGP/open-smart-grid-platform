@@ -109,7 +109,7 @@ class RedisPermitServiceTest {
 
     final PermitKey permitKey = this.createPermitKey();
     this.prepareLock(permitKey);
-    this.preparePermitsSet(permitKey, 0, false);
+    this.preparePermitsSet(permitKey, -1, false);
     this.prepareLobby(permitKey, true);
 
     final boolean created =
@@ -226,7 +226,10 @@ class RedisPermitServiceTest {
   private void preparePermitsSet(final PermitKey permitKey, final int size, final boolean stubAdd) {
     when(this.redissonClient.getScoredSortedSet(permitKey.key()))
         .thenAnswer(invocation -> this.permits);
-    when(this.permits.size()).thenReturn(size);
+
+    if (size >= 0) {
+      when(this.permits.size()).thenReturn(size);
+    }
 
     if (stubAdd) {
       when(this.permits.add(anyDouble(), any(Permit.class))).thenReturn(true);
