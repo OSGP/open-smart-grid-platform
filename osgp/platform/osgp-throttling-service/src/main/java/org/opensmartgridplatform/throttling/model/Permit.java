@@ -4,4 +4,4 @@
 
 package org.opensmartgridplatform.throttling.model;
 
-public record Permit(NetworkSegment networkSegment, int clientId, int requestId) {}
+public record Permit(NetworkSegment networkSegment, PermitRequest permitRequest) {}

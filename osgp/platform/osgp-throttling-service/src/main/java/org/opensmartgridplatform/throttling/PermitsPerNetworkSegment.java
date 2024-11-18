@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.opensmartgridplatform.throttling.model.NetworkSegment;
+import org.opensmartgridplatform.throttling.model.PermitRequest;
 import org.opensmartgridplatform.throttling.model.ThrottlingSettings;
 import org.opensmartgridplatform.throttling.services.PermitService;
 import org.opensmartgridplatform.throttling.services.RateLimitService;
@@ -36,8 +37,7 @@ public class PermitsPerNetworkSegment {
 
   public boolean requestPermit(
       final NetworkSegment networkSegment,
-      final int clientId,
-      final int requestId,
+      final PermitRequest permitRequest,
       final int priority,
       final ThrottlingSettings throttlingSettings) {
 
@@ -46,24 +46,24 @@ public class PermitsPerNetworkSegment {
             networkSegment.baseTransceiverStationId(), networkSegment.cellId(), throttlingSettings);
 
     if (newConnectionRequestAllowed) {
-      log.debug("Request [{}] for permit is allowed by rate-limiter", requestId);
+      log.debug("Request [{}] for permit is allowed by rate-limiter", permitRequest.getRequestId());
       return this.tryAcquiringPermit(
-          networkSegment, clientId, requestId, priority, throttlingSettings.getMaxConcurrency());
+          networkSegment, permitRequest, priority, throttlingSettings.getMaxConcurrency());
     }
 
-    log.debug("Request [{}] for permit is NOT allowed by rate-limiter", requestId);
+    log.debug(
+        "Request [{}] for permit is NOT allowed by rate-limiter", permitRequest.getRequestId());
     return false;
   }
 
   public boolean releasePermit(
-      final NetworkSegment networkSegment, final int clientId, final int requestId) {
-    return this.permitService.removePermit(networkSegment, clientId, requestId);
+      final NetworkSegment networkSegment, final PermitRequest permitRequest) {
+    return this.permitService.removePermit(networkSegment, permitRequest);
   }
 
   private boolean tryAcquiringPermit(
       final NetworkSegment networkSegment,
-      final int clientId,
-      final int requestId,
+      final PermitRequest permitRequest,
       final int priority,
       final int maxConcurrency) {
 
@@ -72,23 +72,26 @@ public class PermitsPerNetworkSegment {
       return false;
     }
 
+    final boolean highPrio =
+        this.highPrioPoolEnabled && priority > MessagePriorityEnum.DEFAULT.getPriority();
+
     final boolean granted =
-        this.permitService.createPermit(networkSegment, clientId, requestId, maxConcurrency);
+        this.permitService.createPermit(networkSegment, permitRequest, maxConcurrency, highPrio);
 
     if (granted) {
-      log.debug("Request [{}] is granted a permit.", requestId);
+      log.debug("Request [{}] is granted a permit.", permitRequest.getRequestId());
       return true;
 
     } else {
-      log.debug("Request [{}], is NOT granted a permit.", requestId);
+      log.debug("Request [{}], is NOT granted a permit.", permitRequest.getRequestId());
 
-      if (this.highPrioPoolEnabled && priority > MessagePriorityEnum.DEFAULT.getPriority()) {
+      if (highPrio) {
         log.debug(
             "Request [{}] is a high priority request and high priority pool is enabled -> we will wait for a permit release...",
-            requestId);
+            permitRequest.getRequestId());
 
         return this.waitUntilPermitIsAvailable(
-            networkSegment, clientId, requestId, maxConcurrency, this.maxWaitForHighPrioInMs);
+            networkSegment, permitRequest, maxConcurrency, this.maxWaitForHighPrioInMs);
       }
     }
 
@@ -97,19 +100,20 @@ public class PermitsPerNetworkSegment {
 
   private boolean waitUntilPermitIsAvailable(
       final NetworkSegment networkSegment,
-      final int clientId,
-      final int requestId,
+      final PermitRequest permitRequest,
       final int maxConcurrency,
       final int maxWaitForHighPrioInMs) {
 
     final long startTime = System.currentTimeMillis();
 
-    log.debug("High priority request [{}] is waiting until permit is available.", requestId);
+    log.debug(
+        "High priority request [{}] is waiting until permit is available.",
+        permitRequest.getRequestId());
 
     while (System.currentTimeMillis() - startTime < maxWaitForHighPrioInMs) {
 
       final boolean granted =
-          this.permitService.createPermit(networkSegment, clientId, requestId, maxConcurrency);
+          this.permitService.createPermit(networkSegment, permitRequest, maxConcurrency, true);
 
       if (!granted) {
 
@@ -124,7 +128,7 @@ public class PermitsPerNetworkSegment {
         continue;
       }
 
-      log.debug("High priority request [{}] is granted a permit.", requestId);
+      log.debug("High priority request [{}] is granted a permit.", permitRequest.getRequestId());
       return true;
     }
 
