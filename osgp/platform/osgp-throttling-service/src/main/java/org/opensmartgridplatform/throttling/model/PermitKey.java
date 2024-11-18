@@ -13,6 +13,7 @@ public class PermitKey {
 
   private static final String KEY_FORMAT = "osgp-network-segment-permit-%s_%s_%s";
   private static final String LOCK_FORMAT = "osgp-network-segment-lock-%s_%s_%s";
+  private static final String LOBBY_FORMAT = "osgp-network-segment-lobby-%s_%s_%s";
 
   private short throttlingConfigID;
   private int baseTransceiverStationId;
@@ -37,6 +38,14 @@ public class PermitKey {
   public String lockId() {
     return String.format(
         LOCK_FORMAT,
+        this.asString(this.throttlingConfigID),
+        this.asString(this.baseTransceiverStationId),
+        this.asString(this.cellId));
+  }
+
+  public String lobby() {
+    return String.format(
+        LOBBY_FORMAT,
         this.asString(this.throttlingConfigID),
         this.asString(this.baseTransceiverStationId),
         this.asString(this.cellId));

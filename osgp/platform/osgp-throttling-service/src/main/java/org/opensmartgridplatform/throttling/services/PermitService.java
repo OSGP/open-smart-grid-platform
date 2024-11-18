@@ -7,17 +7,17 @@ package org.opensmartgridplatform.throttling.services;
 import java.util.Optional;
 import org.opensmartgridplatform.throttling.model.NetworkSegment;
 import org.opensmartgridplatform.throttling.model.Permit;
+import org.opensmartgridplatform.throttling.model.PermitRequest;
 
 public interface PermitService {
 
   boolean createPermit(
-      final NetworkSegment networkSegment,
-      final int clientId,
-      final int requestId,
-      final int maxConcurrentRequests);
+      NetworkSegment networkSegment,
+      PermitRequest permitRequest,
+      int maxConcurrentRequests,
+      boolean highPrioRequest);
 
-  boolean removePermit(
-      final NetworkSegment networkSegment, final int clientId, final int requestId);
+  boolean removePermit(NetworkSegment networkSegment, PermitRequest permitRequest);
 
   Optional<Permit> findByClientIdAndRequestId(int clientId, int requestId);
 
