@@ -192,6 +192,7 @@ public class RedisPermitService implements PermitService {
         .map(this.redisson::getScoredSortedSet)
         .flatMap(RScoredSortedSet::stream)
         .map(p -> (Permit) p)
+        .filter(p -> p.permitRequest() != null)
         .filter(
             p ->
                 p.permitRequest().getClientId() == clientId
@@ -209,6 +210,7 @@ public class RedisPermitService implements PermitService {
         .map(this.redisson::getScoredSortedSet)
         .flatMap(RScoredSortedSet::stream)
         .map(p -> (Permit) p)
+        .filter(p -> p.permitRequest() != null)
         .filter(p -> p.permitRequest().getClientId() == clientId)
         .count();
   }
