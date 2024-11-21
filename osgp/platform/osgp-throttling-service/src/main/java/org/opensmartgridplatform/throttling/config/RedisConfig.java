@@ -61,6 +61,12 @@ public class RedisConfig {
   @Value("${redis.connection.pool-size:64}")
   private int redisConnectionPoolSize;
 
+  @Value("${redis.subscription.connection.pool-size:50}")
+  private int redisSubscriptionConnectionPoolSize;
+
+  @Value("${redis.subscriptions.per.connection:5}")
+  private int redisSubscriptionsPerConnection;
+
   @Bean(destroyMethod = "shutdown")
   public RedissonClient redissonClient(final Config redissonConfig) {
     this.installJCAProvider();
@@ -75,6 +81,8 @@ public class RedisConfig {
     singleServerConfig.setPassword(this.password.isEmpty() ? null : this.password);
     singleServerConfig.setSslEnableEndpointIdentification(false);
     singleServerConfig.setConnectionPoolSize(this.redisConnectionPoolSize);
+    singleServerConfig.setSubscriptionConnectionPoolSize(this.redisSubscriptionConnectionPoolSize);
+    singleServerConfig.setSubscriptionsPerConnection(this.redisSubscriptionsPerConnection);
 
     if (this.useSsl) {
       singleServerConfig.setAddress(String.format("rediss://%s:%d", this.host, this.port));
