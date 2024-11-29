@@ -8,16 +8,21 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -27,6 +32,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.shared.usermanagement.AbstractClient;
 import org.opensmartgridplatform.shared.usermanagement.ResponseException;
 
+@Slf4j
 public class SimulatorTriggerClient extends AbstractClient {
 
   private static final String CONSTRUCTION_FAILED = "SimulatorTriggerClient construction failed";
@@ -50,9 +56,39 @@ public class SimulatorTriggerClient extends AbstractClient {
       final String baseAddress)
       throws SimulatorTriggerClientException {
 
+    // test logging
+    log.info("baseAddress:  {}", baseAddress);
+    final File truststoreLocationFile = new File(truststoreLocation);
+    log.info("{} is parent", truststoreLocationFile.getParentFile());
+    if (truststoreLocationFile.exists()) {
+      log.info("{} exists", truststoreLocation);
+      if (truststoreLocationFile.getParentFile().isDirectory()) {
+        log.info("{} is directoru", truststoreLocationFile.getParentFile());
+        Arrays.stream(truststoreLocationFile.getParentFile().listFiles())
+            .forEach(file -> log.info("== {}", file.getName()));
+      }
+    }
+    // end test logging
+
     try (final InputStream stream = new FileInputStream(truststoreLocation)) {
       // Create the KeyStore.
       final KeyStore truststore = KeyStore.getInstance(truststoreType.toUpperCase());
+
+      // test logging
+      final Iterator<String> iterator = truststore.aliases().asIterator();
+      log.info("== aliases == ");
+      while (iterator.hasNext()) {
+        final String alias = iterator.next();
+        log.info("alias: {}", alias);
+        final Certificate certificate = truststore.getCertificate(alias);
+        log.info("certificate: {}", certificate.toString());
+        final Certificate[] certificateChain = truststore.getCertificateChain(alias);
+        Arrays.stream(certificateChain)
+            .forEach(cc -> log.info("certificate chain: {}", cc.toString()));
+        log.info("creationdate: {}", truststore.getCreationDate(alias));
+      }
+      log.info("== end of aliases == ");
+      // end of test logging
 
       truststore.load(stream, truststorePassword.toCharArray());
 
