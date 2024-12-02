@@ -72,7 +72,15 @@ public class SimulatorTriggerClient extends AbstractClient {
 
     try (final InputStream stream = new FileInputStream(truststoreLocation)) {
       // Create the KeyStore.
+      log.info("truststoreType: {}", truststoreType.toUpperCase());
       final KeyStore truststore = KeyStore.getInstance(truststoreType.toUpperCase());
+
+      truststore.load(stream, truststorePassword.toCharArray());
+
+      // Create TrustManagerFactory and initialize it using the KeyStore.
+      final TrustManagerFactory tmf =
+          TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+      tmf.init(truststore);
 
       // test logging
       final Iterator<String> iterator = truststore.aliases().asIterator();
@@ -89,13 +97,6 @@ public class SimulatorTriggerClient extends AbstractClient {
       }
       log.info("== end of aliases == ");
       // end of test logging
-
-      truststore.load(stream, truststorePassword.toCharArray());
-
-      // Create TrustManagerFactory and initialize it using the KeyStore.
-      final TrustManagerFactory tmf =
-          TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-      tmf.init(truststore);
 
       // Create Apache CXF WebClient with JSON provider.
       final List<Object> providers = new ArrayList<>();
