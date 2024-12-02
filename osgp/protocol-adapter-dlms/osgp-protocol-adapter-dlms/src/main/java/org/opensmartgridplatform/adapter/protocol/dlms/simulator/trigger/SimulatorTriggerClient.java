@@ -28,6 +28,7 @@ import org.opensmartgridplatform.shared.usermanagement.AbstractClient;
 import org.opensmartgridplatform.shared.usermanagement.ResponseException;
 
 public class SimulatorTriggerClient extends AbstractClient {
+  // Test
 
   private static final String CONSTRUCTION_FAILED = "SimulatorTriggerClient construction failed";
   private static final String TRIGGERPATH = "trigger";
