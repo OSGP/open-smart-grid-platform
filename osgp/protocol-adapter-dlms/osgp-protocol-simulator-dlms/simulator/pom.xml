@@ -56,7 +56,7 @@ SPDX-License-Identifier: Apache-2.0
 <!--   </dependencyManagement> -->
 
   <properties>
-    <spring.boot.version>3.3.7</spring.boot.version>
+    <spring.boot.version>3.4.1</spring.boot.version>
   </properties>
 
   <build>
