@@ -41,7 +41,7 @@ SPDX-License-Identifier: Apache-2.0
     type="java.lang.String" override="true" />
 
   <Environment name="osgp/AdapterProtocolOslpElster/config"
-    value="/etc/osp/osgp-adapter-protocol-oslp-elster.properties" type="java.lang.String"
+    value="/etc/osp/osgp-protocol-adapter-oslp-elster.properties" type="java.lang.String"
     override="true" />
   <Environment name="osgp/AdapterProtocolOslpElster/log-config"
     value="/etc/osp/osgp-adapter-protocol-oslp-elster-logback.xml" type="java.lang.String"
