@@ -54,7 +54,7 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
   private int notificationPort;
 
   @Value("${web.service.core.notification.address}")
-  private int notificationAddress;
+  private String notificationAddress;
 
   @Bean("wsCoreNotificationApplicationName")
   public String notificationApplicationName() {

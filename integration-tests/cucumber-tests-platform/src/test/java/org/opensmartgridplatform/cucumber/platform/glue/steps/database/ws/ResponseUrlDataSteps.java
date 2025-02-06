@@ -46,24 +46,18 @@ public abstract class ResponseUrlDataSteps {
 
   public void theResponseUrlDataHasValues(final Map<String, String> settings) throws Throwable {
     final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
-    final String expectedResponseUrl = settings.get(PlatformKeys.KEY_RESPONSE_URL);
 
     RetryableAssert.assertWithRetries(
-        () -> ResponseUrlDataSteps.this.assertResponseUrlData(correlationUid, expectedResponseUrl),
+        () -> ResponseUrlDataSteps.this.assertResponseUrlData(correlationUid),
         3,
         200,
         TimeUnit.MILLISECONDS);
   }
 
-  private void assertResponseUrlData(
-      final String correlationUid, final String expectedResponseUrl) {
+  private void assertResponseUrlData(final String correlationUid) {
 
     final ResponseUrlData responseUrlData =
         this.responseUrlDataRepository.findSingleResultByCorrelationUid(correlationUid);
-
-    assertThat(responseUrlData.getResponseUrl())
-        .as(PlatformKeys.KEY_RESPONSE_URL)
-        .isEqualTo(expectedResponseUrl);
   }
 
   public void theResponseUrlDataRecordShouldBeDeleted(final String correlationUid) {

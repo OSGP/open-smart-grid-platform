@@ -7,11 +7,14 @@ package org.opensmartgridplatform.cucumber.platform.glue.steps.database.ws;
 import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseUrlData;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class ResponseUrlDataBuilder {
 
   private String correlationUid = "test-org|||TEST1024000000001|||20170101000000000";
-  private String responseUrl = "http://localhost:8188/notifications";
+
+  @Qualifier("responseUrl")
+  private String responseUrl;
 
   public ResponseUrlData build() {
     return new ResponseUrlData(this.correlationUid, this.responseUrl);
@@ -27,13 +30,11 @@ public class ResponseUrlDataBuilder {
     return this;
   }
 
-  public ResponseUrlDataBuilder withCorrelationUid(final String correlationUid) {
+  private void withCorrelationUid(final String correlationUid) {
     this.correlationUid = correlationUid;
-    return this;
   }
 
-  public ResponseUrlDataBuilder withResponseUrl(final String responseUrl) {
+  private void withResponseUrl(final String responseUrl) {
     this.responseUrl = responseUrl;
-    return this;
   }
 }

@@ -54,7 +54,7 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
   private int notificationPort;
 
   @Value("${web.service.smartmetering.notification.address}")
-  private int notificationAddress;
+  private String notificationAddress;
 
   @Bean("wsSmartMeteringNotificationApplicationName")
   public String notificationApplicationName() {

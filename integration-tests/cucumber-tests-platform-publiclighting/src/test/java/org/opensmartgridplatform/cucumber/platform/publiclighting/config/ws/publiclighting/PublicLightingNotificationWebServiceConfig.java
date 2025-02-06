@@ -54,7 +54,7 @@ public class PublicLightingNotificationWebServiceConfig extends WsConfigurerAdap
   private int notificationPort;
 
   @Value("${web.service.publiclighting.notification.address}")
-  private int notificationAddress;
+  private String notificationAddress;
 
   @Bean("wsPublicLightingNotificationApplicationName")
   public String notificationApplicationName() {
