@@ -68,7 +68,11 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
 
   @Bean("wsSmartMeteringNotificationTargetUri")
   public String notificationTargetUri() {
-    return "http://"+this.notificationAddress+":" + this.notificationPort + this.notificationContextPath;
+    return "http://"
+        + this.notificationAddress
+        + ":"
+        + this.notificationPort
+        + this.notificationContextPath;
   }
 
   @Override
