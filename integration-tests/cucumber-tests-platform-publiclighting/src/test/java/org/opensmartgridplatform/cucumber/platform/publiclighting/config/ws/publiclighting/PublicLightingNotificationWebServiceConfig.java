@@ -53,6 +53,9 @@ public class PublicLightingNotificationWebServiceConfig extends WsConfigurerAdap
   @Value("${web.service.publiclighting.notification.port}")
   private int notificationPort;
 
+  @Value("${web.service.publiclighting.notification.address}")
+  private int notificationAddress;
+
   @Bean("wsPublicLightingNotificationApplicationName")
   public String notificationApplicationName() {
     return this.notificationApplicationName;
@@ -65,7 +68,7 @@ public class PublicLightingNotificationWebServiceConfig extends WsConfigurerAdap
 
   @Bean("wsPublicLightingNotificationTargetUri")
   public String notificationTargetUri() {
-    return "http://localhost:" + this.notificationPort + this.notificationContextPath;
+    return "http://"+this.notificationAddress+":" + this.notificationPort + this.notificationContextPath;
   }
 
   @Override

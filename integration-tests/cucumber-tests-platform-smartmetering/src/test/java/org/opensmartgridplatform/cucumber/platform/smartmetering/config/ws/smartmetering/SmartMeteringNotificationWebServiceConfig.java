@@ -53,6 +53,9 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
   @Value("${web.service.smartmetering.notification.port}")
   private int notificationPort;
 
+  @Value("${web.service.smartmetering.notification.address}")
+  private int notificationAddress;
+
   @Bean("wsSmartMeteringNotificationApplicationName")
   public String notificationApplicationName() {
     return this.notificationApplicationName;
@@ -65,7 +68,7 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
 
   @Bean("wsSmartMeteringNotificationTargetUri")
   public String notificationTargetUri() {
-    return "http://localhost:" + this.notificationPort + this.notificationContextPath;
+    return "http://"+this.notificationAddress+":" + this.notificationPort + this.notificationContextPath;
   }
 
   @Override

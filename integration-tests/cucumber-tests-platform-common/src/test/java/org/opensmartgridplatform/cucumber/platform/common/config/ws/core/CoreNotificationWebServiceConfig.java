@@ -53,6 +53,9 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
   @Value("${web.service.core.notification.port}")
   private int notificationPort;
 
+  @Value("${web.service.core.notification.address}")
+  private int notificationAddress;
+
   @Bean("wsCoreNotificationApplicationName")
   public String notificationApplicationName() {
     return this.notificationApplicationName;
@@ -65,7 +68,7 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
 
   @Bean("wsCoreNotificationTargetUri")
   public String notificationTargetUri() {
-    return "http://localhost:" + this.notificationPort + this.notificationContextPath;
+    return "http://"+this.notificationAddress+":" + this.notificationPort + this.notificationContextPath;
   }
 
   @Override
