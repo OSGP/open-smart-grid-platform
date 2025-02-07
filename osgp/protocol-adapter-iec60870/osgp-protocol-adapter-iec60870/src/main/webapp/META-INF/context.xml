@@ -40,7 +40,7 @@ SPDX-License-Identifier: Apache-2.0
   <Environment name="osgp/Global/config" value="/etc/osp/global.properties"
     type="java.lang.String" override="false" />
   <Environment name="osgp/AdapterProtocolIec60870/config"
-    value="/etc/osp/osgp-adapter-protocol-iec60870.properties" type="java.lang.String"
+    value="/etc/osp/osgp-protocol-adapter-iec60870.properties" type="java.lang.String"
     override="true" />
   <Environment name="osgp/AdapterProtocolIec60870/log-config"
     value="/etc/osp/osgp-adapter-protocol-iec60870-logback.xml" type="java.lang.String"

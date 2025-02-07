@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("classpath:osgp-adapter-protocol-iec60870.properties")
+@PropertySource("classpath:osgp-protocol-adapter-iec60870.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(
     value = "file:${osgp/AdapterProtocolIec60870/config}",

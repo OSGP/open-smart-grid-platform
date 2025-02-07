@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
     })
 @Import({MetricsConfig.class})
 @EnableTransactionManagement()
-@PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties")
+@PropertySource("classpath:osgp-protocol-adapter-oslp-elster.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(
     value = "file:${osgp/AdapterProtocolOslpElster/config}",

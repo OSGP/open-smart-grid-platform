@@ -1,7 +1,6 @@
 FROM eclipse-temurin:17
 WORKDIR /
 COPY cucumber-tests-platform-publiclighting/target/cucumber-*-test-jar-with-dependencies.jar /
-COPY certificates /etc/ssl/certs/organisations/
 RUN wget https://repo1.maven.org/maven2/org/jacoco/org.jacoco.agent/0.8.12/org.jacoco.agent-0.8.12-runtime.jar
 CMD java -javaagent:org.jacoco.agent-0.8.12-runtime.jar=destfile=/target/code-coverage/jacoco-it.exec \
      -Dcucumber.execution.strict=true\
@@ -10,4 +9,4 @@ CMD java -javaagent:org.jacoco.agent-0.8.12-runtime.jar=destfile=/target/code-co
      -Dtimeout=30\
      -DskipITCoverage=false\
      -DrunHeadless=true\
-     -jar cucumber-*-test-jar-with-dependencies.jar -report /target/output
+     -jar cucumber-*-test-jar-with-dependencies.jar -report /target/output/osgp-cucumber-tests-platform-publiclighting
