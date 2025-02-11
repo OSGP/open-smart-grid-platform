@@ -103,14 +103,11 @@ jobs:
           - image: ghcr.io/osgp/osgp-web-device-simulator
             context: ./osgp/protocol-adapter-oslp/web-device-simulator
           - image: ghcr.io/osgp/osgp-cucumber-tests-platform-common
-            context: ./integration-tests
-            file: /cucumber-tests-platform-common/Dockerfile
+            context: ./integration-tests/cucumber-tests-platform-common
           - image: ghcr.io/osgp/osgp-cucumber-tests-platform-publiclighting
-            context: ./integration-tests
-            file: /cucumber-tests-platform-publiclighting/Dockerfile
+            context: ./integration-tests/cucumber-tests-platform-publiclighting
           - image: ghcr.io/osgp/osgp-cucumber-tests-platform-smartmetering
-            context: ./integration-tests
-            file: /cucumber-tests-platform-smartmetering/Dockerfile
+            context: ./integration-tests/cucumber-tests-platform-smartmetering
     steps:
       - name: Checkout
         uses: actions/checkout@v4
