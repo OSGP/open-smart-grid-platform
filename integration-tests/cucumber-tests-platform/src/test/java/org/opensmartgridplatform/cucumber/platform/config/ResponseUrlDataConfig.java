@@ -14,7 +14,7 @@ public class ResponseUrlDataConfig {
   private int responsePort;
 
   @Value("${response.url.notification.address}")
-  private int responseAddress;
+  private String responseAddress;
 
   @Bean("responseUrl")
   public String notificationTargetUri() {
