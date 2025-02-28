@@ -89,7 +89,7 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
       throws IOException {
 
     LOGGER.info(
-            "Initializing core notifications HTTP server with uri: '{}'", this.notificationTargetUri());
+        "Initializing core notifications HTTP server with uri: '{}'", this.notificationTargetUri());
 
     final SoapMessageDispatcher soapMessageDispatcher = new SoapMessageDispatcher();
     soapMessageDispatcher.setEndpointMappings(Arrays.asList(mapping));
