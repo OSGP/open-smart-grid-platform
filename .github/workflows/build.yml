@@ -43,7 +43,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./mvnw -T1C -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=gxf -Dsonar.projectKey=OSGP_open-smart-grid-platform ${{ steps.maven_options.outputs.maven_options }}
       - name: Staging war and jar files
-        run: mkdir staging && find . -name *.war -not -path './staging/*' -exec cp -prv --parents '{}' 'staging/' ';' -o -name cucumber-*-test-jar-with-dependencies.jar -not -path './staging/*' -exec cp -prv --parents '{}' 'staging/' ';'
+        run: mkdir staging && find . -name gxf -not -path './staging/*' -exec cp -prv --parents '{}' 'staging/' ';' -o -name cucumber-*-test-jar-with-dependencies.jar -not -path './staging/*' -exec cp -prv --parents '{}' 'staging/*' ';' -o -name *simulator*.war -not -path './staging/*' ';'
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers')
       - uses: actions/upload-artifact@v4
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers')
@@ -130,31 +130,13 @@ jobs:
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v6
-        if: ${{ matrix.file == null }}
         with:
           context: ${{ matrix.context }}
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-      - name: Build and push Docker image with file path
-        id: pushWithFile
-        uses: docker/build-push-action@v6
-        if: ${{ matrix.file != null }}
-        with:
-          context: ${{ matrix.context }}
-          file: ${{ matrix.context }}${{ matrix.file }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
-        if: ${{ matrix.file == null }}
         with:
           subject-name: ${{ matrix.image }}
           subject-digest: ${{ steps.push.outputs.digest }}
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v1
-        if: ${{ matrix.file != null }}
-        with:
-          subject-name: ${{ matrix.image }}
-          subject-digest: ${{ steps.pushWithFile.outputs.digest }}
