@@ -89,9 +89,7 @@ public class PublicLightingNotificationWebServiceConfig extends WsConfigurerAdap
       throws IOException {
 
     LOGGER.info(
-        "Initializing public lighting notifications HTTP server with context path: '{}' and port: '{}'",
-        this.notificationContextPath,
-        this.notificationPort);
+            "Initializing core notifications HTTP server with uri: '{}'", this.notificationTargetUri());
 
     final SoapMessageDispatcher soapMessageDispatcher = new SoapMessageDispatcher();
     soapMessageDispatcher.setEndpointMappings(Arrays.asList(mapping));
