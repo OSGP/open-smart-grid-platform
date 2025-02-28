@@ -33,6 +33,7 @@ SPDX-License-Identifier: Apache-2.0
         <artifactId>maven-war-plugin</artifactId>
         <version>${maven.war.plugin.version}</version>
         <configuration>
+          <webappDirectory>${project.build.directory}/gxf/${project.artifactId}</webappDirectory>
           <attachClasses>true</attachClasses>
           <failOnMissingWebXml>false</failOnMissingWebXml>
           <nonFilteredFileExtensions>
