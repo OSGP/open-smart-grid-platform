@@ -19,9 +19,9 @@ import org.junit.runner.RunWith;
     },
     plugin = {
       "pretty",
-      "html:target/output/Cucumber-report",
-      "html:target/output/Cucumber-html-report.html",
-      "json:target/output/cucumber.json"
+      "html:target/output/osgp-cucumber-tests-platform-common/Cucumber-report",
+      "html:target/output/osgp-cucumber-tests-platform-common/Cucumber-html-report.html",
+      "json:target/output/osgp-cucumber-tests-platform-common/cucumber.json"
     },
     snippets = SnippetType.CAMELCASE,
     strict = true,
