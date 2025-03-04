@@ -77,8 +77,17 @@ public class ApplicationContext {
   @Value("${db.password}")
   private String password;
 
-  @Value("${db.url}")
-  private String url;
+  @Value("${db.host}")
+  private String dbHost;
+
+  @Value("${db.port}")
+  private String dbPort;
+
+  @Value("${db.protocol}")
+  private String dbProtocol;
+
+  @Value("${db.name}")
+  private String dbName;
 
   @Value("${db.max_pool_size:5}")
   private int maxPoolSize;
@@ -177,7 +186,7 @@ public class ApplicationContext {
       final HikariConfig hikariConfig = new HikariConfig();
 
       hikariConfig.setDriverClassName(this.driver);
-      hikariConfig.setJdbcUrl(this.url);
+      hikariConfig.setJdbcUrl(this.dbProtocol + dbHost + ":" + dbPort + "/" + dbName);
       hikariConfig.setUsername(this.username);
       hikariConfig.setPassword(this.password);
 
