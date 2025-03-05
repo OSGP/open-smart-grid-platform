@@ -23,9 +23,9 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 @PropertySource(
     value = "classpath:osgp-simulator-protocol-iec61850.properties",
     ignoreResourceNotFound = false)
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:/etc/osp/global.properties", ignoreResourceNotFound = true)
 @PropertySource(
-    value = "file:${osgp/SimulatorProtocolIec61850/config}",
+    value = "file:/etc/osp/osgp-protocol-simulator-iec61850.properties",
     ignoreResourceNotFound = true)
 public class SimulatorApplication extends SpringBootServletInitializer {
 

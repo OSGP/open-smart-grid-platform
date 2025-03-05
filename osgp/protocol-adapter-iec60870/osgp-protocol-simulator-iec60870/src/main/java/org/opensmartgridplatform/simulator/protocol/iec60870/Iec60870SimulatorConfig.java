@@ -28,9 +28,9 @@ import org.springframework.scheduling.support.CronTrigger;
 @PropertySource(
     value = "classpath:osgp-protocol-simulator-iec60870.properties",
     ignoreResourceNotFound = false)
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:/etc/osp/global.properties", ignoreResourceNotFound = true)
 @PropertySource(
-    value = "file:${osgp/SimulatorProtocolIec60870/config}",
+    value = "file:/etc/osp/osgp-protocol-simulator-iec60870.properties",
     ignoreResourceNotFound = true)
 public class Iec60870SimulatorConfig {
 
