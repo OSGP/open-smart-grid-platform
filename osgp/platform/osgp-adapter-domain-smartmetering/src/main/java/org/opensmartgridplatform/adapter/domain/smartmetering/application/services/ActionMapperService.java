@@ -67,6 +67,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushS
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupSmsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupUdpRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetSpecificAttributeValueRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetThdConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequestData;
@@ -118,6 +119,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupLast
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupUdpRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetSpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
@@ -172,6 +174,8 @@ public class ActionMapperService {
     CLASS_MAP.put(UpdateFirmwareRequestData.class, UpdateFirmwareRequestDto.class);
     CLASS_MAP.put(SetKeysRequestData.class, SetKeysRequestDto.class);
     CLASS_MAP.put(SpecificAttributeValueRequestData.class, SpecificAttributeValueRequestDto.class);
+    CLASS_MAP.put(
+        SetSpecificAttributeValueRequestData.class, SetSpecificAttributeValueRequestDto.class);
     CLASS_MAP.put(
         GetAssociationLnObjectsRequestData.class, GetAssociationLnObjectsRequestDto.class);
     CLASS_MAP.put(CoupleMbusDeviceRequestData.class, GetAssociationLnObjectsRequestDto.class);
@@ -270,6 +274,7 @@ public class ActionMapperService {
     CLASS_TO_MAPPER_MAP.put(UpdateFirmwareRequestData.class, this.commonMapper);
     CLASS_TO_MAPPER_MAP.put(SetKeysRequestData.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(SpecificAttributeValueRequestData.class, this.commonMapper);
+    CLASS_TO_MAPPER_MAP.put(SetSpecificAttributeValueRequestData.class, this.commonMapper);
     CLASS_TO_MAPPER_MAP.put(GetAssociationLnObjectsRequestData.class, this.commonMapper);
     CLASS_TO_MAPPER_MAP.put(SetClockConfigurationRequestData.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(GetThdFingerprintRequestData.class, this.monitoringMapper);

@@ -18,12 +18,12 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>6.14.0-SNAPSHOT</version>
+    <version>6.15.0-SNAPSHOT</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
   <properties>
-    <spring.boot.version>3.3.7</spring.boot.version>
+    <spring.boot.version>3.3.8</spring.boot.version>
     <failOnMissingWebXml>false</failOnMissingWebXml>
   </properties>
 

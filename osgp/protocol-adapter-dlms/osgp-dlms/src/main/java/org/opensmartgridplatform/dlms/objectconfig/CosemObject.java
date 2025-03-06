@@ -163,4 +163,12 @@ public class CosemObject {
     }
     return obisParts;
   }
+
+  public void addNote(final String note) {
+    if (this.note == null || note.isBlank()) {
+      this.note = note;
+    } else {
+      this.note = this.note + "\n" + note;
+    }
+  }
 }

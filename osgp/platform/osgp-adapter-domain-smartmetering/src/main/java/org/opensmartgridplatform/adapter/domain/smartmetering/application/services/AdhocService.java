@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebSe
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AssociationLnListType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ScanMbusChannelsResponseData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetSpecificAttributeValueRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.TestAlarmSchedulerRequestData;
@@ -22,6 +23,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAssociationLn
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannelsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannelsResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetSpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.TestAlarmSchedulerRequestDto;
@@ -240,6 +242,47 @@ public class AdhocService {
 
     log.debug(
         "handleGetSpecificAttributeValueResponse for MessageType: {}",
+        messageMetadata.getMessageType());
+
+    final ResponseMessage responseMessage =
+        this.createResponseMessageWithDataObject(
+            deviceResult, exception, messageMetadata, resultData);
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
+  }
+
+  public void setSpecificAttributeValue(
+      final MessageMetadata messageMetadata, final SetSpecificAttributeValueRequest request)
+      throws FunctionalException {
+
+    log.debug(
+        "setSpecificAttributeValue for organisationIdentification: {} for deviceIdentification: {}",
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
+
+    final SmartMeter smartMeter =
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
+
+    final SetSpecificAttributeValueRequestDto requestDto =
+        new SetSpecificAttributeValueRequestDto(
+            request.getObjectType(), request.getAttribute(), request.getIntValue());
+
+    this.osgpCoreRequestMessageSender.send(
+        requestDto,
+        messageMetadata
+            .builder()
+            .withNetworkAddress(smartMeter.getNetworkAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
+  }
+
+  public void handleSetSpecificAttributeValueResponse(
+      final MessageMetadata messageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception,
+      final String resultData) {
+
+    log.debug(
+        "handleSetSpecificAttributeValueResponse for MessageType: {}",
         messageMetadata.getMessageType());
 
     final ResponseMessage responseMessage =

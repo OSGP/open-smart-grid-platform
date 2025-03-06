@@ -179,4 +179,7 @@ public class PlatformSmartmeteringKeys
   public static final String PUSH_OBJECT_OBIS_CODES = "PushObjectObisCodes";
   public static final String PUSH_OBJECT_ATTRIBUTE_IDS = "PushObjectAttributeIds";
   public static final String PUSH_OBJECT_DATA_INDEXES = "PushObjectDataIndexes";
+
+  public static final String OBJECT_TYPE = "ObjectType";
+  public static final String INT_VALUE = "IntValue";
 }

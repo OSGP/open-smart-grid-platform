@@ -70,6 +70,25 @@
     </wsdl:part>
   </wsdl:message>
 
+  <wsdl:message name="SetSpecificAttributeValueRequest">
+    <wsdl:part element="smadhoc:SetSpecificAttributeValueRequest"
+      name="SetSpecificAttributeValueRequest"/>
+  </wsdl:message>
+  <wsdl:message name="SetSpecificAttributeValueAsyncResponse">
+    <wsdl:part element="smadhoc:SetSpecificAttributeValueAsyncResponse"
+      name="SetSpecificAttributeValueAsyncResponse"/>
+  </wsdl:message>
+  <wsdl:message name="SetSpecificAttributeValueAsyncRequest">
+    <wsdl:part element="smadhoc:SetSpecificAttributeValueAsyncRequest"
+      name="SetSpecificAttributeValueAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetSpecificAttributeValueResponse">
+    <wsdl:part element="smadhoc:SetSpecificAttributeValueResponse"
+      name="SetSpecificAttributeValueResponse">
+    </wsdl:part>
+  </wsdl:message>
+
   <wsdl:message name="GetAllAttributeValuesRequest">
     <wsdl:part element="smadhoc:GetAllAttributeValuesRequest"
       name="GetAllAttributeValuesRequest">
@@ -175,6 +194,20 @@
         name="GetSpecificAttributeValueAsyncRequest" />
       <wsdl:output message="tns:GetSpecificAttributeValueResponse"
         name="GetSpecificAttributeValueResponse" />
+    </wsdl:operation>
+    
+    <wsdl:operation name="SetSpecificAttributeValue">
+      <wsdl:input message="tns:SetSpecificAttributeValueRequest"
+        name="SetSpecificAttributeValueRequest" />
+      <wsdl:output message="tns:SetSpecificAttributeValueAsyncResponse"
+        name="SetSpecificAttributeValueAsyncResponse" />
+    </wsdl:operation>
+
+    <wsdl:operation name="SetSpecificAttributeValueResponse">
+      <wsdl:input message="tns:SetSpecificAttributeValueAsyncRequest"
+        name="SetSpecificAttributeValueAsyncRequest" />
+      <wsdl:output message="tns:SetSpecificAttributeValueResponse"
+        name="SetSpecificAttributeValueResponse" />
     </wsdl:operation>
 
     <wsdl:operation name="GetAssociationLnObjects">
@@ -301,6 +334,38 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="GetSpecificAttributeValueResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetSpecificAttributeValue">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetSpecificAttributeValueRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetSpecificAttributeValueAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetSpecificAttributeValueResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetSpecificAttributeValueAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetSpecificAttributeValueResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

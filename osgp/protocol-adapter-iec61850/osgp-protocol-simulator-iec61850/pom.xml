@@ -38,12 +38,12 @@ SPDX-License-Identifier: Apache-2.0
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
-  <version>6.14.0-SNAPSHOT</version>
+  <version>6.15.0-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.7</version>
+    <version>3.4.3</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
@@ -52,7 +52,6 @@ SPDX-License-Identifier: Apache-2.0
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>17</java.version>
-    <spring.boot.version>3.2.0</spring.boot.version>
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
 
     <jxr.version>3.3.2</jxr.version>

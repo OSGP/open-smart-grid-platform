@@ -13,7 +13,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>super-osgp</artifactId>
-  <version>6.14.0-SNAPSHOT</version>
+  <version>6.15.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
   <!-- Description, Organization, Licences, URL and Distribution Management
@@ -45,17 +45,17 @@ SPDX-License-Identifier: Apache-2.0
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>6.14.0-SNAPSHOT</osgp.version>
-    <osgp.dlms.version>6.14.0-SNAPSHOT</osgp.dlms.version>
-    <osgp.shared.version>6.14.0-SNAPSHOT</osgp.shared.version>
-    <osgp.jasper-interface.version>6.14.0-SNAPSHOT</osgp.jasper-interface.version>
+    <osgp.version>6.15.0-SNAPSHOT</osgp.version>
+    <osgp.dlms.version>6.15.0-SNAPSHOT</osgp.dlms.version>
+    <osgp.shared.version>6.15.0-SNAPSHOT</osgp.shared.version>
+    <osgp.jasper-interface.version>6.15.0-SNAPSHOT</osgp.jasper-interface.version>
     <spring.version>6.1.14</spring.version>
     <spring.data.version>3.2.5</spring.data.version>
     <spring.data.commons.version>3.3.1</spring.data.commons.version>
     <spring.security.version>6.2.8</spring.security.version>
     <spring.ws.version>4.0.11</spring.ws.version>
     <spring.integration.version>6.3.5</spring.integration.version>
-    <reactor.version>2023.0.7</reactor.version>
+    <reactor.version>2024.0.3</reactor.version>
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.core.version>4.8.0</mockito.core.version>
@@ -111,7 +111,7 @@ SPDX-License-Identifier: Apache-2.0
     <apache.commons.schema>2.3.1</apache.commons.schema>
     <maven.clean.plugin.version>3.4.0</maven.clean.plugin.version>
     <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
-    <netty.version>4.1.108.Final</netty.version>
+    <netty.version>4.1.118.Final</netty.version>
     <openmuc.jdlms.version>1.8.0</openmuc.jdlms.version>
     <openmuc.jdlms-annotation.version>1.8.0</openmuc.jdlms-annotation.version>
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
@@ -121,7 +121,7 @@ SPDX-License-Identifier: Apache-2.0
     <license.maven.plugin>3.0</license.maven.plugin>
     <jackson.version>2.15.3</jackson.version>
     <cxf.version>4.0.3</cxf.version>
-    <cxf.core.version>4.0.5</cxf.core.version>
+    <cxf.core.version>4.0.6</cxf.core.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
     <micrometer.version>1.13.1</micrometer.version>

@@ -249,6 +249,14 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="SetSpecificAttributeValueRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="adhoc:SetSpecificAttributeValueRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:element name="SetKeysRequest">
     <xsd:complexType>
       <xsd:complexContent>
@@ -417,6 +425,7 @@
         <xsd:element ref="tns:UpdateFirmwareRequest" />
         <xsd:element ref="tns:GetAllAttributeValuesRequest" />
         <xsd:element ref="tns:GetSpecificAttributeValueRequest" />
+        <xsd:element ref="tns:SetSpecificAttributeValueRequest" />
         <xsd:element ref="tns:SetKeysRequest" />
         <xsd:element ref="tns:GetAssociationLnObjectsRequest" />
         <xsd:element ref="tns:SetClockConfigurationRequest" />
@@ -566,6 +575,14 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="SetSpecificAttributeValueResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="adhoc:SetSpecificAttributeValueResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:element name="GetFirmwareVersionResponse">
     <xsd:complexType>
       <xsd:complexContent>
@@ -698,6 +715,7 @@
         <xsd:element ref="tns:GetMbusEncryptionKeyStatusResponse" />
         <xsd:element ref="tns:GetAllAttributeValuesResponse" />
         <xsd:element ref="tns:GetSpecificAttributeValueResponse" />
+        <xsd:element ref="tns:SetSpecificAttributeValueResponse" />
         <xsd:element ref="tns:GetFirmwareVersionResponse" />
         <xsd:element ref="tns:GetFirmwareVersionGasResponse"/>
         <xsd:element ref="tns:UpdateFirmwareResponse" />

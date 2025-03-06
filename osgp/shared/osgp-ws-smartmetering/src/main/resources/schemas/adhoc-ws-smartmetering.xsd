@@ -148,6 +148,7 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+
   <xsd:element name="GetSpecificAttributeValueRequest">
     <xsd:complexType>
       <xsd:complexContent>
@@ -204,6 +205,66 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+
+  <xsd:element name="SetSpecificAttributeValueRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tns:SetSpecificAttributeValueRequestData">
+          <xsd:sequence>
+            <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetSpecificAttributeValueAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetSpecificAttributeValueAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetSpecificAttributeValueResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:Response">
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="SetSpecificAttributeValueRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
+          <xsd:element name="ObjectType" type="tns:AllowedObjectType" />
+          <xsd:element name="Attribute" type="xsd:integer" />
+          <xsd:element name="IntValue" type="xsd:integer" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="SetSpecificAttributeValueResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="AttributeValueData" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:simpleType name="AllowedObjectType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="WATCHDOG_TIMER" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
   <xsd:complexType name="GetAssociationLnObjectsRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">

@@ -12,6 +12,8 @@ import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExcep
 import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.CONNECTION_RESET;
 import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.CONNECTION_TIMED_OUT;
 import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.ILLEGAL_RESPONSE;
+import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.REJECTED_PERMANENT;
+import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.REJECTED_TRANSIENT;
 import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.RESPONSE_TIMEOUT;
 import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.SOCKET_CLOSED_BY_REMOTE;
 import static org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType.UNABLE_TO_DECYPHER;
@@ -53,6 +55,8 @@ public abstract class DlmsConnector {
     errorMap.put("ILLEGAL_RESPONSE", ILLEGAL_RESPONSE);
     errorMap.put("RESPONSE_TIMEOUT", RESPONSE_TIMEOUT);
     errorMap.put("UNKNOWN_ASSOCIATION_RESULT", UNKNOWN_ASSOCIATION_RESULT);
+    errorMap.put("REJECTED_PERMANENT", REJECTED_PERMANENT);
+    errorMap.put("REJECTED_TRANSIENT", REJECTED_TRANSIENT);
   }
 
   public abstract DlmsConnection connect(

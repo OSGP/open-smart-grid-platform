@@ -26,6 +26,8 @@ class DlmsConnectorTest {
     "Unable to decypher/decrypt xDLMS pdu,UNABLE_TO_DECYPHER",
     "WRAPPER_HEADER_INVALID_VERSION,WRAPPER_HEADER_INVALID",
     "UNKNOWN_ASSOCIATION_RESULT,UNKNOWN_ASSOCIATION_RESULT",
+    "REJECTED_PERMANENT,REJECTED_PERMANENT",
+    "REJECTED_TRANSIENT,REJECTED_TRANSIENT"
   })
   void testGetExceptionWithExceptionType(
       final String message, final FunctionalExceptionType expectedType) {

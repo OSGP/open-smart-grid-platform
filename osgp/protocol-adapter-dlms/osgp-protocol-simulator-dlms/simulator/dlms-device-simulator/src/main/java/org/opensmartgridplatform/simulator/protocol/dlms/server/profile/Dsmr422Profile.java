@@ -15,6 +15,7 @@ import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.CaptureObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.DefinableLoadProfile;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.LongUnsignedData;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -76,5 +77,11 @@ public class Dsmr422Profile {
         DataObject.newUInteger32Data(960));
 
     return new DefinableLoadProfile(dynamicValues, cal, null, DEFAULT_CAPTURE_OBJECTS);
+  }
+
+  @Bean
+  public LongUnsignedData watchdogTimer() {
+    final String obisCode = "0.1.94.31.2.255";
+    return new LongUnsignedData(obisCode, 72); // Default timer is 72 hours
   }
 }

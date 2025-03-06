@@ -27,6 +27,7 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.EMonthlyBillingVa
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic.AdjacentCellInfo;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.GsmDiagnostic.CellInfo;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.LongUnsignedData;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDailyBillingValuesPeriod1SMR5;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDriverActiveFirmwareIdentifier;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.MBusDriverActiveFirmwareSignature;
@@ -711,5 +712,11 @@ public class Smr5Profile {
         cellInfo,
         adjacentCellInfos,
         captureTime);
+  }
+
+  @Bean
+  public LongUnsignedData watchdogTimer() {
+    final String obisCode = "0.1.94.31.2.255";
+    return new LongUnsignedData(obisCode, 72); // Default timer is 72 hours
   }
 }

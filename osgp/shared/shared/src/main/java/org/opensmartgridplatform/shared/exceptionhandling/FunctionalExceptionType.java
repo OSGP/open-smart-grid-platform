@@ -4,6 +4,9 @@
 
 package org.opensmartgridplatform.shared.exceptionhandling;
 
+import lombok.Getter;
+
+@Getter
 public enum FunctionalExceptionType {
   // Organisation exceptions
   UNKNOWN_ORGANISATION(101, "UNKNOWN_ORGANISATION"),
@@ -47,6 +50,8 @@ public enum FunctionalExceptionType {
   ILLEGAL_RESPONSE(232, "ILLEGAL_RESPONSE"),
   RESPONSE_TIMEOUT(233, "RESPONSE_TIMEOUT"),
   UNKNOWN_ASSOCIATION_RESULT(234, "UNKNOWN_ASSOCIATION_RESULT"),
+  REJECTED_PERMANENT(235, "REJECTED_PERMANENT"),
+  REJECTED_TRANSIENT(236, "REJECTED_TRANSIENT"),
 
   // Authorization exceptions
   UNAUTHORIZED(301, "UNAUTHORIZED"),
@@ -109,13 +114,5 @@ public enum FunctionalExceptionType {
   FunctionalExceptionType(final int code, final String message) {
     this.code = code;
     this.message = message;
-  }
-
-  public int getCode() {
-    return this.code;
-  }
-
-  public String getMessage() {
-    return this.message;
   }
 }

@@ -2525,6 +2525,24 @@
       ]
     },
     {
+      "tag": "WATCHDOG_TIMER",
+      "description": "Connection watchdog timer P3",
+      "class-id": 1,
+      "version": 0,
+      "obis": "0.1.94.31.2.255",
+      "group": "ABSTRACT",
+      "meterTypes": ["SP","PP"],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "access": "RW"
+        }
+      ]
+    },
+    {
       "tag": "CONFIGURATION_OBJECT",
       "description": "Configuration object",
       "class-id": 1,

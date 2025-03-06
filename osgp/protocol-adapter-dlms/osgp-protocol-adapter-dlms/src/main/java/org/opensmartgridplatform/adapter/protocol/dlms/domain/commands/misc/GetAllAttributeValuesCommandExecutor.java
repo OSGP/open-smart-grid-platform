@@ -187,48 +187,60 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
       final DlmsDevice device,
       final ObjectListElement objectListElement) {
 
-    final List<DataObject> attributeData =
-        this.getAllDataFromAttributes(conn, device, objectListElement);
+    String errorMessage = "";
+    List<DataObject> attributeData;
 
-    return this.dataDecoder.decodeObjectData(objectListElement, attributeData, dlmsProfile);
+    try {
+      attributeData = this.getAllDataFromAttributes(conn, device, objectListElement);
+    } catch (final Exception e) {
+      log.error("Failed reading attributes from " + objectListElement.getLogicalName(), e);
+      errorMessage = "Failed reading attributes";
+      attributeData = List.of();
+    }
+
+    final CosemObject object =
+        this.dataDecoder.decodeObjectData(objectListElement, attributeData, dlmsProfile);
+
+    if (!errorMessage.isEmpty()) {
+      object.addNote(errorMessage);
+    }
+
+    return object;
   }
 
   private List<DataObject> getAllDataFromAttributes(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ObjectListElement objectListElement) {
-    try {
-      final int classId = objectListElement.getClassId();
-      final String obisCode = objectListElement.getLogicalName();
-      final AttributeAddress[] addresses =
-          objectListElement.getAttributes().stream()
-              .map(item -> new AttributeAddress(classId, obisCode, item.getAttributeId()))
-              .toArray(AttributeAddress[]::new);
+      final ObjectListElement objectListElement)
+      throws ProtocolAdapterException {
 
-      conn.getDlmsMessageListener()
-          .setDescription(
-              "RetrieveAllAttributeValues, retrieve attributes: "
-                  + JdlmsObjectToStringUtil.describeAttributes(addresses));
+    final int classId = objectListElement.getClassId();
+    final String obisCode = objectListElement.getLogicalName();
+    final AttributeAddress[] addresses =
+        objectListElement.getAttributes().stream()
+            .map(item -> new AttributeAddress(classId, obisCode, item.getAttributeId()))
+            .toArray(AttributeAddress[]::new);
 
-      log.debug(
-          "Retrieving data for {} attributes of class id: {}, obis code: {}",
-          addresses.length,
-          classId,
-          obisCode);
-      final List<GetResult> getResults = this.dlmsHelper.getWithList(conn, device, addresses);
+    conn.getDlmsMessageListener()
+        .setDescription(
+            "RetrieveAllAttributeValues, retrieve attributes: "
+                + JdlmsObjectToStringUtil.describeAttributes(addresses));
 
-      if (getResults.stream()
-          .allMatch(result -> result.getResultCode() == AccessResultCode.SUCCESS)) {
-        log.debug("ResultCode: SUCCESS");
-      } else {
-        log.debug("ResultCode not SUCCESS for one or more attributes");
-      }
+    log.debug(
+        "Retrieving data for {} attributes of class id: {}, obis code: {}",
+        addresses.length,
+        classId,
+        obisCode);
+    final List<GetResult> getResults = this.dlmsHelper.getWithList(conn, device, addresses);
 
-      return getResults.stream().map(GetResult::getResultData).toList();
-    } catch (final Exception e) {
-      log.debug("Failed reading attributes from " + objectListElement.getLogicalName(), e);
-      return List.of();
+    if (getResults.stream()
+        .allMatch(result -> result.getResultCode() == AccessResultCode.SUCCESS)) {
+      log.debug("ResultCode: SUCCESS");
+    } else {
+      log.debug("ResultCode not SUCCESS for one or more attributes");
     }
+
+    return getResults.stream().map(GetResult::getResultData).toList();
   }
 
   private List<ObjectListElement> getAllObjectListElements(

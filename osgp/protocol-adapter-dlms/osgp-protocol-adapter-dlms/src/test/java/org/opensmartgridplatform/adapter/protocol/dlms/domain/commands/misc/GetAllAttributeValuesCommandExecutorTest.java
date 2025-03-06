@@ -248,6 +248,37 @@ class GetAllAttributeValuesCommandExecutorTest {
 """);
   }
 
+  @Test
+  void testReadingAttributesFails() throws Exception {
+    final DataObject objListElementForKnownObject =
+        this.createObjectListElement(CLASS_ID_REGISTER, VERSION_0, KNOWN_OBIS, NO_OF_ATTR_REGISTER);
+    final DataObject objectList = DataObject.newArrayData(List.of(objListElementForKnownObject));
+    final GetResultImpl getResultObjectList =
+        new GetResultImpl(objectList, AccessResultCode.SUCCESS);
+
+    when(this.connectionManager.getConnection().get(any(AttributeAddress.class)))
+        .thenReturn(getResultObjectList);
+
+    when(this.connectionManager.getConnection().get(ArgumentMatchers.anyList()))
+        .thenThrow(new IOException());
+
+    final String result = this.executor.execute(this.connectionManager, DEVICE, null, MSG_METADATA);
+
+    assertThat(this.replaceNewLinesWithSystemNewLines(result))
+        .isEqualToIgnoringNewLines(
+            """
+[ {
+  "description" : "Active energy import (+A)",
+  "dlmsClass" : "REGISTER",
+  "version" : 0,
+  "obis" : "1.0.1.8.0.255",
+  "note" : "Failed reading attributes",
+  "attributes" : [ ],
+  "class-id" : 3
+} ]
+""");
+  }
+
   private static DlmsDevice createDevice(final Protocol protocol) {
     final DlmsDevice device = new DlmsDevice();
     device.setProtocol(protocol);

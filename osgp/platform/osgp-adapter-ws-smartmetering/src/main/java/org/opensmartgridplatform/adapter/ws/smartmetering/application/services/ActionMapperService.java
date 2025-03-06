@@ -52,6 +52,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetPushS
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetPushSetupUdpRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetRandomisationSettingsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetSpecialDaysRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetSpecificAttributeValueRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetThdConfigurationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.UpdateFirmwareRequest;
@@ -103,6 +104,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushS
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupSmsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupUdpRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetSpecificAttributeValueRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetThdConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequestData;
@@ -235,6 +237,10 @@ public class ActionMapperService {
             .GetSpecificAttributeValueRequestData.class,
         SpecificAttributeValueRequestData.class);
     CLASS_MAP.put(
+        org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc
+            .SetSpecificAttributeValueRequestData.class,
+        SetSpecificAttributeValueRequestData.class);
+    CLASS_MAP.put(
         org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
             .SetClockConfigurationRequestData.class,
         SetClockConfigurationRequestData.class);
@@ -286,6 +292,8 @@ public class ActionMapperService {
     CLASS_MAP.put(SetKeysRequest.class, SetKeysRequestData.class);
     CLASS_MAP.put(GetAssociationLnObjectsRequest.class, GetAssociationLnObjectsRequestData.class);
     CLASS_MAP.put(GetSpecificAttributeValueRequest.class, SpecificAttributeValueRequestData.class);
+    CLASS_MAP.put(
+        SetSpecificAttributeValueRequest.class, SetSpecificAttributeValueRequestData.class);
     CLASS_MAP.put(SetClockConfigurationRequest.class, SetClockConfigurationRequestData.class);
     CLASS_MAP.put(GetConfigurationObjectRequest.class, GetConfigurationObjectRequestData.class);
     CLASS_MAP.put(GetPowerQualityProfileRequest.class, GetPowerQualityProfileRequestData.class);
@@ -375,6 +383,11 @@ public class ActionMapperService {
             .GetSpecificAttributeValueRequestData.class,
         this.adhocMapper);
     CLASS_TO_MAPPER_MAP.put(GetSpecificAttributeValueRequest.class, this.adhocMapper);
+    CLASS_TO_MAPPER_MAP.put(
+        org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc
+            .SetSpecificAttributeValueRequestData.class,
+        this.adhocMapper);
+    CLASS_TO_MAPPER_MAP.put(SetSpecificAttributeValueRequest.class, this.adhocMapper);
     CLASS_TO_MAPPER_MAP.put(
         org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsRequestData
             .class,
