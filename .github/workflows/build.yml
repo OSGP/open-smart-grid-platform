@@ -10,8 +10,6 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
 
-env:
-
 jobs:
   build:
     name: Build and analyze
