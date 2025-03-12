@@ -11,9 +11,6 @@ on:
     types: [opened, synchronize, reopened, labeled, unlabeled]
 
 env:
-  IMPORTANT_REF: ${{ contains(github.ref, 'release') || contains(github.ref, 'development') }}
-  REQUEST_BUILD_CONTAINERS: ${{ contains(github.event.pull_request.labels.*.name, 'build_containers') }}
-  REQUEST_CUCUMBER_TESTING: ${{ contains(github.event.pull_request.labels.*.name, 'cucumber-testing')}}
 
 jobs:
   build:
@@ -38,7 +35,7 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
       - name: Set maven options for cucumber containers
         id: maven_options
-        if: ${{ env.IMPORTANT_REF || env.REQUEST_BUILD_CONTAINERS || env.REQUEST_CUCUMBER_TESTING }}
+        if: ${{ contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber-testing') }}
         run: echo 'maven_options=-DskipTestJarWithDependenciesAssembly=false' >> $GITHUB_OUTPUT
       - name: Build and analyse
         env:
@@ -47,7 +44,7 @@ jobs:
         run: ./mvnw -T1C -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=gxf -Dsonar.projectKey=OSGP_open-smart-grid-platform ${{ steps.maven_options.outputs.maven_options }}
       - name: Staging war and jar files
         run: mkdir staging && find . -path ./staging -prune -o \( -name gxf -o -name cucumber-*-test-jar-with-dependencies.jar -o -name *simulator*.war \) -exec cp -prv --parents '{}' staging/ \;
-        if: ${{ env.IMPORTANT_REF || env.REQUEST_BUILD_CONTAINERS || env.REQUEST_CUCUMBER_TESTING }}
+        if: ${{ contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber-testing') }}
       - uses: actions/upload-artifact@v4
         if:
         with:
@@ -57,7 +54,7 @@ jobs:
   docker:
     name: Building docker images
     runs-on: ubuntu-latest
-    if: ${{ env.IMPORTANT_REF || env.REQUEST_BUILD_CONTAINERS || env.REQUEST_CUCUMBER_TESTING }}
+    if: ${{ contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber-testing') }}
     needs: build
     permissions:
       contents: read
@@ -147,7 +144,7 @@ jobs:
   cucumber:
     name: Running cucumber gxf containers
     runs-on: ubuntu-latest
-    if: ${{ env.IMPORTANT_REF || env.REQUEST_CUCUMBER_TESTING }}
+    if: ${{ contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'cucumber-testing') }}
     needs: docker
     steps:
       - name: Checkout gxf-gitops
