@@ -16,13 +16,15 @@ jobs:
           ref: 'feature/FDP-2849-initial-setup-gitops'
       - name: Setup k3d cluster
         run: bash setup.sh
-      - name: Echo starting
-        run: echo "Generating app secrets"
-      - name: Deleting old secrets
-        run: kubectl delete --all secrets
-      - name: Generating root key
-        run: openssl genpkey -aes-256-cbc -pass pass:"test" -algorithm RSA -out "test" -pkeyopt rsa_keygen_bits:4096
-      - name: Generating root cert
-        run: openssl req -x509 -new -nodes -key test -passin pass:"test" -sha256 -days 365 -out test -subj "/C=NL/ST=Gelderland/L=Arnhem/O=LFEnergy/OU=IT/CN=Generated Root CA"
-      - name: Run generate secrets script
-        run: bash generate-secrets.sh
+      - name: Create gxf platform
+        run: ./charts/gxf-platform/template-apply.sh
+      - name: Create and run gxf cucumber tests
+        run: ./charts/gxf-cucumber-tests/template-apply.sh
+      - name: Wait for jobs to finish
+        #        TODO wait for more than one job
+        run: kubectl wait --for=condition=complete job/osgp-cucumber-tests-platform-common
+      - name: Run maven cucumber reporting
+        run: mvn -f charts/gxf-cucumber-tests/pom.xml verify
+      - name: Show reporting
+        run: find target
+#        TODO publish cucumber reports to PR/action
