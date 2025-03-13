@@ -1,11 +1,11 @@
-name: Testing generate secrets workflow
+name: Testing kubernetes cucumber test cluster
 on:
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
 
 jobs:
   build:
-    name: Build and analyze
+    name: Testing kubernetes cucumber test cluster
     runs-on: ubuntu-latest
     steps:
       - name: Checkout gxf-gitops
@@ -14,6 +14,8 @@ jobs:
           repository: 'OSGP/gxf-gitops'
           #          TODO remove when gxf-gitops is fully operational
           ref: 'feature/FDP-2849-initial-setup-gitops'
+      - name: Setup k3d cluster
+        run: ./setup.sh
       - name: Echo starting
         run: echo "Generating app secrets"
       - name: Deleting old secrets
