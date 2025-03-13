@@ -24,6 +24,9 @@ jobs:
         run: kubectl wait --for=condition=complete --all jobs --timeout=30m
       - name: Run maven cucumber reporting
         run: mvn -f charts/gxf-cucumber-tests/pom.xml verify
-      - name: Show reporting
-        run: find charts/gxf-cucumber-tests/cucumber-reporting
-#        TODO publish cucumber reports to PR/action
+      - name: Show reporting in GHA
+        run: find charts/gxf-cucumber-tests/cucumber-output
+      - uses: deblockt/cucumber-report-annotations-action@v1.7
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          path: "/tmp/k3dvolume/**/*.json"
