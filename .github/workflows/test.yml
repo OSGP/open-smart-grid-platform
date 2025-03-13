@@ -1,0 +1,26 @@
+name: Testing generate secrets workflow
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+jobs:
+  build:
+    name: Build and analyze
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gxf-gitops
+        uses: actions/checkout@v4
+        with:
+          repository: 'OSGP/gxf-gitops'
+          #          TODO remove when gxf-gitops is fully operational
+          ref: 'feature/FDP-2849-initial-setup-gitops'
+      - name: Echo starting
+        run: echo "Generating app secrets"
+      - name: Cleaning up old files
+        run: find . -type f \( -name \*.csr -o -name \*.key -o -name \*.p12 -o -name \*.jks -o -name \*.pem -o -name \*.pfx -o -name \*.cer -o -name \*.crt -o -name \*.srl -o -name \*.der -o -name \*.generated.sh \) | xargs rm
+      - name: Deleting old secrets
+        run: kubectl delete --all secrets
+      - name: Generating root key
+        run: openssl genpkey -aes-256-cbc -pass pass:"${CA_PASS}" -algorithm RSA -out "${CA_KEY}" -pkeyopt rsa_keygen_bits:4096
+      - name: Generating root cert
+        run: openssl req -x509 -new -nodes -key ${CA_KEY} -passin pass:"${CA_PASS}" -sha256 -days 365 -out ${CA_CERT} -subj "/C=NL/ST=Gelderland/L=Arnhem/O=LFEnergy/OU=IT/CN=Generated Root CA"
