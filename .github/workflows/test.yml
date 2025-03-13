@@ -1,0 +1,34 @@
+name: Testing kubernetes cucumber test cluster
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+jobs:
+  build:
+    name: Testing kubernetes cucumber test cluster
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+    steps:
+      - name: Checkout gxf-gitops
+        uses: actions/checkout@v4
+        with:
+          repository: 'OSGP/gxf-gitops'
+          #          TODO remove when gxf-gitops is fully operational
+          ref: 'feature/FDP-2849-initial-setup-gitops'
+      - name: Setup k3d cluster
+        run: bash setup.sh
+      - name: Create gxf platform
+        run: ./charts/gxf-platform/template-apply.sh
+      - name: Create and run gxf cucumber tests
+        run: ./charts/gxf-cucumber-tests/template-apply.sh
+      - name: Wait for jobs to finish
+        run: kubectl wait --for=condition=complete --all jobs --timeout=30m
+      - name: Run maven cucumber reporting
+        run: mvn -f charts/gxf-cucumber-tests/pom.xml verify
+      - name: Show reporting in GHA
+        run: find charts/gxf-cucumber-tests/cucumber-output
+      - uses: deblockt/cucumber-report-annotations-action@v1.7
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          path: "/tmp/k3dvolume/**/*.json"
