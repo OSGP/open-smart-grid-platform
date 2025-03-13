@@ -15,7 +15,7 @@ jobs:
           #          TODO remove when gxf-gitops is fully operational
           ref: 'feature/FDP-2849-initial-setup-gitops'
       - name: Setup k3d cluster
-        run: ./setup.sh
+        run: bash setup.sh
       - name: Echo starting
         run: echo "Generating app secrets"
       - name: Deleting old secrets
@@ -24,3 +24,5 @@ jobs:
         run: openssl genpkey -aes-256-cbc -pass pass:"test" -algorithm RSA -out "test" -pkeyopt rsa_keygen_bits:4096
       - name: Generating root cert
         run: openssl req -x509 -new -nodes -key test -passin pass:"test" -sha256 -days 365 -out test -subj "/C=NL/ST=Gelderland/L=Arnhem/O=LFEnergy/OU=IT/CN=Generated Root CA"
+      - name: Run generate secrets script
+        run: bash generate-secrets.sh
