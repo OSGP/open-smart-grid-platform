@@ -25,5 +25,5 @@ jobs:
       - name: Run maven cucumber reporting
         run: mvn -f charts/gxf-cucumber-tests/pom.xml verify
       - name: Show reporting
-        run: find charts/gxf-cucumber-tests/target
+        run: find charts/gxf-cucumber-tests/cucumber-reporting
 #        TODO publish cucumber reports to PR/action
