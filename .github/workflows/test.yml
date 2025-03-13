@@ -16,8 +16,6 @@ jobs:
           ref: 'feature/FDP-2849-initial-setup-gitops'
       - name: Echo starting
         run: echo "Generating app secrets"
-      - name: Cleaning up old files
-        run: find . -type f \( -name \*.csr -o -name \*.key -o -name \*.p12 -o -name \*.jks -o -name \*.pem -o -name \*.pfx -o -name \*.cer -o -name \*.crt -o -name \*.srl -o -name \*.der -o -name \*.generated.sh \) | xargs rm
       - name: Deleting old secrets
         run: kubectl delete --all secrets
       - name: Generating root key
