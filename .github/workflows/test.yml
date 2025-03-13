@@ -25,9 +25,7 @@ jobs:
       - name: Wait for jobs to finish
         run: kubectl wait --for=condition=complete --all jobs --timeout=30m
       - name: Run maven cucumber reporting
-        run: mvn -f charts/gxf-cucumber-tests/pom.xml verify && find charts/gxf-cucumber-tests
-      - name: Show reporting in GHA
-        run: find charts/gxf-cucumber-tests/cucumber-output
+        run: mvn -f charts/gxf-cucumber-tests/pom.xml verify || find charts/gxf-cucumber-tests
       - uses: deblockt/cucumber-report-annotations-action@v1.7
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
