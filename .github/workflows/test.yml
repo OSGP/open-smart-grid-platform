@@ -21,6 +21,6 @@ jobs:
       - name: Deleting old secrets
         run: kubectl delete --all secrets
       - name: Generating root key
-        run: openssl genpkey -aes-256-cbc -pass pass:"${CA_PASS}" -algorithm RSA -out "${CA_KEY}" -pkeyopt rsa_keygen_bits:4096
+        run: openssl genpkey -aes-256-cbc -pass pass:"test" -algorithm RSA -out "test" -pkeyopt rsa_keygen_bits:4096
       - name: Generating root cert
-        run: openssl req -x509 -new -nodes -key ${CA_KEY} -passin pass:"${CA_PASS}" -sha256 -days 365 -out ${CA_CERT} -subj "/C=NL/ST=Gelderland/L=Arnhem/O=LFEnergy/OU=IT/CN=Generated Root CA"
+        run: openssl req -x509 -new -nodes -key test -passin pass:"test" -sha256 -days 365 -out test -subj "/C=NL/ST=Gelderland/L=Arnhem/O=LFEnergy/OU=IT/CN=Generated Root CA"
