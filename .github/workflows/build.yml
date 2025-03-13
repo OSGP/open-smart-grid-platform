@@ -144,6 +144,8 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') }}
     needs: docker
+    permissions:
+      checks: write
     steps:
       - name: Checkout gxf-gitops
         uses: actions/checkout@v4
@@ -152,9 +154,7 @@ jobs:
 #          TODO remove when gxf-gitops is fully operational
           ref: 'feature/FDP-2849-initial-setup-gitops'
       - name: Setup k3d cluster
-        run: ./setup.sh
-      - name: Generate platform secrets
-        run: ./generate-secrets.sh
+        run: bash setup.sh
       - name: Create gxf platform
         run: ./charts/gxf-platform/template-apply.sh
       - name: Create and run gxf cucumber tests
@@ -163,7 +163,8 @@ jobs:
         run: kubectl wait --for=condition=complete --all jobs --timeout=30m
       - name: Run maven cucumber reporting
         run: mvn -f charts/gxf-cucumber-tests/pom.xml verify
-      - name: Show reporting
-        run: find target
-#        TODO publish cucumber reports to PR/action
+      - uses: deblockt/cucumber-report-annotations-action@v1.7
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          path: "/tmp/k3dvolume/**/*.json"
 
