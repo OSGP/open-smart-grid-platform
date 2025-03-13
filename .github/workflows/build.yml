@@ -151,8 +151,10 @@ jobs:
           repository: 'OSGP/gxf-gitops'
 #          TODO remove when gxf-gitops is fully operational
           ref: 'feature/FDP-2849-initial-setup-gitops'
-      - name: Setup k3d cluster and generate secrets
+      - name: Setup k3d cluster
         run: ./setup.sh
+      - name: Generate platform secrets
+        run: ./generate-secrets.sh
       - name: Create gxf platform
         run: ./charts/gxf-platform/template-apply.sh
       - name: Create and run gxf cucumber tests
