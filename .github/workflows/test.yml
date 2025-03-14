@@ -40,7 +40,8 @@ jobs:
     steps:
       - name: Print pr number
         run: echo ${{ github.event.number }}
-      - run: echo ${{ needs.docker.outputs.tags }}
+      - name: Print truncated docker tag
+        run: echo ${${{ github.event.number }}##*:}
       - name: Checkout gxf-gitops
         uses: actions/checkout@v4
         with:
