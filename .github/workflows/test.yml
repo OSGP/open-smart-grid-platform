@@ -40,7 +40,7 @@ jobs:
     steps:
       - name: Print pr number
         run: echo ${{ github.event.number }}
-      - run: echo '${{ toJSON(needs.docker.outputs) }}'
+      - run: echo ${{ needs.docker.outputs.tags }}
       - name: Checkout gxf-gitops
         uses: actions/checkout@v4
         with:
