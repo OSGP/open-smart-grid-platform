@@ -4,14 +4,43 @@ on:
     types: [opened, synchronize, reopened, labeled, unlabeled]
 
 jobs:
+  docker:
+    name: Building docker images
+    runs-on: ubuntu-latest
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+      labels: ${{ steps.meta.outputs.labels }}
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    strategy:
+      matrix:
+        include:
+          - image: ghcr.io/osgp/osgp-core
+            context: ./osgp/platform/osgp-core/
+          - image: ghcr.io/osgp/osgp-logging
+            context: ./osgp/platform/osgp-logging/
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ matrix.image }}
+
   build:
     name: Testing kubernetes cucumber test cluster
     runs-on: ubuntu-latest
+    needs: docker
     permissions:
       checks: write
     steps:
       - name: Print pr number
         run: echo ${{ github.event.number }}
+      - run: echo '${{ toJSON(needs.docker.outputs) }}'
       - name: Checkout gxf-gitops
         uses: actions/checkout@v4
         with:
