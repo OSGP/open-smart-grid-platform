@@ -4,12 +4,16 @@ on:
     types: [opened, synchronize, reopened, labeled, unlabeled]
 
 jobs:
+  env:
+    PR_NUMBER: ${{ github.event.number }}
   build:
     name: Testing kubernetes cucumber test cluster
     runs-on: ubuntu-latest
     permissions:
       checks: write
     steps:
+      - name: Print pr number
+        run: echo $PR_NUMBER
       - name: Checkout gxf-gitops
         uses: actions/checkout@v4
         with:
