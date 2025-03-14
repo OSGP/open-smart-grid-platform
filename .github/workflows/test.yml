@@ -37,10 +37,6 @@ jobs:
     permissions:
       checks: write
     steps:
-      - name: Print pr number
-        run: echo ${{ github.event.number }}
-      - name: Print truncated docker tag
-        run: echo ${${{ needs.docker.outputs.tags }}##*:}
       - name: Checkout gxf-gitops
         uses: actions/checkout@v4
         with:
