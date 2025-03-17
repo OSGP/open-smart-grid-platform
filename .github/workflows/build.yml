@@ -7,6 +7,8 @@ on:
   push:
     branches:
       - development
+    tags:
+      - '**'
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
 
@@ -122,11 +124,21 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract Maven project version
+        if: ${{ contains(github.ref, 'release') || contains(github.ref, 'development') }}
+        run: echo "version=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
+        id: maven
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ matrix.image }}
+          tags: |
+            type=schedule
+            type=semver,pattern={{version}},value=${{ steps.maven.outputs.version }}
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v6
@@ -158,9 +170,9 @@ jobs:
       - name: Setup k3d cluster
         run: bash setup.sh
       - name: Create gxf platform
-        run: ./charts/gxf-platform/template-apply.sh $(echo ${{ needs.docker.outputs.tags }} | cut -d':' -f2)
+        run: ./charts/gxf-platform/template-apply.sh $(echo -e "${{ needs.docker.outputs.tags }}" | head -n 1 | cut -d':' -f2)
       - name: Create and run gxf cucumber tests
-        run: ./charts/gxf-cucumber-tests/template-apply.sh $(echo ${{ needs.docker.outputs.tags }} | cut -d':' -f2)
+        run: ./charts/gxf-cucumber-tests/template-apply.sh $(echo -e "${{ needs.docker.outputs.tags }}" | head -n 1 | cut -d':' -f2)
       - name: Wait for jobs to finish
         run: kubectl wait --for=condition=complete --all jobs --timeout=30m
       - name: Run maven cucumber reporting
