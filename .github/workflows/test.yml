@@ -43,6 +43,8 @@ jobs:
   build:
     name: Testing kubernetes cucumber test cluster
     runs-on: ubuntu-latest
+    env:
+      dockerTag: $(echo ${{ needs.docker.outputs.tags }} | head -n 1 | cut -d':' -f2)
     needs: docker
     permissions:
       checks: write
@@ -57,9 +59,9 @@ jobs:
         run: bash setup.sh
       - run: echo ${{ needs.docker.outputs.tags }}
       - name: Create gxf platform
-        run: ./charts/gxf-platform/template-apply.sh $(echo ${{ needs.docker.outputs.tags }} | cut -d':' -f2)
+        run: ./charts/gxf-platform/template-apply.sh $dockerTag
       - name: Create and run gxf cucumber tests
-        run: ./charts/gxf-cucumber-tests/template-apply.sh $(echo ${{ needs.docker.outputs.tags }} | cut -d':' -f2)
+        run: ./charts/gxf-cucumber-tests/template-apply.sh $dockerTag
       - name: Wait for jobs to finish
         run: kubectl wait --for=condition=complete --all jobs --timeout=30m
       - name: Run maven cucumber reporting
