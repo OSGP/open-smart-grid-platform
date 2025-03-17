@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tags: ${{ steps.meta.outputs.tags }}
+
     permissions:
       contents: read
       packages: write
@@ -44,7 +45,7 @@ jobs:
     name: Testing kubernetes cucumber test cluster
     runs-on: ubuntu-latest
     env:
-      dockerTag: $(echo ${{ needs.docker.outputs.tags }} | head -n 1 | cut -d':' -f2)
+      dockerTag: $(echo ${{ needs.docker.outputs.tags }} | cut -d' ' -f1 | cut -d':' -f2)
     needs: docker
     permissions:
       checks: write
