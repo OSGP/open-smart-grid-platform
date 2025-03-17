@@ -44,13 +44,12 @@ jobs:
   build:
     name: Testing kubernetes cucumber test cluster
     runs-on: ubuntu-latest
-    env:
-      dockerTag: $(echo ${{ needs.docker.outputs.tags }} | cut -d' ' -f1 | cut -d':' -f2)
     needs: docker
     permissions:
       checks: write
     steps:
-      - run: echo $dockerTag
+      - run: echo "DOCKER_TAG=$(echo ${{ needs.docker.outputs.tags }} | cut -d' ' -f1 | cut -d':' -f2)" >> $GITHUB_ENV
+      - run: echo $DOCKER_TAG
       - name: Checkout gxf-gitops
         uses: actions/checkout@v4
         with:
@@ -60,9 +59,9 @@ jobs:
       - name: Setup k3d cluster
         run: bash setup.sh
       - name: Create gxf platform
-        run: ./charts/gxf-platform/template-apply.sh $dockerTag
+        run: ./charts/gxf-platform/template-apply.sh $DOCKER_TAG
       - name: Create and run gxf cucumber tests
-        run: ./charts/gxf-cucumber-tests/template-apply.sh $dockerTag
+        run: ./charts/gxf-cucumber-tests/template-apply.sh $DOCKER_TAG
       - name: Wait for jobs to finish
         run: kubectl wait --for=condition=complete --all jobs --timeout=30m
       - name: Run maven cucumber reporting
