@@ -25,7 +25,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Extract Maven project version
-        if: ${{ contains(github.ref, 'release') || contains(github.ref, 'development') }}
+#        if: ${{ contains(github.ref, 'release') || contains(github.ref, 'development') }}
         run: echo "maven_version=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
         id: project
       - name: Extract metadata (tags, labels) for Docker
@@ -55,6 +55,7 @@ jobs:
           ref: 'feature/FDP-2849-initial-setup-gitops'
       - name: Setup k3d cluster
         run: bash setup.sh
+      - run: echo ${{ needs.docker.outputs.tags }}
       - name: Create gxf platform
         run: ./charts/gxf-platform/template-apply.sh $(echo ${{ needs.docker.outputs.tags }} | cut -d':' -f2)
       - name: Create and run gxf cucumber tests
