@@ -48,7 +48,7 @@ jobs:
     permissions:
       checks: write
     steps:
-      - run: echo "DOCKER_TAG=$(echo "${{ needs.docker.outputs.tags }}" | cut -d' ' -f1 | cut -d':' -f2)" >> $GITHUB_ENV
+      - run: echo "DOCKER_TAG=$(echo \"${{ needs.docker.outputs.tags }}\" | cut -d' ' -f1 | cut -d':' -f2)" >> $GITHUB_ENV
       - run: echo $DOCKER_TAG
       - name: Checkout gxf-gitops
         uses: actions/checkout@v4
