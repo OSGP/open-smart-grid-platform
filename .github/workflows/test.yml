@@ -47,7 +47,7 @@ jobs:
     permissions:
       checks: write
     steps:
-      - run: echo -e ${{ needs.docker.outputs.tags }} | head -n 1 | cut -d':' -f2
+      - run: echo -e "${{ needs.docker.outputs.tags }}" | head -n 1 | cut -d':' -f2
       - name: Checkout gxf-gitops
         uses: actions/checkout@v4
         with:
