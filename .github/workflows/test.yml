@@ -49,6 +49,7 @@ jobs:
     permissions:
       checks: write
     steps:
+      - run: echo $dockerTag
       - name: Checkout gxf-gitops
         uses: actions/checkout@v4
         with:
