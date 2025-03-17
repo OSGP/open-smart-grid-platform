@@ -57,7 +57,6 @@ jobs:
           ref: 'feature/FDP-2849-initial-setup-gitops'
       - name: Setup k3d cluster
         run: bash setup.sh
-      - run: echo ${{ needs.docker.outputs.tags }}
       - name: Create gxf platform
         run: ./charts/gxf-platform/template-apply.sh $dockerTag
       - name: Create and run gxf cucumber tests
