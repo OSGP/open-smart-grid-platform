@@ -34,6 +34,12 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ matrix.image }}
+          tags: |
+            type=schedule
+            type=semver,pattern={{version}}
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
 
   build:
     name: Testing kubernetes cucumber test cluster
