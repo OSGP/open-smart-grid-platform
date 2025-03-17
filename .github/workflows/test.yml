@@ -27,8 +27,6 @@ jobs:
       - name: Extract Maven project version
         run: echo "maven_version=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
         id: project
-      - name: Show extracted Maven project version
-        run: echo ${{ steps.project.outputs.maven_version }}
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
@@ -36,7 +34,7 @@ jobs:
           images: ${{ matrix.image }}
           tags: |
             type=schedule
-            type=semver,pattern={{version}}
+            type=semver,pattern={{version}},value=${{ steps.project.outputs.maven_version }}
             type=ref,event=branch
             type=ref,event=tag
             type=ref,event=pr
