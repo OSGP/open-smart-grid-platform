@@ -136,11 +136,12 @@ jobs:
         with:
           images: ${{ matrix.image }}
           tags: |
-            type=schedule,pattern=nightly,enable=true,priority=1000
-            type=semver,pattern={{version}},value=${{ steps.maven.outputs.version }},enable=true,priority=900
-            type=ref,event=branch,enable=true,priority=600
-            type=ref,event=tag,enable=true,priority=600
-            type=ref,event=pr,prefix=pr-,enable=true,priority=600
+            type=schedule
+            type=semver,pattern={{version}},value=${{ steps.maven.outputs.version }}
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
+            type=raw,value=latest,enable={{is_default_branch}}
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v6
