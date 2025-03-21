@@ -67,7 +67,7 @@ SPDX-License-Identifier: Apache-2.0
     <jakarta.persistence.api.version>3.1.0</jakarta.persistence.api.version>
     <jakarta.validation.api.version>3.0.2</jakarta.validation.api.version>
     <jakarta.jms.api.version>3.1.0</jakarta.jms.api.version>
-    <artemis.jakarta.client.version>2.40.0</artemis.jakarta.client.version>
+    <artemis.jakarta.client.version>2.33.0</artemis.jakarta.client.version>
     <junit.version>5.10.1</junit.version>
     <junit.platform.launcher.version>1.10.1</junit.platform.launcher.version>
     <byte.buddy.version>1.17.2</byte.buddy.version>
@@ -106,7 +106,7 @@ SPDX-License-Identifier: Apache-2.0
     <dependency-check.maven.plugin.version>7.0.2</dependency-check.maven.plugin.version>
     <versions.maven.plugin.version>2.10.0</versions.maven.plugin.version>
     <fmt-maven-plugin.version>2.23</fmt-maven-plugin.version>
-    <apache.activemq.version>6.0.1</apache.activemq.version>
+    <apache.activemq.version>6.1.5</apache.activemq.version>
     <logback.version>1.5.15</logback.version>
     <apache.commons.schema>2.3.1</apache.commons.schema>
     <maven.clean.plugin.version>3.4.0</maven.clean.plugin.version>
