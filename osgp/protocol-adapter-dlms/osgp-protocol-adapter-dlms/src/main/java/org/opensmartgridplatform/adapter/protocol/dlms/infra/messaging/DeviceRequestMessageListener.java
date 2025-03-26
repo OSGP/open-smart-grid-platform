@@ -38,7 +38,16 @@ public class DeviceRequestMessageListener implements MessageListener {
       processor.processMessage(objectMessage);
 
     } catch (final JMSException ex) {
-      LOGGER.error("Exception: {} ", ex.getMessage(), ex);
+      LOGGER.error(
+          "Exception in DeviceRequestMessageListener (osgp-protocol-adapter-dlms): {} ",
+          ex.getMessage(),
+          ex);
+    } catch (final Throwable t) {
+      LOGGER.error(
+          "Throwable in DeviceRequestMessageListener (osgp-protocol-adapter-dlms): {} ",
+          t.getMessage(),
+          t);
+      throw t;
     }
   }
 }
