@@ -201,7 +201,10 @@ public abstract class DlmsConnectionMessageProcessor {
 
     if (exception != null) {
 
-      LOGGER.error(exception.getMessage(), exception);
+      LOGGER.error(
+          "DlmsConnectionMessageProcessor.sendResponseMessage (exception) : {}",
+          exception.getMessage(),
+          exception);
 
       messageBuilder.osgpException(
           this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception));
