@@ -168,6 +168,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: 'OSGP/gxf-gitops'
+#          TODO remove after gxf-gitops is merged
+          ref: 'feature/FDP-2849-oslp-port'
       - name: Setup k3d cluster
         run: bash setup.sh
       - name: Create gxf platform
