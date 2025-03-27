@@ -82,18 +82,26 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
 
   @Override
   public void processMessage(final ObjectMessage message) throws JMSException {
-    log.debug("Processing {} request message", this.messageType);
+    log.info("Processing {} request message", this.messageType);
 
     final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
+
+    log.info(
+        "messageMetadata for type {}. CorrelationUid: {}",
+        messageMetadata.getMessageType(),
+        messageMetadata.getCorrelationUid());
     final Serializable messageObject = message.getObject();
 
+    log.info("messageObject from message: {}", messageObject);
     try {
       final DlmsDevice device;
+      log.info("requiresExistingDevice: {}", this.requiresExistingDevice());
       if (this.requiresExistingDevice()) {
         device = this.domainHelperService.findDlmsDevice(messageMetadata);
       } else {
         device = null;
       }
+      log.info("usesDeviceConnection: {}", this.usesDeviceConnection(messageObject));
       if (this.usesDeviceConnection(messageObject)) {
         /*
          * Set up a consumer to be called back with a DlmsConnectionManager for which the connection

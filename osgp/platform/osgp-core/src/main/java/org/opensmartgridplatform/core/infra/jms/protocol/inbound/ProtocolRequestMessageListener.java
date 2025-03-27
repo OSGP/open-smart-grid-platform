@@ -48,6 +48,7 @@ public class ProtocolRequestMessageListener implements MessageListener {
         final MessageProcessor processor =
             this.protocolRequestMessageProcessorMap.getMessageProcessor(objectMessage);
 
+        LOGGER.info("MessageProcessor found in protocolRequestMessageProcessorMap");
         processor.processMessage(objectMessage);
 
       } catch (final JMSException ex) {
