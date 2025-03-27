@@ -127,7 +127,10 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       this.deviceRequestMessageSender.send(messageObject, messageMetadata, permitRejectDelay);
 
     } catch (final DeviceKeyProcessAlreadyRunningException exception) {
-
+      log.info(
+          "Key process is already running for device {}. Sending message {} back to core.",
+          messageMetadata.getDeviceIdentification(),
+          messageMetadata.getCorrelationUid());
       this.deviceRequestMessageSender.send(
           messageObject, messageMetadata, this.deviceKeyProcessingTimeout);
     } catch (final Exception exception) {
@@ -208,6 +211,11 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
           metadata.getCorrelationUid(),
           exception);
     }
+    log.error(
+        "Handling ErrorResponse with silent exception in DeviceRequestMessageProcessor during {}, correlationUID: {}",
+        this.messageType.name(),
+        metadata.getCorrelationUid(),
+        exception);
     this.sendResponseMessage(
         metadata,
         ResponseMessageResultType.NOT_OK,

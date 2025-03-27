@@ -125,6 +125,10 @@ public class BundleService {
       throw ce;
 
     } catch (final DeviceKeyProcessAlreadyRunningException e) {
+      log.info(
+          """
+      This exception will be caught in the DeviceRequestMessageProcessor.
+      The request will NOT be sent back to Core to retry but put back on the queue""");
       // This exception will be caught in the DeviceRequestMessageProcessor.
       // The request will NOT be sent back to Core to retry but put back on the queue
       throw e;
