@@ -94,15 +94,19 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
         messageMetadata.getMessageType(),
         messageMetadata.getCorrelationUid(),
         message.getJMSCorrelationID());
+
     final Serializable messageObject = message.getObject();
 
+    log.info("messageObject from message: {}", messageObject);
     try {
       final DlmsDevice device;
+      log.info("requiresExistingDevice: {}", this.requiresExistingDevice());
       if (this.requiresExistingDevice()) {
         device = this.domainHelperService.findDlmsDevice(messageMetadata);
       } else {
         device = null;
       }
+      log.info("usesDeviceConnection: {}", this.usesDeviceConnection(messageObject));
       if (this.usesDeviceConnection(messageObject)) {
         /*
          * Set up a consumer to be called back with a DlmsConnectionManager for which the connection
@@ -226,6 +230,11 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
           metadata.getCorrelationUid(),
           exception);
     }
+    log.error(
+        "Handling ErrorResponse with silent exception in DeviceRequestMessageProcessor during {}, correlationUID: {}",
+        this.messageType.name(),
+        metadata.getCorrelationUid(),
+        exception);
     this.sendResponseMessage(
         metadata,
         ResponseMessageResultType.NOT_OK,

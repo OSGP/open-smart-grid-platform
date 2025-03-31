@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+@SuppressWarnings({"java:S1181", "java:S2139"})
 @Component(value = "protocolDlmsInboundOsgpCoreRequestsMessageListener")
 public class DeviceRequestMessageListener implements MessageListener {
 

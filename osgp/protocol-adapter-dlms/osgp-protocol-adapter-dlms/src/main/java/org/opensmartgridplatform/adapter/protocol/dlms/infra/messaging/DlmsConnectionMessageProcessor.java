@@ -203,6 +203,12 @@ public abstract class DlmsConnectionMessageProcessor {
         new Builder().messageMetadata(messageMetadata).result(result).dataObject(responseObject);
 
     if (exception != null) {
+
+      LOGGER.error(
+          "DlmsConnectionMessageProcessor.sendResponseMessage (exception) : {}",
+          exception.getMessage(),
+          exception);
+
       messageBuilder.osgpException(
           this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception));
     }

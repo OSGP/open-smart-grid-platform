@@ -6,8 +6,8 @@ package org.opensmartgridplatform.shared.infra.jms;
 
 import jakarta.jms.JMSException;
 import jakarta.jms.ObjectMessage;
-import java.util.EnumMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +16,7 @@ public class BaseMessageProcessorMap implements MessageProcessorMap {
   /** Logger for this class */
   private static final Logger LOGGER = LoggerFactory.getLogger(BaseMessageProcessorMap.class);
 
-  protected Map<MessageType, MessageProcessor> messageProcessors = new EnumMap<>(MessageType.class);
+  protected Map<MessageType, MessageProcessor> messageProcessors = new ConcurrentHashMap<>();
 
   protected final String messageProcessorMapName;
 

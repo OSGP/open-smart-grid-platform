@@ -54,6 +54,7 @@ public class ProtocolRequestMessageListener implements MessageListener {
         LOGGER.info(
             "MessageProcessor found in protocolRequestMessageProcessorMap. JMSCorrelationID: {}",
             message.getJMSCorrelationID());
+
         processor.processMessage(objectMessage);
 
       } catch (final JMSException ex) {

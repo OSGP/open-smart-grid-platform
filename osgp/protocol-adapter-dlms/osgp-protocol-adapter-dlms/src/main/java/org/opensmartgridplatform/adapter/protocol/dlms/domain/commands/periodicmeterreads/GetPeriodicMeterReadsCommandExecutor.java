@@ -166,6 +166,10 @@ public class GetPeriodicMeterReadsCommandExecutor
             activeEnergyExportRate1 = this.getValue(selectedObject, bufferedObject);
         case ACTIVE_ENERGY_EXPORT_RATE_2 ->
             activeEnergyExportRate2 = this.getValue(selectedObject, bufferedObject);
+        case MBUS_MASTER_VALUE -> {
+          // Do nothing. Special case for DSMR4.2.2 devices where E-meter and G-meter readings
+          // are combined in one profile. G-meter readings are ignored.
+        }
         default ->
             log.error(
                 "Unexpected objectType in selectedObjects: "
