@@ -12,11 +12,15 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDt
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetKeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
+
+  private static final Logger log = LoggerFactory.getLogger(GetKeysRequestMessageProcessor.class);
 
   @Autowired private ConfigurationService configurationService;
 
@@ -35,6 +39,11 @@ public class GetKeysRequestMessageProcessor extends DeviceRequestMessageProcesso
       final Serializable requestObject,
       final MessageMetadata messageMetadata)
       throws OsgpException {
+
+    log.info(
+        "Handling message of type {} with correlationID {}",
+        messageMetadata.getMessageType(),
+        messageMetadata.getCorrelationUid());
 
     this.assertRequestObjectType(GetKeysRequestDto.class, requestObject);
 

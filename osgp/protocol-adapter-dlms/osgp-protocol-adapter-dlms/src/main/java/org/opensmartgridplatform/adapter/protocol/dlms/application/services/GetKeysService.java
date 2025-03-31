@@ -15,12 +15,16 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.opensmartgridplatform.ws.schema.core.secret.management.SecretType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetKeysService {
+
+  private static final Logger log = LoggerFactory.getLogger(GetKeysService.class);
 
   private final SecretManagementService secretManagementService;
   private final RsaEncrypter encrypterForGxfSmartMetering;
@@ -42,6 +46,12 @@ public class GetKeysService {
 
     final List<SecurityKeyType> securityKeyTypes =
         getKeysRequestDto.getSecretTypes().stream().map(this::convertToSecurityKeyType).toList();
+
+    log.info(
+        "Getting keys for device {} with security key types {}. CorrelationID: {}",
+        device.getDeviceIdentification(),
+        securityKeyTypes,
+        messageMetadata.getCorrelationUid());
 
     final Map<SecurityKeyType, byte[]> unencryptedKeys =
         this.secretManagementService.getKeys(

@@ -39,7 +39,10 @@ public class ProtocolRequestMessageListener implements MessageListener {
   @Override
   public void onMessage(final Message message) {
     try {
-      LOGGER.info("Received message of type: {}", message.getJMSType());
+      LOGGER.info(
+          "Received RequestMessage of type [{}] in core (protocol.inbound) with JMSCorrelationID: [{}]",
+          message.getJMSType(),
+          message.getJMSCorrelationID());
       final ObjectMessage objectMessage = (ObjectMessage) message;
 
       // Check if message can be processed by generic OSGP-CORE
@@ -48,11 +51,16 @@ public class ProtocolRequestMessageListener implements MessageListener {
         final MessageProcessor processor =
             this.protocolRequestMessageProcessorMap.getMessageProcessor(objectMessage);
 
-        LOGGER.info("MessageProcessor found in protocolRequestMessageProcessorMap");
+        LOGGER.info(
+            "MessageProcessor found in protocolRequestMessageProcessorMap. JMSCorrelationID: {}",
+            message.getJMSCorrelationID());
         processor.processMessage(objectMessage);
 
       } catch (final JMSException ex) {
-        LOGGER.error("JMSException", ex);
+        LOGGER.error(
+            "JMSException listening to message with JMSCorrelationID: {}",
+            message.getJMSCorrelationID(),
+            ex);
         // The message needs to be sent to a domain adapter.
         this.sendMessageToDomainAdapter(
             (RequestMessage) objectMessage.getObject(), message.getJMSType());

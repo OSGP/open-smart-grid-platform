@@ -82,26 +82,27 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
 
   @Override
   public void processMessage(final ObjectMessage message) throws JMSException {
-    log.info("Processing {} request message", this.messageType);
+    log.debug(
+        "Processing {} request message with JMSCorrelationID{}",
+        this.messageType,
+        message.getJMSCorrelationID());
 
     final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
 
     log.info(
-        "messageMetadata for type {}. CorrelationUid: {}",
+        "messageMetadata for type {}. CorrelationUid: {} JMSCorrelationID: {}",
         messageMetadata.getMessageType(),
-        messageMetadata.getCorrelationUid());
+        messageMetadata.getCorrelationUid(),
+        message.getJMSCorrelationID());
     final Serializable messageObject = message.getObject();
 
-    log.info("messageObject from message: {}", messageObject);
     try {
       final DlmsDevice device;
-      log.info("requiresExistingDevice: {}", this.requiresExistingDevice());
       if (this.requiresExistingDevice()) {
         device = this.domainHelperService.findDlmsDevice(messageMetadata);
       } else {
         device = null;
       }
-      log.info("usesDeviceConnection: {}", this.usesDeviceConnection(messageObject));
       if (this.usesDeviceConnection(messageObject)) {
         /*
          * Set up a consumer to be called back with a DlmsConnectionManager for which the connection
@@ -125,18 +126,19 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       final Duration permitRejectDelay =
           this.throttlingConfig.permitRejectedDelay(messageMetadata.getMessagePriority());
       log.info(
-          "Throttling permit was denied for deviceIdentification {} for network segment ({}, {}) with priority {} for {}. retry message in {} ms",
+          "Throttling permit was denied for deviceIdentification {} for network segment ({}, {}) with priority {} for {}. retry message in {} ms. Correlation UID: {}",
           messageMetadata.getDeviceIdentification(),
           exception.getBaseTransceiverStationId(),
           exception.getCellId(),
           exception.getPriority(),
           exception.getConfigurationName(),
-          permitRejectDelay.toMillis());
+          permitRejectDelay.toMillis(),
+          messageMetadata.getCorrelationUid());
       this.deviceRequestMessageSender.send(messageObject, messageMetadata, permitRejectDelay);
 
     } catch (final DeviceKeyProcessAlreadyRunningException exception) {
       log.info(
-          "Key process is already running for device {}. Sending message {} back to core.",
+          "Key process is already running for device {}. Sending message with correlation UID {} back to core.",
           messageMetadata.getDeviceIdentification(),
           messageMetadata.getCorrelationUid());
       this.deviceRequestMessageSender.send(
@@ -206,6 +208,11 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     if (!NO_RESPONSE.equals(response)) {
       this.sendResponseMessage(
           metadata, ResponseMessageResultType.OK, null, this.responseMessageSender, response);
+    } else {
+      log.info(
+          "Response is {}. No sending a ResponseMessage for Correlation UID {}",
+          NO_RESPONSE,
+          metadata.getCorrelationUid());
     }
   }
 
@@ -219,11 +226,6 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
           metadata.getCorrelationUid(),
           exception);
     }
-    log.error(
-        "Handling ErrorResponse with silent exception in DeviceRequestMessageProcessor during {}, correlationUID: {}",
-        this.messageType.name(),
-        metadata.getCorrelationUid(),
-        exception);
     this.sendResponseMessage(
         metadata,
         ResponseMessageResultType.NOT_OK,

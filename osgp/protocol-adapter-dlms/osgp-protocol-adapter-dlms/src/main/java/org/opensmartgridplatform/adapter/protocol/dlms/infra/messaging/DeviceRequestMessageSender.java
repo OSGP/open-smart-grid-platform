@@ -7,6 +7,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 import jakarta.jms.ObjectMessage;
 import java.io.Serializable;
 import java.time.Duration;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.shared.infra.jms.JmsMessageCreator;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class DeviceRequestMessageSender {
 
@@ -25,6 +27,11 @@ public class DeviceRequestMessageSender {
 
   public void send(
       final Serializable payload, final MessageMetadata messageMetadata, final Duration delay) {
+
+    log.info(
+        "Sending RequestMessage of type {} from DLMS protocol adapter with correlationUid {}",
+        messageMetadata.getMessageType(),
+        messageMetadata.getCorrelationUid());
 
     this.jmsTemplate.send(
         session -> {
