@@ -6,6 +6,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDto;
@@ -15,16 +16,13 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.opensmartgridplatform.ws.schema.core.secret.management.SecretType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class GetKeysService {
-
-  private static final Logger log = LoggerFactory.getLogger(GetKeysService.class);
 
   private final SecretManagementService secretManagementService;
   private final RsaEncrypter encrypterForGxfSmartMetering;
@@ -48,7 +46,7 @@ public class GetKeysService {
         getKeysRequestDto.getSecretTypes().stream().map(this::convertToSecurityKeyType).toList();
 
     log.info(
-        "Getting keys for device {} with security key types {}. CorrelationID: {}",
+        "Getting keys for device {} with security key types {}. CorrelationUid: {}",
         device.getDeviceIdentification(),
         securityKeyTypes,
         messageMetadata.getCorrelationUid());

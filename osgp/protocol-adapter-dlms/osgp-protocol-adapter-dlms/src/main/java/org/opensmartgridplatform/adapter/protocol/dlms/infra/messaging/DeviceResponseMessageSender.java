@@ -35,14 +35,14 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
 
     if (!(responseMessage instanceof final ProtocolResponseMessage msg)) {
       LOGGER.error(
-          "Only ProtocolResponseMessage type is expected for DeviceResponseMessageSender. Correlation UID = {}",
+          "Only ProtocolResponseMessage type is expected for DeviceResponseMessageSender. CorrelationUid: {}",
           responseMessage.getCorrelationUid());
       return;
     }
 
     if (!ProtocolResponseMessageValidator.isValid(msg, LOGGER)) {
       LOGGER.error(
-          "ProtocolResponseMessage is not valid. DeviceResponseMessageSender is not sending response. Correlation UID = {}",
+          "ProtocolResponseMessage is not valid. DeviceResponseMessageSender is not sending response. CorrelationUid: {}",
           responseMessage.getCorrelationUid());
       return;
     }
@@ -52,7 +52,7 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
 
   private void sendMessage(final ProtocolResponseMessage responseMessage) {
     LOGGER.info(
-        "Sending ResponseMessage of type {} from DLMS protocol adapter with correlationUID: {}",
+        "Sending ResponseMessage of type {} from DLMS protocol adapter with correlationUid: {}",
         responseMessage.getMessageType(),
         responseMessage.getCorrelationUid());
     this.jmsTemplate.send(new ProtocolResponseMessageCreator(responseMessage));

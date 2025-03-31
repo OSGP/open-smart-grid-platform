@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
 import java.io.Serializable;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
@@ -12,15 +13,12 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDt
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class GetKeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
-
-  private static final Logger log = LoggerFactory.getLogger(GetKeysRequestMessageProcessor.class);
 
   @Autowired private ConfigurationService configurationService;
 
@@ -41,7 +39,7 @@ public class GetKeysRequestMessageProcessor extends DeviceRequestMessageProcesso
       throws OsgpException {
 
     log.info(
-        "Handling message of type {} with correlationID {}",
+        "Handling message of type {} with correlationUid {}",
         messageMetadata.getMessageType(),
         messageMetadata.getCorrelationUid());
 

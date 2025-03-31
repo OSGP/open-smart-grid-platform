@@ -42,7 +42,7 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
   public void send(final ProtocolRequestMessage message, final ProtocolInfo protocolInfo) {
 
     LOGGER.info(
-        "Sending protocol request message for device [{}] using protocol [{}] with version [{}]. [correlationUid: {} ].",
+        "Sending protocol request message for device [{}] using protocol [{}] with version [{}] and  [correlationUid: {} ].",
         message.getDeviceIdentification(),
         protocolInfo.getProtocol(),
         protocolInfo.getProtocolVersion(),
@@ -52,7 +52,7 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
         this.protocolRequestMessageJmsTemplateFactory.getJmsTemplate(protocolInfo);
 
     LOGGER.info(
-        "Message sender destination queue: [{}] for protocol [{}] with version [{}]. [correlationUid: {} ].",
+        "Message sender destination queue: [{}] for protocol [{}] with version [{}] and [correlationUid: {} ].",
         jmsTemplate.getDefaultDestination(),
         protocolInfo.getProtocol(),
         protocolInfo.getProtocolVersion(),

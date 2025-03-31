@@ -40,7 +40,7 @@ public class ProtocolRequestMessageListener implements MessageListener {
   public void onMessage(final Message message) {
     try {
       LOGGER.info(
-          "Received RequestMessage of type [{}] in core (protocol.inbound) with JMSCorrelationID: [{}]",
+          "Received RequestMessage of type {} in core (protocol.inbound) with JMSCorrelationID {} ",
           message.getJMSType(),
           message.getJMSCorrelationID());
       final ObjectMessage objectMessage = (ObjectMessage) message;

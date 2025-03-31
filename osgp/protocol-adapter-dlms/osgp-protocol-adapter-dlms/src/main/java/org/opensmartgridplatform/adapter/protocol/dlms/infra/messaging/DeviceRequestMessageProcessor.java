@@ -130,19 +130,19 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       final Duration permitRejectDelay =
           this.throttlingConfig.permitRejectedDelay(messageMetadata.getMessagePriority());
       log.info(
-          "Throttling permit was denied for deviceIdentification {} for network segment ({}, {}) with priority {} for {}. retry message in {} ms. Correlation UID: {}",
+          "Throttling permit was denied for deviceIdentification {} for network segment ({}, {}) with priority {} for {}. retry message with correlationUid {} in {} ms.",
           messageMetadata.getDeviceIdentification(),
           exception.getBaseTransceiverStationId(),
           exception.getCellId(),
           exception.getPriority(),
           exception.getConfigurationName(),
-          permitRejectDelay.toMillis(),
-          messageMetadata.getCorrelationUid());
+          messageMetadata.getCorrelationUid(),
+          permitRejectDelay.toMillis());
       this.deviceRequestMessageSender.send(messageObject, messageMetadata, permitRejectDelay);
 
     } catch (final DeviceKeyProcessAlreadyRunningException exception) {
       log.info(
-          "Key process is already running for device {}. Sending message with correlation UID {} back to core.",
+          "Key process is already running for device {}. Sending message with correlationUid {} back to core.",
           messageMetadata.getDeviceIdentification(),
           messageMetadata.getCorrelationUid());
       this.deviceRequestMessageSender.send(
@@ -214,7 +214,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
           metadata, ResponseMessageResultType.OK, null, this.responseMessageSender, response);
     } else {
       log.info(
-          "Response is {}. No sending a ResponseMessage for Correlation UID {}",
+          "Response is {}. Not sending a ResponseMessage for correlationUid {}",
           NO_RESPONSE,
           metadata.getCorrelationUid());
     }

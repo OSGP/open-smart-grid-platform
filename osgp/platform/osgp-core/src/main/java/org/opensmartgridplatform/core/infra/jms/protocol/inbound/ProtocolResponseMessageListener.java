@@ -29,7 +29,7 @@ public class ProtocolResponseMessageListener implements MessageListener {
   public void onMessage(final Message message) {
     try {
       LOGGER.info(
-          "Received ResponseMessage and type [{}] in core (protocol.inbound) with JMSCorrelationID: [{}]",
+          "Received ResponseMessage of type {} in core (protocol.inbound) with JMSCorrelationID: {}",
           message.getJMSType(),
           message.getJMSCorrelationID());
 
