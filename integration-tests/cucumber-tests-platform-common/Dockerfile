@@ -1,7 +1,7 @@
 FROM eclipse-temurin:17
 WORKDIR /
 COPY target/cucumber-*-test-jar-with-dependencies.jar /
-COPY target/test-classes/logback.xml /logback.xml
+COPY src/test/resources/logback.xml /logback.xml
 RUN wget https://repo1.maven.org/maven2/org/jacoco/org.jacoco.agent/0.8.12/org.jacoco.agent-0.8.12-runtime.jar
 CMD java -javaagent:org.jacoco.agent-0.8.12-runtime.jar=destfile=/target/code-coverage/jacoco-it.exec \
      -Dcucumber.execution.strict=true\
