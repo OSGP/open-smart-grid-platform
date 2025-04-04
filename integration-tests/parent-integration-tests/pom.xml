@@ -265,6 +265,12 @@ SPDX-License-Identifier: Apache-2.0
               </goals>
             </execution>
           </executions>
+          <configuration>
+            <!-- exclude logback.xml -->
+            <excludes>
+              <exclude>**/logback*.xml</exclude>
+            </excludes>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>
