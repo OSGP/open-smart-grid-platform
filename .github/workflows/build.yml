@@ -51,6 +51,7 @@ jobs:
         with:
           name: warFiles
           path: staging
+          compression-level: 9
 
   docker:
     name: Building docker images
