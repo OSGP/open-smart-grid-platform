@@ -320,7 +320,7 @@ jobs:
           path: ${{ matrix.context }}
           name: ${{ matrix.artifact }}
       - name: Show files in current context
-        run: find ./
+        run: find ${{ matrix.context }}
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
