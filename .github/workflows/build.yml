@@ -317,6 +317,7 @@ jobs:
       - name: Download war files
         uses: actions/download-artifact@v4
         with:
+          path: ${{ matrix.context }}
           name: ${{ matrix.artifact }}
       - name: Show files in current context
         run: find ./
