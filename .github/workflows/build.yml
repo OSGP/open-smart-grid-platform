@@ -51,112 +51,112 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: osgp-core
-          path: osgp/platform/osgp-core/target/gxf
+          path: osgp/platform/osgp-core/
 
       - name: Upload osgp-logging
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
         with:
           name: osgp-logging
-          path: osgp/platform/osgp-logging/target/gxf
+          path: osgp/platform/osgp-logging/
 
       - name: Upload osgp-adapter-domain-admin
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
         with:
           name: osgp-adapter-domain-admin
-          path: osgp/platform/osgp-adapter-domain-admin/target/gxf
+          path: osgp/platform/osgp-adapter-domain-admin/
 
       - name: Upload osgp-adapter-domain-core
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
         with:
           name: osgp-adapter-domain-core
-          path: osgp/platform/osgp-adapter-domain-core/target/gxf
+          path: osgp/platform/osgp-adapter-domain-core/
 
       - name: Upload osgp-adapter-domain-publiclighting
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
         with:
           name: osgp-adapter-domain-publiclighting
-          path: osgp/platform/osgp-adapter-domain-publiclighting/target/gxf
+          path: osgp/platform/osgp-adapter-domain-publiclighting/
 
       - name: Upload osgp-adapter-domain-smartmetering
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
         with:
           name: osgp-adapter-domain-smartmetering
-          path: osgp/platform/osgp-adapter-domain-smartmetering/target/gxf
+          path: osgp/platform/osgp-adapter-domain-smartmetering/
 
       - name: Upload osgp-adapter-domain-tariffswitching
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
         with:
           name: osgp-adapter-domain-tariffswitching
-          path: osgp/platform/osgp-adapter-domain-tariffswitching/target/gxf
+          path: osgp/platform/osgp-adapter-domain-tariffswitching/
 
       - name: Upload osgp-adapter-ws-admin
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
         with:
           name: osgp-adapter-ws-admin
-          path: osgp/platform/osgp-adapter-ws-admin/target/gxf
+          path: osgp/platform/osgp-adapter-ws-admin/
 
       - name: Upload osgp-adapter-ws-core
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
         with:
           name: osgp-adapter-ws-core
-          path: osgp/platform/osgp-adapter-ws-core/target/gxf
+          path: osgp/platform/osgp-adapter-ws-core/
 
       - name: Upload osgp-adapter-ws-publiclighting
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
         with:
           name: osgp-adapter-ws-publiclighting
-          path: osgp/platform/osgp-adapter-ws-publiclighting/target/gxf
+          path: osgp/platform/osgp-adapter-ws-publiclighting/
 
       - name: Upload osgp-adapter-ws-smartmetering
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
         with:
           name: osgp-adapter-ws-smartmetering
-          path: osgp/platform/osgp-adapter-ws-smartmetering/target/gxf
+          path: osgp/platform/osgp-adapter-ws-smartmetering/
 
       - name: Upload osgp-adapter-ws-tariffswitching
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
         with:
           name: osgp-adapter-ws-tariffswitching
-          path: osgp/platform/osgp-adapter-ws-tariffswitching/target/gxf
+          path: osgp/platform/osgp-adapter-ws-tariffswitching/
 
       - name: Upload osgp-protocol-adapter-iec60870
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
         with:
           name: osgp-protocol-adapter-iec60870
-          path: osgp/protocol-adapter-iec60870/osgp-protocol-adapter-iec60870/target/gxf
+          path: osgp/protocol-adapter-iec60870/osgp-protocol-adapter-iec60870/
 
       - name: Upload osgp-protocol-adapter-iec61850
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
         with:
           name: osgp-protocol-adapter-iec61850
-          path: osgp/protocol-adapter-iec61850/osgp-protocol-adapter-iec61850/target/gxf
+          path: osgp/protocol-adapter-iec61850/osgp-protocol-adapter-iec61850/
 
       - name: Upload osgp-protocol-adapter-oslp-elster
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
         with:
           name: osgp-protocol-adapter-oslp-elster
-          path: osgp/protocol-adapter-oslp/osgp-protocol-adapter-oslp-elster/target/gxf
+          path: osgp/protocol-adapter-oslp/osgp-protocol-adapter-oslp-elster/
 
       - name: Upload signing-server
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
         with:
           name: signing-server
-          path: osgp/protocol-adapter-oslp/signing-server/target/gxf
+          path: osgp/protocol-adapter-oslp/signing-server/
 
       - name: Find and copy osgp-protocol-simulator-iec60870 war
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
