@@ -162,7 +162,7 @@ jobs:
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         run: |
           mkdir -p osgp-protocol-simulator-iec60870
-          find osgp/protocol-adapter-iec60870/osgp-protocol-simulator-iec60870/target -name 'osgp-protocol-simulator-iec60870-*.war' -exec cp '{}' osgp-protocol-simulator-iec60870/ \;
+          find osgp/protocol-adapter-iec60870/osgp-protocol-simulator-iec60870/target -name 'osgp-protocol-simulator-iec60870-*.war' -exec cp --parents '{}' osgp-protocol-simulator-iec60870/ \;
       - name: Upload osgp-protocol-simulator-iec60870
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
@@ -174,7 +174,7 @@ jobs:
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         run: |
           mkdir -p web-device-simulator
-          find osgp/protocol-adapter-oslp/web-device-simulator/target -name 'web-device-simulator-*.war' -exec cp '{}' web-device-simulator/ \;
+          find osgp/protocol-adapter-oslp/web-device-simulator/target -name 'web-device-simulator-*.war' -exec cp --parents '{}' web-device-simulator/ \;
       - name: Upload web-device-simulator
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
@@ -186,7 +186,7 @@ jobs:
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         run: |
           mkdir -p osgp-protocol-simulator-iec61850
-          find osgp/protocol-adapter-iec61850/osgp-protocol-simulator-iec61850/target -name 'osgp-protocol-simulator-iec61850-*.war' -exec cp '{}' osgp-protocol-simulator-iec61850/ \;
+          find osgp/protocol-adapter-iec61850/osgp-protocol-simulator-iec61850/target -name 'osgp-protocol-simulator-iec61850-*.war' -exec cp --parents '{}' osgp-protocol-simulator-iec61850/ \;
       - name: Upload osgp-protocol-simulator-iec61850
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
@@ -198,7 +198,7 @@ jobs:
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         run: |
           mkdir -p cucumber-tests-platform-common
-          find integration-tests/cucumber-tests-platform-common/target -name 'cucumber-tests-platform-common-*-test-jar-with-dependencies.jar' -exec cp '{}' cucumber-tests-platform-common/ \;
+          find integration-tests/cucumber-tests-platform-common/target -name 'cucumber-tests-platform-common-*-test-jar-with-dependencies.jar' -exec cp --parents '{}' cucumber-tests-platform-common/ \;
       - name: Upload cucumber-tests-platform-common
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
@@ -210,7 +210,7 @@ jobs:
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         run: |
           mkdir -p cucumber-tests-platform-publiclighting
-          find integration-tests/cucumber-tests-platform-publiclighting/target -name 'cucumber-tests-platform-publiclighting-*-test-jar-with-dependencies.jar' -exec cp '{}' cucumber-tests-platform-publiclighting/ \;
+          find integration-tests/cucumber-tests-platform-publiclighting/target -name 'cucumber-tests-platform-publiclighting-*-test-jar-with-dependencies.jar' -exec cp --parents '{}' cucumber-tests-platform-publiclighting/ \;
       - name: Upload cucumber-tests-platform-publiclighting
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
@@ -222,7 +222,7 @@ jobs:
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         run: |
           mkdir -p cucumber-tests-platform-smartmetering
-          find integration-tests/cucumber-tests-platform-smartmetering/target -name 'cucumber-tests-platform-smartmetering-*-test-jar-with-dependencies.jar' -exec cp '{}' cucumber-tests-platform-smartmetering/ \;
+          find integration-tests/cucumber-tests-platform-smartmetering/target -name 'cucumber-tests-platform-smartmetering-*-test-jar-with-dependencies.jar' -exec cp --parents '{}' cucumber-tests-platform-smartmetering/ \;
       - name: Upload cucumber-tests-platform-smartmetering
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
         uses: actions/upload-artifact@v4
