@@ -12,6 +12,7 @@ RUN mkdir -p /var/log/osp && \
     touch /usr/local/tomcat/webapps/probe/probe.txt \
 
 WORKDIR /opt/app
+
 COPY target/osgp-secret-management-*exec.jar osgp-secret-management-exec.jar
 
 ENV SERVER_PORT=8443

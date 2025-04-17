@@ -12,4 +12,5 @@ RUN mkdir -p /var/log/osp && \
     touch /usr/local/tomcat/webapps/probe/probe.txt \
 
 COPY context.xml /usr/local/tomcat/conf
+
 COPY target/gxf /usr/local/tomcat/webapps/
