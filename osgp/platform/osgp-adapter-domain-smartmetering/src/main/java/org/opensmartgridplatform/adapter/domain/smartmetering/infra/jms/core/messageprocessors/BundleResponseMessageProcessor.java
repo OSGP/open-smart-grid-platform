@@ -21,7 +21,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -29,22 +28,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
-  @Autowired
-  @Qualifier("domainSmartMeteringBundleService")
-  private BundleService bundleService;
+  private final BundleService bundleService;
 
   private final FaultResponseFactory faultResponseFactory;
 
-  @Autowired
   public BundleResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      @Qualifier("domainSmartMeteringBundleService") final BundleService bundleService) {
     super(
         responseMessageSender,
         messageProcessorMap,
         MessageType.HANDLE_BUNDLED_ACTIONS,
         ComponentType.DOMAIN_SMART_METERING);
+    this.bundleService = bundleService;
     this.faultResponseFactory = new FaultResponseFactory();
   }
 

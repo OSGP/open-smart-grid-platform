@@ -22,20 +22,20 @@ import org.springframework.stereotype.Component;
 public class GetAssociationLnObjectsResponseMessageProcessor
     extends OsgpCoreResponseMessageProcessor {
 
-  @Autowired
-  @Qualifier("domainSmartMeteringAdhocService")
-  private AdhocService adhocService;
+  private final AdhocService adhocService;
 
   @Autowired
   public GetAssociationLnObjectsResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      @Qualifier("domainSmartMeteringAdhocService") final AdhocService adhocService) {
     super(
         responseMessageSender,
         messageProcessorMap,
         MessageType.GET_ASSOCIATION_LN_OBJECTS,
         ComponentType.DOMAIN_SMART_METERING);
+    this.adhocService = adhocService;
   }
 
   @Override

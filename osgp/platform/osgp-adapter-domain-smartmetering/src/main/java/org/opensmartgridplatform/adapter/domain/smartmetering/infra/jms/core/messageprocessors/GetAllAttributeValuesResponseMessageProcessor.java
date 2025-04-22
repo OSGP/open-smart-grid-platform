@@ -13,7 +13,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -21,20 +20,19 @@ import org.springframework.stereotype.Component;
 public class GetAllAttributeValuesResponseMessageProcessor
     extends OsgpCoreResponseMessageProcessor {
 
-  @Autowired
-  @Qualifier("domainSmartMeteringAdhocService")
-  private AdhocService adhocService;
+  private final AdhocService adhocService;
 
-  @Autowired
   public GetAllAttributeValuesResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      @Qualifier("domainSmartMeteringAdhocService") final AdhocService adhocService) {
     super(
         responseMessageSender,
         messageProcessorMap,
         MessageType.GET_ALL_ATTRIBUTE_VALUES,
         ComponentType.DOMAIN_SMART_METERING);
+    this.adhocService = adhocService;
   }
 
   @Override

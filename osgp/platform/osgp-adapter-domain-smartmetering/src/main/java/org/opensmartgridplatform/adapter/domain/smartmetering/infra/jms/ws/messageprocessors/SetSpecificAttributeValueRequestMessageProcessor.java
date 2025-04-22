@@ -11,7 +11,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +19,6 @@ public class SetSpecificAttributeValueRequestMessageProcessor extends BaseReques
 
   private final AdhocService adhocService;
 
-  @Autowired
   protected SetSpecificAttributeValueRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
           final MessageProcessorMap messageProcessorMap,

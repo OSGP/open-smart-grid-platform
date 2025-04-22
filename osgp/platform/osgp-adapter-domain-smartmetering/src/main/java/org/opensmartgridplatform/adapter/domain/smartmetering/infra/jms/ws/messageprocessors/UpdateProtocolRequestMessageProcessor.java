@@ -11,22 +11,21 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UpdateProtocolRequestMessageProcessor extends BaseRequestMessageProcessor {
 
-  @Autowired
-  @Qualifier("domainSmartMeteringManagementService")
-  private ManagementService managementService;
+  private final ManagementService managementService;
 
-  @Autowired
   protected UpdateProtocolRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      @Qualifier("domainSmartMeteringManagementService")
+          final ManagementService managementService) {
     super(messageProcessorMap, MessageType.UPDATE_PROTOCOL);
+    this.managementService = managementService;
   }
 
   @Override

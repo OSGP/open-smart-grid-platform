@@ -11,7 +11,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -19,15 +18,15 @@ import org.springframework.stereotype.Component;
 public class SetDeviceLifecycleStatusByChannelRequestMessageProcessor
     extends BaseRequestMessageProcessor {
 
-  @Autowired
-  @Qualifier("domainSmartMeteringManagementService")
-  private ManagementService managementService;
+  private final ManagementService managementService;
 
-  @Autowired
   protected SetDeviceLifecycleStatusByChannelRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      @Qualifier("domainSmartMeteringManagementService")
+          final ManagementService managementService) {
     super(messageProcessorMap, MessageType.SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL);
+    this.managementService = managementService;
   }
 
   @Override

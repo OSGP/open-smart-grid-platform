@@ -11,22 +11,21 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetConfigurationObjectRequestMessageProcessor extends BaseRequestMessageProcessor {
 
-  @Autowired
-  @Qualifier("domainSmartMeteringConfigurationService")
-  private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  @Autowired
   protected GetConfigurationObjectRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      @Qualifier("domainSmartMeteringConfigurationService")
+          final ConfigurationService configurationService) {
     super(messageProcessorMap, MessageType.GET_CONFIGURATION_OBJECT);
+    this.configurationService = configurationService;
   }
 
   @Override

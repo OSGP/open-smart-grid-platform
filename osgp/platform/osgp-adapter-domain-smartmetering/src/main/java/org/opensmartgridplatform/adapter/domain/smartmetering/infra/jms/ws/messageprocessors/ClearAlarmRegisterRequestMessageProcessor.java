@@ -11,22 +11,21 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ClearAlarmRegisterRequestMessageProcessor extends BaseRequestMessageProcessor {
 
-  @Autowired
-  @Qualifier("domainSmartMeteringMonitoringService")
-  private MonitoringService monitoringService;
+  private final MonitoringService monitoringService;
 
-  @Autowired
   protected ClearAlarmRegisterRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      @Qualifier("domainSmartMeteringMonitoringService")
+          final MonitoringService monitoringService) {
     super(messageProcessorMap, MessageType.CLEAR_ALARM_REGISTER);
+    this.monitoringService = monitoringService;
   }
 
   @Override

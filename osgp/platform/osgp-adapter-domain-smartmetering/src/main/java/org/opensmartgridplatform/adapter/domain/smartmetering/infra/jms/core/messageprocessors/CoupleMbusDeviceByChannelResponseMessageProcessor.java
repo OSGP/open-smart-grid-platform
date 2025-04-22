@@ -15,7 +15,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -23,18 +22,19 @@ import org.springframework.stereotype.Component;
 public class CoupleMbusDeviceByChannelResponseMessageProcessor
     extends OsgpCoreResponseMessageProcessor {
 
-  @Autowired private InstallationService installationService;
+  private final InstallationService installationService;
 
-  @Autowired
   protected CoupleMbusDeviceByChannelResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      final InstallationService installationService) {
     super(
         responseMessageSender,
         messageProcessorMap,
         MessageType.COUPLE_MBUS_DEVICE_BY_CHANNEL,
         ComponentType.DOMAIN_SMART_METERING);
+    this.installationService = installationService;
   }
 
   @Override

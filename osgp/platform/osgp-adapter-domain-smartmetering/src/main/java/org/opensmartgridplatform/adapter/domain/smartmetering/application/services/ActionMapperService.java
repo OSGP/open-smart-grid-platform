@@ -129,7 +129,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRe
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -216,29 +215,38 @@ public class ActionMapperService {
     CLASS_MAP.put(TestAlarmSchedulerRequestData.class, TestAlarmSchedulerRequestDto.class);
   }
 
-  @Autowired
-  @Qualifier("configurationMapper")
-  private ConfigurationMapper configurationMapper;
-
-  @Autowired private ManagementMapper managementMapper;
-
-  @Autowired private MonitoringMapper monitoringMapper;
-
-  @Autowired private CommonMapper commonMapper;
-
-  @Autowired private PeriodicReadsRequestGasDataConverter periodicReadsRequestGasDataConverter;
-
-  @Autowired
-  private ActualMeterReadsRequestGasRequestDataConverter actualReadsRequestGasDataConverter;
-
-  @Autowired private SetKeyOnGMeterDataConverter setKeyOnGMeterDataConverter;
-
-  @Autowired
-  private GetFirmwareVersionGasRequestDataConverter getFirmwareVersionGasRequestDataConverter;
-
-  @Autowired private DomainHelperService domainHelperService;
+  private final ConfigurationMapper configurationMapper;
+  private final ManagementMapper managementMapper;
+  private final MonitoringMapper monitoringMapper;
+  private final CommonMapper commonMapper;
+  private final PeriodicReadsRequestGasDataConverter periodicReadsRequestGasDataConverter;
+  private final ActualMeterReadsRequestGasRequestDataConverter actualReadsRequestGasDataConverter;
+  private final SetKeyOnGMeterDataConverter setKeyOnGMeterDataConverter;
+  private final GetFirmwareVersionGasRequestDataConverter getFirmwareVersionGasRequestDataConverter;
+  private final DomainHelperService domainHelperService;
 
   private final FaultResponseFactory faultResponseFactory = new FaultResponseFactory();
+
+  public ActionMapperService(
+      @Qualifier("configurationMapper") final ConfigurationMapper configurationMapper,
+      final ManagementMapper managementMapper,
+      final MonitoringMapper monitoringMapper,
+      final CommonMapper commonMapper,
+      final PeriodicReadsRequestGasDataConverter periodicReadsRequestGasDataConverter,
+      final ActualMeterReadsRequestGasRequestDataConverter actualReadsRequestGasDataConverter,
+      final SetKeyOnGMeterDataConverter setKeyOnGMeterDataConverter,
+      final GetFirmwareVersionGasRequestDataConverter getFirmwareVersionGasRequestDataConverter,
+      final DomainHelperService domainHelperService) {
+    this.configurationMapper = configurationMapper;
+    this.managementMapper = managementMapper;
+    this.monitoringMapper = monitoringMapper;
+    this.commonMapper = commonMapper;
+    this.periodicReadsRequestGasDataConverter = periodicReadsRequestGasDataConverter;
+    this.actualReadsRequestGasDataConverter = actualReadsRequestGasDataConverter;
+    this.setKeyOnGMeterDataConverter = setKeyOnGMeterDataConverter;
+    this.getFirmwareVersionGasRequestDataConverter = getFirmwareVersionGasRequestDataConverter;
+    this.domainHelperService = domainHelperService;
+  }
 
   /** Specifies which mapper to use for the core class received. */
   @PostConstruct

@@ -11,22 +11,20 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TestAlarmSchedulerRequestMessageProcessor extends BaseRequestMessageProcessor {
 
-  @Autowired
-  @Qualifier("domainSmartMeteringAdhocService")
-  private AdhocService adhocService;
+  private final AdhocService adhocService;
 
-  @Autowired
   protected TestAlarmSchedulerRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      @Qualifier("domainSmartMeteringAdhocService") final AdhocService adhocService) {
     super(messageProcessorMap, MessageType.SCHEDULE_TEST_ALARM);
+    this.adhocService = adhocService;
   }
 
   @Override

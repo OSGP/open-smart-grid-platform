@@ -13,7 +13,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +22,6 @@ public class SetSpecificAttributeValueResponseMessageProcessor
 
   private final AdhocService adhocService;
 
-  @Autowired
   public SetSpecificAttributeValueResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")

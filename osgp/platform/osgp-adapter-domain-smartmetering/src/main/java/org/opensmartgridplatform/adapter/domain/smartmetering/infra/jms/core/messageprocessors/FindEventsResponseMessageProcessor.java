@@ -15,27 +15,26 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class FindEventsResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
-  @Autowired
-  @Qualifier("domainSmartMeteringManagementService")
-  private ManagementService managementService;
+  private final ManagementService managementService;
 
-  @Autowired
   public FindEventsResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      @Qualifier("domainSmartMeteringManagementService")
+          final ManagementService managementService) {
     super(
         responseMessageSender,
         messageProcessorMap,
         MessageType.FIND_EVENTS,
         ComponentType.DOMAIN_SMART_METERING);
+    this.managementService = managementService;
   }
 
   @Override

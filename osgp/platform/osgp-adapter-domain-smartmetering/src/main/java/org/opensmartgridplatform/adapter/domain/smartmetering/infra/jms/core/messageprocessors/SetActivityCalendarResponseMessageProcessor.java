@@ -13,7 +13,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -21,18 +20,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class SetActivityCalendarResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  @Autowired
   protected SetActivityCalendarResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      final ConfigurationService configurationService) {
     super(
         responseMessageSender,
         messageProcessorMap,
         MessageType.SET_ACTIVITY_CALENDAR,
         ComponentType.DOMAIN_SMART_METERING);
+    this.configurationService = configurationService;
   }
 
   @Override

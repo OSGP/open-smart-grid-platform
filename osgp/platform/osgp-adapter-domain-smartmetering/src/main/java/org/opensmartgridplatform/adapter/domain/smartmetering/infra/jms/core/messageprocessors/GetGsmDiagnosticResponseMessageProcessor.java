@@ -14,27 +14,26 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetGsmDiagnosticResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
-  @Autowired
-  @Qualifier("domainSmartMeteringManagementService")
-  private ManagementService managementService;
+  private final ManagementService managementService;
 
-  @Autowired
   protected GetGsmDiagnosticResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      @Qualifier("domainSmartMeteringManagementService")
+          final ManagementService managementService) {
     super(
         responseMessageSender,
         messageProcessorMap,
         MessageType.GET_GSM_DIAGNOSTIC,
         ComponentType.DOMAIN_SMART_METERING);
+    this.managementService = managementService;
   }
 
   @Override

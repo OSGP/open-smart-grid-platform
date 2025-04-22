@@ -12,7 +12,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -20,13 +19,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class PushNotificationAlarmRequestMessageProcessor extends BaseRequestMessageProcessor {
 
-  @Autowired private NotificationService notificationService;
+  private final NotificationService notificationService;
 
-  @Autowired
   protected PushNotificationAlarmRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundOsgpCoreRequestsMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      final NotificationService notificationService) {
     super(messageProcessorMap, MessageType.PUSH_NOTIFICATION_ALARM);
+    this.notificationService = notificationService;
   }
 
   @Override

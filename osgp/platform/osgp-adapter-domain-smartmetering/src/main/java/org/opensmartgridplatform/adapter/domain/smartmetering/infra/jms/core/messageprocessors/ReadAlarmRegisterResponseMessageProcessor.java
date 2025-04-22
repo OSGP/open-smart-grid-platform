@@ -14,25 +14,25 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ReadAlarmRegisterResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
-  @Autowired private MonitoringService monitoringService;
+  private final MonitoringService monitoringService;
 
-  @Autowired
   protected ReadAlarmRegisterResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      final MonitoringService monitoringService) {
     super(
         responseMessageSender,
         messageProcessorMap,
         MessageType.READ_ALARM_REGISTER,
         ComponentType.DOMAIN_SMART_METERING);
+    this.monitoringService = monitoringService;
   }
 
   @Override

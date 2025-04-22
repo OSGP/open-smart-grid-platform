@@ -10,22 +10,21 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetMbusEncryptionKeyStatusRequestMessageProcessor extends BaseRequestMessageProcessor {
 
-  @Autowired
-  @Qualifier("domainSmartMeteringConfigurationService")
-  private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  @Autowired
   protected GetMbusEncryptionKeyStatusRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      @Qualifier("domainSmartMeteringConfigurationService")
+          final ConfigurationService configurationService) {
     super(messageProcessorMap, MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS);
+    this.configurationService = configurationService;
   }
 
   @Override

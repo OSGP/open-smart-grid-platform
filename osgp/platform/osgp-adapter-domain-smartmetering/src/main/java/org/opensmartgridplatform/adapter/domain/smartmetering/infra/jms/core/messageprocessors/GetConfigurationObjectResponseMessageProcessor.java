@@ -14,7 +14,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -22,20 +21,20 @@ import org.springframework.stereotype.Component;
 public class GetConfigurationObjectResponseMessageProcessor
     extends OsgpCoreResponseMessageProcessor {
 
-  @Autowired
-  @Qualifier("domainSmartMeteringConfigurationService")
-  private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  @Autowired
   protected GetConfigurationObjectResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      @Qualifier("domainSmartMeteringConfigurationService")
+          final ConfigurationService configurationService) {
     super(
         responseMessageSender,
         messageProcessorMap,
         MessageType.GET_CONFIGURATION_OBJECT,
         ComponentType.DOMAIN_SMART_METERING);
+    this.configurationService = configurationService;
   }
 
   @Override

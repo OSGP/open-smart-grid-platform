@@ -13,27 +13,26 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SpecialDaysResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
-  @Autowired
-  @Qualifier("domainSmartMeteringConfigurationService")
-  private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  @Autowired
   protected SpecialDaysResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      @Qualifier("domainSmartMeteringConfigurationService")
+          final ConfigurationService configurationService) {
     super(
         responseMessageSender,
         messageProcessorMap,
         MessageType.SET_SPECIAL_DAYS,
         ComponentType.DOMAIN_SMART_METERING);
+    this.configurationService = configurationService;
   }
 
   @Override

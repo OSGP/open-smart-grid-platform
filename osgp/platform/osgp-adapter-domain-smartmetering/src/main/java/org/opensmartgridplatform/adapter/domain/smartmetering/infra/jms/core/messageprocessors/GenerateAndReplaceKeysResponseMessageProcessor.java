@@ -21,18 +21,20 @@ import org.springframework.stereotype.Component;
 public class GenerateAndReplaceKeysResponseMessageProcessor
     extends OsgpCoreResponseMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
   @Autowired
   protected GenerateAndReplaceKeysResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-          final MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap,
+      final ConfigurationService configurationService) {
     super(
         responseMessageSender,
         messageProcessorMap,
         MessageType.GENERATE_AND_REPLACE_KEYS,
         ComponentType.DOMAIN_SMART_METERING);
+    this.configurationService = configurationService;
   }
 
   @Override
